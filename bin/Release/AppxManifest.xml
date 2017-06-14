@@ -7,7 +7,7 @@
 
     For more information on package manifest files, see http://go.microsoft.com/fwlink/?LinkID=241727
   -->
-  <Identity Name="a1a5e0b9-13d4-41fb-810d-518949f03df4" Version="0.1.6.0" Publisher="CN=geoff" ProcessorArchitecture="neutral" />
+  <Identity Name="a1a5e0b9-13d4-41fb-810d-518949f03df4" Version="0.1.8.0" Publisher="CN=geoff" ProcessorArchitecture="neutral" />
   <mp:PhoneIdentity PhoneProductId="a1a5e0b9-13d4-41fb-810d-518949f03df4" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Kiwix JS</DisplayName>
@@ -21,9 +21,9 @@
     <Resource Language="EN-GB" />
   </Resources>
   <Applications>
-    <Application Id="App" StartPage="ms-appx-web:///index.html">
+    <Application Id="App" StartPage="ms-appx-web:///www/index.html">
       <uap:ApplicationContentUriRules>
-        <uap:Rule Match="ms-appx-web:///index.html" Type="include" WindowsRuntimeAccess="none" />
+        <uap:Rule Match="ms-appx-web:///www/index.html" Type="include" WindowsRuntimeAccess="none" />
       </uap:ApplicationContentUriRules>
       <uap:VisualElements DisplayName="Kiwix JS" Description="Kiwix Offline Wikipedia and ZIM File Reader" BackgroundColor="transparent" Square150x150Logo="images\Square150x150Logo.png" Square44x44Logo="images\Square44x44Logo.png">
         <uap:DefaultTile ShortName="Kiwix JS" Square310x310Logo="images\LargeTile.png" Wide310x150Logo="images\Wide310x150Logo.png" Square71x71Logo="images\SmallTile.png">
