@@ -12,7 +12,7 @@
   <Properties>
     <DisplayName>Kiwix JS</DisplayName>
     <PublisherDisplayName>Peribanu</PublisherDisplayName>
-    <Logo>www\images\storelogo.png</Logo>
+    <Logo>images\storelogo.png</Logo>
   </Properties>
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.10240.0" MaxVersionTested="10.0.15063.0" />
@@ -25,16 +25,16 @@
       <uap:ApplicationContentUriRules>
         <uap:Rule Match="ms-appx-web:///www/index.html" Type="include" WindowsRuntimeAccess="none" />
       </uap:ApplicationContentUriRules>
-      <uap:VisualElements DisplayName="Kiwix JS" Description="Kiwix Offline Wikipedia and ZIM File Reader" BackgroundColor="transparent" Square150x150Logo="www\images\Square150x150Logo.png" Square44x44Logo="www\images\Square44x44Logo.png">
-        <uap:DefaultTile ShortName="Kiwix JS" Square310x310Logo="www\images\LargeTile.png" Wide310x150Logo="www\images\Wide310x150Logo.png" Square71x71Logo="www\images\SmallTile.png">
+      <uap:VisualElements DisplayName="Kiwix JS" Description="Kiwix Offline Wikipedia and ZIM File Reader" BackgroundColor="transparent" Square150x150Logo="images\Square150x150Logo.png" Square44x44Logo="images\Square44x44Logo.png">
+        <uap:DefaultTile ShortName="Kiwix JS" Square310x310Logo="images\LargeTile.png" Wide310x150Logo="images\Wide310x150Logo.png" Square71x71Logo="images\SmallTile.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square150x150Logo" />
             <uap:ShowOn Tile="wide310x150Logo" />
             <uap:ShowOn Tile="square310x310Logo" />
           </uap:ShowNameOnTiles>
         </uap:DefaultTile>
-        <uap:LockScreen Notification="badge" BadgeLogo="www\images\BadgeLogo.png" />
-        <uap:SplashScreen Image="www\images\splashscreen.png" BackgroundColor="transparent" />
+        <uap:LockScreen Notification="badge" BadgeLogo="images\BadgeLogo.png" />
+        <uap:SplashScreen Image="images\splashscreen.png" BackgroundColor="transparent" />
         <uap:InitialRotationPreference>
           <uap:Rotation Preference="portrait" />
           <uap:Rotation Preference="landscape" />
