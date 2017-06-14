@@ -1,0 +1,14 @@
+﻿[ResourceMetadata]
+"ResourceId"			"split.scale-125"
+"ResourceDimensions"		"scale-125"
+
+[Files]
+"C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\split.scale-125.pri"			"resources.pri"
+"C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\PackageLayout\images\Wide310x150Logo.scale-125.png"			"images\Wide310x150Logo.scale-125.png"
+"C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\PackageLayout\images\storelogo.scale-125.png"			"images\storelogo.scale-125.png"
+"C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\PackageLayout\images\Square44x44Logo.scale-125.png"			"images\Square44x44Logo.scale-125.png"
+"C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\PackageLayout\images\Square150x150Logo.scale-125.png"			"images\Square150x150Logo.scale-125.png"
+"C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\PackageLayout\images\splashscreen.scale-125.png"			"images\splashscreen.scale-125.png"
+"C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\PackageLayout\images\SmallTile.scale-125.png"			"images\SmallTile.scale-125.png"
+"C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\PackageLayout\images\LargeTile.scale-125.png"			"images\LargeTile.scale-125.png"
+"C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\PackageLayout\images\BadgeLogo.scale-125.png"			"images\BadgeLogo.scale-125.png"
