@@ -11,13 +11,13 @@ primarily intended for Windows Mobile, but it will run as a UWP Store App on any
 platform: x86, x64, ARM, on Mobile, tablets, Xbox, holographic and PC.
 
 If you would like to test the current build on a Windows Mobile device running Windows 10 Mobile,
-download the .appxbundle under KiwixWebApp/AppPackages/KiwixWebApp_0.x.x.x_Test/ and save it in your
+download the .appxbundle under AppPackages/KiwixWebApp_0.x.x.x_Test/ and save it in your
 downloads folder, or other accessible folder, on the phone. Enable Developer mode on your device
 (Settings / Updates and security / For developers). Open the File Explorer on the phone, navigate
 to the downloads folder and tap the KiwixWebApp bundle. You will be asked if you wish to install.
 
 Installation on a Windows 10 PC involves sideloading with the PowerShell script. Download the full 
-KiwixWebApp/AppPackages/KiwixWebApp_0.x.x.x_Test/ folder to your PC. Turn on Developer mode (Settings /
+AppPackages/KiwixWebApp_0.x.x.x_Test/ folder to your PC. Turn on Developer mode (Settings /
 Update and security / For developers). Right-click Add-AppDevPackage.ps1 inside the folder and run with
 PowerShell. You may be prompted to install a developer's certificate.
 
