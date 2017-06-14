@@ -1,1 +1,1 @@
-C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\KiwixWebApp.jsproj;neutral
+C:\Users\geoff\Source\Repos\kiwix-html5-windows\KiwixWebApp.jsproj;neutral
