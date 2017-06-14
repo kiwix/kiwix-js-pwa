@@ -1,0 +1,126 @@
+﻿/*!
+ * app.css : Main CSS of the application
+ * 
+ * Copyright 2013-2014 Mossroy and contributors
+ * License GPL v3:
+ * 
+ * This file is part of Kiwix.
+ * 
+ * Kiwix is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Kiwix is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
+ */
+
+[role=region] {
+  top: 0; right: 0; bottom: 0; left: 0;
+ 
+  position: fixed;
+  overflow-x: hidden;
+}
+[role=region] > header {
+  margin: .5rem 0 1rem 0;
+  text-align: center;
+}
+[role=region] > header > h1 {
+  margin: 0;
+  text-shadow: 0px 1px 1px rgba(0,0,0,.4);
+}
+[role=region] > .view-content {
+  margin: 0;
+}
+[role=region] > footer {
+  background: rgba(0,0,0,.2);
+  right: 0; bottom: 0; left: 0;
+  position: fixed;
+  text-align: center;
+}
+[role=region] > footer > menu[role=toolbar] {
+  margin: 0;
+  padding: 0;
+}
+
+#navigationButtons .restrictedSize {
+    max-width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.nopadding {
+    padding-right: 1px !important;
+    padding-left: 1px !important;
+}
+
+#searchingForArticles .floating {
+    position: relative;
+    z-index: 10;
+    top: 20px;
+    height: 0px; 
+}
+
+.articleIFrame {
+    width: 100%;
+    border: 0;
+}
+
+.category-padding {
+   margin: 0 1rem 0 1rem;
+}
+
+.apiAvailable {
+    color : green;
+}
+
+.apiUnavailable {
+    color : orange;
+}
+
+/* Réduction de la taille des éléments en haut pour les petits écrans */
+@media (max-width: 768px) {
+    /* Pour réduire la taille du menu en haut */
+    .navbar {
+        min-height: 20px !important;
+        margin-bottom: 1px !important;
+    }
+    .navbar-brand {
+        padding-top: 2px !important;
+        padding-bottom: 1px !important;
+        height: 25px !important;
+    }
+    .navbar-toggle {
+        padding-top: 2px !important;
+        padding-bottom: 2px !important;
+        margin-top: 2px !important;
+        margin-bottom: 0px !important;
+    }
+    [role=region] > header {
+        margin-bottom: 0px !important;
+    }
+    /* Pour supprimer l'espace entre la zone de recherche et l'iframe */
+    .list-group {
+        margin-bottom: 0px !important;
+    }
+    /* Pour réduire la taille du champ de recherche */
+    .form-control {
+        height: 28px !important;
+        padding-bottom: 5px !important;
+    }
+    /* Pour réduire la taille des boutons en haut de l'écran */
+    .btn-xs, .btn-sm, .btn-default, .btn-group-xs > .btn, .btn-group-sm > .btn {
+        font-size: 10px !important;
+    }
+    /* Pour réduire la taille des boutons en bas de l'écran */
+    .btn-lg, .btn-group-lg > .btn {
+        padding-top: 1px !important;
+        padding-bottom: 1px !important;
+        font-size: 16px !important;
+    }    
+}

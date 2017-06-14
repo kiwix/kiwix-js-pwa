@@ -1,0 +1,16 @@
+C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bin\Release\AppxManifest.xml
+C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bin\Release\KiwixWebApp.build.appxrecipe
+C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\ResourceHandlingTask.state
+C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\priconfig.xml
+C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\priconfig.xml.intermediate
+C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\layout.resfiles
+C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\layout.resfiles.intermediate
+C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\resources.resfiles
+C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\resources.resfiles.intermediate
+C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\pri.resfiles
+C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\pri.resfiles.intermediate
+C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\qualifiers.txt
+C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\qualifiers.txt.intermediate
+C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\MultipleQualifiersPerDimensionFound.txt
+C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\ProjectArchitectures.txt
+C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bin\Release\ReverseMap\resources.pri
