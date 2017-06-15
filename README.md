@@ -7,8 +7,9 @@ Wikipedia versions with or without images in many different languages. It has on
 on Wikipedia ZIM files to date.
 
 This is a simple port of the HTML5 web app provided on this git-hub repository. This port is
-primarily intended for Windows Mobile, but it will run as a UWP Store App on any Windows 10
-platform: x86, x64, ARM, on Mobile, tablets, Xbox, holographic and PC.
+primarily intended for Windows Mobile, but it should run as a UWP Store App on any Windows 10
+platform: x86, x64, ARM, on Mobile, tablets, Xbox, Holographic and PC. It has been tested on
+Lumia 950XL (Mobile), Tablet/PC x64 (Windows 10), and a Windows 10 Mobile VM.
 
 If you would like to test the current build on a Windows Mobile device running Windows 10 Mobile,
 download the .appxbundle under AppPackages/KiwixWebApp_0.x.x.x_Test/ and save it in your
