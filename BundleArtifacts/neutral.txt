@@ -1,5 +1,5 @@
-MainPackage=C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Release\KiwixWebApp_0.1.8.0_AnyCPU.appx
-ResourcePack=C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Release\KiwixWebApp_0.1.8.0_scale-100.appx
-ResourcePack=C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Release\KiwixWebApp_0.1.8.0_scale-125.appx
-ResourcePack=C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Release\KiwixWebApp_0.1.8.0_scale-150.appx
-ResourcePack=C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Release\KiwixWebApp_0.1.8.0_scale-400.appx
+MainPackage=C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Release\KiwixWebApp_0.1.9.0_AnyCPU.appx
+ResourcePack=C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Release\KiwixWebApp_0.1.9.0_scale-100.appx
+ResourcePack=C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Release\KiwixWebApp_0.1.9.0_scale-125.appx
+ResourcePack=C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Release\KiwixWebApp_0.1.9.0_scale-150.appx
+ResourcePack=C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Release\KiwixWebApp_0.1.9.0_scale-400.appx

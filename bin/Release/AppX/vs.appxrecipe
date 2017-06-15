@@ -10,7 +10,7 @@
     <PackageArchitecture>neutral</PackageArchitecture>
     <PackageIdentityName>a1a5e0b9-13d4-41fb-810d-518949f03df4</PackageIdentityName>
     <PackageIdentityPublisher>CN=geoff</PackageIdentityPublisher>
-    <IntermediateOutputPath>C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bld\Release\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\geoff\Source\Repos\kiwix-html5-windows\bld\Release\</IntermediateOutputPath>
     <RemoteDeploymentType>
     </RemoteDeploymentType>
     <PackageRegistrationPath>
@@ -19,405 +19,405 @@
     <DeployOptionalPackages>false</DeployOptionalPackages>
     <WindowsSdkPath>
     </WindowsSdkPath>
-    <LayoutDir>C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bin\Release\AppX</LayoutDir>
-    <RegisteredManifestChecksum>AD745A9C5385F7296796201A72E771B3062D73EDCCCF116764F3EF164B0DCAC7</RegisteredManifestChecksum>
-    <RegisteredPackageMoniker>a1a5e0b9-13d4-41fb-810d-518949f03df4_0.1.6.0_neutral__zfxmafgedzx24</RegisteredPackageMoniker>
+    <LayoutDir>C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Release\AppX</LayoutDir>
+    <RegisteredManifestChecksum>C34E2B6A41C78A0F719DD99E60FCDAC0C592DB876C9DF14EB2F4BEF834B6AA1A</RegisteredManifestChecksum>
+    <RegisteredPackageMoniker>a1a5e0b9-13d4-41fb-810d-518949f03df4_0.1.8.0_neutral__zfxmafgedzx24</RegisteredPackageMoniker>
     <RegisteredUserModeAppID>a1a5e0b9-13d4-41fb-810d-518949f03df4_zfxmafgedzx24!App</RegisteredUserModeAppID>
     <RegisteredPackageID>a1a5e0b9-13d4-41fb-810d-518949f03df4</RegisteredPackageID>
     <RegisteredPackagePublisher>CN=geoff</RegisteredPackagePublisher>
-    <RegisteredVersion>0.1.6.0</RegisteredVersion>
+    <RegisteredVersion>0.1.8.0</RegisteredVersion>
     <JitOptimizationSuppressed>True</JitOptimizationSuppressed>
   </PropertyGroup>
   <ItemGroup>
-    <AppXManifest Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bin\Release\AppxManifest.xml">
+    <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-06-14T13:26:40.996</Modified>
+      <Modified>2017-06-15T07:09:23.421</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\A\dummyArticle.html">
-      <PackagePath>A\dummyArticle.html</PackagePath>
-      <Modified>2017-06-14T06:42:47.009</Modified>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\index.html">
-      <PackagePath>index.html</PackagePath>
-      <Modified>2017-06-14T11:40:07.161</Modified>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\css\app.css">
-      <PackagePath>css\app.css</PackagePath>
-      <Modified>2017-06-14T06:43:49.206</Modified>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\css\bootstrap-theme.css">
-      <PackagePath>css\bootstrap-theme.css</PackagePath>
-      <Modified>2017-06-14T06:44:32.558</Modified>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\css\bootstrap.css">
-      <PackagePath>css\bootstrap.css</PackagePath>
-      <Modified>2017-06-14T06:45:08.948</Modified>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\css\default.css">
-      <PackagePath>css\default.css</PackagePath>
-      <Modified>2017-06-12T05:33:43.335</Modified>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\favicon.ico">
-      <PackagePath>favicon.ico</PackagePath>
-      <Modified>2017-06-07T06:55:52.661</Modified>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\fonts\glyphicons-halflings-regular.eot">
-      <PackagePath>fonts\glyphicons-halflings-regular.eot</PackagePath>
-      <Modified>2017-06-07T06:55:52.827</Modified>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\fonts\glyphicons-halflings-regular.svg">
-      <PackagePath>fonts\glyphicons-halflings-regular.svg</PackagePath>
-      <Modified>2017-06-07T06:55:52.853</Modified>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\fonts\glyphicons-halflings-regular.ttf">
-      <PackagePath>fonts\glyphicons-halflings-regular.ttf</PackagePath>
-      <Modified>2017-06-07T06:55:52.880</Modified>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\fonts\glyphicons-halflings-regular.woff">
-      <PackagePath>fonts\glyphicons-halflings-regular.woff</PackagePath>
-      <Modified>2017-06-07T06:55:52.901</Modified>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\fonts\glyphicons-halflings-regular.woff2">
-      <PackagePath>fonts\glyphicons-halflings-regular.woff2</PackagePath>
-      <Modified>2017-06-07T06:55:52.922</Modified>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\BadgeLogo.scale-100.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\BadgeLogo.scale-100.png">
       <PackagePath>images\BadgeLogo.scale-100.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.721</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\BadgeLogo.scale-125.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\BadgeLogo.scale-125.png">
       <PackagePath>images\BadgeLogo.scale-125.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.757</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\BadgeLogo.scale-150.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\BadgeLogo.scale-150.png">
       <PackagePath>images\BadgeLogo.scale-150.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.792</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\BadgeLogo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\BadgeLogo.scale-200.png">
       <PackagePath>images\BadgeLogo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.823</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\BadgeLogo.scale-400.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\BadgeLogo.scale-400.png">
       <PackagePath>images\BadgeLogo.scale-400.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.865</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\LargeTile.scale-100.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\LargeTile.scale-100.png">
       <PackagePath>images\LargeTile.scale-100.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.721</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\LargeTile.scale-125.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\LargeTile.scale-125.png">
       <PackagePath>images\LargeTile.scale-125.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.756</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\LargeTile.scale-150.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\LargeTile.scale-150.png">
       <PackagePath>images\LargeTile.scale-150.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.796</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\LargeTile.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\LargeTile.scale-200.png">
       <PackagePath>images\LargeTile.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.834</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\LargeTile.scale-400.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\LargeTile.scale-400.png">
       <PackagePath>images\LargeTile.scale-400.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.903</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\SmallTile.scale-100.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\SmallTile.scale-100.png">
       <PackagePath>images\SmallTile.scale-100.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.239</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\SmallTile.scale-125.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\SmallTile.scale-125.png">
       <PackagePath>images\SmallTile.scale-125.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.266</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\SmallTile.scale-150.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\SmallTile.scale-150.png">
       <PackagePath>images\SmallTile.scale-150.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.296</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\SmallTile.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\SmallTile.scale-200.png">
       <PackagePath>images\SmallTile.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.326</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\SmallTile.scale-400.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\SmallTile.scale-400.png">
       <PackagePath>images\SmallTile.scale-400.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.360</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\splashscreen.scale-100.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\splashscreen.scale-100.png">
       <PackagePath>images\splashscreen.scale-100.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.327</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\splashscreen.scale-125.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\splashscreen.scale-125.png">
       <PackagePath>images\splashscreen.scale-125.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.368</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\splashscreen.scale-150.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\splashscreen.scale-150.png">
       <PackagePath>images\splashscreen.scale-150.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.432</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\splashscreen.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\splashscreen.scale-200.png">
       <PackagePath>images\splashscreen.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.514</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\splashscreen.scale-400.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\splashscreen.scale-400.png">
       <PackagePath>images\splashscreen.scale-400.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.676</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square150x150Logo.scale-100.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square150x150Logo.scale-100.png">
       <PackagePath>images\Square150x150Logo.scale-100.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.387</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square150x150Logo.scale-125.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square150x150Logo.scale-125.png">
       <PackagePath>images\Square150x150Logo.scale-125.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.418</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square150x150Logo.scale-150.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square150x150Logo.scale-150.png">
       <PackagePath>images\Square150x150Logo.scale-150.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.449</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square150x150Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square150x150Logo.scale-200.png">
       <PackagePath>images\Square150x150Logo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.479</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square150x150Logo.scale-400.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square150x150Logo.scale-400.png">
       <PackagePath>images\Square150x150Logo.scale-400.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.525</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square44x44Logo.altform-unplated_targetsize-16.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square44x44Logo.altform-unplated_targetsize-16.png">
       <PackagePath>images\Square44x44Logo.altform-unplated_targetsize-16.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.183</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square44x44Logo.altform-unplated_targetsize-256.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square44x44Logo.altform-unplated_targetsize-256.png">
       <PackagePath>images\Square44x44Logo.altform-unplated_targetsize-256.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.293</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square44x44Logo.altform-unplated_targetsize-32.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square44x44Logo.altform-unplated_targetsize-32.png">
       <PackagePath>images\Square44x44Logo.altform-unplated_targetsize-32.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.234</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square44x44Logo.altform-unplated_targetsize-48.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square44x44Logo.altform-unplated_targetsize-48.png">
       <PackagePath>images\Square44x44Logo.altform-unplated_targetsize-48.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.260</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square44x44Logo.scale-100.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square44x44Logo.scale-100.png">
       <PackagePath>images\Square44x44Logo.scale-100.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.928</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square44x44Logo.scale-125.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square44x44Logo.scale-125.png">
       <PackagePath>images\Square44x44Logo.scale-125.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.953</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square44x44Logo.scale-150.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square44x44Logo.scale-150.png">
       <PackagePath>images\Square44x44Logo.scale-150.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.977</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square44x44Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square44x44Logo.scale-200.png">
       <PackagePath>images\Square44x44Logo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.002</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square44x44Logo.scale-400.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square44x44Logo.scale-400.png">
       <PackagePath>images\Square44x44Logo.scale-400.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.029</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square44x44Logo.targetsize-16.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square44x44Logo.targetsize-16.png">
       <PackagePath>images\Square44x44Logo.targetsize-16.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.054</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square44x44Logo.targetsize-24.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square44x44Logo.targetsize-24.png">
       <PackagePath>images\Square44x44Logo.targetsize-24.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.078</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square44x44Logo.targetsize-24_altform-unplated.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square44x44Logo.targetsize-24_altform-unplated.png">
       <PackagePath>images\Square44x44Logo.targetsize-24_altform-unplated.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.210</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square44x44Logo.targetsize-256.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square44x44Logo.targetsize-256.png">
       <PackagePath>images\Square44x44Logo.targetsize-256.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.157</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square44x44Logo.targetsize-32.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square44x44Logo.targetsize-32.png">
       <PackagePath>images\Square44x44Logo.targetsize-32.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.103</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Square44x44Logo.targetsize-48.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Square44x44Logo.targetsize-48.png">
       <PackagePath>images\Square44x44Logo.targetsize-48.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.128</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\storelogo.scale-100.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\storelogo.scale-100.png">
       <PackagePath>images\storelogo.scale-100.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.894</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\storelogo.scale-125.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\storelogo.scale-125.png">
       <PackagePath>images\storelogo.scale-125.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.922</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\storelogo.scale-150.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\storelogo.scale-150.png">
       <PackagePath>images\storelogo.scale-150.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.950</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\storelogo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\storelogo.scale-200.png">
       <PackagePath>images\storelogo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:38.979</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\storelogo.scale-400.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\storelogo.scale-400.png">
       <PackagePath>images\storelogo.scale-400.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:39.015</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Wide310x150Logo.scale-100.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Wide310x150Logo.scale-100.png">
       <PackagePath>images\Wide310x150Logo.scale-100.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.553</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Wide310x150Logo.scale-125.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Wide310x150Logo.scale-125.png">
       <PackagePath>images\Wide310x150Logo.scale-125.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.580</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Wide310x150Logo.scale-150.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Wide310x150Logo.scale-150.png">
       <PackagePath>images\Wide310x150Logo.scale-150.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.609</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Wide310x150Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Wide310x150Logo.scale-200.png">
       <PackagePath>images\Wide310x150Logo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.642</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\images\Wide310x150Logo.scale-400.png">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\Wide310x150Logo.scale-400.png">
       <PackagePath>images\Wide310x150Logo.scale-400.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-06-12T06:29:37.690</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\img\icons\kiwix-60.png">
-      <PackagePath>img\icons\kiwix-60.png</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\img\icons\kiwix-60.png">
+      <PackagePath>www\img\icons\kiwix-60.png</PackagePath>
       <Modified>2017-06-07T06:55:53.066</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\img\Kiwix_icon_transparent_600x600.png">
-      <PackagePath>img\Kiwix_icon_transparent_600x600.png</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\img\Kiwix_icon_transparent_600x600.png">
+      <PackagePath>www\img\Kiwix_icon_transparent_600x600.png</PackagePath>
       <Modified>2017-06-07T06:55:52.939</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\img\spinner.gif">
-      <PackagePath>img\spinner.gif</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\A\dummyArticle.html">
+      <PackagePath>www\A\dummyArticle.html</PackagePath>
+      <Modified>2017-06-14T06:42:47.009</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\index.html">
+      <PackagePath>www\index.html</PackagePath>
+      <Modified>2017-06-15T07:08:40.081</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\css\app.css">
+      <PackagePath>www\css\app.css</PackagePath>
+      <Modified>2017-06-14T06:43:49.206</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\css\bootstrap-theme.css">
+      <PackagePath>www\css\bootstrap-theme.css</PackagePath>
+      <Modified>2017-06-14T06:44:32.558</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\css\bootstrap.css">
+      <PackagePath>www\css\bootstrap.css</PackagePath>
+      <Modified>2017-06-14T06:45:08.948</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\css\default.css">
+      <PackagePath>www\css\default.css</PackagePath>
+      <Modified>2017-06-12T05:33:43.335</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\favicon.ico">
+      <PackagePath>www\favicon.ico</PackagePath>
+      <Modified>2017-06-07T06:55:52.661</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\fonts\glyphicons-halflings-regular.eot">
+      <PackagePath>www\fonts\glyphicons-halflings-regular.eot</PackagePath>
+      <Modified>2017-06-07T06:55:52.827</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\fonts\glyphicons-halflings-regular.svg">
+      <PackagePath>www\fonts\glyphicons-halflings-regular.svg</PackagePath>
+      <Modified>2017-06-07T06:55:52.853</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\fonts\glyphicons-halflings-regular.ttf">
+      <PackagePath>www\fonts\glyphicons-halflings-regular.ttf</PackagePath>
+      <Modified>2017-06-07T06:55:52.880</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\fonts\glyphicons-halflings-regular.woff">
+      <PackagePath>www\fonts\glyphicons-halflings-regular.woff</PackagePath>
+      <Modified>2017-06-07T06:55:52.901</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\fonts\glyphicons-halflings-regular.woff2">
+      <PackagePath>www\fonts\glyphicons-halflings-regular.woff2</PackagePath>
+      <Modified>2017-06-07T06:55:52.922</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\img\spinner.gif">
+      <PackagePath>www\img\spinner.gif</PackagePath>
       <Modified>2017-06-07T06:55:52.951</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\js\app.js">
-      <PackagePath>js\app.js</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\app.js">
+      <PackagePath>www\js\app.js</PackagePath>
       <Modified>2017-06-14T07:26:16.935</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\js\init.js">
-      <PackagePath>js\init.js</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\init.js">
+      <PackagePath>www\js\init.js</PackagePath>
       <Modified>2017-06-14T06:31:25.883</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\js\lib\abstractFilesystemAccess.js">
-      <PackagePath>js\lib\abstractFilesystemAccess.js</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\abstractFilesystemAccess.js">
+      <PackagePath>www\js\lib\abstractFilesystemAccess.js</PackagePath>
       <Modified>2017-06-14T06:33:08.719</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\js\lib\bootstrap.js">
-      <PackagePath>js\lib\bootstrap.js</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\bootstrap.js">
+      <PackagePath>www\js\lib\bootstrap.js</PackagePath>
       <Modified>2017-06-14T06:33:47.830</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\js\lib\cookies.js">
-      <PackagePath>js\lib\cookies.js</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\cookies.js">
+      <PackagePath>www\js\lib\cookies.js</PackagePath>
       <Modified>2017-06-14T06:34:31.493</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\js\lib\jquery-2.1.4.js">
-      <PackagePath>js\lib\jquery-2.1.4.js</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\jquery-2.1.4.js">
+      <PackagePath>www\js\lib\jquery-2.1.4.js</PackagePath>
       <Modified>2017-06-14T06:35:04.426</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\js\lib\q.js">
-      <PackagePath>js\lib\q.js</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\q.js">
+      <PackagePath>www\js\lib\q.js</PackagePath>
       <Modified>2017-06-14T06:35:34.396</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\js\lib\require.js">
-      <PackagePath>js\lib\require.js</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\require.js">
+      <PackagePath>www\js\lib\require.js</PackagePath>
       <Modified>2017-06-14T06:36:01.643</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\js\lib\uiUtil.js">
-      <PackagePath>js\lib\uiUtil.js</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\uiUtil.js">
+      <PackagePath>www\js\lib\uiUtil.js</PackagePath>
       <Modified>2017-06-14T06:36:38.345</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\js\lib\utf8.js">
-      <PackagePath>js\lib\utf8.js</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\utf8.js">
+      <PackagePath>www\js\lib\utf8.js</PackagePath>
       <Modified>2017-06-14T06:37:09.654</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\js\lib\util.js">
-      <PackagePath>js\lib\util.js</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\util.js">
+      <PackagePath>www\js\lib\util.js</PackagePath>
       <Modified>2017-06-14T06:37:32.303</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\js\lib\xzdec.js">
-      <PackagePath>js\lib\xzdec.js</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\xzdec.js">
+      <PackagePath>www\js\lib\xzdec.js</PackagePath>
       <Modified>2017-06-14T06:38:06.395</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\js\lib\xzdec_wrapper.js">
-      <PackagePath>js\lib\xzdec_wrapper.js</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\xzdec_wrapper.js">
+      <PackagePath>www\js\lib\xzdec_wrapper.js</PackagePath>
       <Modified>2017-06-14T06:39:09.115</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\js\lib\zimArchive.js">
-      <PackagePath>js\lib\zimArchive.js</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\zimArchive.js">
+      <PackagePath>www\js\lib\zimArchive.js</PackagePath>
       <Modified>2017-06-14T06:39:35.379</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\js\lib\zimArchiveLoader.js">
-      <PackagePath>js\lib\zimArchiveLoader.js</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\zimArchiveLoader.js">
+      <PackagePath>www\js\lib\zimArchiveLoader.js</PackagePath>
       <Modified>2017-06-14T06:40:05.911</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\js\lib\zimDirEntry.js">
-      <PackagePath>js\lib\zimDirEntry.js</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\zimDirEntry.js">
+      <PackagePath>www\js\lib\zimDirEntry.js</PackagePath>
       <Modified>2017-06-14T06:40:35.797</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\js\lib\zimfile.js">
-      <PackagePath>js\lib\zimfile.js</PackagePath>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\zimfile.js">
+      <PackagePath>www\js\lib\zimfile.js</PackagePath>
       <Modified>2017-06-14T06:41:11.086</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\KiwixJS\KiwixWebApp\bin\Release\ReverseMap\resources.pri">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-06-14T13:26:40.830</Modified>
+      <Modified>2017-06-15T07:09:23.250</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>
