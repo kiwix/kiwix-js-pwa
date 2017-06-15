@@ -1,4 +1,4 @@
-# KiwixJS
+# Kiwix HTML5 for Windows
 Port of the Kiwix HTML5 app for Windows 10 Universal Windows Platform
 
 This is a port of the Kiwix Offline Wikipedia (and other Wiki) reader for UWP on Windows 10.
