@@ -20,10 +20,10 @@ icon to appear in the All Apps list. You will also need to download a ZIM file t
 (see below).
 
 Installation on a Windows 10 PC involves sideloading with the PowerShell script. Download the full 
-AppPackages/KiwixWebApp_0.x.x.x_Test/ folder to your PC. Turn on Developer mode (Settings /
-Update and security / For developers). Open the folder in File Explorer, Right-click the
-Add-AppDevPackage.ps1 inside the folder and choose to run with PowerShell. You may be prompted to
-install the developer's certificate.
+AppPackages/KiwixWebApp_0.x.x.x_Test/ folder to your PC (you can use https://minhaskamal.github.io/DownGit
+to do this). Turn on Developer mode (Settings / Update and security / For developers). Open the folder
+in File Explorer, Right-click the Add-AppDevPackage.ps1 inside the folder and choose to run with PowerShell.
+You may be prompted to install the developer's certificate.
 
 You will need a ZIM file to work with this app. For testing, you can download the Ray Charles ZIM
 file in the tests folder on this repository. You only need the wikipedia_en_ray_charles_2015-06.zim
