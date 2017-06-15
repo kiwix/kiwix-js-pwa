@@ -14,14 +14,17 @@ If you would like to test the current build on a Windows Mobile device running W
 download the .appxbundle under AppPackages/KiwixWebApp_0.x.x.x_Test/ and save it in your
 downloads folder, or other accessible folder, on the phone. Enable Developer mode on your device
 (Settings / Updates and security / For developers). Open the File Explorer on the phone, navigate
-to the downloads folder and tap the KiwixWebApp bundle. You will be asked if you wish to install.
+to the downloads folder and tap the KiwixWebApp bundle. You will be asked if you wish to install,
+but it then installs silently in the background. Be patient: it can take a minute or so for the Kiwix
+icon to appear in the All Apps list
 
 Installation on a Windows 10 PC involves sideloading with the PowerShell script. Download the full 
 AppPackages/KiwixWebApp_0.x.x.x_Test/ folder to your PC. Turn on Developer mode (Settings /
-Update and security / For developers). Right-click Add-AppDevPackage.ps1 inside the folder and run with
-PowerShell. You may be prompted to install a developer's certificate.
+Update and security / For developers). Open the folder in File Explorer, Right-click the
+Add-AppDevPackage.ps1 inside the folder and choose to run with PowerShell. You may be prompted to
+install the developer's certificate.
 
-Our intention is to make this app available in the Windows Store.
+Our intention is to make this app available in the Windows Store, when ready.
 
 The authors of the HTML5 app for Kiwix did all the work. Their source code runs almost "as is" on
 the UWP platform. This initial port for Windows 10 (Mobile) is by Geoffrey Kantaris. I can be contacted
