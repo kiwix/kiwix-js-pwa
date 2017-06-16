@@ -246,9 +246,6 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\css\bootstrap.css">
       <PackagePath>www\css\bootstrap.css</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\css\default.css">
-      <PackagePath>www\css\default.css</PackagePath>
-    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\favicon.ico">
       <PackagePath>www\favicon.ico</PackagePath>
     </AppxPackagedFile>

@@ -118,7 +118,6 @@
     <Content Include="www\css\app.css" />
     <Content Include="www\css\bootstrap-theme.css" />
     <Content Include="www\css\bootstrap.css" />
-    <Content Include="www\css\default.css" />
     <Content Include="www\favicon.ico" />
     <Content Include="www\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="www\fonts\glyphicons-halflings-regular.svg" />
