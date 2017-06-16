@@ -36,6 +36,7 @@
 }
 [role=region] > .view-content {
   margin: 0;
+  position: relative;
 }
 [role=region] > footer {
   background: rgba(0,0,0,.2);

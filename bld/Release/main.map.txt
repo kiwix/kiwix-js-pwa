@@ -32,7 +32,6 @@
 "C:\Users\geoff\Source\Repos\kiwix-html5-windows\bld\Release\PackageLayout\www\fonts\glyphicons-halflings-regular.ttf"			"www\fonts\glyphicons-halflings-regular.ttf"
 "C:\Users\geoff\Source\Repos\kiwix-html5-windows\bld\Release\PackageLayout\www\fonts\glyphicons-halflings-regular.svg"			"www\fonts\glyphicons-halflings-regular.svg"
 "C:\Users\geoff\Source\Repos\kiwix-html5-windows\bld\Release\PackageLayout\www\fonts\glyphicons-halflings-regular.eot"			"www\fonts\glyphicons-halflings-regular.eot"
-"C:\Users\geoff\Source\Repos\kiwix-html5-windows\bld\Release\PackageLayout\www\css\default.css"			"www\css\default.css"
 "C:\Users\geoff\Source\Repos\kiwix-html5-windows\bld\Release\PackageLayout\www\css\bootstrap.css"			"www\css\bootstrap.css"
 "C:\Users\geoff\Source\Repos\kiwix-html5-windows\bld\Release\PackageLayout\www\css\bootstrap-theme.css"			"www\css\bootstrap-theme.css"
 "C:\Users\geoff\Source\Repos\kiwix-html5-windows\bld\Release\PackageLayout\www\css\app.css"			"www\css\app.css"
