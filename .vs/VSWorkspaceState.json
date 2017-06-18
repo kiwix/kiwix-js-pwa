@@ -1,6 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\www",
+    "\\www\\css"
   ],
   "SelectedNode": "\\KiwixWebApp.sln",
   "PreviewInSolutionExplorer": false
