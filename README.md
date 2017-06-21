@@ -1,5 +1,5 @@
-# Kiwix HTML5 for Windows
-Port of the Kiwix HTML5 app for Windows 10 Universal Windows Platform
+# Kiwix JS for Windows
+Port of the Kiwix JS app for Windows 10 Universal Windows Platform
 
 This is a port of the Kiwix Offline Wikipedia (and other Wiki) reader for UWP on Windows 10.
 It enables offline reading of a ZIM file downloaded from the Kiwix repository, including full
