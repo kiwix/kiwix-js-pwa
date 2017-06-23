@@ -29,7 +29,7 @@
 define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFilesystemAccess'],
  function($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess) {
      
-    // Disable any eval() call in jQuery : it's disabled by CSP in any packaged application
+    /*/ Disable any eval() call in jQuery : it's disabled by CSP in any packaged application
     // It happens on some wiktionary archives, because there is some javascript inside the html article
     // Cf http://forum.jquery.com/topic/jquery-ajax-disable-script-eval
      jQuery.globalEval = function (code) {
@@ -42,7 +42,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
      * Maximum number of articles to display in a search
      * @type Integer
      */
-    var MAX_SEARCH_RESULT_SIZE = 50;
+    //var MAX_SEARCH_RESULT_SIZE = 50;
+    var MAX_SEARCH_RESULT_SIZE = 20; //GK - speed up search
 
     /**
      * @type ZIMArchive
