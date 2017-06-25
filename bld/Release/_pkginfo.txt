@@ -1,1 +1,1 @@
-C:\Users\geoff\Source\Repos\kiwix-html5-windows\AppPackages\KiwixWebApp_0.4.0.0_Test\KiwixWebApp_0.4.0.0_AnyCPU.appxbundle
+C:\Users\geoff\Source\Repos\kiwix-html5-windows\AppPackages\KiwixWebApp_0.4.1.0_Test\KiwixWebApp_0.4.1.0_AnyCPU.appxbundle
