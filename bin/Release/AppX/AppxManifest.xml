@@ -7,7 +7,7 @@
 
     For more information on package manifest files, see http://go.microsoft.com/fwlink/?LinkID=241727
   -->
-  <Identity Name="a1a5e0b9-13d4-41fb-810d-518949f03df4" Version="0.3.0.0" Publisher="CN=geoff" ProcessorArchitecture="neutral" />
+  <Identity Name="a1a5e0b9-13d4-41fb-810d-518949f03df4" Version="0.4.0.0" Publisher="CN=geoff" ProcessorArchitecture="neutral" />
   <mp:PhoneIdentity PhoneProductId="a1a5e0b9-13d4-41fb-810d-518949f03df4" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Kiwix JS</DisplayName>
@@ -33,7 +33,6 @@
             <uap:ShowOn Tile="square310x310Logo" />
           </uap:ShowNameOnTiles>
         </uap:DefaultTile>
-        <uap:LockScreen Notification="badge" BadgeLogo="images\BadgeLogo.png" />
         <uap:SplashScreen Image="images\splashscreen.png" BackgroundColor="transparent" />
         <uap:InitialRotationPreference>
           <uap:Rotation Preference="portrait" />

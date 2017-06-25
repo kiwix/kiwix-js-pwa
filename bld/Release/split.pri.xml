@@ -177,9 +177,9 @@
 								<Value>www\js\lib\abstractFilesystemAccess.js</Value>
 							</Candidate>
 						</NamedResource>
-						<NamedResource name="bootstrap.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/lib/bootstrap.js">
+						<NamedResource name="bootstrap.min.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/lib/bootstrap.min.js">
 							<Candidate type="Path">
-								<Value>www\js\lib\bootstrap.js</Value>
+								<Value>www\js\lib\bootstrap.min.js</Value>
 							</Candidate>
 						</NamedResource>
 						<NamedResource name="cookies.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/lib/cookies.js">
@@ -187,9 +187,9 @@
 								<Value>www\js\lib\cookies.js</Value>
 							</Candidate>
 						</NamedResource>
-						<NamedResource name="jquery-2.1.4.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/lib/jquery-2.1.4.js">
+						<NamedResource name="jquery-3.2.1.slim.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/lib/jquery-3.2.1.slim.js">
 							<Candidate type="Path">
-								<Value>www\js\lib\jquery-2.1.4.js</Value>
+								<Value>www\js\lib\jquery-3.2.1.slim.js</Value>
 							</Candidate>
 						</NamedResource>
 						<NamedResource name="q.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/lib/q.js">
