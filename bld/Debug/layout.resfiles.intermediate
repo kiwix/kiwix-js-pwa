@@ -66,8 +66,10 @@ www\js\app.js
 www\js\init.js
 www\js\lib\abstractFilesystemAccess.js
 www\js\lib\bootstrap.js
+www\js\lib\bootstrap.min.js
 www\js\lib\cookies.js
 www\js\lib\jquery-2.1.4.js
+www\js\lib\jquery-3.2.1.slim.js
 www\js\lib\q.js
 www\js\lib\require.js
 www\js\lib\uiUtil.js

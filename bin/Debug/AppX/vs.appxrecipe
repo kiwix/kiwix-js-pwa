@@ -20,19 +20,19 @@
     <WindowsSdkPath>
     </WindowsSdkPath>
     <LayoutDir>C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Debug\AppX</LayoutDir>
-    <RegisteredManifestChecksum>2476C239653CB56E06388240153C49F4F5BB1F6E71EF7403BCEB10B507C13772</RegisteredManifestChecksum>
-    <RegisteredPackageMoniker>a1a5e0b9-13d4-41fb-810d-518949f03df4_0.2.0.0_neutral__zfxmafgedzx24</RegisteredPackageMoniker>
+    <RegisteredManifestChecksum>3F3A982E681E889AE2A5AD292DD7EA55CCC80D8157EC9CCCFCD22590D4576300</RegisteredManifestChecksum>
+    <RegisteredPackageMoniker>a1a5e0b9-13d4-41fb-810d-518949f03df4_0.3.0.0_neutral__zfxmafgedzx24</RegisteredPackageMoniker>
     <RegisteredUserModeAppID>a1a5e0b9-13d4-41fb-810d-518949f03df4_zfxmafgedzx24!App</RegisteredUserModeAppID>
     <RegisteredPackageID>a1a5e0b9-13d4-41fb-810d-518949f03df4</RegisteredPackageID>
     <RegisteredPackagePublisher>CN=geoff</RegisteredPackagePublisher>
-    <RegisteredVersion>0.2.0.0</RegisteredVersion>
+    <RegisteredVersion>0.3.0.0</RegisteredVersion>
     <JitOptimizationSuppressed>True</JitOptimizationSuppressed>
   </PropertyGroup>
   <ItemGroup>
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Debug\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-06-19T06:51:03.041</Modified>
+      <Modified>2017-06-25T13:48:59.655</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -300,7 +300,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\index.html">
       <PackagePath>www\index.html</PackagePath>
-      <Modified>2017-06-16T16:26:11.288</Modified>
+      <Modified>2017-06-21T19:37:19.038</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\css\app.css">
       <PackagePath>www\css\app.css</PackagePath>
@@ -344,11 +344,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-06-16T16:31:46.926</Modified>
+      <Modified>2017-06-22T06:07:50.858</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
-      <Modified>2017-06-16T16:31:46.927</Modified>
+      <Modified>2017-06-25T09:57:54.599</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\abstractFilesystemAccess.js">
       <PackagePath>www\js\lib\abstractFilesystemAccess.js</PackagePath>
@@ -358,6 +358,10 @@
       <PackagePath>www\js\lib\bootstrap.js</PackagePath>
       <Modified>2017-06-16T16:31:46.977</Modified>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\bootstrap.min.js">
+      <PackagePath>www\js\lib\bootstrap.min.js</PackagePath>
+      <Modified>2017-06-24T18:35:30.233</Modified>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\cookies.js">
       <PackagePath>www\js\lib\cookies.js</PackagePath>
       <Modified>2017-06-16T16:31:46.977</Modified>
@@ -365,6 +369,10 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\jquery-2.1.4.js">
       <PackagePath>www\js\lib\jquery-2.1.4.js</PackagePath>
       <Modified>2017-06-16T16:31:47.078</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\jquery-3.2.1.slim.js">
+      <PackagePath>www\js\lib\jquery-3.2.1.slim.js</PackagePath>
+      <Modified>2017-06-24T18:35:30.412</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\q.js">
       <PackagePath>www\js\lib\q.js</PackagePath>
@@ -388,7 +396,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\xzdec.js">
       <PackagePath>www\js\lib\xzdec.js</PackagePath>
-      <Modified>2017-06-19T06:50:32.223</Modified>
+      <Modified>2017-06-21T19:37:19.170</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\xzdec_wrapper.js">
       <PackagePath>www\js\lib\xzdec_wrapper.js</PackagePath>
@@ -413,7 +421,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Debug\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-06-19T06:47:39.316</Modified>
+      <Modified>2017-06-25T13:42:35.993</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>

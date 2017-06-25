@@ -29,10 +29,9 @@
 define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFilesystemAccess'],
  function($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess) {
      
-    // Disable any eval() call in jQuery : it's disabled by CSP in any packaged application
+    /*/ Disable any eval() call in jQuery : it's disabled by CSP in any packaged application
     // It happens on some wiktionary archives, because there is some javascript inside the html article
     // Cf http://forum.jquery.com/topic/jquery-ajax-disable-script-eval
-    /** This is not needed for UWP and seems to cause problems - GK
      jQuery.globalEval = function (code) {
         // jQuery believes the javascript has been executed, but we did nothing
         // In any case, that would have been blocked by CSP for package applications
@@ -43,7 +42,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
      * Maximum number of articles to display in a search
      * @type Integer
      */
-    var MAX_SEARCH_RESULT_SIZE = 50;
+    //var MAX_SEARCH_RESULT_SIZE = 50;
+    var MAX_SEARCH_RESULT_SIZE = 20; //GK - speed up search
 
     /**
      * @type ZIMArchive
@@ -576,11 +576,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         var request = new XMLHttpRequest();
         request.open("GET", url, true);
         request.responseType = "blob";
-        request.onload = function (e) {
-            if (request.response) {
+        request.onreadystatechange = function () {
+            if (request.readyState === XMLHttpRequest.DONE) {
+                if ((request.status >= 200 && request.status < 300) || request.status === 0) {
                 // Hack to make this look similar to a file
                 request.response.name = url;
                 setLocalArchiveFromFileList([request.response]);
+            	}
             }
         };
         request.send(null);
