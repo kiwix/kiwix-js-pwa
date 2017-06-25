@@ -5,7 +5,8 @@ function enlargeMemory() {
     assert(TOTAL_MEMORY <= Math.pow(2, 30)); var oldHEAP8 = HEAP8; var buffer = new ArrayBuffer(TOTAL_MEMORY); Module["HEAP8"] = HEAP8 = new Int8Array(buffer); Module["HEAP16"] = HEAP16 = new Int16Array(buffer); Module["HEAP32"] = HEAP32 = new Int32Array(buffer); Module["HEAPU8"] = HEAPU8 = new Uint8Array(buffer); Module["HEAPU16"] = HEAPU16 = new Uint16Array(buffer); Module["HEAPU32"] = HEAPU32 = new Uint32Array(buffer); Module["HEAPF32"] = HEAPF32 = new Float32Array(buffer); Module["HEAPF64"] = HEAPF64 = new Float64Array(buffer); HEAP8.set(oldHEAP8); var success = _emscripten_replace_memory(buffer); assert(success)
 } var byteLength; try { byteLength = Function.prototype.call.bind(Object.getOwnPropertyDescriptor(ArrayBuffer.prototype, "byteLength").get) } catch (e) { byteLength = (function (buffer) { return buffer.byteLength }) }
 var TOTAL_STACK = Module["TOTAL_STACK"] || 5242880;
-var TOTAL_MEMORY = Module["TOTAL_MEMORY"] || 583425; //GK increase
+/* var TOTAL_MEMORY = Module["TOTAL_MEMORY"] || 8e7; //GK hex value incorrectly declared */
+var TOTAL_MEMORY = Module["TOTAL_MEMORY"] || 0x8e7; /* //Fixes kiwix-js #253; kiwix-js-windows #4 */
 var FAST_MEMORY = Module["FAST_MEMORY"] || 2097152; var totalMemory = 64 * 1024;
 while (totalMemory < TOTAL_MEMORY || totalMemory < 2 * TOTAL_STACK) {
     if (totalMemory < 16 * 1024 * 1024) { totalMemory *= 2 } else { totalMemory += 16 * 1024 * 1024 }
