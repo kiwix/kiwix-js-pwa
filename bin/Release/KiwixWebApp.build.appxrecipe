@@ -27,23 +27,18 @@
   <ItemGroup>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\BadgeLogo.scale-100.png">
       <PackagePath>images\BadgeLogo.scale-100.png</PackagePath>
-      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\BadgeLogo.scale-125.png">
       <PackagePath>images\BadgeLogo.scale-125.png</PackagePath>
-      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\BadgeLogo.scale-150.png">
       <PackagePath>images\BadgeLogo.scale-150.png</PackagePath>
-      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\BadgeLogo.scale-200.png">
       <PackagePath>images\BadgeLogo.scale-200.png</PackagePath>
-      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\BadgeLogo.scale-400.png">
       <PackagePath>images\BadgeLogo.scale-400.png</PackagePath>
-      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\images\LargeTile.scale-100.png">
       <PackagePath>images\LargeTile.scale-100.png</PackagePath>
