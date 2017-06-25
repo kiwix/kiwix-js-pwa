@@ -787,8 +787,23 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         $("#articleContent").contents().scrollTop(0);
 
         // Display the article inside the web page.
-        $('#articleContent').contents().find('body').html(htmlArticle);
-        
+        var $body = $(htmlArticle);
+        $body.find('img').each(function(){
+            var image = $(this);
+    	    // Prevents unnecessary 404's being produced when iframe loads images
+            $(image).attr("data-src", $(image).attr("src"));
+            $(image).removeAttr("src");
+            $(image).attr("data-height", $(image).attr("height"));
+            $(image).removeAttr("height");
+            $(image).attr("data-width", $(image).attr("width"));
+            $(image).removeAttr("width");
+            //Restore image height and size on image load
+            $(image).on("load", function (e) {
+                this.width = $(image).attr("data-width");
+                this.height = $(image).attr("data-height");
+            });
+        });
+        $('#articleContent').contents().find('body').html($body);
         
         // If the ServiceWorker is not useable, we need to fallback to parse the DOM
         // to inject math images, and replace some links with javascript calls
@@ -854,7 +869,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 var image = $(this);
                 // It's a standard image contained in the ZIM file
                 // We try to find its name (from an absolute or relative URL)
-                var imageMatch = image.attr("src").match(regexpImageUrl);
+                var imageMatch = image.attr('data-src').match(regexpImageUrl);
                 if (imageMatch) {
                     var title = decodeURIComponent(imageMatch[1]);
                     selectedArchive.getDirEntryByTitle(title).then(function(dirEntry) {
