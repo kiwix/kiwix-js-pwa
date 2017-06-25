@@ -32,7 +32,7 @@
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-06-25T12:59:43.631</Modified>
+      <Modified>2017-06-25T17:40:19.724</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -344,7 +344,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-06-22T06:07:50.858</Modified>
+      <Modified>2017-06-25T17:39:52.565</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
@@ -354,17 +354,17 @@
       <PackagePath>www\js\lib\abstractFilesystemAccess.js</PackagePath>
       <Modified>2017-06-16T16:31:46.929</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\bootstrap.js">
-      <PackagePath>www\js\lib\bootstrap.js</PackagePath>
-      <Modified>2017-06-16T16:31:46.977</Modified>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\bootstrap.min.js">
+      <PackagePath>www\js\lib\bootstrap.min.js</PackagePath>
+      <Modified>2017-06-24T18:35:30.233</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\cookies.js">
       <PackagePath>www\js\lib\cookies.js</PackagePath>
       <Modified>2017-06-16T16:31:46.977</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\jquery-2.1.4.js">
-      <PackagePath>www\js\lib\jquery-2.1.4.js</PackagePath>
-      <Modified>2017-06-16T16:31:47.078</Modified>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\jquery-3.2.1.slim.js">
+      <PackagePath>www\js\lib\jquery-3.2.1.slim.js</PackagePath>
+      <Modified>2017-06-24T18:35:30.412</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\q.js">
       <PackagePath>www\js\lib\q.js</PackagePath>
@@ -372,7 +372,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\require.js">
       <PackagePath>www\js\lib\require.js</PackagePath>
-      <Modified>2017-06-16T16:31:47.175</Modified>
+      <Modified>2017-06-24T18:35:30.532</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\www\js\lib\uiUtil.js">
       <PackagePath>www\js\lib\uiUtil.js</PackagePath>
@@ -413,7 +413,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-06-25T12:59:43.447</Modified>
+      <Modified>2017-06-25T15:05:55.819</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>
