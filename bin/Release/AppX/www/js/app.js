@@ -787,26 +787,25 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         $("#articleContent").contents().scrollTop(0);
 
         // Display the article inside the web page.
-	// Prevents unnecessary 404's being produced when iframe loads images
         var $body = $(htmlArticle);
         $body.find('img').each(function(){
             var image = $(this);
+    	    // Prevents unnecessary 404's being produced when iframe loads images
             $(image).attr("data-src", $(image).attr("src"));
             $(image).removeAttr("src");
-            $(image).attr("data-height", $(image).attr("height"));//GK
-            $(image).removeAttr("height"); //GK
-            $(image).attr("data-width", $(image).attr("width"));//GK
-            $(image).removeAttr("width"); //GK
-            //GK restore image height and size
+            $(image).hide(); 
+            //$(image).attr("data-height", $(image).attr("height"));
+            //$(image).removeAttr("height");
+            //$(image).attr("data-width", $(image).attr("width"));
+            //$(image).removeAttr("width");
+            ////Restore image height and size on image load
             $(image).on("load", function (e) {
-                this.width = $(image).attr("data-width");
-                this.height = $(image).attr("data-height");
+                //this.width = $(image).attr("data-width");
+                //this.height = $(image).attr("data-height");
+                $(this).show();
             });
         });
-        // 404's should now only be produced on loading css and js
         $('#articleContent').contents().find('body').html($body);
-       
-        
         
         // If the ServiceWorker is not useable, we need to fallback to parse the DOM
         // to inject math images, and replace some links with javascript calls
