@@ -30,7 +30,6 @@ C:\Users\geoff\Source\Repos\kiwix-html5-windows\bld\Release\qualifiers.txt.inter
 C:\Users\geoff\Source\Repos\kiwix-html5-windows\bld\Release\MultipleQualifiersPerDimensionFound.txt
 C:\Users\geoff\Source\Repos\kiwix-html5-windows\bld\Release\ProjectArchitectures.txt
 C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Release\resources.pri
-C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri
 C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml
 C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\KiwixWebApp.build.appxrecipe
 C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\Release\ResourceHandlingTask.state
@@ -46,3 +45,4 @@ C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\Release\qualifiers.txt
 C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\Release\qualifiers.txt.intermediate
 C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\Release\MultipleQualifiersPerDimensionFound.txt
 C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\Release\ProjectArchitectures.txt
+C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\resources.pri

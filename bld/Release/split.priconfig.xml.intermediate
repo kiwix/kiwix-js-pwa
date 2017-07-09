@@ -6,7 +6,7 @@
     <autoResourcePackage qualifier="DXFeatureLevel" />
     <omitSchemaFromResourcePacks />
   </packaging>
-  <index root="\" startIndexAt="C:\Users\geoff\Source\Repos\kiwix-html5-windows\bin\Release\resources.pri">
+  <index root="\" startIndexAt="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\resources.pri">
     <default>
       <qualifier name="Language" value="en-gb" />
       <qualifier name="Contrast" value="standard" />
