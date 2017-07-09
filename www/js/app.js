@@ -930,11 +930,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     }
                 });
 
-                // Load Javascript content
+                /*/ Load Javascript content
                 $('#articleContent').contents().find('script').each(function () {
                     var script = $(this);
                     // We try to find its name (from an absolute or relative URL)
-                    var srcMatch = script.attr("src").match(regexpMetadataUrl);
+                    if (script) { var srcMatch = script.attr("src").match(regexpMetadataUrl) }
                     // TODO check that the type of the script is text/javascript or application/javascript
                     if (srcMatch) {
                         // It's a Javascript file contained in the ZIM file
@@ -952,7 +952,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                             console.error("could not find DirEntry for javascript : " + title, e);
                         });
                     }
-                });
+                });*/
 
             }
         }
