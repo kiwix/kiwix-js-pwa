@@ -793,9 +793,19 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 var linkArray = regexpSheetHref.exec(arr[i]);
                 regexpSheetHref.lastIndex = 0; //Reset start position for next loop
                 if (regexpMetadataUrl.test(linkArray[2])) { //It's a CSS file contained in ZIM
-                    var linkURL = uiUtil.removeUrlParameters(decodeURIComponent(linkArray[2].match(regexpMetadataUrl)[1]));
-                    console.log("Attempting to resolve CSS link #" + i + "...");
-                    var linkBLOB = resolveCSS(linkURL, i); //Pass link and index
+                    var zimLink = decodeURIComponent(uiUtil.removeUrlParameters(linkArray[2]));
+                    //If this is a standard Wikipedia css stylesheet cached in the filesystem...
+                    if (zimLink.match(/-\/s\/style\.css/i) ||
+                        zimLink.match(/-\/s\/css_modules\/mediawiki\.toc\.css/i) ||
+                        zimLink.match(/-\/s\/css_modules\/ext\.cite\.styles\.css/i) ||
+                        zimLink.match(/-\/s\/css_modules\/ext\.cite\.a11y\.css/i)) {
+                        blobArray[i] = zimLink; //Store href as is
+                        injectCSS();
+                    } else { //Try to get the stylesheet from the ZIM file
+                        var linkURL = zimLink.match(regexpMetadataUrl)[1];
+                        console.log("Attempting to resolve CSS link #" + i + "...");
+                        resolveCSS(linkURL, i); //Pass link and index
+                    }
                 } else {
                     blobArray[i] = linkArray[2]; //If CSS not in ZIM, store URL in blobArray
                     injectCSS(); //Ensure this is called even if none of CSS links are in ZIM
@@ -805,18 +815,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
 
         function resolveCSS(title, index) {
             selectedArchive.getDirEntryByTitle(title).then(
-                function (dirEntry) {
+            function (dirEntry) {
                 selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content) {
                     //var cssContent = util.uintToString(content);
                     var cssBlob = new Blob([content], { type: 'text/css' });
                     var newURL = URL.createObjectURL(cssBlob);
-                    //return URL.createObjectURL(cssBlob);
                     blobArray[index] = newURL;
-                    injectCSS();
+                    injectCSS(); //Don't move this: it must run within .then function to pass correct values
                 });
             }).fail(function (e) {
                 console.error("could not find DirEntry for CSS : " + title, e);
-                blobArray[index] = "Error";
+                blobArray[index] = title;
                 injectCSS();
             });
         }
