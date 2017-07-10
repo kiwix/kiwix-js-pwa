@@ -26,15 +26,14 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFilesystemAccess'],
- function($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess) {
+define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFilesystemAccess', 'module'],
+ function($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess, module) {
      
     /**
      * Maximum number of articles to display in a search
      * @type Integer
      */
-    //var MAX_SEARCH_RESULT_SIZE = 50;
-    var MAX_SEARCH_RESULT_SIZE = 20; //GK - speed up search
+    var MAX_SEARCH_RESULT_SIZE = module.config().results; //This is set in init.js
 
     /**
      * @type ZIMArchive
@@ -795,15 +794,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 if (regexpMetadataUrl.test(linkArray[2])) { //It's a CSS file contained in ZIM
                     var zimLink = decodeURIComponent(uiUtil.removeUrlParameters(linkArray[2]));
                     //If this is a standard Wikipedia css stylesheet cached in the filesystem...
-                    if (zimLink.match(/-\/s\/style\.css/i) ||
+                    if ((module.config().cssSource != "zimfile") &&
+                        (zimLink.match(/-\/s\/style\.css/i) ||
                         zimLink.match(/-\/s\/css_modules\/mediawiki\.toc\.css/i) ||
                         zimLink.match(/-\/s\/css_modules\/ext\.cite\.styles\.css/i) ||
-                        zimLink.match(/-\/s\/css_modules\/ext\.cite\.a11y\.css/i)) {
-                        blobArray[i] = zimLink; //Store href as is
-                        injectCSS();
+                        zimLink.match(/-\/s\/css_modules\/ext\.cite\.a11y\.css/i))) {
+                            blobArray[i] = zimLink.match(/-\/s\/style\.css/i) && module.config().cssSource == "mobile" ? "../-/s/style-mobile.css" : zimLink;
+                            console.log("Matched #" + i + " [" + blobArray[i] + "] from local filesystem");
+                            injectCSS();
                     } else { //Try to get the stylesheet from the ZIM file
                         var linkURL = zimLink.match(regexpMetadataUrl)[1];
-                        console.log("Attempting to resolve CSS link #" + i + "...");
+                        console.log("Attempting to resolve CSS link #" + i + " [" + linkURL + "] from ZIM file...");
                         resolveCSS(linkURL, i); //Pass link and index
                     }
                 } else {
@@ -838,9 +839,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 htmlArticle = htmlArticle.replace(regexpSheetHref, ""); //Void existing stylesheets
                 var cssArray$ = "\r\n" + cssArray.join("\r\n") + "\r\n";
                 htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
+                console.log("All CSS resolved");
                 injectHTML(htmlArticle); //This passes the revised HTML to the image and JS subroutine...
             } else {
-                console.log("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...")
+                //console.log("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...")
             }
         }
     //End of preload stylesheets code
@@ -930,11 +932,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     }
                 });
 
-                // Load Javascript content
+                /*/ Load Javascript content
                 $('#articleContent').contents().find('script').each(function () {
                     var script = $(this);
                     // We try to find its name (from an absolute or relative URL)
-                    var srcMatch = script.attr("src").match(regexpMetadataUrl);
+                    if (script) { var srcMatch = script.attr("src").match(regexpMetadataUrl) }
                     // TODO check that the type of the script is text/javascript or application/javascript
                     if (srcMatch) {
                         // It's a Javascript file contained in the ZIM file
@@ -952,7 +954,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                             console.error("could not find DirEntry for javascript : " + title, e);
                         });
                     }
-                });
+                });*/
 
             }
         }
