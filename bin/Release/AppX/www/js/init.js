@@ -21,9 +21,13 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
+var params = {};
+var results = params['results'] || 10; //Number of search results to display
+var cssSource = params['cssSource'] || "mobile"; //One of "zimfile", "local" or "mobile""
 
 require.config({
     baseUrl: 'js/lib',
+    config: { '../app': { results: results, cssSource: cssSource } },
     paths: {
         //'jquery': 'jquery-2.1.4',
         //'jquery': 'jquery-3.2.1',
