@@ -116,6 +116,9 @@
     <Content Include="images\Wide310x150Logo.scale-400.png" />
     <Content Include="www\-\s\css_modules\ext.cite.a11y.css" />
     <Content Include="www\-\s\css_modules\ext.cite.styles.css" />
+    <Content Include="www\-\s\css_modules\ext.scribunto.logs.css" />
+    <Content Include="www\-\s\css_modules\ext.timeline.styles.css" />
+    <Content Include="www\-\s\css_modules\mediawiki.page.gallery.styles.css" />
     <Content Include="www\-\s\css_modules\mediawiki.toc.css" />
     <Content Include="www\-\s\style-mobile.css" />
     <Content Include="www\-\s\style.css" />
