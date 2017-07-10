@@ -232,6 +232,15 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.cite.styles.css">
       <PackagePath>www\-\s\css_modules\ext.cite.styles.css</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.scribunto.logs.css">
+      <PackagePath>www\-\s\css_modules\ext.scribunto.logs.css</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.timeline.styles.css">
+      <PackagePath>www\-\s\css_modules\ext.timeline.styles.css</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mediawiki.page.gallery.styles.css">
+      <PackagePath>www\-\s\css_modules\mediawiki.page.gallery.styles.css</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mediawiki.toc.css">
       <PackagePath>www\-\s\css_modules\mediawiki.toc.css</PackagePath>
     </AppxPackagedFile>
