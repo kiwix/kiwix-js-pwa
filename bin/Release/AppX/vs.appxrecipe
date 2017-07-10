@@ -20,19 +20,19 @@
     <WindowsSdkPath>
     </WindowsSdkPath>
     <LayoutDir>C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppX</LayoutDir>
-    <RegisteredManifestChecksum>1D6B0A96F9B402B5EFE59940DB072C32489A52BD9CB3F78B913F83836FF7D17E</RegisteredManifestChecksum>
-    <RegisteredPackageMoniker>a1a5e0b9-13d4-41fb-810d-518949f03df4_0.5.0.0_neutral__zfxmafgedzx24</RegisteredPackageMoniker>
+    <RegisteredManifestChecksum>9B4FA2C6D43297D8009F6D2EAD9B98BE3D00DC06E24A883C19470665453793EF</RegisteredManifestChecksum>
+    <RegisteredPackageMoniker>a1a5e0b9-13d4-41fb-810d-518949f03df4_0.5.1.0_neutral__zfxmafgedzx24</RegisteredPackageMoniker>
     <RegisteredUserModeAppID>a1a5e0b9-13d4-41fb-810d-518949f03df4_zfxmafgedzx24!App</RegisteredUserModeAppID>
     <RegisteredPackageID>a1a5e0b9-13d4-41fb-810d-518949f03df4</RegisteredPackageID>
     <RegisteredPackagePublisher>CN=geoff</RegisteredPackagePublisher>
-    <RegisteredVersion>0.5.0.0</RegisteredVersion>
+    <RegisteredVersion>0.5.1.0</RegisteredVersion>
     <JitOptimizationSuppressed>True</JitOptimizationSuppressed>
   </PropertyGroup>
   <ItemGroup>
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-07-10T17:02:01.327</Modified>
+      <Modified>2017-07-10T19:34:13.265</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -371,11 +371,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-07-10T17:00:39.343</Modified>
+      <Modified>2017-07-10T17:08:27.704</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
-      <Modified>2017-07-10T16:37:03.525</Modified>
+      <Modified>2017-07-10T19:27:56.859</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\abstractFilesystemAccess.js">
       <PackagePath>www\js\lib\abstractFilesystemAccess.js</PackagePath>
@@ -440,7 +440,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-07-10T17:02:01.227</Modified>
+      <Modified>2017-07-10T19:28:05.021</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>
