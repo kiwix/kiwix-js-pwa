@@ -798,6 +798,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                         (zimLink.match(/-\/s\/style\.css/i) ||
                         zimLink.match(/-\/s\/css_modules\/mediawiki\.toc\.css/i) ||
                         zimLink.match(/-\/s\/css_modules\/ext\.cite\.styles\.css/i) ||
+                        zimLink.match(/-\/s\/css_modules\/ext\.timeline\.styles\.css/i) ||
+                        zimLink.match(/-\/s\/css_modules\/ext\.scribunto\.logs\.css/i) ||
+                        zimLink.match(/-\/s\/css_modules\/mediawiki\.page\.gallery\.styles\.css/i) ||
                         zimLink.match(/-\/s\/css_modules\/ext\.cite\.a11y\.css/i))) {
                             blobArray[i] = zimLink.match(/-\/s\/style\.css/i) && module.config().cssSource == "mobile" ? "../-/s/style-mobile.css" : zimLink;
                             console.log("Matched #" + i + " [" + blobArray[i] + "] from local filesystem");
@@ -818,7 +821,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
             selectedArchive.getDirEntryByTitle(title).then(
             function (dirEntry) {
                 selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content) {
-                    //var cssContent = util.uintToString(content);
+                    var cssContent = util.uintToString(content); //Uncomment this line and break on next to capture cssContent for local filesystem cache
                     var cssBlob = new Blob([content], { type: 'text/css' });
                     var newURL = URL.createObjectURL(cssBlob);
                     blobArray[index] = newURL;

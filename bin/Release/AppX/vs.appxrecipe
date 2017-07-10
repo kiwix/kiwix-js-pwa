@@ -32,7 +32,7 @@
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-07-10T16:02:59.952</Modified>
+      <Modified>2017-07-10T17:02:01.327</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -297,6 +297,18 @@
       <PackagePath>www\-\s\css_modules\ext.cite.styles.css</PackagePath>
       <Modified>2017-07-09T20:07:35.865</Modified>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.scribunto.logs.css">
+      <PackagePath>www\-\s\css_modules\ext.scribunto.logs.css</PackagePath>
+      <Modified>2017-07-10T16:53:20.370</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.timeline.styles.css">
+      <PackagePath>www\-\s\css_modules\ext.timeline.styles.css</PackagePath>
+      <Modified>2017-07-10T16:45:46.762</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mediawiki.page.gallery.styles.css">
+      <PackagePath>www\-\s\css_modules\mediawiki.page.gallery.styles.css</PackagePath>
+      <Modified>2017-07-10T16:59:16.695</Modified>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mediawiki.toc.css">
       <PackagePath>www\-\s\css_modules\mediawiki.toc.css</PackagePath>
       <Modified>2017-07-09T20:06:05.109</Modified>
@@ -359,11 +371,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-07-10T16:02:28.314</Modified>
+      <Modified>2017-07-10T17:00:39.343</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
-      <Modified>2017-07-10T15:57:20.553</Modified>
+      <Modified>2017-07-10T16:37:03.525</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\abstractFilesystemAccess.js">
       <PackagePath>www\js\lib\abstractFilesystemAccess.js</PackagePath>
@@ -428,7 +440,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-07-10T15:23:00.830</Modified>
+      <Modified>2017-07-10T17:02:01.227</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>
