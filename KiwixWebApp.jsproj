@@ -114,12 +114,16 @@
     <Content Include="images\Wide310x150Logo.scale-150.png" />
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="images\Wide310x150Logo.scale-400.png" />
+    <Content Include="www\-\s\css_modules\content.parsoid.css" />
     <Content Include="www\-\s\css_modules\ext.cite.a11y.css" />
     <Content Include="www\-\s\css_modules\ext.cite.styles.css" />
     <Content Include="www\-\s\css_modules\ext.scribunto.logs.css" />
     <Content Include="www\-\s\css_modules\ext.timeline.styles.css" />
+    <Content Include="www\-\s\css_modules\inserted_style_mobile.css" />
     <Content Include="www\-\s\css_modules\mediawiki.page.gallery.styles.css" />
     <Content Include="www\-\s\css_modules\mediawiki.toc.css" />
+    <Content Include="www\-\s\css_modules\mobile.css" />
+    <Content Include="www\-\s\css_modules\skins.minerva.base.reset!skins.minerva.content.styles!ext.cite.style!mediawiki.page.gallery.styles!mobile.app.pagestyles.android!mediawiki.skinning.content.parsoid.css" />
     <Content Include="www\-\s\style-mobile.css" />
     <Content Include="www\-\s\style.css" />
     <Content Include="www\A\dummyArticle.html" />
