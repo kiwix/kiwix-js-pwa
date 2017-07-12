@@ -811,11 +811,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                          zimLink.match(/-\/s\/css_modules\/skins\.minerva\.base\.reset\|skins\.minerva\.content\.styles\|ext\.cite\.style\|mediawiki\.page\.gallery\.styles\|mobile\.app\.pagestyles\.android\|mediawiki\.skinning\.content\.parsoid\.css/i)
                         )) {
                         if ((cssSource == "mobile") || (zimLink.match(/minerva/))) { //If user has selected mobile display mode or mobile is built into ZIM, substitute main stylesheet
-                            blobArray[i] = zimLink.match(/(-\/s\/style\.css)|(minerva)/i) ? "../-/s/style-mobile.css" : zimLink;
+                            zimLink = zimLink.match(/(-\/s\/style\.css)|(minerva)/i) ? "../-/s/style-mobile.css" : zimLink;
                         }
-                            blobArray[i] = zimLink.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename)
-                            console.log("Matched #" + i + " [" + blobArray[i] + "] from local filesystem");
-                            injectCSS();
+                        blobArray[i] = zimLink.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename)
+                        console.log("Matched #" + i + " [" + blobArray[i] + "] from local filesystem");
+                        injectCSS();
                     } else { //Try to get the stylesheet from the ZIM file
                         var linkURL = zimLink.match(regexpMetadataUrl)[1];
                         console.log("Attempting to resolve CSS link #" + i + " [" + linkURL + "] from ZIM file..." + 
