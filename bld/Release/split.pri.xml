@@ -103,6 +103,11 @@
 							</Candidate>
 						</NamedResource>
 						<ResourceMapSubtree name="css_modules">
+							<NamedResource name="content.parsoid.css" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/-/s/css_modules/content.parsoid.css">
+								<Candidate type="Path">
+									<Value>www\-\s\css_modules\content.parsoid.css</Value>
+								</Candidate>
+							</NamedResource>
 							<NamedResource name="ext.cite.a11y.css" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/-/s/css_modules/ext.cite.a11y.css">
 								<Candidate type="Path">
 									<Value>www\-\s\css_modules\ext.cite.a11y.css</Value>
@@ -123,6 +128,11 @@
 									<Value>www\-\s\css_modules\ext.timeline.styles.css</Value>
 								</Candidate>
 							</NamedResource>
+							<NamedResource name="inserted_style_mobile.css" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/-/s/css_modules/inserted_style_mobile.css">
+								<Candidate type="Path">
+									<Value>www\-\s\css_modules\inserted_style_mobile.css</Value>
+								</Candidate>
+							</NamedResource>
 							<NamedResource name="mediawiki.page.gallery.styles.css" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/-/s/css_modules/mediawiki.page.gallery.styles.css">
 								<Candidate type="Path">
 									<Value>www\-\s\css_modules\mediawiki.page.gallery.styles.css</Value>
@@ -131,6 +141,11 @@
 							<NamedResource name="mediawiki.toc.css" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/-/s/css_modules/mediawiki.toc.css">
 								<Candidate type="Path">
 									<Value>www\-\s\css_modules\mediawiki.toc.css</Value>
+								</Candidate>
+							</NamedResource>
+							<NamedResource name="mobile.css" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/-/s/css_modules/mobile.css">
+								<Candidate type="Path">
+									<Value>www\-\s\css_modules\mobile.css</Value>
 								</Candidate>
 							</NamedResource>
 						</ResourceMapSubtree>

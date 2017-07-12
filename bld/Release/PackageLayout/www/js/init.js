@@ -23,7 +23,7 @@
 'use strict';
 var params = {};
 var results = params['results'] || 10; //Number of search results to display
-var cssSource = params['cssSource'] || "zimfile"; //One of "zimfile", "local" or "mobile""
+var cssSource = params['cssSource'] || "local"; //One of "zimfile", "local" or "mobile""
 
 require.config({
     baseUrl: 'js/lib',
