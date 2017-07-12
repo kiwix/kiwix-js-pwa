@@ -191,7 +191,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         else {
             setContentInjectionMode('jquery');
         }
-        
+    });
+    $('input:radio[name=cssInjectionMode]').on('change', function (e) {
+        params['cssSource'] = this.value;
     });
     
     /**
@@ -784,6 +786,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         //Set up blobArray of promises
         var cssArray = htmlArticle.match(regexpSheetHref);
         var blobArray = [];
+        cssSource = params['cssSource'];
         getBLOB(cssArray);
 
         //Extract CSS URLs from given array of links
@@ -794,7 +797,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 if (regexpMetadataUrl.test(linkArray[2])) { //It's a CSS file contained in ZIM
                     var zimLink = decodeURIComponent(uiUtil.removeUrlParameters(linkArray[2]));
                     //If this is a standard Wikipedia css use stylesheet cached in the filesystem...
-                    if ((module.config().cssSource != "zimfile") &&
+                    if ((cssSource != "zimfile") &&
                         (zimLink.match(/-\/s\/style\.css/i) ||
                          zimLink.match(/-\/s\/css_modules\/mediawiki\.toc\.css/i) ||
                          zimLink.match(/-\/s\/css_modules\/ext\.cite\.styles\.css/i) ||
@@ -807,10 +810,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                          zimLink.match(/-\/s\/css_modules\/mobile\.css/i) ||
                          zimLink.match(/-\/s\/css_modules\/skins\.minerva\.base\.reset\|skins\.minerva\.content\.styles\|ext\.cite\.style\|mediawiki\.page\.gallery\.styles\|mobile\.app\.pagestyles\.android\|mediawiki\.skinning\.content\.parsoid\.css/i)
                         )) {
-                        if (module.config().cssSource == "mobile") { //If user has selected mobile display mode, substitute main stylesheet
-                            blobArray[i] = zimLink.match(/-\/s\/style\.css/i) ? "../-/s/style-mobile.css" : zimLink;
+                        if ((cssSource == "mobile") || (zimLink.match(/minerva/))) { //If user has selected mobile display mode or mobile is built into ZIM, substitute main stylesheet
+                            blobArray[i] = zimLink.match(/(-\/s\/style\.css)|(minerva)/i) ? "../-/s/style-mobile.css" : zimLink;
                         }
-                            blobArray[i] = zimLink.replace(/\|/ig, "!"); //Replace "|" with "!""
+                            blobArray[i] = zimLink.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename)
                             console.log("Matched #" + i + " [" + blobArray[i] + "] from local filesystem");
                             injectCSS();
                     } else { //Try to get the stylesheet from the ZIM file
@@ -830,7 +833,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
             selectedArchive.getDirEntryByTitle(title).then(
             function (dirEntry) {
                 selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content) {
-                    var cssContent = util.uintToString(content); //Uncomment this line and break on next to capture cssContent for local filesystem cache
+                    //var cssContent = util.uintToString(content); //Uncomment this line and break on next to capture cssContent for local filesystem cache
                     var cssBlob = new Blob([content], { type: 'text/css' });
                     var newURL = URL.createObjectURL(cssBlob);
                     blobArray[index] = newURL;
@@ -850,7 +853,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 }
                 htmlArticle = htmlArticle.replace(regexpSheetHref, ""); //Void existing stylesheets
                 var cssArray$ = "\r\n" + cssArray.join("\r\n") + "\r\n";
-                if (module.config().cssSource == "mobile") { //If user has selected mobile display mode, insert extra stylesheets
+                if (cssSource == "mobile") { //If user has selected mobile display mode, insert extra stylesheets
                     cssArray$ += cssArray$.match(/-\/s\/css_modules\/content\.parsoid\.css/i) ? "" : '<link href="../-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css">\r\n';
                     cssArray$ += cssArray$.match(/-\/s\/css_modules\/mobile\.css/i) ? "" : '<link href="../-/s/css_modules/mobile.css" rel="stylesheet" type="text/css">\r\n';
                     cssArray$ += cssArray$.match(/-\/s\/css_modules\/inserted_style_mobile\.css/i) ? "" : '<link href="../-/s/css_modules/inserted_style_mobile.css" rel="stylesheet" type="text/css">\r\n';
