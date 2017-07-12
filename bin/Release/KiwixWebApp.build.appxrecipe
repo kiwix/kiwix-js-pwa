@@ -226,6 +226,9 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\img\Kiwix_icon_transparent_600x600.png">
       <PackagePath>www\img\Kiwix_icon_transparent_600x600.png</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\content.parsoid.css">
+      <PackagePath>www\-\s\css_modules\content.parsoid.css</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.cite.a11y.css">
       <PackagePath>www\-\s\css_modules\ext.cite.a11y.css</PackagePath>
     </AppxPackagedFile>
@@ -238,11 +241,17 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.timeline.styles.css">
       <PackagePath>www\-\s\css_modules\ext.timeline.styles.css</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\inserted_style_mobile.css">
+      <PackagePath>www\-\s\css_modules\inserted_style_mobile.css</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mediawiki.page.gallery.styles.css">
       <PackagePath>www\-\s\css_modules\mediawiki.page.gallery.styles.css</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mediawiki.toc.css">
       <PackagePath>www\-\s\css_modules\mediawiki.toc.css</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mobile.css">
+      <PackagePath>www\-\s\css_modules\mobile.css</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\style-mobile.css">
       <PackagePath>www\-\s\style-mobile.css</PackagePath>

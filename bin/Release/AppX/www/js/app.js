@@ -191,7 +191,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         else {
             setContentInjectionMode('jquery');
         }
-        
+    });
+    $('input:radio[name=cssInjectionMode]').on('change', function (e) {
+        params['cssSource'] = this.value;
     });
     
     /**
@@ -784,6 +786,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         //Set up blobArray of promises
         var cssArray = htmlArticle.match(regexpSheetHref);
         var blobArray = [];
+        cssSource = params['cssSource'];
         getBLOB(cssArray);
 
         //Extract CSS URLs from given array of links
@@ -793,21 +796,30 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 regexpSheetHref.lastIndex = 0; //Reset start position for next loop
                 if (regexpMetadataUrl.test(linkArray[2])) { //It's a CSS file contained in ZIM
                     var zimLink = decodeURIComponent(uiUtil.removeUrlParameters(linkArray[2]));
-                    //If this is a standard Wikipedia css stylesheet cached in the filesystem...
-                    if ((module.config().cssSource != "zimfile") &&
+                    //If this is a standard Wikipedia css use stylesheet cached in the filesystem...
+                    if ((cssSource != "zimfile") &&
                         (zimLink.match(/-\/s\/style\.css/i) ||
-                        zimLink.match(/-\/s\/css_modules\/mediawiki\.toc\.css/i) ||
-                        zimLink.match(/-\/s\/css_modules\/ext\.cite\.styles\.css/i) ||
-                        zimLink.match(/-\/s\/css_modules\/ext\.timeline\.styles\.css/i) ||
-                        zimLink.match(/-\/s\/css_modules\/ext\.scribunto\.logs\.css/i) ||
-                        zimLink.match(/-\/s\/css_modules\/mediawiki\.page\.gallery\.styles\.css/i) ||
-                        zimLink.match(/-\/s\/css_modules\/ext\.cite\.a11y\.css/i))) {
-                            blobArray[i] = zimLink.match(/-\/s\/style\.css/i) && module.config().cssSource == "mobile" ? "../-/s/style-mobile.css" : zimLink;
+                         zimLink.match(/-\/s\/css_modules\/mediawiki\.toc\.css/i) ||
+                         zimLink.match(/-\/s\/css_modules\/ext\.cite\.styles\.css/i) ||
+                         zimLink.match(/-\/s\/css_modules\/ext\.timeline\.styles\.css/i) ||
+                         zimLink.match(/-\/s\/css_modules\/ext\.scribunto\.logs\.css/i) ||
+                         zimLink.match(/-\/s\/css_modules\/mediawiki\.page\.gallery\.styles\.css/i) ||
+                         zimLink.match(/-\/s\/css_modules\/ext\.cite\.a11y\.css/i) ||
+                         zimLink.match(/-\/s\/css_modules\/content\.parsoid\.css/i) ||
+                         zimLink.match(/-\/s\/css_modules\/inserted_style_mobile\.css/i) ||
+                         zimLink.match(/-\/s\/css_modules\/mobile\.css/i) ||
+                         zimLink.match(/-\/s\/css_modules\/skins\.minerva\.base\.reset\|skins\.minerva\.content\.styles\|ext\.cite\.style\|mediawiki\.page\.gallery\.styles\|mobile\.app\.pagestyles\.android\|mediawiki\.skinning\.content\.parsoid\.css/i)
+                        )) {
+                        if ((cssSource == "mobile") || (zimLink.match(/minerva/))) { //If user has selected mobile display mode or mobile is built into ZIM, substitute main stylesheet
+                            blobArray[i] = zimLink.match(/(-\/s\/style\.css)|(minerva)/i) ? "../-/s/style-mobile.css" : zimLink;
+                        }
+                            blobArray[i] = zimLink.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename)
                             console.log("Matched #" + i + " [" + blobArray[i] + "] from local filesystem");
                             injectCSS();
                     } else { //Try to get the stylesheet from the ZIM file
                         var linkURL = zimLink.match(regexpMetadataUrl)[1];
-                        console.log("Attempting to resolve CSS link #" + i + " [" + linkURL + "] from ZIM file...");
+                        console.log("Attempting to resolve CSS link #" + i + " [" + linkURL + "] from ZIM file..." + 
+                            "\n(Consider adding file #" + i + " to the local filesystem)");
                         resolveCSS(linkURL, i); //Pass link and index
                     }
                 } else {
@@ -841,6 +853,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 }
                 htmlArticle = htmlArticle.replace(regexpSheetHref, ""); //Void existing stylesheets
                 var cssArray$ = "\r\n" + cssArray.join("\r\n") + "\r\n";
+                if (cssSource == "mobile") { //If user has selected mobile display mode, insert extra stylesheets
+                    cssArray$ += cssArray$.match(/-\/s\/css_modules\/content\.parsoid\.css/i) ? "" : '<link href="../-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css">\r\n';
+                    cssArray$ += cssArray$.match(/-\/s\/css_modules\/mobile\.css/i) ? "" : '<link href="../-/s/css_modules/mobile.css" rel="stylesheet" type="text/css">\r\n';
+                    cssArray$ += cssArray$.match(/-\/s\/css_modules\/inserted_style_mobile\.css/i) ? "" : '<link href="../-/s/css_modules/inserted_style_mobile.css" rel="stylesheet" type="text/css">\r\n';
+                    htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*thumb\s+tright\s*["']\s*/ig, 'style="float: right; clear: right; margin-left: 1.4em;"');
+                    htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*thumb\s+tleft\s*["']\s*/ig, 'style="float: left; clear: left; margin-right: 1.4em;"');
+                    htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*thumbcaption\s*["']\s*/ig, 'style="margin: 0.5em 0 0; font-size: 0.8em; line-height: 1.5; padding: 0 !important; color: #54595d; width: auto !important;"');
+                    htmlArticle = htmlArticle.replace(/(table\s+(?=[^>]*class\s*=\s*["'][^"']*infobox)[^>]*style\s*=\s*["'][^"']+[^;'"]);?\s*["']/ig, '$1; position: relative; border: 1px solid #eaecf0; text-align: left; background-color: #f8f9fa;"');
+                }
                 htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
                 console.log("All CSS resolved");
                 injectHTML(htmlArticle); //This passes the revised HTML to the image and JS subroutine...

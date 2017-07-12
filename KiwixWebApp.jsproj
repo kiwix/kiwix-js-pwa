@@ -123,7 +123,6 @@
     <Content Include="www\-\s\css_modules\mediawiki.page.gallery.styles.css" />
     <Content Include="www\-\s\css_modules\mediawiki.toc.css" />
     <Content Include="www\-\s\css_modules\mobile.css" />
-    <Content Include="www\-\s\css_modules\skins.minerva.base.reset!skins.minerva.content.styles!ext.cite.style!mediawiki.page.gallery.styles!mobile.app.pagestyles.android!mediawiki.skinning.content.parsoid.css" />
     <Content Include="www\-\s\style-mobile.css" />
     <Content Include="www\-\s\style.css" />
     <Content Include="www\A\dummyArticle.html" />
