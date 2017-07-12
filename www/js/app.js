@@ -855,7 +855,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         function injectCSS() {
             if (blobArray.length === cssArray.length) { //If all promised values have been obtained
                 for (var i in cssArray) {
-                    cssArray[i] = cssArray[i].replace(/(href\s*=\s*["'])([^"']+)/ig, "$1" + blobArray[i]);
+                    cssArray[i] = cssArray[i].replace(/(href\s*=\s*["'])([^"']+)/i, "$1" + blobArray[i]);
+                    //DEV note: do not attempt to release the memory used by CSS BLOBs with link.onload: it fires before the
+                    //stylesheet changes have been painted and causes a crash...
                 }
                 htmlArticle = htmlArticle.replace(regexpSheetHref, ""); //Void existing stylesheets
                 var cssArray$ = "\r\n" + cssArray.join("\r\n") + "\r\n";
