@@ -45,6 +45,7 @@
   </Applications>
   <Capabilities>
     <Capability Name="internetClient" />
+    <Capability Name="privateNetworkClientServer" />
     <uap:Capability Name="removableStorage" />
     <DeviceCapability Name="location" />
   </Capabilities>

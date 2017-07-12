@@ -201,13 +201,22 @@
                     <br /> Click <a id="btnRescanDeviceStorage">here</a> to rescan your SD Cards and internal memory
                 </div>
                 <br />
+                <h2>Display settings</h2>
+                <div id="cssSettingsDiv">
+                    Please select the display style: <br />
+                    <input type="radio" name="cssInjectionMode" value="local" id="cssModeLocalRadio" checked><label for="cssModeLocalRadio">&nbsp; Use locally cached display styles</label> (faster if using a Wikipedia ZIM file, falls back to the styles stored in the ZIM)
+                    <br />
+                    <input type="radio" name="cssInjectionMode" value="mobile" id="cssModeMobileRadio"><label for="cssModeMobileRadio">&nbsp; Use Wikipedia mobile display style</label> (only works with standard Wikipedia ZIM files)
+                    <br />
+                    <input type="radio" name="cssInjectionMode" value="zimfile" id="cssModeZIMfileRadio"><label for="cssModeZIMfileRadio">&nbsp; Use styles embedded in the ZIM file</label> (slower retrieval, uses more memory if accessing large Wikipedia ZIMs)
+                </div>
                 <h2>Expert settings</h2>
                 <div id="contentInjectionModeDiv">
                     Do not touch unless you know what you're doing. <br />
                     Content injection mode : <br />
-                    <input type="radio" name="contentInjectionMode" value="jquery" id="jQueryModeRadio" checked><label for="jQueryModeRadio">JQuery</label> (slow and memory hungry, but safer)
+                    <input type="radio" name="contentInjectionMode" value="jquery" id="jQueryModeRadio" checked><label for="jQueryModeRadio">&nbsp; JQuery</label> (slow and memory hungry, but safer)
                     <br>
-                    <input type="radio" name="contentInjectionMode" value="serviceworker" id="serviceworkerModeRadio"><label for="serviceworkerModeRadio">ServiceWorker</label> (faster but unstable, and not supported by all platforms. In particular, Firefox extensions do not allow ServiceWorkers for now)
+                    <input type="radio" name="contentInjectionMode" value="serviceworker" id="serviceworkerModeRadio"><label for="serviceworkerModeRadio">&nbsp; ServiceWorker</label> (faster but unstable, and not supported by all platforms. In particular, Firefox extensions do not allow ServiceWorkers for now)
                 </div>
                 <div id="serviceWorkerStatus"></div>
                 <div id="messageChannelStatus"></div>
