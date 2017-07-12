@@ -791,6 +791,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
 
         //Extract CSS URLs from given array of links
         function getBLOB(arr) {
+            if (cssSource == "desktop" && (!arr.join().match(/-\/s\/style\.css/i))) {
+                arr.push('<link href="../-/s/style.css" rel="stylesheet">'); //Insert the standard desktop style
+            }
             for (var i = 0; i < arr.length; i++) {
                 var linkArray = regexpSheetHref.exec(arr[i]);
                 regexpSheetHref.lastIndex = 0; //Reset start position for next loop
@@ -810,6 +813,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                          zimLink.match(/-\/s\/css_modules\/mobile\.css/i) ||
                          zimLink.match(/-\/s\/css_modules\/skins\.minerva\.base\.reset\|skins\.minerva\.content\.styles\|ext\.cite\.style\|mediawiki\.page\.gallery\.styles\|mobile\.app\.pagestyles\.android\|mediawiki\.skinning\.content\.parsoid\.css/i)
                         )) {
+                        if (cssSource == "desktop" && zimLink.match(/minerva|mobile|parsoid/)) { //If user selected desktop style and the ZIM is formatted for mobile...
+                            zimLink = "#"; //Void the style
+                        } 
                         if ((cssSource == "mobile") || (zimLink.match(/minerva/))) { //If user has selected mobile display mode or mobile is built into ZIM, substitute main stylesheet
                             zimLink = zimLink.match(/(-\/s\/style\.css)|(minerva)/i) ? "../-/s/style-mobile.css" : zimLink;
                         }
@@ -861,6 +867,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*thumb\s+tleft\s*["']\s*/ig, 'style="float: left; clear: left; margin-right: 1.4em;"');
                     htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*thumbcaption\s*["']\s*/ig, 'style="margin: 0.5em 0 0; font-size: 0.8em; line-height: 1.5; padding: 0 !important; color: #54595d; width: auto !important;"');
                     htmlArticle = htmlArticle.replace(/(table\s+(?=[^>]*class\s*=\s*["'][^"']*infobox)[^>]*style\s*=\s*["'][^"']+[^;'"]);?\s*["']/ig, '$1; position: relative; border: 1px solid #eaecf0; text-align: left; background-color: #f8f9fa;"');
+                }
+                if (cssSource == "desktop") { //If user has selected desktop display mode...
+                    htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*mw-body\s*["']\s*/ig, 'style="background-color: white; padding: 1em; border-width: 0px; max-width: 55.8em; margin: 0 auto 0 auto;"');
+                    htmlArticle = htmlArticle.replace(/<h1\s*[^>]+titleHeading[^>]+>\s*<\/h1>\s*/ig, ""); //Void empty header title
                 }
                 htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
                 console.log("All CSS resolved");

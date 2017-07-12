@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Custom style meant to match the design of mwoffliner mobile version to the mobile version of wikipedia
  */
 .mw-body-content {
@@ -13,8 +13,8 @@
     padding: 0.5em 0;
 }
 .mw-body h3, .mw-body h2 {
-    clear: both;
-    width: 100%;
+    /*clear: both;*/
+    /*width: 100%;*/
     margin-bottom: 0.5em;
     border-bottom: solid 1px #eaecf0;
     font-family: 'Linux Libertine','Georgia','Times',serif;
