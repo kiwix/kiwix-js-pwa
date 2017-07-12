@@ -855,7 +855,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         function injectCSS() {
             if (blobArray.length === cssArray.length) { //If all promised values have been obtained
                 for (var i in cssArray) {
-                    cssArray[i] = cssArray[i].replace(/(href\s*=\s*["'])([^"']+)/ig, "$1" + blobArray[i]);
+                    cssArray[i] = cssArray[i].replace(/(href\s*=\s*["'])([^"']+)/i, "$1" + blobArray[i]);
+                    if (blobArray[i].match(/blob:/i)) { //Release memory used by blob
+                        cssArray[i] = cssArray[i].replace(/>/i, ' onload="URL.revokeObjectURL(\'' + blobArray[i] + '\');">');
+                        console.log(cssArray[i]);
+                    }
                 }
                 htmlArticle = htmlArticle.replace(regexpSheetHref, ""); //Void existing stylesheets
                 var cssArray$ = "\r\n" + cssArray.join("\r\n") + "\r\n";
