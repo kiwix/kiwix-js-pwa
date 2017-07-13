@@ -26,7 +26,7 @@
 }
 .mw-body h1 {
     font-size: 42px;
-    font-family: 'Linux Libertine','Georgia','Times',serif;
+    font-family: 'Linux Libertine','Georgia','Times',serif; /* GK added */
 }
 .mw-body h2 {
     font-size: 24px;
