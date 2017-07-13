@@ -35,11 +35,11 @@ define([], function() {
      * @param {String} mimeType
      */
     function feedNodeWithBlob(jQueryNode, nodeAttribute, content, mimeType) {
-        var blob = new Blob([content], {type: mimeType});
+        var blob = new Blob([content], { type: mimeType }, {oneTimeOnly: true});
         var url = URL.createObjectURL(blob);
-        jQueryNode.on('load', function () {
+        /*jQueryNode.on('load', function () {
             URL.revokeObjectURL(url);
-        });
+        });*/
         jQueryNode.attr(nodeAttribute, url);
     }
         
