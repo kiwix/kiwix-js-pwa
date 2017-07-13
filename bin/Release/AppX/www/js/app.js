@@ -866,21 +866,31 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     cssArray$ += cssArray$.match(/-\/s\/css_modules\/content\.parsoid\.css/i) ? "" : '<link href="../-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css">\r\n';
                     cssArray$ += cssArray$.match(/-\/s\/css_modules\/inserted_style_mobile\.css/i) ? "" : '<link href="../-/s/css_modules/inserted_style_mobile.css" rel="stylesheet" type="text/css">\r\n';
                     cssArray$ += cssArray$.match(/-\/s\/css_modules\/mobile\.css/i) ? "" : '<link href="../-/s/css_modules/mobile.css" rel="stylesheet" type="text/css">\r\n';
-                    htmlArticle = htmlArticle.replace(/(<div\s+[^>]*mw-body[^>]+style[^>]+padding\s*:\s*)1em/i, "$10 1em");
+                    //Allow images to float right or left
                     htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*thumb\s+tright\s*["']\s*/ig, 'style="float: right; clear: right; margin-left: 1.4em;"');
                     htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*thumb\s+tleft\s*["']\s*/ig, 'style="float: left; clear: left; margin-right: 1.4em;"');
+                    //Add styling to image captions that is hard-coded in Wikipedia mobile
                     htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*thumbcaption\s*["']\s*/ig, 'style="margin: 0.5em 0 0.5em; font-size: 0.8em; line-height: 1.5; padding: 0 !important; color: #54595d; width: auto !important;"');
-                    //Move info-box below lead
-                    htmlArticle = htmlArticle.replace(/(<table\s*(?=[^>]*infobox)[\s\S]+?<\/table>[^<]*)(<p\b[^>]*>(?:(?=([^<]+))\3|<(?!p\b[^>]*>))*?<\/p>)/ig, "$2$1");
+                    //Move info-box below lead paragraph like on Wikipedia mobile
+                    htmlArticle = htmlArticle.replace(/(<table\s+(?=[^>]*infobox)[\s\S]+?<\/table>[^<]*)(<p\b[^>]*>(?:(?=([^<]+))\3|<(?!p\b[^>]*>))*?<\/p>)/ig, "$2$1");
+                    //Set infobox styling hard-coded in Wikipedia mobile
                     htmlArticle = htmlArticle.replace(/(table\s+(?=[^>]*class\s*=\s*["'][^"']*infobox)[^>]*style\s*=\s*["'][^"']+[^;'"]);?\s*["']/ig, '$1; position: relative; border: 1px solid #eaecf0; text-align: left; background-color: #f8f9fa;"');
+                    //Wrap <h2> tags in <div> to control bottom border width if there's an infobox
+                    htmlArticle = htmlArticle.match(/table\s+(?=[^>]*class\s*=\s*["'][^"']*infobox)/i) ? htmlArticle.replace(/(<h2\s+[^<]*<\/h2>)/ig, '<div style="width: 60%;">$1</div>') : htmlArticle;
                 }
                 if (cssSource == "desktop") { //If user has selected desktop display mode...
+                    //Ensure white background colour
                     htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*mw-body\s*["']\s*/ig, 'style="background-color: white; padding: 1em; border-width: 0px; max-width: 55.8em; margin: 0 auto 0 auto;"');
-                    htmlArticle = htmlArticle.replace(/<h1\s*[^>]+titleHeading[^>]+>\s*<\/h1>\s*/ig, ""); //Void empty header title
+                    //Void empty header title
+                    htmlArticle = htmlArticle.replace(/<h1\s*[^>]+titleHeading[^>]+>\s*<\/h1>\s*/ig, "");
+                }
+                if (cssSource != "zimfile") { //For all cases except where user wants exactly what's in the zimfile...
+                    //Reduce the hard-coded top padding to 0
+                    htmlArticle = htmlArticle.replace(/(<div\s+[^>]*mw-body[^>]+style[^>]+padding\s*:\s*)1em/i, "$10 1em");
                 }
                 htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
                 console.log("All CSS resolved");
-                injectHTML(htmlArticle); //This passes the revised HTML to the image and JS subroutine...
+                injectHTML(htmlArticle); //Pass the revised HTML to the image and JS subroutine...
             } else {
                 //console.log("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...")
             }
