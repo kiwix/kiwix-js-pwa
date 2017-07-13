@@ -825,7 +825,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     } else { //Try to get the stylesheet from the ZIM file
                         var linkURL = zimLink.match(regexpMetadataUrl)[1];
                         console.log("Attempting to resolve CSS link #" + i + " [" + linkURL + "] from ZIM file..." + 
-                            "\n(Consider adding file #" + i + " to the local filesystem)");
+                            (cssSource != "zimfile" ? "\n(Consider adding file #" + i + " to the local filesystem)" : ""));
                         resolveCSS(linkURL, i); //Pass link and index
                     }
                 } else {
@@ -840,7 +840,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
             function (dirEntry) {
                 selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content) {
                     //var cssContent = util.uintToString(content); //Uncomment this line and break on next to capture cssContent for local filesystem cache
-                    var cssBlob = new Blob([content], { type: 'text/css' });
+                    var cssBlob = new Blob([content], { type: 'text/css' }, { oneTimeOnly: true });
                     var newURL = URL.createObjectURL(cssBlob);
                     blobArray[index] = newURL;
                     injectCSS(); //Don't move this: it must run within .then function to pass correct values
@@ -856,20 +856,21 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
             if (blobArray.length === cssArray.length) { //If all promised values have been obtained
                 for (var i in cssArray) {
                     cssArray[i] = cssArray[i].replace(/(href\s*=\s*["'])([^"']+)/i, "$1" + blobArray[i]);
-                    if (blobArray[i].match(/blob:/i)) { //Release memory used by blob
-                        cssArray[i] = cssArray[i].replace(/>/i, ' onload="URL.revokeObjectURL(\'' + blobArray[i] + '\');">');
-                        console.log(cssArray[i]);
-                    }
+                    //DEV note: do not attempt to add onload="URL.revokeObjectURL...)": it fires before the
+                    //stylesheet changes have been painted and causes a crash...
+                    //Consider using oneTimeOnly= true when creating blob instead
                 }
                 htmlArticle = htmlArticle.replace(regexpSheetHref, ""); //Void existing stylesheets
                 var cssArray$ = "\r\n" + cssArray.join("\r\n") + "\r\n";
                 if (cssSource == "mobile") { //If user has selected mobile display mode, insert extra stylesheets
                     cssArray$ += cssArray$.match(/-\/s\/css_modules\/content\.parsoid\.css/i) ? "" : '<link href="../-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css">\r\n';
-                    cssArray$ += cssArray$.match(/-\/s\/css_modules\/mobile\.css/i) ? "" : '<link href="../-/s/css_modules/mobile.css" rel="stylesheet" type="text/css">\r\n';
                     cssArray$ += cssArray$.match(/-\/s\/css_modules\/inserted_style_mobile\.css/i) ? "" : '<link href="../-/s/css_modules/inserted_style_mobile.css" rel="stylesheet" type="text/css">\r\n';
+                    cssArray$ += cssArray$.match(/-\/s\/css_modules\/mobile\.css/i) ? "" : '<link href="../-/s/css_modules/mobile.css" rel="stylesheet" type="text/css">\r\n';
                     htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*thumb\s+tright\s*["']\s*/ig, 'style="float: right; clear: right; margin-left: 1.4em;"');
                     htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*thumb\s+tleft\s*["']\s*/ig, 'style="float: left; clear: left; margin-right: 1.4em;"');
-                    htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*thumbcaption\s*["']\s*/ig, 'style="margin: 0.5em 0 0; font-size: 0.8em; line-height: 1.5; padding: 0 !important; color: #54595d; width: auto !important;"');
+                    htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*thumbcaption\s*["']\s*/ig, 'style="margin: 0.5em 0 0.5em; font-size: 0.8em; line-height: 1.5; padding: 0 !important; color: #54595d; width: auto !important;"');
+                    //Move info-box below lead
+                    htmlArticle = htmlArticle.replace(/(<table\s*(?=[^>]*infobox)[\s\S]+?<\/table>[^<]*)(<p\b[^>]*>(?:(?=([^<]+))\3|<(?!p\b[^>]*>))*?<\/p>)/ig, "$2$1");
                     htmlArticle = htmlArticle.replace(/(table\s+(?=[^>]*class\s*=\s*["'][^"']*infobox)[^>]*style\s*=\s*["'][^"']+[^;'"]);?\s*["']/ig, '$1; position: relative; border: 1px solid #eaecf0; text-align: left; background-color: #f8f9fa;"');
                 }
                 if (cssSource == "desktop") { //If user has selected desktop display mode...
