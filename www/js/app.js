@@ -26,8 +26,8 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFilesystemAccess', 'module', 'transformCSS'],
- function($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess, module, transformCSS) {
+define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFilesystemAccess', 'module'],
+ function($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess, module) {
      
     /**
      * Maximum number of articles to display in a search
@@ -821,7 +821,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                         }
                         blobArray[i] = zimLink.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename)
                         console.log("Matched #" + i + " [" + blobArray[i] + "] from local filesystem");
-                        transformCSS.injectCSS();
+                        injectCSS();
                     } else { //Try to get the stylesheet from the ZIM file
                         var linkURL = zimLink.match(regexpMetadataUrl)[1];
                         console.log("Attempting to resolve CSS link #" + i + " [" + linkURL + "] from ZIM file..." + 
@@ -830,7 +830,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     }
                 } else {
                     blobArray[i] = linkArray[2]; //If CSS not in ZIM, store URL in blobArray
-                    transformCSS.injectCSS(); //Ensure this is called even if none of CSS links are in ZIM
+                    injectCSS(); //Ensure this is called even if none of CSS links are in ZIM
                 }
             }
         }
@@ -843,15 +843,58 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     var cssBlob = new Blob([content], { type: 'text/css' }, { oneTimeOnly: true });
                     var newURL = URL.createObjectURL(cssBlob);
                     blobArray[index] = newURL;
-                    transformCSS.injectCSS(); //Don't move this: it must run within .then function to pass correct values
+                    injectCSS(); //Don't move this: it must run within .then function to pass correct values
                 });
             }).fail(function (e) {
                 console.error("could not find DirEntry for CSS : " + title, e);
                 blobArray[index] = title;
-                transformCSS.injectCSS();
+                injectCSS();
             });
         }
 
+        function injectCSS() {
+            if (blobArray.length === cssArray.length) { //If all promised values have been obtained
+                for (var i in cssArray) {
+                    cssArray[i] = cssArray[i].replace(/(href\s*=\s*["'])([^"']+)/i, "$1" + blobArray[i]);
+                    //DEV note: do not attempt to add onload="URL.revokeObjectURL...)": it fires before the
+                    //stylesheet changes have been painted and causes a crash...
+                    //Use oneTimeOnly=true when creating blob instead (implemented above)
+                }
+                htmlArticle = htmlArticle.replace(regexpSheetHref, ""); //Void existing stylesheets
+                var cssArray$ = "\r\n" + cssArray.join("\r\n") + "\r\n";
+                if (cssSource == "mobile") { //If user has selected mobile display mode, insert extra stylesheets
+                    cssArray$ += cssArray$.match(/-\/s\/css_modules\/content\.parsoid\.css/i) ? "" : '<link href="../-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css">\r\n';
+                    cssArray$ += cssArray$.match(/-\/s\/css_modules\/inserted_style_mobile\.css/i) ? "" : '<link href="../-/s/css_modules/inserted_style_mobile.css" rel="stylesheet" type="text/css">\r\n';
+                    cssArray$ += cssArray$.match(/-\/s\/css_modules\/mobile\.css/i) ? "" : '<link href="../-/s/css_modules/mobile.css" rel="stylesheet" type="text/css">\r\n';
+                    //Allow images to float right or left
+                    htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*thumb\s+tright\s*["']\s*/ig, 'style="float: right; clear: right; margin-left: 1.4em;"');
+                    htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*thumb\s+tleft\s*["']\s*/ig, 'style="float: left; clear: left; margin-right: 1.4em;"');
+                    //Add styling to image captions that is hard-coded in Wikipedia mobile
+                    htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*thumbcaption\s*["']\s*/ig, 'style="margin: 0.5em 0 0.5em; font-size: 0.8em; line-height: 1.5; padding: 0 !important; color: #54595d; width: auto !important;"');
+                    //Move info-box below lead paragraph like on Wikipedia mobile
+                    htmlArticle = htmlArticle.replace(/(<table\s+(?=[^>]*infobox)[\s\S]+?<\/table>[^<]*)(<p\b[^>]*>(?:(?=([^<]+))\3|<(?!p\b[^>]*>))*?<\/p>)/ig, "$2$1");
+                    //Set infobox styling hard-coded in Wikipedia mobile
+                    htmlArticle = htmlArticle.replace(/(table\s+(?=[^>]*class\s*=\s*["'][^"']*infobox)[^>]*style\s*=\s*["'][^"']+[^;'"]);?\s*["']/ig, '$1; position: relative; border: 1px solid #eaecf0; text-align: left; background-color: #f8f9fa;"');
+                    //Wrap <h2> tags in <div> to control bottom border width if there's an infobox
+                    htmlArticle = htmlArticle.match(/table\s+(?=[^>]*class\s*=\s*["'][^"']*infobox)/i) ? htmlArticle.replace(/(<h2\s+[^<]*<\/h2>)/ig, '<div style="width: 60%;">$1</div>') : htmlArticle;
+                }
+                if (cssSource == "desktop") { //If user has selected desktop display mode...
+                    //Ensure white background colour
+                    htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*mw-body\s*["']\s*/ig, 'style="background-color: white; padding: 1em; border-width: 0px; max-width: 55.8em; margin: 0 auto 0 auto;"');
+                    //Void empty header title
+                    htmlArticle = htmlArticle.replace(/<h1\s*[^>]+titleHeading[^>]+>\s*<\/h1>\s*/ig, "");
+                }
+                if (cssSource != "zimfile") { //For all cases except where user wants exactly what's in the zimfile...
+                    //Reduce the hard-coded top padding to 0
+                    htmlArticle = htmlArticle.replace(/(<div\s+[^>]*mw-body[^>]+style[^>]+padding\s*:\s*)1em/i, "$10 1em");
+                }
+                htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
+                console.log("All CSS resolved");
+                injectHTML(htmlArticle); //Pass the revised HTML to the image and JS subroutine...
+            } else {
+                //console.log("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...")
+            }
+        }
     //End of preload stylesheets code
 
         function injectHTML(htmlContent) {
