@@ -26,8 +26,8 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFilesystemAccess', 'module', 'transformCSS'],
- function($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess, module, transformCSS) {
+define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFilesystemAccess', 'module', 'transformStyles'],
+ function($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess, module, transformStyles) {
      
     /**
      * Maximum number of articles to display in a search
@@ -192,12 +192,19 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
             setContentInjectionMode('jquery');
         }
     });
+    $('input:checkbox[name=cssCacheMode]').on('change', function (e) {
+        params['cssCache'] = this.checked ? true : false;
+    });
     $('input:radio[name=cssInjectionMode]').on('change', function (e) {
         params['cssSource'] = this.value;
     });
-    
+    $(document).ready(function (e) {
+        // Set checkbox for cssCache and radio for cssSource
+        document.getElementById('cssCacheModeCheck').checked = params['cssCache'];
+    });
+     
     /**
-     * Displays of refreshes the API status shown to the user
+     * Displays or refreshes the API status shown to the user
      */
     function refreshAPIStatus() {
         if (isMessageChannelAvailable()) {
@@ -335,7 +342,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     else {
         setContentInjectionMode('jquery');
     }
-    
+
     var serviceWorkerRegistration = null;
     
     /**
@@ -786,51 +793,28 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         //Set up blobArray of promises
         var cssArray = htmlArticle.match(regexpSheetHref);
         var blobArray = [];
-        cssSource = params['cssSource'];
+        var cssSource = params['cssSource'];
+        var cssCache = params['cssCache'];
+        var zimType = "";
         getBLOB(cssArray);
 
         //Extract CSS URLs from given array of links
         function getBLOB(arr) {
-            if (cssSource == "desktop" && (!arr.join().match(/-\/s\/style\.css/i))) {
-                arr.push('<link href="../-/s/style.css" rel="stylesheet">'); //Insert the standard desktop style
-            }
+            zimType = arr.join().match(/-\/s\/style\.css/i) ? "desktop" : zimType;
+            zimType = arr.join().match(/minerva|mobile/i) ? "mobile" : zimType;
             for (var i = 0; i < arr.length; i++) {
                 var linkArray = regexpSheetHref.exec(arr[i]);
                 regexpSheetHref.lastIndex = 0; //Reset start position for next loop
                 if (regexpMetadataUrl.test(linkArray[2])) { //It's a CSS file contained in ZIM
                     var zimLink = decodeURIComponent(uiUtil.removeUrlParameters(linkArray[2]));
-                    //If this is a standard Wikipedia css use stylesheet cached in the filesystem...
-                    if ((cssSource != "zimfile") &&
-                        (zimLink.match(/-\/s\/style\.css/i) ||
-                         zimLink.match(/-\/s\/css_modules\/mediawiki\.toc\.css/i) ||
-                         zimLink.match(/-\/s\/css_modules\/ext\.cite\.styles\.css/i) ||
-                         zimLink.match(/-\/s\/css_modules\/ext\.timeline\.styles\.css/i) ||
-                         zimLink.match(/-\/s\/css_modules\/ext\.scribunto\.logs\.css/i) ||
-                         zimLink.match(/-\/s\/css_modules\/mediawiki\.page\.gallery\.styles\.css/i) ||
-                         zimLink.match(/-\/s\/css_modules\/ext\.cite\.a11y\.css/i) ||
-                         zimLink.match(/-\/s\/css_modules\/content\.parsoid\.css/i) ||
-                         zimLink.match(/-\/s\/css_modules\/inserted_style_mobile\.css/i) ||
-                         zimLink.match(/-\/s\/css_modules\/mobile\.css/i) ||
-                         zimLink.match(/-\/s\/css_modules\/skins\.minerva\.base\.reset\|skins\.minerva\.content\.styles\|ext\.cite\.style\|mediawiki\.page\.gallery\.styles\|mobile\.app\.pagestyles\.android\|mediawiki\.skinning\.content\.parsoid\.css/i)
-                        )) {
-                        if (cssSource == "desktop" && zimLink.match(/minerva|mobile|parsoid/)) { //If user selected desktop style and the ZIM is formatted for mobile...
-                            zimLink = "#"; //Void the style
-                        } 
-                        if ((cssSource == "mobile") || (zimLink.match(/minerva/))) { //If user has selected mobile display mode or mobile is built into ZIM, substitute main stylesheet
-                            zimLink = zimLink.match(/(-\/s\/style\.css)|(minerva)/i) ? "../-/s/style-mobile.css" : zimLink;
-                        }
-                        blobArray[i] = zimLink.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename)
-                        console.log("Matched #" + i + " [" + blobArray[i] + "] from local filesystem");
-                        transformCSS.injectCSS();
-                    } else { //Try to get the stylesheet from the ZIM file
-                        var linkURL = zimLink.match(regexpMetadataUrl)[1];
-                        console.log("Attempting to resolve CSS link #" + i + " [" + linkURL + "] from ZIM file..." + 
-                            (cssSource != "zimfile" ? "\n(Consider adding file #" + i + " to the local filesystem)" : ""));
-                        resolveCSS(linkURL, i); //Pass link and index
-                    }
+                    /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
+                    var filteredLink = transformStyles.filterCSS(zimLink, zimType, cssCache, cssSource, i);
+                    //blobArray[i] = filteredLink.zl; //This line is a mistake! It fills blobArray too quickly and doesn't trigger waiting for primises...
+                    //filteredLink.rtnFunction == "injectCSS" ? injectCSS() : resolveCSS(filteredLink.zl, i); 
+                    if (filteredLink.rtnFunction == "injectCSS") { blobArray[i] = filteredLink.zl; injectCSS() } else { resolveCSS(filteredLink.zl, i); }
                 } else {
-                    blobArray[i] = linkArray[2]; //If CSS not in ZIM, store URL in blobArray
-                    transformCSS.injectCSS(); //Ensure this is called even if none of CSS links are in ZIM
+                    blobArray[i] = zimLink; //If CSS not in ZIM, store URL in blobArray
+                    injectCSS(); //Ensure this is called even if none of CSS links are in ZIM
                 }
             }
         }
@@ -842,16 +826,44 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     //var cssContent = util.uintToString(content); //Uncomment this line and break on next to capture cssContent for local filesystem cache
                     var cssBlob = new Blob([content], { type: 'text/css' }, { oneTimeOnly: true });
                     var newURL = URL.createObjectURL(cssBlob);
-                    blobArray[index] = newURL;
-                    transformCSS.injectCSS(); //Don't move this: it must run within .then function to pass correct values
+                    //blobArray[index] = newURL; //Don't bother with "index" -- you don't need to track the order of the blobs TODO: delete this logic
+                    blobArray.push(newURL);
+                    injectCSS(); //Don't move this: it must run within .then function to pass correct values
                 });
             }).fail(function (e) {
                 console.error("could not find DirEntry for CSS : " + title, e);
                 blobArray[index] = title;
-                transformCSS.injectCSS();
+                injectCSS();
             });
         }
 
+        function injectCSS() {
+            if (blobArray.length === cssArray.length) { //If all promised values have been obtained
+                for (var i in cssArray) {
+                    cssArray[i] = cssArray[i].replace(/(href\s*=\s*["'])([^"']+)/i, "$1" + blobArray[i]);
+                    //DEV note: do not attempt to add onload="URL.revokeObjectURL...)": see [kiwix.js #284]
+                }
+                htmlArticle = htmlArticle.replace(regexpSheetHref, ""); //Void existing stylesheets
+                var cssArray$ = "\r\n" + cssArray.join("\r\n") + "\r\n";
+                if (cssSource == "mobile") { //If user has selected mobile display mode...
+                    var mobileCSS = transformStyles.toMobileCSS(htmlArticle, zimType, cssCache, cssSource, cssArray$);
+                    htmlArticle = mobileCSS.html;
+                    cssArray$ = mobileCSS.css;
+                }
+                if (cssSource == "desktop") { //If user has selected desktop display mode...
+                    htmlArticle = transformStyles.toDesktopCSS(htmlArticle,zimType,cssCache).html;
+                }
+                if (cssCache) { //For all cases except where user wants exactly what's in the zimfile...
+                    //Reduce the hard-coded top padding to 0
+                    htmlArticle = htmlArticle.replace(/(<div\s+[^>]*mw-body[^>]+style[^>]+padding\s*:\s*)1em/i, "$10 1em");
+                }
+                htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
+                console.log("All CSS resolved");
+                injectHTML(htmlArticle); //Pass the revised HTML to the image and JS subroutine...
+            } else {
+                //console.log("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...")
+            }
+        }
     //End of preload stylesheets code
 
         function injectHTML(htmlContent) {
@@ -1054,5 +1066,4 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
             }
         });
     }
-
 });

@@ -18,6 +18,7 @@
 "C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\Release\PackageLayout\www\js\lib\util.js"			"www\js\lib\util.js"
 "C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\Release\PackageLayout\www\js\lib\utf8.js"			"www\js\lib\utf8.js"
 "C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\Release\PackageLayout\www\js\lib\uiUtil.js"			"www\js\lib\uiUtil.js"
+"C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\Release\PackageLayout\www\js\lib\transformStyles.js"			"www\js\lib\transformStyles.js"
 "C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\Release\PackageLayout\www\js\lib\require.js"			"www\js\lib\require.js"
 "C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\Release\PackageLayout\www\js\lib\q.js"			"www\js\lib\q.js"
 "C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\Release\PackageLayout\www\js\lib\jquery-3.2.1.slim.js"			"www\js\lib\jquery-3.2.1.slim.js"
