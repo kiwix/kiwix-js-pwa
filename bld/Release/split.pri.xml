@@ -263,6 +263,11 @@
 								<Value>www\js\lib\require.js</Value>
 							</Candidate>
 						</NamedResource>
+						<NamedResource name="transformStyles.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/lib/transformStyles.js">
+							<Candidate type="Path">
+								<Value>www\js\lib\transformStyles.js</Value>
+							</Candidate>
+						</NamedResource>
 						<NamedResource name="uiUtil.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/lib/uiUtil.js">
 							<Candidate type="Path">
 								<Value>www\js\lib\uiUtil.js</Value>
