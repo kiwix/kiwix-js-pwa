@@ -24,12 +24,63 @@
 'use strict';
 define([], function () {
 
-    function toMobileCSS(html, zim, cc, css) {
-        css += css.match(/-\/s\/css_modules\/content\.parsoid\.css/i) ? "" : '<link href="../-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css">\r\n';
-        css += css.match(/-\/s\/css_modules\/inserted_style_mobile\.css/i) ? "" : '<link href="../-/s/css_modules/inserted_style_mobile.css" rel="stylesheet" type="text/css">\r\n';
-        css += css.match(/-\/s\/css_modules\/mobile\.css/i) ? "" : '<link href="../-/s/css_modules/mobile.css" rel="stylesheet" type="text/css">\r\n';
+    /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i]  */
+    function filterCSS(zl, zim, cc, cs, i) {
+        var rtnFunction = "injectCSS";
+        if ((zim != cs) && zl.match(/(-\/s\/style\.css)|minerva|mobile|parsoid/i)) { //If it's the wrong ZIM type and style matches main styles...
+            if (zl.match(/(-\/s\/style\.css)|(minerva)/i)) { //If it matches one of the required styles...
+                zl = (cs == "mobile") ? "../-/s/style-mobile.css" : "../-/s/style.css"; //Take it from cache, because not in the ZIM
+                console.log("Matched #" + i + " [" + zl + "] from local filesystem because style is not in ZIM" +
+                    "\nbut your display options require a " + cs + " style");
+            }
+            if (cs == "desktop" && zl.match(/minerva|mobile|parsoid/)) { //If user selected desktop style and style is one of the mobile styles
+                console.log("Voiding #" + i + " [" + zl + "] from document header \nbecause your display options require a desktop style");
+                zl = "#"; //Void these mobile styles
+            }
+            //ba[0] = zl;
+            //injectCSS();
+            return {zl : zl, rtnFunction : rtnFunction};
+        } else {
+            //If this is a standard Wikipedia css use stylesheet cached in the filesystem...
+            if (cc &&
+                (zl.match(/-\/s\/style\.css/i) ||
+                    zl.match(/-\/s\/css_modules\/mediawiki\.toc\.css/i) ||
+                    zl.match(/-\/s\/css_modules\/ext\.cite\.styles\.css/i) ||
+                    zl.match(/-\/s\/css_modules\/ext\.timeline\.styles\.css/i) ||
+                    zl.match(/-\/s\/css_modules\/ext\.scribunto\.logs\.css/i) ||
+                    zl.match(/-\/s\/css_modules\/mediawiki\.page\.gallery\.styles\.css/i) ||
+                    zl.match(/-\/s\/css_modules\/ext\.cite\.a11y\.css/i) ||
+                    zl.match(/-\/s\/css_modules\/content\.parsoid\.css/i) ||
+                    zl.match(/-\/s\/css_modules\/inserted_style_mobile\.css/i) ||
+                    zl.match(/-\/s\/css_modules\/mobile\.css/i) ||
+                    zl.match(/-\/s\/css_modules\/skins\.minerva\.base\.reset\|skins\.minerva\.content\.styles\|ext\.cite\.style\|mediawiki\.page\.gallery\.styles\|mobile\.app\.pagestyles\.android\|mediawiki\.skinning\.content\.parsoid\.css/i)
+                )) {
+                zl = zl.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename - but next line renders this redundant in current implementation)
+                if (zl.match(/(-\/s\/style\.css)|(minerva)/i)) { //If it matches one of the required styles...
+                    zl = (cs == "mobile") ? "../-/s/style-mobile.css" : "../-/s/style.css";
+                }
+                console.log("Matched #" + i + " [" + zl + "] from local filesystem");
+                //injectCSS();
+                return { zl: zl, rtnFunction: rtnFunction };
+            } else { //Try to get the stylesheet from the ZIM file unless it's the wrong ZIM type
+                zl = zl.match(/^(?:\.\.\/|\/)+(-\/.*)$/)[1]; //Remove the directory path
+                console.log("Attempting to resolve CSS link #" + i + " [" + zl + "] from ZIM file..." +
+                    (cc ? "\n(Consider adding file #" + i + " to the local filesystem)" : ""));
+                //resolveCSS(zl, i); //Pass link and index
+                rtnFunction = "resolveCSS";
+                return { zl: zl, rtnFunction: rtnFunction };
+            }
+        }
+    }
+
+    function toMobileCSS(html, zim, cc, cs, css) {
+        if (zim != cs) {
+            css += css.match(/-\/s\/css_modules\/content\.parsoid\.css/i) ? "" : '<link href="../-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css">\r\n';
+            css += css.match(/-\/s\/css_modules\/inserted_style_mobile\.css/i) ? "" : '<link href="../-/s/css_modules/inserted_style_mobile.css" rel="stylesheet" type="text/css">\r\n';
+            css += css.match(/-\/s\/css_modules\/mobile\.css/i) ? "" : '<link href="../-/s/css_modules/mobile.css" rel="stylesheet" type="text/css">\r\n';
+        }
         if (cc || (zim == "desktop")) { //If user requested cached styles OR the ZIM does not contain mobile styles
-            console.log(zim == "desktop" ? "Transforming display style to mobile..." : "Optimizing cached styhles for mobile display...");
+            console.log(zim == "desktop" ? "Transforming display style to mobile..." : "Optimizing cached styles for mobile display...");
             //Allow images to float right or left
             html = html.replace(/class\s*=\s*["']\s*thumb\s+tright\s*["']\s*/ig, 'style="float: right; clear: right; margin-left: 1.4em;"');
             html = html.replace(/class\s*=\s*["']\s*thumb\s+tleft\s*["']\s*/ig, 'style="float: left; clear: left; margin-right: 1.4em;"');
@@ -45,7 +96,7 @@ define([], function () {
         return { html: html, css: css };
     }
 
-    function toDesktopCSS(html, zim, cc, css) {
+    function toDesktopCSS(html, zim, cc, cs, css) {
         if (cc || (zim == "mobile")) { //If user requested cached styles OR the ZIM does not contain desktop styles
             console.log(zim == "mobile" ? "Transforming display style to desktop..." : "Optimizing cached styhles for desktop display...");
             //If it's in mobile position, move info-box above lead paragraph like on Wikipedia desktop
@@ -64,6 +115,7 @@ define([], function () {
     */
     return {
         toMobileCSS: toMobileCSS,
-        toDesktopCSS: toDesktopCSS
+        toDesktopCSS: toDesktopCSS,
+        filterCSS: filterCSS
     };
 });
