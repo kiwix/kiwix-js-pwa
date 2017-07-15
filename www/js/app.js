@@ -802,51 +802,18 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         function getBLOB(arr) {
             zimType = arr.join().match(/-\/s\/style\.css/i) ? "desktop" : zimType;
             zimType = arr.join().match(/minerva|mobile/i) ? "mobile" : zimType;
-
             for (var i = 0; i < arr.length; i++) {
                 var linkArray = regexpSheetHref.exec(arr[i]);
                 regexpSheetHref.lastIndex = 0; //Reset start position for next loop
                 if (regexpMetadataUrl.test(linkArray[2])) { //It's a CSS file contained in ZIM
                     var zimLink = decodeURIComponent(uiUtil.removeUrlParameters(linkArray[2]));
-                    if ((zimType != cssSource) && zimLink.match(/(-\/s\/style\.css)|minerva|mobile|parsoid/i)) { //If it's the wrong ZIM type and style matches main styles...
-                        if (zimLink.match(/(-\/s\/style\.css)|(minerva)/i)) { //If it matches one of the required styles...
-                            zimLink = (cssSource == "mobile") ? "../-/s/style-mobile.css" : "../-/s/style.css"; //Take it from cache, because not in the ZIM
-                            console.log("Matched #" + i + " [" + zimLink + "] from local filesystem because style is not in ZIM" +
-                                "\nbut your display options require a " + cssSource + " style");
-                        }
-                        if (cssSource == "desktop" && zimLink.match(/minerva|mobile|parsoid/)) { //If user selected desktop style and style is one of the mobile styles
-                            console.log("Voiding #" + i + " [" + zimLink + "] from document header \nbecause your display options require a desktop style");
-                            zimLink = "#"; //Void these mobile styles
-                        }
-                        blobArray[i] = zimLink;
-                        injectCSS();
-                    } else {
-                        //If this is a standard Wikipedia css use stylesheet cached in the filesystem...
-                        if ( cssCache &&
-                            (zimLink.match(/-\/s\/style\.css/i) ||
-                             zimLink.match(/-\/s\/css_modules\/mediawiki\.toc\.css/i) ||
-                             zimLink.match(/-\/s\/css_modules\/ext\.cite\.styles\.css/i) ||
-                             zimLink.match(/-\/s\/css_modules\/ext\.timeline\.styles\.css/i) ||
-                             zimLink.match(/-\/s\/css_modules\/ext\.scribunto\.logs\.css/i) ||
-                             zimLink.match(/-\/s\/css_modules\/mediawiki\.page\.gallery\.styles\.css/i) ||
-                             zimLink.match(/-\/s\/css_modules\/ext\.cite\.a11y\.css/i) ||
-                             zimLink.match(/-\/s\/css_modules\/content\.parsoid\.css/i) ||
-                             zimLink.match(/-\/s\/css_modules\/inserted_style_mobile\.css/i) ||
-                             zimLink.match(/-\/s\/css_modules\/mobile\.css/i) ||
-                             zimLink.match(/-\/s\/css_modules\/skins\.minerva\.base\.reset\|skins\.minerva\.content\.styles\|ext\.cite\.style\|mediawiki\.page\.gallery\.styles\|mobile\.app\.pagestyles\.android\|mediawiki\.skinning\.content\.parsoid\.css/i)
-                            )) {
-                            blobArray[i] = zimLink.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename)
-                            console.log("Matched #" + i + " [" + blobArray[i] + "] from local filesystem");
-                            injectCSS();
-                        } else { //Try to get the stylesheet from the ZIM file unless it's the wrong ZIM type
-                            var linkURL = zimLink.match(regexpMetadataUrl)[1];
-                            console.log("Attempting to resolve CSS link #" + i + " [" + linkURL + "] from ZIM file..." + 
-                                (cssCache ? "\n(Consider adding file #" + i + " to the local filesystem)" : ""));
-                            resolveCSS(linkURL, i); //Pass link and index
-                        }
-                    }
+                    /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
+                    var filteredLink = transformStyles.filterCSS(zimLink, zimType, cssCache, cssSource, i);
+                    //blobArray[i] = filteredLink.zl; //This line is a mistake! It fills blobArray too quickly and doesn't trigger waiting for primises...
+                    //filteredLink.rtnFunction == "injectCSS" ? injectCSS() : resolveCSS(filteredLink.zl, i); 
+                    if (filteredLink.rtnFunction == "injectCSS") { blobArray[i] = filteredLink.zl; injectCSS() } else { resolveCSS(filteredLink.zl, i); }
                 } else {
-                    blobArray[i] = linkArray[2]; //If CSS not in ZIM, store URL in blobArray
+                    blobArray[i] = zimLink; //If CSS not in ZIM, store URL in blobArray
                     injectCSS(); //Ensure this is called even if none of CSS links are in ZIM
                 }
             }
@@ -859,7 +826,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     //var cssContent = util.uintToString(content); //Uncomment this line and break on next to capture cssContent for local filesystem cache
                     var cssBlob = new Blob([content], { type: 'text/css' }, { oneTimeOnly: true });
                     var newURL = URL.createObjectURL(cssBlob);
-                    blobArray[index] = newURL;
+                    //blobArray[index] = newURL; //Don't bother with "index" -- you don't need to track the order of the blobs TODO: delete this logic
+                    blobArray.push(newURL);
                     injectCSS(); //Don't move this: it must run within .then function to pass correct values
                 });
             }).fail(function (e) {
@@ -878,7 +846,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 htmlArticle = htmlArticle.replace(regexpSheetHref, ""); //Void existing stylesheets
                 var cssArray$ = "\r\n" + cssArray.join("\r\n") + "\r\n";
                 if (cssSource == "mobile") { //If user has selected mobile display mode...
-                    var mobileCSS = transformStyles.toMobileCSS(htmlArticle, zimType, cssCache, cssArray$);
+                    var mobileCSS = transformStyles.toMobileCSS(htmlArticle, zimType, cssCache, cssSource, cssArray$);
                     htmlArticle = mobileCSS.html;
                     cssArray$ = mobileCSS.css;
                 }
