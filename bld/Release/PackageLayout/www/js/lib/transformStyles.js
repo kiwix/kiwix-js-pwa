@@ -37,7 +37,6 @@ define([], function () {
                 console.log("Voiding #" + i + " [" + zl + "] from document header \nbecause your display options require a desktop style");
                 zl = "#"; //Void these mobile styles
             }
-            //ba[0] = zl;
             //injectCSS();
             return {zl : zl, rtnFunction : rtnFunction};
         } else {
@@ -74,10 +73,12 @@ define([], function () {
     }
 
     function toMobileCSS(html, zim, cc, cs, css) {
-        if (zim != cs) {
-            css += css.match(/-\/s\/css_modules\/content\.parsoid\.css/i) ? "" : '<link href="../-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css">\r\n';
-            css += css.match(/-\/s\/css_modules\/inserted_style_mobile\.css/i) ? "" : '<link href="../-/s/css_modules/inserted_style_mobile.css" rel="stylesheet" type="text/css">\r\n';
-            css += css.match(/-\/s\/css_modules\/mobile\.css/i) ? "" : '<link href="../-/s/css_modules/mobile.css" rel="stylesheet" type="text/css">\r\n';
+        //DEV: Careful not to add styles twice...
+        //NB Can't relocate to filterCSS function above because it filters styles serially and code would be called for every style...
+        if (zim != cs) { //If ZIM doesn't match user-requested style, add in stylesheets if they're missing
+            css += /-\/s\/css_modules\/content\.parsoid\.css/i.test(css) ? "" : '<link href="../-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css">\r\n';
+            css += /-\/s\/css_modules\/inserted_style_mobile\.css/i.test(css) ? "" : '<link href="../-/s/css_modules/inserted_style_mobile.css" rel="stylesheet" type="text/css">\r\n';
+            css += /-\/s\/css_modules\/mobile\.css/i.test(css) ? "" : '<link href="../-/s/css_modules/mobile.css" rel="stylesheet" type="text/css">\r\n';
         }
         if (cc || (zim == "desktop")) { //If user requested cached styles OR the ZIM does not contain mobile styles
             console.log(zim == "desktop" ? "Transforming display style to mobile..." : "Optimizing cached styles for mobile display...");
@@ -93,10 +94,16 @@ define([], function () {
             //Wrap <h2> tags in <div> to control bottom border width if there's an infobox
             html = html.match(/table\s+(?=[^>]*class\s*=\s*["'][^"']*infobox)/i) ? html.replace(/(<h2\s+[^<]*<\/h2>)/ig, '<div style="width: 60%;">$1</div>') : html;
         }
-        return { html: html, css: css };
+        return { html : html, css : css };
     }
 
     function toDesktopCSS(html, zim, cc, cs, css) {
+        if (cc || (zim != cs)) {
+            if (/class\s*=\s*["']gallery/i.test(html) && !/gallery/i.test(css)) {
+                console.log("Inserting missing css required for gallery display [mediawiki.page.gallery.styles.css]...");
+                css += /-\/s\/css_modules\/mediawiki\.page\.gallery\.styles\.css/i.test(css) ? "" : '<link href="../-/s/css_modules/mediawiki.page.gallery.styles.css" rel="stylesheet" type="text/css">\r\n';
+            }
+        }
         if (cc || (zim == "mobile")) { //If user requested cached styles OR the ZIM does not contain desktop styles
             console.log(zim == "mobile" ? "Transforming display style to desktop..." : "Optimizing cached styles for desktop display...");
             //If it's in mobile position, move info-box above lead paragraph like on Wikipedia desktop

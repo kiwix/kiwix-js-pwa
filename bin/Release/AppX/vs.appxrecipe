@@ -20,19 +20,19 @@
     <WindowsSdkPath>
     </WindowsSdkPath>
     <LayoutDir>C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppX</LayoutDir>
-    <RegisteredManifestChecksum>37083B3CEA7299C8251E6967822F0D18FDA88758381170EA71357231FDDB45B0</RegisteredManifestChecksum>
-    <RegisteredPackageMoniker>a1a5e0b9-13d4-41fb-810d-518949f03df4_0.7.0.0_neutral__zfxmafgedzx24</RegisteredPackageMoniker>
+    <RegisteredManifestChecksum>241559AA6053C5782D5C808ACC229318D171426ACA3BC552F46B05B0C6013D6A</RegisteredManifestChecksum>
+    <RegisteredPackageMoniker>a1a5e0b9-13d4-41fb-810d-518949f03df4_0.7.2.0_neutral__zfxmafgedzx24</RegisteredPackageMoniker>
     <RegisteredUserModeAppID>a1a5e0b9-13d4-41fb-810d-518949f03df4_zfxmafgedzx24!App</RegisteredUserModeAppID>
     <RegisteredPackageID>a1a5e0b9-13d4-41fb-810d-518949f03df4</RegisteredPackageID>
     <RegisteredPackagePublisher>CN=geoff</RegisteredPackagePublisher>
-    <RegisteredVersion>0.7.0.0</RegisteredVersion>
+    <RegisteredVersion>0.7.2.0</RegisteredVersion>
     <JitOptimizationSuppressed>True</JitOptimizationSuppressed>
   </PropertyGroup>
   <ItemGroup>
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-07-16T14:06:47.567</Modified>
+      <Modified>2017-07-17T18:00:56.276</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -289,6 +289,18 @@
       <PackagePath>www\img\Kiwix_icon_transparent_600x600.png</PackagePath>
       <Modified>2017-06-16T16:31:46.863</Modified>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\I\s\Checker-16x16.png">
+      <PackagePath>www\I\s\Checker-16x16.png</PackagePath>
+      <Modified>2017-07-17T08:03:25.210</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\I\s\cog-sprite.png">
+      <PackagePath>www\I\s\cog-sprite.png</PackagePath>
+      <Modified>2017-07-17T08:05:58.802</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\I\s\magnify-clip-ltr.png">
+      <PackagePath>www\I\s\magnify-clip-ltr.png</PackagePath>
+      <Modified>2017-07-17T08:09:36.141</Modified>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\content.parsoid.css">
       <PackagePath>www\-\s\css_modules\content.parsoid.css</PackagePath>
       <Modified>2017-07-12T09:47:51.033</Modified>
@@ -331,7 +343,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\style.css">
       <PackagePath>www\-\s\style.css</PackagePath>
-      <Modified>2017-07-15T14:52:25.266</Modified>
+      <Modified>2017-07-17T09:23:37.605</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\css\app.css">
       <PackagePath>www\css\app.css</PackagePath>
@@ -381,9 +393,17 @@
       <PackagePath>www\img\spinner.gif</PackagePath>
       <Modified>2017-06-16T16:31:46.889</Modified>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\I\s\Icons-mini-file_acrobat.gif">
+      <PackagePath>www\I\s\Icons-mini-file_acrobat.gif</PackagePath>
+      <Modified>2017-07-17T07:24:54.741</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\I\s\spinner.gif">
+      <PackagePath>www\I\s\spinner.gif</PackagePath>
+      <Modified>2017-07-17T08:11:34.467</Modified>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-07-16T11:33:07.015</Modified>
+      <Modified>2017-07-17T17:29:34.209</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
@@ -415,7 +435,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\transformStyles.js">
       <PackagePath>www\js\lib\transformStyles.js</PackagePath>
-      <Modified>2017-07-16T14:06:35.966</Modified>
+      <Modified>2017-07-17T18:00:43.357</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\uiUtil.js">
       <PackagePath>www\js\lib\uiUtil.js</PackagePath>
@@ -439,7 +459,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\zimArchive.js">
       <PackagePath>www\js\lib\zimArchive.js</PackagePath>
-      <Modified>2017-07-11T05:58:27.405</Modified>
+      <Modified>2017-07-17T12:20:43.323</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\zimArchiveLoader.js">
       <PackagePath>www\js\lib\zimArchiveLoader.js</PackagePath>
@@ -456,7 +476,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-07-16T11:08:22.043</Modified>
+      <Modified>2017-07-17T09:40:13.497</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>
