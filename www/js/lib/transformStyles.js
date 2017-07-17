@@ -73,7 +73,7 @@ define([], function () {
     }
 
     function toMobileCSS(html, zim, cc, cs, css) {
-        //DEV: the css.match statements below won't match BLOB URLs! Careful not to add styles twice... //EDIT: NOW THEY DO!!!!
+        //DEV: Careful not to add styles twice...
         //NB Can't relocate to filterCSS function above because it filters styles serially and code would be called for every style...
         if (zim != cs) { //If ZIM doesn't match user-requested style, add in stylesheets if they're missing
             css += /-\/s\/css_modules\/content\.parsoid\.css/i.test(css) ? "" : '<link href="../-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css">\r\n';
@@ -94,7 +94,7 @@ define([], function () {
             //Wrap <h2> tags in <div> to control bottom border width if there's an infobox
             html = html.match(/table\s+(?=[^>]*class\s*=\s*["'][^"']*infobox)/i) ? html.replace(/(<h2\s+[^<]*<\/h2>)/ig, '<div style="width: 60%;">$1</div>') : html;
         }
-        return { html: html, css: css };
+        return { html : html, css : css };
     }
 
     function toDesktopCSS(html, zim, cc, cs, css) {
