@@ -243,7 +243,7 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
      */
     ZIMArchive.prototype.readBinaryFile = function(dirEntry, callback) {
         return dirEntry.readData().then(function(data) {
-            callback(dirEntry.title, data);
+            callback(dirEntry.title, data, dirEntry.namespace, dirEntry.url);
         });
     };
     
