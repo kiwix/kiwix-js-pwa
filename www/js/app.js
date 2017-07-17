@@ -817,6 +817,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         function getBLOB(arr) {
             zimType = arr.join().match(/-\/s\/style\.css/i) ? "desktop" : zimType;
             zimType = arr.join().match(/minerva|mobile/i) ? "mobile" : zimType;
+
             for (var i = 0; i < arr.length; i++) {
                 var linkArray = regexpSheetHref.exec(arr[i]);
                 regexpSheetHref.lastIndex = 0; //Reset start position for next loop
