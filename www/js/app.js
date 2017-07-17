@@ -558,6 +558,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     function setLocalArchiveFromFileList(files) {
         selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
             // The archive is set : go back to home page to start searching
+
+            //TESTING
+            console.time("Time to HTML load");
+
             $("#btnHome").click();
         });
     }
@@ -833,26 +837,36 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         function resolveCSS(title, index) {
             selectedArchive.getDirEntryByTitle(title).then(
             function (dirEntry) {
-                selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content) {
+                selectedArchive.readBinaryFile(dirEntry,
+                    function (readableTitle, content, namespace, url) {
                     var cssContent = util.uintToString(content); //Uncomment this line and break on next to capture cssContent for local filesystem cache
                     var cssBlob = new Blob([content], { type: 'text/css' }, { oneTimeOnly: true });
-                    var newURL = URL.createObjectURL(cssBlob);
+                    var newURL = [namespace + "/" + url, URL.createObjectURL(cssBlob)];
                     //blobArray[index] = newURL; //Don't bother with "index" -- you don't need to track the order of the blobs TODO: delete this logic
                     blobArray.push(newURL);
-                    injectCSS(); //Don't move this: it must run within .then function to pass correct values
+                    injectCSS(); //DO NOT move this: it must run within .then function to pass correct values
                 });
             }).fail(function (e) {
                 console.error("could not find DirEntry for CSS : " + title, e);
-                blobArray[index] = title;
+                //blobArray[index] = title;
+                blobArray.push(title);
                 injectCSS();
             });
         }
 
         function injectCSS() {
             if (blobArray.length === cssArray.length) { //If all promised values have been obtained
-                for (var i in cssArray) {
-                    cssArray[i] = cssArray[i].replace(/(href\s*=\s*["'])([^"']+)/i, "$1" + blobArray[i]);
-                    //DEV note: do not attempt to add onload="URL.revokeObjectURL...)": see [kiwix.js #284]
+                for (var i in cssArray) { //Put them back in the correct order
+                    for (var j in blobArray) { //Iterate the blobArray to find the matching entry
+                        if (~cssArray[i].indexOf(blobArray[j][0])) { break; }
+                    }
+                    if (/blob:/i.test(blobArray[j][1])) {
+                        cssArray[i] = cssArray[i].replace(/(href\s*=\s*["'])([^"']+)/i, "$1" +
+                        blobArray[j][1] + '" data-kiwixhref="$2');//Store the original URL for later use
+                        //DEV note: do not attempt to add onload="URL.revokeObjectURL...)": see [kiwix.js #284]
+                    //DEBUG:
+                        //console.log("BLOB CSS #" + i + ": " + cssArray[i] + "\nshould correspond to: " + blobArray[j][0]);
+                   }
                 }
 
                 htmlArticle = htmlArticle.replace(regexpSheetHref, ""); //Void existing stylesheets
@@ -863,7 +877,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     cssArray$ = mobileCSS.css;
                 }
                 if (cssSource == "desktop") { //If user has selected desktop display mode...
-                    htmlArticle = transformStyles.toDesktopCSS(htmlArticle,zimType,cssCache).html;
+                    var desktopCSS = transformStyles.toDesktopCSS(htmlArticle, zimType, cssCache, cssSource, cssArray$);
+                    htmlArticle = desktopCSS.html;
+                    cssArray$ = desktopCSS.css;
                 }
                 if (cssCache) { //For all cases except where user wants exactly what's in the zimfile...
                     //Reduce the hard-coded top padding to 0
