@@ -226,6 +226,15 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\img\Kiwix_icon_transparent_600x600.png">
       <PackagePath>www\img\Kiwix_icon_transparent_600x600.png</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\I\s\Checker-16x16.png">
+      <PackagePath>www\I\s\Checker-16x16.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\I\s\cog-sprite.png">
+      <PackagePath>www\I\s\cog-sprite.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\I\s\magnify-clip-ltr.png">
+      <PackagePath>www\I\s\magnify-clip-ltr.png</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\content.parsoid.css">
       <PackagePath>www\-\s\css_modules\content.parsoid.css</PackagePath>
     </AppxPackagedFile>
@@ -294,6 +303,12 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\img\spinner.gif">
       <PackagePath>www\img\spinner.gif</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\I\s\Icons-mini-file_acrobat.gif">
+      <PackagePath>www\I\s\Icons-mini-file_acrobat.gif</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\I\s\spinner.gif">
+      <PackagePath>www\I\s\spinner.gif</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
