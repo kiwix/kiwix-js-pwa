@@ -20,19 +20,19 @@
     <WindowsSdkPath>
     </WindowsSdkPath>
     <LayoutDir>C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppX</LayoutDir>
-    <RegisteredManifestChecksum>241559AA6053C5782D5C808ACC229318D171426ACA3BC552F46B05B0C6013D6A</RegisteredManifestChecksum>
-    <RegisteredPackageMoniker>a1a5e0b9-13d4-41fb-810d-518949f03df4_0.7.2.0_neutral__zfxmafgedzx24</RegisteredPackageMoniker>
+    <RegisteredManifestChecksum>D3BD4822819E3A6B8A8021110D2A30673120E896CD19A60364E1DEA5409EAD90</RegisteredManifestChecksum>
+    <RegisteredPackageMoniker>a1a5e0b9-13d4-41fb-810d-518949f03df4_0.7.4.0_neutral__zfxmafgedzx24</RegisteredPackageMoniker>
     <RegisteredUserModeAppID>a1a5e0b9-13d4-41fb-810d-518949f03df4_zfxmafgedzx24!App</RegisteredUserModeAppID>
     <RegisteredPackageID>a1a5e0b9-13d4-41fb-810d-518949f03df4</RegisteredPackageID>
     <RegisteredPackagePublisher>CN=geoff</RegisteredPackagePublisher>
-    <RegisteredVersion>0.7.2.0</RegisteredVersion>
+    <RegisteredVersion>0.7.4.0</RegisteredVersion>
     <JitOptimizationSuppressed>True</JitOptimizationSuppressed>
   </PropertyGroup>
   <ItemGroup>
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-07-18T01:11:54.401</Modified>
+      <Modified>2017-07-18T23:06:18.797</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -345,6 +345,10 @@
       <PackagePath>www\-\s\style.css</PackagePath>
       <Modified>2017-07-17T09:23:37.605</Modified>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\vector.css">
+      <PackagePath>www\-\s\vector.css</PackagePath>
+      <Modified>2017-07-18T08:09:35.600</Modified>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\css\app.css">
       <PackagePath>www\css\app.css</PackagePath>
       <Modified>2017-06-19T05:52:18.779</Modified>
@@ -363,7 +367,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\index.html">
       <PackagePath>www\index.html</PackagePath>
-      <Modified>2017-07-14T17:52:49.466</Modified>
+      <Modified>2017-07-18T22:56:53.389</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\favicon.ico">
       <PackagePath>www\favicon.ico</PackagePath>
@@ -403,7 +407,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-07-18T00:30:47.913</Modified>
+      <Modified>2017-07-18T22:49:14.425</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
@@ -435,11 +439,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\transformStyles.js">
       <PackagePath>www\js\lib\transformStyles.js</PackagePath>
-      <Modified>2017-07-18T01:11:32.454</Modified>
+      <Modified>2017-07-18T23:06:05.495</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\uiUtil.js">
       <PackagePath>www\js\lib\uiUtil.js</PackagePath>
-      <Modified>2017-07-13T07:02:36.153</Modified>
+      <Modified>2017-07-18T23:01:42.491</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\utf8.js">
       <PackagePath>www\js\lib\utf8.js</PackagePath>
@@ -476,7 +480,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-07-17T09:40:13.497</Modified>
+      <Modified>2017-07-18T08:36:18.282</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>
