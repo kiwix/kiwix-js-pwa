@@ -202,6 +202,35 @@
 						</Candidate>
 					</NamedResource>
 				</ResourceMapSubtree>
+				<ResourceMapSubtree name="I">
+					<ResourceMapSubtree name="s">
+						<NamedResource name="Checker-16x16.png" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/I/s/Checker-16x16.png">
+							<Candidate type="Path">
+								<Value>www\I\s\Checker-16x16.png</Value>
+							</Candidate>
+						</NamedResource>
+						<NamedResource name="cog-sprite.png" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/I/s/cog-sprite.png">
+							<Candidate type="Path">
+								<Value>www\I\s\cog-sprite.png</Value>
+							</Candidate>
+						</NamedResource>
+						<NamedResource name="Icons-mini-file_acrobat.gif" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/I/s/Icons-mini-file_acrobat.gif">
+							<Candidate type="Path">
+								<Value>www\I\s\Icons-mini-file_acrobat.gif</Value>
+							</Candidate>
+						</NamedResource>
+						<NamedResource name="magnify-clip-ltr.png" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/I/s/magnify-clip-ltr.png">
+							<Candidate type="Path">
+								<Value>www\I\s\magnify-clip-ltr.png</Value>
+							</Candidate>
+						</NamedResource>
+						<NamedResource name="spinner.gif" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/I/s/spinner.gif">
+							<Candidate type="Path">
+								<Value>www\I\s\spinner.gif</Value>
+							</Candidate>
+						</NamedResource>
+					</ResourceMapSubtree>
+				</ResourceMapSubtree>
 				<ResourceMapSubtree name="img">
 					<NamedResource name="Kiwix_icon_transparent_600x600.png" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/img/Kiwix_icon_transparent_600x600.png">
 						<Candidate type="Path">
