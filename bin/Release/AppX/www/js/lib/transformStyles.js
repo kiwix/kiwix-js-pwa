@@ -28,7 +28,7 @@ define([], function () {
     function filterCSS(zl, zim, cc, cs, i) {
         var rtnFunction = "injectCSS";
         if ((zim != cs) && zl.match(/(-\/s\/style\.css)|minerva|mobile|parsoid/i)) { //If it's the wrong ZIM type and style matches main styles...
-            if (zl.match(/(-\/s\/style\.css)|(minerva)/i)) { //If it matches one of the required styles...
+            if (zl.match(/(-\/s\/style\.css)|(minerva)|style-mobile\.css/i)) { //If it matches one of the required styles...
                 zl = (cs == "mobile") ? "../-/s/style-mobile.css" : "../-/s/style.css"; //Take it from cache, because not in the ZIM
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem because style is not in ZIM" +
                     "\nbut your display options require a " + cs + " style");
@@ -52,6 +52,7 @@ define([], function () {
                     zl.match(/-\/s\/css_modules\/content\.parsoid\.css/i) ||
                     zl.match(/-\/s\/css_modules\/inserted_style_mobile\.css/i) ||
                     zl.match(/-\/s\/css_modules\/mobile\.css/i) ||
+                    zl.match(/-\/s\/style-mobile\.css/i) ||
                     zl.match(/-\/s\/css_modules\/skins\.minerva\.base\.reset\|skins\.minerva\.content\.styles\|ext\.cite\.style\|mediawiki\.page\.gallery\.styles\|mobile\.app\.pagestyles\.android\|mediawiki\.skinning\.content\.parsoid\.css/i)
                 )) {
                 zl = zl.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename - but next line renders this redundant in current implementation)
@@ -73,7 +74,7 @@ define([], function () {
     }
 
     function toMobileCSS(html, zim, cc, cs, css) {
-        //DEV: the css.match statements below won't match BLOB URLs! Careful not to add styles twice... //EDIT: NOW THEY DO!!!!
+        //DEV: Careful not to add styles twice...
         //NB Can't relocate to filterCSS function above because it filters styles serially and code would be called for every style...
         if (zim != cs) { //If ZIM doesn't match user-requested style, add in stylesheets if they're missing
             css += /-\/s\/css_modules\/content\.parsoid\.css/i.test(css) ? "" : '<link href="../-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css">\r\n';
@@ -88,13 +89,14 @@ define([], function () {
             //Add styling to image captions that is hard-coded in Wikipedia mobile
             html = html.replace(/class\s*=\s*["']\s*thumbcaption\s*["']\s*/ig, 'style="margin: 0.5em 0 0.5em; font-size: 0.8em; line-height: 1.5; padding: 0 !important; color: #54595d; width: auto !important;"');
             //If it's in desktop position, move info-box below lead paragraph like on Wikipedia mobile
-            html = zim == "desktop" ? /<\/p>[\s\S]*?<table\s+[^>]*(?:infobox|vertical-navbox)/i.test(html) ? html : html.replace(/(<table\s+(?=[^>]*(?:infobox|vertical-navbox))[\s\S]+?<\/table>[^<]*)((?:<span\s*>\s*)?<p\b[^>]*>(?:(?=([^<]+))\3|<(?!p\b[^>]*>))*?<\/p>(?:<span\s*>)?)/i, "$2\r\n$1") : html;
+            //html = zim == "desktop" ? /<\/p>[\s\S]*?<table\s+[^>]*(?:infobox|vertical-navbox)/i.test(html) ? html : html.replace(/(<table\s+(?=[^>]*(?:infobox|vertical-navbox))[\s\S]+?<\/table>[^<]*)((?:<span\s*>\s*)?<p\b[^>]*>(?:(?=([^<]+))\3|<(?!p\b[^>]*>))*?<\/p>(?:<span\s*>)?)/i, "$2\r\n$1") : html;
+            html = zim == "desktop" ? html.replace(/(<table\s+(?=[^>]*(?:infobox|vertical-navbox))[\s\S]+?<\/table>[^<]*)((?:<span\s*>\s*)?<p\b[^>]*>(?:(?=([^<]+))\3|<(?!p\b[^>]*>))*?<\/p>(?:<span\s*>)?)/i, "$2\r\n$1") : html;
             //Set infobox styling hard-coded in Wikipedia mobile
             html = html.replace(/(table\s+(?=[^>]*class\s*=\s*["'][^"']*infobox)[^>]*style\s*=\s*["'][^"']+[^;'"]);?\s*["']/ig, '$1; position: relative; border: 1px solid #eaecf0; text-align: left; background-color: #f8f9fa;"');
             //Wrap <h2> tags in <div> to control bottom border width if there's an infobox
             html = html.match(/table\s+(?=[^>]*class\s*=\s*["'][^"']*infobox)/i) ? html.replace(/(<h2\s+[^<]*<\/h2>)/ig, '<div style="width: 60%;">$1</div>') : html;
         }
-        return { html: html, css: css };
+        return { html : html, css : css };
     }
 
     function toDesktopCSS(html, zim, cc, cs, css) {
