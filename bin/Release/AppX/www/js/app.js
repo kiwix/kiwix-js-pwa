@@ -815,12 +815,19 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
 
         //Extract CSS URLs from given array of links
         function getBLOB(arr) {
-            zimType = arr.join().match(/-\/s\/style\.css/i) ? "desktop" : zimType;
-            zimType = arr.join().match(/minerva|mobile/i) ? "mobile" : zimType;
+            var testCSS = arr.join();
+            zimType = /-\/s\/style\.css/i.test(testCSS) ? "desktop" : zimType;
+            zimType = /minerva|mobile/i.test(testCSS) ? "mobile" : zimType;
+            if (/minerva/i.test(testCSS) && (cssCache || zimType != cssSource)) {
+                //Substitute ridiculously long style name TODO: move this code to transformStyles
+                for (var i = 0; i < arr.length; i++) { //NB minerva.css is a dummy name for now TODO: sort out in transfromStyles
+                    arr[i] = /minerva/i.test(arr[i]) ? '<link href="../-/s/style-mobile.css" rel="stylesheet" type="text/css">' : arr[i];
+                }
+            }
             for (var i = 0; i < arr.length; i++) {
                 var linkArray = regexpSheetHref.exec(arr[i]);
                 regexpSheetHref.lastIndex = 0; //Reset start position for next loop
-                if (regexpMetadataUrl.test(linkArray[2])) { //It's a CSS file contained in ZIM
+                if (linkArray && regexpMetadataUrl.test(linkArray[2])) { //It's a CSS file contained in ZIM
                     var zimLink = decodeURIComponent(uiUtil.removeUrlParameters(linkArray[2]));
                     /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
                     var filteredLink = transformStyles.filterCSS(zimLink, zimType, cssCache, cssSource, i);
@@ -828,7 +835,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     //filteredLink.rtnFunction == "injectCSS" ? injectCSS() : resolveCSS(filteredLink.zl, i); 
                     if (filteredLink.rtnFunction == "injectCSS") { blobArray[i] = filteredLink.zl; injectCSS() } else { resolveCSS(filteredLink.zl, i); }
                 } else {
-                    blobArray[i] = zimLink; //If CSS not in ZIM, store URL in blobArray
+                    blobArray[i] = arr[i]; //If CSS not in ZIM, store URL in blobArray
                     injectCSS(); //Ensure this is called even if none of CSS links are in ZIM
                 }
             }
@@ -856,19 +863,21 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
 
         function injectCSS() {
             if (blobArray.length === cssArray.length) { //If all promised values have been obtained
+                var resultsArray= [];
                 for (var i in cssArray) { //Put them back in the correct order
+                    var match = 0;
                     for (var j in blobArray) { //Iterate the blobArray to find the matching entry
-                        if (~cssArray[i].indexOf(blobArray[j][0])) { break; }
+                        var testBlob = blobArray[j][0] == "." ? blobArray[j] : blobArray[j][0]; //What a kludge! TODO: fix this ugly mixing of arrays and strings 
+                        if (~cssArray[i].indexOf(testBlob)) { match = 1; break; }
                     }
-                    if (/blob:/i.test(blobArray[j][1])) {
-                        cssArray[i] = cssArray[i].replace(/(href\s*=\s*["'])([^"']+)/i, "$1" +
-                        blobArray[j][1] + '" data-kiwixhref="$2');//Store the original URL for later use
+                    testBlob = match && /blob:/i.test(blobArray[j][1]) ? blobArray[j][1] : blobArray[i]; //Whoa!!! Steady on!
+                    resultsArray[i] = cssArray[i].replace(/(href\s*=\s*["'])([^"']+)/i, "$1" +
+                        testBlob + '" data-kiwixhref="$2');//Store the original URL for later use
                         //DEV note: do not attempt to add onload="URL.revokeObjectURL...)": see [kiwix.js #284]
                     //DEBUG:
-                        //console.log("BLOB CSS #" + i + ": " + cssArray[i] + "\nshould correspond to: " + blobArray[j][0]);
-                   }
+                        console.log("BLOB CSS #" + i + ": " + resultsArray[i] + "\nshould correspond to: " + testBlob);
                 }
-
+                cssArray = resultsArray;
                 htmlArticle = htmlArticle.replace(regexpSheetHref, ""); //Void existing stylesheets
                 var cssArray$ = "\r\n" + cssArray.join("\r\n") + "\r\n";
                 if (cssSource == "mobile") { //If user has selected mobile display mode...
