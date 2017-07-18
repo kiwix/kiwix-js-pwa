@@ -100,6 +100,11 @@ define([], function () {
     }
 
     function toDesktopCSS(html, zim, cc, cs, css) {
+        //Test custom stylesheet switching
+        var customStylesheet = '<link href="../-/s/vector.css" rel="stylesheet" type="text/css">\r\n';
+        if (customStylesheet) {
+            css = customStylesheet;
+        }
         if (cc || (zim != cs)) {
             if (/class\s*=\s*["']gallery/i.test(html) && !/gallery/i.test(css)) {
                 console.log("Inserting missing css required for gallery display [mediawiki.page.gallery.styles.css]...");
