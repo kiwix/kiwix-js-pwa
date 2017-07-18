@@ -197,6 +197,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     });
     $('input:radio[name=cssInjectionMode]').on('change', function (e) {
         params['cssSource'] = this.value;
+        document.getElementById('returntoArticle_top').innerHTML = "";
+        document.getElementById('returntoArticle_bottom').innerHTML = "";
     });
     $(document).ready(function (e) {
         // Set checkbox for cssCache and radio for cssSource
@@ -558,10 +560,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     function setLocalArchiveFromFileList(files) {
         selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
             // The archive is set : go back to home page to start searching
-
-            //TESTING
-            console.time("Time to HTML load");
-
             $("#btnHome").click();
         });
     }
@@ -780,8 +778,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     // Since late 2014, all ZIM files should use relative URLs
     var regexpImageUrl = /^(?:\.\.\/|\/)+(I\/.*)$/;
     var regexpMetadataUrl = /^(?:\.\.\/|\/)+(-\/.*)$/;
-    // This regular expression matches the href of all <link> tags containing rel="stylesheet" in raw HTML
+    // This matches the href of all <link> tags containing rel="stylesheet" in raw HTML
     var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*href\s*=\s*["'])([^"']+)(["'][^>]*>)/ig;
+     // This matches the title between <title  attrs> ... </title>
+    var regexpArticleTitle = /<title\s*[^>]*>\s*([^<]+)\s*</i;
+     // This matches the title of a Type1 Wikimedia ZIM file or any ZIM file using simple <h1 attrs....> Title </h1>
+    var regexpType1ZIMTitle = /<h1\s+[^>]*>\s*([^<]+)\s*</i;
+    // This matches the title of a mw-offliner (Type2) Wikimedia ZIM file, specifically 
+    var regexpType2ZIMTitle = /id\s*=\s*['"][^'"]*title_0[^"']*["'][^>]*>\s*([^<]+)\s*</i;
+
 
 
     /**
@@ -875,7 +880,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                         testBlob + '" data-kiwixhref="$2');//Store the original URL for later use
                         //DEV note: do not attempt to add onload="URL.revokeObjectURL...)": see [kiwix.js #284]
                     //DEBUG:
-                        console.log("BLOB CSS #" + i + ": " + resultsArray[i] + "\nshould correspond to: " + testBlob);
+                        //console.log("BLOB CSS #" + i + ": " + resultsArray[i] + "\nshould correspond to: " + testBlob);
                 }
                 cssArray = resultsArray;
                 htmlArticle = htmlArticle.replace(regexpSheetHref, ""); //Void existing stylesheets
@@ -894,21 +899,34 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     //Reduce the hard-coded top padding to 0
                     htmlArticle = htmlArticle.replace(/(<div\s+[^>]*mw-body[^>]+style[^>]+padding\s*:\s*)1em/i, "$10 1em");
                 }
+                //For all cases, neutralize the toggleOpenSection javascript that causes a crash - TODO: make it work for mobile style
+                htmlArticle = htmlArticle.replace(/onclick\s*=\s*["']toggleOpenSection[^"']*['"]\s*/ig, "");
                 htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
                 console.log("All CSS resolved");
+                //$("#progressMessage").html(""); //Void progress messages
                 injectHTML(htmlArticle); //Pass the revised HTML to the image and JS subroutine...
             } else {
+               uiUtil.poll("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...");
                 //console.log("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...")
             }
         }
     //End of preload stylesheets code
 
         function injectHTML(htmlContent) {
+            //Void progress message
+            uiUtil.clear(); //Void progress messages
             $("#readingArticle").hide();
             $("#articleContent").show();
             // Scroll the iframe to its top
             $("#articleContent").contents().scrollTop(0);
             $('#articleContent').contents().find('body').html(htmlContent);
+            //Try to match Title
+            var articleTitle = htmlContent.match(regexpArticleTitle); 
+            //If not found try to match mw-offliner ZIM format
+            var articleTitle = articleTitle ? articleTitle[1] : htmlContent.match(regexpType2ZIMTitle);
+            //If not found, use "Article"
+            articleTitle = articleTitle ? articleTitle[1] : "Article";
+            uiUtil.makeReturnLink(articleTitle);
 
             // If the ServiceWorker is not useable, we need to fallback to parse the DOM
             // to inject math images, and replace some links with javascript calls
@@ -1090,7 +1108,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     }
     
     function goToMainArticle() {
-        selectedArchive.getMainPageDirEntry(function(dirEntry) {
+
+        //TESTING
+        console.time("Time to HTML load");
+
+        selectedArchive.getMainPageDirEntry(function (dirEntry) {
             if (dirEntry === null || dirEntry === undefined) {
                 console.error("Error finding main article.");
             }

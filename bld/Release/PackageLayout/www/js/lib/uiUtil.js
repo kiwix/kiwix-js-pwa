@@ -53,11 +53,30 @@ define([], function() {
         }
     }
 
+    function makeReturnLink(title) {
+        var link = '<h4><a href="#" onclick="$(\'#configuration\').hide();$(\'#formArticleSearch\').show();' +
+            '$(\'#articleContent\').show();$(\'#liHomeNav\').attr(\'class\',\'active\');$(\'#liConfigureNav\').attr(\'class\', \'\');' +
+            '$(\'#liAboutNav\').attr(\'class\', \'\');">&lt;&lt; Return to ' + title + '</a></h4>';
+        document.getElementById("returntoArticle_top").innerHTML = link;
+        document.getElementById("returntoArticle_bottom").innerHTML = link;
+    }
+
+    function poll(msg) {
+        window.document.getElementById("progressMessage").innerHTML += '<p>' + msg + '</p>';
+    }
+
+    function clear(msg) {
+        window.document.getElementById("progressMessage").innerHTML = "<p></p>";
+    }
+
     /**
      * Functions and classes exposed by this module
      */
     return {
         feedNodeWithBlob: feedNodeWithBlob,
-        removeUrlParameters: removeUrlParameters
+        removeUrlParameters: removeUrlParameters,
+        makeReturnLink: makeReturnLink,
+        poll: poll,
+        clear: clear
     };
 });
