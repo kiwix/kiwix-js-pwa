@@ -28,7 +28,7 @@ define([], function () {
     function filterCSS(zl, zim, cc, cs, i) {
         var rtnFunction = "injectCSS";
         if ((zim != cs) && zl.match(/(-\/s\/style\.css)|minerva|mobile|parsoid/i)) { //If it's the wrong ZIM type and style matches main styles...
-            if (zl.match(/(-\/s\/style\.css)|(minerva)/i)) { //If it matches one of the required styles...
+            if (zl.match(/(-\/s\/style\.css)|(minerva)|style-mobile\.css/i)) { //If it matches one of the required styles...
                 zl = (cs == "mobile") ? "../-/s/style-mobile.css" : "../-/s/style.css"; //Take it from cache, because not in the ZIM
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem because style is not in ZIM" +
                     "\nbut your display options require a " + cs + " style");
@@ -52,6 +52,7 @@ define([], function () {
                     zl.match(/-\/s\/css_modules\/content\.parsoid\.css/i) ||
                     zl.match(/-\/s\/css_modules\/inserted_style_mobile\.css/i) ||
                     zl.match(/-\/s\/css_modules\/mobile\.css/i) ||
+                    zl.match(/-\/s\/style-mobile\.css/i) ||
                     zl.match(/-\/s\/css_modules\/skins\.minerva\.base\.reset\|skins\.minerva\.content\.styles\|ext\.cite\.style\|mediawiki\.page\.gallery\.styles\|mobile\.app\.pagestyles\.android\|mediawiki\.skinning\.content\.parsoid\.css/i)
                 )) {
                 zl = zl.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename - but next line renders this redundant in current implementation)
