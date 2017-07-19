@@ -185,6 +185,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     });
     $('input:radio[name=contentInjectionMode]').on('change', function(e) {
         if (checkWarnServiceWorkerMode(this.value)) {
+            document.getElementById('returntoArticle_top').innerHTML = "";
+            document.getElementById('returntoArticle_bottom').innerHTML = "";
             // Do the necessary to enable or disable the Service Worker
             setContentInjectionMode(this.value);
         }
@@ -807,7 +809,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
 
         //Fast-replace img src with data-kiwixsrc and hide image [kiwix-js #272]
         htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)src(\s*=)/ig,
-            "$1style=\"display: none;\" onload=\"this.style.display='inline'\" data-kiwixsrc$2");
+            "$1style=\"display: none;\" onload=\"this.style.display='inline';\" data-kiwixsrc$2");
 
      //Preload stylesheets [kiwix-js @149]
         //Set up blobArray of promises
