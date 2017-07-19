@@ -185,6 +185,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     });
     $('input:radio[name=contentInjectionMode]').on('change', function(e) {
         if (checkWarnServiceWorkerMode(this.value)) {
+            document.getElementById('returntoArticle_top').innerHTML = "";
+            document.getElementById('returntoArticle_bottom').innerHTML = "";
             // Do the necessary to enable or disable the Service Worker
             setContentInjectionMode(this.value);
         }
