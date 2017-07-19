@@ -783,11 +783,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     // This matches the href of all <link> tags containing rel="stylesheet" in raw HTML
     var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*href\s*=\s*["'])([^"']+)(["'][^>]*>)/ig;
      // This matches the title between <title  attrs> ... </title>
-    var regexpArticleTitle = /<title\s*[^>]*>\s*([^<]+)\s*</i;
+    //var regexpArticleTitle = /<title\s*[^>]*>\s*([^<]+)\s*</i;
      // This matches the title of a Type1 Wikimedia ZIM file or any ZIM file using simple <h1 attrs....> Title </h1>
-    var regexpType1ZIMTitle = /<h1\s+[^>]*>\s*([^<]+)\s*</i;
+    //var regexpType1ZIMTitle = /<h1\s+[^>]*>\s*([^<]+)\s*</i;
     // This matches the title of a mw-offliner (Type2) Wikimedia ZIM file, specifically 
-    var regexpType2ZIMTitle = /id\s*=\s*['"][^'"]*title_0[^"']*["'][^>]*>\s*([^<]+)\s*</i;
+    //var regexpType2ZIMTitle = /id\s*=\s*['"][^'"]*title_0[^"']*["'][^>]*>\s*([^<]+)\s*</i;
 
 
 
@@ -923,12 +923,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
             $("#articleContent").contents().scrollTop(0);
             $('#articleContent').contents().find('body').html(htmlContent);
             //Try to match Title
-            var articleTitle = htmlContent.match(regexpArticleTitle); 
+            //var articleTitle = htmlContent.match(regexpArticleTitle); 
             //If not found try to match mw-offliner ZIM format
-            var articleTitle = articleTitle ? articleTitle[1] : htmlContent.match(regexpType2ZIMTitle);
+            //var articleTitle = articleTitle ? articleTitle[1] : htmlContent.match(regexpType2ZIMTitle);
             //If not found, use "Article"
-            articleTitle = articleTitle ? articleTitle[1] : "Article";
-            uiUtil.makeReturnLink(articleTitle);
+            //articleTitle = articleTitle ? articleTitle[1] : "Article";
+        uiUtil.makeReturnLink(dirEntry); //[kiwix-js #127]
 
             // If the ServiceWorker is not useable, we need to fallback to parse the DOM
             // to inject math images, and replace some links with javascript calls
