@@ -32,7 +32,7 @@
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-07-18T23:06:18.797</Modified>
+      <Modified>2017-07-19T09:49:40.605</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -283,79 +283,79 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\img\icons\kiwix-60.png">
       <PackagePath>www\img\icons\kiwix-60.png</PackagePath>
-      <Modified>2017-06-16T16:31:46.885</Modified>
+      <Modified>2017-06-24T12:12:19.003</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\img\Kiwix_icon_transparent_600x600.png">
       <PackagePath>www\img\Kiwix_icon_transparent_600x600.png</PackagePath>
-      <Modified>2017-06-16T16:31:46.863</Modified>
+      <Modified>2017-06-24T12:12:18.996</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\I\s\Checker-16x16.png">
       <PackagePath>www\I\s\Checker-16x16.png</PackagePath>
-      <Modified>2017-07-17T08:03:25.210</Modified>
+      <Modified>2017-07-19T09:47:26.577</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\I\s\cog-sprite.png">
       <PackagePath>www\I\s\cog-sprite.png</PackagePath>
-      <Modified>2017-07-17T08:05:58.802</Modified>
+      <Modified>2017-07-19T09:47:26.579</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\I\s\magnify-clip-ltr.png">
       <PackagePath>www\I\s\magnify-clip-ltr.png</PackagePath>
-      <Modified>2017-07-17T08:09:36.141</Modified>
+      <Modified>2017-07-19T09:47:26.580</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\content.parsoid.css">
       <PackagePath>www\-\s\css_modules\content.parsoid.css</PackagePath>
-      <Modified>2017-07-12T09:47:51.033</Modified>
+      <Modified>2017-07-19T09:47:26.508</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.cite.a11y.css">
       <PackagePath>www\-\s\css_modules\ext.cite.a11y.css</PackagePath>
-      <Modified>2017-07-12T09:48:15.112</Modified>
+      <Modified>2017-07-19T09:47:26.508</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.cite.styles.css">
       <PackagePath>www\-\s\css_modules\ext.cite.styles.css</PackagePath>
-      <Modified>2017-07-12T09:48:32.068</Modified>
+      <Modified>2017-07-19T09:47:26.544</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.scribunto.logs.css">
       <PackagePath>www\-\s\css_modules\ext.scribunto.logs.css</PackagePath>
-      <Modified>2017-07-12T09:49:04.852</Modified>
+      <Modified>2017-07-19T09:47:26.544</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.timeline.styles.css">
       <PackagePath>www\-\s\css_modules\ext.timeline.styles.css</PackagePath>
-      <Modified>2017-07-12T09:39:44.300</Modified>
+      <Modified>2017-07-19T09:47:26.544</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\inserted_style_mobile.css">
       <PackagePath>www\-\s\css_modules\inserted_style_mobile.css</PackagePath>
-      <Modified>2017-07-15T14:24:54.772</Modified>
+      <Modified>2017-07-19T09:47:26.553</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mediawiki.page.gallery.styles.css">
       <PackagePath>www\-\s\css_modules\mediawiki.page.gallery.styles.css</PackagePath>
-      <Modified>2017-07-12T09:41:05.074</Modified>
+      <Modified>2017-07-19T09:47:26.553</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mediawiki.toc.css">
       <PackagePath>www\-\s\css_modules\mediawiki.toc.css</PackagePath>
-      <Modified>2017-07-12T09:42:20.179</Modified>
+      <Modified>2017-07-19T09:47:26.553</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mobile.css">
       <PackagePath>www\-\s\css_modules\mobile.css</PackagePath>
-      <Modified>2017-07-13T17:29:22.676</Modified>
+      <Modified>2017-07-19T09:47:26.556</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\style-mobile.css">
       <PackagePath>www\-\s\style-mobile.css</PackagePath>
-      <Modified>2017-07-15T14:49:35.260</Modified>
+      <Modified>2017-07-19T09:47:26.560</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\style.css">
       <PackagePath>www\-\s\style.css</PackagePath>
-      <Modified>2017-07-17T09:23:37.605</Modified>
+      <Modified>2017-07-19T09:47:26.570</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\vector.css">
       <PackagePath>www\-\s\vector.css</PackagePath>
-      <Modified>2017-07-18T08:09:35.600</Modified>
+      <Modified>2017-07-19T09:47:26.574</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\css\app.css">
       <PackagePath>www\css\app.css</PackagePath>
-      <Modified>2017-06-19T05:52:18.779</Modified>
+      <Modified>2017-07-19T09:47:26.580</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\css\bootstrap-theme.css">
       <PackagePath>www\css\bootstrap-theme.css</PackagePath>
-      <Modified>2017-07-15T15:03:16.780</Modified>
+      <Modified>2017-07-19T09:47:26.588</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\css\bootstrap.css">
       <PackagePath>www\css\bootstrap.css</PackagePath>
@@ -363,124 +363,124 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\A\dummyArticle.html">
       <PackagePath>www\A\dummyArticle.html</PackagePath>
-      <Modified>2017-06-16T16:31:46.800</Modified>
+      <Modified>2017-07-19T09:47:26.576</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\index.html">
       <PackagePath>www\index.html</PackagePath>
-      <Modified>2017-07-18T22:56:53.389</Modified>
+      <Modified>2017-07-19T09:47:26.696</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\favicon.ico">
       <PackagePath>www\favicon.ico</PackagePath>
-      <Modified>2017-06-16T16:31:46.819</Modified>
+      <Modified>2017-06-24T12:12:18.959</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\fonts\glyphicons-halflings-regular.eot">
       <PackagePath>www\fonts\glyphicons-halflings-regular.eot</PackagePath>
-      <Modified>2017-06-16T16:31:46.830</Modified>
+      <Modified>2017-06-24T12:12:18.970</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\fonts\glyphicons-halflings-regular.svg">
       <PackagePath>www\fonts\glyphicons-halflings-regular.svg</PackagePath>
-      <Modified>2017-06-16T16:31:46.836</Modified>
+      <Modified>2017-06-24T12:12:18.976</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\fonts\glyphicons-halflings-regular.ttf">
       <PackagePath>www\fonts\glyphicons-halflings-regular.ttf</PackagePath>
-      <Modified>2017-06-16T16:31:46.841</Modified>
+      <Modified>2017-06-24T12:12:18.982</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\fonts\glyphicons-halflings-regular.woff">
       <PackagePath>www\fonts\glyphicons-halflings-regular.woff</PackagePath>
-      <Modified>2017-06-16T16:31:46.845</Modified>
+      <Modified>2017-06-24T12:12:18.986</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\fonts\glyphicons-halflings-regular.woff2">
       <PackagePath>www\fonts\glyphicons-halflings-regular.woff2</PackagePath>
-      <Modified>2017-06-16T16:31:46.850</Modified>
+      <Modified>2017-06-24T12:12:18.995</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\img\spinner.gif">
       <PackagePath>www\img\spinner.gif</PackagePath>
-      <Modified>2017-06-16T16:31:46.889</Modified>
+      <Modified>2017-06-24T12:12:19.006</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\I\s\Icons-mini-file_acrobat.gif">
       <PackagePath>www\I\s\Icons-mini-file_acrobat.gif</PackagePath>
-      <Modified>2017-07-17T07:24:54.741</Modified>
+      <Modified>2017-07-19T09:47:26.578</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\I\s\spinner.gif">
       <PackagePath>www\I\s\spinner.gif</PackagePath>
-      <Modified>2017-07-17T08:11:34.467</Modified>
+      <Modified>2017-07-19T09:47:26.580</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-07-18T22:49:14.425</Modified>
+      <Modified>2017-07-19T09:49:27.424</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
-      <Modified>2017-07-15T09:57:19.263</Modified>
+      <Modified>2017-07-19T09:47:26.736</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\abstractFilesystemAccess.js">
       <PackagePath>www\js\lib\abstractFilesystemAccess.js</PackagePath>
-      <Modified>2017-06-16T16:31:46.929</Modified>
+      <Modified>2017-07-19T09:47:26.740</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\bootstrap.min.js">
       <PackagePath>www\js\lib\bootstrap.min.js</PackagePath>
-      <Modified>2017-06-25T20:11:47.640</Modified>
+      <Modified>2017-07-19T09:47:26.792</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\cookies.js">
       <PackagePath>www\js\lib\cookies.js</PackagePath>
-      <Modified>2017-06-16T16:31:46.977</Modified>
+      <Modified>2017-07-19T09:47:26.796</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\jquery-3.2.1.slim.js">
       <PackagePath>www\js\lib\jquery-3.2.1.slim.js</PackagePath>
-      <Modified>2017-06-25T20:11:13.372</Modified>
+      <Modified>2017-07-10T18:00:56.198</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\q.js">
       <PackagePath>www\js\lib\q.js</PackagePath>
-      <Modified>2017-06-16T16:31:47.129</Modified>
+      <Modified>2017-07-19T09:47:27.642</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\require.js">
       <PackagePath>www\js\lib\require.js</PackagePath>
-      <Modified>2017-06-25T20:12:30.923</Modified>
+      <Modified>2017-07-19T09:47:27.978</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\transformStyles.js">
       <PackagePath>www\js\lib\transformStyles.js</PackagePath>
-      <Modified>2017-07-18T23:06:05.495</Modified>
+      <Modified>2017-07-19T09:47:28.172</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\uiUtil.js">
       <PackagePath>www\js\lib\uiUtil.js</PackagePath>
-      <Modified>2017-07-18T23:01:42.491</Modified>
+      <Modified>2017-07-19T09:47:28.173</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\utf8.js">
       <PackagePath>www\js\lib\utf8.js</PackagePath>
-      <Modified>2017-06-16T16:31:47.177</Modified>
+      <Modified>2017-07-19T09:47:28.175</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\util.js">
       <PackagePath>www\js\lib\util.js</PackagePath>
-      <Modified>2017-07-11T05:58:27.374</Modified>
+      <Modified>2017-07-19T09:47:28.203</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\xzdec.js">
       <PackagePath>www\js\lib\xzdec.js</PackagePath>
-      <Modified>2017-06-21T19:37:19.170</Modified>
+      <Modified>2017-07-19T09:47:28.327</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\xzdec_wrapper.js">
       <PackagePath>www\js\lib\xzdec_wrapper.js</PackagePath>
-      <Modified>2017-06-16T16:31:47.327</Modified>
+      <Modified>2017-07-19T09:47:28.331</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\zimArchive.js">
       <PackagePath>www\js\lib\zimArchive.js</PackagePath>
-      <Modified>2017-07-17T12:20:43.323</Modified>
+      <Modified>2017-07-19T09:47:28.369</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\zimArchiveLoader.js">
       <PackagePath>www\js\lib\zimArchiveLoader.js</PackagePath>
-      <Modified>2017-06-16T16:31:47.356</Modified>
+      <Modified>2017-07-19T09:47:28.371</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\zimDirEntry.js">
       <PackagePath>www\js\lib\zimDirEntry.js</PackagePath>
-      <Modified>2017-06-16T16:31:47.357</Modified>
+      <Modified>2017-07-19T09:47:28.373</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\zimfile.js">
       <PackagePath>www\js\lib\zimfile.js</PackagePath>
-      <Modified>2017-07-11T05:58:27.436</Modified>
+      <Modified>2017-07-19T09:47:28.403</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-07-18T08:36:18.282</Modified>
+      <Modified>2017-07-19T09:47:26.504</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>
