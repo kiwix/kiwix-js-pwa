@@ -32,7 +32,7 @@
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-07-19T09:49:40.605</Modified>
+      <Modified>2017-07-19T16:00:03.995</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -407,7 +407,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-07-19T09:49:27.424</Modified>
+      <Modified>2017-07-19T10:03:17.883</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
@@ -443,7 +443,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\uiUtil.js">
       <PackagePath>www\js\lib\uiUtil.js</PackagePath>
-      <Modified>2017-07-19T09:47:28.173</Modified>
+      <Modified>2017-07-19T10:03:58.143</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\utf8.js">
       <PackagePath>www\js\lib\utf8.js</PackagePath>

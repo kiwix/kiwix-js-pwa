@@ -22,7 +22,8 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
-define([], function () {
+
+define(['uiUtil'], function (uiUtil) {
 
     /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i]  */
     function filterCSS(zl, zim, cc, cs, i) {
@@ -32,9 +33,11 @@ define([], function () {
                 zl = (cs == "mobile") ? "../-/s/style-mobile.css" : "../-/s/style.css"; //Take it from cache, because not in the ZIM
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem because style is not in ZIM" +
                     "\nbut your display options require a " + cs + " style");
+                uiUtil.poll("Matched [" + zl.substring(0, 30) + "] from cache" + " because your display options require a " + cs + " style...");
             }
             if (cs == "desktop" && zl.match(/minerva|mobile|parsoid/)) { //If user selected desktop style and style is one of the mobile styles
                 console.log("Voiding #" + i + " [" + zl + "] from document header \nbecause your display options require a desktop style");
+                uiUtil.poll("Voiding [" + zl.substring(0, 30) + "] because your display options require a " + cs + " style...");
                 zl = "#"; //Void these mobile styles
             }
             //injectCSS();
@@ -60,13 +63,14 @@ define([], function () {
                     zl = (cs == "mobile") ? "../-/s/style-mobile.css" : "../-/s/style.css";
                 }
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem");
+                uiUtil.poll("Matched #" + i + " [" + zl.substring(0, 30) + "] from local filesystem");
                 //injectCSS();
                 return { zl: zl, rtnFunction: rtnFunction };
             } else { //Try to get the stylesheet from the ZIM file unless it's the wrong ZIM type
                 zl = zl.match(/^(?:\.\.\/|\/)+(-\/.*)$/)[1]; //Remove the directory path
                 console.log("Attempting to resolve CSS link #" + i + " [" + zl + "] from ZIM file..." +
                     (cc ? "\n(Consider adding file #" + i + " to the local filesystem)" : ""));
-                //resolveCSS(zl, i); //Pass link and index
+                uiUtil.poll("Attempting to resolve CSS link #" + i + " [" + zl.substring(0, 30) + "] from ZIM file...");
                 rtnFunction = "resolveCSS";
                 return { zl: zl, rtnFunction: rtnFunction };
             }
@@ -83,6 +87,7 @@ define([], function () {
         }
         if (cc || (zim == "desktop")) { //If user requested cached styles OR the ZIM does not contain mobile styles
             console.log(zim == "desktop" ? "Transforming display style to mobile..." : "Optimizing cached styles for mobile display...");
+            uiUtil.poll("desktop" ? "Transforming display style to mobile..." : "Optimizing cached styles for mobile display...");
             //Allow images to float right or left
             html = html.replace(/class\s*=\s*["']\s*thumb\s+tright\s*["']\s*/ig, 'style="float: right; clear: right; margin-left: 1.4em;"');
             html = html.replace(/class\s*=\s*["']\s*thumb\s+tleft\s*["']\s*/ig, 'style="float: left; clear: left; margin-right: 1.4em;"');
@@ -100,19 +105,16 @@ define([], function () {
     }
 
     function toDesktopCSS(html, zim, cc, cs, css) {
-        //Test custom stylesheet switching
-        var customStylesheet = '<link href="../-/s/vector.css" rel="stylesheet" type="text/css">\r\n';
-        if (customStylesheet) {
-            css = customStylesheet;
-        }
         if (cc || (zim != cs)) {
             if (/class\s*=\s*["']gallery/i.test(html) && !/gallery/i.test(css)) {
                 console.log("Inserting missing css required for gallery display [mediawiki.page.gallery.styles.css]...");
+                uiUtil.poll("Inserting missing css required for gallery display [mediawiki.page.gallery.styles.css]...");
                 css += /-\/s\/css_modules\/mediawiki\.page\.gallery\.styles\.css/i.test(css) ? "" : '<link href="../-/s/css_modules/mediawiki.page.gallery.styles.css" rel="stylesheet" type="text/css">\r\n';
             }
         }
         if (cc || (zim == "mobile")) { //If user requested cached styles OR the ZIM does not contain desktop styles
             console.log(zim == "mobile" ? "Transforming display style to desktop..." : "Optimizing cached styles for desktop display...");
+            uiUtil.poll("mobile" ? "Transforming display style to desktop..." : "Optimizing cached styles for desktop display...");
             //If it's in mobile position, move info-box above lead paragraph like on Wikipedia desktop
             //html = html.replace(/((?:<span\s*>\s*)?<p\b[^>]*>(?:(?=([^<]+))\2|<(?!p\b[^>]*>))*?<\/p>(?:<\/span\s*>)?[^<]*)([\s\S]*?)(<table\s*(?=[^>]*infobox)[\s\S]+?<\/table>)/i, "$4$3$1");
             html = zim == "mobile" ? html.replace(/((?:<span\s*>\s*)?<p\b[\s\S]+?)(<table\s*(?=[^>]*(?:infobox|vertical-navbox))[\s\S]+?<\/table>)/i, "$2\r\n$1") : html;
