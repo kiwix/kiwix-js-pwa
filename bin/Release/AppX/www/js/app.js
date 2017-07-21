@@ -40,14 +40,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
      */
     var selectedArchive = null;
 
-   /* window.document.iframe.addEventListener('DOMContentLoaded', function () {
-        
-        //TESTING
-        console.log("** Document Finished **");
-        console.timeEnd("Time to Document Ready");
-
-    });*/
-
     /**
      * Resize the IFrame height, so that it fills the whole available height in the window
      */
@@ -689,11 +681,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
      */
     function handleTitleClick(event) {
 
-        //TESTING//
+        /*/TESTING//
         console.log("Initiating HTML load...");
         console.time("Time to HTML load");
         console.log("Initiating Document Ready timer...");
-        console.time("Time to Document Ready");
+        console.time("Time to Document Ready"); */
 
         var dirEntryId = event.target.getAttribute("dirEntryId");
         $("#articleList").empty();
@@ -738,6 +730,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
             selectedArchive.resolveRedirect(dirEntry, readArticle);
         }
         else {
+
+            //TESTING//
+            console.log("Initiating HTML load...");
+            console.time("Time to HTML load");
+            console.log("Initiating Document Ready timer...");
+            console.time("Time to Document Ready");
+
             selectedArchive.readArticle(dirEntry, displayArticleInForm);
         }
     }
@@ -880,7 +879,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
 
         function injectCSS() {
             if (blobArray.length === cssArray.length) { //If all promised values have been obtained
-                var resultsArray= [];
+                var resultsArray = [];
                 for (var i in cssArray) { //Put them back in the correct order
                     var match = 0;
                     for (var j in blobArray) { //Iterate the blobArray to find the matching entry
@@ -938,7 +937,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
             //var articleTitle = articleTitle ? articleTitle[1] : htmlContent.match(regexpType2ZIMTitle);
             //If not found, use "Article"
             //articleTitle = articleTitle ? articleTitle[1] : "Article";
-        uiUtil.makeReturnLink(dirEntry); //[kiwix-js #127]
+            uiUtil.makeReturnLink(dirEntry); //[kiwix-js #127]
 
             // If the ServiceWorker is not useable, we need to fallback to parse the DOM
             // to inject math images, and replace some links with javascript calls
@@ -1004,33 +1003,66 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 //TESTING
                 console.log("** First Paint complete **");
                 console.timeEnd("Time to First Paint");
-                var numImages = htmlContent.match(/kiwixsrc\s*=\s*["'](?:\.\.\/|\/)+(I\/)/ig).length;
+
+                //var imageURLs = htmlContent.match(/kiwixsrc\s*=\s*["'](?:\.\.\/|\/)+(I\/)/ig);
+                //var allImagesCount = imageURLs.length; //Do you need this? Just do imageURLs.length
+                var images = $('#articleContent').contents().find('body').find('img');
                 var countImages = 0;
+                var sliceSize = 5; //DEV: Set this to desired slice size
+                var countSlices = Math.floor(images.length / (sliceSize));
+                var remainder = images.length % (sliceSize);
+                var imageSlice = {};
+                var slice$x = 0;
+                var slice$y = 0;  
+                sliceImages();
 
-                $('#articleContent').contents().find('body').find('img').each(function () {
-                    var image = $(this);
-                    // It's a standard image contained in the ZIM file
-                    // We try to find its name (from an absolute or relative URL)
-                    var imageMatch = image.attr('data-kiwixsrc').match(regexpImageUrl); //kiwix-js #272
-                    if (imageMatch) {
-                        var title = decodeURIComponent(imageMatch[1]);
-                        selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                            selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content) {
-                                // TODO : use the complete MIME-type of the image (as read from the ZIM file)
-                                uiUtil.feedNodeWithBlob(image, 'src', content, 'image');
-                                //TESTING
-                                countImages++;
-                                console.log("Extracted image " + countImages + " of " + numImages + "...");
-                                if (countImages == numImages) { console.log("** All images loaded: document ready **"); console.timeEnd("Time to Document Ready");}
-                            });
-                        }).fail(function (e) {
-                            console.error("could not find DirEntry for image:" + title, e);
-                        });
+                function sliceImages() {
+                    if ((countImages >= slice$y) && (countImages < images.length)) { //If starting loop or slice batch is complete AND we still need images for article
+                        slice$x = slice$y > 0 ? slice$x + sliceSize : 0; //Increment slice$x except at outset
+                        slice$y = slice$y + sliceSize;
+                        slice$y = slice$y > images.length ? images.length : slice$y; //If all images can be obtained in one batch, set slice$y to number of images
+                        if (slice$y + remainder === images.length) { slice$y += remainder; }
+                        console.log("About to request images # " + slice$x + " to " + slice$y + "...");
+                        imageSlice = images.slice(slice$x, slice$y);
+                        serializeImages();
                     }
-                });
+                }
 
-                /*/ Load Javascript content
-                $('#articleContent').contents().find('script').each(function () {
+                function serializeImages() {
+                //$('#articleContent').contents().find('body').find('img').each(function () {
+                    $(imageSlice).each(function () {
+                        var image = $(this);
+                        // It's a standard image contained in the ZIM file
+                        // We try to find its name (from an absolute or relative URL)
+                        var imageMatch = image.attr('data-kiwixsrc').match(regexpImageUrl); //kiwix-js #272
+                        if (imageMatch) {
+                            var title = decodeURIComponent(imageMatch[1]);
+                            selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+                                selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content) {
+                                    // TODO : use the complete MIME-type of the image (as read from the ZIM file)
+                                    uiUtil.feedNodeWithBlob(image, 'src', content, 'image');
+                                    console.log("Extracted image " + countImages + " of " + images.length + "...");
+                                    countImages++
+                                    sliceImages();
+
+                                    //TESTING
+                                    if (countImages == images.length) {
+                                        console.log("** All images extracted: document ready **");
+                                        console.timeEnd("Time to Document Ready");
+                                    }
+                                });
+                            }).fail(function (e) {
+                                console.error("could not find DirEntry for image:" + title, e);
+                                countImages++;
+                                sliceImages();
+                            });
+                        }
+                    });
+                }
+
+                // Load Javascript content
+                function loadJavascript() {
+                //$('#articleContent').contents().find('script').each(function () {
                     var script = $(this);
                     // We try to find its name (from an absolute or relative URL)
                     if (script) { var srcMatch = script.attr("src").match(regexpMetadataUrl) }
@@ -1051,13 +1083,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                             console.error("could not find DirEntry for javascript : " + title, e);
                         });
                     }
-                });*/
+                }
 
             }
         }
     }
 
-    /**
+     /**
      * Changes the URL of the browser page, so that the user might go back to it
      * 
      * @param {String} title
@@ -1126,10 +1158,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     }
     
     function goToMainArticle() {
-
-        //TESTING
-        console.time("Time to HTML load");
-
         selectedArchive.getMainPageDirEntry(function (dirEntry) {
             if (dirEntry === null || dirEntry === undefined) {
                 console.error("Error finding main article.");
