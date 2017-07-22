@@ -1008,9 +1008,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 //var allImagesCount = imageURLs.length; //Do you need this? Just do imageURLs.length
                 var images = $('#articleContent').contents().find('body').find('img');
                 var countImages = 0;
-                var sliceSize = 5; //DEV: Set this to desired slice size
-                var countSlices = Math.floor(images.length / (sliceSize));
-                var remainder = images.length % (sliceSize);
+            //DEV: firstSliceSize determines maximum number of images loaded above the fold (should be <= 10)
+                var firstSliceSize = 10; //Smaller numbers give faster subjective experience, but too small may delay load of visible images above the fold
+            //DEV: sliceSize determines minimum batch size of background image extraction for remaining images
+                var sliceSize = 200; //Larger numbers marginally increase speed of background extraction (NB 200 will extract up to 399 in one go)
+                var remainder = (images.length - firstSliceSize) % (sliceSize);
                 var imageSlice = {};
                 var slice$x = 0;
                 var slice$y = 0;  
@@ -1018,11 +1020,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
 
                 function sliceImages() {
                     if ((countImages >= slice$y) && (countImages < images.length)) { //If starting loop or slice batch is complete AND we still need images for article
-                        slice$x = slice$y > 0 ? slice$x + sliceSize : 0; //Increment slice$x except at outset
-                        slice$y = slice$y + sliceSize;
+                        slice$x = slice$y;
+                        slice$y = slice$y > 0 ? slice$y + sliceSize : slice$y + firstSliceSize; //Increment by standard or initial sliceSize 
                         slice$y = slice$y > images.length ? images.length : slice$y; //If all images can be obtained in one batch, set slice$y to number of images
-                        if (slice$y + remainder === images.length) { slice$y += remainder; }
-                        console.log("About to request images # " + slice$x + " to " + slice$y + "...");
+                        if (slice$x > 0 && (slice$y + remainder === images.length)) { slice$y += remainder; } //Last batch should be increased to include any remainder
+                        console.log("** About to request images # " + (slice$x + 1) + " to " + slice$y + "...");
                         imageSlice = images.slice(slice$x, slice$y);
                         serializeImages();
                     }
@@ -1041,7 +1043,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                                 selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content) {
                                     // TODO : use the complete MIME-type of the image (as read from the ZIM file)
                                     uiUtil.feedNodeWithBlob(image, 'src', content, 'image');
-                                    console.log("Extracted image " + countImages + " of " + images.length + "...");
+                                    console.log("Extracted image " + (countImages + 1) + " of " + images.length + "...");
                                     countImages++
                                     sliceImages();
 
