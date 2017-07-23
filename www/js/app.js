@@ -1005,40 +1005,55 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 console.timeEnd("Time to First Paint");
 
                 //var imageURLs = htmlContent.match(/kiwixsrc\s*=\s*["'](?:\.\.\/|\/)+(I\/)/ig);
-                //var allImagesCount = imageURLs.length; //Do you need this? Just do imageURLs.length
                 var images = $('#articleContent').contents().find('body').find('img');
                 var countImages = 0;
             //DEV: firstSliceSize determines maximum number of images loaded above the fold (should be <= 10)
-                var firstSliceSize = 10; //Smaller numbers give faster subjective experience, but too small may delay load of visible images above the fold
+                //Smaller numbers give faster subjective experience, but too small may delay load of visible images above the fold
+                var firstSliceSize = 10; 
             //DEV: sliceSize determines minimum batch size of background image extraction for remaining images
-                var sliceSize = 200; //Larger numbers marginally increase speed of background extraction (NB 200 will extract up to 399 in one go)
+                //Larger numbers marginally increase speed of background extraction but take longer for directory lookup and conflict with user scrolling
+                var sliceSize = 20;
                 var remainder = (images.length - firstSliceSize) % (sliceSize);
                 var imageSlice = {};
                 var slice$x = 0;
                 var slice$y = 0;
                 var windowScroll = false;
-                sliceImages();
-
+                if (images) { //If there are images in the article, set up a listener function for onscroll event
+                    if (images.length > firstSliceSize) {
+                        $("#articleContent").contents().on("scroll", function () {
+                            if (windowScroll) { //Ensure event doesn't fire multiple times
+                                windowScroll = false; //Indicate we no longer need to delay execution because user has scrolled
+                                sliceImages();
+                            }
+                        });
+                    }
+                    sliceImages();
+                }
+                
+                //Loads images in batches or "slices" according to firstSliceSize and sliceSize parameters set above
+                //Slices after firstSlice are delayed until the user scrolls the iframe window
                 function sliceImages() {
-                    if ((countImages >= slice$y) && (countImages < images.length)) { //If starting loop or slice batch is complete AND we still need images for article
+                    //If starting loop or slice batch is complete AND we still need images for article
+                    if ((countImages >= slice$y) && (countImages < images.length)) {
                         if (!windowScroll) { //If we haven't requested the next loop to be on scroll
                             slice$x = slice$y;
                             slice$y = slice$y > 0 ? slice$y + sliceSize : slice$y + firstSliceSize; //Increment by standard or initial sliceSize 
-                            slice$y = slice$y > images.length ? images.length : slice$y; //If all images can be obtained in one batch, set slice$y to number of images
-                            if (slice$x > 0 && (slice$y + remainder === images.length)) { slice$y += remainder; } //Last batch should be increased to include any remainder
-                            console.log("** About to request images # " + (slice$x + 1) + " to " + slice$y + "...");
+                             //If all images can be obtained in one batch, set slice$y to number of images
+                            slice$y = slice$y > images.length ? images.length : slice$y;
+                             //Last batch should be increased to include any remainder
+                            if (slice$x > 0 && (slice$y + remainder === images.length)) { slice$y += remainder; }
+                            console.log("Requesting images # " + (slice$x + 1) + " to " + slice$y + "...");
                             imageSlice = images.slice(slice$x, slice$y);
                             windowScroll = true; //Ensure next loop gets delayed until a scroll event occurs
                             serializeImages();
                         } else {
-                            $("#articleContent").contents().on("scroll", function () {
-                                if (windowScroll) { //Ensure event doesn't fire multiple times
-                                    windowScroll = false; //Indicate we no longer need to delay execution because user has scrolled
-                                    sliceImages();
-                                }
-                            });
+                            console.log("** Waiting for user to scroll the window...");
                         }
-                        if (!windowScroll) { $("#articleContent").contents().off('scroll'); }
+                    } else { //All images requested, so Unload the scroll listener
+                        if (countImages == images.length) {
+                            console.log("Unloading scroll listener");
+                            $("#articleContent").contents().off('scroll');
+                        }
                     }
                 }
 
