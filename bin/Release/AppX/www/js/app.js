@@ -1021,7 +1021,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 if (images) { //If there are images in the article, set up a listener function for onscroll event
                     if (images.length > firstSliceSize) {
                         $("#articleContent").contents().on("scroll", function () {
-                            if (windowScroll) { //Ensure event doesn't fire multiple times
+                            //Ensure event doesn't fire multiple times and waits for previous slice to be retrieved
+                            if (windowScroll && countImages == slice$y) {
                                 windowScroll = false; //Indicate we no longer need to delay execution because user has scrolled
                                 sliceImages();
                             }
@@ -1029,9 +1030,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     }
                     sliceImages();
                 }
-                
-                //Loads images in batches or "slices" according to firstSliceSize and sliceSize parameters set above
-                //Slices after firstSlice are delayed until the user scrolls the iframe window
+
+                /**
+                * Loads images in batches or "slices" according to firstSliceSize and sliceSize parameters set above
+                * Slices after firstSlice are delayed until the user scrolls the iframe window
+                **/
                 function sliceImages() {
                     //If starting loop or slice batch is complete AND we still need images for article
                     if ((countImages >= slice$y) && (countImages < images.length)) {
@@ -1044,7 +1047,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                             if (slice$x > 0 && (slice$y + remainder === images.length)) { slice$y += remainder; }
                             console.log("Requesting images # " + (slice$x + 1) + " to " + slice$y + "...");
                             imageSlice = images.slice(slice$x, slice$y);
-                            windowScroll = true; //Ensure next loop gets delayed until a scroll event occurs
                             serializeImages();
                         } else {
                             console.log("** Waiting for user to scroll the window...");
@@ -1069,19 +1071,31 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                                 selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content) {
                                     // TODO : use the complete MIME-type of the image (as read from the ZIM file)
                                     uiUtil.feedNodeWithBlob(image, 'src', content, 'image');
-                                    console.log("Extracted image " + (countImages + 1) + " of " + images.length + "...");
                                     countImages++
-                                    sliceImages();
 
-                                    //TESTING
-                                    if (countImages == images.length) {
-                                        console.log("** All images extracted: document ready **");
+                                //TESTING
+                                    console.log("Extracted image " + (countImages) + " of " + images.length + "...");
+                                    if (countImages == firstSliceSize) {
+                                        console.log("** First image slice extracted: document ready **");
                                         console.timeEnd("Time to Document Ready");
+                                        console.log("");
                                     }
+                                    if (countImages == images.length) {
+                                        console.log("** All images extracted **");
+                                    }
+                                //END TESTING
+
+                                    if (countImages == slice$y) {
+                                        windowScroll = true; //Once slice is complete, delay the loop
+                                    }
+                                    sliceImages();
                                 });
                             }).fail(function (e) {
-                                console.error("could not find DirEntry for image:" + title, e);
+                                console.error("Could not find DirEntry for image:" + title, e);
                                 countImages++;
+                                if (countImages == slice$y) {
+                                    windowScroll = true; //Once slice is complete, delay the loop
+                                }
                                 sliceImages();
                             });
                         }
