@@ -1015,23 +1015,34 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 var remainder = (images.length - firstSliceSize) % (sliceSize);
                 var imageSlice = {};
                 var slice$x = 0;
-                var slice$y = 0;  
+                var slice$y = 0;
+                var windowScroll = false;
                 sliceImages();
 
                 function sliceImages() {
                     if ((countImages >= slice$y) && (countImages < images.length)) { //If starting loop or slice batch is complete AND we still need images for article
-                        slice$x = slice$y;
-                        slice$y = slice$y > 0 ? slice$y + sliceSize : slice$y + firstSliceSize; //Increment by standard or initial sliceSize 
-                        slice$y = slice$y > images.length ? images.length : slice$y; //If all images can be obtained in one batch, set slice$y to number of images
-                        if (slice$x > 0 && (slice$y + remainder === images.length)) { slice$y += remainder; } //Last batch should be increased to include any remainder
-                        console.log("** About to request images # " + (slice$x + 1) + " to " + slice$y + "...");
-                        imageSlice = images.slice(slice$x, slice$y);
-                        serializeImages();
+                        if (!windowScroll) { //If we haven't requested the next loop to be on scroll
+                            slice$x = slice$y;
+                            slice$y = slice$y > 0 ? slice$y + sliceSize : slice$y + firstSliceSize; //Increment by standard or initial sliceSize 
+                            slice$y = slice$y > images.length ? images.length : slice$y; //If all images can be obtained in one batch, set slice$y to number of images
+                            if (slice$x > 0 && (slice$y + remainder === images.length)) { slice$y += remainder; } //Last batch should be increased to include any remainder
+                            console.log("** About to request images # " + (slice$x + 1) + " to " + slice$y + "...");
+                            imageSlice = images.slice(slice$x, slice$y);
+                            windowScroll = true; //Ensure next loop gets delayed until a scroll event occurs
+                            serializeImages();
+                        } else {
+                            $("#articleContent").contents().on("scroll", function () {
+                                if (windowScroll) { //Ensure event doesn't fire multiple times
+                                    windowScroll = false; //Indicate we no longer need to delay execution because user has scrolled
+                                    sliceImages();
+                                }
+                            });
+                        }
+                        if (!windowScroll) { $("#articleContent").contents().off('scroll'); }
                     }
                 }
 
                 function serializeImages() {
-                //$('#articleContent').contents().find('body').find('img').each(function () {
                     $(imageSlice).each(function () {
                         var image = $(this);
                         // It's a standard image contained in the ZIM file
