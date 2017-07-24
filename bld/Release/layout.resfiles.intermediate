@@ -51,6 +51,9 @@ images\Wide310x150Logo.scale-400.png
 www\-\s\css_modules\content.parsoid.css
 www\-\s\css_modules\ext.cite.a11y.css
 www\-\s\css_modules\ext.cite.styles.css
+www\-\s\css_modules\ext.kartographer.frame.css
+www\-\s\css_modules\ext.kartographer.link.css
+www\-\s\css_modules\ext.kartographer.style.css
 www\-\s\css_modules\ext.scribunto.logs.css
 www\-\s\css_modules\ext.timeline.styles.css
 www\-\s\css_modules\inserted_style_mobile.css
