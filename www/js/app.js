@@ -824,8 +824,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)src(\s*=)/ig, "$1data-kiwixsrc$2");
         //Ensure 24px clickable image height so user can request images by clicking [kiwix-js #173]
         htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)height(\s*=\s*)/ig,
-            '$1height="24" onload="this.height = this.getAttribute(\'data-kiwixheight\');" ' +
-            'style="background-color: lightyellow;" data-kiwixheight$2');
+            '$1height="24" onload="this.height = this.getAttribute(\'data-kiwixheight\'); ' +
+            'this.style.background = \'\';" style="background-color: lightyellow;" data-kiwixheight$2');
 
      //Preload stylesheets [kiwix-js @149]
         //Set up blobArray of promises
@@ -1037,7 +1037,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                         });
                     }
                     sliceImages();
-                } else { //User did not request images, so give option of loading one by one
+                } else { //User did not request images, so give option of loading one by one {kiwix-js #173]
                     if (images.length) {
                         images.each(function () {
                             // Attach an onclick function to load the image
