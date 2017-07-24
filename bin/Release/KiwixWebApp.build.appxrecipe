@@ -244,6 +244,15 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.cite.styles.css">
       <PackagePath>www\-\s\css_modules\ext.cite.styles.css</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.kartographer.frame.css">
+      <PackagePath>www\-\s\css_modules\ext.kartographer.frame.css</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.kartographer.link.css">
+      <PackagePath>www\-\s\css_modules\ext.kartographer.link.css</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.kartographer.style.css">
+      <PackagePath>www\-\s\css_modules\ext.kartographer.style.css</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.scribunto.logs.css">
       <PackagePath>www\-\s\css_modules\ext.scribunto.logs.css</PackagePath>
     </AppxPackagedFile>

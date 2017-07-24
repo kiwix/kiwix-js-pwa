@@ -117,6 +117,9 @@
     <Content Include="www\-\s\css_modules\content.parsoid.css" />
     <Content Include="www\-\s\css_modules\ext.cite.a11y.css" />
     <Content Include="www\-\s\css_modules\ext.cite.styles.css" />
+    <Content Include="www\-\s\css_modules\ext.kartographer.frame.css" />
+    <Content Include="www\-\s\css_modules\ext.kartographer.link.css" />
+    <Content Include="www\-\s\css_modules\ext.kartographer.style.css" />
     <Content Include="www\-\s\css_modules\ext.scribunto.logs.css" />
     <Content Include="www\-\s\css_modules\ext.timeline.styles.css" />
     <Content Include="www\-\s\css_modules\inserted_style_mobile.css" />

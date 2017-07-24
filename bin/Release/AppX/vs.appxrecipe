@@ -32,7 +32,7 @@
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-07-23T18:16:53.208</Modified>
+      <Modified>2017-07-24T07:30:22.015</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -313,6 +313,18 @@
       <PackagePath>www\-\s\css_modules\ext.cite.styles.css</PackagePath>
       <Modified>2017-07-19T09:47:26.544</Modified>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.kartographer.frame.css">
+      <PackagePath>www\-\s\css_modules\ext.kartographer.frame.css</PackagePath>
+      <Modified>2017-07-24T07:09:44.456</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.kartographer.link.css">
+      <PackagePath>www\-\s\css_modules\ext.kartographer.link.css</PackagePath>
+      <Modified>2017-07-24T07:09:30.454</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.kartographer.style.css">
+      <PackagePath>www\-\s\css_modules\ext.kartographer.style.css</PackagePath>
+      <Modified>2017-07-24T06:34:16.389</Modified>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.scribunto.logs.css">
       <PackagePath>www\-\s\css_modules\ext.scribunto.logs.css</PackagePath>
       <Modified>2017-07-19T09:47:26.544</Modified>
@@ -339,11 +351,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\style-mobile.css">
       <PackagePath>www\-\s\style-mobile.css</PackagePath>
-      <Modified>2017-07-19T09:47:26.560</Modified>
+      <Modified>2017-07-24T07:29:37.830</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\style.css">
       <PackagePath>www\-\s\style.css</PackagePath>
-      <Modified>2017-07-19T09:47:26.570</Modified>
+      <Modified>2017-07-24T07:24:33.180</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\vector.css">
       <PackagePath>www\-\s\vector.css</PackagePath>
@@ -367,7 +379,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\index.html">
       <PackagePath>www\index.html</PackagePath>
-      <Modified>2017-07-20T16:30:44.754</Modified>
+      <Modified>2017-07-24T05:40:27.944</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\favicon.ico">
       <PackagePath>www\favicon.ico</PackagePath>
@@ -407,11 +419,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-07-23T18:16:39.844</Modified>
+      <Modified>2017-07-23T20:54:59.975</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
-      <Modified>2017-07-20T20:42:00.305</Modified>
+      <Modified>2017-07-23T20:35:25.720</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\abstractFilesystemAccess.js">
       <PackagePath>www\js\lib\abstractFilesystemAccess.js</PackagePath>
@@ -439,7 +451,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\transformStyles.js">
       <PackagePath>www\js\lib\transformStyles.js</PackagePath>
-      <Modified>2017-07-19T09:47:28.172</Modified>
+      <Modified>2017-07-24T07:10:02.639</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\uiUtil.js">
       <PackagePath>www\js\lib\uiUtil.js</PackagePath>
@@ -480,7 +492,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-07-23T17:20:11.806</Modified>
+      <Modified>2017-07-24T07:11:09.480</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>
