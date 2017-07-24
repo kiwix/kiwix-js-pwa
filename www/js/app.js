@@ -197,6 +197,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     $('input:checkbox[name=cssCacheMode]').on('change', function (e) {
         params['cssCache'] = this.checked ? true : false;
     });
+    $('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
+        params['imageDisplay'] = this.checked ? true : false;
+    });
     $('input:radio[name=cssInjectionMode]').on('change', function (e) {
         params['cssSource'] = this.value;
         document.getElementById('returntoArticle_top').innerHTML = "";
@@ -205,6 +208,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     $(document).ready(function (e) {
         // Set checkbox for cssCache and radio for cssSource
         document.getElementById('cssCacheModeCheck').checked = params['cssCache'];
+        document.getElementById('imageDisplayModeCheck').checked = params['imageDisplay'];
     });
      
     /**
@@ -862,7 +866,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
             function (dirEntry) {
                 selectedArchive.readBinaryFile(dirEntry,
                     function (readableTitle, content, namespace, url) {
-                    var cssContent = util.uintToString(content); //Uncomment this line and break on next to capture cssContent for local filesystem cache
+                    //var cssContent = util.uintToString(content); //Uncomment this line and break on next to capture cssContent for local filesystem cache
                     var cssBlob = new Blob([content], { type: 'text/css' }, { oneTimeOnly: true });
                     var newURL = [namespace + "/" + url, URL.createObjectURL(cssBlob)];
                     //blobArray[index] = newURL; //Don't bother with "index" -- you don't need to track the order of the blobs TODO: delete this logic
@@ -1005,6 +1009,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 console.timeEnd("Time to First Paint");
 
                 //var imageURLs = htmlContent.match(/kiwixsrc\s*=\s*["'](?:\.\.\/|\/)+(I\/)/ig);
+                var imageDisplay = params['imageDisplay'];
                 var images = $('#articleContent').contents().find('body').find('img');
                 var countImages = 0;
             //DEV: firstSliceSize determines maximum number of images loaded above the fold (should be <= 10)
@@ -1018,7 +1023,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 var slice$x = 0;
                 var slice$y = 0;
                 var windowScroll = false;
-                if (images) { //If there are images in the article, set up a listener function for onscroll event
+                if (images.length && imageDisplay) { //If there are images in the article, set up a listener function for onscroll event
                     if (images.length > firstSliceSize) {
                         $("#articleContent").contents().on("scroll", function () {
                             //Ensure event doesn't fire multiple times and waits for previous slice to be retrieved
@@ -1030,6 +1035,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     }
                     sliceImages();
                 }
+            //TESTING
+                if (!images.length) {
+                    console.log("No images in document");
+                    console.timeEnd("Time to Document Ready");
+                } else {
+                    if (!imageDisplay) {
+                        console.log("Image retrieval disabled by user");
+                        console.timeEnd("Time to Document Ready");
+                    }
+                }
+            //END TESTING
 
                 /**
                 * Loads images in batches or "slices" according to firstSliceSize and sliceSize parameters set above
@@ -1052,9 +1068,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                             console.log("** Waiting for user to scroll the window...");
                         }
                     } else { //All images requested, so Unload the scroll listener
-                        if (countImages == images.length) {
-                            console.log("Unloading scroll listener");
-                            $("#articleContent").contents().off('scroll');
+                        if (images && images.length > firstSliceSize) {
+                            if (countImages == images.length) {
+                                console.log("Unloading scroll listener");
+                                $("#articleContent").contents().off('scroll');
+                            }
                         }
                     }
                 }
@@ -1075,7 +1093,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
 
                                 //TESTING
                                     console.log("Extracted image " + (countImages) + " of " + images.length + "...");
-                                    if (countImages == firstSliceSize) {
+                                    if (countImages == firstSliceSize || (countImages <= firstSliceSize && countImages == images.length)) {
                                         console.log("** First image slice extracted: document ready **");
                                         console.timeEnd("Time to Document Ready");
                                         console.log("");
