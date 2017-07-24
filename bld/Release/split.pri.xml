@@ -123,6 +123,21 @@
 									<Value>www\-\s\css_modules\ext.cite.styles.css</Value>
 								</Candidate>
 							</NamedResource>
+							<NamedResource name="ext.kartographer.frame.css" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/-/s/css_modules/ext.kartographer.frame.css">
+								<Candidate type="Path">
+									<Value>www\-\s\css_modules\ext.kartographer.frame.css</Value>
+								</Candidate>
+							</NamedResource>
+							<NamedResource name="ext.kartographer.link.css" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/-/s/css_modules/ext.kartographer.link.css">
+								<Candidate type="Path">
+									<Value>www\-\s\css_modules\ext.kartographer.link.css</Value>
+								</Candidate>
+							</NamedResource>
+							<NamedResource name="ext.kartographer.style.css" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/-/s/css_modules/ext.kartographer.style.css">
+								<Candidate type="Path">
+									<Value>www\-\s\css_modules\ext.kartographer.style.css</Value>
+								</Candidate>
+							</NamedResource>
 							<NamedResource name="ext.scribunto.logs.css" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/-/s/css_modules/ext.scribunto.logs.css">
 								<Candidate type="Path">
 									<Value>www\-\s\css_modules\ext.scribunto.logs.css</Value>
