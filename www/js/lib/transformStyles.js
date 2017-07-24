@@ -44,19 +44,24 @@ define(['uiUtil'], function (uiUtil) {
             return {zl : zl, rtnFunction : rtnFunction};
         } else {
             //If this is a standard Wikipedia css use stylesheet cached in the filesystem...
+            //DEV: Although "." matches any character in regex, there is enough specificity in the patterns below
+            //DEV: Add any local stylesheets you wish to include here
             if (cc &&
-                (zl.match(/-\/s\/style\.css/i) ||
-                    zl.match(/-\/s\/css_modules\/mediawiki\.toc\.css/i) ||
-                    zl.match(/-\/s\/css_modules\/ext\.cite\.styles\.css/i) ||
-                    zl.match(/-\/s\/css_modules\/ext\.timeline\.styles\.css/i) ||
-                    zl.match(/-\/s\/css_modules\/ext\.scribunto\.logs\.css/i) ||
-                    zl.match(/-\/s\/css_modules\/mediawiki\.page\.gallery\.styles\.css/i) ||
-                    zl.match(/-\/s\/css_modules\/ext\.cite\.a11y\.css/i) ||
-                    zl.match(/-\/s\/css_modules\/content\.parsoid\.css/i) ||
-                    zl.match(/-\/s\/css_modules\/inserted_style_mobile\.css/i) ||
-                    zl.match(/-\/s\/css_modules\/mobile\.css/i) ||
-                    zl.match(/-\/s\/style-mobile\.css/i) ||
-                    zl.match(/-\/s\/css_modules\/skins\.minerva\.base\.reset\|skins\.minerva\.content\.styles\|ext\.cite\.style\|mediawiki\.page\.gallery\.styles\|mobile\.app\.pagestyles\.android\|mediawiki\.skinning\.content\.parsoid\.css/i)
+                (zl.match(/-\/s\/style.css/i) ||
+                    zl.match(/-\/s\/css_modules\/mediawiki.toc.css/i) ||
+                    zl.match(/-\/s\/css_modules\/ext.cite.styles.css/i) ||
+                    zl.match(/-\/s\/css_modules\/ext.timeline.styles.css/i) ||
+                    zl.match(/-\/s\/css_modules\/ext.scribunto.logs.css/i) ||
+                    zl.match(/-\/s\/css_modules\/mediawiki.page.gallery.styles.css/i) ||
+                    zl.match(/-\/s\/css_modules\/ext.cite.a11y.css/i) ||
+                    zl.match(/-\/s\/css_modules\/ext.kartographer.style.css/i) ||
+                    zl.match(/-\/s\/css_modules\/ext.kartographer.link.css/i) ||
+                    zl.match(/-\/s\/css_modules\/ext.kartographer.frame.css/i) ||
+                    zl.match(/-\/s\/css_modules\/content.parsoid.css/i) ||
+                    zl.match(/-\/s\/css_modules\/inserted_style_mobile.css/i) ||
+                    zl.match(/-\/s\/css_modules\/mobile.css/i) ||
+                    zl.match(/-\/s\/style-mobile.css/i) ||
+                    zl.match(/-\/s\/css_modules\/skins.minerva.base.reset\|skins.minerva.content.styles\|ext.cite.style\|mediawiki.page.gallery.styles\|mobile.app.pagestyles.android\|mediawiki.skinning.content.parsoid.css/i)
                 )) {
                 zl = zl.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename - but next line renders this redundant in current implementation)
                 if (zl.match(/(-\/s\/style\.css)|(minerva)/i)) { //If it matches one of the required styles...
