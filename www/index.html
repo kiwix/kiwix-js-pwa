@@ -205,29 +205,31 @@
                 <h2>Display settings</h2>
                 <table>
                     <tr>
-                        <td style="vertical-align:top; min-width : 20em;">
+                        <td style="vertical-align:top; min-width : 18em;">
                             <div id="cssSettingsDiv">
-                                Please select the display style: <br />
-                                <input type="radio" name="cssInjectionMode" value="desktop" id="cssModeDesktopRadio" checked>
-                                <span style="margin-left: 22px; text-indent: -22px;">
-                                    <label for="cssModeDesktopRadio">&nbsp;Use Wikipedia desktop display style</label> (for Wikipedia files)
-                                    <br />
-                                </span>
-                                <input type="radio" name="cssInjectionMode" value="mobile" id="cssModeMobileRadio">
-                                <span style="margin-left: 22px; text-indent: -22px;">
-                                    <label for="cssModeMobileRadio">&nbsp;Use Wikipedia mobile display style</label> (for Wikipedia files)
-                                </span>
+                                <p>Please select the display style:</p>
+                                <p style="text-indent: -22px; margin-left: 20px;">
+                                    <input name="cssInjectionMode" id="cssModeDesktopRadio" type="radio" checked="" value="desktop">
+                                    <b>&nbsp;Use Wikipedia desktop display style</b> (for Wikipedia files)
+                                </p>                               
+                                <p style="text-indent: -22px; margin-left: 20px;">
+                                    <input type="radio" name="cssInjectionMode" value="mobile" id="cssModeMobileRadio">
+                                    <b>&nbsp;Use Wikipedia mobile display style</b> (for Wikipedia files)
+                                </p>
                             </div>
                         </td>
                         <td style="vertical-align:top; padding-left: 1em;">
-                            <div id="cssSettingsDiv">
-                                Please select the display option: <br />
-                                <input type="checkbox" name="cssCacheMode" value="local" id="cssCacheModeCheck">
-                                <span style="padding-left: 22px; text-indent: -22px;">
-                                    <label for="cssCacheModeCheck">&nbsp;Use locally cached display styles</label> (<i>recommended</i> for Wikipedia ZIM)
-                                </span>
+                            <div id="displaySettingsDiv">
+                                <p>Please select the display option:</p>
+                                <p style="text-indent: -22px; margin-left: 20px;">
+                                    <input type="checkbox" name="cssCacheMode" value="local" id="cssCacheModeCheck">
+                                    <b>&nbsp;Use locally cached display styles</b> (<i>recommended</i> for Wikipedia ZIM)
+                                </p>
+                                <p style="text-indent: -22px; margin-left: 20px;">
+                                    <input type="checkbox" name="imageDisplayMode" value="true" id="imageDisplayModeCheck">
+                                    <b>&nbsp;Display images</b> (if the ZIM file contains them)
+                                </p>
                             </div>
-
                         </td>
                     </tr>
                 </table>
