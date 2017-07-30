@@ -57,6 +57,10 @@ define(['uiUtil'], function (uiUtil) {
                     zl.match(/-\/s\/css_modules\/ext.kartographer.style.css/i) ||
                     zl.match(/-\/s\/css_modules\/ext.kartographer.link.css/i) ||
                     zl.match(/-\/s\/css_modules\/ext.kartographer.frame.css/i) ||
+                    zl.match(/-\/s\/css_modules\/mw.TMHGalleryHook.js.css/i) ||
+                    zl.match(/-\/s\/css_modules\/mw.PopUpMediaTransform.css/i) ||
+                    zl.match(/-\/s\/css_modules\/mw.MediaWikiPlayer.loader.css/i) ||
+                    zl.match(/-\/s\/css_modules\/ext.tmh.thumbnail.styles.css/i) ||
                     zl.match(/-\/s\/css_modules\/content.parsoid.css/i) ||
                     zl.match(/-\/s\/css_modules\/inserted_style_mobile.css/i) ||
                     zl.match(/-\/s\/css_modules\/mobile.css/i) ||
