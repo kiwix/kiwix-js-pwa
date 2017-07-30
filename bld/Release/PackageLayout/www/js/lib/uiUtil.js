@@ -53,6 +53,23 @@ define([], function() {
         }
     }
 
+    /**
+     * Checks whether an element is fully or partially in view
+     * This is useful for progressive download of images inside an article
+     *
+     * @param {Object} el
+     * @param {Boolean} fully
+     */
+    function isElementInView(el, fully) {
+        var elemTop = el.getBoundingClientRect().top;
+        var elemBottom = el.getBoundingClientRect().bottom;
+
+        var isVisible = fully ? elemTop < window.innerHeight && elemBottom >= 0 :
+            elemTop >= 0 && elemBottom <= window.innerHeight;
+        return isVisible;
+    }
+
+
     function makeReturnLink(title) {
         //Abbreviate title if necessary
         var shortTitle = title.substring(0, 25);
@@ -78,6 +95,7 @@ define([], function() {
     return {
         feedNodeWithBlob: feedNodeWithBlob,
         removeUrlParameters: removeUrlParameters,
+        isElementInView: isElementInView,
         makeReturnLink: makeReturnLink,
         poll: poll,
         clear: clear

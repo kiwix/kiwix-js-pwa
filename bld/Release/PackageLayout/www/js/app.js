@@ -35,7 +35,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
      */
     var MAX_SEARCH_RESULT_SIZE = module.config().results; //This is set in init.js
 
-    /**
+//TESTING
+    // Get the app's installation folder.
+    var appFolder = Windows.ApplicationModel.Package.current.installedLocation;
+    // Print the folder's path to the Visual Studio Output window.
+    console.log(appFolder.name, "folder path:", appFolder.path);
+//END TESTING
+
+     /**
      * @type ZIMArchive
      */
     var selectedArchive = null;
@@ -392,7 +399,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
      * 
      * @type Array.<StorageFirefoxOS>
      */
-    var storages = [];
+    //var storages = [];
+    var storages = [appFolder.path];  //UWP
     function searchForArchivesInPreferencesOrStorage() {
         // First see if the list of archives is stored in the cookie
         var listOfArchivesFromCookie = cookies.getItem("listOfArchives");
@@ -422,8 +430,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         // Make a fake first access to device storage, in order to ask the user for confirmation if necessary.
         // This way, it is only done once at this moment, instead of being done several times in callbacks
         // After that, we can start looking for archives
-        storages[0].get("fake-file-to-read").then(searchForArchivesInPreferencesOrStorage,
-                                                  searchForArchivesInPreferencesOrStorage);
+        //storages[0].get("fake-file-to-read").then(searchForArchivesInPreferencesOrStorage,
+                                                  //searchForArchivesInPreferencesOrStorage);
+        searchForArchivesInPreferencesOrStorage;
     }
     else {
         // If DeviceStorage is not available, we display the file select components
