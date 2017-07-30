@@ -32,7 +32,7 @@
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-07-30T16:56:39.265</Modified>
+      <Modified>2017-07-30T20:49:39.862</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -289,6 +289,10 @@
       <PackagePath>www\img\Kiwix_icon_transparent_600x600.png</PackagePath>
       <Modified>2017-06-24T12:12:18.996</Modified>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\img\lightBlue.png">
+      <PackagePath>www\img\lightBlue.png</PackagePath>
+      <Modified>2017-07-30T17:25:04.321</Modified>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\I\s\Checker-16x16.png">
       <PackagePath>www\I\s\Checker-16x16.png</PackagePath>
       <Modified>2017-07-19T09:47:26.577</Modified>
@@ -333,6 +337,10 @@
       <PackagePath>www\-\s\css_modules\ext.timeline.styles.css</PackagePath>
       <Modified>2017-07-19T09:47:26.544</Modified>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.tmh.thumbnail.styles.css">
+      <PackagePath>www\-\s\css_modules\ext.tmh.thumbnail.styles.css</PackagePath>
+      <Modified>2017-07-30T20:00:22.792</Modified>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\inserted_style_mobile.css">
       <PackagePath>www\-\s\css_modules\inserted_style_mobile.css</PackagePath>
       <Modified>2017-07-19T09:47:26.553</Modified>
@@ -348,6 +356,18 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mobile.css">
       <PackagePath>www\-\s\css_modules\mobile.css</PackagePath>
       <Modified>2017-07-19T09:47:26.556</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mw.MediaWikiPlayer.loader.css">
+      <PackagePath>www\-\s\css_modules\mw.MediaWikiPlayer.loader.css</PackagePath>
+      <Modified>2017-07-30T19:54:47.593</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mw.PopUpMediaTransform.css">
+      <PackagePath>www\-\s\css_modules\mw.PopUpMediaTransform.css</PackagePath>
+      <Modified>2017-07-30T19:54:47.593</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mw.TMHGalleryHook.js.css">
+      <PackagePath>www\-\s\css_modules\mw.TMHGalleryHook.js.css</PackagePath>
+      <Modified>2017-07-30T19:54:47.593</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\style-mobile.css">
       <PackagePath>www\-\s\style-mobile.css</PackagePath>
@@ -419,7 +439,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-07-30T10:07:20.947</Modified>
+      <Modified>2017-07-30T20:49:28.788</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
@@ -451,7 +471,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\transformStyles.js">
       <PackagePath>www\js\lib\transformStyles.js</PackagePath>
-      <Modified>2017-07-27T21:15:17.117</Modified>
+      <Modified>2017-07-30T20:03:42.218</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\uiUtil.js">
       <PackagePath>www\js\lib\uiUtil.js</PackagePath>
@@ -492,7 +512,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-07-30T16:24:03.374</Modified>
+      <Modified>2017-07-30T20:07:11.035</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>

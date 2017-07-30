@@ -56,10 +56,14 @@ www\-\s\css_modules\ext.kartographer.link.css
 www\-\s\css_modules\ext.kartographer.style.css
 www\-\s\css_modules\ext.scribunto.logs.css
 www\-\s\css_modules\ext.timeline.styles.css
+www\-\s\css_modules\ext.tmh.thumbnail.styles.css
 www\-\s\css_modules\inserted_style_mobile.css
 www\-\s\css_modules\mediawiki.page.gallery.styles.css
 www\-\s\css_modules\mediawiki.toc.css
 www\-\s\css_modules\mobile.css
+www\-\s\css_modules\mw.MediaWikiPlayer.loader.css
+www\-\s\css_modules\mw.PopUpMediaTransform.css
+www\-\s\css_modules\mw.TMHGalleryHook.js.css
 www\-\s\style.css
 www\-\s\style-mobile.css
 www\-\s\vector.css
@@ -80,6 +84,7 @@ www\I\s\magnify-clip-ltr.png
 www\I\s\spinner.gif
 www\img\icons\kiwix-60.png
 www\img\Kiwix_icon_transparent_600x600.png
+www\img\lightBlue.png
 www\img\spinner.gif
 www\index.html
 www\js\app.js
