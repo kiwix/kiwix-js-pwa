@@ -84,6 +84,16 @@
     color : orange;
 }
 
+.settings {
+    float: left;
+    margin: 5px;
+    padding: 10px;
+    max-width: 300px;
+    height: 150px;
+    border: 1px solid black;
+} 
+
+
 /* Réduction de la taille des éléments en haut pour les petits écrans */
 @media (max-width: 768px) {
     /* Pour réduire la taille du menu en haut */
@@ -91,7 +101,7 @@
         min-height: 20px !important;
         margin-bottom: 1px !important;
     }
-    .navbar-brand {
+    .navbar-brand, .navbar-nav a { /* GK added navbar-nav a*/
         padding-top: 2px !important;
         padding-bottom: 1px !important;
         height: 25px !important;
@@ -102,6 +112,21 @@
         margin-top: 2px !important;
         margin-bottom: 0px !important;
     }
+/* Pour réduire la taille des éléments et boutons dans l'aréa de navégation - GK
+    .navbar-nav, .navbar-nav > li {
+        padding-top: 2px !important;
+        padding-bottom: 2px !important;
+        margin-top: 2px !important;
+        margin-bottom: 0px !important;
+    }  */
+    .navbar-nav {
+        margin-top: 0px !important;
+        margin-bottom: 0px !important;
+    }
+    .navbar-nav > li > a { /*Make sure these align correctly rather than stacking at full width - GK*/
+        float: left !important;
+    }
+
     [role=region] > header {
         margin-bottom: 0px !important;
     }
@@ -123,5 +148,5 @@
         padding-top: 1px !important;
         padding-bottom: 1px !important;
         font-size: 16px !important;
-    }    
+    }
 }
