@@ -1045,6 +1045,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
 
         //Set up tracking variables
         var countImages = 0;
+    //DEV: This sets the maximum number of visible images to request in a single batch (too many will slow image display)
+        //NB remaining visible images are shunted into prefetchSlice, which works in the background
+        var maxVisibleSliceSize = 10;
     //DEV: Set this to the number of images you want to prefetch after the on-screen images have been fetched
         var prefetchSliceSize = 20;
     //DEV: SVG images are currently very taxing: keep this number at 5 or below and test on your system with Sine.html
@@ -1094,6 +1097,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 prepareImages();
             } else {
                 console.log("There are no images to display in this article.");
+                //TESTING
+                console.timeEnd("Time to Document Ready");
             }
         } else {
             console.log("Image retrieval disabled by user");
@@ -1213,7 +1218,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                         svgGroup1.push(images[i]);
                     }
                 } else {
-                    if (i <= lastVisible) {
+                    if (i <= lastVisible && visibleSlice.length <= maxVisibleSliceSize) {
                         visibleSlice.push(images[i]);
                     } else {
                         prefetchSlice.push(images[i]);
@@ -1246,18 +1251,16 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 sliceID++; //Get ready to process next slice
                 if (sliceID == 1) {
                     if (visibleSlice.length) {
-                        console.log("** About to request " + visibleSlice.length + " visible image(s)...");
+                        console.log("** Accessing " + visibleSlice.length + " visible image(s)...");
                         loadImageSlice(visibleSlice, 1, visibleSlice.length, displaySlices);
                         visibleSlice = [];
-                    //TESTING
-                        console.timeEnd("Time to Document Ready");
                     } else { //No images in this slice so move on to next
                         sliceID++;
                     }
                 }
                 if (sliceID == 2) {
                     if (prefetchSlice.length) {
-                        console.log("Prefetching " + prefetchSlice.length + " offscreen images...");
+                        console.log("** Prefetching " + prefetchSlice.length + " offscreen images...");
                         loadImageSlice(prefetchSlice, 2, prefetchSlice.length, displaySlices);
                         prefetchSlice = [];
                     } else { //No images in this slice so move on to next
@@ -1265,7 +1268,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     }
                 }
                 if (sliceID == 3) {
+                    //TESTING
+                    if (countImages <= maxVisibleSliceSize + prefetchSliceSize) { console.timeEnd("Time to Document Ready"); }
+
                     if (svgSlice.length) {
+                        console.log("** Slicing " + svgSlice.length + " SVG images...");
                         //Set up variables to hold visible image range (to check whether user scrolls during lengthy procedure)
                         var startSVG;
                         var endSVG;
@@ -1279,7 +1286,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                         console.log("** All images extracted from current document **")
                         windowScroll = true; //Go back to prove this!
                     } else {
-                        console.log("All images extracted from requested slices\n" +
+                        console.log("All requested image slices have been processed\n" +
                             "** Waiting for user scroll... **");
                         windowScroll = true;
                     }
