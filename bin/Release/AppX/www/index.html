@@ -45,21 +45,17 @@
             <nav class="navbar navbar-default" role="navigation">
                 <!-- Brand and toggle get grouped for better mobile display -->
                 <div class="navbar-header">
-                    <button type="button" id="navbarToggle" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
+
                     <a class="navbar-brand">Kiwix JS 0.x (beta)</a>
-                </div>
-                <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse navbar-ex1-collapse">
                     <ul class="nav navbar-nav">
-                        <li id="liHomeNav" class="active"><a href="#" id="btnHome">Home</a></li>
-                        <li id="liConfigureNav"><a href="#" id="btnConfigure">Configure</a></li>
-                        <li id="liAboutNav"><a href="#" id="btnAbout">About</a></li>
+                        <li id="liHomeNav"><a id="btnHome" href="#">Home</a></li>
+                        <li class="active" id="liConfigureNav"><a id="btnConfigure" href="#">Configure</a></li>
+                        <li id="liAboutNav"><a id="btnAbout" href="#">About</a></li>
                     </ul>
+                </div>
+                <!-- Collect the nav links, forms, and other content for toggling
+                <div class="navbar-collapse navbar-ex1-collapse collapse" aria-expanded="false" style="height: 1px;">
+
                 </div><!-- /.navbar-collapse -->
             </nav>
 
@@ -206,20 +202,18 @@
                 <table>
                     <tr>
                         <td style="vertical-align:top; min-width : 16em;">
-                            <div id="cssSettingsDiv">
+                            <div id="cssSettingsDiv" class="settings">
                                 <p>Please select the display style:</p>
                                 <p style="text-indent: -22px; margin-left: 20px;">
-                                    <input name="cssInjectionMode" id="cssModeDesktopRadio" type="radio" checked="" value="desktop">
-                                    <b>&nbsp;Use Wikipedia desktop display style</b> (for Wikipedia files)
+                                    <input name="cssInjectionMode" id="cssModeDesktopRadio" type="radio" checked="checked" value="desktop">
+                                    <b>&nbsp;Use Wikimedia desktop display style</b> (for Wikipedia files)
                                 </p>                               
                                 <p style="text-indent: -22px; margin-left: 20px;">
                                     <input type="radio" name="cssInjectionMode" value="mobile" id="cssModeMobileRadio">
-                                    <b>&nbsp;Use Wikipedia mobile display style</b> (for Wikipedia files)
+                                    <b>&nbsp;Use Wikimedia mobile display style</b> (for Wikipedia files)
                                 </p>
                             </div>
-                        </td>
-                        <td style="vertical-align:top; padding-left: 1em;">
-                            <div id="displaySettingsDiv">
+                            <div id="displaySettingsDiv" class="settings">
                                 <p>Please select the display option:</p>
                                 <p style="text-indent: -22px; margin-left: 20px;">
                                     <input type="checkbox" name="cssCacheMode" value="local" id="cssCacheModeCheck">
