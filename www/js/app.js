@@ -837,7 +837,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         if (!params['imageDisplay']) {
             //Ensure 36px clickable image height so user can request images by clicking [kiwix-js #173]
             htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)height(\s*=\s*)/ig,
-                '$1height="36" alt="Placeholder" style="color: lightblue; background-color: lightblue;" ' +
+                '$1height="36" src="../img/lightBlue.png" style="color: lightblue; background-color: lightblue;" ' +
                 'data-kiwixheight$2');
         }
 
