@@ -109,3 +109,991 @@ table.climate-table th {
 	background: #CEE0E7;
 }
 /* END: CSS for Template:Climate */
+
+
+
+/*
+MediaWiki:Common.css
+*/
+/* Le CSS placé ici sera appliqué à tous les habillages. */
+
+/* https://phabricator.wikimedia.org/T134352 */
+#banner-drapeau a {
+	display: inline-block;
+    width: auto;
+    height: auto;
+}
+
+/* DEBUT des styles pour pagebanner extension */
+h1.wpb-name a {
+	margin-right: 5px;
+}
+h1.wpb-name {
+    font-family: sans-serif;
+    border-bottom: none;
+}
+.ext-wpb-pagebanner {
+	clear: both;
+}
+
+/* Fix problem with banner overlay */
+div.toctitle {display:none;}
+
+/* Remove when https://phabricator.wikimedia.org/T113642 fixed */
+.client-js #contentSub { display: none; }
+.client-js .ext-wpb-pagebanner { padding-top: 1em; }
+.client-js #contentSub.visible { font-size: 0.875em; margin: 0; display: block; }
+.client-js .ext-wpb-pagebanner.bugfix-T113642 { padding-top: 0; }
+/* end https://phabricator.wikimedia.org/T113642 */
+
+/* hide upload link in toolbox */
+
+.routeBox {
+ font-size: small;
+ border-style: none;
+ border-spacing: 0 0;
+ border-collapse: collapse;
+ margin: 0 auto;
+}
+
+/* Styles for Geo template */
+
+#geoCoord table {
+ border-collapse: collapse;
+ background: transparent;
+}
+#geoCoord td {
+ font-size: 0.9em;
+ line-height: 100%;
+ vertical-align: middle;
+ padding: 0 0 0 10px;
+ text-align: right;
+ border-left: 1px solid #88a;
+}
+#geoCoord td.icon {
+ border-left: none;
+ height: 27px;
+ width: 35px;
+ padding: 0 10px 0 0;
+}
+ 
+#DoM {
+ background: transparent;
+ padding: 0;
+}
+
+/* Styles pour les bannières de pages */
+ 
+.topbanner {
+    position: relative;
+    overflow: hidden;
+    max-width: 1800px; 
+    height: auto;
+}
+ 
+.topbanner img {
+    max-width: 100%;
+    height: auto;
+    width: auto;
+}
+ 
+.topbanner-box {
+    position: absolute;
+    z-index: 2;
+    margin-top: 1.5em;
+    color: white;
+    width: 50%;
+    min-width: 20em;
+    left: 2%;
+    text-align: left;
+}
+ 
+.topbanner .name {
+    position: absolute; 
+    z-index: 2; 
+    margin: 0.6em 0 0 0.4em; 
+    padding: 8px 7px; 
+    font-size: 2.2em; 
+    background: rgb(16,16,16); 
+    background: rgba(0,0,0,0.5); 
+    border-radius: 4px; 
+    color: white;
+    white-space: nowrap;
+    line-height: 0.9em;
+}
+
+/* Styles pour les infos du coin supérieur droit des bannières de pages */
+.iconbox {
+    position: absolute; 
+    top: 6px; 
+    right: 0; 
+    padding: 3px; 
+    z-index: 3; 
+    background: rgb(16,16,16); 
+    background: rgba(0,0,0,0.7); 
+    border-bottom-left-radius: 5px;
+}
+ 
+/* Style pour table des matières horizontale copiée de Common.css sur en.wikivoyage le 19 mai 2013
+   Style for hlist class - pulled from Wikipedia's Common.css file on 20 Mar 2013
+   Style for horizontal lists (separator following item).
+   Note: hlist formatting will break if the resulting HTML lacks a breakable character
+   between list items. This happens when the following conditions are true:
+   1) The list is made using wiki markup (where HTML is built by parser.php)
+   2) HTMLTidy is disabled or unavailable (such as on Special: pages)
+   In such cases, building lists with .hlist using HTML instead of wiki markup
+   will work around this problem. See also [[Bugzilla:39617]].
+   IE8-specific classes are assigned in [[MediaWiki:Common.js/IEFixes.js]].
+   Last updated: January 24, 2013
+   @source mediawiki.org/wiki/Snippets/Horizontal_lists
+   @maintainer: [[User:Edokter]]
+   @revision: 3.1
+*/
+.skin-monobook .hlist dl,
+.skin-modern .hlist dl,
+.skin-vector .hlist dl {
+    line-height: 1.1em;
+}
+.hlist dl,
+.hlist ol,
+.hlist ul {
+    margin: 0;
+    padding: 0;
+    line-height: 1.1em;
+}
+/* Display list items inline and make them nowrap */
+.hlist dd,
+.hlist dt,
+.hlist li {
+    display: inline;
+    white-space: nowrap;
+}
+/* Allow wrapping for list items (in tight spaces) */
+.hlist.hwrap dd,
+.hlist.hwrap dt,
+.hlist.hwrap li {
+    white-space: normal;
+}
+/* Display nested lists inline and allow them to wrap */
+.hlist dl dl, .hlist dl ol, .hlist dl ul,
+.hlist ol dl, .hlist ol ol, .hlist ol ul,
+.hlist ul dl, .hlist ul ol, .hlist ul ul {
+    display: inline;
+    white-space: normal;
+}
+/* Generate interpuncts */
+.hlist dt:after {
+    content: ":";
+}
+.hlist dd:after,
+.hlist li:after {
+    content: " ·";
+    font-weight: bold;
+    padding: 0 0.3em;
+}
+.hlist dd:last-child:after,
+.hlist dt:last-child:after,
+.hlist li:last-child:after {
+    content: none;
+}
+/* For IE8 */
+.hlist dd.hlist-last-child:after,
+.hlist dt.hlist-last-child:after,
+.hlist li.hlist-last-child:after {
+    content: none;
+}
+/* Add parentheses around nested lists */
+.hlist dd dd:first-child:before, .hlist dd dt:first-child:before, .hlist dd li:first-child:before,
+.hlist dt dd:first-child:before, .hlist dt dt:first-child:before, .hlist dt li:first-child:before,
+.hlist li dd:first-child:before, .hlist li dt:first-child:before, .hlist li li:first-child:before {
+    content: "(";
+    font-weight: normal;
+}
+.hlist dd dd:last-child:after, .hlist dd dt:last-child:after, .hlist dd li:last-child:after,
+.hlist dt dd:last-child:after, .hlist dt dt:last-child:after, .hlist dt li:last-child:after,
+.hlist li dd:last-child:after, .hlist li dt:last-child:after, .hlist li li:last-child:after {
+    content: ")";
+    font-weight: normal;
+}
+/* For IE8 */
+.hlist dd dd.hlist-last-child:after, .hlist dd dt.hlist-last-child:after, .hlist dd li.hlist-last-child:after,
+.hlist dt dd.hlist-last-child:after, .hlist dt dt.hlist-last-child:after, .hlist dt li.hlist-last-child:after,
+.hlist li dd.hlist-last-child:after, .hlist li dt.hlist-last-child:after, .hlist li li.hlist-last-child:after {
+    content: ")";
+    font-weight: normal;
+}
+/* allow ToC to stretch across screen when it is part of a horizontal list, change background and font colours  */
+.hlist #toc.tocFloat {
+    width: 100%; 
+    max-width: 170em;
+    color: black;
+}
+ 
+.hlist.tocbox-s #toc.tocFloat {
+    width: 100%; 
+    max-width: 170em;
+    margin: 0;
+    padding: 0;
+    line-height: 1.1em;
+    color: black;
+    background-color: #e0e0e0; 
+}
+ 
+.hlist.tocbox-b #toc.tocFloat {
+    width: 100%; 
+    max-width: 170em;
+    margin: 0;
+    padding: 0;
+    line-height: 1.1em;
+    color: white;
+    background: rgb(16,16,16); 
+    background: rgba(0,0,0,0.5); 
+    border: none;
+}
+ 
+.hlist.tocbox-w #toc.tocFloat {
+    width: 100%; 
+    max-width: 170em;
+    margin: 0;
+    padding: 0;
+    line-height: 1.1em;
+    color: black;
+    background: rgb(225,225,225); 
+    background: rgba(160,160,160,0.6); 
+    border: none;
+}
+ 
+.hlist #toc table,
+.hlist #toc tr,
+.hlist #toc td {
+    margin: 0;
+    padding: 0;
+    line-height: 1.1em;
+}
+ 
+/* links in the horizontal ToC should be black... */
+.hlist #toc a {
+    color: black;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+ 
+/* ... except when the ToC box is black ... */
+.hlist.tocbox-b #toc a {
+    color: white;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+ 
+/* ... or except when being hovered over */
+.hlist #toc.tocFloat a:hover {
+    color: #bdddfd;
+}
+ 
+/* don't display ToC title when in horizontal ToC */
+.hlist #toctitle {
+    display: none;
+}
+ 
+.mf-mobile-only {
+    display: none;
+}
+ 
+/* Prevent display of subheadings in horizontal ToC */
+.hlist #toc .toclevel-2,
+.hlist #toc .toclevel-3,
+.hlist #toc .toclevel-4,
+.hlist #toc .toclevel-5,
+.hlist #toc .toclevel-6 {
+    display: none;
+}
+ 
+.hlist .toggleNode {
+    display: none;
+}
+
+/* Corporate Design */
+ 
+.containerTabs {
+ border: 1px solid #6cc8f3;
+ border-top-left-radius: 5px;
+ border-top-right-radius: 5px;
+ -moz-border-radius-topleft: 5px;
+ -moz-border-radius-topright: 5px;
+ -webkit-border-top-left-radius: 5px;
+ -webkit-border-top-right-radius: 5px;
+ -khtml-border-radius-topleft: 5px;
+ -khtml-border-radius-topright: 5px;
+ 
+ margin: 0 0 0 0.75em;
+ padding: 0.2em 1em;
+ background: #f0f0f0;
+ float: left;
+ position: relative;
+ top: 1px;
+}
+#content div.mainTab {
+ border-bottom: 1px solid #f0f0f0;
+}
+#content > .boxTabsEnd { /* Verstecken vor IE 6 */
+ display: none;
+}
+.tabbedContainers .containerTabs {
+ font-weight: normal;
+ text-decoration: none;
+ color: #002bb8;
+ cursor: pointer;
+ display: none;
+}
+.tabbedContainers .mainTab {
+ font-weight: bold;
+ text-decoration: none;
+ color: #000000;
+ cursor: text;
+ display: none;
+}
+.tabbedContainers .showIt {
+ display: block;
+}
+@media print {
+ .tabbedContainers .containerTabs, .tabbedContainers .mainTab,
+ .tabbedContainers .showIt, .tabbedContainers .boxTabsEnd {
+  display: none;
+ }
+}
+ 
+.container {
+ border: 1px solid #6cc8f3;
+ padding: 0 0 3px;
+ margin: 0.75em 0 0;
+ border-radius: 5px;
+ -moz-border-radius: 5px;
+ -webkit-border-radius: 5px;
+ -khtml-border-radius: 5px;
+}
+ 
+/* Color border's variations */ 
+/* Light green */
+#content .var2 {
+ border-color: #80f000;
+}
+ 
+/* Dark green */
+#content .var3 {
+ border-color: #158200;
+}
+ 
+/* Orange */
+#content .var4 {
+ border-color: #EDAA02;
+}
+ 
+/* Red */
+#content .var5 {
+ border-color: #DB0003;
+}
+ 
+/* Brown */
+#content .var6 {
+ border-color: #AD5A1B;
+}
+ 
+/* Violet */
+#content .var7 {
+ border-color: #9154AD;
+}
+ 
+/* Black */
+#content .var8 {
+ border-color: #000000;
+}
+ 
+/* Dark blue */
+#content .var9 {
+ border-color: #0400FF;
+}
+ 
+.container .header, .infobox .header {
+ background: #f0f0f0;
+ color: #004f80;
+ margin-top: 0;
+ margin-bottom: 0.4em;
+ padding: 0.3em 0.35em;
+ border-bottom: none;
+ font-size: 1.3em;
+}
+ 
+.container .header:first-child, .container .editLink:first-child + .header, .infobox .header:first-child {
+ border-top-left-radius: 5px;
+ border-top-right-radius: 5px;
+ -moz-border-radius-topleft: 5px;
+ -moz-border-radius-topright: 5px;
+ -webkit-border-top-left-radius: 5px;
+ -webkit-border-top-right-radius: 5px;
+ -khtml-border-radius-topleft: 5px;
+ -khtml-border-radius-topright: 5px;
+ margin-top: 0;
+ border-top: none;
+}
+ 
+.container * ~ .header {
+ margin-top: 0.75em;
+ border-top: 1px solid #c0c0c0;
+}
+ 
+.container .centered {
+ text-align: center;
+}
+ 
+.container .justified {
+ text-align: justify;
+}
+ 
+/* Color title's variations */ 
+/* Light green */
+.var2 .header, .var2 .header a {
+ color: #00804f;
+}
+ 
+/* Dark green */
+.var3 .header, .var3 .header a {
+ color: #158200;
+}
+ 
+/* Orange */
+.var4 .header, .var4 .header a {
+ color: #EDAA02;
+ }
+ 
+/* Red */
+.var5 .header, .var5 .header a {
+ color: #DB0003;
+}
+ 
+/* Brown */
+.var6 .header, .var6 .header a {
+ color: #AD5A1B;
+}
+ 
+/* Violet */
+.var7 .header, .var7 .header a {
+ color: #9154AD;
+}
+ 
+/* Black */
+.var8 .header, .var8 .header a {
+ color: #000000;
+}
+ 
+/* Dark blue */
+.var9 .header, .var9 .header a {
+ color: #0400FF;
+}
+ 
+.container .editLink {
+ float: right;
+ font-size: 90%;
+ background: transparent;
+ margin: 0.5em 0.75em;
+}
+ 
+.container h2 {
+ padding: 0.5em 0.35em;
+}
+ 
+.container h3 {
+ padding: 0.3em 0.35em;
+}
+ 
+.container p, .container ul, .container .div {
+ padding: 0 0.5em;
+ margin-bottom: 0.3em;
+}
+ 
+.container .emph {
+ font-size: 110%;
+ font-weight: bold;
+}
+ 
+.container ul ul {
+ padding: 0;
+}
+ 
+@media print {
+ .container ul, .container ul ul {
+  padding-left: 1em;
+ }
+}
+ 
+.container ol {
+ padding-right: 0.5em;
+}
+ 
+.container ol ol {
+ padding-right: 0em;
+}
+ 
+.container h4, .container h5, .container h6, .container dl {
+ padding-left: 0.5em;
+ padding-right: 0.5em;
+}
+ 
+.container > .divBox, .container > .prettytable, .container > .multiline,
+.container > .gallery, .container > div.center {
+ margin-left: 0.5em;
+ margin-right: 0.5em;
+}
+ 
+.container div.floatleft {
+ margin-left: 0.5em;
+}
+ 
+.container div.floatright {
+ margin-right: 0.5em;
+}
+ 
+.container .usr-code div.center {
+ margin: 0;
+}
+ 
+.container hr {
+ margin: 0 0.5em;
+}
+ 
+table.container {
+ margin: 0;
+ border-style: none;
+ border-spacing: 0 0;
+ border-collapse: collapse;
+}
+ 
+div.cFirst, table.cFirst, .containerTabs + .container, .boxTabsEnd + .container {
+ margin: 0;
+ clear: both;
+}
+ 
+div.cInner, table.cInner {
+ margin: 0.75em;
+}
+ 
+table.container td {
+ margin: 0;
+ padding: 0 0 0 0.75em;
+ vertical-align: top;
+}
+ 
+table.container td:first-child {
+ padding: 0;
+}
+ 
+* html table.container td { /* Stern-HTML-Hack fuer IE6 */
+ padding-left: expression((this.parentNode.firstChild == this)? "0" : "0.75em" );
+}
+ 
+@media print {
+ .container { border: 0.25mm solid #6cc8f3; }
+ .container .header, .infobox .header {
+  font-size: 1em;
+  border-top: 0.25mm solid #c0c0c0;
+ }
+}
+ 
+.regionFlag {
+ border: 1px solid #404040;
+ width: 20px;
+ height: 15px;
+ margin: 0 0.5em 0 0;
+ float: left;
+}
+ 
+#socialbm iframe {
+ display: inline;
+ height: 45px;
+ margin: 0;
+}
+#socialbm a img {
+ vertical-align: 23px;
+}
+ 
+.ImageGroup {
+ text-align: center;
+ border: 1px solid #6cc8f3;
+ background-color: #ffffff;
+}
+* html .ImageGroup { // IE6-Hack;
+ width: 220px;
+}
+.ImageGroup .header {
+ font-size: 110%;
+ font-weight: bold;
+ padding: 0 3px;
+ background: #f0f0f0; 
+}
+.ImageGroup .thumb {
+ margin-bottom: 0;
+}
+.ImageGroup .thumbinner {
+ margin: 0 auto;
+}
+.ImageGroup .ImageGrUnitHeader {
+ background: #f0f0f0;
+}
+ 
+.topicsTable {
+ width: 100%;
+ border-collapse: collapse;
+ empty-cells: show;
+ background: transparent;
+ border-spacing: 0 0;
+}
+.topicsTable td {
+ width: 50%;
+ vertical-align: top;
+ padding: 1em 0;
+}
+.topicsTable td:first-child {
+ padding-right: 1em;
+}
+.topicsTable td .floatright {
+ border: solid 1px #cccccc;
+ background: #eeeeee;
+ padding: 3px;
+ margin: 5px 0 0 1em;
+}
+ 
+@media print {
+ .ImageGroup {
+  border: none;
+  padding: 0;
+ }
+ .ImageGroup .header, .ImageGroup .ImageGrUnitHeader {
+  display: none;
+ }
+}
+ 
+#altIsIn {
+ line-height: 1.8em;
+}
+
+/* Quickbar styles */
+ 
+#content .qb {
+ border: 1px solid #6cc8f3;
+ margin: 0 0 1em;
+ border-radius: 5px;
+ -moz-border-radius: 5px;
+ -webkit-border-radius: 5px;
+ -khtml-border-radius: 5px;
+}
+#content .qbRight {
+ clear: right;
+ float: right;
+ margin: 0 0 1em 1em;
+ width: 300px;
+}
+#content .qbRightDiv {
+ clear: right;
+ float: right;
+ margin: 0 0 1em 1em;
+}
+#content .qbTopBorder {
+}
+#content .qbLeft {
+ clear: left;
+ float: left;
+ margin: 0 1em 0 1em;
+ width: 300px;
+}
+.qb td {
+ padding: 2px 0.4em;
+ vertical-align: baseline;
+}
+.qb th {
+ padding: 2px 0.4em;
+ vertical-align: baseline;
+ text-align: left;
+ font-weight: bold;
+}
+#content .qb .qbHeader {
+ text-align: center;
+ color: #004f80;
+ padding: 0.3em 0.35em;
+ font-size: 1.2em;
+ background: #f0f0f0;
+ border-top: 1px solid #c0c0c0;
+}
+#content .qb tr:first-child .qbHeader {
+ border-top: none;
+ border-top-left-radius: 5px;
+ border-top-right-radius: 5px;
+ -moz-border-radius-topleft: 5px;
+ -moz-border-radius-topright: 5px;
+ -webkit-border-top-left-radius: 5px;
+ -webkit-border-top-right-radius: 5px;
+ -khtml-border-radius-topleft: 5px;
+ -khtml-border-radius-topright: 5px;
+}
+.qbImage {
+/* border-top: 1px solid #4D64CF; */
+ text-align: center;
+ padding: 5px 2px;
+ margin-left: auto;
+ margin-right: auto;
+}
+.qbImage div.thumb {
+ border-style: none;
+ margin-bottom: 0;
+}
+.qbImage div.thumbinner {
+ border-style: none;
+ padding: 0 !important;
+ background: transparent;
+ margin: 0 auto;
+}
+.qbImage div.tright {
+ float: none;
+ margin: 0;
+}
+.qb .qbImageCell {
+ padding: 0;
+}
+.qbImageCell .qbHeader {
+ border-bottom: none;
+}
+.qbEmpty {
+ display: none;
+}
+.qbEmpty td {
+ height: 1px;
+}
+.breakable {
+ font-size: 7%;
+ line-height: 0.1%;
+ text-decoration: none !important;
+ visibility: hidden;
+}
+@media print {
+ #content .qb { border-width: 0.25mm; }
+ #content .qb .qbHeader {
+  font-size: 1em;
+  background: #f0f0f0;
+  border-top: 0.25mm solid #c0c0c0;
+  border-bottom: 0.25mm solid #c0c0c0;
+ }
+}
+
+/*** styles and counter for mapping listings ***/
+@media screen {
+    .printonly { display:none !important; }
+}
+ 
+@media screen, print {
+    span.listing-map {
+        display: inline-block;
+        width: 12px; height: 13px;
+        text-align: right;
+        color: white;
+        font-size: 0.85em;
+        font-family: Arial,Verdana,sans-serif;
+        padding: 0px 2px 3px 1px;
+        -webkit-print-color-adjust: exact; //force printing on safari and chrome
+    }
+ 
+    h2 { counter-reset: mapnumber; }
+    span.listing-map:before {
+        content: counter(mapnumber);
+        counter-increment: mapnumber;
+    }
+ 
+    body { counter-reset: generalnumber; }
+    span.listing-map.listing-general:before {
+        content: counter(generalnumber);
+        counter-increment: generalnumber;
+    }
+
+}
+
+/* Externalisation des modèles de style pour améliorer les performances - Auslagerung von Stil-Vorlagen zur Performance-Steigerung */
+ 
+#contentSub img {
+ vertical-align: baseline;
+}
+ 
+.prettytable {
+ border: 1px solid #6cc8f3;
+ border-collapse: collapse;
+ empty-cells: show;
+ margin: 1em 0;
+ background: transparent;
+ border-spacing: 0 0;
+}
+.prettytable td, .prettytable th {
+ border: 1px solid #6cc8f3;
+ padding: 0.25em;
+ vertical-align: baseline;
+}
+.prettytable th { /* hightlighting */
+ text-align: center;
+ border-bottom: 1px solid #6cc8f3;
+ border-top: 1px solid #6cc8f3;
+ background: #f0f0f0;
+ color: #004f80;
+}
+.sortable th { /* ab Version 1.9 */
+ text-align: left;
+}
+.verticalCentered td, .verticalCentered th {
+ vertical-align: middle;
+}
+.textCentered td, .textCentered th {
+ text-align: center;
+}
+.framedBox {
+ margin: 1em 0;
+ padding: 0.5em;
+ border: 1px solid #6cc8f3;
+ border-radius: 5px;
+ -moz-border-radius: 5px;
+ -webkit-border-radius: 5px;
+ -khtml-border-radius: 5px;
+ -o-border-radius: 5px;
+}
+.noFloat {
+ clear: both;
+ float: none;
+ margin: 0;
+}
+
+/**** STYLES AIDE ET ACCUEIL ****/
+/* contruction des éléments */
+#aa-bloc-tete {
+	display:table; 
+	width: 100%;
+}
+ 
+#aa-bloc-gauche,
+#aa-bloc-droite {
+	display:table-cell;
+	vertical-align:center;
+}
+#aa-bloc-droite {
+	width:30%;
+}
+#aa-bloc-dessous {
+	padding:5px 10px;
+}
+#aa-bloc-tete h2 {
+	margin-top:4pt; /* Correction du style des titres par défaut pour une meilleure intégration */
+}
+/* Couleur et apparence des éléments */
+.aa-fond-gris {
+		background-color:#F6F6F6;
+		padding:10px; 
+		font-size: 1.1em;
+		}
+.aa-filet-gris {	
+	border:1px solid #CCC;
+	}
+.aa-fond-blanc {
+		background-color:#FFF;
+		padding:10px; 
+		}
+.aa-fond-avertissement {
+	display:block;
+	border-bottom:1px  solid #C00;
+	background-color:#FFF; 
+	padding: 10px;
+}
+.aa-titre-bleu {
+	color:#3366BB;
+	border:none;		
+}
+ 
+.aa-titre-rouge {
+	color:#C00;
+	border:none;
+}
+.aa-titre-vert {
+	color:#008769;
+	border:none;
+}
+.aa-faux-h2 {
+	font-weight:normal;
+	font-size:150%; 
+}
+.aa-faux-h3 {
+	font-weight:normal;
+	font-size:132%; 
+}
+
+/* Styles pour [[Modèle:Animation]] */
+ 
+.diaporamaControl img {
+  background-color: white;
+  border: 1px solid #DDDDDD;
+}
+ 
+.diaporamaControl .ScrollBar {
+  background-image: url(//upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Round_Edge.png/5px-Round_Edge.png);
+  background-position: top;
+  background-repeat: repeat-x;
+}
+ 
+.diaporamaControl .ScrollBarContainer {
+  background-image: url(//upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Round_Edge_bis.png/5px-Round_Edge_bis.png);
+  background-position: top;
+  background-repeat: repeat-x;
+}
+ 
+.diaporama .magnify {
+  display: none;
+}
+ 
+.diaporama select {
+  font-size: 12px;
+}
+
+/* CHIFFRES ROMAINS */
+ 
+/* Affichage des chiffres romains, voir [[modèle:Rom]] ou [[modèle:Romain]]. */
+ 
+.romain {
+  text-transform: lowercase;
+  font-variant: small-caps;
+}
+
+/* [[Modèle:Indication de langue]] */
+ 
+.indicateur-langue {
+  font-family: monospace;
+  font-weight: bold;
+  font-size: small;
+  font-style: normal;
+}
+ 
+.indicateur-format {
+  font-family: monospace;
+  font-weight: bold;
+  font-size: small;
+  font-style: normal;
+}/*
+MediaWiki:Vector.css
+*/
+/* CSS placed here will affect users of the Vector skin */
+
+#contentSub, #contentSub2 { font-size: 100% }
+
+.ns-8 pre { font-size: 125% }
+
+#geoCoord, #DoM {
+ position: absolute;
+ z-index: 1;
+ right: 12px;
+ right: 0;
+ top: -36px;
+ float: right;
+}
+
+#DoM {
+ top: -4px;
+}
