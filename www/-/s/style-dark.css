@@ -24,6 +24,10 @@
     color: lightgray;
   }
 
+  td[style*="color"] {
+      color: lightslategray !important;
+  }
+
   h1, h2, h3, h4, h5, h6, #footer li, .infobox th[style*="background"],
   div[style*="color"], input[type="search"], input[type="submit"],
   input[type="number"], select, .suggestions-result
@@ -128,7 +132,7 @@ a, .CategoryTreeToggle, #toc a, #toc a span, body .ui-button {
     background-color: #222 !important;
   }
 
-.navbox th, .climate-table th, .wikitable th, .navbox-title, th[bgcolor] {
+.navbox th, .climate-table th, .wikitable th, .navbox-title, th[bgcolor], td[bgcolor], tr[bgcolor] {
     background-color: darkslategray !important
 }
 
@@ -170,7 +174,7 @@ td[style*="background:#F2F2F2"], table.wikitable > tbody > tr[style*="background
   }
   /* add a white background to transparent images; see
    * https://forum.userstyles.org/discussion/48549/x */
-  img[data-kiwixsrc*=".svg"], a.image img, a[href*=".svg"] img {
+  img[data-kiwixsrc$=".svg"], img[data-kiwixsrc*="transparent"], a.image img, a[href*=".svg"] img {
     background: #ddd !important;
   }
 
@@ -179,9 +183,14 @@ td[style*="background:#F2F2F2"], table.wikitable > tbody > tr[style*="background
     background: #fff !important;
   }
 
-  .keyboard-key {
+blockquote[style*="background-color: white"] {
+    background-color: black !important;
+    color: lightgray !important;
+}
+
+.keyboard-key {
     box-shadow: 0.1em 0.2em 0.2em #444 !important;
-  }
+}
 
   hr {
     background-color: #555 !important;
@@ -209,7 +218,7 @@ td[style*="background:#F2F2F2"], table.wikitable > tbody > tr[style*="background
     background-color: #182030 !important;
   } */
 
-  .navbox-abovebelow, th.navbox-group, .navbox-subgroup .navbox-title,
+  .navbox-abovebelow, th.navbox-group, td.navbox-group, .navbox-subgroup .navbox-title,
   .navbox-abovebelow *, th.navbox-group *, .navbox-subgroup .navbox-title * {
     background-color: #212C43 !important;
   }
