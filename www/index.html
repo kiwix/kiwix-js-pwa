@@ -42,7 +42,7 @@
 <body role="application">
     <section id="search-article" role="region">
         <header id="top">
-            <nav class="navbar navbar-default" role="navigation">
+            <nav class="navbar navbar-default" id="navbar" role="navigation">
                 <!-- Brand and toggle get grouped for better mobile display -->
                 <div class="navbar-header">
 
@@ -59,9 +59,9 @@
                 </div><!-- /.navbar-collapse -->
             </nav>
 
-            <div class="container">
+            <div class="container" id="container">
                 <form id="formArticleSearch">
-                    <div class="row">
+                    <div class="row" id="row">
                         <span class="nopadding col-md-offset-1 col-sm-offset-1 col-md-8 col-sm-8 col-xs-7">
                             <span class="input-group">
                                 <input type="search" id="prefix" placeholder="Search..." class="form-control" />
@@ -82,7 +82,7 @@
                 </form>
             </div>
         </header>
-        <article class="view-content">
+        <article class="view-content" id="article">
             <div id="about" style="display: none;" class="category-padding">
                 <h2>
                     <img src="img/icons/kiwix-60.png" alt="Kiwix icon" />
@@ -221,9 +221,21 @@
                                 </p>
                                 <p style="text-indent: -22px; margin-left: 20px;">
                                     <input type="checkbox" name="imageDisplayMode" value="true" id="imageDisplayModeCheck">
-                                    <b>&nbsp;Display images if any</b> (if you hide them, click on <span style="background-color:lightblue">blue area</span> to display one-by-one)
+                                    <b>&nbsp;Display images if any</b> (if you hide them, click on <span style="background-color:lightblue; color:black;">blue area</span> to display one-by-one)
                                 </p>
                             </div>
+                            <div id="displayThemeDiv" class="settings" style="clear: left;">
+                                <p>Here you may select a dark theme for night reading:</p>
+                                <p style="text-indent: -22px; margin-left: 20px;">
+                                    <input type="checkbox" name="cssUIDarkTheme" id="cssUIDarkThemeCheck">
+                                    <b>&nbsp;Use a dark theme for the user interface</b>
+                                </p>
+                                <p style="text-indent: -22px; margin-left: 20px;">
+                                    <input type="checkbox" name="cssWikiDarkTheme" id="cssWikiDarkThemeCheck">
+                                    <b>&nbsp;Use a dark theme for Wikimedia articles</b> (this may not work on non-Wikipedia ZIM files)
+                                </p>
+                            </div>
+
                         </td>
                     </tr>
                 </table>
