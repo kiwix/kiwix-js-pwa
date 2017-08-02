@@ -128,7 +128,7 @@ a, .CategoryTreeToggle, #toc a, #toc a span, body .ui-button {
     background-color: #222 !important;
   }
 
-.navbox th, .navbox-title {
+.navbox th, .climate-table th, .wikitable th, .navbox-title, th[bgcolor] {
     background-color: darkslategray !important
 }
 
@@ -138,14 +138,12 @@ a, .CategoryTreeToggle, #toc a, #toc a span, body .ui-button {
     border-color: #555 !important;
   }
 
-  table[style*="background-color:#fff;"], .search-form fieldset, table.ambox, tr[style*="background-color: #fff;"],
-  .mw-ui-button[style*="background-color:#008B6D"], tr[style*="background-color: #f5faff;"],
-  tr[style*="background:#E9E9E9"] > *, table.infobox.hproduct > tbody > tr[style*="background: #F0F0F0;"],
-  td[style*="background:lightgray"], td[style*="background:#eeeeff"], td[style*="background:#ddddff"],
-  .oo-ui-buttonElement-button:hover, .tracklist tr[style*="background-color:#f7f7f7"]
-  {
+table[style*="background-color:#fff;"], .search-form fieldset, table.ambox, tr[style*="background-color: #fff;"],
+.mw-ui-button[style*="background-color:#008B6D"], tr[style*="background-color: #f5faff;"],
+tr[style*="background:#E9E9E9"] > *, table.infobox.hproduct > tbody > tr[style*="background: #F0F0F0;"],
+td[style*="background:lightgray"], td[style*="background:#eeeeff"], td[style*="background:#e8e8e8"], td[style*="background:#ddddff"], td[style*="background:#efefef"], td[style*="background:#e9e9e9"], .oo-ui-buttonElement-button:hover, .tracklist tr[style*="background-color:#f7f7f7"] {
     background-color: #282828 !important;
-  }
+}
 
   table.wikitable > tr > th, table.wikitable > * > tr > th, div.barbox > table > tbody > tr > th
   {
@@ -153,14 +151,12 @@ a, .CategoryTreeToggle, #toc a, #toc a span, body .ui-button {
  /* don't include !important flag */
   }
 
-  td[style*="background: #ececec;"], th[style*="background:#eee"], th[style*="background-color: #eee"],
-  tr[style*="background-color: #f7f7f7;"], th[style*="background:#F2F2F2"], #filetoc, .toccolours,
-  th[style*="background:#F9F9F9"], table.plainlinks, th[style*="background-color: lightgrey"],
-  th[style*="background:#ddd"], .infobox th[style*="background"], .infobox td[style*="background"],
-  td[style*="background:#F2F2F2"], table.wikitable > tbody > tr[style*="background-color:#F6F6F6"],
-  .tlheader {
+td[style*="background: #ececec;"], th[style*="background:#eee"], th[style*="background-color: #eee"],
+tr[style*="background-color: #f7f7f7;"], th[style*="background:#F2F2F2"], th[style*="background:#ffffff"], #filetoc, .toccolours, th[style*="background:#F9F9F9"], th[style*="background:#e8e8e8"], table.plainlinks, th[style*="background-color: lightgrey"], th[style*="background:#ddd"], .infobox th[style*="background"], .infobox td[style*="background"],
+td[style*="background:#F2F2F2"], table.wikitable > tbody > tr[style*="background-color:#F6F6F6"],
+.tlheader {
     background-color: #333 !important;
-  }
+}
 
   /* remove background image/gradient */
   .keyboard-key, div#editpage-specialchars a, body div.ui-dialog .ui-widget-header {
@@ -239,7 +235,7 @@ a, .CategoryTreeToggle, #toc a, #toc a span, body .ui-button {
     border-color: #555 !important;
   }
 
-  td[style*="border-bottom"] {
+td[style*="border-bottom"] {
     border-right-color: #555 !important;
     border-left-color: #555 !important;
     border-top-color: #555 !important;
