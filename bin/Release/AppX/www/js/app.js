@@ -239,6 +239,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     });
     $('input:checkbox[name=cssWikiDarkTheme]').on('change', function (e) {
         params['cssTheme'] = this.checked ? 'dark' : 'light';
+        if (this.checked) {
+            document.getElementById('footer').classList.add("darkfooter");
+        }
+        if (!this.checked) {
+            document.getElementById('footer').classList.remove("darkfooter");
+        }
     });
     $('input:radio[name=cssInjectionMode]').on('click', function (e) {
         params['cssSource'] = this.value;

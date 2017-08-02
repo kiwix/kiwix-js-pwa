@@ -28,16 +28,16 @@
   div[style*="color"], input[type="search"], input[type="submit"],
   input[type="number"], select, .suggestions-result
   {
-    color: #9a9a9a !important;
+    color: gainsboro !important;
   }
 
 a, .CategoryTreeToggle, #toc a, #toc a span, body .ui-button {
-    color: #f2f2f2 !important;
+    color: lightblue !important;
 }
 
   a:visited, #toc a:visited, #toc a:visited span
   {
-    color: /*[[visited-color]]*/!important;
+    color: palevioletred !important;
   }
 
   a:hover, a:hover span, #toc a:hover, #toc a:hover span,
@@ -46,6 +46,16 @@ a, .CategoryTreeToggle, #toc a, #toc a span, body .ui-button {
     color: #fff !important;
     text-decoration: underline !important;
   }
+
+#content .qb .qbHeader {
+    background: #1d3030;
+    color: whitesmoke;
+}
+
+.prettytable th { /* hightlighting */
+    background: #1d3030;
+}
+
 
   /* text selection */
   ::selection
@@ -118,6 +128,10 @@ a, .CategoryTreeToggle, #toc a, #toc a span, body .ui-button {
     background-color: #222 !important;
   }
 
+.navbox th, .navbox-title {
+    background-color: darkslategray !important
+}
+
   body .ui-button
   {
     background: #282828 !important;
@@ -160,9 +174,10 @@ a, .CategoryTreeToggle, #toc a, #toc a span, body .ui-button {
   }
   /* add a white background to transparent images; see
    * https://forum.userstyles.org/discussion/48549/x */
-  a.image img, a[href*=".svg"] img {
+  img[data-kiwixsrc*=".svg"], a.image img, a[href*=".svg"] img {
     background: #ddd !important;
   }
+
   /* white background to wikEd - see #24 */
   .wikEdFrameBodySyntax {
     background: #fff !important;
