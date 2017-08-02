@@ -93,14 +93,18 @@
     border: 1px solid black;
 }
 
-.dark {
-    color: lightgray;
-    background-color: #222 !important;
-    border-color: darkgray;
+.darkfooter {
+    background: rgba(47,79,79,.3) !important;
 }
 
-.form-control .dark > input {
+.glyphicon {
+    color: #337ab7 !important;
+}
+
+.dark {
     color: lightgray !important;
+    background-color: #222 !important;
+    border-color: darkgray;
 }
 
 
