@@ -89,9 +89,19 @@
     margin: 5px;
     padding: 10px;
     max-width: 300px;
-    height: 150px;
+    min-height: 150px;
     border: 1px solid black;
-} 
+}
+
+.dark {
+    color: lightgray;
+    background-color: #222 !important;
+    border-color: darkgray;
+}
+
+.form-control .dark > input {
+    color: lightgray !important;
+}
 
 
 /* Réduction de la taille des éléments en haut pour les petits écrans */
@@ -111,6 +121,7 @@
         padding-bottom: 2px !important;
         margin-top: 2px !important;
         margin-bottom: 0px !important;
+        background-color: lightgray !important;
     }
 /* Pour réduire la taille des éléments et boutons dans l'aréa de navégation - GK
     .navbar-nav, .navbar-nav > li {

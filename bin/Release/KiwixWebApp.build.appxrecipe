@@ -286,6 +286,9 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mw.TMHGalleryHook.js.css">
       <PackagePath>www\-\s\css_modules\mw.TMHGalleryHook.js.css</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\style-dark.css">
+      <PackagePath>www\-\s\style-dark.css</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\style-mobile.css">
       <PackagePath>www\-\s\style-mobile.css</PackagePath>
     </AppxPackagedFile>

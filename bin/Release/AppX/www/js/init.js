@@ -25,6 +25,8 @@ var params = {};
 var results = params['results'] || 10; //Number of search results to display
 params['cssSource'] = params['cssSource'] || "desktop"; //Set default to "desktop" or "mobile"
 params['cssCache'] = params['cssCache'] || true; //Set default to true to use cached CSS, false to use Zim only
+params['cssTheme'] = params['cssTheme'] || 'light'; //Set default to 'light' or 'dark' to use respective themes for Wiki articles
+params['cssUITheme'] = params['cssUITheme'] || 'light'; //Set default to 'light' or 'dark' to use respective themes for UI
 params['imageDisplay'] = params['imageDisplay'] || true; //Set default to display images from Zim
 
 require.config({
