@@ -174,7 +174,7 @@ td[style*="background:#F2F2F2"], table.wikitable > tbody > tr[style*="background
   }
   /* add a white background to transparent images; see
    * https://forum.userstyles.org/discussion/48549/x */
-  img[data-kiwixsrc$=".svg"], img[data-kiwixsrc*="transparent"], a.image img, a[href*=".svg"] img {
+  img[data-kiwixsrc$=".svg"], img[data-kiwixsrc*="Kiwix_logo"], a.image img, a[href*=".svg"] img {
     background: #ddd !important;
   }
 
@@ -326,7 +326,7 @@ td[style*="border-bottom"] {
   /*** invert images ***/
   img[title="Wikipedia"], .bookshelf-container .bookend, img.mwe-math-fallback-image-inline,
   #mw-wsmfinal-close, img[src*="Speaker_Icon"], .infobox img[alt*="structure"][src*=".svg"], img[src*=".png"]:active,
-  img[src*=".svg"][height="16"], img[src*=".svg"][height="17"], img[src*=".svg"][height="18"],
+  img[src*=".svg"][height="16"], img[src*=".svg"][height="17"], img[src*=".svg"][height="18"], img[data-kiwixsrc*="Kiwix_icon"],
   .oo-ui-iconElement-icon:not(.mw-echo-notifications-badge), .RTsettings, #gtx-host, .jfk-bubble-closebtn,
   #pt-notifications-notice .mw-echo-notifications-badge:before, .oo-ui-pendingElement-pending,
   #pt-notifications-alert .mw-echo-notifications-badge:before {
