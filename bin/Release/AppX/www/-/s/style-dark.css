@@ -3,6 +3,14 @@
  * https://github.com/StylishThemes/Wikipedia-Dark
  * http://userstyles.org/styles/
  * Modified from https://userstyles.org/styles/47161/dark-wikipedia-rounded
+ * In turn, the styles have been modified to work with Kiwix JS and Kiwix JS Windows.
+ * The source file for this adapted version can be found at:
+ * https://github.com/kiwix/kiwix-js-windows/
+ *
+ * This CSS file is licensed with a CC-BY-SA Creative Commons Free Culture Licence:
+ * https://creativecommons.org/licenses/by-sa/4.0/ 
+ * This licence applies *only* to this CSS file within the Kiwix JS and Kiwix JS Windows projects.
+ *
  */
 
   /* transparent background */
@@ -132,8 +140,14 @@ a, .CategoryTreeToggle, #toc a, #toc a span, body .ui-button {
     background-color: #222 !important;
   }
 
-.navbox th, .climate-table th, .wikitable th, .navbox-title, th[bgcolor], td[bgcolor], tr[bgcolor] {
-    background-color: darkslategray !important
+.navbox th, .climate-table th, .wikitable th, .navbox-title, th[bgcolor], td[bgcolor] {
+    background-color: darkslategray !important;
+    border-color: #555 !important;
+}
+
+tr[bgcolor] {
+    background-color: #2F3F4F !important;
+    border-color: #524B4B !important;
 }
 
   body .ui-button
@@ -174,7 +188,7 @@ td[style*="background:#F2F2F2"], table.wikitable > tbody > tr[style*="background
   }
   /* add a white background to transparent images; see
    * https://forum.userstyles.org/discussion/48549/x */
-  img[data-kiwixsrc$=".svg"], a.image img, a[href*=".svg"] img {
+  img[data-kiwixsrc$=".svg"], img[data-kiwixsrc*="Kiwix_logo"], a.image img, a[href*=".svg"] img {
     background: #ddd !important;
   }
 
@@ -183,7 +197,7 @@ td[style*="background:#F2F2F2"], table.wikitable > tbody > tr[style*="background
     background: #fff !important;
   }
 
-blockquote[style*="background-color: white"] {
+blockquote[style*="white"] {
     background-color: black !important;
     color: lightgray !important;
 }
@@ -207,16 +221,16 @@ blockquote[style*="background-color: white"] {
     background: #244024 !important;
   }
 
-/* Blue 
-  div[style*="background"] h2, div[style*="background"] h2 *, #mp-right h2, #mp-right h2 span, .navbox th,
-  .navbox-title, .navbox-title *, tr[style*="background-color:tan;"],
-  div[style*="background: #444444;"], div[style*="background: #444444;"] *,
-  ol.references li:target, sup.reference:target, span.citation:target,
-  ol.references li:target *, sup.reference:target *, span.citation:target *,
-  td[style*="background:#CEDFF2"], tr[bgcolor="#CEDFF2"], table[style*="background-color:#cef2e0"] *,
-  div[style*="background-color: #cee0f2"], div[style*="background-color: #cedff2"] {
-    background-color: #182030 !important;
-  } */
+  /* Blue */
+div[style*="background"] h2, div[style*="background"] h2 *, #mp-right h2, #mp-right h2 span, .navbox th,
+.navbox-title, .navbox-title *, tr[style*="background-color:tan;"],
+div[style*="background: #444444;"], div[style*="background: #444444;"] *,
+ol.references li:target, sup.reference:target, span.citation:target,
+ol.references li:target *, sup.reference:target *, span.citation:target *,
+td[style*="background:#CEDFF2"], tr[bgcolor="#CEDFF2"], table[style*="background-color:#cef2e0"] *,
+div[style*="background-color: #cee0f2"], div[style*="background-color: #cedff2"] {
+    background-color: black !important;
+}
 
   .navbox-abovebelow, th.navbox-group, td.navbox-group, .navbox-subgroup .navbox-title,
   .navbox-abovebelow *, th.navbox-group *, .navbox-subgroup .navbox-title * {
@@ -324,16 +338,16 @@ td[style*="border-bottom"] {
   }
 
   /*** invert images ***/
-  img[title="Wikipedia"], .bookshelf-container .bookend, img.mwe-math-fallback-image-inline,
-  #mw-wsmfinal-close, img[src*="Speaker_Icon"], .infobox img[alt*="structure"][src*=".svg"], img[src*=".png"]:active,
-  img[src*=".svg"][height="16"], img[src*=".svg"][height="17"], img[src*=".svg"][height="18"], img[data-kiwixsrc*="Kiwix"],
-  .oo-ui-iconElement-icon:not(.mw-echo-notifications-badge), .RTsettings, #gtx-host, .jfk-bubble-closebtn,
-  #pt-notifications-notice .mw-echo-notifications-badge:before, .oo-ui-pendingElement-pending,
-  #pt-notifications-alert .mw-echo-notifications-badge:before {
+img[title="Wikipedia"], .bookshelf-container .bookend, img.mwe-math-fallback-image-inline,
+#mw-wsmfinal-close, img[data-kiwixsrc*="Speaker_Icon"], .infobox img[alt*="structure"][data-kiwixsrc*=".svg"], .infobox img[data-file-type*="drawing"][data-kiwixsrc*=".svg"], img[data-kiwixsrc*=".png"]:active,
+img[data-kiwixsrc*=".svg"][height="16"], img[data-kiwixsrc*=".svg"][height="17"], img[data-kiwixsrc*=".svg"][height="18"], img[data-kiwixsrc*="Kiwix_icon"],
+.oo-ui-iconElement-icon:not(.mw-echo-notifications-badge), .RTsettings, #gtx-host, .jfk-bubble-closebtn,
+#pt-notifications-notice .mw-echo-notifications-badge:before, .oo-ui-pendingElement-pending,
+#pt-notifications-alert .mw-echo-notifications-badge:before {
     -webkit-filter: invert(100%) !important;
-            filter: invert(100%) !important;
+    filter: invert(100%) !important;
     background-color: transparent !important;
-  }
+}
   .oo-ui-icon-bell {
     opacity: 0.7 !important;
   }
