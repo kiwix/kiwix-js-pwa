@@ -32,7 +32,7 @@
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-03T06:44:44.458</Modified>
+      <Modified>2017-08-03T16:11:24.322</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -371,7 +371,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\style-dark.css">
       <PackagePath>www\-\s\style-dark.css</PackagePath>
-      <Modified>2017-08-03T06:44:19.647</Modified>
+      <Modified>2017-08-03T14:46:32.147</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\style-mobile.css">
       <PackagePath>www\-\s\style-mobile.css</PackagePath>
@@ -379,7 +379,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\style.css">
       <PackagePath>www\-\s\style.css</PackagePath>
-      <Modified>2017-07-27T16:49:07.370</Modified>
+      <Modified>2017-08-03T13:54:24.424</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\vector.css">
       <PackagePath>www\-\s\vector.css</PackagePath>
@@ -387,7 +387,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\css\app.css">
       <PackagePath>www\css\app.css</PackagePath>
-      <Modified>2017-08-02T13:58:13.045</Modified>
+      <Modified>2017-08-03T16:01:31.768</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\css\bootstrap-theme.css">
       <PackagePath>www\css\bootstrap-theme.css</PackagePath>
@@ -403,7 +403,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\index.html">
       <PackagePath>www\index.html</PackagePath>
-      <Modified>2017-08-02T11:08:14.747</Modified>
+      <Modified>2017-08-03T14:16:34.242</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\favicon.ico">
       <PackagePath>www\favicon.ico</PackagePath>
@@ -443,11 +443,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-08-02T13:37:50.968</Modified>
+      <Modified>2017-08-03T13:25:41.310</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
-      <Modified>2017-07-31T12:00:36.763</Modified>
+      <Modified>2017-08-03T13:13:48.797</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\abstractFilesystemAccess.js">
       <PackagePath>www\js\lib\abstractFilesystemAccess.js</PackagePath>
