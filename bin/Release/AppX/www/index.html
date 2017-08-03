@@ -205,12 +205,16 @@
                             <div id="cssSettingsDiv" class="settings">
                                 <p>Please select the display style:</p>
                                 <p style="text-indent: -22px; margin-left: 20px;">
-                                    <input name="cssInjectionMode" id="cssModeDesktopRadio" type="radio" checked="checked" value="desktop">
-                                    <b>&nbsp;Use Wikimedia desktop display style</b> (for Wikipedia files)
+                                    <input name="cssInjectionMode" id="cssModeAutoRadio" type="radio" value="auto">
+                                    <b>&nbsp;Select style automatically</b> (<i>recommended</i>: matches the ZIM style)
+                                </p>
+                                <p style="text-indent: -22px; margin-left: 20px;">
+                                    <input name="cssInjectionMode" id="cssModeDesktopRadio" type="radio" value="desktop">
+                                    <b>&nbsp;Use Wikimedia desktop display style</b> (and transform if necessary)
                                 </p>                               
                                 <p style="text-indent: -22px; margin-left: 20px;">
                                     <input type="radio" name="cssInjectionMode" value="mobile" id="cssModeMobileRadio">
-                                    <b>&nbsp;Use Wikimedia mobile display style</b> (for Wikipedia files)
+                                    <b>&nbsp;Use Wikimedia mobile display style</b> (and transform if necessary)
                                 </p>
                             </div>
                             <div id="displaySettingsDiv" class="settings">
@@ -239,6 +243,7 @@
                         </td>
                     </tr>
                 </table>
+                <div id="returntoArticle_bottom" style="text-align: center;"></div>
                 <h2>Expert settings</h2>
                 <div id="contentInjectionModeDiv">
                     Do not touch unless you know what you're doing. <br />
@@ -250,7 +255,6 @@
                 <div id="serviceWorkerStatus"></div>
                 <div id="messageChannelStatus"></div>
                 <br />
-                <div id="returntoArticle_bottom" style="text-align: center;"></div>
             </div>
             <div id="welcomeText" class="container category-padding">
                 You can search the content of your ZIM archive by typing in the above search field.

@@ -895,6 +895,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
             var testCSS = arr.join();
             zimType = /-\/s\/style\.css/i.test(testCSS) ? "desktop" : zimType;
             zimType = /minerva|mobile/i.test(testCSS) ? "mobile" : zimType;
+            cssSource = cssSource == "auto" ? zimType : cssSource; //Default to in-built zimType if user has selected automatic detection of styles
             if (/minerva/i.test(testCSS) && (cssCache || zimType != cssSource)) {
                 //Substitute ridiculously long style name TODO: move this code to transformStyles
                 for (var i = 0; i < arr.length; i++) { //NB minerva.css is a dummy name for now TODO: sort out in transfromStyles
