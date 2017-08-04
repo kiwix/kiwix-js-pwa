@@ -97,10 +97,6 @@ define(['uiUtil'], function (uiUtil) {
         if (cc || (zim == "desktop")) { //If user requested cached styles OR the ZIM does not contain mobile styles
             console.log(zim == "desktop" ? "Transforming display style to mobile..." : "Optimizing cached styles for mobile display...");
             uiUtil.poll("desktop" ? "Transforming display style to mobile..." : "Optimizing cached styles for mobile display...");
-            //Add dark theme if requested
-            css += (cssTheme == "dark") ? '<link href="../-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : "";
-            html = (cssTheme == "dark") ? html.replace(/(<h1\s+[^>]*)background-color\s*:\s*white;\s*/i, "$1") : html;
-            html = (cssTheme == "dark") ? html.replace(/(<div\s+[^>]*)background-image\s*:\s*linear-gradient[^;]+white[^;]*;\s*/i, "$1") : html;
             //Allow images to float right or left
             html = html.replace(/class\s*=\s*["']\s*thumb\s+tright\s*["']\s*/ig, 'style="float: right; clear: right; margin-left: 1.4em;"');
             html = html.replace(/class\s*=\s*["']\s*thumb\s+tleft\s*["']\s*/ig, 'style="float: left; clear: left; margin-right: 1.4em;"');
@@ -115,6 +111,11 @@ define(['uiUtil'], function (uiUtil) {
             //Wrap <h2> tags in <div> to control bottom border width if there's an infobox
             html = html.match(/table\s+(?=[^>]*class\s*=\s*["'][^"']*infobox)/i) ? html.replace(/(<h2\s+[^<]*<\/h2>)/ig, '<div style="width: 60%;">$1</div>') : html;
         }
+        //Add dark theme if requested
+        css += (cssTheme == "dark") ? '<link href="../-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : "";
+        html = (cssTheme == "dark") ? html.replace(/(<h1\s+[^>]*)background-color\s*:\s*white;\s*/i, "$1") : html;
+        html = (cssTheme == "dark") ? html.replace(/(<div\s+[^>]*)background-image\s*:\s*linear-gradient[^;]+white[^;]*;\s*/i, "$1") : html;
+
         return { html : html, css : css };
     }
 
@@ -130,10 +131,6 @@ define(['uiUtil'], function (uiUtil) {
         if (cc || (zim == "mobile")) { //If user requested cached styles OR the ZIM does not contain desktop styles
             console.log(zim == "mobile" ? "Transforming display style to desktop..." : "Optimizing cached styles for desktop display...");
             uiUtil.poll("mobile" ? "Transforming display style to desktop..." : "Optimizing cached styles for desktop display...");
-            //Add dark theme if requested
-            css += (cssTheme == "dark") ? '<link href="../-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : "";
-            html = (cssTheme == "dark") ? html.replace(/(<h1\s+[^>]*)background-color:\s*white;\s*/i, "$1") : html;
-            html = (cssTheme == "dark") ? html.replace(/(<div\s+[^>]*)background-image\s*:\s*linear-gradient[^;]+white[^;]*;\s*/i, "$1") : html;
             //If it's in mobile position, move info-box above lead paragraph like on Wikipedia desktop
             //html = html.replace(/((?:<span\s*>\s*)?<p\b[^>]*>(?:(?=([^<]+))\2|<(?!p\b[^>]*>))*?<\/p>(?:<\/span\s*>)?[^<]*)([\s\S]*?)(<table\s*(?=[^>]*infobox)[\s\S]+?<\/table>)/i, "$4$3$1");
             html = zim == "mobile" ? html.replace(/((?:<span\s*>\s*)?<p\b[\s\S]+?)(<table\s*(?=[^>]*(?:infobox|vertical-navbox))[\s\S]+?<\/table>)/i, "$2\r\n$1") : html;
@@ -142,6 +139,11 @@ define(['uiUtil'], function (uiUtil) {
             //Void empty header title
             html = html.replace(/<h1\s*[^>]+titleHeading[^>]+>\s*<\/h1>\s*/ig, "");
         }
+        //Add dark theme if requested
+        css += (cssTheme == "dark") ? '<link href="../-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : "";
+        html = (cssTheme == "dark") ? html.replace(/(<h1\s+[^>]*)background-color:\s*white;\s*/i, "$1") : html;
+        html = (cssTheme == "dark") ? html.replace(/(<div\s+[^>]*)background-image\s*:\s*linear-gradient[^;]+white[^;]*;\s*/i, "$1") : html;
+
         return { html : html, css : css };
     }
 
