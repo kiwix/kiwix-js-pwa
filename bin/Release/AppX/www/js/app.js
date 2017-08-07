@@ -880,7 +880,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 '$1height="36" src="../img/lightBlue.png" style="color: lightblue; background-color: lightblue;" ' +
                 'data-kiwixheight$2');
         }
-
+     //TESTING - find out whether document contains MathSVGs
+        var containsMathSVG = /\.svg\s*['"][^>]+mwe-math-fallback-image|mwe-math-fallback-image[^>]+\.svg\s*['"]/i.test(htmlArticle);
+        
      //Preload stylesheets [kiwix-js @149]
         //Set up blobArray of promises
         var cssArray = htmlArticle.match(regexpSheetHref);
@@ -986,25 +988,31 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         }
     //End of preload stylesheets code
 
-        function injectHTML(htmlContent) {
+        function injectHTML() {
             //Void progress message
             uiUtil.clear(); //Void progress messages
             $("#readingArticle").hide();
             $("#articleContent").show();
             // Scroll the iframe to its top
             $("#articleContent").contents().scrollTop(0);
-            $('#articleContent').contents().find('body').html(htmlContent);
-            //Try to match Title
-            //var articleTitle = htmlContent.match(regexpArticleTitle); 
-            //If not found try to match mw-offliner ZIM format
-            //var articleTitle = articleTitle ? articleTitle[1] : htmlContent.match(regexpType2ZIMTitle);
-            //If not found, use "Article"
-            //articleTitle = articleTitle ? articleTitle[1] : "Article";
+            $('#articleContent').contents().find('body').html(htmlArticle);
+
             uiUtil.makeReturnLink(dirEntry); //[kiwix-js #127]
 
             // If the ServiceWorker is not useable, we need to fallback to parse the DOM
             // to inject math images, and replace some links with javascript calls
             if (contentInjectionMode === 'jquery') {
+
+                //Load MathJax if required and if not already loaded
+                if (containsMathSVG) {
+                    if (!window.frames[0].MathJax) {
+                        var doc = $("#articleContent").contents()[0];
+                        var script = doc.createElement("script");
+                        script.type = "text/javascript";
+                        script.src = "../js/MathJax/MathJax.js?config=config";
+                        doc.head.appendChild(script);
+                    }
+                }
 
                 // Convert links into javascript calls
                 $('#articleContent').contents().find('body').find('a').each(function () {
@@ -1312,6 +1320,27 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     //TESTING
                     if (countImages <= maxVisibleSliceSize + prefetchSliceSize) { console.timeEnd("Time to Document Ready"); }
 
+                    //Use the MathJax method of typesetting formulae if user has requested this
+                    if (params['useMathJax']) {
+                        var counter = 0;
+                        $(svgSlice).each(function () {
+                            var node = this;
+                            if (/mwe-math-fallback-image/i.test(node.className) && node.alt) {
+                                var text = node.alt;
+                                var script = document.createElement("script");
+                                script.type = "math/tex";
+                                script.text = text;
+                                $(this).replaceWith(script);
+                                console.log("Typesetting image #" + countImages + "...");
+                                countImages++;
+                                svgSlice.splice(counter, 1);
+                            } else {
+                                counter++;
+                            }
+                        });
+                        window.frames[0].MathJax.Hub.Queue(["Typeset", window.frames[0].MathJax.Hub]);
+                    }
+                    //If there are any SVGs left which were not dealt with by MathJax, process fallback images
                     if (svgSlice.length) {
                         console.log("** Slicing " + svgSlice.length + " SVG images...");
                         //Set up variables to hold visible image range (to check whether user scrolls during lengthy procedure)
