@@ -1322,7 +1322,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
 
                     if (svgSlice.length) {
                         //Use the MathJax method of typesetting formulae if user has requested this
-                        if (params['useMathJax']) {
+                        if (params['useMathJax'] && window.frames[0].MathJax) {
                             var counter = 0;
                             $(svgSlice).each(function () {
                                 var node = this;
