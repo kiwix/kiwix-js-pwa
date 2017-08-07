@@ -92,6 +92,11 @@
 				</NamedResource>
 				<ResourceMapSubtree name="-">
 					<ResourceMapSubtree name="s">
+						<NamedResource name="style-dark.css" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/-/s/style-dark.css">
+							<Candidate type="Path">
+								<Value>www\-\s\style-dark.css</Value>
+							</Candidate>
+						</NamedResource>
 						<NamedResource name="style-mobile.css" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/-/s/style-mobile.css">
 							<Candidate type="Path">
 								<Value>www\-\s\style-mobile.css</Value>
@@ -148,6 +153,11 @@
 									<Value>www\-\s\css_modules\ext.timeline.styles.css</Value>
 								</Candidate>
 							</NamedResource>
+							<NamedResource name="ext.tmh.thumbnail.styles.css" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/-/s/css_modules/ext.tmh.thumbnail.styles.css">
+								<Candidate type="Path">
+									<Value>www\-\s\css_modules\ext.tmh.thumbnail.styles.css</Value>
+								</Candidate>
+							</NamedResource>
 							<NamedResource name="inserted_style_mobile.css" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/-/s/css_modules/inserted_style_mobile.css">
 								<Candidate type="Path">
 									<Value>www\-\s\css_modules\inserted_style_mobile.css</Value>
@@ -166,6 +176,21 @@
 							<NamedResource name="mobile.css" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/-/s/css_modules/mobile.css">
 								<Candidate type="Path">
 									<Value>www\-\s\css_modules\mobile.css</Value>
+								</Candidate>
+							</NamedResource>
+							<NamedResource name="mw.MediaWikiPlayer.loader.css" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/-/s/css_modules/mw.MediaWikiPlayer.loader.css">
+								<Candidate type="Path">
+									<Value>www\-\s\css_modules\mw.MediaWikiPlayer.loader.css</Value>
+								</Candidate>
+							</NamedResource>
+							<NamedResource name="mw.PopUpMediaTransform.css" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/-/s/css_modules/mw.PopUpMediaTransform.css">
+								<Candidate type="Path">
+									<Value>www\-\s\css_modules\mw.PopUpMediaTransform.css</Value>
+								</Candidate>
+							</NamedResource>
+							<NamedResource name="mw.TMHGalleryHook.js.css" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/-/s/css_modules/mw.TMHGalleryHook.js.css">
+								<Candidate type="Path">
+									<Value>www\-\s\css_modules\mw.TMHGalleryHook.js.css</Value>
 								</Candidate>
 							</NamedResource>
 						</ResourceMapSubtree>
@@ -255,6 +280,11 @@
 					<NamedResource name="Kiwix_icon_transparent_600x600.png" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/img/Kiwix_icon_transparent_600x600.png">
 						<Candidate type="Path">
 							<Value>www\img\Kiwix_icon_transparent_600x600.png</Value>
+						</Candidate>
+					</NamedResource>
+					<NamedResource name="lightBlue.png" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/img/lightBlue.png">
+						<Candidate type="Path">
+							<Value>www\img\lightBlue.png</Value>
 						</Candidate>
 					</NamedResource>
 					<NamedResource name="spinner.gif" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/img/spinner.gif">
@@ -362,6 +392,1313 @@
 								<Value>www\js\lib\zimfile.js</Value>
 							</Candidate>
 						</NamedResource>
+					</ResourceMapSubtree>
+					<ResourceMapSubtree name="MathJax">
+						<NamedResource name="deleteMe_latest_js.delete" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/deleteMe_latest_js.delete">
+							<Candidate type="Path">
+								<Value>www\js\MathJax\deleteMe_latest_js.delete</Value>
+							</Candidate>
+						</NamedResource>
+						<NamedResource name="MathJax.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/MathJax.js">
+							<Candidate type="Path">
+								<Value>www\js\MathJax\MathJax.js</Value>
+							</Candidate>
+						</NamedResource>
+						<ResourceMapSubtree name="config">
+							<NamedResource name="config.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/config/config.js">
+								<Candidate type="Path">
+									<Value>www\js\MathJax\config\config.js</Value>
+								</Candidate>
+							</NamedResource>
+						</ResourceMapSubtree>
+						<ResourceMapSubtree name="extensions">
+							<NamedResource name="AssistiveMML.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/AssistiveMML.js">
+								<Candidate type="Path">
+									<Value>www\js\MathJax\extensions\AssistiveMML.js</Value>
+								</Candidate>
+							</NamedResource>
+							<NamedResource name="CHTML-preview.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/CHTML-preview.js">
+								<Candidate type="Path">
+									<Value>www\js\MathJax\extensions\CHTML-preview.js</Value>
+								</Candidate>
+							</NamedResource>
+							<NamedResource name="fast-preview.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/fast-preview.js">
+								<Candidate type="Path">
+									<Value>www\js\MathJax\extensions\fast-preview.js</Value>
+								</Candidate>
+							</NamedResource>
+							<NamedResource name="FontWarnings.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/FontWarnings.js">
+								<Candidate type="Path">
+									<Value>www\js\MathJax\extensions\FontWarnings.js</Value>
+								</Candidate>
+							</NamedResource>
+							<NamedResource name="HelpDialog.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/HelpDialog.js">
+								<Candidate type="Path">
+									<Value>www\js\MathJax\extensions\HelpDialog.js</Value>
+								</Candidate>
+							</NamedResource>
+							<NamedResource name="MatchWebFonts.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/MatchWebFonts.js">
+								<Candidate type="Path">
+									<Value>www\js\MathJax\extensions\MatchWebFonts.js</Value>
+								</Candidate>
+							</NamedResource>
+							<NamedResource name="MathEvents.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/MathEvents.js">
+								<Candidate type="Path">
+									<Value>www\js\MathJax\extensions\MathEvents.js</Value>
+								</Candidate>
+							</NamedResource>
+							<NamedResource name="MathMenu.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/MathMenu.js">
+								<Candidate type="Path">
+									<Value>www\js\MathJax\extensions\MathMenu.js</Value>
+								</Candidate>
+							</NamedResource>
+							<NamedResource name="MathZoom.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/MathZoom.js">
+								<Candidate type="Path">
+									<Value>www\js\MathJax\extensions\MathZoom.js</Value>
+								</Candidate>
+							</NamedResource>
+							<NamedResource name="Safe.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/Safe.js">
+								<Candidate type="Path">
+									<Value>www\js\MathJax\extensions\Safe.js</Value>
+								</Candidate>
+							</NamedResource>
+							<NamedResource name="tex2jax.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/tex2jax.js">
+								<Candidate type="Path">
+									<Value>www\js\MathJax\extensions\tex2jax.js</Value>
+								</Candidate>
+							</NamedResource>
+							<ResourceMapSubtree name="a11y">
+								<NamedResource name="accessibility-menu.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/accessibility-menu.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\a11y\accessibility-menu.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="auto-collapse.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/auto-collapse.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\a11y\auto-collapse.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="collapsible.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/collapsible.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\a11y\collapsible.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="explorer.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/explorer.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\a11y\explorer.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="invalid_keypress.mp3" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/invalid_keypress.mp3">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\a11y\invalid_keypress.mp3</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="invalid_keypress.ogg" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/invalid_keypress.ogg">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\a11y\invalid_keypress.ogg</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="mathjax-sre.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathjax-sre.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\a11y\mathjax-sre.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="semantic-enrich.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/semantic-enrich.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\a11y\semantic-enrich.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="wgxpath.install.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/wgxpath.install.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\a11y\wgxpath.install.js</Value>
+									</Candidate>
+								</NamedResource>
+								<ResourceMapSubtree name="mathmaps">
+									<NamedResource name=".htaccess" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/.htaccess">
+										<Candidate type="Path">
+											<Value>www\js\MathJax\extensions\a11y\mathmaps\.htaccess</Value>
+										</Candidate>
+									</NamedResource>
+									<NamedResource name="mathmaps_ie.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/mathmaps_ie.js">
+										<Candidate type="Path">
+											<Value>www\js\MathJax\extensions\a11y\mathmaps\mathmaps_ie.js</Value>
+										</Candidate>
+									</NamedResource>
+									<ResourceMapSubtree name="functions">
+										<NamedResource name="algebra.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/functions/algebra.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\functions\algebra.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="elementary.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/functions/elementary.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\functions\elementary.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="hyperbolic.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/functions/hyperbolic.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\functions\hyperbolic.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="trigonometry.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/functions/trigonometry.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\functions\trigonometry.js</Value>
+											</Candidate>
+										</NamedResource>
+									</ResourceMapSubtree>
+									<ResourceMapSubtree name="symbols">
+										<NamedResource name="greek-capital.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/greek-capital.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-capital.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="greek-mathfonts.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/greek-mathfonts.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-mathfonts.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="greek-scripts.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/greek-scripts.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-scripts.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="greek-small.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/greek-small.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-small.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="greek-symbols.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/greek-symbols.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-symbols.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="hebrew_letters.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/hebrew_letters.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\hebrew_letters.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="latin-lower-double-accent.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/latin-lower-double-accent.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-lower-double-accent.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="latin-lower-normal.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/latin-lower-normal.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-lower-normal.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="latin-lower-phonetic.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/latin-lower-phonetic.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-lower-phonetic.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="latin-lower-single-accent.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/latin-lower-single-accent.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-lower-single-accent.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="latin-mathfonts.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/latin-mathfonts.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-mathfonts.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="latin-rest.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/latin-rest.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-rest.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="latin-upper-double-accent.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/latin-upper-double-accent.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-upper-double-accent.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="latin-upper-normal.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/latin-upper-normal.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-upper-normal.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="latin-upper-single-accent.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/latin-upper-single-accent.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-upper-single-accent.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="math_angles.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/math_angles.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_angles.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="math_arrows.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/math_arrows.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_arrows.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="math_characters.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/math_characters.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_characters.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="math_delimiters.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/math_delimiters.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_delimiters.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="math_digits.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/math_digits.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_digits.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="math_geometry.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/math_geometry.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_geometry.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="math_harpoons.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/math_harpoons.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_harpoons.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="math_non_characters.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/math_non_characters.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_non_characters.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="math_symbols.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/math_symbols.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_symbols.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="math_whitespace.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/math_whitespace.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_whitespace.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="other_stars.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/symbols/other_stars.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\symbols\other_stars.js</Value>
+											</Candidate>
+										</NamedResource>
+									</ResourceMapSubtree>
+									<ResourceMapSubtree name="units">
+										<NamedResource name="energy.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/units/energy.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\units\energy.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="length.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/units/length.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\units\length.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="memory.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/units/memory.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\units\memory.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="other.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/units/other.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\units\other.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="speed.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/units/speed.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\units\speed.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="temperature.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/units/temperature.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\units\temperature.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="time.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/units/time.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\units\time.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="volume.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/units/volume.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\units\volume.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="weight.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/a11y/mathmaps/units/weight.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\extensions\a11y\mathmaps\units\weight.js</Value>
+											</Candidate>
+										</NamedResource>
+									</ResourceMapSubtree>
+								</ResourceMapSubtree>
+							</ResourceMapSubtree>
+							<ResourceMapSubtree name="HTML-CSS">
+								<NamedResource name="handle-floats.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/HTML-CSS/handle-floats.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\HTML-CSS\handle-floats.js</Value>
+									</Candidate>
+								</NamedResource>
+							</ResourceMapSubtree>
+							<ResourceMapSubtree name="TeX">
+								<NamedResource name="action.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/action.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\action.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="AMScd.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/AMScd.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\AMScd.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="AMSmath.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/AMSmath.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\AMSmath.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="AMSsymbols.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/AMSsymbols.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\AMSsymbols.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="autobold.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/autobold.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\autobold.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="autoload-all.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/autoload-all.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\autoload-all.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="bbox.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/bbox.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\bbox.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="begingroup.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/begingroup.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\begingroup.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="boldsymbol.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/boldsymbol.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\boldsymbol.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="cancel.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/cancel.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\cancel.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="color.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/color.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\color.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="enclose.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/enclose.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\enclose.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="extpfeil.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/extpfeil.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\extpfeil.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="HTML.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/HTML.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\HTML.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="mathchoice.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/mathchoice.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\mathchoice.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="mediawiki-texvc.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/mediawiki-texvc.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\mediawiki-texvc.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="mhchem.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/mhchem.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\mhchem.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="newcommand.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/newcommand.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\newcommand.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="noErrors.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/noErrors.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\noErrors.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="noUndefined.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/noUndefined.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\noUndefined.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="unicode.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/unicode.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\unicode.js</Value>
+									</Candidate>
+								</NamedResource>
+								<NamedResource name="verb.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/verb.js">
+									<Candidate type="Path">
+										<Value>www\js\MathJax\extensions\TeX\verb.js</Value>
+									</Candidate>
+								</NamedResource>
+								<ResourceMapSubtree name="mhchem3">
+									<NamedResource name="mhchem.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/extensions/TeX/mhchem3/mhchem.js">
+										<Candidate type="Path">
+											<Value>www\js\MathJax\extensions\TeX\mhchem3\mhchem.js</Value>
+										</Candidate>
+									</NamedResource>
+								</ResourceMapSubtree>
+							</ResourceMapSubtree>
+						</ResourceMapSubtree>
+						<ResourceMapSubtree name="fonts">
+							<ResourceMapSubtree name="HTML-CSS">
+								<ResourceMapSubtree name="TeX">
+									<ResourceMapSubtree name="woff">
+										<NamedResource name="MathJax_AMS-Regular.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_AMS-Regular.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_AMS-Regular.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_Caligraphic-Bold.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Caligraphic-Bold.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Caligraphic-Bold.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_Caligraphic-Regular.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Caligraphic-Regular.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Caligraphic-Regular.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_Fraktur-Bold.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Fraktur-Bold.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Fraktur-Bold.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_Fraktur-Regular.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Fraktur-Regular.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Fraktur-Regular.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_Main-Bold.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Main-Bold.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Main-Bold.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_Main-Italic.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Main-Italic.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Main-Italic.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_Main-Regular.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Main-Regular.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Main-Regular.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_Math-BoldItalic.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Math-BoldItalic.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Math-BoldItalic.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_Math-Italic.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Math-Italic.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Math-Italic.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_Math-Regular.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Math-Regular.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Math-Regular.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_SansSerif-Bold.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_SansSerif-Bold.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_SansSerif-Bold.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_SansSerif-Italic.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_SansSerif-Italic.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_SansSerif-Italic.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_SansSerif-Regular.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_SansSerif-Regular.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_SansSerif-Regular.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_Script-Regular.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Script-Regular.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Script-Regular.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_Size1-Regular.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Size1-Regular.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Size1-Regular.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_Size2-Regular.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Size2-Regular.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Size2-Regular.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_Size3-Regular.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Size3-Regular.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Size3-Regular.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_Size4-Regular.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Size4-Regular.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Size4-Regular.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_Typewriter-Regular.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Typewriter-Regular.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Typewriter-Regular.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_Vector-Bold.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Vector-Bold.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Vector-Bold.woff</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathJax_Vector-Regular.woff" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/fonts/HTML-CSS/TeX/woff/MathJax_Vector-Regular.woff">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Vector-Regular.woff</Value>
+											</Candidate>
+										</NamedResource>
+									</ResourceMapSubtree>
+								</ResourceMapSubtree>
+							</ResourceMapSubtree>
+						</ResourceMapSubtree>
+						<ResourceMapSubtree name="jax">
+							<ResourceMapSubtree name="element">
+								<ResourceMapSubtree name="mml">
+									<NamedResource name="jax.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/jax.js">
+										<Candidate type="Path">
+											<Value>www\js\MathJax\jax\element\mml\jax.js</Value>
+										</Candidate>
+									</NamedResource>
+									<ResourceMapSubtree name="optable">
+										<NamedResource name="Arrows.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/Arrows.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\Arrows.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="BasicLatin.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/BasicLatin.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\BasicLatin.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="CombDiacritMarks.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/CombDiacritMarks.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\CombDiacritMarks.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="CombDiactForSymbols.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/CombDiactForSymbols.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\CombDiactForSymbols.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="Dingbats.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/Dingbats.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\Dingbats.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="GeneralPunctuation.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/GeneralPunctuation.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\GeneralPunctuation.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="GeometricShapes.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/GeometricShapes.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\GeometricShapes.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="GreekAndCoptic.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/GreekAndCoptic.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\GreekAndCoptic.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="Latin1Supplement.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/Latin1Supplement.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\Latin1Supplement.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="LetterlikeSymbols.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/LetterlikeSymbols.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\LetterlikeSymbols.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MathOperators.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/MathOperators.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\MathOperators.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MiscMathSymbolsA.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/MiscMathSymbolsA.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\MiscMathSymbolsA.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MiscMathSymbolsB.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/MiscMathSymbolsB.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\MiscMathSymbolsB.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MiscSymbolsAndArrows.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/MiscSymbolsAndArrows.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\MiscSymbolsAndArrows.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="MiscTechnical.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/MiscTechnical.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\MiscTechnical.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="SpacingModLetters.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/SpacingModLetters.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\SpacingModLetters.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="SupplementalArrowsA.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/SupplementalArrowsA.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\SupplementalArrowsA.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="SupplementalArrowsB.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/SupplementalArrowsB.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\SupplementalArrowsB.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="SuppMathOperators.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/element/mml/optable/SuppMathOperators.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\element\mml\optable\SuppMathOperators.js</Value>
+											</Candidate>
+										</NamedResource>
+									</ResourceMapSubtree>
+								</ResourceMapSubtree>
+							</ResourceMapSubtree>
+							<ResourceMapSubtree name="input">
+								<ResourceMapSubtree name="TeX">
+									<NamedResource name="config.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/input/TeX/config.js">
+										<Candidate type="Path">
+											<Value>www\js\MathJax\jax\input\TeX\config.js</Value>
+										</Candidate>
+									</NamedResource>
+									<NamedResource name="jax.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/input/TeX/jax.js">
+										<Candidate type="Path">
+											<Value>www\js\MathJax\jax\input\TeX\jax.js</Value>
+										</Candidate>
+									</NamedResource>
+								</ResourceMapSubtree>
+							</ResourceMapSubtree>
+							<ResourceMapSubtree name="output">
+								<ResourceMapSubtree name="HTML-CSS">
+									<NamedResource name="config.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/config.js">
+										<Candidate type="Path">
+											<Value>www\js\MathJax\jax\output\HTML-CSS\config.js</Value>
+										</Candidate>
+									</NamedResource>
+									<NamedResource name="imageFonts.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/imageFonts.js">
+										<Candidate type="Path">
+											<Value>www\js\MathJax\jax\output\HTML-CSS\imageFonts.js</Value>
+										</Candidate>
+									</NamedResource>
+									<NamedResource name="jax.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/jax.js">
+										<Candidate type="Path">
+											<Value>www\js\MathJax\jax\output\HTML-CSS\jax.js</Value>
+										</Candidate>
+									</NamedResource>
+									<ResourceMapSubtree name="autoload">
+										<NamedResource name="annotation-xml.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/autoload/annotation-xml.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\output\HTML-CSS\autoload\annotation-xml.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="maction.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/autoload/maction.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\output\HTML-CSS\autoload\maction.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="menclose.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/autoload/menclose.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\output\HTML-CSS\autoload\menclose.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="mglyph.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/autoload/mglyph.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\output\HTML-CSS\autoload\mglyph.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="mmultiscripts.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/autoload/mmultiscripts.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\output\HTML-CSS\autoload\mmultiscripts.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="ms.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/autoload/ms.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\output\HTML-CSS\autoload\ms.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="mtable.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/autoload/mtable.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\output\HTML-CSS\autoload\mtable.js</Value>
+											</Candidate>
+										</NamedResource>
+										<NamedResource name="multiline.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/autoload/multiline.js">
+											<Candidate type="Path">
+												<Value>www\js\MathJax\jax\output\HTML-CSS\autoload\multiline.js</Value>
+											</Candidate>
+										</NamedResource>
+									</ResourceMapSubtree>
+									<ResourceMapSubtree name="fonts">
+										<ResourceMapSubtree name="TeX">
+											<NamedResource name="fontdata-extra.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/fontdata-extra.js">
+												<Candidate type="Path">
+													<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\fontdata-extra.js</Value>
+												</Candidate>
+											</NamedResource>
+											<NamedResource name="fontdata.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/fontdata.js">
+												<Candidate type="Path">
+													<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\fontdata.js</Value>
+												</Candidate>
+											</NamedResource>
+											<ResourceMapSubtree name="AMS">
+												<ResourceMapSubtree name="Regular">
+													<NamedResource name="Arrows.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/Arrows.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\Arrows.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="BBBold.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/BBBold.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\BBBold.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="BoxDrawing.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/BoxDrawing.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\BoxDrawing.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="CombDiacritMarks.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/CombDiacritMarks.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\CombDiacritMarks.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Dingbats.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/Dingbats.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\Dingbats.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="EnclosedAlphanum.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/EnclosedAlphanum.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\EnclosedAlphanum.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="GeneralPunctuation.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/GeneralPunctuation.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\GeneralPunctuation.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="GeometricShapes.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/GeometricShapes.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\GeometricShapes.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="GreekAndCoptic.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/GreekAndCoptic.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\GreekAndCoptic.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Latin1Supplement.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/Latin1Supplement.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\Latin1Supplement.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="LatinExtendedA.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/LatinExtendedA.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\LatinExtendedA.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="LetterlikeSymbols.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/LetterlikeSymbols.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\LetterlikeSymbols.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="MathOperators.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/MathOperators.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\MathOperators.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="MiscMathSymbolsB.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/MiscMathSymbolsB.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\MiscMathSymbolsB.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="MiscSymbols.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/MiscSymbols.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\MiscSymbols.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="MiscTechnical.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/MiscTechnical.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\MiscTechnical.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="PUA.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/PUA.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\PUA.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="SpacingModLetters.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/SpacingModLetters.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\SpacingModLetters.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="SuppMathOperators.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/SuppMathOperators.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\SuppMathOperators.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+											</ResourceMapSubtree>
+											<ResourceMapSubtree name="Caligraphic">
+												<ResourceMapSubtree name="Bold">
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Caligraphic/Bold/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Caligraphic\Bold\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+												<ResourceMapSubtree name="Regular">
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Caligraphic/Regular/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Caligraphic\Regular\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+											</ResourceMapSubtree>
+											<ResourceMapSubtree name="Fraktur">
+												<ResourceMapSubtree name="Bold">
+													<NamedResource name="BasicLatin.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Fraktur/Bold/BasicLatin.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Bold\BasicLatin.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Fraktur/Bold/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Bold\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Other.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Fraktur/Bold/Other.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Bold\Other.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="PUA.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Fraktur/Bold/PUA.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Bold\PUA.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+												<ResourceMapSubtree name="Regular">
+													<NamedResource name="BasicLatin.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Fraktur/Regular/BasicLatin.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Regular\BasicLatin.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Fraktur/Regular/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Regular\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Other.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Fraktur/Regular/Other.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Regular\Other.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="PUA.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Fraktur/Regular/PUA.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Regular\PUA.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+											</ResourceMapSubtree>
+											<ResourceMapSubtree name="Greek">
+												<ResourceMapSubtree name="Bold">
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Greek/Bold/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Greek\Bold\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+												<ResourceMapSubtree name="BoldItalic">
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Greek/BoldItalic/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Greek\BoldItalic\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+												<ResourceMapSubtree name="Italic">
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Greek/Italic/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Greek\Italic\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+												<ResourceMapSubtree name="Regular">
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Greek/Regular/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Greek\Regular\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+											</ResourceMapSubtree>
+											<ResourceMapSubtree name="Main">
+												<ResourceMapSubtree name="Bold">
+													<NamedResource name="Arrows.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Bold/Arrows.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\Arrows.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="CombDiacritMarks.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Bold/CombDiacritMarks.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\CombDiacritMarks.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="CombDiactForSymbols.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Bold/CombDiactForSymbols.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\CombDiactForSymbols.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="GeneralPunctuation.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Bold/GeneralPunctuation.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\GeneralPunctuation.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="GeometricShapes.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Bold/GeometricShapes.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\GeometricShapes.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Latin1Supplement.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Bold/Latin1Supplement.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\Latin1Supplement.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="LatinExtendedA.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Bold/LatinExtendedA.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\LatinExtendedA.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="LatinExtendedB.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Bold/LatinExtendedB.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\LatinExtendedB.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="LetterlikeSymbols.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Bold/LetterlikeSymbols.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\LetterlikeSymbols.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Bold/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="MathOperators.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Bold/MathOperators.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\MathOperators.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="MiscMathSymbolsA.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Bold/MiscMathSymbolsA.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\MiscMathSymbolsA.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="MiscSymbols.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Bold/MiscSymbols.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\MiscSymbols.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="MiscTechnical.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Bold/MiscTechnical.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\MiscTechnical.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="SpacingModLetters.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Bold/SpacingModLetters.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\SpacingModLetters.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="SupplementalArrowsA.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Bold/SupplementalArrowsA.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\SupplementalArrowsA.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="SuppMathOperators.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Bold/SuppMathOperators.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\SuppMathOperators.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+												<ResourceMapSubtree name="Italic">
+													<NamedResource name="CombDiacritMarks.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Italic/CombDiacritMarks.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\CombDiacritMarks.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="GeneralPunctuation.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Italic/GeneralPunctuation.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\GeneralPunctuation.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Latin1Supplement.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Italic/Latin1Supplement.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\Latin1Supplement.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="LetterlikeSymbols.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Italic/LetterlikeSymbols.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\LetterlikeSymbols.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Italic/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+												<ResourceMapSubtree name="Regular">
+													<NamedResource name="CombDiacritMarks.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Regular/CombDiacritMarks.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\CombDiacritMarks.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="GeometricShapes.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Regular/GeometricShapes.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\GeometricShapes.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Regular/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="MiscSymbols.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Regular/MiscSymbols.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\MiscSymbols.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="SpacingModLetters.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Regular/SpacingModLetters.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\SpacingModLetters.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+											</ResourceMapSubtree>
+											<ResourceMapSubtree name="Math">
+												<ResourceMapSubtree name="BoldItalic">
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Math/BoldItalic/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Math\BoldItalic\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+												<ResourceMapSubtree name="Italic">
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Math/Italic/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Math\Italic\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+											</ResourceMapSubtree>
+											<ResourceMapSubtree name="SansSerif">
+												<ResourceMapSubtree name="Bold">
+													<NamedResource name="BasicLatin.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/SansSerif/Bold/BasicLatin.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Bold\BasicLatin.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="CombDiacritMarks.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/SansSerif/Bold/CombDiacritMarks.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Bold\CombDiacritMarks.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/SansSerif/Bold/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Bold\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Other.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/SansSerif/Bold/Other.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Bold\Other.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+												<ResourceMapSubtree name="Italic">
+													<NamedResource name="BasicLatin.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/SansSerif/Italic/BasicLatin.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Italic\BasicLatin.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="CombDiacritMarks.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/SansSerif/Italic/CombDiacritMarks.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Italic\CombDiacritMarks.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/SansSerif/Italic/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Italic\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Other.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/SansSerif/Italic/Other.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Italic\Other.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+												<ResourceMapSubtree name="Regular">
+													<NamedResource name="BasicLatin.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/SansSerif/Regular/BasicLatin.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Regular\BasicLatin.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="CombDiacritMarks.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/SansSerif/Regular/CombDiacritMarks.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Regular\CombDiacritMarks.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/SansSerif/Regular/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Regular\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Other.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/SansSerif/Regular/Other.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Regular\Other.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+											</ResourceMapSubtree>
+											<ResourceMapSubtree name="Script">
+												<ResourceMapSubtree name="Regular">
+													<NamedResource name="BasicLatin.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Script/Regular/BasicLatin.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Script\Regular\BasicLatin.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Script/Regular/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Script\Regular\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Other.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Script/Regular/Other.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Script\Regular\Other.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+											</ResourceMapSubtree>
+											<ResourceMapSubtree name="Size1">
+												<ResourceMapSubtree name="Regular">
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Size1/Regular/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Size1\Regular\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+											</ResourceMapSubtree>
+											<ResourceMapSubtree name="Size2">
+												<ResourceMapSubtree name="Regular">
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Size2/Regular/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Size2\Regular\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+											</ResourceMapSubtree>
+											<ResourceMapSubtree name="Size3">
+												<ResourceMapSubtree name="Regular">
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Size3/Regular/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Size3\Regular\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+											</ResourceMapSubtree>
+											<ResourceMapSubtree name="Size4">
+												<ResourceMapSubtree name="Regular">
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Size4/Regular/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Size4\Regular\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+											</ResourceMapSubtree>
+											<ResourceMapSubtree name="Typewriter">
+												<ResourceMapSubtree name="Regular">
+													<NamedResource name="BasicLatin.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Typewriter/Regular/BasicLatin.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Typewriter\Regular\BasicLatin.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="CombDiacritMarks.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Typewriter/Regular/CombDiacritMarks.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Typewriter\Regular\CombDiacritMarks.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Typewriter/Regular/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Typewriter\Regular\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Other.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/Typewriter/Regular/Other.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Typewriter\Regular\Other.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+											</ResourceMapSubtree>
+											<ResourceMapSubtree name="WinChrome">
+												<ResourceMapSubtree name="Regular">
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/WinChrome/Regular/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\WinChrome\Regular\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+											</ResourceMapSubtree>
+											<ResourceMapSubtree name="WinIE6">
+												<ResourceMapSubtree name="Regular">
+													<NamedResource name="AMS.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/WinIE6/Regular/AMS.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\WinIE6\Regular\AMS.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Bold.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/WinIE6/Regular/Bold.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\WinIE6\Regular\Bold.js</Value>
+														</Candidate>
+													</NamedResource>
+													<NamedResource name="Main.js" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/www/js/MathJax/jax/output/HTML-CSS/fonts/TeX/WinIE6/Regular/Main.js">
+														<Candidate type="Path">
+															<Value>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\WinIE6\Regular\Main.js</Value>
+														</Candidate>
+													</NamedResource>
+												</ResourceMapSubtree>
+											</ResourceMapSubtree>
+										</ResourceMapSubtree>
+									</ResourceMapSubtree>
+								</ResourceMapSubtree>
+							</ResourceMapSubtree>
+						</ResourceMapSubtree>
 					</ResourceMapSubtree>
 				</ResourceMapSubtree>
 			</ResourceMapSubtree>
