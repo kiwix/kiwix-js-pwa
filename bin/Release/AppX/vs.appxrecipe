@@ -32,7 +32,7 @@
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-07T05:59:43.248</Modified>
+      <Modified>2017-08-07T07:17:46.496</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -531,7 +531,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-08-07T05:50:10.176</Modified>
+      <Modified>2017-08-07T06:45:19.435</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
@@ -603,7 +603,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\config\config.js">
       <PackagePath>www\js\MathJax\config\config.js</PackagePath>
-      <Modified>2017-08-05T18:18:34.635</Modified>
+      <Modified>2017-08-07T07:17:27.329</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\accessibility-menu.js">
       <PackagePath>www\js\MathJax\extensions\a11y\accessibility-menu.js</PackagePath>
@@ -1456,7 +1456,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-07T05:58:16.299</Modified>
+      <Modified>2017-08-07T06:40:52.194</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>

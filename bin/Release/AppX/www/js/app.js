@@ -1320,25 +1320,27 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     //TESTING
                     if (countImages <= maxVisibleSliceSize + prefetchSliceSize) { console.timeEnd("Time to Document Ready"); }
 
-                    //Use the MathJax method of typesetting formulae if user has requested this
-                    if (params['useMathJax']) {
-                        var counter = 0;
-                        $(svgSlice).each(function () {
-                            var node = this;
-                            if (/mwe-math-fallback-image/i.test(node.className) && node.alt) {
-                                var text = node.alt;
-                                var script = document.createElement("script");
-                                script.type = "math/tex";
-                                script.text = text;
-                                $(this).replaceWith(script);
-                                console.log("Typesetting image #" + countImages + "...");
-                                countImages++;
-                                svgSlice.splice(counter, 1);
-                            } else {
-                                counter++;
-                            }
-                        });
-                        window.frames[0].MathJax.Hub.Queue(["Typeset", window.frames[0].MathJax.Hub]);
+                    if (svgSlice.length) {
+                        //Use the MathJax method of typesetting formulae if user has requested this
+                        if (params['useMathJax'] && window.frames[0].MathJax) {
+                            var counter = 0;
+                            $(svgSlice).each(function () {
+                                var node = this;
+                                if (/mwe-math-fallback-image/i.test(node.className) && node.alt) {
+                                    var text = node.alt;
+                                    var script = document.createElement("script");
+                                    script.type = "math/tex";
+                                    script.text = text;
+                                    $(this).replaceWith(script);
+                                    console.log("Typesetting image #" + countImages + "...");
+                                    countImages++;
+                                    svgSlice.splice(counter, 1);
+                                } else {
+                                    counter++;
+                                }
+                            });
+                            window.frames[0].MathJax.Hub.Queue(["Typeset", window.frames[0].MathJax.Hub]);
+                        }
                     }
                     //If there are any SVGs left which were not dealt with by MathJax, process fallback images
                     if (svgSlice.length) {
