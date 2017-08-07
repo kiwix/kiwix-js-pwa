@@ -1009,7 +1009,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                         var doc = $("#articleContent").contents()[0];
                         var script = doc.createElement("script");
                         script.type = "text/javascript";
-                        script.src = "../js/MathJax/MathJax.js?config=config";
+                        script.src = "../js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
                         doc.head.appendChild(script);
                     }
                 }
@@ -1103,6 +1103,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         var svgSliceSize = 3;
         var visibleSlice = [];
         var svgSlice = [];
+        var svgGroup1 = [];
+        var initialSVGRun = true;
         var prefetchSlice = [];
         var windowScroll = true;
         var imageDisplay = params['imageDisplay'];
@@ -1258,7 +1260,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
 
 
             //Sort through images to put them in the appropriate slice arrays
-            var svgGroup1 = [], svgGroup2 = [];
+            svgGroup1 = [];
+            var svgGroup2 = [];
             for (var i = startSlice; i < lengthSlice; i++) {
                 if (/\.svg$/i.test(images[i].getAttribute('data-kiwixsrc'))) {
                     if (i < firstVisible || i > lastVisible) {
@@ -1323,14 +1326,18 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     if (svgSlice.length) {
                         //Use the MathJax method of typesetting formulae if user has requested this
                         if (params['useMathJax'] && window.frames[0].MathJax) {
-                            var counter = 0;
+                            /*/If MathJax has not yet completed a typesetting run, discard non-visible SVGs to speed up the initial typesetting operation
+                            if (initialSVGRun && svgGroup1.length > 0) {
+                                svgSlice = svgGroup1;
+                            }
+                            initialSVGRun = false;*/
+                            var counter = 0; 
                             $(svgSlice).each(function () {
                                 var node = this;
                                 if (/mwe-math-fallback-image/i.test(node.className) && node.alt) {
-                                    var text = node.alt;
                                     var script = document.createElement("script");
                                     script.type = "math/tex";
-                                    script.text = text;
+                                    script.text = node.alt;
                                     $(this).replaceWith(script);
                                     console.log("Typesetting image #" + countImages + "...");
                                     countImages++;
