@@ -463,6 +463,9 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\config\config.js">
       <PackagePath>www\js\MathJax\config\config.js</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\config\TeX-AMS_HTML-full.js">
+      <PackagePath>www\js\MathJax\config\TeX-AMS_HTML-full.js</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\accessibility-menu.js">
       <PackagePath>www\js\MathJax\extensions\a11y\accessibility-menu.js</PackagePath>
     </AppxPackagedFile>
