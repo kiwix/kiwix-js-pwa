@@ -14,7 +14,7 @@
  */
 
   /* transparent background */
-  div, span:not(.legend-color):not([class*="wikEd"]), .MainPageBG, .navbox-list,
+  div, span:not(.legend-color):not([class*="wikEd"]):not([style*="background"]), .MainPageBG, .navbox-list,
   div#mw-head, .mw-wsmfinal-content, #bodyContent, .referencetooltip > li + li,
   div.vectorTabs ul li, tr[style*="background:#F5FFFA"],
   th[style*="background-color: #fff"], .mw-echo-notifications-badge,
@@ -25,14 +25,13 @@
   }
 
   /*** Overall ***/
-td, p, li, th:not([style*="background"]), caption, div,
-span:not([class*="color"]):not([class*="wikEd"]),
-p code, label code, dl code
-{
+td:not([style*="background"]), p, li, th:not([style*="background"]), caption, div,
+/*span:not([class*="color"]):not([class*="wikEd"]),*/
+p code, label code, dl code {
     color: lightgray;
 }
 
-  td[style*="color"] {
+  td[style*="color"], td span[style*="color"] {
       color: lightslategray !important;
   }
 
@@ -45,6 +44,10 @@ p code, label code, dl code
 
 a, .CategoryTreeToggle, #toc a, #toc a span, body .ui-button {
     color: lightblue !important;
+}
+
+td[style*=background] a:first-child {
+    color: dimgray !important
 }
 
   a:visited, #toc a:visited, #toc a:visited span
@@ -138,7 +141,7 @@ html, body {
     background-color: #222 !important;
   }
 
-.navbox th, .climate-table th, .wikitable th, .navbox-title, th[bgcolor], td[bgcolor] {
+.navbox th, .climate-table th, .wikitable th, .navbox-title, th[bgcolor], td[bgcolor], th[style*="background"] {
     background-color: darkslategray !important;
     border-color: #555 !important;
 }
@@ -157,7 +160,9 @@ tr[bgcolor] {
 table[style*="background-color:#fff;"], .search-form fieldset, table.ambox, tr[style*="background-color: #fff;"],
 .mw-ui-button[style*="background-color:#008B6D"], tr[style*="background-color: #f5faff;"],
 tr[style*="background:#E9E9E9"] > *, table.infobox.hproduct > tbody > tr[style*="background: #F0F0F0;"],
-td[style*="background:lightgray"], td[style*="background:#f0f0f0"], td[style*="background:#eeeeff"], td[style*="background:#e8e8e8"], td[style*="background:#ddddff"], td[style*="background:#efefef"], td[style*="background:#e9e9e9"], .oo-ui-buttonElement-button:hover, .tracklist tr[style*="background-color:#f7f7f7"] {
+td[style*="background:lightgray"], td[style*="background:#f0f0f0"], td[style*="background:#eeeeff"], td[style*="background:#e8e8e8"],
+td[style*="background:#ddddff"], td[style*="background:#efefef"], td[style*="background:#e9e9e9"], td[style*="background:#f1f1f1"],
+.oo-ui-buttonElement-button:hover, .tracklist tr[style*="background-color:#f7f7f7"] {
     background-color: #282828 !important;
 }
 
@@ -169,7 +174,7 @@ td[style*="background:lightgray"], td[style*="background:#f0f0f0"], td[style*="b
 
 td[style*="background: #ececec;"], th[style*="background:#eee"], th[style*="background-color: #eee"],
 tr[style*="background-color: #f7f7f7;"], th[style*="background:#F2F2F2"], th[style*="background:#ffffff"], #filetoc, .toccolours, th[style*="background:#F9F9F9"], th[style*="background:#e8e8e8"], table.plainlinks, th[style*="background-color: lightgrey"], th[style*="background:#ddd"], .infobox th[style*="background"], .infobox td[style*="background"],
-td[style*="background:#F2F2F2"], table.wikitable > tbody > tr[style*="background-color:#F6F6F6"],
+td[style*="background:#F2F2F2"], table.wikitable > tbody > tr[style*="background-color:#F6F6F6"], td[style*="background:#e1e1e1"],
 .tlheader {
     background-color: #333 !important;
 }
