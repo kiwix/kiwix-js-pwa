@@ -94,7 +94,7 @@ td[style*=background] a:first-child {
   /*** Background ***/
 html, body {
     background-color: black !important;
-    background-image: /*[[bg-choice]]*/ !important;
+    /*background-image: [[bg-choice]] !important;*/
     background-clip: border-box !important;
     background-origin: padding-box !important;
     /*background-attachment: [[bg-attachment]]!important;*/
