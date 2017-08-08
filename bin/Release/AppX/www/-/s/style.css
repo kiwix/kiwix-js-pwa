@@ -1099,3 +1099,11 @@ MediaWiki:Vector.css
 #DoM {
  top: -4px;
 }
+
+/* Reduce padding for small screens */
+@media (max-width: 768px) {
+    div#content {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+}
