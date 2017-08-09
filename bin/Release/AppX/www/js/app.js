@@ -26,8 +26,8 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFilesystemAccess', 'module', 'transformStyles'],
- function($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess, module, transformStyles) {
+define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFilesystemAccess', 'q', 'module', 'transformStyles'],
+ function($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess, q, module, transformStyles) {
      
     /**
      * Maximum number of articles to display in a search
@@ -628,9 +628,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     }
 
     /**
-     * This is used in the testing interface to inject a remote archive.
+     * Reads a remote archive with given URL, and returns the response in a Promise.
+     * This function is used by setRemoteArchives below, for UI tests
+     * 
+     * @param url The URL of the archive to read
+     * @returns {Promise}
      */
-    window.setRemoteArchive = function(url) {
+    function readRemoteArchive(url) {
+        var deferred = q.defer();
         var request = new XMLHttpRequest();
         request.open("GET", url, true);
         request.responseType = "blob";
@@ -639,11 +644,32 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 if ((request.status >= 200 && request.status < 300) || request.status === 0) {
                 // Hack to make this look similar to a file
                 request.response.name = url;
-                setLocalArchiveFromFileList([request.response]);
+                    deferred.resolve(request.response);
             	}
+                else {
+                    deferred.reject("HTTP status " + request.status + " when reading " + url);
+            }
             }
         };
+        request.onabort = function (e) {
+            deferred.reject(e);
+        };
         request.send(null);
+        return deferred.promise;
+    }
+    
+    /**
+     * This is used in the testing interface to inject remote archives
+     */
+    window.setRemoteArchives = function() {
+        var readRequests = [];
+        var i;
+        for (i = 0; i < arguments.length; i++) {
+            readRequests[i] = readRemoteArchive(arguments[i]);
+        }
+        return q.all(readRequests).then(function(arrayOfArchives) {
+            setLocalArchiveFromFileList(arrayOfArchives);
+        });
     };
 
     /**
@@ -1075,11 +1101,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
 
         } //End of injectHTML()
 
-        if (contentInjectionMode === 'jquery') {
-            //loadImages();
-            //loadJavascript(); //Disabled for now, since it does nothing
-        }
-
     } //End of displayArticleInForm()
 
     /** This is the main image loading function.
@@ -1127,22 +1148,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     });
                 }
                 $("#articleContent").contents().scrollStopped(prepareImages);
-                    /*(function () {
-                    //Ensure event doesn't fire multiple times before launched process has finished
-                    if (windowScroll) {
-                        //scrollEnded = true;
-                        windowScroll = false;
-                        prepareImages();
-                    }
-                });
-                /*$("#articleContent").contents().on("scroll", function () {
-                    //Ensure event doesn't fire multiple times before scrollStopped "event"
-                    if (windowScroll && scrollEnded) {
-                        scrollEnded = false;
-                        windowScroll = false;
-                        prepareImages();
-                    }
-                });*/
             }
             if (allImages) {
                 prepareImages();
@@ -1161,10 +1166,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     img.on('click', function () {
                         this.height = this.getAttribute('data-kiwixheight');
                         this.style.background = "";
-                        //loadImageSlice(this, 0, 0, function (sliceID, sliceCount, sliceEnd, url) {
-                        //    img[0].src = url;
-                        //}); //Both the blob method and the src="data:" method work - if changing check parameters carefully
-                        //loadImageSlice(this.getAttribute('data-kiwixsrc'), 0, 0, function (sliceID,sliceCount,sliceEnd,mimetype,data) {
                         loadImageSlice(this, 0, 0, function (sliceID, sliceCount, sliceEnd, mimetype, data) {
                             img[0].src = "data:" + mimetype + ";base64," + btoa(data);
                             }, true);
