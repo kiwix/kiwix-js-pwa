@@ -32,7 +32,7 @@
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-08T15:02:21.183</Modified>
+      <Modified>2017-08-08T16:42:09.717</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -395,7 +395,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\css\bootstrap.css">
       <PackagePath>www\css\bootstrap.css</PackagePath>
-      <Modified>2017-08-02T13:49:36.179</Modified>
+      <Modified>2017-08-08T16:12:36.240</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\A\dummyArticle.html">
       <PackagePath>www\A\dummyArticle.html</PackagePath>
@@ -403,7 +403,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\index.html">
       <PackagePath>www\index.html</PackagePath>
-      <Modified>2017-08-05T17:55:31.105</Modified>
+      <Modified>2017-08-08T16:36:14.273</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\favicon.ico">
       <PackagePath>www\favicon.ico</PackagePath>
@@ -531,7 +531,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-08-07T21:21:42.133</Modified>
+      <Modified>2017-08-08T16:33:58.498</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
@@ -599,7 +599,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\zimfile.js">
       <PackagePath>www\js\lib\zimfile.js</PackagePath>
-      <Modified>2017-07-19T09:47:28.403</Modified>
+      <Modified>2017-08-08T16:42:01.118</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\config\config.js">
       <PackagePath>www\js\MathJax\config\config.js</PackagePath>
