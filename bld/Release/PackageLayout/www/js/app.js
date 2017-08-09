@@ -1845,6 +1845,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         selectedArchive.getMainPageDirEntry(function (dirEntry) {
             if (dirEntry === null || dirEntry === undefined) {
                 console.error("Error finding main article.");
+                $("#welcomeText").show();
             }
             else {
                 if (dirEntry.namespace === 'A') {
@@ -1856,6 +1857,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 }
                 else {
                     console.error("The main page of this archive does not seem to be an article");
+                    $("#welcomeText").show();
                 }
             }
         });
