@@ -907,8 +907,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 'data-kiwixheight$2');
         }
      //TESTING - find out whether document contains MathSVGs
-        var containsMathSVG = /\.svg\s*['"][^>]+mwe-math-fallback-image|mwe-math-fallback-image[^>]+\.svg\s*['"]/i.test(htmlArticle);
-        
+        //var containsMathSVG = /\.svg\s*['"][^>]+mwe-math-fallback-image|mwe-math-fallback-image[^>]+\.svg\s*['"]/i.test(htmlArticle);
+        //Version below will match any type of fallback image so long as there is an alt string
+        var containsMathSVG = /alt\s*=\s*['"][^'"]+['"][^>]+mwe-math-fallback-image|mwe-math-fallback-image[^>]+alt\s*=\s*['"][^'"]+['"]/i.test(htmlArticle);
+
      //Preload stylesheets [kiwix-js @149]
         //Set up blobArray of promises
         var cssArray = htmlArticle.match(regexpSheetHref);
@@ -1264,7 +1266,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             svgGroup1 = [];
             var svgGroup2 = [];
             for (var i = startSlice; i < lengthSlice; i++) {
-                if (/\.svg$/i.test(images[i].getAttribute('data-kiwixsrc'))) {
+                if (/\.svg$/i.test(images[i].getAttribute('data-kiwixsrc')) ||
+                    //Include any kind of maths image fallback that has an alt string in SVG bucket
+                    (/mwe-math-fallback/i.test(images[i].className) && images[i].alt)) {
                     if (i < firstVisible || i > lastVisible) {
                         svgGroup2.push(images[i]);
                     } else {
@@ -1386,10 +1390,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 if (sliceCount === sliceEnd) {
                     //Check to see if visible images have changed (i.e. if user has scrolled)
                     if (!sliceCount) {
-                        console.log("startSVG");
+                        //console.log("startSVG");
                         startSVG = checkVisibleImages();
                     } else {
-                        console.log("endSVG");
+                        //console.log("endSVG");
                         endSVG = checkVisibleImages();
                     }
                     if (endSVG) {
