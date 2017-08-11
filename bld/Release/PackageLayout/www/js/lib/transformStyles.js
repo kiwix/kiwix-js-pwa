@@ -60,6 +60,8 @@ define(['uiUtil'], function (uiUtil) {
                     zl.match(/-\/s\/css_modules\/mw.PopUpMediaTransform.css/i) ||
                     zl.match(/-\/s\/css_modules\/mw.MediaWikiPlayer.loader.css/i) ||
                     zl.match(/-\/s\/css_modules\/ext.tmh.thumbnail.styles.css/i) ||
+                    zl.match(/-\/s\/css_modules\/ext.math.styles.css/i) ||
+                    zl.match(/-\/s\/css_modules\/ext.math.scripts.css/i) ||
                     zl.match(/-\/s\/css_modules\/content.parsoid.css/i) ||
                     zl.match(/-\/s\/css_modules\/inserted_style_mobile.css/i) ||
                     zl.match(/-\/s\/css_modules\/mobile.css/i) ||
