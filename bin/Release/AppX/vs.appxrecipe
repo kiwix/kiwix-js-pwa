@@ -32,7 +32,7 @@
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-09T09:44:08.806</Modified>
+      <Modified>2017-08-10T17:07:11.468</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -329,6 +329,14 @@
       <PackagePath>www\-\s\css_modules\ext.kartographer.style.css</PackagePath>
       <Modified>2017-07-25T06:35:48.785</Modified>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.math.scripts.css">
+      <PackagePath>www\-\s\css_modules\ext.math.scripts.css</PackagePath>
+      <Modified>2017-08-10T15:47:48.698</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.math.styles.css">
+      <PackagePath>www\-\s\css_modules\ext.math.styles.css</PackagePath>
+      <Modified>2017-08-10T15:45:34.526</Modified>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.scribunto.logs.css">
       <PackagePath>www\-\s\css_modules\ext.scribunto.logs.css</PackagePath>
       <Modified>2017-07-19T09:47:26.544</Modified>
@@ -531,7 +539,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-08-09T09:28:35.895</Modified>
+      <Modified>2017-08-10T16:58:46.349</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
@@ -563,7 +571,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\transformStyles.js">
       <PackagePath>www\js\lib\transformStyles.js</PackagePath>
-      <Modified>2017-08-03T21:20:00.970</Modified>
+      <Modified>2017-08-10T15:53:07.091</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\uiUtil.js">
       <PackagePath>www\js\lib\uiUtil.js</PackagePath>
@@ -607,7 +615,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\config\TeX-AMS_HTML-full.js">
       <PackagePath>www\js\MathJax\config\TeX-AMS_HTML-full.js</PackagePath>
-      <Modified>2017-08-02T18:56:25.000</Modified>
+      <Modified>2017-08-09T10:07:30.872</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\accessibility-menu.js">
       <PackagePath>www\js\MathJax\extensions\a11y\accessibility-menu.js</PackagePath>
@@ -1460,7 +1468,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-08T05:41:27.827</Modified>
+      <Modified>2017-08-10T15:54:13.502</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>

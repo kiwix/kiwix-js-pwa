@@ -120,6 +120,8 @@
     <Content Include="www\-\s\css_modules\ext.kartographer.frame.css" />
     <Content Include="www\-\s\css_modules\ext.kartographer.link.css" />
     <Content Include="www\-\s\css_modules\ext.kartographer.style.css" />
+    <Content Include="www\-\s\css_modules\ext.math.scripts.css" />
+    <Content Include="www\-\s\css_modules\ext.math.styles.css" />
     <Content Include="www\-\s\css_modules\ext.scribunto.logs.css" />
     <Content Include="www\-\s\css_modules\ext.timeline.styles.css" />
     <Content Include="www\-\s\css_modules\ext.tmh.thumbnail.styles.css" />
