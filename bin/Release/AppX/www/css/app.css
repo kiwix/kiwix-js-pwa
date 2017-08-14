@@ -94,8 +94,20 @@
     border: 1px solid black;
 }
 
+.navbar-fixed-bottom {
+    background: inherit;
+}
+
+.btn-sm {
+    background: rgba(51,122,183,0.3) !important;
+    border: transparent !important;
+    float: none !important;
+    color: whitesmoke !important;
+    font-weight: bold !important;
+}
+
 .darkfooter {
-    background: rgba(47,79,79,.3) !important;
+    background: rgba(47,79,79,.5) !important;
 }
 
 .glyphicon {
@@ -112,19 +124,31 @@
     border-color: darkgray;
 }
 
+.darkfooter .dropdown-menu, .darkfooter .dropdown-menu a {
+    color: lightblue !important;
+    background-color: rgba(34,34,34,0.6) !important;
+    border-color: darkgray;
+}
+
+.darkfooter .dropdown-menu a:focus, .darkfooter .dropdown-menu a:hover {
+    color: lightblue !important;
+    background: darkslategray !important;
+}
+
 .dark .list-group-item {
     color: lightblue !important;
     background-color: #222 !important;
 }
 
 .dark a.list-group-item:hover, .dark a.list-group-item:focus, .dark nav a:hover, .dark nav a:focus {
-    color: lightblue !important;
-    background-color: darkslategray !important;
-}
+        color: lightblue !important;
+        background-color: darkslategray !important;
+    }
 
 .dark .btn-default {
     background: #222 !important;
     color: dimgray !important;
+    text-shadow: none;
 }
 
 

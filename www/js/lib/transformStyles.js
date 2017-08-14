@@ -23,7 +23,7 @@
  */
 'use strict';
 
-define(['uiUtil'], function (uiUtil) {
+define(['util', 'uiUtil'], function (util, uiUtil) {
     /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i]  */
     function filterCSS(zl, zim, cc, cs, i) {
         var rtnFunction = "injectCSS";
@@ -107,7 +107,27 @@ define(['uiUtil'], function (uiUtil) {
             //If it's in desktop position, move info-box below lead paragraph like on Wikipedia mobile
             //html = zim == "desktop" ? /<\/p>[\s\S]*?<table\s+[^>]*(?:infobox|vertical-navbox)/i.test(html) ? html : html.replace(/(<table\s+(?=[^>]*(?:infobox|vertical-navbox))[\s\S]+?<\/table>[^<]*)((?:<span\s*>\s*)?<p\b[^>]*>(?:(?=([^<]+))\3|<(?!p\b[^>]*>))*?<\/p>(?:<span\s*>)?)/i, "$2\r\n$1") : html;
             //var test = html.getElementById("qbRight")
-            html = zim == "desktop" ? html.replace(/(<table\s+(?=[^>]*(?:infobox|vertical-navbox|qbRight))[\s\S]+?<\/table>[^<]*)((?:<span\s*>\s*)?<p\b[^>]*>(?:(?=([^<]+))\3|<(?!p\b[^>]*>))*?<\/p>(?:<span\s*>)?)/i, "$2\r\n$1") : html;
+            if (zim == "desktop") {
+                var table = util.matchOuter(html, '<table\\b[^>]*>', '</table>', 'i');
+                if (table.length && /infobox|vertical-navbox|qbRight/i.test(table[0])) {
+                    var temphtml = html.replace(table[0], "");
+                    var paras = util.matchInner(temphtml, '<p\\b[^>]*>', '</p>', 'gi');
+                    var matched = false;
+                    if (paras.length) {
+                        for (var g = 0; g < 3; g++) {
+                            //Check if the paragraph is a proper sentence, i.e. contains at least 50 non-HTML-delimetered non-full-stop characters, followed by a punctuation character
+                            if (/[^.]{50,}[^.]*[.,;:?!-]/.test(paras[g].replace(/<[^>]*>/g, ""))) { matched = true; break; }
+                        }
+                        if (matched) {
+                            //Swap table and first matched paragraph, but mark lead paragraph first
+                            //We already deleted the table above
+                            html = temphtml;
+                            html = html.replace(paras[g], paras[g].replace(/(<p\s+)/i, '$1data-kiwix-id="lead" ') + "\r\n" + table[0]);
+                        }
+                    }
+                }
+            }
+            //html = zim == "desktop" ? html.replace(/(<table\s+(?=[^>]*(?:infobox|vertical-navbox|qbRight))[\s\S]+?<\/table>[^<]*)((?:<span\s*>\s*)?<p\b[^>]*>(?:(?=([^<]+))\3|<(?!p\b[^>]*>))*?<\/p>(?:<span\s*>)?)/i, "$2\r\n$1") : html;
             //Set infobox styling hard-coded in Wikipedia mobile
             html = html.replace(/(table\s+(?=[^>]*class\s*=\s*["'][^"']*infobox)[^>]*style\s*=\s*["'][^"']+[^;'"]);?\s*["']/ig, '$1; position: relative; border: 1px solid #eaecf0; text-align: left; background-color: #f8f9fa;"');
             //Wrap <h2> tags in <div> to control bottom border width if there's an infobox
