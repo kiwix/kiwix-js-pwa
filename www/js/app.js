@@ -1024,15 +1024,21 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             var dropup = '<span class="dropup"><button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Contents <span class="caret"></span> </button> <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">';
             headings.forEach(function (heading) {
                 if (/^h1$/i.test(heading.tagName))
-                    dropup = dropup + '<li><a href="javascript:void(0)" onclick="$(&apos;#articleContent&apos;).contents().scrollTop($(&apos;#articleContent&apos;).contents().find(&apos;#' + heading.id + '&apos;).offset().top)">' + heading.textContent + '</a></li>';
+                    dropup = dropup + '<li><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
                 else if (/^h2$/i.test(heading.tagName))
-                    dropup = dropup + '<li class="small"><a href="javascript:void(0)" onclick="$(&apos;#articleContent&apos;).contents().scrollTop($(&apos;#articleContent&apos;).contents().find(&apos;#' + heading.id + '&apos;).offset().top)">' + heading.textContent + '</a></li>';
+                    dropup = dropup + '<li class="small"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
                 //else
                 //Currently skip smaller headings until toc scrolling works
                 //dropup = ...
             });
             dropup = dropup + '</ul></span>'
             $("#appStatus").removeClass().html(dropup);
+            $("#appStatus").find("a").each(function() {
+                $(this).on("click", function () {
+                    $("#articleContent").contents().scrollTop(
+                        $("#articleContent").contents().find("#" + this.dataset.headingId).offset().top)
+                });
+            });
         }
 
 
