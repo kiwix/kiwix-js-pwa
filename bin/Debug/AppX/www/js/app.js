@@ -26,30 +26,28 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFilesystemAccess'],
- function($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess) {
+define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFilesystemAccess', 'q', 'module', 'transformStyles'],
+ function($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess, q, module, transformStyles) {
      
-    /*/ Disable any eval() call in jQuery : it's disabled by CSP in any packaged application
-    // It happens on some wiktionary archives, because there is some javascript inside the html article
-    // Cf http://forum.jquery.com/topic/jquery-ajax-disable-script-eval
-     jQuery.globalEval = function (code) {
-        // jQuery believes the javascript has been executed, but we did nothing
-        // In any case, that would have been blocked by CSP for package applications
-        console.log("jQuery tried to run some javascript with eval(), which is not allowed in packaged applications");
-    }; */
-    
     /**
      * Maximum number of articles to display in a search
      * @type Integer
      */
-    //var MAX_SEARCH_RESULT_SIZE = 50;
-    var MAX_SEARCH_RESULT_SIZE = 20; //GK - speed up search
+    var MAX_SEARCH_RESULT_SIZE = module.config().results; //This is set in init.js
 
-    /**
+//TESTING
+    // Get the app's installation folder.
+    //var appFolder = Windows.ApplicationModel.Package.current.installedLocation;
+    var appfolder = "";
+     // Print the folder's path to the Visual Studio Output window.
+    //console.log(appFolder.name, "folder path:", appFolder.path);
+//END TESTING
+
+     /**
      * @type ZIMArchive
      */
     var selectedArchive = null;
-    
+
     /**
      * Resize the IFrame height, so that it fills the whole available height in the window
      */
@@ -195,17 +193,75 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     });
     $('input:radio[name=contentInjectionMode]').on('change', function(e) {
         if (checkWarnServiceWorkerMode(this.value)) {
+            document.getElementById('returntoArticle_top').innerHTML = "";
+            document.getElementById('returntoArticle_bottom').innerHTML = "";
             // Do the necessary to enable or disable the Service Worker
             setContentInjectionMode(this.value);
         }
         else {
             setContentInjectionMode('jquery');
         }
-        
     });
-    
+    $('input:checkbox[name=cssCacheMode]').on('change', function (e) {
+        params['cssCache'] = this.checked ? true : false;
+    });
+    $('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
+        params['imageDisplay'] = this.checked ? true : false;
+    });
+    $('input:checkbox[name=cssUIDarkTheme]').on('change', function (e) {
+        params['cssUITheme'] = this.checked ? 'dark' : 'light';
+        if (this.checked) {
+            document.getElementById('search-article').classList.add("dark");
+            document.getElementById('article').classList.add("dark");
+            document.getElementById('navbar').classList.remove("navbar-default");
+            document.getElementById('navbar').classList.add("dark");
+            document.getElementById('archiveFiles').classList.add("dark");
+            document.getElementById('archiveFiles').classList.remove("btn");
+            document.getElementById('container').classList.add("dark");
+            document.getElementById('row').classList.add("dark");
+            document.getElementById('prefix').classList.add("dark");
+            var elements = document.querySelectorAll(".settings");
+            for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid darkgray"; } 
+        }
+        if (!this.checked) {
+            document.getElementById('search-article').classList.remove("dark");
+            document.getElementById('article').classList.remove("dark");
+            document.getElementById('navbar').classList.add("navbar-default");
+            document.getElementById('navbar').classList.remove("dark");
+            document.getElementById('archiveFiles').classList.remove("dark");
+            document.getElementById('archiveFiles').classList.add("btn");
+            document.getElementById('container').classList.remove("dark");
+            document.getElementById('row').classList.remove("dark");
+            document.getElementById('prefix').classList.remove("dark");
+            var elements = document.querySelectorAll(".settings");
+            for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid black"; }
+        }
+    });
+    $('input:checkbox[name=cssWikiDarkTheme]').on('change', function (e) {
+        params['cssTheme'] = this.checked ? 'dark' : 'light';
+        if (this.checked) {
+            document.getElementById('footer').classList.add("darkfooter");
+        }
+        if (!this.checked) {
+            document.getElementById('footer').classList.remove("darkfooter");
+        }
+    });
+    $('input:radio[name=cssInjectionMode]').on('click', function (e) {
+        params['cssSource'] = this.value;
+        //document.getElementById('returntoArticle_top').innerHTML = "";
+        //document.getElementById('returntoArticle_bottom').innerHTML = "";
+    });
+    $(document).ready(function (e) {
+        // Set checkbox for cssCache and radio for cssSource
+        document.getElementById('cssCacheModeCheck').checked = params['cssCache'];
+        document.getElementById('imageDisplayModeCheck').checked = params['imageDisplay'];
+        document.getElementById('cssWikiDarkThemeCheck').checked = params['cssTheme'] == 'dark' ? true : false;
+        document.getElementById('cssUIDarkThemeCheck').checked = params['cssUITheme'] == 'dark' ? true : false;
+        $('input:radio[name=cssInjectionMode]').filter('[value="' + params['cssSource'] + '"]').prop('checked', true);
+    });
+
     /**
-     * Displays of refreshes the API status shown to the user
+     * Displays or refreshes the API status shown to the user
      */
     function refreshAPIStatus() {
         if (isMessageChannelAvailable()) {
@@ -343,7 +399,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     else {
         setContentInjectionMode('jquery');
     }
-    
+
     var serviceWorkerRegistration = null;
     
     /**
@@ -386,6 +442,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
      * @type Array.<StorageFirefoxOS>
      */
     var storages = [];
+    //var storages = [appFolder.path];  //UWP
     function searchForArchivesInPreferencesOrStorage() {
         // First see if the list of archives is stored in the cookie
         var listOfArchivesFromCookie = cookies.getItem("listOfArchives");
@@ -415,8 +472,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
         // Make a fake first access to device storage, in order to ask the user for confirmation if necessary.
         // This way, it is only done once at this moment, instead of being done several times in callbacks
         // After that, we can start looking for archives
-        storages[0].get("fake-file-to-read").then(searchForArchivesInPreferencesOrStorage,
-                                                  searchForArchivesInPreferencesOrStorage);
+        //storages[0].get("fake-file-to-read").then(searchForArchivesInPreferencesOrStorage,
+                                                  //searchForArchivesInPreferencesOrStorage);
+        searchForArchivesInPreferencesOrStorage;
     }
     else {
         // If DeviceStorage is not available, we display the file select components
@@ -570,9 +628,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     }
 
     /**
-     * This is used in the testing interface to inject a remote archive.
+     * Reads a remote archive with given URL, and returns the response in a Promise.
+     * This function is used by setRemoteArchives below, for UI tests
+     * 
+     * @param url The URL of the archive to read
+     * @returns {Promise}
      */
-    window.setRemoteArchive = function(url) {
+    function readRemoteArchive(url) {
+        var deferred = q.defer();
         var request = new XMLHttpRequest();
         request.open("GET", url, true);
         request.responseType = "blob";
@@ -581,11 +644,32 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 if ((request.status >= 200 && request.status < 300) || request.status === 0) {
                 // Hack to make this look similar to a file
                 request.response.name = url;
-                setLocalArchiveFromFileList([request.response]);
+                    deferred.resolve(request.response);
             	}
+                else {
+                    deferred.reject("HTTP status " + request.status + " when reading " + url);
+            }
             }
         };
+        request.onabort = function (e) {
+            deferred.reject(e);
+        };
         request.send(null);
+        return deferred.promise;
+    }
+    
+    /**
+     * This is used in the testing interface to inject remote archives
+     */
+    window.setRemoteArchives = function() {
+        var readRequests = [];
+        var i;
+        for (i = 0; i < arguments.length; i++) {
+            readRequests[i] = readRemoteArchive(arguments[i]);
+        }
+        return q.all(readRequests).then(function(arrayOfArchives) {
+            setLocalArchiveFromFileList(arrayOfArchives);
+        });
     };
 
     /**
@@ -676,7 +760,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
      * @param {Event} event
      * @returns {Boolean}
      */
-    function handleTitleClick(event) {       
+    function handleTitleClick(event) {
+
+        /*/TESTING//
+        console.log("Initiating HTML load...");
+        console.time("Time to HTML load");
+        console.log("Initiating Document Ready timer...");
+        console.time("Time to Document Ready"); */
+
         var dirEntryId = event.target.getAttribute("dirEntryId");
         $("#articleList").empty();
         $('#articleListHeaderMessage').empty();
@@ -720,6 +811,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
             selectedArchive.resolveRedirect(dirEntry, readArticle);
         }
         else {
+
+            //TESTING//
+            console.log("Initiating HTML load...");
+            console.time("Time to HTML load");
+            console.log("Initiating Document Ready timer...");
+            console.time("Time to Document Ready");
+
             selectedArchive.readArticle(dirEntry, displayArticleInForm);
         }
     }
@@ -772,41 +870,80 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     // Since late 2014, all ZIM files should use relative URLs
     var regexpImageUrl = /^(?:\.\.\/|\/)+(I\/.*)$/;
     var regexpMetadataUrl = /^(?:\.\.\/|\/)+(-\/.*)$/;
-    // This regular expression matches the href of all <link> tags containing rel="stylesheet" in raw HTML
-    var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*"stylesheet)[^>]*href\s*=\s*["'])([^"']+)(["'][^>]*>)/ig;
+    // This matches the href of all <link> tags containing rel="stylesheet" in raw HTML
+    var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*href\s*=\s*["'])([^"']+)(["'][^>]*>)/ig;
+     // This matches the title between <title  attrs> ... </title>
+    //var regexpArticleTitle = /<title\s*[^>]*>\s*([^<]+)\s*</i;
+     // This matches the title of a Type1 Wikimedia ZIM file or any ZIM file using simple <h1 attrs....> Title </h1>
+    //var regexpType1ZIMTitle = /<h1\s+[^>]*>\s*([^<]+)\s*</i;
+    // This matches the title of a mw-offliner (Type2) Wikimedia ZIM file, specifically 
+    //var regexpType2ZIMTitle = /id\s*=\s*['"][^'"]*title_0[^"']*["'][^>]*>\s*([^<]+)\s*</i;
+
 
 
     /**
      * Display the the given HTML article in the web page,
      * and convert links to javascript calls
      * NB : in some error cases, the given title can be null, and the htmlArticle contains the error message
+     *
      * @param {DirEntry} dirEntry
      * @param {String} htmlArticle
      */
     function displayArticleInForm(dirEntry, htmlArticle) {
         // Display the article inside the web page.
 
-        //Fast-replace img with data-img and hide image [kiwix-js #272]
-        htmlArticle = htmlArticle.replace(/(<img\s+[^>]*)src(\s*=)/ig,
-            "$1style=\"display: none;\" onload=\"this.style.display='inline'\" data-kiwixsrc$2");
+        //TESTING
+        console.log("** HTML received **");
+        console.timeEnd("Time to HTML load");
+        console.log("Loading stylesheets...");
+        console.time("Time to First Paint");
+
+        //Fast-replace img src with data-kiwixsrc and hide image [kiwix-js #272]
+        htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)src(\s*=)/ig, "$1data-kiwixsrc$2");
+        if (!params['imageDisplay']) {
+            //Ensure 36px clickable image height so user can request images by clicking [kiwix-js #173]
+            htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)height(\s*=\s*)/ig,
+                '$1height="36" src="../img/lightBlue.png" style="color: lightblue; background-color: lightblue;" ' +
+                'data-kiwixheight$2');
+        }
+     //TESTING - find out whether document contains MathSVGs
+        //var containsMathSVG = /\.svg\s*['"][^>]+mwe-math-fallback-image|mwe-math-fallback-image[^>]+\.svg\s*['"]/i.test(htmlArticle);
+        //Version below will match any type of fallback image so long as there is an alt string
+        var containsMathSVG = /alt\s*=\s*['"][^'"]+['"][^>]+mwe-math-fallback-image|mwe-math-fallback-image[^>]+alt\s*=\s*['"][^'"]+['"]/i.test(htmlArticle);
 
      //Preload stylesheets [kiwix-js @149]
         //Set up blobArray of promises
         var cssArray = htmlArticle.match(regexpSheetHref);
         var blobArray = [];
+        var cssSource = params['cssSource'];
+        var cssCache = params['cssCache'];
+        var zimType = "";
         getBLOB(cssArray);
 
         //Extract CSS URLs from given array of links
         function getBLOB(arr) {
+            var testCSS = arr.join();
+            zimType = /-\/s\/style\.css/i.test(testCSS) ? "desktop" : zimType;
+            zimType = /minerva|mobile/i.test(testCSS) ? "mobile" : zimType;
+            cssSource = cssSource == "auto" ? zimType : cssSource; //Default to in-built zimType if user has selected automatic detection of styles
+            if (/minerva/i.test(testCSS) && (cssCache || zimType != cssSource)) {
+                //Substitute ridiculously long style name TODO: move this code to transformStyles
+                for (var i = 0; i < arr.length; i++) { //NB minerva.css is a dummy name for now TODO: sort out in transfromStyles
+                    arr[i] = /minerva/i.test(arr[i]) ? '<link href="../-/s/style-mobile.css" rel="stylesheet" type="text/css">' : arr[i];
+                }
+            }
             for (var i = 0; i < arr.length; i++) {
                 var linkArray = regexpSheetHref.exec(arr[i]);
                 regexpSheetHref.lastIndex = 0; //Reset start position for next loop
-                if (regexpMetadataUrl.test(linkArray[2])) { //It's a CSS file contained in ZIM
-                    var linkURL = uiUtil.removeUrlParameters(decodeURIComponent(linkArray[2].match(regexpMetadataUrl)[1]));
-                    console.log("Attempting to resolve CSS link #" + i + "...");
-                    var linkBLOB = resolveCSS(linkURL, i); //Pass link and index
+                if (linkArray && regexpMetadataUrl.test(linkArray[2])) { //It's a CSS file contained in ZIM
+                    var zimLink = decodeURIComponent(uiUtil.removeUrlParameters(linkArray[2]));
+                    /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
+                    var filteredLink = transformStyles.filterCSS(zimLink, zimType, cssCache, cssSource, i);
+                    //blobArray[i] = filteredLink.zl; //This line is a mistake! It fills blobArray too quickly and doesn't trigger waiting for primises...
+                    //filteredLink.rtnFunction == "injectCSS" ? injectCSS() : resolveCSS(filteredLink.zl, i); 
+                    if (filteredLink.rtnFunction == "injectCSS") { blobArray[i] = filteredLink.zl; injectCSS() } else { resolveCSS(filteredLink.zl, i); }
                 } else {
-                    blobArray[i] = linkArray[2]; //If CSS not in ZIM, store URL in blobArray
+                    blobArray[i] = arr[i]; //If CSS not in ZIM, store URL in blobArray
                     injectCSS(); //Ensure this is called even if none of CSS links are in ZIM
                 }
             }
@@ -814,47 +951,118 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
 
         function resolveCSS(title, index) {
             selectedArchive.getDirEntryByTitle(title).then(
-                function (dirEntry) {
-                selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content) {
+            function (dirEntry) {
+                selectedArchive.readBinaryFile(dirEntry,
+                    function (readableTitle, content, namespace, url) {
+                //DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
                     //var cssContent = util.uintToString(content);
-                    var cssBlob = new Blob([content], { type: 'text/css' });
-                    var newURL = URL.createObjectURL(cssBlob);
-                    //return URL.createObjectURL(cssBlob);
-                    blobArray[index] = newURL;
-                    injectCSS();
+                    var cssBlob = new Blob([content], { type: 'text/css' }, { oneTimeOnly: true });
+                    var newURL = [namespace + "/" + url, URL.createObjectURL(cssBlob)];
+                    //blobArray[index] = newURL; //Don't bother with "index" -- you don't need to track the order of the blobs TODO: delete this logic
+                    blobArray.push(newURL);
+                    injectCSS(); //DO NOT move this: it must run within .then function to pass correct values
                 });
             }).fail(function (e) {
                 console.error("could not find DirEntry for CSS : " + title, e);
-                blobArray[index] = "Error";
+                //blobArray[index] = title;
+                blobArray.push(title);
                 injectCSS();
             });
         }
 
         function injectCSS() {
             if (blobArray.length === cssArray.length) { //If all promised values have been obtained
-                for (var i in cssArray) {
-                    cssArray[i] = cssArray[i].replace(/(href\s*=\s*["'])([^"']+)/ig, "$1" + blobArray[i]);
+                var resultsArray = [];
+                for (var i in cssArray) { //Put them back in the correct order
+                    var match = 0;
+                    for (var j in blobArray) { //Iterate the blobArray to find the matching entry
+                        var testBlob = blobArray[j][0] == "." ? blobArray[j] : blobArray[j][0]; //What a kludge! TODO: fix this ugly mixing of arrays and strings 
+                        if (~cssArray[i].indexOf(testBlob)) { match = 1; break; }
+                    }
+                    testBlob = match && /blob:/i.test(blobArray[j][1]) ? blobArray[j][1] : blobArray[i]; //Whoa!!! Steady on!
+                    resultsArray[i] = cssArray[i].replace(/(href\s*=\s*["'])([^"']+)/i, "$1" +
+                        testBlob + '" data-kiwixhref="$2');//Store the original URL for later use
+                        //DEV note: do not attempt to add onload="URL.revokeObjectURL...)": see [kiwix.js #284]
+                    //DEBUG:
+                        //console.log("BLOB CSS #" + i + ": " + resultsArray[i] + "\nshould correspond to: " + testBlob);
                 }
+                cssArray = resultsArray;
                 htmlArticle = htmlArticle.replace(regexpSheetHref, ""); //Void existing stylesheets
                 var cssArray$ = "\r\n" + cssArray.join("\r\n") + "\r\n";
-                htmlArticle = htmlArticle.replace(/\s+(<\/head>)/i, cssArray$ + "$1");
-                injectHTML(htmlArticle); //This passes the revised HTML to the image and JS subroutine...
+                if (cssSource == "mobile") { //If user has selected mobile display mode...
+                    var mobileCSS = transformStyles.toMobileCSS(htmlArticle, zimType, cssCache, cssSource, cssArray$);
+                    htmlArticle = mobileCSS.html;
+                    cssArray$ = mobileCSS.css;
+                }
+                if (cssSource == "desktop") { //If user has selected desktop display mode...
+                    var desktopCSS = transformStyles.toDesktopCSS(htmlArticle, zimType, cssCache, cssSource, cssArray$);
+                    htmlArticle = desktopCSS.html;
+                    cssArray$ = desktopCSS.css;
+                }
+                if (cssCache) { //For all cases except where user wants exactly what's in the zimfile...
+                    //Reduce the hard-coded top padding to 0
+                    htmlArticle = htmlArticle.replace(/(<div\s+[^>]*mw-body[^>]+style[^>]+padding\s*:\s*)1em/i, "$10 1em");
+                }
+                //For all cases, neutralize the toggleOpenSection javascript that causes a crash - TODO: make it work for mobile style
+                htmlArticle = htmlArticle.replace(/onclick\s*=\s*["']toggleOpenSection[^"']*['"]\s*/ig, "");
+                htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
+                console.log("All CSS resolved");
+                //$("#progressMessage").html(""); //Void progress messages
+                injectHTML(htmlArticle); //Pass the revised HTML to the image and JS subroutine...
             } else {
-                console.log("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...")
+               uiUtil.poll("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...");
+                //console.log("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...")
             }
         }
     //End of preload stylesheets code
 
-        function injectHTML(htmlContent) {
+        function setupTableOfContents() {
+            var iframe = window.frames[0].frameElement;
+            var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+            var tableOfContents = new uiUtil.toc(innerDoc);
+            var headings = tableOfContents.getHeadingObjects();
+            var dropup = '<span class="dropup"><button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Contents <span class="caret"></span> </button> <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">';
+            headings.forEach(function (heading) {
+                if (/^h1$/i.test(heading.tagName))
+                    dropup = dropup + '<li><a href="javascript:void(0)" onclick="$(&apos;#articleContent&apos;).contents().scrollTop($(&apos;#articleContent&apos;).contents().find(&apos;#' + heading.id + '&apos;).offset().top)">' + heading.textContent + '</a></li>';
+                else if (/^h2$/i.test(heading.tagName))
+                    dropup = dropup + '<li class="small"><a href="javascript:void(0)" onclick="$(&apos;#articleContent&apos;).contents().scrollTop($(&apos;#articleContent&apos;).contents().find(&apos;#' + heading.id + '&apos;).offset().top)">' + heading.textContent + '</a></li>';
+                //else
+                //Currently skip smaller headings until toc scrolling works
+                //dropup = ...
+            });
+            dropup = dropup + '</ul></span>'
+            $("#appStatus").removeClass().html(dropup);
+        }
+
+
+        function injectHTML() {
+            //Void progress message
+            uiUtil.clear(); //Void progress messages
             $("#readingArticle").hide();
             $("#articleContent").show();
             // Scroll the iframe to its top
             $("#articleContent").contents().scrollTop(0);
-            $('#articleContent').contents().find('body').html(htmlContent);
+            $('#articleContent').contents().find('body').html(htmlArticle);
+
+            setupTableOfContents();
+
+            uiUtil.makeReturnLink(dirEntry); //[kiwix-js #127]
 
             // If the ServiceWorker is not useable, we need to fallback to parse the DOM
             // to inject math images, and replace some links with javascript calls
             if (contentInjectionMode === 'jquery') {
+
+                //Load MathJax if required and if not already loaded
+                if (containsMathSVG) {
+                    if (!window.frames[0].MathJax) {
+                        var doc = $("#articleContent").contents()[0];
+                        var script = doc.createElement("script");
+                        script.type = "text/javascript";
+                        script.src = "../js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
+                        doc.head.appendChild(script);
+                    }
+                }
 
                 // Convert links into javascript calls
                 $('#articleContent').contents().find('body').find('a').each(function () {
@@ -911,54 +1119,687 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                     }
                 });
 
-                // Load images
-                $('#articleContent').contents().find('body').find('img').each(function () {
-                    var image = $(this);
-                    // It's a standard image contained in the ZIM file
-                    // We try to find its name (from an absolute or relative URL)
-                    var imageMatch = image.attr('data-kiwixsrc').match(regexpImageUrl); //kiwix-js #272
-                    if (imageMatch) {
-                        var title = decodeURIComponent(imageMatch[1]);
-                        selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                            selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content) {
-                                // TODO : use the complete MIME-type of the image (as read from the ZIM file)
-                                uiUtil.feedNodeWithBlob(image, 'src', content, 'image');
+                loadImages();
+                //loadJavascript(); //Disabled for now, since it does nothing
+            }  
+
+        } //End of injectHTML()
+
+    } //End of displayArticleInForm()
+
+    /** This is the main image loading function.
+     * Contains four sub functions: prepareImages, triageImages, displaySlices, loadImageSlice
+     * and a utility function checkVisibleImages
+     */
+    function loadImages() {
+
+        //TESTING
+        console.log("** First Paint complete **");
+        console.timeEnd("Time to First Paint");
+
+        //Set up tracking variables
+        var countImages = 0;
+    //DEV: This sets the maximum number of visible images to request in a single batch (too many will slow image display)
+        //NB remaining visible images are shunted into prefetchSlice, which works in the background
+        var maxVisibleSliceSize = 10;
+    //DEV: Set this to the number of images you want to prefetch after the on-screen images have been fetched
+        var prefetchSliceSize = 20;
+    //DEV: SVG images are currently very taxing: keep this number at 5 or below and test on your system with Sine.html
+        var svgSliceSize = 3;
+        var visibleSlice = [];
+        var svgSlice = [];
+        var svgGroup1 = [];
+        var initialSVGRun = true;
+        var prefetchSlice = [];
+        var windowScroll = true;
+        var imageDisplay = params['imageDisplay'];
+
+        //Establish master image array
+        var images = $('#articleContent').contents().find('body').find('img');
+        var allImages = images.length;
+
+        //If user wants to display images...
+        if (imageDisplay) {
+
+            //Set up a listener function for onscroll event
+            if (allImages > prefetchSliceSize) {
+                //Polyfill scrollStopped event
+                $.fn.scrollStopped = function (callback) {
+                    var that = this, $this = $(that);
+                    $this.scroll(function (ev) {
+                        clearTimeout($this.data('scrollTimeout'));
+                        $this.data('scrollTimeout', setTimeout(callback.bind(that), 250, ev));
+                    });
+                }
+                $("#articleContent").contents().scrollStopped(prepareImages);
+            }
+            if (allImages) {
+                prepareImages();
+            } else {
+                console.log("There are no images to display in this article.");
+                //TESTING
+                console.timeEnd("Time to Document Ready");
+            }
+        } else {
+            console.log("Image retrieval disabled by user");
+            //User did not request images, so give option of loading one by one {kiwix-js #173]
+            if (images.length) {
+                images.each(function () {
+                    // Attach an onclick function to load the image
+                    var img = $(this);
+                    img.on('click', function () {
+                        this.height = this.getAttribute('data-kiwixheight');
+                        this.style.background = "";
+                        loadImageSlice(this, 0, 0, function (sliceID, sliceCount, sliceEnd, mimetype, data) {
+                            img[0].src = "data:" + mimetype + ";base64," + btoa(data);
+                            }, true);
+                    });
+                });
+            }
+            //TESTING
+            console.timeEnd("Time to Document Ready");
+        }
+
+        /** Prepares the main array of images remaining for triage
+         * and determines which images are visible
+         */
+        function prepareImages() {
+            //Ensure the function isn't launched multiple times
+            if (!windowScroll) { return; }
+            windowScroll = false;
+
+            //Reload images array because we may have spliced it on a previous loop
+            images = $('#articleContent').contents().find('body').find('img');
+            
+            //Remove images that have already been loaded
+            var visibleImage = null;
+            var lastRemovedPosition = 0;
+            for (var i = 0; i < images.length; i++) {
+                if (images[i].src) {
+                    visibleImage = uiUtil.isElementInView(images[i], true) ? lastRemovedPosition : visibleImage;
+                    images.splice(i, 1);
+                    i--; //If we removed an image, reset the index
+                    lastRemovedPosition++;
+                }
+            }
+
+            if (images.length) {
+                console.log("Processing " + images.length + " images...");
+                //Determine first and last visible images in the current window
+                var view = checkVisibleImages();
+                //windowScroll = true;
+                //return;
+
+                //If there are undisplayed images in the current window...
+                if (view.lastVisible >= 0) {
+                    triageImages(view.firstVisible, view.lastVisible);
+                } else {
+                    //If the currently visible image(s) have already been loaded...
+                    if (visibleImage != null) {
+                        //If we are viewing an image within 5 images of the next unloaded image
+                        if (lastRemovedPosition - visibleImage <= 5) {
+                            triageImages();
+                        } else {
+                            console.log("No images need prefetching\n\n" +
+                                "** Waiting for user to scroll **");
+                            windowScroll = true;
+                        }        
+                    } else {
+                        //We don't know where we are because no images are in view, so we'd better fetch some more
+                        triageImages();
+                    }
+                }
+            } else {
+                //Unload scroll listener
+                console.log("Unloading scroll listener");
+                $("#articleContent").contents().off('scroll');
+                windowScroll = true; //Check if it's really unloaded...
+            }
+
+        } //End of prepareImages()
+
+        /**
+         * Sort the images into three arrays:
+         * visibleSlice (visible images which will be loaded first)
+         * svgSlice (groups together SVG images)
+         * prefetchSlice (preload set number of non-visible images)
+         * Pass the index of the first and last images of visible area if known 
+         *
+         * @param {number} firstVisible
+         * @param {number} lastVisible
+         */
+        function triageImages(firstVisible, lastVisible) {
+            //Set the window of images to be requested
+            if (typeof firstVisible === 'undefined' || firstVisible == null) { firstVisible = -1; } //No first images was set
+            if (typeof lastVisible === 'undefined' || lastVisible == null) { lastVisible = -1; } //No first images was set
+            var lengthSlice = lastVisible + prefetchSliceSize + 1;
+            var startSlice = firstVisible;
+            //If the requested images window extends beyond the end of the image array...
+            if (lengthSlice > images.length) {
+                //Move the window backwards
+                startSlice -= lengthSlice - images.length;
+                lengthSlice = images.length;
+            }
+            //Check that the start of the window isn't before the beginning of the array
+            startSlice = startSlice < 0 ? 0 : startSlice;
+
+
+            //Sort through images to put them in the appropriate slice arrays
+            svgGroup1 = [];
+            var svgGroup2 = [];
+            for (var i = startSlice; i < lengthSlice; i++) {
+                if (/\.svg$/i.test(images[i].getAttribute('data-kiwixsrc')) ||
+                    //Include any kind of maths image fallback that has an alt string in SVG bucket
+                    (/mwe-math-fallback/i.test(images[i].className) && images[i].alt)) {
+                    if (i < firstVisible || i > lastVisible) {
+                        svgGroup2.push(images[i]);
+                    } else {
+                        svgGroup1.push(images[i]);
+                    }
+                } else {
+                    if (i <= lastVisible && visibleSlice.length <= maxVisibleSliceSize) {
+                        visibleSlice.push(images[i]);
+                    } else {
+                        prefetchSlice.push(images[i]);
+                    }
+                }
+            }
+            svgSlice = svgGroup1.concat(svgGroup2);
+
+            //Call displaySlices with all counters zeroed
+            //This lets the function know that it should initialize display process
+            displaySlices(0, 0, 0);
+
+        } //End of triageImages()
+
+        /**
+         * This controls the order in which slices will be displayed and acts as a callback function for loadImageSlice
+         * sliceID (callback value) identifies the slices: 1=visibleSlice; 2=prefetchSlice; 3=svgSlice 
+         * sliceCount (callback value) keeps count of the images loaded in the current slice
+         * sliceEnd (callback value) is the index of the last image in the current slice 
+         * Start the function with all values zeroed
+         *
+         * @callback requestCallback
+         * @param {number} sliceID
+         * @param {number} sliceCount
+         * @param {number} sliceEnd
+         */
+        function displaySlices(sliceID, sliceCount, sliceEnd) {
+            //Only respond to callback if all slice images have been extracted (or on startup)
+            if (sliceCount === sliceEnd) {
+                sliceID++; //Get ready to process next slice
+                if (sliceID == 1) {
+                    if (visibleSlice.length) {
+                        console.log("** Accessing " + visibleSlice.length + " visible image(s)...");
+                        loadImageSlice(visibleSlice, 1, visibleSlice.length, displaySlices);
+                        visibleSlice = [];
+                    } else { //No images in this slice so move on to next
+                        sliceID++;
+                    }
+                }
+                if (sliceID == 2) {
+                    if (prefetchSlice.length) {
+                        console.log("** Prefetching " + prefetchSlice.length + " offscreen images...");
+                        loadImageSlice(prefetchSlice, 2, prefetchSlice.length, displaySlices);
+                        prefetchSlice = [];
+                    } else { //No images in this slice so move on to next
+                        sliceID++;
+                    }
+                }
+                if (sliceID == 3) {
+                    //TESTING
+                    if (countImages <= maxVisibleSliceSize + prefetchSliceSize) { console.timeEnd("Time to Document Ready"); }
+
+                    if (svgSlice.length) {
+                        //Use the MathJax method of typesetting formulae if user has requested this
+                        if (params['useMathJax'] && window.frames[0].MathJax) {
+                            /*/If MathJax has not yet completed a typesetting run, discard non-visible SVGs to speed up the initial typesetting operation
+                            if (initialSVGRun && svgGroup1.length > 0) {
+                                svgSlice = svgGroup1;
+                            }
+                            initialSVGRun = false;*/
+                            var counter = 0; 
+                            $(svgSlice).each(function () {
+                                var node = this;
+                                if (/mwe-math-fallback-image/i.test(node.className) && node.alt) {
+                                    var script = document.createElement("script");
+                                    script.type = "math/tex";
+                                    script.text = node.alt;
+                                    $(this).replaceWith(script);
+                                    console.log("Typesetting image #" + countImages + "...");
+                                    countImages++;
+                                    svgSlice.splice(counter, 1);
+                                } else {
+                                    counter++;
+                                }
                             });
-                        }).fail(function (e) {
-                            console.error("could not find DirEntry for image:" + title, e);
-                        });
+                            window.frames[0].MathJax.Hub.Queue(["Typeset", window.frames[0].MathJax.Hub]);
+                        }
                     }
-                });
-
-                // Load Javascript content
-                $('#articleContent').contents().find('script').each(function () {
-                    var script = $(this);
-                    // We try to find its name (from an absolute or relative URL)
-                    var srcMatch = script.attr("src").match(regexpMetadataUrl);
-                    // TODO check that the type of the script is text/javascript or application/javascript
-                    if (srcMatch) {
-                        // It's a Javascript file contained in the ZIM file
-                        var title = uiUtil.removeUrlParameters(decodeURIComponent(srcMatch[1]));
-                        selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                            if (dirEntry === null)
-                                console.log("Error: js file not found: " + title);
-                            else
-                                selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content) {
-                                    // TODO : I have to disable javascript for now
-                                    // var jsContent = encodeURIComponent(util.uintToString(content));
-                                    //script.attr("src", 'data:text/javascript;charset=UTF-8,' + jsContent);
-                                });
-                        }).fail(function (e) {
-                            console.error("could not find DirEntry for javascript : " + title, e);
-                        });
+                    //If there are any SVGs left which were not dealt with by MathJax, process fallback images
+                    if (svgSlice.length) {
+                        console.log("** Slicing " + svgSlice.length + " SVG images...");
+                        //Set up variables to hold visible image range (to check whether user scrolls during lengthy procedure)
+                        var startSVG;
+                        var endSVG;
+                        iterateSVGSlice(3, 0, 0);
+                    } else { //No images in this slice so move on to next
+                        sliceID++;
                     }
-                });
+                }
+                if (sliceID > 3) {
+                    if (countImages === allImages) {
+                        console.log("** All images extracted from current document **")
+                        windowScroll = true; //Go back to prove this!
+                    } else {
+                        console.log("All requested image slices have been processed\n" +
+                            "** Waiting for user scroll... **");
+                        windowScroll = true;
+                    }
+                }
+            }
 
+            /**
+             * This is a specialized callback to iterate the SVGSlice
+             * This slice needs special handling because svg images can hang the program
+             *
+             * @callback requestCallback
+             * @param {number} sliceID
+             * @param {number} sliceCount
+             * @param {number} sliceEnd
+             */
+            function iterateSVGSlice(sliceID, sliceCount, sliceEnd) {
+                if (sliceCount === sliceEnd) {
+                    //Check to see if visible images have changed (i.e. if user has scrolled)
+                    if (!sliceCount) {
+                        //console.log("startSVG");
+                        startSVG = checkVisibleImages();
+                    } else {
+                        //console.log("endSVG");
+                        endSVG = checkVisibleImages();
+                    }
+                    if (endSVG) {
+                        if (startSVG.firstVisible != endSVG.firstVisible || startSVG.lastVisible != endSVG.lastVisible) {
+                            //Visible images have changed, so abandon this svgSlice
+                            console.log("** Abandoning svgSlice due to user scroll **");
+                            svgSlice = [];
+                            windowScroll = true;
+                            prepareImages();
+                            return;
+                        }
+                    }                    
+                    var batchSize = svgSliceSize > svgSlice.length ? svgSlice.length : svgSliceSize;
+                    if (batchSize) {
+                        //Split svgSlice into chunks to avoid hanging the program
+                        var svgSubSlice = svgSlice.slice(0, batchSize);
+                        svgSlice = svgSlice.slice(batchSize, svgSlice.length);
+                        console.log("Requesting batch of " + batchSize + " SVG image(s)...");
+                        loadImageSlice(svgSubSlice, 3, batchSize, iterateSVGSlice);
+                    } else {
+                        console.log("** Finished iterating svgSlice");
+                        displaySlices(3, 0, 0);
+                    }
+                }    
+            } //End of iterateSVGSlice()
+
+        } //End of displaySlices()
+
+        /**
+         * Loads images in the array passed as images
+         * sliceID will be passed to the callback 
+         * sliceEnd is the index of the last image in the current slice 
+         * dataRequested == true returns the content and disables creation of blob
+         *
+         * @param {Array} imnages
+         * @param {number} sliceID
+         * @param {number} sliceEnd
+         * @param {requestCallback} callback
+         * @param {Boolean} dataRequested
+         */
+        function loadImageSlice(images, sliceID, sliceEnd, callback, dataRequested) {
+            var sliceCount = 0;
+            $(images).each(function () {
+                var image = $(this);
+                // It's a standard image contained in the ZIM file
+                // We try to find its name (from an absolute or relative URL)
+                var imageMatch = image.attr('data-kiwixsrc').match(regexpImageUrl); //kiwix-js #272
+                if (imageMatch) {
+                    var title = decodeURIComponent(imageMatch[1]);
+                    selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+                        selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content, namespace, url) {
+                            var mimetype = url.match(/\.(\w{2,4})$/);
+                            mimetype = mimetype ? "image/" + mimetype[1].toLowerCase() : "image";
+                            mimetype = /\.jpg$/i.test(url) ? "image/jpeg" : mimetype;
+                            mimetype = /\.tif$/i.test(url) ? "image/tiff" : mimetype;
+                            mimetype = /\.ico$/i.test(url) ? "image/x-icon" : mimetype;
+                            mimetype = /\.svg$/i.test(url) ? "image/svg+xml" : mimetype;
+                            if (!dataRequested) {
+                                uiUtil.feedNodeWithBlob(image, 'src', content, mimetype);
+                            }
+                            sliceCount++;
+                            console.log("Extracted image #" + countImages + "...");
+                            countImages++;
+                            if (!dataRequested) {
+                                callback(sliceID, sliceCount, sliceEnd, url);
+                            } else {
+                                callback(sliceID, sliceCount, sliceEnd, mimetype, util.uintToString(content));
+                            }
+                        });
+                    }).fail(function (e) {
+                        sliceCount++;
+                        console.error("Could not find DirEntry for image:" + title, e);
+                        countImages++;
+                        callback(sliceID, sliceCount, sliceEnd, "Error!");
+                    });
+                }
+            });
+        } //End of loadImageRange()
+
+        /**
+         * This is a utility function to check the window of images visible to the user.
+         * It needs to be run within the scope of the main images array.
+         * Returns an object with attributes .firstVisible and .lastVisible
+         * They return null if no images are currently visible.
+         */
+        function checkVisibleImages() {
+            var firstVisible = null;
+            var lastVisible = null;
+            //Determine first and last visible images in the current window
+            for (var i = 0; i < images.length; i++) {
+                //console.log("Checking #" + i + ": " + images[i].getAttribute("data-kiwixsrc"));
+                if (uiUtil.isElementInView(images[i], true)) {
+                    //console.log("#" + i + " *is* visible");
+                    if (firstVisible == null) { firstVisible = i; }
+                    lastVisible = i;
+                } else {
+                    //console.log("#" + i + " is not visible");
+                    if (firstVisible != null && lastVisible != null) {
+                        console.log("First visible image is #" + firstVisible + "\n" +
+                            "Last visible image is #" + lastVisible);
+                        break; //We've found the last visible image, so stop the loop
+                    }
+                }
+            }
+            return {
+                firstVisible: firstVisible,
+                lastVisible: lastVisible
+            };
+        }
+
+
+
+    /*** Image functions below this comment are deprecated ****
+
+        function prePrepImages() {
+            //var imageURLs = htmlContent.match(/kiwixsrc\s*=\s*["'](?:\.\.\/|\/)+(I\/)/ig);
+            var imageDisplay = params['imageDisplay'];
+            var images = $('#articleContent').contents().find('body').find('img');
+            var countImages = 0;
+            //DEV: firstSliceSize determines maximum number of images loaded above the fold (should be <= 10)
+            //Smaller numbers give faster subjective experience, but too small may delay load of visible images above the fold
+            var firstSliceSize = 7;
+            //DEV: sliceSize determines minimum batch size of background image extraction for remaining images
+            //Larger numbers marginally increase speed of background extraction but take longer for directory lookup and conflict with user scrolling
+            var sliceSize = 10;
+            var svgSliceSize = 5;
+            var imageSlice = {};
+            var slice$x = 0;
+            var slice$y = 0;
+            var svg = 0;
+            var windowScroll = false;
+
+            //If there are images in the article, set up a listener function for onscroll event
+            if (images.length && imageDisplay) {
+                if (images.length > firstSliceSize) {
+                    $("#articleContent").contents().on("scroll", function () {
+                        //Ensure event doesn't fire multiple times and waits for previous slice to be retrieved
+                        if (windowScroll && countImages == slice$y) {
+                            windowScroll = false; //Indicate we no longer need to delay execution because user has scrolled
+                            sliceImages();
+                        }
+                    });
+                }
+
+                sliceImages();
+
+            } else { //User did not request images, so give option of loading one by one {kiwix-js #173]
+                if (images.length) {
+                    images.each(function () {
+                        // Attach an onclick function to load the image
+                        var img = $(this);
+                        img.on('click', function () {
+                            this.height = this.getAttribute('data-kiwixheight');
+                            this.style.background = "";
+                            //loadOneImage(this.getAttribute('data-kiwixsrc'), function (url) {
+                            //    img[0].src = url;
+                            //}); //Both the blob method and the src="data:" method work - if changing, edit loadOneImage() also
+                            loadOneImage(this.getAttribute('data-kiwixsrc'), function (mimetype, data) {
+                                img[0].src = "data:" + mimetype + ";base64," + btoa(data);
+                            });
+                        });
+                    });
+                }
+            }
+            //TESTING
+            if (!images.length) {
+                console.log("No images in document");
+                console.timeEnd("Time to Document Ready");
+            } else {
+                if (!imageDisplay) {
+                    console.log("Image retrieval disabled by user");
+                    console.timeEnd("Time to Document Ready");
+                }
+            }
+            //END TESTING
+        }
+
+        /**
+        * Loads images in batches or "slices" according to firstSliceSize and sliceSize parameters set above
+        * Slices after firstSlice are delayed until the user scrolls the iframe window
+        **
+        function sliceImages() {
+            //Chrome seems to lose the number of images between loops, so we repeat this statement:
+            images = $('#articleContent').contents().find('body').find('img');
+
+            //If starting loop or slice batch is complete AND we still need images for article
+            if ((countImages >= slice$y) && (countImages < images.length)) {
+                if (!windowScroll) { //If we haven't requested the next loop to be on scroll
+                    //Filter out images we've already extracted
+                    for (var i = 0; i < images.length; i++) {
+                        if (images[i].src) {
+                            images.splice(i, 1);
+                            countImages--; //Don't count already displayed images
+                        }
+                    }
+                    //TESTING: Reset everything! NOPE - causes infinite loop
+                    //countImages = 0;
+                    //slice$x = 0;
+                    //slice$y = 0;
+
+                    //slice$x = slice$y; //Not needed, because we'll always start again now
+                    var remainder = (images.length - firstSliceSize) % (sliceSize);
+                    slice$y = slice$y > 0 ? slice$y + sliceSize : slice$y + firstSliceSize; //Increment by standard or initial sliceSize 
+                    //If all images can be obtained in one batch, set slice$y to number of images
+                    slice$y = slice$y > images.length ? images.length : slice$y;
+                    //Last batch should be increased to include any remainder
+                    if (slice$x > 0 && (slice$y + remainder === images.length)) { slice$y += remainder; }
+
+                    //Find visible images
+                    var firstVisible, lastVisible;
+                    for (var n = 0; n < images.length; n++) {
+                        var visibility = uiUtil.isElementInView(images[n], false);
+                        if (visibility) {
+                            firstVisible = firstVisible >= 0 ? firstVisible : n;
+                            lastVisible = n;
+                        } else {
+                            if (firstVisible >= 0 && lastVisible >= 0) {
+                                console.log("** First visible image is #" + firstVisible + "\n" +
+                                    "** Last visible image is #" + lastVisible);
+                                break;
+                            }
+                        }
+                    }
+
+                    //Extend slice$y if it doesn't cover all visible images
+                    slice$y = slice$y < lastVisible ? lastVisible : slice$y;
+
+                    console.log("Requesting images # " + (slice$x + 1) + " to " + slice$y + "...");
+                    imageSlice = images.slice(slice$x, slice$y);
+
+                     // Check to see if the slice contains svg images...
+                    if (imageSlice.length > svgSliceSize) {
+                        for (var t = 0; t < imageSlice.length; t++) {
+                            if (/\.svg$/i.test(imageSlice[t].getAttribute('data-kiwixsrc'))) {
+                                var tempimageSlice = imageSlice.slice(0, svgSliceSize);
+                                slice$y = slice$x + svgSliceSize //Reduce sliceSize to prevent app from hanging
+                                imageSlice = tempimageSlice;
+                                //Increment svg loop detector unless we reach end of visible images
+                                svg = svg < (Math.ceil((lastVisible - slice$y)/svgSliceSize)) ? svg + 1 : 0; //Resetting svg to 0 will cause wait on scroll on next sliceImages loop
+                                console.log("SVG images detected in slice, reducing image sliceSize...");
+                                break;
+                            }
+                        }
+                    }
+
+                    serializeImages();
+
+                } else {
+                    console.log("** Waiting for user to scroll the window...");
+                }
+            } else { //All images requested, so Unload the scroll listener
+                if (images && images.length > firstSliceSize) {
+                    if (countImages == images.length) {
+                        console.log("Unloading scroll listener");
+                        $("#articleContent").contents().off('scroll');
+                    }
+                }
             }
         }
+
+        function serializeImages() {
+            $(imageSlice).each(function () {
+                var image = $(this);
+                //TESTING: If the image isn't in the viewport, abandon it
+                if (!uiUtil.isElementInView(image[0], false)) {
+                    //countImages++;
+                    slice$y--;
+                    windowScroll = countImages == slice$y ? true : windowScroll;
+                    sliceImages();
+                    return;
+                }
+
+                /*TEST
+                var isInView = uiUtil.isElementInView(image[0], false);
+                console.log("The next image is " + (isInView ? "" : "not ") + "visible");
+                //*
+
+                // It's a standard image contained in the ZIM file
+                // We try to find its name (from an absolute or relative URL)
+                var imageMatch = image.attr('data-kiwixsrc').match(regexpImageUrl); //kiwix-js #272
+                if (imageMatch) {
+                    var title = decodeURIComponent(imageMatch[1]);
+                    selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+                        selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content, namespace, url) {
+                            // TODO : use the complete MIME-type of the image (as read from the ZIM file)
+                            var mimetype = url.match(/\.(\w{2,4})$/);
+                            mimetype = mimetype ? "image/" + mimetype[1].toLowerCase() : "image";
+                            mimetype = /\.jpg$/i.test(url) ? "image/jpeg" : mimetype;
+                            mimetype = /\.tif$/i.test(url) ? "image/tiff" : mimetype;
+                            mimetype = /\.ico$/i.test(url) ? "image/x-icon" : mimetype;
+                            mimetype = /\.svg$/i.test(url) ? "image/svg+xml" : mimetype;
+                            uiUtil.feedNodeWithBlob(image, 'src', content, mimetype);
+                            //Alternative way of loading images below also works
+                            //var data = util.uintToString(content);
+                            //image[0].src = "data:" + mimetype + ";base64," + btoa(data);
+                            countImages++
+
+                        //TESTING
+                            console.log("Extracted image " + (countImages) + " of " + images.length + "...");
+                            if (countImages == firstSliceSize || (countImages <= firstSliceSize && countImages == images.length)) {
+                                console.log("** First image slice extracted: document ready **");
+                                console.timeEnd("Time to Document Ready");
+                                console.log("");
+                            }
+                            if (countImages == images.length) {
+                                console.log("** All images extracted **");
+                            }
+                        //END TESTING
+
+                            if (countImages == slice$y) {
+                                //Once slice is complete, delay the loop unless there are SVG images in slice
+                                windowScroll = svg ? false : true; //If svg is 0, waits for user scroll on next sliceImages loop
+                            }   //Explanation: extraction of svg images is slow and memory-hungry, so keep going while detecting SVG, in slices of 5 (see code above)
+                            sliceImages();
+                        });
+                    }).fail(function (e) {
+                        console.error("Could not find DirEntry for image:" + title, e);
+                        countImages++;
+                        if (countImages == slice$y) {
+                            windowScroll = true; //Once slice is complete, delay the loop
+                        }
+                        sliceImages();
+                    });
+                }
+            });
+        }
+
+        function loadOneImage(image, callback) {
+            // It's a standard image contained in the ZIM file
+            // We try to find its name (from an absolute or relative URL)
+            var imageMatch = image.match(regexpImageUrl);
+            if (imageMatch) {
+                var title = decodeURIComponent(imageMatch[1]);
+                selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+                    selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content, namespace, url) {
+                        var mimetype = url.match(/\.(\w{2,4})$/);
+                        mimetype = mimetype ? "image/" + mimetype[1].toLowerCase() : "image";
+                        mimetype = /\.jpg$/i.test(url) ? "image/jpeg" : mimetype;
+                        mimetype = /\.tif$/i.test(url) ? "image/tiff" : mimetype;
+                        mimetype = /\.ico$/i.test(url) ? "image/x-icon" : mimetype;
+                        mimetype = /\.svg$/i.test(url) ? "image/svg+xml" : mimetype;
+                        //var imageBlob = new Blob([content], { type: mimetype }, { oneTimeOnly: true });
+                        //var newURL = URL.createObjectURL(imageBlob);
+                        var data = util.uintToString(content);
+                        //callback(newURL); //If using blob method, no need to send mimetype
+                        callback(mimetype, data);
+                    });
+                }).fail(function (e) {
+                    console.error("Could not find DirEntry for image:" + title, e);
+                    callback("");
+                });
+            }
+        } */
+
+    } //End of loadImages()
+
+    // Load Javascript content
+    function loadJavascript() {
+        $('#articleContent').contents().find('script').each(function () {
+            var script = $(this);
+            // We try to find its name (from an absolute or relative URL)
+            if (script) { var srcMatch = script.attr("src").match(regexpMetadataUrl) }
+            // TODO check that the type of the script is text/javascript or application/javascript
+            if (srcMatch) {
+                // It's a Javascript file contained in the ZIM file
+                var title = uiUtil.removeUrlParameters(decodeURIComponent(srcMatch[1]));
+                selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+                    if (dirEntry === null)
+                        console.log("Error: js file not found: " + title);
+                    else
+                        selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content) {
+                            // TODO : I have to disable javascript for now
+                            // var jsContent = encodeURIComponent(util.uintToString(content));
+                            //script.attr("src", 'data:text/javascript;charset=UTF-8,' + jsContent);
+                        });
+                }).fail(function (e) {
+                    console.error("could not find DirEntry for javascript : " + title, e);
+                });
+            }
+        });
     }
 
-    /**
+
+     /**
      * Changes the URL of the browser page, so that the user might go back to it
      * 
      * @param {String} title
@@ -1005,7 +1846,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     }
     
     function goToRandomArticle() {
-        selectedArchive.getRandomDirEntry(function(dirEntry) {
+        if (selectedArchive === null) { return; } //Prevents exception if user hasn't selected an archive
+        selectedArchive.getRandomDirEntry(function (dirEntry) {
             if (dirEntry === null || dirEntry === undefined) {
                 alert("Error finding random article.");
             }
@@ -1027,9 +1869,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
     }
     
     function goToMainArticle() {
-        selectedArchive.getMainPageDirEntry(function(dirEntry) {
+        selectedArchive.getMainPageDirEntry(function (dirEntry) {
             if (dirEntry === null || dirEntry === undefined) {
                 console.error("Error finding main article.");
+                $("#welcomeText").show();
             }
             else {
                 if (dirEntry.namespace === 'A') {
@@ -1041,9 +1884,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies','abstractFiles
                 }
                 else {
                     console.error("The main page of this archive does not seem to be an article");
+                    $("#welcomeText").show();
                 }
             }
         });
     }
-
 });

@@ -309,6 +309,71 @@ define(['q'], function(q) {
     }
 
     /**
+     * Matches the outermost balanced constructs and their contents
+     * even if they have nested balanced constructs within them
+     * e.g., outer HTML of a pair of opening and closing tags. 
+     * Left and right constructs must not be equal. Backreferences in right are not supported.
+     * Double backslash (\\) any backslash characters, e.g. '\\b'.
+     * If you do not set the global flag ('g'), then only contents of first construct will be returned.
+     * Adapted from http://blog.stevenlevithan.com/archives/javascript-match-recursive-regexp
+     * (c) 2007 Steven Levithan - MIT Licence https://opensource.org/licenses/MIT
+     * 
+     * @param {string} str - String to be searched.
+     * @param {string} left - Regex string of opening pattern to match, e.g. '<table\\b[^>]*>' matches <table> or <table ...>. 
+     * @param {string} right - Regex string of closing pattern to match, e.g. '</table>'. Must not be equal to left.
+     * @param {string} flags - Regex flags, if any, such as 'gi' (= match globally and case insensitive).
+     * @returns {Array} An array of matches.
+     */
+    function matchOuter(str, left, right, flags) {
+        flags = flags || "";
+        var f = flags.replace(/g/g, ""),
+            g = flags.indexOf("g") > -1,
+            l = new RegExp(left, f),
+            //Creates a neutral middle value if left is a well-formed regex for an html tag with attributes
+            mid = /^(<[^\\]+)\\/.test(left) ? left.replace(/^(<[^\\]+)[\S\s]+$/, "$1") + '\\b[^>]*>' : "",
+            x = new RegExp((mid ? mid : left) + "|" + right, "g" + f),
+            a = [],
+            t, s, m;
+        mid = mid ? new RegExp(mid, f) : l;
+
+        do {
+            t = 0;
+            while (m = x.exec(str)) {
+                if ((t?mid:l).test(m[0])) {
+                    if (!t++) s = m.index;
+                } else if (t) {
+                    if (!--t) {
+                        a.push(str.slice(s, x.lastIndex));
+                        if (!g) return a;
+                    }
+                }
+            }
+        } while (t && (x.lastIndex = s));
+
+        return a;
+    }
+
+    /**
+     * Matches the contents of innermost HTML elements even if they are nested inside other elements.
+     * Left and right strings must be opening and closing HTML or XML elements. Backreferences are not supported.
+     * If you do not set the global flag ('g'), then only contents of first match will be returned.
+     * Double backslash (\\) any backslash characters, e.g. '\\b'.
+     * Adapted from http://blog.stevenlevithan.com/archives/match-innermost-html-element
+     * 
+     * @param {string} str - String to be searched.
+     * @param {string} left - Regex string of opening element to match, e.g. '<table\\b[^>]*>', must include '<' and '>'. 
+     * @param {string} right - Regex string of closing element to match, e.g. '</table>'.
+     * @param {string} flags - Regex flags, if any, such as 'gi' (= match globally and case insensitive).
+     * @returns {Array} A RegExp array of matches.
+     */
+    function matchInner(str, left, right, flags) {
+        flags = flags || "";
+        var x = new RegExp(left + '(?:(?=([^<]+))\\1|<(?!' + left.replace(/^</, "") + '))*?' + right, flags);
+        return str.match(x);
+    }
+
+
+    /**
      * Functions and classes exposed by this module
      */
     return {
@@ -327,6 +392,8 @@ define(['q'], function(q) {
         binarySearch: binarySearch,
         b64toBlob: b64toBlob,
         uintToString: uintToString,
-        leftShift: leftShift
+        leftShift: leftShift,
+        matchOuter: matchOuter,
+        matchInner: matchInner
     };
 });
