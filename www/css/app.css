@@ -99,7 +99,7 @@
 }
 
 .btn-sm {
-    background: rgba(51,122,183,0.3) !important;
+    background: rgba(51,122,183,0.5) !important;
     border: transparent !important;
     float: none !important;
     color: whitesmoke !important;
@@ -113,6 +113,15 @@
 .glyphicon {
     color: #337ab7;
 }
+
+footer .glyphicon {
+    color: lightblue;
+}
+
+.dropdown-menu, .dropdown-menu a {
+    background-color: rgba(255,255,255,0.7) !important;
+}
+
 
 .darkfooter .glyphicon, .dark .glyphicon {
     color: lightblue;

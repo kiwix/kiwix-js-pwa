@@ -108,9 +108,16 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             //html = zim == "desktop" ? /<\/p>[\s\S]*?<table\s+[^>]*(?:infobox|vertical-navbox)/i.test(html) ? html : html.replace(/(<table\s+(?=[^>]*(?:infobox|vertical-navbox))[\s\S]+?<\/table>[^<]*)((?:<span\s*>\s*)?<p\b[^>]*>(?:(?=([^<]+))\3|<(?!p\b[^>]*>))*?<\/p>(?:<span\s*>)?)/i, "$2\r\n$1") : html;
             //var test = html.getElementById("qbRight")
             if (zim == "desktop") {
-                var table = util.matchOuter(html, '<table\\b[^>]*>', '</table>', 'i');
-                if (table.length && /infobox|vertical-navbox|qbRight/i.test(table[0])) {
-                    var temphtml = html.replace(table[0], "");
+                var infobox = [];
+                if (/<table\b[^>]+(?:infobox|vertical-navbox|qbRight)/i.test(html)) {
+                    infobox = util.matchOuter(html, '<table\\b[^>]+(?:infobox|vertical-navbox|qbRight)[^>]+>', '</table>', 'i');
+                } else {
+                    if (/<div\b[^>]+(?:infobox|vertical-navbox|qbRight)/i.test(html)) {
+                        infobox = util.matchOuter(html, '<div\\b[^>]+(?:infobox|vertical-navbox|qbRight)[^>]+>', '</div>', 'i');
+                    }
+                }
+                if (infobox.length) {
+                    var temphtml = html.replace(infobox[0], "");
                     var paras = util.matchInner(temphtml, '<p\\b[^>]*>', '</p>', 'gi');
                     var matched = false;
                     if (paras.length) {
@@ -122,7 +129,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                             //Swap table and first matched paragraph, but mark lead paragraph first
                             //We already deleted the table above
                             html = temphtml;
-                            html = html.replace(paras[g], paras[g].replace(/(<p\s+)/i, '$1data-kiwix-id="lead" ') + "\r\n" + table[0]);
+                            html = html.replace(paras[g], paras[g].replace(/(<p\s+)/i, '$1data-kiwix-id="lead" ') + "\r\n" + infobox[0]);
                         }
                     }
                 }
