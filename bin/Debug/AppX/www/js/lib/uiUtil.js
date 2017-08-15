@@ -35,11 +35,11 @@ define([], function() {
      * @param {String} mimeType
      */
     function feedNodeWithBlob(jQueryNode, nodeAttribute, content, mimeType) {
-        var blob = new Blob([content], {type: mimeType});
+        var blob = new Blob([content], { type: mimeType }, {oneTimeOnly: true});
         var url = URL.createObjectURL(blob);
-        jQueryNode.on('load', function () {
+        /*jQueryNode.on('load', function () {
             URL.revokeObjectURL(url);
-        });
+        });*/
         jQueryNode.attr(nodeAttribute, url);
     }
         
@@ -53,11 +53,71 @@ define([], function() {
         }
     }
 
+    function TableOfContents (articleDoc) {
+        this.doc = articleDoc;
+        this.headings = this.doc.querySelectorAll("h1, h2, h3, h4, h5, h6");
+
+        this.getHeadingObjects = function () {
+            var headings = [];
+            for (var i = 0; i < this.headings.length; i++) { 
+                var element = this.headings[i];
+                var obj = {};
+                obj.id = element.id;
+                obj.index = i;
+                obj.textContent = element.textContent;
+                obj.tagName = element.tagName;
+                headings.push(obj);
+            }
+            return headings;
+        }
+    }
+
+    /**
+     * Checks whether an element is fully or partially in view
+     * This is useful for progressive download of images inside an article
+     *
+     * @param {Object} el
+     * @param {Boolean} fully
+     */
+    function isElementInView(el, fully) {
+        var elemTop = el.getBoundingClientRect().top;
+        var elemBottom = el.getBoundingClientRect().bottom;
+
+        var isVisible = fully ? elemTop < window.innerHeight && elemBottom >= 0 :
+            elemTop >= 0 && elemBottom <= window.innerHeight;
+        return isVisible;
+    }
+
+
+    function makeReturnLink(title) {
+        //Abbreviate title if necessary
+        var shortTitle = title.substring(0, 25);
+        shortTitle = shortTitle == title ? shortTitle : shortTitle + "..."; 
+        var link = '<h4><a href="#" onclick="$(\'#configuration\').hide();$(\'#formArticleSearch\').show();' +
+            '$(\'#articleContent\').show();$(\'#liHomeNav\').attr(\'class\',\'active\');$(\'#liConfigureNav\').attr(\'class\', \'\');' +
+            '$(\'#liAboutNav\').attr(\'class\', \'\');">&lt;&lt; Return to ' + shortTitle + '</a></h4>';
+        document.getElementById("returntoArticle_top").innerHTML = link;
+        document.getElementById("returntoArticle_bottom").innerHTML = link;
+    }
+
+    function poll(msg) {
+        document.getElementById("progressMessage").innerHTML += '<p>' + msg + '</p>';
+    }
+
+    function clear() {
+        document.getElementById("progressMessage").innerHTML = "<p></p>";
+    }
+
     /**
      * Functions and classes exposed by this module
      */
     return {
         feedNodeWithBlob: feedNodeWithBlob,
-        removeUrlParameters: removeUrlParameters
+        removeUrlParameters: removeUrlParameters,
+        toc: TableOfContents,
+        isElementInView: isElementInView,
+        makeReturnLink: makeReturnLink,
+        poll: poll,
+        clear: clear
     };
 });

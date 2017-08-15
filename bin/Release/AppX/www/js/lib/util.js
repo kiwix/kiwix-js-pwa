@@ -328,15 +328,18 @@ define(['q'], function(q) {
         flags = flags || "";
         var f = flags.replace(/g/g, ""),
             g = flags.indexOf("g") > -1,
-            x = new RegExp(left + "|" + right, "g" + f),
             l = new RegExp(left, f),
+            //Creates a neutral middle value if left is a well-formed regex for an html tag with attributes
+            mid = /^(<[^\\]+)\\/.test(left) ? left.replace(/^(<[^\\]+)[\S\s]+$/, "$1") + '\\b[^>]*>' : "",
+            x = new RegExp((mid ? mid : left) + "|" + right, "g" + f),
             a = [],
             t, s, m;
+        mid = mid ? new RegExp(mid, f) : l;
 
         do {
             t = 0;
             while (m = x.exec(str)) {
-                if (l.test(m[0])) {
+                if ((t?mid:l).test(m[0])) {
                     if (!t++) s = m.index;
                 } else if (t) {
                     if (!--t) {

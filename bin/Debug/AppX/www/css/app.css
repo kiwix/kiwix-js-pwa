@@ -27,12 +27,13 @@
   overflow-x: hidden;
 }
 [role=region] > header {
-  margin: .5rem 0 1rem 0;
-  text-align: center;
+    /*margin: .5rem 0 1rem 0;*/
+    margin: 0 0 1rem 0;
+    text-align: center;
 }
 [role=region] > header > h1 {
   margin: 0;
-  text-shadow: 0px 1px 1px rgba(0,0,0,.4);
+  text-shadow: 0 1px 1px rgba(0,0,0,.4);
 }
 [role=region] > .view-content {
   margin: 0;
@@ -64,7 +65,7 @@
     position: relative;
     z-index: 10;
     top: 20px;
-    height: 0px; 
+    height: 0; 
 }
 
 .articleIFrame {
@@ -84,6 +85,82 @@
     color : orange;
 }
 
+.settings {
+    float: left;
+    margin: 5px;
+    padding: 10px;
+    max-width: 500px;
+    min-height: 150px;
+    border: 1px solid black;
+}
+
+.navbar-fixed-bottom {
+    background: inherit;
+}
+
+.btn-sm {
+    background: rgba(51,122,183,0.5) !important;
+    border: transparent !important;
+    float: none !important;
+    color: whitesmoke !important;
+    font-weight: bold !important;
+}
+
+.darkfooter {
+    background: rgba(47,79,79,.5) !important;
+}
+
+.glyphicon {
+    color: #337ab7;
+}
+
+footer .glyphicon {
+    color: lightblue;
+}
+
+.dropdown-menu, .dropdown-menu a {
+    background-color: rgba(255,255,255,0.7) !important;
+}
+
+
+.darkfooter .glyphicon, .dark .glyphicon {
+    color: lightblue;
+}
+
+.dark {
+    color: lightgray !important;
+    background-color: #222 !important;
+    border-color: darkgray;
+}
+
+.darkfooter .dropdown-menu, .darkfooter .dropdown-menu a {
+    color: lightblue !important;
+    background-color: rgba(34,34,34,0.6) !important;
+    border-color: darkgray;
+}
+
+.darkfooter .dropdown-menu a:focus, .darkfooter .dropdown-menu a:hover {
+    color: lightblue !important;
+    background: darkslategray !important;
+}
+
+.dark .list-group-item {
+    color: lightblue !important;
+    background-color: #222 !important;
+}
+
+.dark a.list-group-item:hover, .dark a.list-group-item:focus, .dark nav a:hover, .dark nav a:focus {
+        color: lightblue !important;
+        background-color: darkslategray !important;
+    }
+
+.dark .btn-default {
+    background: #222 !important;
+    color: dimgray !important;
+    text-shadow: none;
+}
+
+
 /* Réduction de la taille des éléments en haut pour les petits écrans */
 @media (max-width: 768px) {
     /* Pour réduire la taille du menu en haut */
@@ -91,23 +168,50 @@
         min-height: 20px !important;
         margin-bottom: 1px !important;
     }
-    .navbar-brand {
-        padding-top: 2px !important;
+    /*.navbar-brand, .navbar-nav a { /* GK added navbar-nav a*/
+    /*padding-top: 2px !important;
         padding-bottom: 1px !important;
         height: 25px !important;
+    }*/
+
+    .navbar-nav a {
+        padding-bottom: 15px !important;
     }
+
     .navbar-toggle {
         padding-top: 2px !important;
         padding-bottom: 2px !important;
         margin-top: 2px !important;
         margin-bottom: 0px !important;
+        background-color: lightgray !important;
     }
-    [role=region] > header {
+    /* Pour réduire la taille des éléments et boutons dans l'aréa de navégation - GK
+    .navbar-nav, .navbar-nav > li {
+        padding-top: 2px !important;
+        padding-bottom: 2px !important;
+        margin-top: 2px !important;
         margin-bottom: 0px !important;
+    } */
+    .navbar-nav {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+    .navbar-nav > li > a { /*Make sure these align correctly rather than stacking at full width - GK*/
+        float: left !important;
+        /*Added this to prevent the buttons becoming so small*/
+        padding-top: 15px !important;
+        }
+    
+    .col-md-offset-1 {
+        padding-left: 5px !important;
+    }
+
+    [role=region] > header {
+        margin-bottom: 0 !important;
     }
     /* Pour supprimer l'espace entre la zone de recherche et l'iframe */
     .list-group {
-        margin-bottom: 0px !important;
+        margin-bottom: 0 !important;
     }
     /* Pour réduire la taille du champ de recherche */
     .form-control {
@@ -123,5 +227,5 @@
         padding-top: 1px !important;
         padding-bottom: 1px !important;
         font-size: 16px !important;
-    }    
+    }
 }
