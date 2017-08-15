@@ -24,6 +24,64 @@
     width: 22.5em;
 }
 
+div.infobox_v3 {
+    padding: 5px;
+    width: 25em;
+    background: #f9f9f9;
+    border: 1px solid #aaa;
+    clear: right;
+    float: right;
+    font-size: 0.9em;
+    line-height: 1.4;
+    margin: 0 0 0.5em 1em;
+    max-width: 325px;
+    word-wrap: break-word;
+}
+
+.infobox_v3 .entete {
+    display: table;
+    height: 45px;
+    width: 100%;
+    font-weight: bold;
+    text-align: center;
+    font-size: 1.4em;
+    line-height: 1.1;
+    margin-bottom: 10px;
+    background-color: #dfedff;
+}
+
+.infobox_v3 .entete > div {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 3px;
+}
+
+:not(.large).infobox_v3 .entete.icon > div {
+    padding: 3px 48px;
+}
+
+.entete {
+    background-position: right center;
+    background-repeat: no-repeat;
+}
+
+.infobox_v3 table {
+    width: 100%;
+    margin: 5px 0;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.infobox_v3 p.bloc, .infobox_v3 caption {
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.1;
+    margin: 0 0 5px 0;
+    padding: 4px;
+    background: #dfedff;
+}
+
+
 /* BEGIN Map caption - used with MapExpander JS */
 .map-expand-link {
 	float: right;
