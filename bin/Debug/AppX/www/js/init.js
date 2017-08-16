@@ -23,12 +23,31 @@
 'use strict';
 var params = {};
 var results = params['results'] || 15; //Number of search results to display
-params['cssSource'] = params['cssSource'] || "auto"; //Set default to "auto", "desktop" or "mobile"
-params['cssCache'] = params['cssCache'] || true; //Set default to true to use cached CSS, false to use Zim only
-params['cssTheme'] = params['cssTheme'] || 'light'; //Set default to 'light' or 'dark' to use respective themes for Wiki articles
-params['cssUITheme'] = params['cssUITheme'] || 'light'; //Set default to 'light' or 'dark' to use respective themes for UI
-params['imageDisplay'] = params['imageDisplay'] || true; //Set default to display images from Zim
+params['cssSource'] = getCookie('cssSource') || "auto"; //Set default to "auto", "desktop" or "mobile"
+params['cssCache'] = getCookie('cssCache') || true; //Set default to true to use cached CSS, false to use Zim only
+//Convert string values of true / false to Boolean without disturbing any Boolean already set:
+params['cssCache'] = params['cssCache'] == "false" ? false : (params['cssCache'] == "true" ? true : params['cssCache']);
+params['cssTheme'] = getCookie('cssTheme') || 'light'; //Set default to 'light' or 'dark' to use respective themes for Wiki articles
+params['cssUITheme'] = getCookie('cssUITheme') || 'light'; //Set default to 'light' or 'dark' to use respective themes for UI
+params['imageDisplay'] = getCookie('imageDisplay') || true; //Set default to display images from Zim
+params['imageDisplay'] = params['imageDisplay'] == "false" ? false : (params['imageDisplay'] == "true" ? true : params['imageDisplay']);
 params['useMathJax'] = params['useMathJax'] || true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+} 
 
 require.config({
     baseUrl: 'js/lib',

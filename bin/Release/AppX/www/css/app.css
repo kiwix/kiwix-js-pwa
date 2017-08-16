@@ -99,7 +99,7 @@
 }
 
 .btn-sm {
-    background: rgba(51,122,183,0.5) !important;
+    background: rgba(51,122,183,0.7) !important;
     border: transparent !important;
     float: none !important;
     color: whitesmoke !important;
@@ -107,7 +107,7 @@
 }
 
 .darkfooter {
-    background: rgba(47,79,79,.5) !important;
+    background: rgba(47,79,79,.6) !important;
 }
 
 .glyphicon {
@@ -119,7 +119,7 @@ footer .glyphicon {
 }
 
 .dropdown-menu, .dropdown-menu a {
-    background-color: rgba(255,255,255,0.6) !important;
+    background-color: rgba(255,255,255,0.7) !important;
 }
 
 
@@ -209,23 +209,28 @@ footer .glyphicon {
     [role=region] > header {
         margin-bottom: 0 !important;
     }
-    /* Pour supprimer l'espace entre la zone de recherche et l'iframe */
+    /* Pour supprimer l'espace entre la zone de recherche et l'iframe 
     .list-group {
         margin-bottom: 0 !important;
-    }
-    /* Pour réduire la taille du champ de recherche */
+    } */
+    /* Pour réduire la taille du champ de recherche 
     .form-control {
         height: 28px !important;
         padding-bottom: 5px !important;
+    } */
+
+    .dropdown-menu {
+        font-size: 20px !important;
     }
-    /* Pour réduire la taille des boutons en haut de l'écran */
+
+    /* Pour réduire la taille des boutons en haut de l'écran 
     .btn-xs, .btn-sm, .btn-default, .btn-group-xs > .btn, .btn-group-sm > .btn {
         font-size: 10px !important;
-    }
-    /* Pour réduire la taille des boutons en bas de l'écran */
+    }*/
+    /* Pour réduire la taille des boutons en bas de l'écran 
     .btn-lg, .btn-group-lg > .btn {
         padding-top: 1px !important;
         padding-bottom: 1px !important;
         font-size: 16px !important;
-    }
+    }*/
 }
