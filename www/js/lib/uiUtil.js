@@ -63,7 +63,7 @@ define([], function() {
                 var element = this.headings[i];
                 var obj = {};
                 obj.id = element.id;
-                obj.id = obj.id ? obj.id : element.innerHTML.match(/\bid\s*=["']([^"']+)["']/i)[1];
+                obj.id = obj.id ? obj.id : element.innerHTML.match(/\bid\s*=\s*["']\s*([^"']+?)\s*["']/i)[1];
                 obj.index = i;
                 obj.textContent = element.textContent;
                 obj.tagName = element.tagName;
