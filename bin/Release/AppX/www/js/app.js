@@ -904,6 +904,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         console.log("Loading stylesheets...");
         console.time("Time to First Paint");
 
+        $('#articleList').hide();
+
         //Fast-replace img src with data-kiwixsrc and hide image [kiwix-js #272]
         htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)src(\s*=)/ig, "$1data-kiwixsrc$2");
         if (!params['imageDisplay']) {
