@@ -207,7 +207,7 @@ footer .glyphicon {
     }
 
     [role=region] > header {
-        margin-bottom: 0 !important;
+        margin-bottom: 10px !important;
     }
     /* Pour supprimer l'espace entre la zone de recherche et l'iframe 
     .list-group {
@@ -221,6 +221,10 @@ footer .glyphicon {
 
     .dropdown-menu {
         font-size: 20px !important;
+    }
+
+    .btn-xs {
+        font-size: 10px !important;
     }
 
     /* Pour réduire la taille des boutons en haut de l'écran 
