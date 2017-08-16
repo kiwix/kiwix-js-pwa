@@ -204,13 +204,20 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
     });
     $('input:checkbox[name=cssCacheMode]').on('change', function (e) {
         params['cssCache'] = this.checked ? true : false;
+        cookies.setItem('cssCache', params['cssCache'], Infinity);
     });
     $('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
         params['imageDisplay'] = this.checked ? true : false;
+        cookies.setItem('imageDisplay', params['imageDisplay'], Infinity);
     });
     $('input:checkbox[name=cssUIDarkTheme]').on('change', function (e) {
         params['cssUITheme'] = this.checked ? 'dark' : 'light';
-        if (this.checked) {
+        cookies.setItem('cssUITheme', params['cssUITheme'], Infinity);
+        cssUIThemeSet(params['cssUITheme']);
+    });
+
+    function cssUIThemeSet(value) {
+        if (value == 'dark') {
             document.getElementById('search-article').classList.add("dark");
             document.getElementById('article').classList.add("dark");
             document.getElementById('navbar').classList.remove("navbar-default");
@@ -223,7 +230,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             var elements = document.querySelectorAll(".settings");
             for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid darkgray"; } 
         }
-        if (!this.checked) {
+        if (value == 'light') {
             document.getElementById('search-article').classList.remove("dark");
             document.getElementById('article').classList.remove("dark");
             document.getElementById('navbar').classList.add("navbar-default");
@@ -236,27 +243,26 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             var elements = document.querySelectorAll(".settings");
             for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid black"; }
         }
-    });
+    }
+
     $('input:checkbox[name=cssWikiDarkTheme]').on('change', function (e) {
         params['cssTheme'] = this.checked ? 'dark' : 'light';
-        if (this.checked) {
-            document.getElementById('footer').classList.add("darkfooter");
-        }
-        if (!this.checked) {
-            document.getElementById('footer').classList.remove("darkfooter");
-        }
+        cookies.setItem('cssTheme', params['cssTheme'], Infinity);
+        if (this.checked) document.getElementById('footer').classList.add("darkfooter");
+        if (!this.checked) document.getElementById('footer').classList.remove("darkfooter");
     });
     $('input:radio[name=cssInjectionMode]').on('click', function (e) {
         params['cssSource'] = this.value;
-        //document.getElementById('returntoArticle_top').innerHTML = "";
-        //document.getElementById('returntoArticle_bottom').innerHTML = "";
+        cookies.setItem('cssSource', params['cssSource'], Infinity);
     });
     $(document).ready(function (e) {
         // Set checkbox for cssCache and radio for cssSource
         document.getElementById('cssCacheModeCheck').checked = params['cssCache'];
         document.getElementById('imageDisplayModeCheck').checked = params['imageDisplay'];
         document.getElementById('cssWikiDarkThemeCheck').checked = params['cssTheme'] == 'dark' ? true : false;
+        if (params['cssTheme'] == "dark") document.getElementById('footer').classList.add("darkfooter");
         document.getElementById('cssUIDarkThemeCheck').checked = params['cssUITheme'] == 'dark' ? true : false;
+        if (params['cssUITheme'] == 'dark') cssUIThemeSet('dark');
         $('input:radio[name=cssInjectionMode]').filter('[value="' + params['cssSource'] + '"]').prop('checked', true);
     });
 
