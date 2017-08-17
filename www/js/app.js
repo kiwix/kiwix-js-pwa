@@ -1140,6 +1140,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
 
     } //End of displayArticleInForm()
 
+
     /** This is the main image loading function.
      * Contains four sub functions: prepareImages, triageImages, displaySlices, loadImageSlice
      * and a utility function checkVisibleImages
