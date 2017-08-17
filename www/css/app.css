@@ -40,10 +40,12 @@
   position: relative; /*Fixes #250 Random button display bug in W10M */
 }
 [role=region] > footer {
-  background: rgba(0,0,0,.2);
-  right: 0; bottom: 0; left: 0;
-  position: fixed;
-  text-align: center;
+    background: rgba(51,122,183,.2);
+    right: 0;
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    text-align: center;
 }
 [role=region] > footer > menu[role=toolbar] {
   margin: 0;
@@ -106,8 +108,12 @@
     font-weight: bold !important;
 }
 
+.darkfooter .btn-sm {
+    background: rgba(47,79,79,0.7) !important;
+}
+
 .darkfooter {
-    background: rgba(47,79,79,.6) !important;
+    background: rgba(47,79,79,.5) !important;
 }
 
 .glyphicon {
