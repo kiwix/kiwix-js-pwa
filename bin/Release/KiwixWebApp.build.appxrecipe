@@ -220,6 +220,9 @@
       <PackagePath>images\Wide310x150Logo.scale-400.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\img\icons\kiwix-19.png">
+      <PackagePath>www\img\icons\kiwix-19.png</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\img\icons\kiwix-60.png">
       <PackagePath>www\img\icons\kiwix-60.png</PackagePath>
     </AppxPackagedFile>
