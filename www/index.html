@@ -42,9 +42,9 @@
 <body role="application">
     <section id="search-article" role="region">
         <header id="top">
-            <nav class="navbar navbar-default" id="navbar" role="navigation">
-                <!-- Brand and toggle get grouped for better mobile display -->
-                <div class="navbar-header">
+            <nav id="navbar" role="navigation">
+                <div class="navbar-header" id="container">
+                <!-- Deprecated... Brand and toggle get grouped for better mobile display 
 
                     <a class="navbar-brand">Kiwix JS 0.x (beta)</a>
                     <ul class="nav navbar-nav">
@@ -56,9 +56,9 @@
                 <!-- Collect the nav links, forms, and other content for toggling
                 <div class="navbar-collapse navbar-ex1-collapse collapse" aria-expanded="false" style="height: 1px;">
 
-                </div><!-- /.navbar-collapse -->
-            </nav>
-
+                </div><!-- /.navbar-collapse --
+            </nav> -->
+<!-- Deprecated...
             <div class="container" id="container">
                 <form id="formArticleSearch">
                     <div class="row" id="row">
@@ -78,9 +78,29 @@
                     </div>
                     <div id="searchingForArticles" class="floating" style="display: none;">
                         <img src="img/spinner.gif" alt="Please wait..." />
-                    </div>
-                </form>
-            </div>
+                    </div> -->
+                    <form id="formArticleSearch">
+                        <div class="" id="row">
+                            <span class="input-group">
+                                <span class="input-group-btn">
+                                    <!-- button id="btnHome" type="button" class="btn btn-default" -->
+                                        <a id="btnHome" title="Home" class="btn btn-default"><img src="./img/icons/kiwix-19.png" /></a>
+                                    <!--/--button-->
+                                </span>
+                                <input type="search" id="prefix" placeholder="Search..."
+                                       class="form-control" />
+                                <span class="input-group-btn">
+                                    <a class="btn btn-default" title="Article Search" id="searchArticles"><span class="glyphicon glyphicon-search"></span></a>
+                                    <!-- <a class="btn btn-default" title="Image Search" id="searchImages"><span class="glyphicon glyphicon-camera"></span></a> -->
+                                    <a class="btn btn-default" title="Random Article" id="btnRandomArticle"><span class="glyphicon glyphicon-random"></span></a>
+                                    <a class="btn btn-default" title="Settings" id="btnConfigure"><span class="glyphicon glyphicon-wrench"></span></a>
+                                    <a class="btn btn-default" title="About" id="btnAbout"><span class="glyphicon glyphicon-info-sign"></span></a>
+                                </span>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+            </nav>
         </header>
         <article class="view-content" id="article">
             <div id="about" style="display: none;" class="category-padding">

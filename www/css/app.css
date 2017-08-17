@@ -21,36 +21,43 @@
  */
 
 [role=region] {
-  top: 0; right: 0; bottom: 0; left: 0;
- 
-  position: fixed;
-  overflow-x: hidden;
-}
-[role=region] > header {
-    /*margin: .5rem 0 1rem 0;*/
-    margin: 0 0 1rem 0;
-    text-align: center;
-}
-[role=region] > header > h1 {
-  margin: 0;
-  text-shadow: 0 1px 1px rgba(0,0,0,.4);
-}
-[role=region] > .view-content {
-  margin: 0;
-  position: relative; /*Fixes #250 Random button display bug in W10M */
-}
-[role=region] > footer {
-    background: rgba(51,122,183,.2);
+    top: 0;
     right: 0;
     bottom: 0;
     left: 0;
     position: fixed;
-    text-align: center;
+    overflow-x: hidden;
 }
-[role=region] > footer > menu[role=toolbar] {
-  margin: 0;
-  padding: 0;
-}
+
+    [role=region] > header {
+        /*margin: .5rem 0 1rem 0;*/
+        margin: 0 0.75em 0 0;
+        text-align: center;
+    }
+
+        [role=region] > header > h1 {
+            margin: 0;
+            text-shadow: 0 1px 1px rgba(0,0,0,.4);
+        }
+
+    [role=region] > .view-content {
+        margin: 0;
+        position: relative; /*Fixes #250 Random button display bug in W10M */
+    }
+
+    [role=region] > footer {
+        background: rgba(51,122,183,.2);
+        right: 0;
+        bottom: 0;
+        left: 0;
+        position: fixed;
+        text-align: center;
+    }
+
+        [role=region] > footer > menu[role=toolbar] {
+            margin: 0;
+            padding: 0;
+        }
 
 #navigationButtons .restrictedSize {
     max-width: 80%;
@@ -67,7 +74,12 @@
     position: relative;
     z-index: 10;
     top: 20px;
-    height: 0; 
+    height: 0;
+}
+
+.form-control {
+    margin-top: 0.3px;
+    /*box-shadow: none !important;*/
 }
 
 .articleIFrame {
@@ -76,15 +88,15 @@
 }
 
 .category-padding {
-   margin: 0 1rem 0 1rem;
+    margin: 0 1rem 0 1rem;
 }
 
 .apiAvailable {
-    color : green;
+    color: green;
 }
 
 .apiUnavailable {
-    color : orange;
+    color: orange;
 }
 
 .settings {
@@ -94,6 +106,10 @@
     max-width: 500px;
     min-height: 150px;
     border: 1px solid black;
+}
+
+.navbar-header {
+    float: none !important;
 }
 
 .navbar-fixed-bottom {
@@ -106,6 +122,11 @@
     float: none !important;
     color: whitesmoke !important;
     font-weight: bold !important;
+}
+
+.btn {
+    margin-bottom: 1px !important;
+    z-index:initial !important;
 }
 
 .darkfooter .btn-sm {
@@ -145,10 +166,10 @@ footer .glyphicon {
     border-color: darkgray;
 }
 
-.darkfooter .dropdown-menu a:focus, .darkfooter .dropdown-menu a:hover {
-    color: lightblue !important;
-    background: darkslategray !important;
-}
+    .darkfooter .dropdown-menu a:focus, .darkfooter .dropdown-menu a:hover {
+        color: lightblue !important;
+        background: darkslategray !important;
+    }
 
 .dark .list-group-item {
     color: lightblue !important;
@@ -156,9 +177,9 @@ footer .glyphicon {
 }
 
 .dark a.list-group-item:hover, .dark a.list-group-item:focus, .dark nav a:hover, .dark nav a:focus {
-        color: lightblue !important;
-        background-color: darkslategray !important;
-    }
+    color: lightblue !important;
+    background-color: darkslategray !important;
+}
 
 .dark .btn-default {
     background: #222 !important;
@@ -202,19 +223,20 @@ footer .glyphicon {
         margin-top: 0 !important;
         margin-bottom: 0 !important;
     }
-    .navbar-nav > li > a { /*Make sure these align correctly rather than stacking at full width - GK*/
-        float: left !important;
-        /*Added this to prevent the buttons becoming so small*/
-        padding-top: 15px !important;
+
+        .navbar-nav > li > a { /*Make sure these align correctly rather than stacking at full width - GK*/
+            float: left !important;
+            /*Added this to prevent the buttons becoming so small*/
+            padding-top: 15px !important;
         }
-    
+
     .col-md-offset-1 {
         padding-left: 5px !important;
     }
 
-    [role=region] > header {
+    /*[role=region] > header {
         margin-bottom: 10px !important;
-    }
+    }*/
     /* Pour supprimer l'espace entre la zone de recherche et l'iframe 
     .list-group {
         margin-bottom: 0 !important;
