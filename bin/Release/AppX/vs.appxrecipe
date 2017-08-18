@@ -32,7 +32,7 @@
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-18T12:16:48.979</Modified>
+      <Modified>2017-08-18T13:39:33.511</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -415,7 +415,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\index.html">
       <PackagePath>www\index.html</PackagePath>
-      <Modified>2017-08-18T12:16:01.045</Modified>
+      <Modified>2017-08-18T12:25:59.985</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\favicon.ico">
       <PackagePath>www\favicon.ico</PackagePath>
@@ -543,7 +543,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-08-18T10:39:55.324</Modified>
+      <Modified>2017-08-18T13:39:09.996</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
@@ -587,7 +587,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\util.js">
       <PackagePath>www\js\lib\util.js</PackagePath>
-      <Modified>2017-08-18T11:14:13.973</Modified>
+      <Modified>2017-08-18T13:28:08.176</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\xzdec.js">
       <PackagePath>www\js\lib\xzdec.js</PackagePath>
@@ -1472,7 +1472,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-17T14:06:02.572</Modified>
+      <Modified>2017-08-18T13:01:43.083</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>

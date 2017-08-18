@@ -372,9 +372,11 @@ define(['q'], function(q) {
         return str.match(x);
     }
 
+    // Defines an object and functions for searching and highlighting text in a node
+    //
     // Original JavaScript code by Chirp Internet: www.chirp.com.au
     // Please acknowledge use of this code by including this header.
-
+    // For documentation see: http://www.the-art-of-web.com/javascript/search-highlight/
     function Hilitor(node, tag) {
 
         var targetNode = node || document.body;
@@ -414,7 +416,7 @@ define(['q'], function(q) {
             retval = retval.replace(/([ao])e/ig, "$1");
             retval = retval.replace(/\\u00E[024]/ig, "a");
             retval = retval.replace(/\\u00E7/ig, "c");
-            retval = retval.replace(/\\u00E[89AB]/ig, "e");
+            retval = retval.replace(/\\u00E[89AB]|\\u00C[9A]/ig, "e");
             retval = retval.replace(/\\u00E[DEF]/ig, "i");
             retval = retval.replace(/\\u00F[46]/ig, "o");
             retval = retval.replace(/\\u00F[9BC]/ig, "u");
@@ -423,7 +425,7 @@ define(['q'], function(q) {
             retval = retval.replace(/c/ig, "[cç]");
             retval = retval.replace(/e/ig, "[eèéêë]");
             retval = retval.replace(/a/ig, "([aàâäá]|ae)");
-            retval = retval.replace(/i/ig, "[iîïí]");
+            retval = retval.replace(/i/ig, "[iîïíì]");
             retval = retval.replace(/n/ig, "[nñ]");
             retval = retval.replace(/o/ig, "([oôöó]|oe)");
             retval = retval.replace(/u/ig, "[uùûüú]");
@@ -439,7 +441,7 @@ define(['q'], function(q) {
             input = addAccents(input);
             if (input) {
                 var re = "(" + input + ")";
-                if (!this.openLeft) re = "(?:^|[\\b\\s])" + re;
+                if (!this.openLeft) re = "(?:^|[\\b\\s'\"¿¡])" + re;
                 if (!this.openRight) re = re + "(?:[\\b\\s]|$)";
                 matchRegex = new RegExp(re, "i");
                 return true;
