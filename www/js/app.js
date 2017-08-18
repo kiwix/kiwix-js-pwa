@@ -27,61 +27,88 @@
 // http://requirejs.org/docs/api.html#define
 
 define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFilesystemAccess', 'q', 'module', 'transformStyles'],
- function($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess, q, module, transformStyles) {
-     
-    /**
-     * Maximum number of articles to display in a search
-     * @type Integer
-     */
-    var MAX_SEARCH_RESULT_SIZE = module.config().results; //This is set in init.js
+    function ($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess, q, module, transformStyles) {
 
-//TESTING
-    // Get the app's installation folder.
-    //var appFolder = Windows.ApplicationModel.Package.current.installedLocation;
-    var appfolder = "";
-     // Print the folder's path to the Visual Studio Output window.
-    //console.log(appFolder.name, "folder path:", appFolder.path);
-//END TESTING
+        /**
+         * Maximum number of articles to display in a search
+         * @type Integer
+         */
+        var MAX_SEARCH_RESULT_SIZE = module.config().results; //This is set in init.js
 
-     /**
-     * @type ZIMArchive
-     */
-    var selectedArchive = null;
+        //TESTING
+        // Get the app's installation folder.
+        //var appFolder = Windows.ApplicationModel.Package.current.installedLocation;
+        var appfolder = "";
+        // Print the folder's path to the Visual Studio Output window.
+        //console.log(appFolder.name, "folder path:", appFolder.path);
+        //END TESTING
 
-    /**
-     * Resize the IFrame height, so that it fills the whole available height in the window
-     */
-    function resizeIFrame() {
-        var height = $(window).outerHeight()
+        /**
+        * @type ZIMArchive
+        */
+        var selectedArchive = null;
+
+        /**
+         * Resize the IFrame height, so that it fills the whole available height in the window
+         */
+        function resizeIFrame() {
+            var height = $(window).outerHeight()
                 - $("#top").outerHeight(true)
                 - $("#articleListWithHeader").outerHeight(true)
                 // TODO : this 5 should be dynamically computed, and not hard-coded
                 - 5;
-        $(".articleIFrame").css("height", height + "px");
-    }
-    $(document).ready(resizeIFrame);
-    $(window).resize(resizeIFrame);
-    
-    // Define behavior of HTML elements
-    $('#searchArticles').on('click', function(e) {
-        pushBrowserHistoryState(null, $('#prefix').val());
-        searchDirEntriesFromPrefix($('#prefix').val());
-        $("#welcomeText").hide();
-        $("#readingArticle").hide();
-        $("#articleContent").hide();
-        if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
-            $('#navbarToggle').click();
+            $(".articleIFrame").css("height", height + "px");
+        }
+        $(document).ready(resizeIFrame);
+        $(window).resize(resizeIFrame);
+
+        // Define behavior of HTML elements
+        $('#searchArticles').on('click', function (e) {
+            pushBrowserHistoryState(null, $('#prefix').val());
+            searchDirEntriesFromPrefix($('#prefix').val());
+            $("#welcomeText").hide();
+            $("#readingArticle").hide();
+            $("#articleContent").hide();
+            if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
+                $('#navbarToggle').click();
+            }
+        });
+        $('#formArticleSearch').on('submit', function (e) {
+            document.getElementById("searchArticles").click();
+            return false;
+        });
+        $('#prefix').on('keyup', function (e) {
+            if (selectedArchive !== null && selectedArchive.isReady()) {
+                onKeyUpPrefix(e);
+            }
+        });
+    var localSearch = {};
+    $('#findText').on('click', function (e) {
+        var innerDocument = window.frames[0].frameElement.contentDocument || window.frames[0].frameElement.contentWindow.document;
+        if (innerDocument.body.innerText.length < 10) return;
+        var searchDiv = document.getElementById('row2');
+        var findInArticle = document.getElementById('findInArticle');
+        if (localSearch.remove) {
+            localSearch.remove();
+        } else {
+            localSearch = new util.Hilitor(innerDocument);
+            //TODO: Check right-to-left language support...
+            localSearch.setMatchType('left');
+            findInArticle.addEventListener('keyup', function (e) {
+                localSearch.apply(this.value);
+            }, false);
+        }
+        if (searchDiv.style.display == 'none') {
+            searchDiv.style.display = "inline";
+            findInArticle.focus();
+        } else {
+            searchDiv.style.display = "none";
         }
     });
-    $('#formArticleSearch').on('submit', function(e) {
-        document.getElementById("searchArticles").click();
-        return false;
-    });
-    $('#prefix').on('keyup', function(e) {
-        if (selectedArchive !== null && selectedArchive.isReady()) {
-            onKeyUpPrefix(e);
-        }
-    });
+    $('#findInArticle').on('keyup', function (e) {
+        myHilitor2.apply(this.value);
+    }, false);
+
     $("#btnRandomArticle").on("click", function(e) {
         $('#prefix').val("");
         goToRandomArticle();
@@ -225,7 +252,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             document.getElementById('archiveFiles').classList.add("dark");
             document.getElementById('archiveFiles').classList.remove("btn");
             document.getElementById('container').classList.add("dark");
-            document.getElementById('row').classList.add("dark");
+            document.getElementById('findInArticle').classList.add("dark");
             document.getElementById('prefix').classList.add("dark");
             var elements = document.querySelectorAll(".settings");
             for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid darkgray"; } 
@@ -238,7 +265,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             document.getElementById('archiveFiles').classList.remove("dark");
             document.getElementById('archiveFiles').classList.add("btn");
             document.getElementById('container').classList.remove("dark");
-            document.getElementById('row').classList.remove("dark");
+            document.getElementById('findInArticle').classList.remove("dark");
             document.getElementById('prefix').classList.remove("dark");
             var elements = document.querySelectorAll(".settings");
             for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid black"; }
@@ -1131,6 +1158,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                         });
                     }
                 });
+
+                //FFOS doesn't calculate the iframe window height correctly for newly loaded articles (at least in the simulator)
+                //This prevents transparency from working in the bottom toolbar. Setting the style
+                //for iframe height + 30 fixes the issue, and has no effect on other browsers
+                var ele = document.getElementById('articleContent');
+                var y = ~~ele.style.height.match(/[\d.]+/)[0];
+                y += 30;
+                ele.style.height = y + "px";
 
                 loadImages();
                 //loadJavascript(); //Disabled for now, since it does nothing
