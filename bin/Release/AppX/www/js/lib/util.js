@@ -372,9 +372,11 @@ define(['q'], function(q) {
         return str.match(x);
     }
 
+    // Defines an object and functions for searching and highlighting text in a node
+    //
     // Original JavaScript code by Chirp Internet: www.chirp.com.au
     // Please acknowledge use of this code by including this header.
-
+    // For documentation see: http://www.the-art-of-web.com/javascript/search-highlight/
     function Hilitor(node, tag) {
 
         var targetNode = node || document.body;
@@ -414,19 +416,19 @@ define(['q'], function(q) {
             retval = retval.replace(/([ao])e/ig, "$1");
             retval = retval.replace(/\\u00E[024]/ig, "a");
             retval = retval.replace(/\\u00E7/ig, "c");
-            retval = retval.replace(/\\u00E[89AB]/ig, "e");
-            retval = retval.replace(/\\u00E[EF]/ig, "i");
+            retval = retval.replace(/\\u00E[89AB]|\\u00C[9A]/ig, "e");
+            retval = retval.replace(/\\u00E[DEF]/ig, "i");
             retval = retval.replace(/\\u00F[46]/ig, "o");
             retval = retval.replace(/\\u00F[9BC]/ig, "u");
             retval = retval.replace(/\\u00FF/ig, "y");
             retval = retval.replace(/\\u00DF/ig, "s");
             retval = retval.replace(/c/ig, "[cç]");
-            retval = retval.replace(/e/ig, "[eèéêë]");
-            retval = retval.replace(/a/ig, "([aàâäá]|ae)");
-            retval = retval.replace(/i/ig, "[iîïí]");
-            retval = retval.replace(/n/ig, "[nñ]");
-            retval = retval.replace(/o/ig, "([oôöó]|oe)");
-            retval = retval.replace(/u/ig, "[uùûüú]");
+            retval = retval.replace(/e/ig, "[eèéêëÉÈÊ]");
+            retval = retval.replace(/a/ig, "([aàâäáÁÀÂ]|ae)");
+            retval = retval.replace(/i/ig, "[iîïíìÍÌ]");
+            retval = retval.replace(/n/ig, "[nñÑ]");
+            retval = retval.replace(/o/ig, "([oôöóÓ]|oe)");
+            retval = retval.replace(/u/ig, "[uùûüúÚ]");
             retval = retval.replace(/y/ig, "[yÿ]");
             retval = retval.replace(/s/ig, "(ss|[sß])");
             return retval;
@@ -598,26 +600,6 @@ define(['q'], function(q) {
         }
 
     }
-    /*function doSearch(text) {
-        var docWindow = window.frames[0].frameElement.contentWindow;
-        if (docWindow.find && docWindow.getSelection) {
-            docWindow.document.designMode = "on";
-            var sel = docWindow.getSelection();
-            sel.collapse(docWindow.document.body, 0);
-
-            while (docWindow.find(text)) {
-                docWindow.document.execCommand("HiliteColor", false, "yellow"); 
-                sel.collapseToEnd();
-            }
-            docWindow.document.designMode = "off";
-        } else if (docWindow.document.body.createTextRange) {
-            var textRange = docWindow.document.body.createTextRange();
-            while (textRange.findText(text)) {
-                textRange.execCommand("BackColor", false, "yellow");
-                textRange.collapse(false);
-            }
-        }
-    }*/
 
 
     /**
