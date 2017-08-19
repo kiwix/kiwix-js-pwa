@@ -383,9 +383,12 @@ define(['q'], function(q) {
         var hiliteTag = tag || "EM";
         var skipTags = new RegExp("^(?:" + hiliteTag + "|SCRIPT|FORM)$");
         var colors = ["#ff6", "#a0ffff", "#9f9", "#f99", "#f6f"];
+        var className = "hilitor";
         var wordColor = [];
         var colorIdx = 0;
         var matchRegex = "";
+        //Add any symbols that may prefix a start string and don't match \b (word boundary)
+        var leadingSymbols = "’‘¿¡";
         var openLeft = false;
         var openRight = false;
 
@@ -422,6 +425,7 @@ define(['q'], function(q) {
             retval = retval.replace(/\\u00F[9BC]/ig, "u");
             retval = retval.replace(/\\u00FF/ig, "y");
             retval = retval.replace(/\\u00DF/ig, "s");
+            retval = retval.replace(/'/ig, "['’‘]");
             retval = retval.replace(/c/ig, "[cç]");
             retval = retval.replace(/e/ig, "[eèéêë]");
             retval = retval.replace(/a/ig, "([aàâäá]|ae)");
@@ -441,7 +445,7 @@ define(['q'], function(q) {
             input = addAccents(input);
             if (input) {
                 var re = "(" + input + ")";
-                if (!this.openLeft) re = "(?:^|[\\b\\s'\"¿¡])" + re;
+                if (!this.openLeft) re = "(?:^|[\\b\\s" + leadingSymbols + "])" + re;
                 if (!this.openRight) re = re + "(?:[\\b\\s]|$)";
                 matchRegex = new RegExp(re, "i");
                 return true;
@@ -454,6 +458,12 @@ define(['q'], function(q) {
             retval = retval.replace(/(^\/|\(\?:[^\)]+\)|\/i$)/g, "");
             return retval;
         };
+
+        this.countMatches = function () {
+            if (node === undefined || !node) return;
+            var matches = matchInner(node.body.innerHTML, '<' + hiliteTag + '\\b[^>]*class="hilitor"[^>]*>', '</' + hiliteTag + '>', 'gi');
+            return matches.length;
+        }
 
         // recursively apply word highlighting
         this.hiliteWords = function (node) {
@@ -477,9 +487,12 @@ define(['q'], function(q) {
                     match.style.backgroundColor = wordColor[regs[1].toLowerCase()];
                     match.style.fontStyle = "inherit";
                     match.style.color = "#000";
+                    match.className = className;
 
                     var after;
-                    if (regs[0].match(/^\s/)) { // in case of leading whitespace
+                    // In case of leading whitespace or other symbols
+                    var leadR = new RegExp("^[\\s" + leadingSymbols + "]");
+                    if (leadR.test(regs[0])) { 
                         after = node.splitText(regs.index + 1);
                     } else {
                         after = node.splitText(regs.index);
@@ -492,7 +505,7 @@ define(['q'], function(q) {
 
         // remove highlighting
         this.remove = function () {
-            var arr = node.getElementsByTagName(hiliteTag), el;
+            var arr = node.getElementsByClassName(className), el;
             while (arr.length && (el = arr[0])) {
                 var parent = el.parentNode;
                 parent.replaceChild(el.firstChild, el);
