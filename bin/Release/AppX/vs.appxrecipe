@@ -32,7 +32,7 @@
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-19T13:17:37.811</Modified>
+      <Modified>2017-08-20T18:41:06.455</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -399,7 +399,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\css\app.css">
       <PackagePath>www\css\app.css</PackagePath>
-      <Modified>2017-08-17T13:55:29.992</Modified>
+      <Modified>2017-08-20T18:09:44.037</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\css\bootstrap-theme.css">
       <PackagePath>www\css\bootstrap-theme.css</PackagePath>
@@ -415,7 +415,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\index.html">
       <PackagePath>www\index.html</PackagePath>
-      <Modified>2017-08-19T13:17:20.030</Modified>
+      <Modified>2017-08-20T14:54:56.576</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\favicon.ico">
       <PackagePath>www\favicon.ico</PackagePath>
@@ -543,7 +543,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-08-19T13:17:32.154</Modified>
+      <Modified>2017-08-20T18:03:09.796</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
@@ -587,7 +587,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\util.js">
       <PackagePath>www\js\lib\util.js</PackagePath>
-      <Modified>2017-08-19T13:11:37.419</Modified>
+      <Modified>2017-08-20T18:40:59.430</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\xzdec.js">
       <PackagePath>www\js\lib\xzdec.js</PackagePath>

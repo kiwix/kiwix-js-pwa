@@ -95,17 +95,24 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         $('#findText').on('click', function (e) {
             var innerDocument = window.frames[0].frameElement.contentDocument || window.frames[0].frameElement.contentWindow.document;
             if (innerDocument.body.innerHTML.length < 10) return;
+            innerDocument = innerDocument.body;
+            if (!innerDocument) return;
             var searchDiv = document.getElementById('row2');
             var findInArticle = document.getElementById('findInArticle');
             if (searchDiv.style.display == 'none') {
                 searchDiv.style.display = "inline";
+                document.getElementById('findText').classList.add("active");
                 findInArticle.focus();
             } else {
+                findInArticle.value = "";
+                document.getElementById('matches').innerHTML = "Full: 0";
+                document.getElementById('partial').innerHTML = "Partial: 0";
                 searchDiv.style.display = "none";
+                document.getElementById('findText').classList.remove("active");
             }
             if (localSearch.remove) {
                 localSearch.remove();
-            } else {
+            } else if (searchDiv.style.display == "inline") {
                 localSearch = new util.Hilitor(innerDocument);
                 //TODO: Check right-to-left language support...
                 localSearch.setMatchType('left');
@@ -113,14 +120,32 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 findInArticle.addEventListener('keyup', function (e) {
                     //Ensure timeout doesn't occur if another key has been pressed within time window
                     clearTimeout(timer);
+                    //If user pressed Alt-F, exit
+                    if (e.altKey && e.which == 70) return;
                     var val = this.value;
+                    if (val && e.which == 13) {
+                        localSearch.scrollToFullMatch(val);
+                        return;
+                    }
                     //Ensure nothing happens if only one value has been entered (not specific enough), but ensure timeout is set 
                     //if no value has been entered (clears highlighting if user deletes all values in search field)
                     if (~(val.length - 2)) {
                         timer = setTimeout(function () {
                             localSearch.apply(val);
-                            var x = localSearch.countMatches();
-
+                            if (val.length) {
+                                var fullTotal = localSearch.countFullMatches(val);
+                                var partialTotal = localSearch.countPartialMatches();
+                                fullTotal = fullTotal > partialTotal ? partialTotal : fullTotal;
+                                document.getElementById('matches').innerHTML = '<a id="scrollLink" href="#">Full: ' + fullTotal + '</a>'; 
+                                document.getElementById('partial').innerHTML = "Partial: " + partialTotal;
+                                document.getElementById('scrollLink').addEventListener('click', function () {
+                                    localSearch.scrollToFullMatch(val);
+                                });
+                                //localSearch.scrollToFullMatch(val);
+                            } else {
+                                document.getElementById('matches').innerHTML = "Full: 0";
+                                document.getElementById('partial').innerHTML = "Partial: 0";
+                            } 
                         }, 500);
                     }
                 }, false);
