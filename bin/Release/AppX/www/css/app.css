@@ -31,7 +31,7 @@
 
     [role=region] > header {
         /*margin: .5rem 0 1rem 0;*/
-        margin: 0 0.75em 0 0;
+        margin: 0 0.75em 0 1px;
         text-align: center;
     }
 
@@ -116,7 +116,7 @@
     background: inherit;
 }
 
-.btn-sm {
+.btn-sm, .btn-lg {
     background: rgba(51,122,183,0.7) !important;
     border: transparent !important;
     float: none !important;
@@ -160,30 +160,34 @@ footer .glyphicon {
     border-color: darkgray;
 }
 
+.dark a {
+    color: lightblue !important;
+}
+
 .darkfooter .dropdown-menu, .darkfooter .dropdown-menu a {
     color: lightblue !important;
     background-color: rgba(34,34,34,0.6) !important;
     border-color: darkgray;
 }
 
-    .darkfooter .dropdown-menu a:focus, .darkfooter .dropdown-menu a:hover {
-        color: lightblue !important;
-        background: darkslategray !important;
-    }
+.darkfooter .dropdown-menu a:focus, .darkfooter .dropdown-menu a:hover {
+    color: lightblue !important;
+    background: darkslategray !important;
+}
 
 .dark .list-group-item {
     color: lightblue !important;
     background-color: #222 !important;
 }
 
-.dark a.list-group-item:hover, .dark a.list-group-item:focus, .dark nav a:hover, .dark nav a:focus {
+.dark a.list-group-item:hover, .dark a.list-group-item:focus, .dark nav a:hover, .dark nav a:focus, .dark nav .active {
     color: lightblue !important;
     background-color: darkslategray !important;
 }
 
-.dark .btn-default {
+.dark .btn-default, .dark .input-group-addon {
     background: #222 !important;
-    color: dimgray !important;
+    color: lightgray !important;
     text-shadow: none;
 }
 

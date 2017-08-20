@@ -378,7 +378,6 @@ define(['q'], function(q) {
     // Please acknowledge use of this code by including this header.
     // For documentation see: http://www.the-art-of-web.com/javascript/search-highlight/
     function Hilitor(node, tag) {
-
         var targetNode = node || document.body;
         var hiliteTag = tag || "EM";
         var skipTags = new RegExp("^(?:" + hiliteTag + "|SCRIPT|FORM)$");
@@ -388,7 +387,7 @@ define(['q'], function(q) {
         var colorIdx = 0;
         var matchRegex = "";
         //Add any symbols that may prefix a start string and don't match \b (word boundary)
-        var leadingSymbols = "’‘¿¡";
+        var leadingSymbols = "’‘¿¡-";
         var openLeft = false;
         var openRight = false;
 
@@ -417,11 +416,12 @@ define(['q'], function(q) {
         function addAccents(input) {
             var retval = input;
             retval = retval.replace(/([ao])e/ig, "$1");
-            retval = retval.replace(/\\u00E[024]/ig, "a");
+            retval = retval.replace(/\\u00[CE][0124]/ig, "a");
             retval = retval.replace(/\\u00E7/ig, "c");
             retval = retval.replace(/\\u00E[89AB]|\\u00C[9A]/ig, "e");
-            retval = retval.replace(/\\u00E[DEF]/ig, "i");
-            retval = retval.replace(/\\u00F[46]/ig, "o");
+            retval = retval.replace(/\\u00[CE][DEF]/ig, "i");
+            retval = retval.replace(/\\u00[DF]1/ig, "n");
+            retval = retval.replace(/\\u00[FD][346]/ig, "o");
             retval = retval.replace(/\\u00F[9BC]/ig, "u");
             retval = retval.replace(/\\u00FF/ig, "y");
             retval = retval.replace(/\\u00DF/ig, "s");
@@ -459,10 +459,78 @@ define(['q'], function(q) {
             return retval;
         };
 
-        this.countMatches = function () {
+        this.countFullMatches = function (input) {
             if (node === undefined || !node) return;
-            var matches = matchInner(node.body.innerHTML, '<' + hiliteTag + '\\b[^>]*class="hilitor"[^>]*>', '</' + hiliteTag + '>', 'gi');
-            return matches.length;
+            var strippedText = node.innerHTML.replace(/<title[^>]*>[\s\S]*<\/title>/i, "");
+            strippedText = node.innerHTML.replace(/<[^>]*>\s*/g, " ");
+            if (!strippedText) return 0;
+            strippedText = strippedText.replace(/(?:&nbsp;|\r?\n|[.,;:?!¿¡-])+/g, " ");
+            strippedText = strippedText.replace(/\s+/g, " ");
+            if (!strippedText.length) return 0;
+            input = input.replace(/[\s.,;:?!¿¡-]+/g, " ");
+            var inputMatcher = new RegExp(input, "ig");
+            var matches = strippedText.match(inputMatcher);
+            if (matches) return matches.length
+                else return 0;
+        }
+
+        this.countPartialMatches = function () {
+            if (node === undefined || !node) return;
+            var matches = matchInner(node.innerHTML, '<' + hiliteTag + '\\b[^>]*class="hilitor"[^>]*>', '</' + hiliteTag + '>', 'gi');
+            if (matches) return matches.length
+                else return 0;
+            //if (matches) {
+            //    var input = document.getElementById('findInArticle').value.replace(/\s*/g, "").toLowerCase();
+            //    var matchedWords = "";
+            //    var buffer = "";
+            //    var countFullMatches = 0;
+            //    for (var i = 0; i < matches.length; i++ ) {
+            //        var instance = matches[i].match(/<[^>]*>([^<]*)</i)[1].toLowerCase();
+            //        buffer += instance;
+            //        var inputMatcher = new RegExp('^' + buffer);
+            //        if (input.match(inputMatcher)) {
+            //            matchedWords += instance;
+            //        } else {
+            //            buffer = "";
+            //            matchedWords = "";
+            //            continue;
+            //        }
+            //        if (~matchedWords.indexOf(input)) {
+            //            countFullMatches++;
+            //            buffer = "";
+            //            matchedWords = "";
+            //        }
+            //    }
+            //    return countFullMatches;
+            //} else return 0;
+        }
+
+        this.scrollToFullMatch = function (input) {
+            if (node === undefined || !node) return;
+            if (!input) return;
+            //Normalize spaces
+            input = input.replace(/\s+/g, " ");
+            var inputWords = input.split(" ");
+            var testInput = addAccents(input);
+            var testInput = new RegExp(testInput, "i");
+            var hilitedNodes = node.getElementsByClassName(className);
+            var subNodes = [];
+            var start;
+            var end = inputWords.length;
+            for (start = 0; start < hilitedNodes.length; start++) {
+                for (var f = start; f < end; f++) {
+                    if (f > hilitedNodes.length - 1) break;
+                    subNodes.push(hilitedNodes[f].innerHTML); 
+                }
+                var nodeText = subNodes.join(" ");
+                if (testInput.test(nodeText)) {
+                    //hilitedNodes[start].scrollIntoView(true);
+                    $("#articleContent").contents().scrollTop($(hilitedNodes[start]).offset().top);
+                    break;
+                }
+                subNodes = [];
+                end++;
+            }
         }
 
         // recursively apply word highlighting
@@ -484,7 +552,7 @@ define(['q'], function(q) {
 
                     var match = document.createElement(hiliteTag);
                     match.appendChild(document.createTextNode(regs[1]));
-                    match.style.backgroundColor = wordColor[regs[1].toLowerCase()];
+                    match.style.setProperty("background-color", wordColor[regs[1].toLowerCase()], "important");
                     match.style.fontStyle = "inherit";
                     match.style.color = "#000";
                     match.className = className;
