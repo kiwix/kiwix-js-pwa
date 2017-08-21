@@ -69,6 +69,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             $("#welcomeText").hide();
             $("#readingArticle").hide();
             $("#articleContent").hide();
+            clearFindInArticle();
             if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
                 $('#navbarToggle').click();
             }
@@ -103,7 +104,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
 
         var localSearch = {};
 
-        function clearArticleSearch() {
+        function clearFindInArticle() {
             document.getElementById('findInArticle').value = "";
             if (localSearch.remove) localSearch.remove();
             document.getElementById('matches').innerHTML = "Full: 0";
@@ -124,7 +125,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 document.getElementById('findText').classList.add("active");
                 findInArticle.focus();
             } else {
-                clearArticleSearch();
+                clearFindInArticle();
             }
             if (localSearch.remove) {
                 localSearch.remove();
@@ -176,6 +177,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
 
     $("#btnRandomArticle").on("click", function(e) {
         $('#prefix').val("");
+        clearFindInArticle();
         goToRandomArticle();
         $("#welcomeText").hide();
         $('#articleList').hide();
@@ -192,10 +194,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
     });
     // Bottom bar :
     $('#btnBack').on('click', function(e) {
+        clearFindInArticle();
         history.back();
         return false;
     });
     $('#btnForward').on('click', function(e) {
+        clearFindInArticle();
         history.forward();
         return false;
     });
@@ -217,6 +221,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
             $('#navbarToggle').click();
         }
+        clearFindInArticle();
         // Show the selected content in the page
         $('#about').hide();
         $('#configuration').hide();
@@ -248,6 +253,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
             $('#navbarToggle').click();
         }
+        clearFindInArticle();
         // Show the selected content in the page
         $('#about').hide();
         $('#configuration').show();
@@ -270,6 +276,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
             $('#navbarToggle').click();
         }
+        clearFindInArticle();
         // Show the selected content in the page
         $('#about').show();
         $('#configuration').hide();
@@ -1216,7 +1223,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                             url = url.substring(1);
                         }
                         $(this).on('click', function (e) {
-                            clearArticleSearch();
+                            clearFindInArticle();
                             var decodedURL = decodeURIComponent(url);
                             pushBrowserHistoryState(decodedURL);
                             goToArticle(decodedURL);
