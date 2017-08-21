@@ -111,7 +111,6 @@ www\js\lib\zimDirEntry.js
 www\js\lib\zimfile.js
 www\js\MathJax\config\config.js
 www\js\MathJax\config\TeX-AMS_HTML-full.js
-www\js\MathJax\deleteMe_latest_js.delete
 www\js\MathJax\extensions\a11y\accessibility-menu.js
 www\js\MathJax\extensions\a11y\auto-collapse.js
 www\js\MathJax\extensions\a11y\collapsible.js

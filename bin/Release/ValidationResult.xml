@@ -1,83 +1,83 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type='text/xsl' href='C:\ProgramData\Windows App Certification Kit\results.xsl'?>
-<REPORT xml:lang="en-GB" OVERALL_RESULT="PASS" VERSION="10.0.15063.137" LATEST_VERSION="TRUE" UPDATE_DOWNLOAD_URL="" TOOLSET_ARCHITECTURE="x64" SecureBoot="FALSE" APP_TYPE="UapApp" PUBLISHER_DISPLAY_NAME="CN=geoff" APP_NAME="" APP_VERSION="" OSVERSION="10.0.15063.0" OS="Microsoft Windows 10 Pro" PER_USER_APPLICATION="" PARTIAL_RUN="FALSE" LCID="2057" VALIDATION_TYPE="UI" ReportGenerationTime="12-7-2017 10:52:19 am" ID="93d5fb8617c256a6fca60fc9ccaf8cd0">
+<REPORT xml:lang="en-GB" OVERALL_RESULT="PASS" VERSION="10.0.15063.137" LATEST_VERSION="TRUE" UPDATE_DOWNLOAD_URL="" TOOLSET_ARCHITECTURE="x64" SecureBoot="FALSE" APP_TYPE="UapApp" PUBLISHER_DISPLAY_NAME="CN=geoff" APP_NAME="" APP_VERSION="" OSVERSION="10.0.15063.0" OS="Microsoft Windows 10 Pro" PER_USER_APPLICATION="" PARTIAL_RUN="FALSE" LCID="2057" VALIDATION_TYPE="UI" ReportGenerationTime="21-8-2017 2:39:33 pm" ID="b8a59f8c551d98d6694c2e023f27442c">
   <REQUIREMENTS>
     <REQUIREMENT NUMBER="10" TITLE="Deployment and launch tests" RATIONALE="Application failures such as crashes and hangs are a major disruption to users and cause frustration. Eliminating such failures improves application stability and reliability, and overall, provides users with a better application experience.">
-      <TEST INDEX="50" NAME="Bytecode generation" DESCRIPTION="Byte code generation should be able to complete successfully for packages containing an HTML5 Windows Store app." EXECUTIONTIME="00h:00m:01s.11ms" OPTIONAL="FALSE">
+      <TEST INDEX="50" NAME="Bytecode generation" DESCRIPTION="Byte code generation should be able to complete successfully for packages containing an HTML5 Windows Store app." EXECUTIONTIME="00h:00m:00s.91ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="79" NAME="Background tasks cancelation handler" DESCRIPTION="App should implement event handler to handle background task cancelation request." EXECUTIONTIME="00h:00m:20s.17ms" OPTIONAL="FALSE">
+      <TEST INDEX="79" NAME="Background tasks cancelation handler" DESCRIPTION="App should implement event handler to handle background task cancelation request." EXECUTIONTIME="00h:00m:20s.05ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="81" NAME="Platform version launch" DESCRIPTION="App should not mis-use OSVersionInfo API to provide users functionality that is specific to the OS." EXECUTIONTIME="00h:00m:17s.98ms" OPTIONAL="FALSE">
+      <TEST INDEX="81" NAME="Platform version launch" DESCRIPTION="App should not mis-use OSVersionInfo API to provide users functionality that is specific to the OS." EXECUTIONTIME="00h:00m:17s.79ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="47" NAME="App launch" DESCRIPTION="App launch tests." EXECUTIONTIME="00h:00m:17s.88ms" OPTIONAL="FALSE">
+      <TEST INDEX="47" NAME="App launch" DESCRIPTION="App launch tests." EXECUTIONTIME="00h:00m:17s.59ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="21" NAME="Crashes and hangs" DESCRIPTION="Do not crash or hang during the testing process." EXECUTIONTIME="00h:00m:02s.18ms" OPTIONAL="FALSE">
+      <TEST INDEX="21" NAME="Crashes and hangs" DESCRIPTION="Do not crash or hang during the testing process." EXECUTIONTIME="00h:00m:01s.92ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="12" TITLE="Package compliance test" RATIONALE="The package manifest was missing one or more required attributes.">
-      <TEST INDEX="77" NAME="Application count" DESCRIPTION="One package should not define more than one app in the manifest." EXECUTIONTIME="00h:00m:00s.76ms" OPTIONAL="FALSE">
+      <TEST INDEX="77" NAME="Application count" DESCRIPTION="One package should not define more than one app in the manifest." EXECUTIONTIME="00h:00m:00s.78ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="31" NAME="App manifest" DESCRIPTION="App manifest must include valid entries for all required fields." EXECUTIONTIME="00h:00m:00s.90ms" OPTIONAL="FALSE">
+      <TEST INDEX="31" NAME="App manifest" DESCRIPTION="App manifest must include valid entries for all required fields." EXECUTIONTIME="00h:00m:00s.86ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="74" NAME="Bundle manifest" DESCRIPTION="Bundle manifest must include valid entries for all required fields." EXECUTIONTIME="00h:00m:00s.99ms" OPTIONAL="FALSE">
+      <TEST INDEX="74" NAME="Bundle manifest" DESCRIPTION="Bundle manifest must include valid entries for all required fields." EXECUTIONTIME="00h:00m:00s.85ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="75" NAME="Package size" DESCRIPTION="Package file size should not be greater than 4 gigabytes." EXECUTIONTIME="00h:00m:01s.05ms" OPTIONAL="FALSE">
+      <TEST INDEX="75" NAME="Package size" DESCRIPTION="Package file size should not be greater than 4 gigabytes." EXECUTIONTIME="00h:00m:00s.80ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="83" NAME="Restricted namespace" DESCRIPTION="Check if any restricted namespace is referenced in the appx manifest." EXECUTIONTIME="00h:00m:00s.75ms" OPTIONAL="FALSE">
+      <TEST INDEX="83" NAME="Restricted namespace" DESCRIPTION="Check if any restricted namespace is referenced in the appx manifest." EXECUTIONTIME="00h:00m:00s.81ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="14" TITLE="Windows security features test" RATIONALE="Applications must opt-into Windows security features.">
-      <TEST INDEX="33" NAME="Binary analyzer" DESCRIPTION="Analysis of security features enabled on binaries" EXECUTIONTIME="00h:00m:01s.26ms" OPTIONAL="FALSE">
+      <TEST INDEX="33" NAME="Binary analyzer" DESCRIPTION="Analysis of security features enabled on binaries" EXECUTIONTIME="00h:00m:01s.34ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="70" NAME="Banned file analyzer" DESCRIPTION="Analysis of application to detect known insecure files" EXECUTIONTIME="00h:00m:00s.94ms" OPTIONAL="FALSE">
+      <TEST INDEX="70" NAME="Banned file analyzer" DESCRIPTION="Analysis of application to detect known insecure files" EXECUTIONTIME="00h:00m:00s.86ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="62" NAME="Private code signing" DESCRIPTION="App should not package private code signing key files." EXECUTIONTIME="00h:00m:00s.78ms" OPTIONAL="FALSE">
+      <TEST INDEX="62" NAME="Private code signing" DESCRIPTION="App should not package private code signing key files." EXECUTIONTIME="00h:00m:00s.83ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="15" TITLE="Supported API test" RATIONALE="The application should only refer to the APIs allowed by the Windows SDK for Windows Store Apps.">
-      <TEST INDEX="38" NAME="Supported APIs" DESCRIPTION="Windows Store App must only use supported platform APIs." EXECUTIONTIME="00h:00m:01s.14ms" OPTIONAL="FALSE">
+      <TEST INDEX="38" NAME="Supported APIs" DESCRIPTION="Windows Store App must only use supported platform APIs." EXECUTIONTIME="00h:00m:01s.11ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="19" TITLE="App manifest resources tests" RATIONALE="The App Package Manifest should have valid resources defined in the resources.pri file, as per the App Packaging Specification and App Manifest Schema.">
-      <TEST INDEX="45" NAME="App resources" DESCRIPTION="The package should have valid resources defined in the resources.pri file." EXECUTIONTIME="00h:00m:00s.74ms" OPTIONAL="FALSE">
+      <TEST INDEX="45" NAME="App resources" DESCRIPTION="The package should have valid resources defined in the resources.pri file." EXECUTIONTIME="00h:00m:00s.71ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="61" NAME="Branding" DESCRIPTION="App should not use the default images packed by windows SDK samples or Visual Studio." EXECUTIONTIME="00h:00m:01s.45ms" OPTIONAL="FALSE">
+      <TEST INDEX="61" NAME="Branding" DESCRIPTION="App should not use the default images packed by windows SDK samples or Visual Studio." EXECUTIONTIME="00h:00m:01s.27ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="20" TITLE="Debug configuration test" RATIONALE="The App should not install any debug binaries.">
-      <TEST INDEX="46" NAME="Debug configuration" DESCRIPTION="The App should not install any debug binaries." EXECUTIONTIME="00h:00m:00s.97ms" OPTIONAL="FALSE">
+      <TEST INDEX="46" NAME="Debug configuration" DESCRIPTION="The App should not install any debug binaries." EXECUTIONTIME="00h:00m:00s.98ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
@@ -89,49 +89,49 @@
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="23" TITLE="App Capabilities test" RATIONALE="Packages declaring special-use capabilities will have to provide justifications during the onboarding process.">
-      <TEST INDEX="52" NAME="Special use capabilities" DESCRIPTION="Packages declaring special-use capabilities will have to provide justifications during the onboarding process." EXECUTIONTIME="00h:00m:00s.91ms" OPTIONAL="FALSE">
+      <TEST INDEX="52" NAME="Special use capabilities" DESCRIPTION="Packages declaring special-use capabilities will have to provide justifications during the onboarding process." EXECUTIONTIME="00h:00m:00s.81ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="24" TITLE="Windows Runtime metadata validation" RATIONALE="Metadata needs to be conformant and consistent across all generation sources.">
-      <TEST INDEX="56" NAME="ExclusiveTo attribute" DESCRIPTION="A class must not implement an interface that is marked ExclusiveTo another class." EXECUTIONTIME="00h:00m:07s.46ms" OPTIONAL="FALSE">
+      <TEST INDEX="56" NAME="ExclusiveTo attribute" DESCRIPTION="A class must not implement an interface that is marked ExclusiveTo another class." EXECUTIONTIME="00h:00m:07s.09ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="57" NAME="Type location" DESCRIPTION="Types must be defined in the metadata file with the longest matching namespace." EXECUTIONTIME="00h:00m:00s.82ms" OPTIONAL="FALSE">
+      <TEST INDEX="57" NAME="Type location" DESCRIPTION="Types must be defined in the metadata file with the longest matching namespace." EXECUTIONTIME="00h:00m:00s.76ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="55" NAME="Type name case-sensitivity" DESCRIPTION="Namespace and type names must not vary only by casing." EXECUTIONTIME="00h:00m:00s.88ms" OPTIONAL="FALSE">
+      <TEST INDEX="55" NAME="Type name case-sensitivity" DESCRIPTION="Namespace and type names must not vary only by casing." EXECUTIONTIME="00h:00m:00s.74ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="54" NAME="Type name correctness" DESCRIPTION="Only system types can be in the Windows namespace and no types can be in the global namespace." EXECUTIONTIME="00h:00m:00s.88ms" OPTIONAL="FALSE">
+      <TEST INDEX="54" NAME="Type name correctness" DESCRIPTION="Only system types can be in the Windows namespace and no types can be in the global namespace." EXECUTIONTIME="00h:00m:00s.74ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="58" NAME="General metadata correctness" DESCRIPTION="Metadata files must meet various requirements in order to be valid and correct." EXECUTIONTIME="00h:00m:08s.26ms" OPTIONAL="FALSE">
+      <TEST INDEX="58" NAME="General metadata correctness" DESCRIPTION="Metadata files must meet various requirements in order to be valid and correct." EXECUTIONTIME="00h:00m:07s.12ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="53" NAME="Properties" DESCRIPTION="Write-only and indexer properties may not be used. Corresponding getter and setter methods must match in type." EXECUTIONTIME="00h:00m:01s.13ms" OPTIONAL="FALSE">
+      <TEST INDEX="53" NAME="Properties" DESCRIPTION="Write-only and indexer properties may not be used. Corresponding getter and setter methods must match in type." EXECUTIONTIME="00h:00m:00s.75ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="25" TITLE="Package sanity test" RATIONALE="Validation of the app package contents to ensure correctness.">
-      <TEST INDEX="63" NAME="Platform appropriate files" DESCRIPTION="App should not install files that do not match the target processor architecture." EXECUTIONTIME="00h:00m:00s.91ms" OPTIONAL="FALSE">
+      <TEST INDEX="63" NAME="Platform appropriate files" DESCRIPTION="App should not install files that do not match the target processor architecture." EXECUTIONTIME="00h:00m:00s.80ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="66" NAME="Supported directory structure check" DESCRIPTION="Validate each file in the package for that the file name length should be less than MAX_PATH." EXECUTIONTIME="00h:00m:01s.00ms" OPTIONAL="FALSE">
+      <TEST INDEX="66" NAME="Supported directory structure check" DESCRIPTION="Validate each file in the package for that the file name length should be less than MAX_PATH." EXECUTIONTIME="00h:00m:00s.80ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="27" TITLE="Resource Usage Test" RATIONALE="WinJS background tasks need to call close() to free resource.">
-      <TEST INDEX="68" NAME="WinJS background task" DESCRIPTION="WinJS background tasks need to call close() to free resource." EXECUTIONTIME="00h:00m:00s.99ms" OPTIONAL="FALSE">
+      <TEST INDEX="68" NAME="WinJS background task" DESCRIPTION="WinJS background tasks need to call close() to free resource." EXECUTIONTIME="00h:00m:00s.86ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
@@ -139,12 +139,12 @@
   </REQUIREMENTS>
   <APPLICATIONS>
     <Installed_Programs>
-      <Program Name="a1a5e0b9-13d4-41fb-810d-518949f03df4" Type="Application" Source="AppxPackage" Publisher="CN=geoff" Version="0.6.3.0" Language="2057" InstallDate="07/12/2017 09:50:20" OSVersionAtInstallTime="10.0.0.15063" RootDirPath="c:\program files\windowsapps\a1a5e0b9-13d4-41fb-810d-518949f03df4_0.6.3.0_neutral__zfxmafgedzx24" Id="0000140433c84427c4f0cbe137b6d29b178700000908">
+      <Program Name="a1a5e0b9-13d4-41fb-810d-518949f03df4" Type="Application" Source="AppxPackage" Publisher="CN=geoff" Version="0.8.0.0" Language="2057" InstallDate="08/21/2017 13:37:28" OSVersionAtInstallTime="10.0.0.15063" RootDirPath="c:\program files\windowsapps\a1a5e0b9-13d4-41fb-810d-518949f03df4_0.8.0.0_neutral__zfxmafgedzx24" Id="00002ecbca38a52a5829eeebd89b28e80eee00000908">
         <Indicators>
           <WindowsStoreAppManifestIndicators>
-            <PackageManifest PackageFullName="a1a5e0b9-13d4-41fb-810d-518949f03df4_0.6.3.0_neutral__zfxmafgedzx24">
+            <PackageManifest PackageFullName="a1a5e0b9-13d4-41fb-810d-518949f03df4_0.8.0.0_neutral__zfxmafgedzx24">
               <Package>
-                <Identity Name="a1a5e0b9-13d4-41fb-810d-518949f03df4" Version="0.6.3.0" Publisher="CN=geoff" ProcessorArchitecture="neutral" />
+                <Identity Name="a1a5e0b9-13d4-41fb-810d-518949f03df4" Version="0.8.0.0" Publisher="CN=geoff" ProcessorArchitecture="neutral" />
                 <PhoneIdentity PhoneProductId="a1a5e0b9-13d4-41fb-810d-518949f03df4" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
                 <Properties>
                   <DisplayName>Kiwix JS</DisplayName>
@@ -161,7 +161,7 @@
                 <Applications>
                   <Application Id="App" StartPage="ms-appx-web:///www/index.html">
                     <ApplicationContentUriRules>
-                      <Rule Match="ms-appx-web:///www/index.html" Type="include" WindowsRuntimeAccess="none" />
+                      <Rule Match="ms-appx-web:///www/index.html" Type="include" WindowsRuntimeAccess="all" />
                     </ApplicationContentUriRules>
                     <VisualElements DisplayName="Kiwix JS" Description="Kiwix Offline Wikipedia and ZIM File Reader" BackgroundColor="transparent" Square150x150Logo="images\Square150x150Logo.png" Square44x44Logo="images\Square44x44Logo.png" ForegroundText="light">
                       <DefaultTile ShortName="Kiwix JS" Square310x310Logo="images\LargeTile.png" Wide310x150Logo="images\Wide310x150Logo.png" Square71x71Logo="images\SmallTile.png">
@@ -179,42 +179,49 @@
                         <Rotation Preference="landscapeFlipped" />
                       </InitialRotationPreference>
                     </VisualElements>
+                    <Extensions>
+                      <Extension Category="windows.fileSavePicker">
+                        <FileSavePicker>
+                          <SupportedFileTypes>
+                            <SupportsAnyFileType />
+                          </SupportedFileTypes>
+                        </FileSavePicker>
+                      </Extension>
+                    </Extensions>
                   </Application>
                 </Applications>
                 <Capabilities>
                   <Capability Name="internetClient" />
-                  <Capability Name="privateNetworkClientServer" />
-                  <Capability Name="removableStorage" />
                   <DeviceCapability Name="location" />
                 </Capabilities>
               </Package>
             </PackageManifest>
             <BundleManifest PackageFamilyName="a1a5e0b9-13d4-41fb-810d-518949f03df4_zfxmafgedzx24">
               <Bundle SchemaVersion="3.0">
-                <Identity Name="a1a5e0b9-13d4-41fb-810d-518949f03df4" Publisher="CN=geoff" Version="0.6.3.0" />
+                <Identity Name="a1a5e0b9-13d4-41fb-810d-518949f03df4" Publisher="CN=geoff" Version="0.8.0.0" />
                 <Packages>
-                  <Package Type="application" Version="0.6.3.0" Architecture="neutral" FileName="KiwixWebApp_0.6.3.0_AnyCPU.appx" Offset="61" Size="750407">
+                  <Package Type="application" Version="0.8.0.0" Architecture="neutral" FileName="KiwixWebApp_0.8.0.0_AnyCPU.appx" Offset="61" Size="1858502">
                     <Resources>
                       <Resource Language="EN-GB" />
                       <Resource Scale="200" />
                     </Resources>
                   </Package>
-                  <Package Type="resource" Version="0.6.3.0" ResourceId="split.scale-100" FileName="KiwixWebApp_0.6.3.0_scale-100.appx" Offset="750556" Size="100539">
+                  <Package Type="resource" Version="0.8.0.0" ResourceId="split.scale-100" FileName="KiwixWebApp_0.8.0.0_scale-100.appx" Offset="1858651" Size="100537">
                     <Resources>
                       <Resource Scale="100" />
                     </Resources>
                   </Package>
-                  <Package Type="resource" Version="0.6.3.0" ResourceId="split.scale-125" FileName="KiwixWebApp_0.6.3.0_scale-125.appx" Offset="851183" Size="131673">
+                  <Package Type="resource" Version="0.8.0.0" ResourceId="split.scale-125" FileName="KiwixWebApp_0.8.0.0_scale-125.appx" Offset="1959276" Size="131668">
                     <Resources>
                       <Resource Scale="125" />
                     </Resources>
                   </Package>
-                  <Package Type="resource" Version="0.6.3.0" ResourceId="split.scale-150" FileName="KiwixWebApp_0.6.3.0_scale-150.appx" Offset="982944" Size="161312">
+                  <Package Type="resource" Version="0.8.0.0" ResourceId="split.scale-150" FileName="KiwixWebApp_0.8.0.0_scale-150.appx" Offset="2091032" Size="161312">
                     <Resources>
                       <Resource Scale="150" />
                     </Resources>
                   </Package>
-                  <Package Type="resource" Version="0.6.3.0" ResourceId="split.scale-400" FileName="KiwixWebApp_0.6.3.0_scale-400.appx" Offset="1144344" Size="619840">
+                  <Package Type="resource" Version="0.8.0.0" ResourceId="split.scale-400" FileName="KiwixWebApp_0.8.0.0_scale-400.appx" Offset="2252432" Size="619841">
                     <Resources>
                       <Resource Scale="400" />
                     </Resources>
@@ -231,9 +238,162 @@
     </Installed_Programs>
   </APPLICATIONS>
   <DEPENDENCY_INFORMATION>
-    <AitStaticAnalysis ProgramId="0000140433c84427c4f0cbe137b6d29b178700000904" AnalysisVersion="1.60" DictionaryVersion="3.1" Type="Package" Id="a1a5e0b9-13d4-41fb-810d-518949f03df4_0.6.3.0_neutral__zfxmafgedzx24">
-      <AitFile ErrorCode="0" Name="index.html" Id="000004d6f6d86ba5d6087c0e218bb73d3125505f1568" />
-      <AitFile ErrorCode="0" Name="util.js" Id="0000059af638663f2a1fbc93a8a4b0e598b2eecff8cc" />
+    <AitStaticAnalysis ProgramId="00002ecbca38a52a5829eeebd89b28e80eee00000904" AnalysisVersion="1.60" DictionaryVersion="3.1" Type="Package" Id="a1a5e0b9-13d4-41fb-810d-518949f03df4_0.8.0.0_neutral__zfxmafgedzx24">
+      <AitFile ErrorCode="0" Name="math_characters.js" Id="000000123c1ef5114b87a3312519f384dec7ebb118c9" />
+      <AitFile ErrorCode="0" Name="color.js" Id="00000190a2521d458cec0fc9081e5063d6a5f259a1ac" />
+      <AitFile ErrorCode="0" Name="HelpDialog.js" Id="000002ae00ac7a1eff2516c87d382333840eb3ac14c9">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.body.removeChild" />
+          <AitFeature Name="document.body.scrollTop" />
+          <AitFeature Name="document.documentElement" />
+          <AitFeature Name="document.documentElement.scrollWidth" />
+          <AitFeature Name="window.innerHeight" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="MathJax.js" Id="000003b383feb8b0332cd89ee990d80521191c799bed">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.body.scrollIntoView" />
+          <AitFeature Name="document.childNodes" />
+          <AitFeature Name="document.compatMode" />
+          <AitFeature Name="document.createElement" />
+          <AitFeature Name="document.createTextNode" />
+          <AitFeature Name="document.documentElement" />
+          <AitFeature Name="document.documentMode" />
+          <AitFeature Name="document.getElementById" />
+          <AitFeature Name="document.getElementsByTagName" />
+          <AitFeature Name="document.getElementsByTagNameNS" />
+          <AitFeature Name="document.location.hash" />
+          <AitFeature Name="document.location.hash.substr" />
+          <AitFeature Name="document.namespaces.add" />
+          <AitFeature Name="document.readyState" />
+          <AitFeature Name="document.styleSheets" />
+          <AitFeature Name="document.styleSheets.length" />
+          <AitFeature Name="navigator.appVersion.match" />
+          <AitFeature Name="navigator.buildID" />
+          <AitFeature Name="navigator.platform.substr" />
+          <AitFeature Name="navigator.product" />
+          <AitFeature Name="navigator.productSub" />
+          <AitFeature Name="navigator.userAgent" />
+          <AitFeature Name="navigator.userAgent.match" />
+          <AitFeature Name="navigator.vendor" />
+          <AitFeature Name="navigator.vendorSub" />
+          <AitFeature Name="window.__TeSt_VaR__" />
+          <AitFeature Name="window.addEventListener" />
+          <AitFeature Name="window.attachEvent" />
+          <AitFeature Name="window.chrome.app" />
+          <AitFeature Name="window.chrome.loadTimes" />
+          <AitFeature Name="window.execScript" />
+          <AitFeature Name="window.hasOwnProperty" />
+          <AitFeature Name="window.msPerformance" />
+          <AitFeature Name="window.opera.version" />
+          <AitFeature Name="window.performance" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="SuppMathOperators.js" Id="0000058911934a6244ed50544d246b9d36d224abb0bc" />
+      <AitFile ErrorCode="0" Name="CombDiacritMarks.js" Id="00000a9175ffa7dc8ee8abc30e9f0f8b74c47d7b5653" />
+      <AitFile ErrorCode="0" Name="CombDiacritMarks.js" Id="00000b2d255b0a2c4212e7878e9b304897054d0b57b2" />
+      <AitFile ErrorCode="0" Name="BasicLatin.js" Id="00000b98287c0e47db0621a44880c64335da1b3c39a0" />
+      <AitFile ErrorCode="0" Name="PUA.js" Id="00000bcd5c190890958401647e0d3e2c8196dc0ddcdf" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="00000c10c75c73d8da79095dc5816878f5503890b268" />
+      <AitFile ErrorCode="0" Name="BasicLatin.js" Id="00000d3e6a696170a355866dd4c1d5c1fc6fa91854ec" />
+      <AitFile ErrorCode="0" Name="Dingbats.js" Id="00000d47ac8502c3b6bcff05aeedbbffc00fc3866480" />
+      <AitFile ErrorCode="0" Name="MiscMathSymbolsA.js" Id="00000d915ba00a4997e36c033e6551323f0a053d0687" />
+      <AitFile ErrorCode="0" Name="length.js" Id="00000eee1504628b4c963800ffb5a02f9c66021e2e5a" />
+      <AitFile ErrorCode="0" Name="autoload-all.js" Id="00000f0be957ec24a4b6903a0e9a1dacd6c63a93d3e5" />
+      <AitFile ErrorCode="0" Name="enclose.js" Id="000013447e01181f401e79c85e0347822c0e734a0324" />
+      <AitFile ErrorCode="0" Name="autobold.js" Id="000013aadefa8a67ccdb1d197868499a7b2f1d30fd67">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.createElement" />
+          <AitFeature Name="document.createTextNode" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="ms.js" Id="000014fb26e6eb374793292e38d3b2301e7f688ce2ac" />
+      <AitFile ErrorCode="0" Name="BasicLatin.js" Id="0000162e0296b53e81aaa154049af002ed31efe95fd9" />
+      <AitFile ErrorCode="0" Name="menclose.js" Id="000016e3b8082ff6c395bcd322dfe6e4dad8b1159e10">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.createElementNS" />
+          <AitFeature Name="document.createStyleSheet" />
+          <AitFeature Name="document.documentMode" />
+          <AitFeature Name="document.getElementById" />
+          <AitFeature Name="document.namespaces" />
+          <AitFeature Name="document.namespaces.add" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="latin-lower-double-accent.js" Id="0000193402f3c04121b8adaf08711d53b421535e9b90" />
+      <AitFile ErrorCode="0" Name="uiUtil.js" Id="00001a5b82c79765805e531f4092f845509c08f4accd">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="URL.createObjectURL" />
+          <AitFeature Name="URL.revokeObjectURL" />
+          <AitFeature Name="document.getElementById" />
+          <AitFeature Name="window.innerHeight" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="Main.js" Id="00001b4d7da1db56c95dbaeb57cdda6f9ab603d0aabc" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="00001c14bb1392ab7526cc62fbbff98eb2e846ac35bb" />
+      <AitFile ErrorCode="0" Name="MiscSymbols.js" Id="00001c5e38eae4f387a137bf7fec82d16c4340a91d25" />
+      <AitFile ErrorCode="0" Name="MatchWebFonts.js" Id="00001c6c21bfcf98c2c94b25e874d8daddabcd8baaaf">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.getElementById" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="greek-scripts.js" Id="00001cf96dff7bdfec57ffbaf85e4e0772bfa4c708a4" />
+      <AitFile ErrorCode="0" Name="util.js" Id="00001e8bfe2153d2c0ca59e9b1ed61380c6d1fe421b6">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.createElement" />
+          <AitFeature Name="document.createTextNode" />
+          <AitFeature Name="document.getElementById" />
+          <AitFeature Name="window.innerHeight" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="hyperbolic.js" Id="000020117834efd8e8b765ece4d29a3ee01c76ab2044" />
+      <AitFile ErrorCode="0" Name="PUA.js" Id="000023cd766473c5acba5af764a46ec39d01133b07b4" />
+      <AitFile ErrorCode="0" Name="hebrew_letters.js" Id="0000258a5aa306f69cf9413f35f55c9bd370917e4f7e" />
+      <AitFile ErrorCode="0" Name="CombDiactForSymbols.js" Id="000026c786c5e30b0e795db4e9f9d0bc9b6f5bce6b08" />
+      <AitFile ErrorCode="0" Name="mathjax-sre.js" Id="000029e838c7959d0835dfbd76ab12aa5ab35208ab73">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.createElement" />
+          <AitFeature Name="document.createElementNS" />
+          <AitFeature Name="document.createNSResolver" />
+          <AitFeature Name="document.documentElement.querySelectorAll" />
+          <AitFeature Name="document.evaluate" />
+          <AitFeature Name="location.protocol" />
+          <AitFeature Name="window.chrome.loadTimes" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="Arrows.js" Id="00002a29a88243860e9290405bf549f5904c70e6856d" />
+      <AitFile ErrorCode="0" Name="MathMenu.js" Id="00002ab61b19fb690e672a294a9efa09c9a3693b46ac">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.body.getBoundingClientRect" />
+          <AitFeature Name="document.body.removeChild" />
+          <AitFeature Name="document.body.scrollHeight" />
+          <AitFeature Name="document.body.scrollLeft" />
+          <AitFeature Name="document.body.scrollTop" />
+          <AitFeature Name="document.body.scrollWidth" />
+          <AitFeature Name="document.compatMode" />
+          <AitFeature Name="document.documentElement" />
+          <AitFeature Name="document.documentElement.scrollLeft" />
+          <AitFeature Name="document.documentElement.scrollTop" />
+          <AitFeature Name="document.documentElement.scrollWidth" />
+          <AitFeature Name="document.documentMode" />
+          <AitFeature Name="document.getElementById" />
+          <AitFeature Name="document.location.reload" />
+          <AitFeature Name="document.selection" />
+          <AitFeature Name="document.selection.empty" />
+          <AitFeature Name="navigator.appVersion.match" />
+          <AitFeature Name="window.getComputedStyle" />
+          <AitFeature Name="window.innerHeight" />
+          <AitFeature Name="window.pageXOffset" />
+          <AitFeature Name="window.pageYOffset" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="latin-upper-single-accent.js" Id="00002ae98a5d57d2e22ddceeb064a9ca3213149d2f99" />
+      <AitFile ErrorCode="0" Name="elementary.js" Id="00002af91412f22f2c9b5237cba7548f74cc81cfa1fa" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="00002b322185ed35ef85e035784a4ad83517bf513d06" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="00002b3af3866b0adb52c17187619665968dc9b62bc1" />
+      <AitFile ErrorCode="0" Name="latin-lower-phonetic.js" Id="00002bafe043dee9e90c1cf9fe11578bf76cd58698c7" />
+      <AitFile ErrorCode="0" Name="SuppMathOperators.js" Id="00002e083fa5e390b2a35195d8d8987ca60ac115dab1" />
+      <AitFile ErrorCode="0" Name="CombDiacritMarks.js" Id="00002e578ba16f131a4627a997aa59f760ae20ec7fd3" />
+      <AitFile ErrorCode="0" Name="math_geometry.js" Id="00002e8f1b79f18a773586092bd7a655692746814f0f" />
       <AitFile ErrorCode="0" Name="xzdec.js" Id="00002ebc4e41cc9765bfc84c0bb1c8b1ea980a616822">
         <AitCategory Id="WRTJavaScript">
           <AitFeature Name="document.addEventListener" />
@@ -251,14 +411,299 @@
           <AitFeature Name="window.webkitURL" />
         </AitCategory>
       </AitFile>
+      <AitFile ErrorCode="0" Name="BasicLatin.js" Id="0000302a6564a8842b8d7f70ae1addbae256f9b1c0c7" />
       <AitFile ErrorCode="0" Name="q.js" Id="0000304ac92007ab6c0e3f75d2d503b5a7077e2912f9" />
+      <AitFile ErrorCode="0" Name="GeneralPunctuation.js" Id="000030599246ebaef9dc11557c6bb94fbebbecaa4624" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="0000307fb77c17e46ea7dfe93a705e678ae08abac567" />
+      <AitFile ErrorCode="0" Name="LatinExtendedA.js" Id="00003215012215a820a1069000043abcf05dc6aea6ec" />
+      <AitFile ErrorCode="0" Name="GeneralPunctuation.js" Id="000033138c7bb172076145126bfcf66ad7de32def6e8" />
+      <AitFile ErrorCode="0" Name="Safe.js" Id="00003410dbf2d6b8b01507a53a39068189d0ed283637">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.createElement" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="latin-mathfonts.js" Id="000036e2b4a75cbee28ce9ad625adb16c713d14c6e01" />
+      <AitFile ErrorCode="0" Name="Other.js" Id="000039f676089e81f70a28b2e2566f9544430e295827" />
+      <AitFile ErrorCode="0" Name="latin-upper-double-accent.js" Id="00003ad8c35b611440cd1ca098730f348b3b2eaa656f" />
+      <AitFile ErrorCode="0" Name="config.js" Id="00003c399be45beea2d00833990be61aa7750dbffa7b" />
+      <AitFile ErrorCode="0" Name="fontdata.js" Id="00003c88eb71aebf52d784bede6026d89dea49caf208">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="navigator.userAgent.match" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="Arrows.js" Id="00003cb4353888fb2768ee48865fd73a406f70831e87" />
+      <AitFile ErrorCode="0" Name="MiscSymbols.js" Id="00003d768a488a1a9c3330f31a881542c9e5ef6bbda5" />
+      <AitFile ErrorCode="0" Name="CombDiacritMarks.js" Id="00003df7c57f4d061729ddb58878f767c31db49613af" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="00003e85bc2c30135c3cc0b12879460ca1daff82d1b6" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="00003efff4ebcab47b0c72badf1c0675e5f91c86a1ab" />
+      <AitFile ErrorCode="0" Name="app.js" Id="00003fcbb9a08d42bb000a49470c2418aadec6c1c506">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="URL.createObjectURL" />
+          <AitFeature Name="URL.revokeObjectURL..." />
+          <AitFeature Name="Windows.ApplicationModel.Package.current.installedLocation" />
+          <AitFeature Name="document.createElement" />
+          <AitFeature Name="document.getElementById" />
+          <AitFeature Name="document.querySelectorAll" />
+          <AitFeature Name="navigator.getDeviceStorages" />
+          <AitFeature Name="navigator.serviceWorker.controller.postMessage" />
+          <AitFeature Name="navigator.serviceWorker.register" />
+          <AitFeature Name="navigator.userAgent.indexOf" />
+          <AitFeature Name="window.clearTimeout" />
+          <AitFeature Name="window.history.pushState" />
+          <AitFeature Name="window.onpopstate" />
+          <AitFeature Name="window.setRemoteArchives" />
+          <AitFeature Name="window.setTimeout" />
+          <AitFeature Name="window.timeoutKeyUpPrefix" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="MiscMathSymbolsB.js" Id="000040bd56a8e3e4ee349169f260280b75c7894e8e80" />
+      <AitFile ErrorCode="0" Name="latin-lower-normal.js" Id="000041707e20798537ef0efa824aba45f03fcc7b06ce" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="000042c64bb436598f64d664df77ad40b1e90f8b2520" />
       <AitFile ErrorCode="0" Name="cookies.js" Id="0000439177fdc7a592c6780bb15983b2bff2ef9b3153">
         <AitCategory Id="WRTJavaScript">
           <AitFeature Name="document.cookie.replace" />
         </AitCategory>
       </AitFile>
+      <AitFile ErrorCode="0" Name="zimfile.js" Id="00004474f188f917ff8f9873266f438770680b0b2881" />
+      <AitFile ErrorCode="0" Name="MiscSymbols.js" Id="0000449914f5e0a3601722917e9425db60b3aa11add5" />
       <AitFile ErrorCode="0" Name="utf8.js" Id="0000496f1268db7e46f34f21168e789dcec280bcbd87" />
-      <AitFile ErrorCode="0" Name="jquery-3.2.1.slim.js" Id="000049909652981c0afcbf2f5daf86b1c0e5614302a1">
+      <AitFile ErrorCode="0" Name="jax.js" Id="000049836dd2d2b9da1d20dfbcd33ac9145118aae803">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.body.appendChild" />
+          <AitFeature Name="document.body.firstChild" />
+          <AitFeature Name="document.body.insertBefore" />
+          <AitFeature Name="document.body.removeChild" />
+          <AitFeature Name="document.compatMode" />
+          <AitFeature Name="document.createElement" />
+          <AitFeature Name="document.documentMode" />
+          <AitFeature Name="document.getElementById" />
+          <AitFeature Name="document.location" />
+          <AitFeature Name="document.location.hostname" />
+          <AitFeature Name="document.location.port" />
+          <AitFeature Name="document.location.protocol" />
+          <AitFeature Name="document.styleSheets" />
+          <AitFeature Name="navigator.appVersion.match" />
+          <AitFeature Name="navigator.platform.match" />
+          <AitFeature Name="navigator.vendor.match" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="other.js" Id="00004a317395740d10bfd6ddea237e123913aabbea83" />
+      <AitFile ErrorCode="0" Name="CombDiactForSymbols.js" Id="00004b8de792c00edf1b78f62ff3e2a942eef90d5ce0" />
+      <AitFile ErrorCode="0" Name="BoxDrawing.js" Id="00004ed4d9ccc037d1964f24e050aa425f922294733c" />
+      <AitFile ErrorCode="0" Name="BasicLatin.js" Id="0000503e74a3d668d669c35e663a4475d9759f8908be" />
+      <AitFile ErrorCode="0" Name="noErrors.js" Id="0000513b96404ded95f81f014dc5f3f536f93c3b008a">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.createElement" />
+          <AitFeature Name="document.createTextNode" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="GeometricShapes.js" Id="00005163c03ed7e6d69b54ba0220de41609fe7dfcb3b" />
+      <AitFile ErrorCode="0" Name="LatinExtendedB.js" Id="000052809d14bc5f914a0077d7b2d2987c0205c935de" />
+      <AitFile ErrorCode="0" Name="mmultiscripts.js" Id="000053b113a2083dfe2cb99a7e605bb087607c61c84d" />
+      <AitFile ErrorCode="0" Name="imageFonts.js" Id="000053f0bd712a86b1056126493fb5043bbf05cc08c3">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.compatMode" />
+          <AitFeature Name="document.documentElement" />
+          <AitFeature Name="window.innerHeight" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="greek-small.js" Id="0000548ed3449000a7ac3ef7af12dd7e6012255150db" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="000055892fe9f3502878ad50769e081c684230e114b0" />
+      <AitFile ErrorCode="0" Name="MiscTechnical.js" Id="0000574485567a3439b1d5a120d9388fb1e8e7466dd2" />
+      <AitFile ErrorCode="0" Name="action.js" Id="0000583bd56789673a9ee263af2da5cc395922599fc6" />
+      <AitFile ErrorCode="0" Name="memory.js" Id="000058a7227dd3092def65e8934c5fbdf1e1c4b8d668" />
+      <AitFile ErrorCode="0" Name="zimDirEntry.js" Id="000059d70bd3c87a0870a07ab814029a6b4ad6778adb" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="00005b2351ad8febe72e892a4fb9fa5cc6f9769009b6" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="00005be20643b4f408c9630e9b648fe55b521361dcf3" />
+      <AitFile ErrorCode="0" Name="MathOperators.js" Id="00005d2066e2cb6dcb49207eabeb2896e5c81203903a" />
+      <AitFile ErrorCode="0" Name="require.js" Id="00005dcff3abc050272828a80dea6919e9bd095c0b1e">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.createElement" />
+          <AitFeature Name="document.createElementNS" />
+          <AitFeature Name="document.getElementsByTagName" />
+          <AitFeature Name="navigator.platform" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="zimArchiveLoader.js" Id="000062f6e39f2228d04b088eadf343121786bc79a297" />
+      <AitFile ErrorCode="0" Name="MiscTechnical.js" Id="000063a7cee61548c92fb7743345d80e77784a0e1d24" />
+      <AitFile ErrorCode="0" Name="LetterlikeSymbols.js" Id="0000645cdfbad11e1bba976d54ea1ad9bdb658db7961" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="00006697aae4837ef5bcba57b050166b52801a29b48c" />
+      <AitFile ErrorCode="0" Name="auto-collapse.js" Id="000069319e4abc7cbc668411def51293acf7f84a41d1">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.createElement" />
+          <AitFeature Name="document.getElementById" />
+          <AitFeature Name="window.addEventListener" />
+          <AitFeature Name="window.attachEvent" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="HTML.js" Id="00006aac96f491de34fa1440839b5f72817bd8a620d3" />
+      <AitFile ErrorCode="0" Name="Arrows.js" Id="00006cb6b42f52ca4190e3ef942d080b0efbcf335378" />
+      <AitFile ErrorCode="0" Name="fast-preview.js" Id="00006cc67dd9fa44b0483497cdc7a8df1b3de8e4651c">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.documentMode" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="tex2jax.js" Id="00006dd88fa6a115ee82465fd3e42c077e775bf3725a">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.createElement" />
+          <AitFeature Name="document.documentMode" />
+          <AitFeature Name="document.getElementById" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="GreekAndCoptic.js" Id="00007036836b4973d278679bbbedafcf61996f1f4a67" />
+      <AitFile ErrorCode="0" Name="SpacingModLetters.js" Id="0000714fa1b75586a40bcaf494c860f688dacfaeceb0" />
+      <AitFile ErrorCode="0" Name="multiline.js" Id="000071ec7bf712e0c8d8b10dd9c89452b57c268b46fb">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.getElementById" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="EnclosedAlphanum.js" Id="0000723e4355b8a8b7b1dab37a949dc24b6a07765c7f" />
+      <AitFile ErrorCode="0" Name="BasicLatin.js" Id="0000726e0aada637db82f9c8e657ed45941ad24feab3" />
+      <AitFile ErrorCode="0" Name="config.js" Id="000074c12f88e8c7c70fafcb7cea33c46c8ff5f197ba">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.createElement" />
+          <AitFeature Name="document.createTextNode" />
+          <AitFeature Name="document.documentMode" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="config.js" Id="0000761cac6ef87e76842ebca1ffca876621b3e4171b" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="000077bf5f5dc8d45a2d4cb189b6c74d308299f1f906" />
+      <AitFile ErrorCode="0" Name="math_delimiters.js" Id="000078805086146409ddda5f82fa34a45af417ba79ea" />
+      <AitFile ErrorCode="0" Name="handle-floats.js" Id="0000797641738e7a74ef8726306cdd493c29c8fc403d" />
+      <AitFile ErrorCode="0" Name="temperature.js" Id="00007a00e6cb99f96a6a3738b0946fe5f079cb643d78" />
+      <AitFile ErrorCode="0" Name="Latin1Supplement.js" Id="00007a571bc8f55ec31e3a55e4bf34d198798ab29081" />
+      <AitFile ErrorCode="0" Name="greek-capital.js" Id="00007b31ffc1520690e0b83e765159aa3a6741998b86" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="00007bb266221bc216f57379c55d925c4ebf80046d94" />
+      <AitFile ErrorCode="0" Name="wgxpath.install.js" Id="00007bf9652f5a937f45235bac069ca66cf94c5874a1" />
+      <AitFile ErrorCode="0" Name="LetterlikeSymbols.js" Id="00007e49fd9374ad5e289cba52eccc012b921e7be914" />
+      <AitFile ErrorCode="0" Name="jax.js" Id="00007f179d98889c7a4cad30f780e04cb27d9990466e">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.createComment" />
+          <AitFeature Name="document.createElement" />
+          <AitFeature Name="document.createTextNode" />
+          <AitFeature Name="document.importNode" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="Main.js" Id="00007f9603588c66eabf2b64555d0626b7afd2818781" />
+      <AitFile ErrorCode="0" Name="Latin1Supplement.js" Id="000080b234314b005be9a6c8b780e6f83637d3f85549" />
+      <AitFile ErrorCode="0" Name="dummyArticle.html" Id="000080f5dfd8ab55bd82b77fe49d3f998a55232db24c" />
+      <AitFile ErrorCode="0" Name="math_arrows.js" Id="0000816cca5ea459ab17d28e0f40e32eafe1762a47fe" />
+      <AitFile ErrorCode="0" Name="verb.js" Id="000081b6141ae7434966d90c294411dc16941c48f545" />
+      <AitFile ErrorCode="0" Name="MiscSymbolsAndArrows.js" Id="000082d2640ee703d9e0818c83368474f5c220bbd429" />
+      <AitFile ErrorCode="0" Name="algebra.js" Id="0000832345dff63d4f1fefe25d55f0f59dce7dfbac76" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="00008512a75107f5208fe322c436b146de6b303ceac0" />
+      <AitFile ErrorCode="0" Name="AMSsymbols.js" Id="0000874445776ac93599bd176eff550a5239e6965172" />
+      <AitFile ErrorCode="0" Name="fontdata-extra.js" Id="000089ab9316d95ee49b26148c5a8681133b5489eca6" />
+      <AitFile ErrorCode="0" Name="GeneralPunctuation.js" Id="000089e38521362b745a172c8534c367192d0378ca44" />
+      <AitFile ErrorCode="0" Name="mhchem.js" Id="00008a885cace6f7d1d30767205ae1c3b4f392e1decb" />
+      <AitFile ErrorCode="0" Name="xzdec_wrapper.js" Id="00008b2cc9eb16ceb2cc73ff044378aa95383a9046bf" />
+      <AitFile ErrorCode="0" Name="bootstrap.min.js" Id="00008ce8782282320432697948d1c62df8691225ab18">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.body.clientWidth" />
+          <AitFeature Name="document.body.scrollTop" />
+          <AitFeature Name="document.body.style.paddingRight" />
+          <AitFeature Name="document.constructor" />
+          <AitFeature Name="document.createElement" />
+          <AitFeature Name="document.documentElement" />
+          <AitFeature Name="document.documentElement.clientHeight" />
+          <AitFeature Name="document.documentElement.getBoundingClientRect" />
+          <AitFeature Name="document.documentElement.scrollHeight" />
+          <AitFeature Name="document.documentElement.scrollTop" />
+          <AitFeature Name="document.getElementById" />
+          <AitFeature Name="window.SVGElement" />
+          <AitFeature Name="window.innerWidth" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="CombDiacritMarks.js" Id="00008d5c5fef5b17196547006a680e1be978a3531eb4" />
+      <AitFile ErrorCode="0" Name="energy.js" Id="00008e7f50a1924076efe5e12624f58dc1bda746c395" />
+      <AitFile ErrorCode="0" Name="math_angles.js" Id="00008f140a0ced29d992bc4645ce72da8baa5e86f975" />
+      <AitFile ErrorCode="0" Name="MathOperators.js" Id="0000907b7e20a3e00077dc63d9b87b9aa4fd669f73fe" />
+      <AitFile ErrorCode="0" Name="MiscMathSymbolsB.js" Id="000091c6f79a25db3472f6a6e49307c0dc163f1fb4f6" />
+      <AitFile ErrorCode="0" Name="newcommand.js" Id="000091d330aae0eb0f2fd8d1de0b7d8fd560ed00d6e5" />
+      <AitFile ErrorCode="0" Name="weight.js" Id="00009283e18761321b90368924f8508445797472ea2b" />
+      <AitFile ErrorCode="0" Name="noUndefined.js" Id="000094d413a2568117a07a76490b63e2d6ec999e0d5f" />
+      <AitFile ErrorCode="0" Name="latin-rest.js" Id="00009586d5010ce9a43fdeac2f80fe1199d3030d9570" />
+      <AitFile ErrorCode="0" Name="FontWarnings.js" Id="0000968b2fa5ece683a2e658cb5b8fd53d8f787ae177">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.body.clientWidth" />
+          <AitFeature Name="document.documentMode" />
+          <AitFeature Name="document.getElementById" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="GeometricShapes.js" Id="000096d6480580f39c46ba20aba3ec6a4e595b456460" />
+      <AitFile ErrorCode="0" Name="PUA.js" Id="000097ec269a769f1f473ae4791fcab9898d189c80e6" />
+      <AitFile ErrorCode="0" Name="GeneralPunctuation.js" Id="000098f2d9a16debf3c338c75c99aacf9bdd284aab23" />
+      <AitFile ErrorCode="0" Name="Other.js" Id="00009912431ff7ced24694521b78c8af19e1cf2d2640" />
+      <AitFile ErrorCode="0" Name="Bold.js" Id="00009b2d8a5dc2cb0666030788cf6c3784a328d100ad" />
+      <AitFile ErrorCode="0" Name="CombDiacritMarks.js" Id="00009b81be42af928698ee960099e33ce4f23117bf5a" />
+      <AitFile ErrorCode="0" Name="transformStyles.js" Id="00009ccb5a6b54e5cd85c5fe1c7acb513c7337374255">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.getElementById" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="math_whitespace.js" Id="00009ceabf1c1ed80f952402fcab273f7df1281f42ca" />
+      <AitFile ErrorCode="0" Name="SupplementalArrowsA.js" Id="00009d10ecdf6268417c41be09a7803edd6b62c0a75b" />
+      <AitFile ErrorCode="0" Name="math_symbols.js" Id="0000a0a72bce9816ce6c40e739b42597a5eb065797bb" />
+      <AitFile ErrorCode="0" Name="cancel.js" Id="0000a28c584836b16ea32081b654d57220755f7a84d7" />
+      <AitFile ErrorCode="0" Name="GeometricShapes.js" Id="0000a3400d401a4fa11dc42ed57cd61d835e2e100f38" />
+      <AitFile ErrorCode="0" Name="other_stars.js" Id="0000a3f76a4ea91b7bdfe29c1a24307f340dda9e0166" />
+      <AitFile ErrorCode="0" Name="speed.js" Id="0000a439a98e97a059e8892d83f78ec27e7b28491193" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="0000a5105a3c413551979e2e4db05add68277c1acfe5" />
+      <AitFile ErrorCode="0" Name="Latin1Supplement.js" Id="0000a7438d3e92056bddffdacb6d883c3f319ba0ebab" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="0000a7b6e9228e728f5e6c13c18bbd6b4bceb57669c4" />
+      <AitFile ErrorCode="0" Name="AMSmath.js" Id="0000a9f6ca7d3342a543ad1be10983b9bf0294a9589d">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.getElementById" />
+          <AitFeature Name="document.getElementsByTagName" />
+          <AitFeature Name="document.location" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="SupplementalArrowsB.js" Id="0000aa665c5828036404553bf6491571ff9da404bf2c" />
+      <AitFile ErrorCode="0" Name="LetterlikeSymbols.js" Id="0000aa776033811abbade0036d2afe32cb9c6e3f545f" />
+      <AitFile ErrorCode="0" Name="AssistiveMML.js" Id="0000ab37adb4fac9c1804c554f0bb4be1fd7272afca2">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.documentMode" />
+          <AitFeature Name="document.getElementById" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="bbox.js" Id="0000ac63a8f4da4d0f7e322cf045980b5a756541aa82" />
+      <AitFile ErrorCode="0" Name="AMS.js" Id="0000ac72c46591954e52943c5038111622581aa6dcee" />
+      <AitFile ErrorCode="0" Name="Dingbats.js" Id="0000ad5e5dcf6403ba8ebcbcb35d91357cc16ab9d1aa" />
+      <AitFile ErrorCode="0" Name="CombDiacritMarks.js" Id="0000ad8e656d2e2e7d225e9c931873eb59304b480de5" />
+      <AitFile ErrorCode="0" Name="Other.js" Id="0000af77c9abb6b29b8a06f2834a429b100f9b1f1c2e" />
+      <AitFile ErrorCode="0" Name="math_non_characters.js" Id="0000af7b7c9cde24ef87c56f5b8eeb8258fb3b25978c" />
+      <AitFile ErrorCode="0" Name="LetterlikeSymbols.js" Id="0000b139b1dd0d73c1c4003cc7af7723bc2e12f6c9ba" />
+      <AitFile ErrorCode="0" Name="MiscMathSymbolsA.js" Id="0000b14809f31dab32b294a8ffc0f42308542ba0ded5" />
+      <AitFile ErrorCode="0" Name="trigonometry.js" Id="0000b7d460cfefd6e7a3405475b05bee681c22fe7fd6" />
+      <AitFile ErrorCode="0" Name="volume.js" Id="0000b843b0030dc432c44a9f7f80ffe7286a2ccec32d" />
+      <AitFile ErrorCode="0" Name="SpacingModLetters.js" Id="0000b88b6f2ba9b9782954d071c7b4037fe5cef3d5ec" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="0000b915f5b1f15825a6b1de56cf2d54610db12142ea" />
+      <AitFile ErrorCode="0" Name="SupplementalArrowsA.js" Id="0000bb296e3c6d6ae61752b82e3ae242a72d5288af79" />
+      <AitFile ErrorCode="0" Name="abstractFilesystemAccess.js" Id="0000bbe1b37b87c542498b2cd2a4ba268b574fa6ec57" />
+      <AitFile ErrorCode="0" Name="explorer.js" Id="0000bd58b6886264369f75c47808a95c7dc8f55c200a">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.body.appendChild" />
+          <AitFeature Name="document.body.removeChild" />
+          <AitFeature Name="document.getElementById" />
+          <AitFeature Name="window.pageXOffset" />
+          <AitFeature Name="window.pageYOffset" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="unicode.js" Id="0000be8aff05a1f731ee8369c129554cffac682f02f7" />
+      <AitFile ErrorCode="0" Name="Latin1Supplement.js" Id="0000bfd5cdf06f50cc09f411614230af3984fc1e6002" />
+      <AitFile ErrorCode="0" Name="SpacingModLetters.js" Id="0000c02756a66b41bbc9073ed40975dfb673f34a6865" />
+      <AitFile ErrorCode="0" Name="GeometricShapes.js" Id="0000c0394529af1051600bcfb493513087177a3c3002" />
+      <AitFile ErrorCode="0" Name="mhchem.js" Id="0000c05199dc55bb7c0a596cf94f9e30dccf028429a6" />
+      <AitFile ErrorCode="0" Name="mathchoice.js" Id="0000c223f7112ac6bc1cfe8f0b9fdda1450c41e82525" />
+      <AitFile ErrorCode="0" Name="math_harpoons.js" Id="0000c2653079a6011c4b36f71544baa6dd4fe0e45d25" />
+      <AitFile ErrorCode="0" Name="SuppMathOperators.js" Id="0000c39eb98edebf37ad4005339cd31a18c605e4642f" />
+      <AitFile ErrorCode="0" Name="collapsible.js" Id="0000c4155e35cca8e6216f195b8d82b4c41dc107ad4e" />
+      <AitFile ErrorCode="0" Name="LatinExtendedA.js" Id="0000c51a54891ec05a5d51b5f0c0909f5ce0343fb4ad" />
+      <AitFile ErrorCode="0" Name="semantic-enrich.js" Id="0000c528441e54e662436f9265badbf746637aefe0e9" />
+      <AitFile ErrorCode="0" Name="mtable.js" Id="0000c708ed8c12f61f78f6533e350184e1ba0a253132" />
+      <AitFile ErrorCode="0" Name="accessibility-menu.js" Id="0000c7dd98dc32e0de0b07a425cdd847852f09c78aae" />
+      <AitFile ErrorCode="0" Name="zimArchive.js" Id="0000c979bfc03d1707e99f5216bcbcd630b6744cc0ef" />
+      <AitFile ErrorCode="0" Name="jquery-3.2.1.slim.js" Id="0000cb010c285057834ecc5ebc77eb597f4caccb2e47">
         <AitCategory Id="WRTJavaScript">
           <AitFeature Name="document.activeElement" />
           <AitFeature Name="document.addEventListener" />
@@ -287,61 +732,124 @@
           <AitFeature Name="window.setTimeout" />
         </AitCategory>
       </AitFile>
-      <AitFile ErrorCode="0" Name="zimDirEntry.js" Id="000059d70bd3c87a0870a07ab814029a6b4ad6778adb" />
-      <AitFile ErrorCode="0" Name="require.js" Id="00005dcff3abc050272828a80dea6919e9bd095c0b1e">
+      <AitFile ErrorCode="0" Name="init.js" Id="0000cba5ea4cf16f15908b4c877777eaaeb7ce0b64fc" />
+      <AitFile ErrorCode="0" Name="MathEvents.js" Id="0000cccbff055f1affa5c63f0abf4ee29e33f80e9706">
         <AitCategory Id="WRTJavaScript">
-          <AitFeature Name="document.createElement" />
-          <AitFeature Name="document.createElementNS" />
-          <AitFeature Name="document.getElementsByTagName" />
-          <AitFeature Name="navigator.platform" />
+          <AitFeature Name="document.compatMode" />
+          <AitFeature Name="document.documentMode" />
+          <AitFeature Name="document.getElementById" />
+          <AitFeature Name="document.selection" />
+          <AitFeature Name="document.selection.empty" />
+          <AitFeature Name="window.getSelection" />
         </AitCategory>
       </AitFile>
-      <AitFile ErrorCode="0" Name="zimArchiveLoader.js" Id="000062f6e39f2228d04b088eadf343121786bc79a297" />
-      <AitFile ErrorCode="0" Name="init.js" Id="0000667606c63aa519472a297bb7102763bc6c2979cd" />
-      <AitFile ErrorCode="0" Name="dummyArticle.html" Id="000080f5dfd8ab55bd82b77fe49d3f998a55232db24c" />
-      <AitFile ErrorCode="0" Name="xzdec_wrapper.js" Id="00008b2cc9eb16ceb2cc73ff044378aa95383a9046bf" />
-      <AitFile ErrorCode="0" Name="bootstrap.min.js" Id="00008ce8782282320432697948d1c62df8691225ab18">
+      <AitFile ErrorCode="0" Name="time.js" Id="0000cd2a4a39ddf3a4b9c4b1e9f334fa55f8f8fee1bc" />
+      <AitFile ErrorCode="0" Name="extpfeil.js" Id="0000cee825c70c99527c87d3099550458786d5602733" />
+      <AitFile ErrorCode="0" Name="boldsymbol.js" Id="0000cf43e0c3612647e567e5d709256e702b9e832cc8" />
+      <AitFile ErrorCode="0" Name="BasicLatin.js" Id="0000d0a5133aa7cb555163ddbe2d16bc1d04bde2e05d" />
+      <AitFile ErrorCode="0" Name="mglyph.js" Id="0000d26120f70c2407b5e62d23e0c6e9fb727ff75239" />
+      <AitFile ErrorCode="0" Name="math_digits.js" Id="0000d4bcca7ab6db5a2f1623a394b668c3c4cc80bf8e" />
+      <AitFile ErrorCode="0" Name="latin-upper-normal.js" Id="0000d53f9397e8d1193ac7ff9600aea9b052c52cd5eb" />
+      <AitFile ErrorCode="0" Name="latin-lower-single-accent.js" Id="0000d591d7fe0231bbf264c8e8335196d1b92d794c98" />
+      <AitFile ErrorCode="0" Name="annotation-xml.js" Id="0000d6650046e86a28c7b339d7925d07308198accb59" />
+      <AitFile ErrorCode="0" Name="greek-symbols.js" Id="0000d7200f5f6aeacea5becaf5cfba27ae07f2cb6fae" />
+      <AitFile ErrorCode="0" Name="TeX-AMS_HTML-full.js" Id="0000d7fa8e7677cf1f7f037863cef42f23097783378b">
         <AitCategory Id="WRTJavaScript">
-          <AitFeature Name="document.body.clientWidth" />
+          <AitFeature Name="document.body.appendChild" />
+          <AitFeature Name="document.body.clientHeight" />
+          <AitFeature Name="document.body.firstChild" />
+          <AitFeature Name="document.body.getBoundingClientRect" />
+          <AitFeature Name="document.body.insertBefore" />
+          <AitFeature Name="document.body.removeChild" />
+          <AitFeature Name="document.body.scrollHeight" />
+          <AitFeature Name="document.body.scrollLeft" />
           <AitFeature Name="document.body.scrollTop" />
-          <AitFeature Name="document.body.style.paddingRight" />
-          <AitFeature Name="document.constructor" />
+          <AitFeature Name="document.body.scrollWidth" />
+          <AitFeature Name="document.compatMode" />
+          <AitFeature Name="document.createComment" />
           <AitFeature Name="document.createElement" />
+          <AitFeature Name="document.createTextNode" />
           <AitFeature Name="document.documentElement" />
           <AitFeature Name="document.documentElement.clientHeight" />
-          <AitFeature Name="document.documentElement.getBoundingClientRect" />
-          <AitFeature Name="document.documentElement.scrollHeight" />
+          <AitFeature Name="document.documentElement.scrollLeft" />
+          <AitFeature Name="document.documentElement.scrollTop" />
+          <AitFeature Name="document.documentElement.scrollWidth" />
+          <AitFeature Name="document.documentMode" />
+          <AitFeature Name="document.getElementById" />
+          <AitFeature Name="document.getElementsByTagName" />
+          <AitFeature Name="document.importNode" />
+          <AitFeature Name="document.location" />
+          <AitFeature Name="document.location.hostname" />
+          <AitFeature Name="document.location.port" />
+          <AitFeature Name="document.location.protocol" />
+          <AitFeature Name="document.location.reload" />
+          <AitFeature Name="document.selection" />
+          <AitFeature Name="document.selection.empty" />
+          <AitFeature Name="document.styleSheets" />
+          <AitFeature Name="navigator.appVersion.match" />
+          <AitFeature Name="navigator.platform.match" />
+          <AitFeature Name="navigator.vendor.match" />
+          <AitFeature Name="window.addEventListener" />
+          <AitFeature Name="window.attachEvent" />
+          <AitFeature Name="window.detachEvent" />
+          <AitFeature Name="window.getComputedStyle" />
+          <AitFeature Name="window.getSelection" />
+          <AitFeature Name="window.innerHeight" />
+          <AitFeature Name="window.pageXOffset" />
+          <AitFeature Name="window.pageYOffset" />
+          <AitFeature Name="window.removeEventListener" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="Main.js" Id="0000d81377e38d9610ff8b25da93d2a7f8e49ea77235" />
+      <AitFile ErrorCode="0" Name="CHTML-preview.js" Id="0000d88b7e8bb52d68b2c79865ba66fa4beef01241c8" />
+      <AitFile ErrorCode="0" Name="mathmaps_ie.js" Id="0000d923185a898f1de95fdac134553affe7f9654fc5" />
+      <AitFile ErrorCode="0" Name="CombDiacritMarks.js" Id="0000d9517e07adc5cacb3086e7f58b032ba65c4ebcf1" />
+      <AitFile ErrorCode="0" Name="maction.js" Id="0000db3fc14c74b149655885410a5f8ecdab2e67b0f8">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.body.scrollLeft" />
+          <AitFeature Name="document.body.scrollTop" />
+          <AitFeature Name="document.documentElement.scrollLeft" />
           <AitFeature Name="document.documentElement.scrollTop" />
           <AitFeature Name="document.getElementById" />
-          <AitFeature Name="window.SVGElement" />
-          <AitFeature Name="window.innerWidth" />
         </AitCategory>
       </AitFile>
-      <AitFile ErrorCode="0" Name="abstractFilesystemAccess.js" Id="0000bbe1b37b87c542498b2cd2a4ba268b574fa6ec57" />
-      <AitFile ErrorCode="0" Name="app.js" Id="0000bf5411d72124f4a13e7ec2c77fb196b10a507b61">
+      <AitFile ErrorCode="0" Name="Other.js" Id="0000db44e5ef2fa2d73d7bd69e3187b8b8b8e16d27a7" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="0000dc1b0694081aff19dd1dc65d620ca393d98461bb" />
+      <AitFile ErrorCode="0" Name="greek-mathfonts.js" Id="0000dccba4703f5202ab353cfa1933dd169850c9269d" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="0000dd23185abf3f83bef7d867af7b01d1c29211bf61" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="0000e1a5983106d3140fe4bc242faaba2e461c2ad5d8" />
+      <AitFile ErrorCode="0" Name="BBBold.js" Id="0000e34b5e6aeedcc38ec92709cc9a693687f265b9a3" />
+      <AitFile ErrorCode="0" Name="Other.js" Id="0000e3c99d734308e87e42d9f3471bf8bc5c29e064c0" />
+      <AitFile ErrorCode="0" Name="jax.js" Id="0000e766ec35a477d895cb5ba6bc96f7a574002a72d3" />
+      <AitFile ErrorCode="0" Name="mediawiki-texvc.js" Id="0000e8b27237f044bd8af82dcb0c7d530e53c1dcad74" />
+      <AitFile ErrorCode="0" Name="Other.js" Id="0000e8c29011b2eee6a3a6af69e78913a39d16bb2582" />
+      <AitFile ErrorCode="0" Name="SpacingModLetters.js" Id="0000e93fdb00c862864927988f35fab22ffe958ee313" />
+      <AitFile ErrorCode="0" Name="MiscTechnical.js" Id="0000e9cd5aeea9b4d18c16be7a4ac60069a6c2518dac" />
+      <AitFile ErrorCode="0" Name="Main.js" Id="0000ea84147de2909cfe0aad9e3148d16ebac83e870d" />
+      <AitFile ErrorCode="0" Name="Other.js" Id="0000ebd9f45d8b07e10a12c072d9bc48200fdf3740ae" />
+      <AitFile ErrorCode="0" Name="MathZoom.js" Id="0000f0f8eaadb9db6cb5b9a8fd4dc6a02ad09b9a9ac1">
         <AitCategory Id="WRTJavaScript">
-          <AitFeature Name="URL.createObjectURL" />
+          <AitFeature Name="document.body.clientHeight" />
+          <AitFeature Name="document.body.removeChild" />
+          <AitFeature Name="document.compatMode" />
+          <AitFeature Name="document.documentElement" />
+          <AitFeature Name="document.documentElement.clientHeight" />
+          <AitFeature Name="document.documentMode" />
           <AitFeature Name="document.getElementById" />
-          <AitFeature Name="navigator.getDeviceStorages" />
-          <AitFeature Name="navigator.serviceWorker.controller.postMessage" />
-          <AitFeature Name="navigator.serviceWorker.register" />
-          <AitFeature Name="navigator.userAgent.indexOf" />
-          <AitFeature Name="window.clearTimeout" />
-          <AitFeature Name="window.history.pushState" />
-          <AitFeature Name="window.onpopstate" />
-          <AitFeature Name="window.setRemoteArchive" />
-          <AitFeature Name="window.setTimeout" />
-          <AitFeature Name="window.timeoutKeyUpPrefix" />
+          <AitFeature Name="window.addEventListener" />
+          <AitFeature Name="window.attachEvent" />
+          <AitFeature Name="window.detachEvent" />
+          <AitFeature Name="window.getComputedStyle" />
+          <AitFeature Name="window.removeEventListener" />
         </AitCategory>
       </AitFile>
-      <AitFile ErrorCode="0" Name="zimArchive.js" Id="0000d3f9ab9efa31d01f8a70b8e26ec455ec2c5f57d5" />
-      <AitFile ErrorCode="0" Name="uiUtil.js" Id="0000eb7a92b17f457693c497b4017759948375d270ef">
-        <AitCategory Id="WRTJavaScript">
-          <AitFeature Name="URL.createObjectURL" />
-          <AitFeature Name="URL.revokeObjectURL" />
-        </AitCategory>
-      </AitFile>
-      <AitFile ErrorCode="0" Name="zimfile.js" Id="0000f290cb88f68de9905bc511c33fcc04ac1bb99219" />
+      <AitFile ErrorCode="0" Name="MathOperators.js" Id="0000f1db967ea0bd42a258ed3b35486d0995fa549ac5" />
+      <AitFile ErrorCode="0" Name="begingroup.js" Id="0000f284fc6c4799accfac7296366f2b74fde42d14ae" />
+      <AitFile ErrorCode="0" Name="index.html" Id="0000f3f354861d583f54588c430f7d694ae9518964da" />
+      <AitFile ErrorCode="0" Name="GreekAndCoptic.js" Id="0000f71d56106853025f59ab32fe6408acac1f0b1718" />
+      <AitFile ErrorCode="0" Name="CombDiacritMarks.js" Id="0000f93e0acd0164ae6644a48d3d267cccbd302c47da" />
+      <AitFile ErrorCode="0" Name="AMScd.js" Id="0000fd2c4112dcbe3742f4903fb9a1b512a255b7e2e1" />
+      <AitFile ErrorCode="0" Name="BasicLatin.js" Id="0000ff4c1d976b60a0b96c902e73ca6efe8f45006223" />
     </AitStaticAnalysis>
   </DEPENDENCY_INFORMATION>
 </REPORT>

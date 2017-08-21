@@ -1,4 +1,4 @@
-
+﻿
 /* Wikipedia Dark Theme v1.0.23 (1/17/2017)
  * https://github.com/StylishThemes/Wikipedia-Dark
  * http://userstyles.org/styles/
@@ -71,6 +71,9 @@ td[style*=background] a:first-child {
     background: #1d3030;
 }
 
+a span {
+    color: lightblue !important;
+}
 
   /* text selection */
   ::selection
@@ -162,8 +165,7 @@ table[style*="background-color:#fff;"], .search-form fieldset, table.ambox, tr[s
 tr[style*="background:#E9E9E9"] > *, table.infobox.hproduct > tbody > tr[style*="background: #F0F0F0;"],
 td[style*="background:lightgray"], td[style*="background:#f0f0f0"], td[style*="background:#eeeeff"], td[style*="background:#e8e8e8"],
 td[style*="background:#ddddff"], td[style*="background:#efefef"], td[style*="background:#e9e9e9"], td[style*="background:#f1f1f1"],
-.oo-ui-buttonElement-button:hover, .tracklist tr[style*="background-color:#f7f7f7"] {
-    background-color: #282828 !important;
+.oo-ui-buttonElement-button:hover, .tracklist tr[style*="background-color:#f7f7f7"], caption[style*="background:#e3e3e3"] { background-color: #282828 !important;
 }
 
   table.wikitable > tr > th, table.wikitable > * > tr > th, div.barbox > table > tbody > tr > th
@@ -321,6 +323,10 @@ td[style*="border-bottom"] {
   .wikitable tr:not([style*="color:black"]) th,
   table.wikitable > tbody > tr[style*="background-color:#F6F6F6"] > td > * {
     color: #fff !important;
+  }
+
+  span[style*="color:black"] {
+      color: whitesmoke !important;
   }
 
   .CategoryTreeEmptyBullet {

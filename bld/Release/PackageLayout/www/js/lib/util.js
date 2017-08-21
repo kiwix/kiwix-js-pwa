@@ -309,6 +309,393 @@ define(['q'], function(q) {
     }
 
     /**
+     * Matches the outermost balanced constructs and their contents
+     * even if they have nested balanced constructs within them
+     * e.g., outer HTML of a pair of opening and closing tags. 
+     * Left and right constructs must not be equal. Backreferences in right are not supported.
+     * Double backslash (\\) any backslash characters, e.g. '\\b'.
+     * If you do not set the global flag ('g'), then only contents of first construct will be returned.
+     * Adapted from http://blog.stevenlevithan.com/archives/javascript-match-recursive-regexp
+     * (c) 2007 Steven Levithan - MIT Licence https://opensource.org/licenses/MIT
+     * 
+     * @param {string} str - String to be searched.
+     * @param {string} left - Regex string of opening pattern to match, e.g. '<table\\b[^>]*>' matches <table> or <table ...>. 
+     * @param {string} right - Regex string of closing pattern to match, e.g. '</table>'. Must not be equal to left.
+     * @param {string} flags - Regex flags, if any, such as 'gi' (= match globally and case insensitive).
+     * @returns {Array} An array of matches.
+     */
+    function matchOuter(str, left, right, flags) {
+        flags = flags || "";
+        var f = flags.replace(/g/g, ""),
+            g = flags.indexOf("g") > -1,
+            l = new RegExp(left, f),
+            //Creates a neutral middle value if left is a well-formed regex for an html tag with attributes
+            mid = /^(<[^\\]+)\\/.test(left) ? left.replace(/^(<[^\\]+)[\S\s]+$/, "$1") + '\\b[^>]*>' : "",
+            x = new RegExp((mid ? mid : left) + "|" + right, "g" + f),
+            a = [],
+            t, s, m;
+        mid = mid ? new RegExp(mid, f) : l;
+
+        do {
+            t = 0;
+            while (m = x.exec(str)) {
+                if ((t?mid:l).test(m[0])) {
+                    if (!t++) s = m.index;
+                } else if (t) {
+                    if (!--t) {
+                        a.push(str.slice(s, x.lastIndex));
+                        if (!g) return a;
+                    }
+                }
+            }
+        } while (t && (x.lastIndex = s));
+
+        return a;
+    }
+
+    /**
+     * Matches the contents of innermost HTML elements even if they are nested inside other elements.
+     * Left and right strings must be opening and closing HTML or XML elements. Backreferences are not supported.
+     * If you do not set the global flag ('g'), then only contents of first match will be returned.
+     * Double backslash (\\) any backslash characters, e.g. '\\b'.
+     * Adapted from http://blog.stevenlevithan.com/archives/match-innermost-html-element
+     * 
+     * @param {string} str - String to be searched.
+     * @param {string} left - Regex string of opening element to match, e.g. '<table\\b[^>]*>', must include '<' and '>'. 
+     * @param {string} right - Regex string of closing element to match, e.g. '</table>'.
+     * @param {string} flags - Regex flags, if any, such as 'gi' (= match globally and case insensitive).
+     * @returns {Array} A RegExp array of matches.
+     */
+    function matchInner(str, left, right, flags) {
+        flags = flags || "";
+        var x = new RegExp(left + '(?:(?=([^<]+))\\1|<(?!' + left.replace(/^</, "") + '))*?' + right, flags);
+        return str.match(x);
+    }
+
+    // Defines an object and functions for searching and highlighting text in a node
+    //
+    // Original JavaScript code by Chirp Internet: www.chirp.com.au
+    // Please acknowledge use of this code by including this header.
+    // For documentation see: http://www.the-art-of-web.com/javascript/search-highlight/
+    function Hilitor(node, tag) {
+        var targetNode = node || document.body;
+        var hiliteTag = tag || "EM";
+        var skipTags = new RegExp("^(?:" + hiliteTag + "|SCRIPT|FORM)$");
+        var colors = ["#ff6", "#a0ffff", "#9f9", "#f99", "#f6f"];
+        var className = "hilitor";
+        var wordColor = [];
+        var colorIdx = 0;
+        var matchRegex = "";
+        //Add any symbols that may prefix a start string and don't match \b (word boundary)
+        var leadingSymbols = "‘'\"“([«¿¡!*-";
+        var openLeft = false;
+        var openRight = false;
+
+        this.setMatchType = function (type) {
+            switch (type) {
+                case "left":
+                    this.openLeft = false;
+                    this.openRight = true;
+                    break;
+
+                case "right":
+                    this.openLeft = true;
+                    this.openRight = false;
+                    break;
+
+                case "open":
+                    this.openLeft = this.openRight = true;
+                    break;
+
+                default:
+                    this.openLeft = this.openRight = false;
+
+            }
+        };
+
+        function addAccents(input) {
+            var retval = input;
+            retval = retval.replace(/([ao])e/ig, "$1");
+            retval = retval.replace(/\\u00[CE][0124]/ig, "a");
+            retval = retval.replace(/\\u00E7/ig, "c");
+            retval = retval.replace(/\\u00E[89AB]|\\u00C[9A]/ig, "e");
+            retval = retval.replace(/\\u00[CE][DEF]/ig, "i");
+            retval = retval.replace(/\\u00[DF]1/ig, "n");
+            retval = retval.replace(/\\u00[FD][346]/ig, "o");
+            retval = retval.replace(/\\u00F[9BC]/ig, "u");
+            retval = retval.replace(/\\u00FF/ig, "y");
+            retval = retval.replace(/\\u00DF/ig, "s");
+            retval = retval.replace(/'/ig, "['’‘]");
+            retval = retval.replace(/c/ig, "[cç]");
+            retval = retval.replace(/e/ig, "[eèéêë]");
+            retval = retval.replace(/a/ig, "([aàâäá]|ae)");
+            retval = retval.replace(/i/ig, "[iîïíì]");
+            retval = retval.replace(/n/ig, "[nñ]");
+            retval = retval.replace(/o/ig, "([oôöó]|oe)");
+            retval = retval.replace(/u/ig, "[uùûüú]");
+            retval = retval.replace(/y/ig, "[yÿ]");
+            retval = retval.replace(/s/ig, "(ss|[sß])");
+            return retval;
+        }
+
+        this.setRegex = function (input) {
+            input = input.replace(/\\([^u]|$)/g, "$1");
+            input = input.replace(/[^\w\\\s']+/g, "").replace(/\s+/g, "|");
+            input = input.replace(/^\||\|$/g, "");
+            input = addAccents(input);
+            if (input) {
+                var re = "(" + input + ")";
+                if (!this.openLeft) re = "(?:^|[\\b\\s" + leadingSymbols + "])" + re;
+                if (!this.openRight) re = re + "(?:[\\b\\s]|$)";
+                matchRegex = new RegExp(re, "i");
+                return true;
+            }
+            return false;
+        };
+
+        this.getRegex = function () {
+            var retval = matchRegex.toString();
+            retval = retval.replace(/(^\/|\(\?:[^\)]+\)|\/i$)/g, "");
+            return retval;
+        };
+
+        this.countFullMatches = function (input) {
+            if (node === undefined || !node) return;
+            var strippedText = node.innerHTML.replace(/<title[^>]*>[\s\S]*<\/title>/i, "");
+            strippedText = node.innerHTML.replace(/<[^>]*>\s*/g, " ");
+            if (!strippedText) return 0;
+            strippedText = strippedText.replace(/(?:&nbsp;|\r?\n|[.,;:?!¿¡-])+/g, " ");
+            strippedText = strippedText.replace(/\s+/g, " ");
+            if (!strippedText.length) return 0;
+            input = input.replace(/[\s.,;:?!¿¡-]+/g, " ");
+            var inputMatcher = new RegExp(input, "ig");
+            var matches = strippedText.match(inputMatcher);
+            if (matches) return matches.length
+                else return 0;
+        }
+
+        this.countPartialMatches = function () {
+            if (node === undefined || !node) return;
+            var matches = matchInner(node.innerHTML, '<' + hiliteTag + '\\b[^>]*class="hilitor"[^>]*>', '</' + hiliteTag + '>', 'gi');
+            if (matches) return matches.length
+                else return 0;
+            //if (matches) {
+            //    var input = document.getElementById('findInArticle').value.replace(/\s*/g, "").toLowerCase();
+            //    var matchedWords = "";
+            //    var buffer = "";
+            //    var countFullMatches = 0;
+            //    for (var i = 0; i < matches.length; i++ ) {
+            //        var instance = matches[i].match(/<[^>]*>([^<]*)</i)[1].toLowerCase();
+            //        buffer += instance;
+            //        var inputMatcher = new RegExp('^' + buffer);
+            //        if (input.match(inputMatcher)) {
+            //            matchedWords += instance;
+            //        } else {
+            //            buffer = "";
+            //            matchedWords = "";
+            //            continue;
+            //        }
+            //        if (~matchedWords.indexOf(input)) {
+            //            countFullMatches++;
+            //            buffer = "";
+            //            matchedWords = "";
+            //        }
+            //    }
+            //    return countFullMatches;
+            //} else return 0;
+        }
+
+        this.scrollFrom = 0;
+
+        this.lastScrollValue = "";
+
+        this.scrollToFullMatch = function (input, scrollFrom) {
+            if (node === undefined || !node) return;
+            if (!input) return;
+            //Normalize spaces
+            input = input.replace(/\s+/g, " ");
+            var inputWords = input.split(" ");
+            var testInput = addAccents(input);
+            var testInput = new RegExp(testInput, "i");
+            var hilitedNodes = node.getElementsByClassName(className);
+            var subNodes = [];
+            var start = scrollFrom || 0;
+            start = start >= hilitedNodes.length ? 0 : start;
+            var end = start + inputWords.length;
+            for (start; start < hilitedNodes.length; start++) {
+                for (var f = start; f < end; f++) {
+                    if (f == hilitedNodes.length) break;
+                    subNodes.push(hilitedNodes[f].innerHTML); 
+                }
+                var nodeText = subNodes.join(" ");
+                if (testInput.test(nodeText)) {
+                    //hilitedNodes[start].scrollIntoView(true);
+                    $("#articleContent").contents().scrollTop($(hilitedNodes[start]).offset().top - window.innerHeight/3);
+                    break;
+                } else {
+                    if (f == hilitedNodes.length && scrollFrom > 0) {
+                        //Restart search from top of page
+                        scrollFrom = 0;
+                        start = 0;
+                    }
+                }
+                subNodes = [];
+                end++;
+            }
+            return start + inputWords.length;
+        }
+
+        // recursively apply word highlighting
+        this.hiliteWords = function (node) {
+            if (node === undefined || !node) return;
+            if (!matchRegex) return;
+            if (skipTags.test(node.nodeName)) return;
+
+            if (node.hasChildNodes()) {
+                for (var i = 0; i < node.childNodes.length; i++)
+                    this.hiliteWords(node.childNodes[i]);
+            }
+            if (node.nodeType == 3) { // NODE_TEXT
+                var nv, regs;
+                if ((nv = node.nodeValue) && (regs = matchRegex.exec(nv))) {
+                    if (!wordColor[regs[1].toLowerCase()]) {
+                        wordColor[regs[1].toLowerCase()] = colors[colorIdx++ % colors.length];
+                    }
+
+                    var match = document.createElement(hiliteTag);
+                    match.appendChild(document.createTextNode(regs[1]));
+                    match.style.setProperty("background-color", wordColor[regs[1].toLowerCase()], "important");
+                    match.style.fontStyle = "inherit";
+                    match.style.color = "#000";
+                    match.className = className;
+
+                    var after;
+                    // In case of leading whitespace or other symbols
+                    var leadR = new RegExp("^[\\s" + leadingSymbols + "]");
+                    if (leadR.test(regs[0])) { 
+                        after = node.splitText(regs.index + 1);
+                    } else {
+                        after = node.splitText(regs.index);
+                    }
+                    after.nodeValue = after.nodeValue.substring(regs[1].length);
+                    node.parentNode.insertBefore(match, after);
+                }
+            };
+        };
+
+        // remove highlighting
+        this.remove = function () {
+            var arr = node.getElementsByClassName(className), el;
+            while (arr.length && (el = arr[0])) {
+                var parent = el.parentNode;
+                parent.replaceChild(el.firstChild, el);
+                parent.normalize();
+            }
+        };
+
+        // start highlighting at target node
+        this.apply = function (input) {
+            this.remove();
+            if (input === undefined || !(input = input.replace(/(^\s+|\s+$)/g, ""))) return;
+            input = convertCharStr2jEsc(input);
+            if (this.setRegex(input)) {
+                this.hiliteWords(targetNode);
+            }
+        };
+
+        // added by Yanosh Kunsh to include utf-8 string comparison
+        function dec2hex4(textString) {
+            var hexequiv = new Array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F");
+            return hexequiv[(textString >> 12) & 0xF] + hexequiv[(textString >> 8) & 0xF] + hexequiv[(textString >> 4) & 0xF] + hexequiv[textString & 0xF];
+        }
+
+        function convertCharStr2jEsc(str, cstyle) {
+            // Converts a string of characters to JavaScript escapes
+            // str: sequence of Unicode characters
+            var highsurrogate = 0;
+            var suppCP;
+            var pad;
+            var n = 0;
+            var outputString = '';
+            for (var i = 0; i < str.length; i++) {
+                var cc = str.charCodeAt(i);
+                if (cc < 0 || cc > 0xFFFF) {
+                    outputString += '!Error in convertCharStr2UTF16: unexpected charCodeAt result, cc=' + cc + '!';
+                }
+                if (highsurrogate != 0) { // this is a supp char, and cc contains the low surrogate
+                    if (0xDC00 <= cc && cc <= 0xDFFF) {
+                        suppCP = 0x10000 + ((highsurrogate - 0xD800) << 10) + (cc - 0xDC00);
+                        if (cstyle) {
+                            pad = suppCP.toString(16);
+                            while (pad.length < 8) {
+                                pad = '0' + pad;
+                            }
+                            outputString += '\\U' + pad;
+                        } else {
+                            suppCP -= 0x10000;
+                            outputString += '\\u' + dec2hex4(0xD800 | (suppCP >> 10)) + '\\u' + dec2hex4(0xDC00 | (suppCP & 0x3FF));
+                        }
+                        highsurrogate = 0;
+                        continue;
+                    } else {
+                        outputString += 'Error in convertCharStr2UTF16: low surrogate expected, cc=' + cc + '!';
+                        highsurrogate = 0;
+                    }
+                }
+                if (0xD800 <= cc && cc <= 0xDBFF) { // start of supplementary character
+                    highsurrogate = cc;
+                } else { // this is a BMP character
+                    switch (cc) {
+                        case 0:
+                            outputString += '\\0';
+                            break;
+                        case 8:
+                            outputString += '\\b';
+                            break;
+                        case 9:
+                            outputString += '\\t';
+                            break;
+                        case 10:
+                            outputString += '\\n';
+                            break;
+                        case 13:
+                            outputString += '\\r';
+                            break;
+                        case 11:
+                            outputString += '\\v';
+                            break;
+                        case 12:
+                            outputString += '\\f';
+                            break;
+                        case 34:
+                            outputString += '\\\"';
+                            break;
+                        case 39:
+                            outputString += '\\\'';
+                            break;
+                        case 92:
+                            outputString += '\\\\';
+                            break;
+                        default:
+                            if (cc > 0x1f && cc < 0x7F) {
+                                outputString += String.fromCharCode(cc);
+                            } else {
+                                pad = cc.toString(16).toUpperCase();
+                                while (pad.length < 4) {
+                                    pad = '0' + pad;
+                                }
+                                outputString += '\\u' + pad;
+                            }
+                    }
+                }
+            }
+            return outputString;
+        }
+
+    }
+
+
+    /**
      * Functions and classes exposed by this module
      */
     return {
@@ -327,6 +714,9 @@ define(['q'], function(q) {
         binarySearch: binarySearch,
         b64toBlob: b64toBlob,
         uintToString: uintToString,
-        leftShift: leftShift
+        leftShift: leftShift,
+        matchOuter: matchOuter,
+        matchInner: matchInner,
+        Hilitor: Hilitor
     };
 });

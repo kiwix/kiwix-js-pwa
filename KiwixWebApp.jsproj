@@ -177,7 +177,6 @@
     <Content Include="www\js\lib\zimfile.js" />
     <Content Include="www\js\MathJax\config\config.js" />
     <Content Include="www\js\MathJax\config\TeX-AMS_HTML-full.js" />
-    <Content Include="www\js\MathJax\deleteMe_latest_js.delete" />
     <Content Include="www\js\MathJax\extensions\a11y\accessibility-menu.js" />
     <Content Include="www\js\MathJax\extensions\a11y\auto-collapse.js" />
     <Content Include="www\js\MathJax\extensions\a11y\collapsible.js" />
