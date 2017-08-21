@@ -42,9 +42,9 @@
 <body role="application">
     <section id="search-article" role="region">
         <header id="top">
-            <nav class="navbar navbar-default" id="navbar" role="navigation">
-                <!-- Brand and toggle get grouped for better mobile display -->
-                <div class="navbar-header">
+            <nav id="navbar" role="navigation">
+                <div class="navbar-header" id="container">
+                <!-- Deprecated... Brand and toggle get grouped for better mobile display 
 
                     <a class="navbar-brand">Kiwix JS 0.x (beta)</a>
                     <ul class="nav navbar-nav">
@@ -56,9 +56,9 @@
                 <!-- Collect the nav links, forms, and other content for toggling
                 <div class="navbar-collapse navbar-ex1-collapse collapse" aria-expanded="false" style="height: 1px;">
 
-                </div><!-- /.navbar-collapse -->
-            </nav>
-
+                </div><!-- /.navbar-collapse --
+            </nav> -->
+<!-- Deprecated...
             <div class="container" id="container">
                 <form id="formArticleSearch">
                     <div class="row" id="row">
@@ -78,15 +78,42 @@
                     </div>
                     <div id="searchingForArticles" class="floating" style="display: none;">
                         <img src="img/spinner.gif" alt="Please wait..." />
-                    </div>
-                </form>
-            </div>
+                    </div> -->
+                    <form id="formArticleSearch">
+                        <div class="" id="row">
+                            <span class="input-group">
+                                <span class="input-group-btn">
+                                    <!-- button id="btnHome" type="button" class="btn btn-default" -->
+                                    <a id="btnHome" title="Home" class="btn btn-default"><img src="./img/icons/kiwix-19.png" /></a>
+                                    <!--/--button-->
+                                </span>
+                                <input type="search" id="prefix" placeholder="Search..."
+                                       class="form-control" />
+                                <span class="input-group-btn">
+                                    <a class="btn btn-default" title="Article Search" id="searchArticles"><span class="glyphicon glyphicon-book"></span></a>
+                                    <a class="btn btn-default" title="Alt-F: Find and highlight text in article..." id="findText"><span class="glyphicon glyphicon-search"></span></a>
+                                    <a class="btn btn-default" title="Random Article" id="btnRandomArticle"><span class="glyphicon glyphicon-random"></span></a>
+                                    <a class="btn btn-default" title="Settings" id="btnConfigure"><span class="glyphicon glyphicon-wrench"></span></a>
+                                    <a class="btn btn-default" title="About" id="btnAbout"><span class="glyphicon glyphicon-info-sign"></span></a>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="" id="row2" style="display:none;">
+                            <span class="input-group">
+                                <input class="form-control" id="findInArticle" style="display:inline;" type="search" placeholder="Highlight in article...">
+                                <span class="input-group-addon" id="matches">Full: 0</span>
+                                <span class="input-group-addon" id="partial">Partial: 0</span>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+            </nav>
         </header>
         <article class="view-content" id="article">
             <div id="about" style="display: none;" class="category-padding">
                 <h2>
                     <img src="img/icons/kiwix-60.png" alt="Kiwix icon" />
-                    Kiwix : offline Wikipedia viewer
+                    Kiwix JS Windows: offline Wikipedia viewer <small>(Version 0.9 Beta)</small>
                 </h2>
                 <br />Official site : <a href="http://www.kiwix.org/" target="_blank">http://www.kiwix.org/</a>
                 <br />
@@ -220,11 +247,11 @@
                             <div id="displaySettingsDiv" class="settings">
                                 <p>Please select the display option:</p>
                                 <p style="text-indent: -22px; margin-left: 20px;">
-                                    <input type="checkbox" name="cssCacheMode" value="local" id="cssCacheModeCheck">
+                                    <input type="checkbox" name="cssCacheMode" id="cssCacheModeCheck">
                                     <b>&nbsp;Use locally cached display styles</b> (<i>recommended</i> for Wikipedia ZIM)
                                 </p>
                                 <p style="text-indent: -22px; margin-left: 20px;">
-                                    <input type="checkbox" name="imageDisplayMode" value="true" id="imageDisplayModeCheck">
+                                    <input type="checkbox" name="imageDisplayMode" id="imageDisplayModeCheck">
                                     <b>&nbsp;Display images if any</b> (if you hide them, click on <span style="background-color:lightblue; color:black;">blue area</span> to display one-by-one)
                                 </p>
                             </div>
@@ -276,12 +303,13 @@
                 <!-- We need to restrict the size of this navbar,
                 to avoid the top button to be in the scrollbar area :
                 on a device, it can trigger a "page down" of the scrollbar -->
-                <div class="restrictedSize">
-                    <a class="btn btn-lg pull-left" id="btnHomeBottom" title="Home"><span class="glyphicon glyphicon-home"></span></a>
-                    <a class="btn btn-lg" id="btnBack" title="Back"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>
-                    <a class="btn btn-lg" id="btnForward" title="Forward"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
-                    <a class="btn btn-lg pull-right" id="btnTop" title="Top" href="#top"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                </div>
+                <!-- div class="restrictedSize" -->
+                        <a class="btn btn-primary btn-sm pull-left" id="btnHomeBottom" title="Home"><span class="glyphicon glyphicon-home"></span></a>
+                        <a class="btn btn-sm" id="btnBack" title="Back"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>&nbsp;&nbsp;
+                        <span id="appStatus"></span>
+                        <a class="btn btn-sm" id="btnForward" title="Forward"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
+                        <a class="btn btn-primary btn-sm pull-right" id="btnTop" title="Top" href="#top" style="margin-right: 1em;"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                <!-- /div -->
             </div>
         </footer>
     </section>

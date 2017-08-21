@@ -1,4 +1,4 @@
-
+﻿
 /* Wikipedia Dark Theme v1.0.23 (1/17/2017)
  * https://github.com/StylishThemes/Wikipedia-Dark
  * http://userstyles.org/styles/
@@ -71,6 +71,9 @@ td[style*=background] a:first-child {
     background: #1d3030;
 }
 
+a span {
+    color: lightblue !important;
+}
 
   /* text selection */
   ::selection
@@ -320,6 +323,10 @@ td[style*="border-bottom"] {
   .wikitable tr:not([style*="color:black"]) th,
   table.wikitable > tbody > tr[style*="background-color:#F6F6F6"] > td > * {
     color: #fff !important;
+  }
+
+  span[style*="color:black"] {
+      color: whitesmoke !important;
   }
 
   .CategoryTreeEmptyBullet {

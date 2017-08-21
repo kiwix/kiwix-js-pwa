@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  /MathJax/jax/element/mml/optable/Arrows.js
  *
  *  Copyright (c) 2009-2017 The MathJax Consortium

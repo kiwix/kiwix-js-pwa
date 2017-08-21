@@ -53,6 +53,26 @@ define([], function() {
         }
     }
 
+    function TableOfContents (articleDoc) {
+        this.doc = articleDoc;
+        this.headings = this.doc.querySelectorAll("h1, h2, h3, h4, h5, h6");
+
+        this.getHeadingObjects = function () {
+            var headings = [];
+            for (var i = 0; i < this.headings.length; i++) { 
+                var element = this.headings[i];
+                var obj = {};
+                obj.id = element.id;
+                obj.id = obj.id ? obj.id : element.innerHTML.match(/\bid\s*=\s*["']\s*([^"']+?)\s*["']/i)[1];
+                obj.index = i;
+                obj.textContent = element.textContent;
+                obj.tagName = element.tagName;
+                headings.push(obj);
+            }
+            return headings;
+        }
+    }
+
     /**
      * Checks whether an element is fully or partially in view
      * This is useful for progressive download of images inside an article
@@ -95,6 +115,7 @@ define([], function() {
     return {
         feedNodeWithBlob: feedNodeWithBlob,
         removeUrlParameters: removeUrlParameters,
+        toc: TableOfContents,
         isElementInView: isElementInView,
         makeReturnLink: makeReturnLink,
         poll: poll,

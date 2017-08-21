@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  /MathJax/jax/output/HTML-CSS/fonts/TeX/Fraktur/Bold/BasicLatin.js
  *
  *  Copyright (c) 2009-2017 The MathJax Consortium
