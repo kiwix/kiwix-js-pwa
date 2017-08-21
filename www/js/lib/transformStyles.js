@@ -1,4 +1,4 @@
-/**
+﻿/**
  * transformCSS.js: Provides transformations in CSS of Wikipedia articles contained in the ZIM file
  * This allows the user to choose the presentation style for the page to be viewed.
  * Currently available are "mobile" and "desktop" display modes.

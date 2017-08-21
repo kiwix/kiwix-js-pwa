@@ -27,61 +27,153 @@
 // http://requirejs.org/docs/api.html#define
 
 define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFilesystemAccess', 'q', 'module', 'transformStyles'],
- function($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess, q, module, transformStyles) {
-     
-    /**
-     * Maximum number of articles to display in a search
-     * @type Integer
-     */
-    var MAX_SEARCH_RESULT_SIZE = module.config().results; //This is set in init.js
+    function ($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess, q, module, transformStyles) {
 
-//TESTING
-    // Get the app's installation folder.
-    //var appFolder = Windows.ApplicationModel.Package.current.installedLocation;
-    var appfolder = "";
-     // Print the folder's path to the Visual Studio Output window.
-    //console.log(appFolder.name, "folder path:", appFolder.path);
-//END TESTING
+        /**
+         * Maximum number of articles to display in a search
+         * @type Integer
+         */
+        var MAX_SEARCH_RESULT_SIZE = module.config().results; //This is set in init.js
 
-     /**
-     * @type ZIMArchive
-     */
-    var selectedArchive = null;
+        //TESTING
+        // Get the app's installation folder.
+        //var appFolder = Windows.ApplicationModel.Package.current.installedLocation;
+        var appfolder = "";
+        // Print the folder's path to the Visual Studio Output window.
+        //console.log(appFolder.name, "folder path:", appFolder.path);
+        //END TESTING
 
-    /**
-     * Resize the IFrame height, so that it fills the whole available height in the window
-     */
-    function resizeIFrame() {
-        var height = $(window).outerHeight()
+        /**
+        * @type ZIMArchive
+        */
+        var selectedArchive = null;
+
+        /**
+         * Resize the IFrame height, so that it fills the whole available height in the window
+         */
+        function resizeIFrame() {
+            var height = $(window).outerHeight()
                 - $("#top").outerHeight(true)
                 - $("#articleListWithHeader").outerHeight(true)
                 // TODO : this 5 should be dynamically computed, and not hard-coded
                 - 5;
-        $(".articleIFrame").css("height", height + "px");
-    }
-    $(document).ready(resizeIFrame);
-    $(window).resize(resizeIFrame);
-    
-    // Define behavior of HTML elements
-    $('#searchArticles').on('click', function(e) {
-        pushBrowserHistoryState(null, $('#prefix').val());
-        searchDirEntriesFromPrefix($('#prefix').val());
-        $("#welcomeText").hide();
-        $("#readingArticle").hide();
-        $("#articleContent").hide();
-        if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
-            $('#navbarToggle').click();
+            $(".articleIFrame").css("height", height + "px");
         }
-    });
-    $('#formArticleSearch').on('submit', function(e) {
-        document.getElementById("searchArticles").click();
-        return false;
-    });
-    $('#prefix').on('keyup', function(e) {
-        if (selectedArchive !== null && selectedArchive.isReady()) {
-            onKeyUpPrefix(e);
+        $(document).ready(resizeIFrame);
+        $(window).resize(resizeIFrame);
+
+        // Define behavior of HTML elements
+        $('#searchArticles').on('click', function (e) {
+            pushBrowserHistoryState(null, $('#prefix').val());
+            searchDirEntriesFromPrefix($('#prefix').val());
+            $("#welcomeText").hide();
+            $("#readingArticle").hide();
+            $("#articleContent").hide();
+            if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
+                $('#navbarToggle').click();
+            }
+        });
+        $('#formArticleSearch').on('submit', function (e) {
+            document.getElementById("searchArticles").click();
+            return false;
+        });
+        $('#prefix').on('keyup', function (e) {
+            if (selectedArchive !== null && selectedArchive.isReady()) {
+                onKeyUpPrefix(e);
+            }
+        });
+
+        //Add keyboard shortcuts
+        $(window).on('keyup', function (e) {
+            var e = e || window.event;
+            //Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
+            if ((e.ctrlKey || e.altKey) && e.which == 70) {
+                $('#findText').click();
+                return false;
+            }
+        });
+        //Also have to listen to iframe key presses
+        document.getElementById('articleContent').contentWindow.addEventListener('keyup', function (e) {
+            //Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
+            if ((e.ctrlKey || e.altKey) && e.which == 70) {
+                $('#findText').click();
+                return false;
+            }
+        }), false;
+
+        var localSearch = {};
+
+        function clearArticleSearch() {
+            document.getElementById('findInArticle').value = "";
+            if (localSearch.remove) localSearch.remove();
+            document.getElementById('matches').innerHTML = "Full: 0";
+            document.getElementById('partial').innerHTML = "Partial: 0";
+            document.getElementById('row2').style.display = "none";
+            document.getElementById('findText').classList.remove("active");
         }
-    });
+
+        $('#findText').on('click', function (e) {
+            var innerDocument = window.frames[0].frameElement.contentDocument || window.frames[0].frameElement.contentWindow.document;
+            if (innerDocument.body.innerHTML.length < 10) return;
+            innerDocument = innerDocument.body;
+            if (!innerDocument) return;
+            var searchDiv = document.getElementById('row2');
+            var findInArticle = document.getElementById('findInArticle');
+            if (searchDiv.style.display == 'none') {
+                searchDiv.style.display = "inline";
+                document.getElementById('findText').classList.add("active");
+                findInArticle.focus();
+            } else {
+                clearArticleSearch();
+            }
+            if (localSearch.remove) {
+                localSearch.remove();
+            } else if (searchDiv.style.display == "inline") {
+                localSearch = new util.Hilitor(innerDocument);
+                //TODO: Check right-to-left language support...
+                localSearch.setMatchType('left');
+                var timer = null;
+                findInArticle.addEventListener('keyup', function (e) {
+                    //Ensure timeout doesn't occur if another key has been pressed within time window
+                    clearTimeout(timer);
+                    //If user pressed Alt-F or Ctrl-F, exit
+                    if ((e.altKey || e.ctrlKey) && e.which == 70) return;
+                    var val = this.value;
+                    //If user pressed enter / return key
+                    if (val && e.which == 13) {
+                        localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
+                        return;
+                    }
+                    //If value hasn't changed, exit
+                    if (val == localSearch.lastScrollValue) return;
+                    //Ensure nothing happens if only one value has been entered (not specific enough), but ensure timeout is set 
+                    //if no value has been entered (clears highlighting if user deletes all values in search field)
+                    if (~(val.length - 2)) {
+                        localSearch.scrollFrom = 0;
+                        localSearch.lastScrollValue = val;
+                        timer = setTimeout(function () {
+                            localSearch.apply(val);
+                            if (val.length) {
+                                var fullTotal = localSearch.countFullMatches(val);
+                                var partialTotal = localSearch.countPartialMatches();
+                                fullTotal = fullTotal > partialTotal ? partialTotal : fullTotal;
+                                document.getElementById('matches').innerHTML = '<a id="scrollLink" href="#">Full: ' + fullTotal + '</a>'; 
+                                document.getElementById('partial').innerHTML = "Partial: " + partialTotal;
+                                document.getElementById('scrollLink').addEventListener('click', function () {
+                                    localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
+                                });
+                                //Auto-scroll: TODO - consider making this an option
+                                localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
+                            } else {
+                                document.getElementById('matches').innerHTML = "Full: 0";
+                                document.getElementById('partial').innerHTML = "Partial: 0";
+                            } 
+                        }, 500);
+                    }
+                }, false);
+            }
+        });
+
     $("#btnRandomArticle").on("click", function(e) {
         $('#prefix').val("");
         goToRandomArticle();
@@ -159,7 +251,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         // Show the selected content in the page
         $('#about').hide();
         $('#configuration').show();
-        $('#formArticleSearch').hide();
+        //$('#formArticleSearch').hide();
         $("#welcomeText").hide();
         $('#articleList').hide();
         $('#articleListHeaderMessage').hide();
@@ -181,7 +273,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         // Show the selected content in the page
         $('#about').show();
         $('#configuration').hide();
-        $('#formArticleSearch').hide();
+        //$('#formArticleSearch').hide();
         $("#welcomeText").hide();
         $('#articleList').hide();
         $('#articleListHeaderMessage').hide();
@@ -204,13 +296,20 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
     });
     $('input:checkbox[name=cssCacheMode]').on('change', function (e) {
         params['cssCache'] = this.checked ? true : false;
+        cookies.setItem('cssCache', params['cssCache'], Infinity);
     });
     $('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
         params['imageDisplay'] = this.checked ? true : false;
+        cookies.setItem('imageDisplay', params['imageDisplay'], Infinity);
     });
     $('input:checkbox[name=cssUIDarkTheme]').on('change', function (e) {
         params['cssUITheme'] = this.checked ? 'dark' : 'light';
-        if (this.checked) {
+        cookies.setItem('cssUITheme', params['cssUITheme'], Infinity);
+        cssUIThemeSet(params['cssUITheme']);
+    });
+
+    function cssUIThemeSet(value) {
+        if (value == 'dark') {
             document.getElementById('search-article').classList.add("dark");
             document.getElementById('article').classList.add("dark");
             document.getElementById('navbar').classList.remove("navbar-default");
@@ -218,12 +317,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             document.getElementById('archiveFiles').classList.add("dark");
             document.getElementById('archiveFiles').classList.remove("btn");
             document.getElementById('container').classList.add("dark");
-            document.getElementById('row').classList.add("dark");
+            document.getElementById('findInArticle').classList.add("dark");
             document.getElementById('prefix').classList.add("dark");
             var elements = document.querySelectorAll(".settings");
             for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid darkgray"; } 
         }
-        if (!this.checked) {
+        if (value == 'light') {
             document.getElementById('search-article').classList.remove("dark");
             document.getElementById('article').classList.remove("dark");
             document.getElementById('navbar').classList.add("navbar-default");
@@ -231,32 +330,31 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             document.getElementById('archiveFiles').classList.remove("dark");
             document.getElementById('archiveFiles').classList.add("btn");
             document.getElementById('container').classList.remove("dark");
-            document.getElementById('row').classList.remove("dark");
+            document.getElementById('findInArticle').classList.remove("dark");
             document.getElementById('prefix').classList.remove("dark");
             var elements = document.querySelectorAll(".settings");
             for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid black"; }
         }
-    });
+    }
+
     $('input:checkbox[name=cssWikiDarkTheme]').on('change', function (e) {
         params['cssTheme'] = this.checked ? 'dark' : 'light';
-        if (this.checked) {
-            document.getElementById('footer').classList.add("darkfooter");
-        }
-        if (!this.checked) {
-            document.getElementById('footer').classList.remove("darkfooter");
-        }
+        cookies.setItem('cssTheme', params['cssTheme'], Infinity);
+        if (this.checked) document.getElementById('footer').classList.add("darkfooter");
+        if (!this.checked) document.getElementById('footer').classList.remove("darkfooter");
     });
     $('input:radio[name=cssInjectionMode]').on('click', function (e) {
         params['cssSource'] = this.value;
-        //document.getElementById('returntoArticle_top').innerHTML = "";
-        //document.getElementById('returntoArticle_bottom').innerHTML = "";
+        cookies.setItem('cssSource', params['cssSource'], Infinity);
     });
     $(document).ready(function (e) {
         // Set checkbox for cssCache and radio for cssSource
         document.getElementById('cssCacheModeCheck').checked = params['cssCache'];
         document.getElementById('imageDisplayModeCheck').checked = params['imageDisplay'];
         document.getElementById('cssWikiDarkThemeCheck').checked = params['cssTheme'] == 'dark' ? true : false;
+        if (params['cssTheme'] == "dark") document.getElementById('footer').classList.add("darkfooter");
         document.getElementById('cssUIDarkThemeCheck').checked = params['cssUITheme'] == 'dark' ? true : false;
+        if (params['cssUITheme'] == 'dark') cssUIThemeSet('dark');
         $('input:radio[name=cssInjectionMode]').filter('[value="' + params['cssSource'] + '"]').prop('checked', true);
     });
 
@@ -898,6 +996,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         console.log("Loading stylesheets...");
         console.time("Time to First Paint");
 
+        $('#articleList').hide();
+
         //Fast-replace img src with data-kiwixsrc and hide image [kiwix-js #272]
         htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)src(\s*=)/ig, "$1data-kiwixsrc$2");
         if (!params['imageDisplay']) {
@@ -1016,6 +1116,31 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         }
     //End of preload stylesheets code
 
+        function setupTableOfContents() {
+            var iframe = window.frames[0].frameElement;
+            var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+            var tableOfContents = new uiUtil.toc(innerDoc);
+            var headings = tableOfContents.getHeadingObjects();
+            var dropup = '<span class="dropup"><button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Contents <span class="caret"></span> </button> <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">';
+            headings.forEach(function (heading) {
+                if (/^h1$/i.test(heading.tagName))
+                    dropup = dropup + '<li><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                else if (/^h2$/i.test(heading.tagName))
+                    dropup = dropup + '<li class="small"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                //else
+                //Currently skip smaller headings until toc scrolling works
+                //dropup = ...
+            });
+            dropup = dropup + '</ul></span>'
+            $("#appStatus").removeClass().html(dropup);
+            $("#appStatus").find("a").each(function() {
+                $(this).on("click", function () {
+                    window.frames[0].frameElement.contentWindow.location.hash = this.dataset.headingId;
+                });
+            });
+        }
+
+
         function injectHTML() {
             //Void progress message
             uiUtil.clear(); //Void progress messages
@@ -1024,6 +1149,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             // Scroll the iframe to its top
             $("#articleContent").contents().scrollTop(0);
             $('#articleContent').contents().find('body').html(htmlArticle);
+
+            setupTableOfContents();
 
             uiUtil.makeReturnLink(dirEntry); //[kiwix-js #127]
 
@@ -1089,6 +1216,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                             url = url.substring(1);
                         }
                         $(this).on('click', function (e) {
+                            clearArticleSearch();
                             var decodedURL = decodeURIComponent(url);
                             pushBrowserHistoryState(decodedURL);
                             goToArticle(decodedURL);
@@ -1097,6 +1225,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                     }
                 });
 
+                //FFOS doesn't calculate the iframe window height correctly for newly loaded articles (at least in the simulator)
+                //This prevents transparency from working in the bottom toolbar. Setting the style
+                //for iframe height + 30 fixes the issue, and has no effect on other browsers
+                var ele = document.getElementById('articleContent');
+                var y = ~~ele.style.height.match(/[\d.]+/)[0];
+                y += 30;
+                ele.style.height = y + "px";
+
                 loadImages();
                 //loadJavascript(); //Disabled for now, since it does nothing
             }  
@@ -1104,6 +1240,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         } //End of injectHTML()
 
     } //End of displayArticleInForm()
+
 
     /** This is the main image loading function.
      * Contains four sub functions: prepareImages, triageImages, displaySlices, loadImageSlice
@@ -1503,250 +1640,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 lastVisible: lastVisible
             };
         }
-
-
-
-    /*** Image functions below this comment are deprecated ****
-
-        function prePrepImages() {
-            //var imageURLs = htmlContent.match(/kiwixsrc\s*=\s*["'](?:\.\.\/|\/)+(I\/)/ig);
-            var imageDisplay = params['imageDisplay'];
-            var images = $('#articleContent').contents().find('body').find('img');
-            var countImages = 0;
-            //DEV: firstSliceSize determines maximum number of images loaded above the fold (should be <= 10)
-            //Smaller numbers give faster subjective experience, but too small may delay load of visible images above the fold
-            var firstSliceSize = 7;
-            //DEV: sliceSize determines minimum batch size of background image extraction for remaining images
-            //Larger numbers marginally increase speed of background extraction but take longer for directory lookup and conflict with user scrolling
-            var sliceSize = 10;
-            var svgSliceSize = 5;
-            var imageSlice = {};
-            var slice$x = 0;
-            var slice$y = 0;
-            var svg = 0;
-            var windowScroll = false;
-
-            //If there are images in the article, set up a listener function for onscroll event
-            if (images.length && imageDisplay) {
-                if (images.length > firstSliceSize) {
-                    $("#articleContent").contents().on("scroll", function () {
-                        //Ensure event doesn't fire multiple times and waits for previous slice to be retrieved
-                        if (windowScroll && countImages == slice$y) {
-                            windowScroll = false; //Indicate we no longer need to delay execution because user has scrolled
-                            sliceImages();
-                        }
-                    });
-                }
-
-                sliceImages();
-
-            } else { //User did not request images, so give option of loading one by one {kiwix-js #173]
-                if (images.length) {
-                    images.each(function () {
-                        // Attach an onclick function to load the image
-                        var img = $(this);
-                        img.on('click', function () {
-                            this.height = this.getAttribute('data-kiwixheight');
-                            this.style.background = "";
-                            //loadOneImage(this.getAttribute('data-kiwixsrc'), function (url) {
-                            //    img[0].src = url;
-                            //}); //Both the blob method and the src="data:" method work - if changing, edit loadOneImage() also
-                            loadOneImage(this.getAttribute('data-kiwixsrc'), function (mimetype, data) {
-                                img[0].src = "data:" + mimetype + ";base64," + btoa(data);
-                            });
-                        });
-                    });
-                }
-            }
-            //TESTING
-            if (!images.length) {
-                console.log("No images in document");
-                console.timeEnd("Time to Document Ready");
-            } else {
-                if (!imageDisplay) {
-                    console.log("Image retrieval disabled by user");
-                    console.timeEnd("Time to Document Ready");
-                }
-            }
-            //END TESTING
-        }
-
-        /**
-        * Loads images in batches or "slices" according to firstSliceSize and sliceSize parameters set above
-        * Slices after firstSlice are delayed until the user scrolls the iframe window
-        **
-        function sliceImages() {
-            //Chrome seems to lose the number of images between loops, so we repeat this statement:
-            images = $('#articleContent').contents().find('body').find('img');
-
-            //If starting loop or slice batch is complete AND we still need images for article
-            if ((countImages >= slice$y) && (countImages < images.length)) {
-                if (!windowScroll) { //If we haven't requested the next loop to be on scroll
-                    //Filter out images we've already extracted
-                    for (var i = 0; i < images.length; i++) {
-                        if (images[i].src) {
-                            images.splice(i, 1);
-                            countImages--; //Don't count already displayed images
-                        }
-                    }
-                    //TESTING: Reset everything! NOPE - causes infinite loop
-                    //countImages = 0;
-                    //slice$x = 0;
-                    //slice$y = 0;
-
-                    //slice$x = slice$y; //Not needed, because we'll always start again now
-                    var remainder = (images.length - firstSliceSize) % (sliceSize);
-                    slice$y = slice$y > 0 ? slice$y + sliceSize : slice$y + firstSliceSize; //Increment by standard or initial sliceSize 
-                    //If all images can be obtained in one batch, set slice$y to number of images
-                    slice$y = slice$y > images.length ? images.length : slice$y;
-                    //Last batch should be increased to include any remainder
-                    if (slice$x > 0 && (slice$y + remainder === images.length)) { slice$y += remainder; }
-
-                    //Find visible images
-                    var firstVisible, lastVisible;
-                    for (var n = 0; n < images.length; n++) {
-                        var visibility = uiUtil.isElementInView(images[n], false);
-                        if (visibility) {
-                            firstVisible = firstVisible >= 0 ? firstVisible : n;
-                            lastVisible = n;
-                        } else {
-                            if (firstVisible >= 0 && lastVisible >= 0) {
-                                console.log("** First visible image is #" + firstVisible + "\n" +
-                                    "** Last visible image is #" + lastVisible);
-                                break;
-                            }
-                        }
-                    }
-
-                    //Extend slice$y if it doesn't cover all visible images
-                    slice$y = slice$y < lastVisible ? lastVisible : slice$y;
-
-                    console.log("Requesting images # " + (slice$x + 1) + " to " + slice$y + "...");
-                    imageSlice = images.slice(slice$x, slice$y);
-
-                     // Check to see if the slice contains svg images...
-                    if (imageSlice.length > svgSliceSize) {
-                        for (var t = 0; t < imageSlice.length; t++) {
-                            if (/\.svg$/i.test(imageSlice[t].getAttribute('data-kiwixsrc'))) {
-                                var tempimageSlice = imageSlice.slice(0, svgSliceSize);
-                                slice$y = slice$x + svgSliceSize //Reduce sliceSize to prevent app from hanging
-                                imageSlice = tempimageSlice;
-                                //Increment svg loop detector unless we reach end of visible images
-                                svg = svg < (Math.ceil((lastVisible - slice$y)/svgSliceSize)) ? svg + 1 : 0; //Resetting svg to 0 will cause wait on scroll on next sliceImages loop
-                                console.log("SVG images detected in slice, reducing image sliceSize...");
-                                break;
-                            }
-                        }
-                    }
-
-                    serializeImages();
-
-                } else {
-                    console.log("** Waiting for user to scroll the window...");
-                }
-            } else { //All images requested, so Unload the scroll listener
-                if (images && images.length > firstSliceSize) {
-                    if (countImages == images.length) {
-                        console.log("Unloading scroll listener");
-                        $("#articleContent").contents().off('scroll');
-                    }
-                }
-            }
-        }
-
-        function serializeImages() {
-            $(imageSlice).each(function () {
-                var image = $(this);
-                //TESTING: If the image isn't in the viewport, abandon it
-                if (!uiUtil.isElementInView(image[0], false)) {
-                    //countImages++;
-                    slice$y--;
-                    windowScroll = countImages == slice$y ? true : windowScroll;
-                    sliceImages();
-                    return;
-                }
-
-                /*TEST
-                var isInView = uiUtil.isElementInView(image[0], false);
-                console.log("The next image is " + (isInView ? "" : "not ") + "visible");
-                //*
-
-                // It's a standard image contained in the ZIM file
-                // We try to find its name (from an absolute or relative URL)
-                var imageMatch = image.attr('data-kiwixsrc').match(regexpImageUrl); //kiwix-js #272
-                if (imageMatch) {
-                    var title = decodeURIComponent(imageMatch[1]);
-                    selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                        selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content, namespace, url) {
-                            // TODO : use the complete MIME-type of the image (as read from the ZIM file)
-                            var mimetype = url.match(/\.(\w{2,4})$/);
-                            mimetype = mimetype ? "image/" + mimetype[1].toLowerCase() : "image";
-                            mimetype = /\.jpg$/i.test(url) ? "image/jpeg" : mimetype;
-                            mimetype = /\.tif$/i.test(url) ? "image/tiff" : mimetype;
-                            mimetype = /\.ico$/i.test(url) ? "image/x-icon" : mimetype;
-                            mimetype = /\.svg$/i.test(url) ? "image/svg+xml" : mimetype;
-                            uiUtil.feedNodeWithBlob(image, 'src', content, mimetype);
-                            //Alternative way of loading images below also works
-                            //var data = util.uintToString(content);
-                            //image[0].src = "data:" + mimetype + ";base64," + btoa(data);
-                            countImages++
-
-                        //TESTING
-                            console.log("Extracted image " + (countImages) + " of " + images.length + "...");
-                            if (countImages == firstSliceSize || (countImages <= firstSliceSize && countImages == images.length)) {
-                                console.log("** First image slice extracted: document ready **");
-                                console.timeEnd("Time to Document Ready");
-                                console.log("");
-                            }
-                            if (countImages == images.length) {
-                                console.log("** All images extracted **");
-                            }
-                        //END TESTING
-
-                            if (countImages == slice$y) {
-                                //Once slice is complete, delay the loop unless there are SVG images in slice
-                                windowScroll = svg ? false : true; //If svg is 0, waits for user scroll on next sliceImages loop
-                            }   //Explanation: extraction of svg images is slow and memory-hungry, so keep going while detecting SVG, in slices of 5 (see code above)
-                            sliceImages();
-                        });
-                    }).fail(function (e) {
-                        console.error("Could not find DirEntry for image:" + title, e);
-                        countImages++;
-                        if (countImages == slice$y) {
-                            windowScroll = true; //Once slice is complete, delay the loop
-                        }
-                        sliceImages();
-                    });
-                }
-            });
-        }
-
-        function loadOneImage(image, callback) {
-            // It's a standard image contained in the ZIM file
-            // We try to find its name (from an absolute or relative URL)
-            var imageMatch = image.match(regexpImageUrl);
-            if (imageMatch) {
-                var title = decodeURIComponent(imageMatch[1]);
-                selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                    selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content, namespace, url) {
-                        var mimetype = url.match(/\.(\w{2,4})$/);
-                        mimetype = mimetype ? "image/" + mimetype[1].toLowerCase() : "image";
-                        mimetype = /\.jpg$/i.test(url) ? "image/jpeg" : mimetype;
-                        mimetype = /\.tif$/i.test(url) ? "image/tiff" : mimetype;
-                        mimetype = /\.ico$/i.test(url) ? "image/x-icon" : mimetype;
-                        mimetype = /\.svg$/i.test(url) ? "image/svg+xml" : mimetype;
-                        //var imageBlob = new Blob([content], { type: mimetype }, { oneTimeOnly: true });
-                        //var newURL = URL.createObjectURL(imageBlob);
-                        var data = util.uintToString(content);
-                        //callback(newURL); //If using blob method, no need to send mimetype
-                        callback(mimetype, data);
-                    });
-                }).fail(function (e) {
-                    console.error("Could not find DirEntry for image:" + title, e);
-                    callback("");
-                });
-            }
-        } */
 
     } //End of loadImages()
 

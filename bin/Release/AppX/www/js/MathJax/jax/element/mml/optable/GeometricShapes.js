@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  /MathJax/jax/element/mml/optable/GeometricShapes.js
  *
  *  Copyright (c) 2009-2017 The MathJax Consortium

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  /MathJax/config/TeX-AMS_HTML-full.js
  *  
  *  Copyright (c) 2010-2017 The MathJax Consortium

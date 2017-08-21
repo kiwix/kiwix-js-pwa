@@ -387,7 +387,7 @@ define(['q'], function(q) {
         var colorIdx = 0;
         var matchRegex = "";
         //Add any symbols that may prefix a start string and don't match \b (word boundary)
-        var leadingSymbols = "’‘¿¡-";
+        var leadingSymbols = "‘'\"“([«¿¡!*-";
         var openLeft = false;
         var openRight = false;
 
@@ -505,7 +505,11 @@ define(['q'], function(q) {
             //} else return 0;
         }
 
-        this.scrollToFullMatch = function (input) {
+        this.scrollFrom = 0;
+
+        this.lastScrollValue = "";
+
+        this.scrollToFullMatch = function (input, scrollFrom) {
             if (node === undefined || !node) return;
             if (!input) return;
             //Normalize spaces
@@ -515,22 +519,30 @@ define(['q'], function(q) {
             var testInput = new RegExp(testInput, "i");
             var hilitedNodes = node.getElementsByClassName(className);
             var subNodes = [];
-            var start;
-            var end = inputWords.length;
-            for (start = 0; start < hilitedNodes.length; start++) {
+            var start = scrollFrom || 0;
+            start = start >= hilitedNodes.length ? 0 : start;
+            var end = start + inputWords.length;
+            for (start; start < hilitedNodes.length; start++) {
                 for (var f = start; f < end; f++) {
-                    if (f > hilitedNodes.length - 1) break;
+                    if (f == hilitedNodes.length) break;
                     subNodes.push(hilitedNodes[f].innerHTML); 
                 }
                 var nodeText = subNodes.join(" ");
                 if (testInput.test(nodeText)) {
                     //hilitedNodes[start].scrollIntoView(true);
-                    $("#articleContent").contents().scrollTop($(hilitedNodes[start]).offset().top);
+                    $("#articleContent").contents().scrollTop($(hilitedNodes[start]).offset().top - window.innerHeight/3);
                     break;
+                } else {
+                    if (f == hilitedNodes.length && scrollFrom > 0) {
+                        //Restart search from top of page
+                        scrollFrom = 0;
+                        start = 0;
+                    }
                 }
                 subNodes = [];
                 end++;
             }
+            return start + inputWords.length;
         }
 
         // recursively apply word highlighting

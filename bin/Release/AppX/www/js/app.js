@@ -83,15 +83,35 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             }
         });
 
-        var localSearch = {};
         //Add keyboard shortcuts
         $(window).on('keyup', function (e) {
-            //Alt-F for search in article
-            if (e.altKey && e.which == 70) {
+            var e = e || window.event;
+            //Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
+            if ((e.ctrlKey || e.altKey) && e.which == 70) {
                 $('#findText').click();
                 return false;
             }
         });
+        //Also have to listen to iframe key presses
+        document.getElementById('articleContent').contentWindow.addEventListener('keyup', function (e) {
+            //Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
+            if ((e.ctrlKey || e.altKey) && e.which == 70) {
+                $('#findText').click();
+                return false;
+            }
+        }), false;
+
+        var localSearch = {};
+
+        function clearArticleSearch() {
+            document.getElementById('findInArticle').value = "";
+            if (localSearch.remove) localSearch.remove();
+            document.getElementById('matches').innerHTML = "Full: 0";
+            document.getElementById('partial').innerHTML = "Partial: 0";
+            document.getElementById('row2').style.display = "none";
+            document.getElementById('findText').classList.remove("active");
+        }
+
         $('#findText').on('click', function (e) {
             var innerDocument = window.frames[0].frameElement.contentDocument || window.frames[0].frameElement.contentWindow.document;
             if (innerDocument.body.innerHTML.length < 10) return;
@@ -104,11 +124,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 document.getElementById('findText').classList.add("active");
                 findInArticle.focus();
             } else {
-                findInArticle.value = "";
-                document.getElementById('matches').innerHTML = "Full: 0";
-                document.getElementById('partial').innerHTML = "Partial: 0";
-                searchDiv.style.display = "none";
-                document.getElementById('findText').classList.remove("active");
+                clearArticleSearch();
             }
             if (localSearch.remove) {
                 localSearch.remove();
@@ -120,16 +136,21 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 findInArticle.addEventListener('keyup', function (e) {
                     //Ensure timeout doesn't occur if another key has been pressed within time window
                     clearTimeout(timer);
-                    //If user pressed Alt-F, exit
-                    if (e.altKey && e.which == 70) return;
+                    //If user pressed Alt-F or Ctrl-F, exit
+                    if ((e.altKey || e.ctrlKey) && e.which == 70) return;
                     var val = this.value;
+                    //If user pressed enter / return key
                     if (val && e.which == 13) {
-                        localSearch.scrollToFullMatch(val);
+                        localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
                         return;
                     }
+                    //If value hasn't changed, exit
+                    if (val == localSearch.lastScrollValue) return;
                     //Ensure nothing happens if only one value has been entered (not specific enough), but ensure timeout is set 
                     //if no value has been entered (clears highlighting if user deletes all values in search field)
                     if (~(val.length - 2)) {
+                        localSearch.scrollFrom = 0;
+                        localSearch.lastScrollValue = val;
                         timer = setTimeout(function () {
                             localSearch.apply(val);
                             if (val.length) {
@@ -139,9 +160,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                                 document.getElementById('matches').innerHTML = '<a id="scrollLink" href="#">Full: ' + fullTotal + '</a>'; 
                                 document.getElementById('partial').innerHTML = "Partial: " + partialTotal;
                                 document.getElementById('scrollLink').addEventListener('click', function () {
-                                    localSearch.scrollToFullMatch(val);
+                                    localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
                                 });
-                                //localSearch.scrollToFullMatch(val);
+                                //Auto-scroll: TODO - consider making this an option
+                                localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
                             } else {
                                 document.getElementById('matches').innerHTML = "Full: 0";
                                 document.getElementById('partial').innerHTML = "Partial: 0";
@@ -1194,6 +1216,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                             url = url.substring(1);
                         }
                         $(this).on('click', function (e) {
+                            clearArticleSearch();
                             var decodedURL = decodeURIComponent(url);
                             pushBrowserHistoryState(decodedURL);
                             goToArticle(decodedURL);

@@ -21,34 +21,43 @@
  */
 
 [role=region] {
-  top: 0; right: 0; bottom: 0; left: 0;
- 
-  position: fixed;
-  overflow-x: hidden;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    overflow-x: hidden;
 }
-[role=region] > header {
-    /*margin: .5rem 0 1rem 0;*/
-    margin: 0 0 1rem 0;
-    text-align: center;
-}
-[role=region] > header > h1 {
-  margin: 0;
-  text-shadow: 0 1px 1px rgba(0,0,0,.4);
-}
-[role=region] > .view-content {
-  margin: 0;
-  position: relative; /*Fixes #250 Random button display bug in W10M */
-}
-[role=region] > footer {
-  background: rgba(0,0,0,.2);
-  right: 0; bottom: 0; left: 0;
-  position: fixed;
-  text-align: center;
-}
-[role=region] > footer > menu[role=toolbar] {
-  margin: 0;
-  padding: 0;
-}
+
+    [role=region] > header {
+        /*margin: .5rem 0 1rem 0;*/
+        margin: 0 0.75em 0 1px;
+        text-align: center;
+    }
+
+        [role=region] > header > h1 {
+            margin: 0;
+            text-shadow: 0 1px 1px rgba(0,0,0,.4);
+        }
+
+    [role=region] > .view-content {
+        margin: 0;
+        position: relative; /*Fixes #250 Random button display bug in W10M */
+    }
+
+    [role=region] > footer {
+        background: rgba(51,122,183,.2);
+        right: 0;
+        bottom: 0;
+        left: 0;
+        position: fixed;
+        text-align: center;
+    }
+
+        [role=region] > footer > menu[role=toolbar] {
+            margin: 0;
+            padding: 0;
+        }
 
 #navigationButtons .restrictedSize {
     max-width: 80%;
@@ -65,7 +74,12 @@
     position: relative;
     z-index: 10;
     top: 20px;
-    height: 0; 
+    height: 0;
+}
+
+.form-control {
+    margin-top: 0.3px;
+    /*box-shadow: none !important;*/
 }
 
 .articleIFrame {
@@ -74,15 +88,15 @@
 }
 
 .category-padding {
-   margin: 0 1rem 0 1rem;
+    margin: 0 1rem 0 1rem;
 }
 
 .apiAvailable {
-    color : green;
+    color: green;
 }
 
 .apiUnavailable {
-    color : orange;
+    color: orange;
 }
 
 .settings {
@@ -94,13 +108,47 @@
     border: 1px solid black;
 }
 
+.navbar-header {
+    float: none !important;
+}
+
+.navbar-fixed-bottom {
+    background: inherit;
+}
+
+.btn-sm, .btn-lg {
+    background: rgba(51,122,183,0.7) !important;
+    border: transparent !important;
+    float: none !important;
+    color: whitesmoke !important;
+    font-weight: bold !important;
+}
+
+.btn {
+    margin-bottom: 1px !important;
+    z-index:initial !important;
+}
+
+.darkfooter .btn-sm {
+    background: rgba(47,79,79,0.7) !important;
+}
+
 .darkfooter {
-    background: rgba(47,79,79,.3) !important;
+    background: rgba(47,79,79,.5) !important;
 }
 
 .glyphicon {
     color: #337ab7;
 }
+
+footer .glyphicon {
+    color: lightblue;
+}
+
+.dropdown-menu, .dropdown-menu a {
+    background-color: rgba(255,255,255,0.7) !important;
+}
+
 
 .darkfooter .glyphicon, .dark .glyphicon {
     color: lightblue;
@@ -112,19 +160,35 @@
     border-color: darkgray;
 }
 
+.dark a {
+    color: lightblue !important;
+}
+
+.darkfooter .dropdown-menu, .darkfooter .dropdown-menu a {
+    color: lightblue !important;
+    background-color: rgba(34,34,34,0.6) !important;
+    border-color: darkgray;
+}
+
+.darkfooter .dropdown-menu a:focus, .darkfooter .dropdown-menu a:hover {
+    color: lightblue !important;
+    background: darkslategray !important;
+}
+
 .dark .list-group-item {
     color: lightblue !important;
     background-color: #222 !important;
 }
 
-.dark a.list-group-item:hover, .dark a.list-group-item:focus, .dark nav a:hover, .dark nav a:focus {
+.dark a.list-group-item:hover, .dark a.list-group-item:focus, .dark nav a:hover, .dark nav a:focus, .dark nav .active {
     color: lightblue !important;
     background-color: darkslategray !important;
 }
 
-.dark .btn-default {
+.dark .btn-default, .dark .input-group-addon {
     background: #222 !important;
-    color: dimgray !important;
+    color: lightgray !important;
+    text-shadow: none;
 }
 
 
@@ -163,36 +227,46 @@
         margin-top: 0 !important;
         margin-bottom: 0 !important;
     }
-    .navbar-nav > li > a { /*Make sure these align correctly rather than stacking at full width - GK*/
-        float: left !important;
-        /*Added this to prevent the buttons becoming so small*/
-        padding-top: 15px !important;
+
+        .navbar-nav > li > a { /*Make sure these align correctly rather than stacking at full width - GK*/
+            float: left !important;
+            /*Added this to prevent the buttons becoming so small*/
+            padding-top: 15px !important;
         }
-    
+
     .col-md-offset-1 {
         padding-left: 5px !important;
     }
 
-    [role=region] > header {
-        margin-bottom: 0 !important;
-    }
-    /* Pour supprimer l'espace entre la zone de recherche et l'iframe */
+    /*[role=region] > header {
+        margin-bottom: 10px !important;
+    }*/
+    /* Pour supprimer l'espace entre la zone de recherche et l'iframe 
     .list-group {
         margin-bottom: 0 !important;
-    }
-    /* Pour réduire la taille du champ de recherche */
+    } */
+    /* Pour réduire la taille du champ de recherche 
     .form-control {
         height: 28px !important;
         padding-bottom: 5px !important;
+    } */
+
+    .dropdown-menu {
+        font-size: 20px !important;
     }
-    /* Pour réduire la taille des boutons en haut de l'écran */
-    .btn-xs, .btn-sm, .btn-default, .btn-group-xs > .btn, .btn-group-sm > .btn {
+
+    .btn-xs {
         font-size: 10px !important;
     }
-    /* Pour réduire la taille des boutons en bas de l'écran */
+
+    /* Pour réduire la taille des boutons en haut de l'écran 
+    .btn-xs, .btn-sm, .btn-default, .btn-group-xs > .btn, .btn-group-sm > .btn {
+        font-size: 10px !important;
+    }*/
+    /* Pour réduire la taille des boutons en bas de l'écran 
     .btn-lg, .btn-group-lg > .btn {
         padding-top: 1px !important;
         padding-bottom: 1px !important;
         font-size: 16px !important;
-    }
+    }*/
 }
