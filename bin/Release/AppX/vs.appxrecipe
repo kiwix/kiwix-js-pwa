@@ -32,7 +32,7 @@
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-21T17:05:21.562</Modified>
+      <Modified>2017-08-22T19:51:22.485</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -295,7 +295,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\img\lightBlue.png">
       <PackagePath>www\img\lightBlue.png</PackagePath>
-      <Modified>2017-08-11T06:35:38.708</Modified>
+      <Modified>2017-08-21T17:37:06.543</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\I\s\Checker-16x16.png">
       <PackagePath>www\I\s\Checker-16x16.png</PackagePath>
@@ -323,23 +323,23 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.kartographer.frame.css">
       <PackagePath>www\-\s\css_modules\ext.kartographer.frame.css</PackagePath>
-      <Modified>2017-08-21T12:43:23.348</Modified>
+      <Modified>2017-08-21T17:37:06.421</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.kartographer.link.css">
       <PackagePath>www\-\s\css_modules\ext.kartographer.link.css</PackagePath>
-      <Modified>2017-08-21T12:43:23.348</Modified>
+      <Modified>2017-08-21T17:37:06.421</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.kartographer.style.css">
       <PackagePath>www\-\s\css_modules\ext.kartographer.style.css</PackagePath>
-      <Modified>2017-08-21T12:43:23.380</Modified>
+      <Modified>2017-08-21T17:37:06.421</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.math.scripts.css">
       <PackagePath>www\-\s\css_modules\ext.math.scripts.css</PackagePath>
-      <Modified>2017-08-21T12:43:23.380</Modified>
+      <Modified>2017-08-21T17:37:06.421</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.math.styles.css">
       <PackagePath>www\-\s\css_modules\ext.math.styles.css</PackagePath>
-      <Modified>2017-08-21T12:43:23.395</Modified>
+      <Modified>2017-08-21T17:37:06.437</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.scribunto.logs.css">
       <PackagePath>www\-\s\css_modules\ext.scribunto.logs.css</PackagePath>
@@ -351,11 +351,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\ext.tmh.thumbnail.styles.css">
       <PackagePath>www\-\s\css_modules\ext.tmh.thumbnail.styles.css</PackagePath>
-      <Modified>2017-08-21T12:43:23.411</Modified>
+      <Modified>2017-08-21T17:37:06.438</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\inserted_style_mobile.css">
       <PackagePath>www\-\s\css_modules\inserted_style_mobile.css</PackagePath>
-      <Modified>2017-08-21T12:43:23.431</Modified>
+      <Modified>2017-08-22T19:18:33.177</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mediawiki.page.gallery.styles.css">
       <PackagePath>www\-\s\css_modules\mediawiki.page.gallery.styles.css</PackagePath>
@@ -371,35 +371,35 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mw.MediaWikiPlayer.loader.css">
       <PackagePath>www\-\s\css_modules\mw.MediaWikiPlayer.loader.css</PackagePath>
-      <Modified>2017-08-21T12:43:23.449</Modified>
+      <Modified>2017-08-21T17:37:06.442</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mw.PopUpMediaTransform.css">
       <PackagePath>www\-\s\css_modules\mw.PopUpMediaTransform.css</PackagePath>
-      <Modified>2017-08-21T12:43:23.449</Modified>
+      <Modified>2017-08-21T17:37:06.442</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\css_modules\mw.TMHGalleryHook.js.css">
       <PackagePath>www\-\s\css_modules\mw.TMHGalleryHook.js.css</PackagePath>
-      <Modified>2017-08-21T12:43:23.449</Modified>
+      <Modified>2017-08-21T17:37:06.442</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\style-dark.css">
       <PackagePath>www\-\s\style-dark.css</PackagePath>
-      <Modified>2017-08-21T12:36:47.436</Modified>
+      <Modified>2017-08-21T17:37:06.458</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\style-mobile.css">
       <PackagePath>www\-\s\style-mobile.css</PackagePath>
-      <Modified>2017-08-21T16:23:41.699</Modified>
+      <Modified>2017-08-21T17:37:06.489</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\style.css">
       <PackagePath>www\-\s\style.css</PackagePath>
-      <Modified>2017-08-16T13:59:06.296</Modified>
+      <Modified>2017-08-21T17:37:06.505</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\-\s\vector.css">
       <PackagePath>www\-\s\vector.css</PackagePath>
-      <Modified>2017-08-21T12:37:21.913</Modified>
+      <Modified>2017-08-21T17:37:06.520</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\css\app.css">
       <PackagePath>www\css\app.css</PackagePath>
-      <Modified>2017-08-20T18:09:44.037</Modified>
+      <Modified>2017-08-22T19:51:04.182</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\css\bootstrap-theme.css">
       <PackagePath>www\css\bootstrap-theme.css</PackagePath>
@@ -407,15 +407,15 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\css\bootstrap.css">
       <PackagePath>www\css\bootstrap.css</PackagePath>
-      <Modified>2017-08-21T11:29:32.553</Modified>
+      <Modified>2017-08-21T17:37:06.540</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\A\dummyArticle.html">
       <PackagePath>www\A\dummyArticle.html</PackagePath>
-      <Modified>2017-07-19T09:47:26.576</Modified>
+      <Modified>2017-08-22T19:14:25.255</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\index.html">
       <PackagePath>www\index.html</PackagePath>
-      <Modified>2017-08-21T17:05:02.996</Modified>
+      <Modified>2017-08-22T19:36:31.780</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\favicon.ico">
       <PackagePath>www\favicon.ico</PackagePath>
@@ -439,91 +439,91 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_AMS-Regular.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_AMS-Regular.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.396</Modified>
+      <Modified>2017-08-21T17:37:08.040</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Caligraphic-Bold.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Caligraphic-Bold.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.396</Modified>
+      <Modified>2017-08-21T17:37:08.044</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Caligraphic-Regular.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Caligraphic-Regular.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.412</Modified>
+      <Modified>2017-08-21T17:37:08.048</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Fraktur-Bold.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Fraktur-Bold.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.443</Modified>
+      <Modified>2017-08-21T17:37:08.072</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Fraktur-Regular.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Fraktur-Regular.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.443</Modified>
+      <Modified>2017-08-21T17:37:08.087</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Main-Bold.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Main-Bold.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.443</Modified>
+      <Modified>2017-08-21T17:37:08.087</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Main-Italic.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Main-Italic.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.460</Modified>
+      <Modified>2017-08-21T17:37:08.087</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Main-Regular.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Main-Regular.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.465</Modified>
+      <Modified>2017-08-21T17:37:08.105</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Math-BoldItalic.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Math-BoldItalic.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.469</Modified>
+      <Modified>2017-08-21T17:37:08.111</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Math-Italic.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Math-Italic.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.477</Modified>
+      <Modified>2017-08-21T17:37:08.113</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Math-Regular.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Math-Regular.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.481</Modified>
+      <Modified>2017-08-21T17:37:08.113</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_SansSerif-Bold.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_SansSerif-Bold.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.485</Modified>
+      <Modified>2017-08-21T17:37:08.113</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_SansSerif-Italic.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_SansSerif-Italic.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.488</Modified>
+      <Modified>2017-08-21T17:37:08.129</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_SansSerif-Regular.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_SansSerif-Regular.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.488</Modified>
+      <Modified>2017-08-21T17:37:08.129</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Script-Regular.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Script-Regular.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.488</Modified>
+      <Modified>2017-08-21T17:37:08.129</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Size1-Regular.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Size1-Regular.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.488</Modified>
+      <Modified>2017-08-21T17:37:08.129</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Size2-Regular.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Size2-Regular.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.488</Modified>
+      <Modified>2017-08-21T17:37:08.129</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Size3-Regular.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Size3-Regular.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.504</Modified>
+      <Modified>2017-08-21T17:37:08.144</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Size4-Regular.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Size4-Regular.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.504</Modified>
+      <Modified>2017-08-21T17:37:08.144</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Typewriter-Regular.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Typewriter-Regular.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.504</Modified>
+      <Modified>2017-08-21T17:37:08.144</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Vector-Bold.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Vector-Bold.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.504</Modified>
+      <Modified>2017-08-21T17:37:08.144</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Vector-Regular.woff">
       <PackagePath>www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Vector-Regular.woff</PackagePath>
-      <Modified>2017-08-11T06:35:39.504</Modified>
+      <Modified>2017-08-21T17:37:08.144</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\fonts\glyphicons-halflings-regular.woff2">
       <PackagePath>www\fonts\glyphicons-halflings-regular.woff2</PackagePath>
@@ -543,11 +543,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-08-21T16:51:32.260</Modified>
+      <Modified>2017-08-22T19:44:23.316</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
-      <Modified>2017-08-16T15:50:17.638</Modified>
+      <Modified>2017-08-22T17:04:33.397</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\abstractFilesystemAccess.js">
       <PackagePath>www\js\lib\abstractFilesystemAccess.js</PackagePath>
@@ -575,11 +575,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\transformStyles.js">
       <PackagePath>www\js\lib\transformStyles.js</PackagePath>
-      <Modified>2017-08-21T11:27:08.614</Modified>
+      <Modified>2017-08-21T17:37:08.892</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\uiUtil.js">
       <PackagePath>www\js\lib\uiUtil.js</PackagePath>
-      <Modified>2017-08-16T20:53:49.585</Modified>
+      <Modified>2017-08-22T16:38:25.562</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\utf8.js">
       <PackagePath>www\js\lib\utf8.js</PackagePath>
@@ -587,7 +587,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\util.js">
       <PackagePath>www\js\lib\util.js</PackagePath>
-      <Modified>2017-08-21T07:38:32.347</Modified>
+      <Modified>2017-08-21T17:37:08.914</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\xzdec.js">
       <PackagePath>www\js\lib\xzdec.js</PackagePath>
@@ -611,864 +611,864 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\zimfile.js">
       <PackagePath>www\js\lib\zimfile.js</PackagePath>
-      <Modified>2017-08-11T06:35:40.300</Modified>
+      <Modified>2017-08-21T17:37:08.945</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\config\config.js">
       <PackagePath>www\js\MathJax\config\config.js</PackagePath>
-      <Modified>2017-08-21T13:27:54.576</Modified>
+      <Modified>2017-08-21T17:37:06.863</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\config\TeX-AMS_HTML-full.js">
       <PackagePath>www\js\MathJax\config\TeX-AMS_HTML-full.js</PackagePath>
-      <Modified>2017-08-21T13:27:54.727</Modified>
+      <Modified>2017-08-21T17:37:06.857</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\accessibility-menu.js">
       <PackagePath>www\js\MathJax\extensions\a11y\accessibility-menu.js</PackagePath>
-      <Modified>2017-08-21T13:27:54.743</Modified>
+      <Modified>2017-08-21T17:37:07.329</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\auto-collapse.js">
       <PackagePath>www\js\MathJax\extensions\a11y\auto-collapse.js</PackagePath>
-      <Modified>2017-08-21T13:27:54.743</Modified>
+      <Modified>2017-08-21T17:37:07.329</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\collapsible.js">
       <PackagePath>www\js\MathJax\extensions\a11y\collapsible.js</PackagePath>
-      <Modified>2017-08-21T13:27:54.781</Modified>
+      <Modified>2017-08-21T17:37:07.391</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\explorer.js">
       <PackagePath>www\js\MathJax\extensions\a11y\explorer.js</PackagePath>
-      <Modified>2017-08-21T13:27:54.796</Modified>
+      <Modified>2017-08-21T17:37:07.429</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathjax-sre.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathjax-sre.js</PackagePath>
-      <Modified>2017-08-21T13:27:54.928</Modified>
+      <Modified>2017-08-21T17:37:07.563</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\functions\algebra.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\functions\algebra.js</PackagePath>
-      <Modified>2017-08-21T13:27:54.928</Modified>
+      <Modified>2017-08-21T17:37:07.597</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\functions\elementary.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\functions\elementary.js</PackagePath>
-      <Modified>2017-08-21T13:27:54.944</Modified>
+      <Modified>2017-08-21T17:37:07.597</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\functions\hyperbolic.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\functions\hyperbolic.js</PackagePath>
-      <Modified>2017-08-21T13:27:54.944</Modified>
+      <Modified>2017-08-21T17:37:07.597</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\functions\trigonometry.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\functions\trigonometry.js</PackagePath>
-      <Modified>2017-08-21T13:27:54.959</Modified>
+      <Modified>2017-08-21T17:37:07.597</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\mathmaps_ie.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\mathmaps_ie.js</PackagePath>
-      <Modified>2017-08-21T13:27:54.981</Modified>
+      <Modified>2017-08-21T17:37:07.691</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-capital.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-capital.js</PackagePath>
-      <Modified>2017-08-21T13:27:54.997</Modified>
+      <Modified>2017-08-21T17:37:07.691</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-mathfonts.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-mathfonts.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.013</Modified>
+      <Modified>2017-08-21T17:37:07.714</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-scripts.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-scripts.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.013</Modified>
+      <Modified>2017-08-21T17:37:07.714</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-small.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-small.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.028</Modified>
+      <Modified>2017-08-21T17:37:07.714</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-symbols.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-symbols.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.044</Modified>
+      <Modified>2017-08-21T17:37:07.714</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\hebrew_letters.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\hebrew_letters.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.044</Modified>
+      <Modified>2017-08-21T17:37:07.714</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-lower-double-accent.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-lower-double-accent.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.060</Modified>
+      <Modified>2017-08-21T17:37:07.729</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-lower-normal.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-lower-normal.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.077</Modified>
+      <Modified>2017-08-21T17:37:07.729</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-lower-phonetic.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-lower-phonetic.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.082</Modified>
+      <Modified>2017-08-21T17:37:07.745</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-lower-single-accent.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-lower-single-accent.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.097</Modified>
+      <Modified>2017-08-21T17:37:07.760</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-mathfonts.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-mathfonts.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.113</Modified>
+      <Modified>2017-08-21T17:37:07.776</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-rest.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-rest.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.129</Modified>
+      <Modified>2017-08-21T17:37:07.792</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-upper-double-accent.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-upper-double-accent.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.129</Modified>
+      <Modified>2017-08-21T17:37:07.813</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-upper-normal.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-upper-normal.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.144</Modified>
+      <Modified>2017-08-21T17:37:07.813</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-upper-single-accent.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-upper-single-accent.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.160</Modified>
+      <Modified>2017-08-21T17:37:07.829</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\math_angles.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_angles.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.160</Modified>
+      <Modified>2017-08-21T17:37:07.829</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\math_arrows.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_arrows.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.182</Modified>
+      <Modified>2017-08-21T17:37:07.860</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\math_characters.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_characters.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.198</Modified>
+      <Modified>2017-08-21T17:37:07.860</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\math_delimiters.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_delimiters.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.213</Modified>
+      <Modified>2017-08-21T17:37:07.876</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\math_digits.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_digits.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.229</Modified>
+      <Modified>2017-08-21T17:37:07.892</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\math_geometry.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_geometry.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.244</Modified>
+      <Modified>2017-08-21T17:37:07.910</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\math_harpoons.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_harpoons.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.260</Modified>
+      <Modified>2017-08-21T17:37:07.911</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\math_non_characters.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_non_characters.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.282</Modified>
+      <Modified>2017-08-21T17:37:07.912</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\math_symbols.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_symbols.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.298</Modified>
+      <Modified>2017-08-21T17:37:07.929</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\math_whitespace.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\math_whitespace.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.298</Modified>
+      <Modified>2017-08-21T17:37:07.944</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\symbols\other_stars.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\symbols\other_stars.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.313</Modified>
+      <Modified>2017-08-21T17:37:07.944</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\units\energy.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\units\energy.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.313</Modified>
+      <Modified>2017-08-21T17:37:07.944</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\units\length.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\units\length.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.329</Modified>
+      <Modified>2017-08-21T17:37:07.944</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\units\memory.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\units\memory.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.345</Modified>
+      <Modified>2017-08-21T17:37:07.944</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\units\other.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\units\other.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.345</Modified>
+      <Modified>2017-08-21T17:37:07.944</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\units\speed.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\units\speed.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.360</Modified>
+      <Modified>2017-08-21T17:37:07.962</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\units\temperature.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\units\temperature.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.360</Modified>
+      <Modified>2017-08-21T17:37:07.966</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\units\time.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\units\time.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.380</Modified>
+      <Modified>2017-08-21T17:37:07.966</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\units\volume.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\units\volume.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.383</Modified>
+      <Modified>2017-08-21T17:37:07.970</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\units\weight.js">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\units\weight.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.383</Modified>
+      <Modified>2017-08-21T17:37:07.970</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\semantic-enrich.js">
       <PackagePath>www\js\MathJax\extensions\a11y\semantic-enrich.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.383</Modified>
+      <Modified>2017-08-21T17:37:07.970</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\wgxpath.install.js">
       <PackagePath>www\js\MathJax\extensions\a11y\wgxpath.install.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.398</Modified>
+      <Modified>2017-08-21T17:37:08.013</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\AssistiveMML.js">
       <PackagePath>www\js\MathJax\extensions\AssistiveMML.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.414</Modified>
+      <Modified>2017-08-21T17:37:06.897</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\CHTML-preview.js">
       <PackagePath>www\js\MathJax\extensions\CHTML-preview.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.429</Modified>
+      <Modified>2017-08-21T17:37:06.899</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\fast-preview.js">
       <PackagePath>www\js\MathJax\extensions\fast-preview.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.445</Modified>
+      <Modified>2017-08-21T17:37:08.032</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\FontWarnings.js">
       <PackagePath>www\js\MathJax\extensions\FontWarnings.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.461</Modified>
+      <Modified>2017-08-21T17:37:06.900</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\HelpDialog.js">
       <PackagePath>www\js\MathJax\extensions\HelpDialog.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.483</Modified>
+      <Modified>2017-08-21T17:37:06.903</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\HTML-CSS\handle-floats.js">
       <PackagePath>www\js\MathJax\extensions\HTML-CSS\handle-floats.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.483</Modified>
+      <Modified>2017-08-21T17:37:06.902</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\MatchWebFonts.js">
       <PackagePath>www\js\MathJax\extensions\MatchWebFonts.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.583</Modified>
+      <Modified>2017-08-21T17:37:06.913</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\MathEvents.js">
       <PackagePath>www\js\MathJax\extensions\MathEvents.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.598</Modified>
+      <Modified>2017-08-21T17:37:06.944</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\MathMenu.js">
       <PackagePath>www\js\MathJax\extensions\MathMenu.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.614</Modified>
+      <Modified>2017-08-21T17:37:06.976</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\MathZoom.js">
       <PackagePath>www\js\MathJax\extensions\MathZoom.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.692</Modified>
+      <Modified>2017-08-21T17:37:07.013</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\Safe.js">
       <PackagePath>www\js\MathJax\extensions\Safe.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.787</Modified>
+      <Modified>2017-08-21T17:37:07.013</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\tex2jax.js">
       <PackagePath>www\js\MathJax\extensions\tex2jax.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.572</Modified>
+      <Modified>2017-08-21T17:37:08.032</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\action.js">
       <PackagePath>www\js\MathJax\extensions\TeX\action.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.795</Modified>
+      <Modified>2017-08-21T17:37:07.110</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\AMScd.js">
       <PackagePath>www\js\MathJax\extensions\TeX\AMScd.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.822</Modified>
+      <Modified>2017-08-21T17:37:07.029</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\AMSmath.js">
       <PackagePath>www\js\MathJax\extensions\TeX\AMSmath.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.878</Modified>
+      <Modified>2017-08-21T17:37:07.102</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\AMSsymbols.js">
       <PackagePath>www\js\MathJax\extensions\TeX\AMSsymbols.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.889</Modified>
+      <Modified>2017-08-21T17:37:07.105</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\autobold.js">
       <PackagePath>www\js\MathJax\extensions\TeX\autobold.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.926</Modified>
+      <Modified>2017-08-21T17:37:07.121</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\autoload-all.js">
       <PackagePath>www\js\MathJax\extensions\TeX\autoload-all.js</PackagePath>
-      <Modified>2017-08-21T13:27:55.945</Modified>
+      <Modified>2017-08-21T17:37:07.121</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\bbox.js">
       <PackagePath>www\js\MathJax\extensions\TeX\bbox.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.034</Modified>
+      <Modified>2017-08-21T17:37:07.138</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\begingroup.js">
       <PackagePath>www\js\MathJax\extensions\TeX\begingroup.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.139</Modified>
+      <Modified>2017-08-21T17:37:07.138</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\boldsymbol.js">
       <PackagePath>www\js\MathJax\extensions\TeX\boldsymbol.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.152</Modified>
+      <Modified>2017-08-21T17:37:07.153</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\cancel.js">
       <PackagePath>www\js\MathJax\extensions\TeX\cancel.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.184</Modified>
+      <Modified>2017-08-21T17:37:07.153</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\color.js">
       <PackagePath>www\js\MathJax\extensions\TeX\color.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.252</Modified>
+      <Modified>2017-08-21T17:37:07.169</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\enclose.js">
       <PackagePath>www\js\MathJax\extensions\TeX\enclose.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.296</Modified>
+      <Modified>2017-08-21T17:37:07.185</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\extpfeil.js">
       <PackagePath>www\js\MathJax\extensions\TeX\extpfeil.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.305</Modified>
+      <Modified>2017-08-21T17:37:07.185</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\HTML.js">
       <PackagePath>www\js\MathJax\extensions\TeX\HTML.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.328</Modified>
+      <Modified>2017-08-21T17:37:07.107</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\mathchoice.js">
       <PackagePath>www\js\MathJax\extensions\TeX\mathchoice.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.359</Modified>
+      <Modified>2017-08-21T17:37:07.185</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\mediawiki-texvc.js">
       <PackagePath>www\js\MathJax\extensions\TeX\mediawiki-texvc.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.375</Modified>
+      <Modified>2017-08-21T17:37:07.201</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\mhchem.js">
       <PackagePath>www\js\MathJax\extensions\TeX\mhchem.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.428</Modified>
+      <Modified>2017-08-21T17:37:07.245</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\mhchem3\mhchem.js">
       <PackagePath>www\js\MathJax\extensions\TeX\mhchem3\mhchem.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.500</Modified>
+      <Modified>2017-08-21T17:37:07.291</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\newcommand.js">
       <PackagePath>www\js\MathJax\extensions\TeX\newcommand.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.515</Modified>
+      <Modified>2017-08-21T17:37:07.313</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\noErrors.js">
       <PackagePath>www\js\MathJax\extensions\TeX\noErrors.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.528</Modified>
+      <Modified>2017-08-21T17:37:07.313</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\noUndefined.js">
       <PackagePath>www\js\MathJax\extensions\TeX\noUndefined.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.552</Modified>
+      <Modified>2017-08-21T17:37:07.313</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\unicode.js">
       <PackagePath>www\js\MathJax\extensions\TeX\unicode.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.556</Modified>
+      <Modified>2017-08-21T17:37:07.313</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\TeX\verb.js">
       <PackagePath>www\js\MathJax\extensions\TeX\verb.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.567</Modified>
+      <Modified>2017-08-21T17:37:07.313</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\jax.js">
       <PackagePath>www\js\MathJax\jax\element\mml\jax.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.584</Modified>
+      <Modified>2017-08-21T17:37:08.191</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\Arrows.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\Arrows.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.589</Modified>
+      <Modified>2017-08-21T17:37:08.191</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\BasicLatin.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\BasicLatin.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.606</Modified>
+      <Modified>2017-08-21T17:37:08.191</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\CombDiacritMarks.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\CombDiacritMarks.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.642</Modified>
+      <Modified>2017-08-21T17:37:08.191</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\CombDiactForSymbols.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\CombDiactForSymbols.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.648</Modified>
+      <Modified>2017-08-21T17:37:08.191</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\Dingbats.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\Dingbats.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.653</Modified>
+      <Modified>2017-08-21T17:37:08.191</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\GeneralPunctuation.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\GeneralPunctuation.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.658</Modified>
+      <Modified>2017-08-21T17:37:08.191</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\GeometricShapes.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\GeometricShapes.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.695</Modified>
+      <Modified>2017-08-21T17:37:08.211</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\GreekAndCoptic.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\GreekAndCoptic.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.776</Modified>
+      <Modified>2017-08-21T17:37:08.212</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\Latin1Supplement.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\Latin1Supplement.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.843</Modified>
+      <Modified>2017-08-21T17:37:08.212</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\LetterlikeSymbols.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\LetterlikeSymbols.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.851</Modified>
+      <Modified>2017-08-21T17:37:08.212</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\MathOperators.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\MathOperators.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.874</Modified>
+      <Modified>2017-08-21T17:37:08.212</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\MiscMathSymbolsA.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\MiscMathSymbolsA.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.905</Modified>
+      <Modified>2017-08-21T17:37:08.212</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\MiscMathSymbolsB.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\MiscMathSymbolsB.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.932</Modified>
+      <Modified>2017-08-21T17:37:08.212</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\MiscSymbolsAndArrows.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\MiscSymbolsAndArrows.js</PackagePath>
-      <Modified>2017-08-21T13:27:56.984</Modified>
+      <Modified>2017-08-21T17:37:08.212</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\MiscTechnical.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\MiscTechnical.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.046</Modified>
+      <Modified>2017-08-21T17:37:08.212</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\SpacingModLetters.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\SpacingModLetters.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.091</Modified>
+      <Modified>2017-08-21T17:37:08.212</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\SupplementalArrowsA.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\SupplementalArrowsA.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.127</Modified>
+      <Modified>2017-08-21T17:37:08.212</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\SupplementalArrowsB.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\SupplementalArrowsB.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.143</Modified>
+      <Modified>2017-08-21T17:37:08.229</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\element\mml\optable\SuppMathOperators.js">
       <PackagePath>www\js\MathJax\jax\element\mml\optable\SuppMathOperators.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.165</Modified>
+      <Modified>2017-08-21T17:37:08.212</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\input\TeX\config.js">
       <PackagePath>www\js\MathJax\jax\input\TeX\config.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.201</Modified>
+      <Modified>2017-08-21T17:37:08.229</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\input\TeX\jax.js">
       <PackagePath>www\js\MathJax\jax\input\TeX\jax.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.224</Modified>
+      <Modified>2017-08-21T17:37:08.291</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\autoload\annotation-xml.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\autoload\annotation-xml.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.260</Modified>
+      <Modified>2017-08-21T17:37:08.291</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\autoload\maction.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\autoload\maction.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.285</Modified>
+      <Modified>2017-08-21T17:37:08.313</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\autoload\menclose.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\autoload\menclose.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.319</Modified>
+      <Modified>2017-08-21T17:37:08.344</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\autoload\mglyph.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\autoload\mglyph.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.334</Modified>
+      <Modified>2017-08-21T17:37:08.360</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\autoload\mmultiscripts.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\autoload\mmultiscripts.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.346</Modified>
+      <Modified>2017-08-21T17:37:08.360</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\autoload\ms.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\autoload\ms.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.376</Modified>
+      <Modified>2017-08-21T17:37:08.360</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\autoload\mtable.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\autoload\mtable.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.398</Modified>
+      <Modified>2017-08-21T17:37:08.391</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\autoload\multiline.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\autoload\multiline.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.415</Modified>
+      <Modified>2017-08-21T17:37:08.429</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\config.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\config.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.431</Modified>
+      <Modified>2017-08-21T17:37:08.429</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\Arrows.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\Arrows.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.437</Modified>
+      <Modified>2017-08-21T17:37:08.429</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\BBBold.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\BBBold.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.446</Modified>
+      <Modified>2017-08-21T17:37:08.429</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\BoxDrawing.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\BoxDrawing.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.466</Modified>
+      <Modified>2017-08-21T17:37:08.445</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\CombDiacritMarks.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\CombDiacritMarks.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.480</Modified>
+      <Modified>2017-08-21T17:37:08.445</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\Dingbats.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\Dingbats.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.522</Modified>
+      <Modified>2017-08-21T17:37:08.445</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\EnclosedAlphanum.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\EnclosedAlphanum.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.546</Modified>
+      <Modified>2017-08-21T17:37:08.445</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\GeneralPunctuation.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\GeneralPunctuation.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.562</Modified>
+      <Modified>2017-08-21T17:37:08.445</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\GeometricShapes.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\GeometricShapes.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.588</Modified>
+      <Modified>2017-08-21T17:37:08.445</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\GreekAndCoptic.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\GreekAndCoptic.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.594</Modified>
+      <Modified>2017-08-21T17:37:08.445</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\Latin1Supplement.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\Latin1Supplement.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.603</Modified>
+      <Modified>2017-08-21T17:37:08.445</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\LatinExtendedA.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\LatinExtendedA.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.616</Modified>
+      <Modified>2017-08-21T17:37:08.445</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\LetterlikeSymbols.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\LetterlikeSymbols.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.629</Modified>
+      <Modified>2017-08-21T17:37:08.445</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.642</Modified>
+      <Modified>2017-08-21T17:37:08.445</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\MathOperators.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\MathOperators.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.647</Modified>
+      <Modified>2017-08-21T17:37:08.460</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\MiscMathSymbolsB.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\MiscMathSymbolsB.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.654</Modified>
+      <Modified>2017-08-21T17:37:08.460</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\MiscSymbols.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\MiscSymbols.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.659</Modified>
+      <Modified>2017-08-21T17:37:08.460</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\MiscTechnical.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\MiscTechnical.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.665</Modified>
+      <Modified>2017-08-21T17:37:08.460</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\PUA.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\PUA.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.682</Modified>
+      <Modified>2017-08-21T17:37:08.460</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\SpacingModLetters.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\SpacingModLetters.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.687</Modified>
+      <Modified>2017-08-21T17:37:08.460</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\SuppMathOperators.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\SuppMathOperators.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.694</Modified>
+      <Modified>2017-08-21T17:37:08.476</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Caligraphic\Bold\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Caligraphic\Bold\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.710</Modified>
+      <Modified>2017-08-21T17:37:08.476</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Caligraphic\Regular\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Caligraphic\Regular\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.723</Modified>
+      <Modified>2017-08-21T17:37:08.476</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\fontdata-extra.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\fontdata-extra.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.728</Modified>
+      <Modified>2017-08-21T17:37:08.691</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\fontdata.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\fontdata.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.741</Modified>
+      <Modified>2017-08-21T17:37:08.729</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Bold\BasicLatin.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Bold\BasicLatin.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.747</Modified>
+      <Modified>2017-08-21T17:37:08.492</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Bold\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Bold\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.753</Modified>
+      <Modified>2017-08-21T17:37:08.492</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Bold\Other.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Bold\Other.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.767</Modified>
+      <Modified>2017-08-21T17:37:08.512</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Bold\PUA.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Bold\PUA.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.773</Modified>
+      <Modified>2017-08-21T17:37:08.513</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Regular\BasicLatin.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Regular\BasicLatin.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.787</Modified>
+      <Modified>2017-08-21T17:37:08.513</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Regular\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Regular\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.802</Modified>
+      <Modified>2017-08-21T17:37:08.529</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Regular\Other.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Regular\Other.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.816</Modified>
+      <Modified>2017-08-21T17:37:08.529</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Regular\PUA.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Regular\PUA.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.829</Modified>
+      <Modified>2017-08-21T17:37:08.529</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Greek\BoldItalic\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Greek\BoldItalic\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.856</Modified>
+      <Modified>2017-08-21T17:37:08.544</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Greek\Bold\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Greek\Bold\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.842</Modified>
+      <Modified>2017-08-21T17:37:08.544</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Greek\Italic\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Greek\Italic\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.870</Modified>
+      <Modified>2017-08-21T17:37:08.544</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Greek\Regular\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Greek\Regular\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.884</Modified>
+      <Modified>2017-08-21T17:37:08.544</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\Arrows.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\Arrows.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.889</Modified>
+      <Modified>2017-08-21T17:37:08.544</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\CombDiacritMarks.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\CombDiacritMarks.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.903</Modified>
+      <Modified>2017-08-21T17:37:08.544</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\CombDiactForSymbols.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\CombDiactForSymbols.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.916</Modified>
+      <Modified>2017-08-21T17:37:08.560</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\GeneralPunctuation.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\GeneralPunctuation.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.931</Modified>
+      <Modified>2017-08-21T17:37:08.560</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\GeometricShapes.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\GeometricShapes.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.949</Modified>
+      <Modified>2017-08-21T17:37:08.560</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\Latin1Supplement.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\Latin1Supplement.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.962</Modified>
+      <Modified>2017-08-21T17:37:08.560</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\LatinExtendedA.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\LatinExtendedA.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.968</Modified>
+      <Modified>2017-08-21T17:37:08.560</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\LatinExtendedB.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\LatinExtendedB.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.970</Modified>
+      <Modified>2017-08-21T17:37:08.560</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\LetterlikeSymbols.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\LetterlikeSymbols.js</PackagePath>
-      <Modified>2017-08-21T13:27:57.986</Modified>
+      <Modified>2017-08-21T17:37:08.560</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.001</Modified>
+      <Modified>2017-08-21T17:37:08.560</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\MathOperators.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\MathOperators.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.017</Modified>
+      <Modified>2017-08-21T17:37:08.560</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\MiscMathSymbolsA.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\MiscMathSymbolsA.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.033</Modified>
+      <Modified>2017-08-21T17:37:08.560</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\MiscSymbols.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\MiscSymbols.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.048</Modified>
+      <Modified>2017-08-21T17:37:08.560</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\MiscTechnical.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\MiscTechnical.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.048</Modified>
+      <Modified>2017-08-21T17:37:08.576</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\SpacingModLetters.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\SpacingModLetters.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.070</Modified>
+      <Modified>2017-08-21T17:37:08.576</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\SupplementalArrowsA.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\SupplementalArrowsA.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.070</Modified>
+      <Modified>2017-08-21T17:37:08.576</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\SuppMathOperators.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\SuppMathOperators.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.086</Modified>
+      <Modified>2017-08-21T17:37:08.576</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\CombDiacritMarks.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\CombDiacritMarks.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.086</Modified>
+      <Modified>2017-08-21T17:37:08.576</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\GeneralPunctuation.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\GeneralPunctuation.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.102</Modified>
+      <Modified>2017-08-21T17:37:08.576</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\Latin1Supplement.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\Latin1Supplement.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.102</Modified>
+      <Modified>2017-08-21T17:37:08.576</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\LetterlikeSymbols.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\LetterlikeSymbols.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.117</Modified>
+      <Modified>2017-08-21T17:37:08.576</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.117</Modified>
+      <Modified>2017-08-21T17:37:08.591</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\CombDiacritMarks.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\CombDiacritMarks.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.133</Modified>
+      <Modified>2017-08-21T17:37:08.591</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\GeometricShapes.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\GeometricShapes.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.148</Modified>
+      <Modified>2017-08-21T17:37:08.591</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.165</Modified>
+      <Modified>2017-08-21T17:37:08.591</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\MiscSymbols.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\MiscSymbols.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.170</Modified>
+      <Modified>2017-08-21T17:37:08.609</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\SpacingModLetters.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\SpacingModLetters.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.171</Modified>
+      <Modified>2017-08-21T17:37:08.610</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Math\BoldItalic\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Math\BoldItalic\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.186</Modified>
+      <Modified>2017-08-21T17:37:08.612</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Math\Italic\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Math\Italic\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.202</Modified>
+      <Modified>2017-08-21T17:37:08.613</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Bold\BasicLatin.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Bold\BasicLatin.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.218</Modified>
+      <Modified>2017-08-21T17:37:08.613</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Bold\CombDiacritMarks.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Bold\CombDiacritMarks.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.333</Modified>
+      <Modified>2017-08-21T17:37:08.613</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Bold\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Bold\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.397</Modified>
+      <Modified>2017-08-21T17:37:08.613</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Bold\Other.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Bold\Other.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.410</Modified>
+      <Modified>2017-08-21T17:37:08.613</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Italic\BasicLatin.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Italic\BasicLatin.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.427</Modified>
+      <Modified>2017-08-21T17:37:08.613</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Italic\CombDiacritMarks.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Italic\CombDiacritMarks.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.449</Modified>
+      <Modified>2017-08-21T17:37:08.613</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Italic\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Italic\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.500</Modified>
+      <Modified>2017-08-21T17:37:08.613</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Italic\Other.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Italic\Other.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.544</Modified>
+      <Modified>2017-08-21T17:37:08.629</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Regular\BasicLatin.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Regular\BasicLatin.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.570</Modified>
+      <Modified>2017-08-21T17:37:08.629</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Regular\CombDiacritMarks.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Regular\CombDiacritMarks.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.588</Modified>
+      <Modified>2017-08-21T17:37:08.629</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Regular\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Regular\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.602</Modified>
+      <Modified>2017-08-21T17:37:08.629</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Regular\Other.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Regular\Other.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.616</Modified>
+      <Modified>2017-08-21T17:37:08.629</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Script\Regular\BasicLatin.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Script\Regular\BasicLatin.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.641</Modified>
+      <Modified>2017-08-21T17:37:08.645</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Script\Regular\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Script\Regular\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.667</Modified>
+      <Modified>2017-08-21T17:37:08.645</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Script\Regular\Other.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Script\Regular\Other.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.739</Modified>
+      <Modified>2017-08-21T17:37:08.645</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Size1\Regular\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Size1\Regular\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.866</Modified>
+      <Modified>2017-08-21T17:37:08.645</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Size2\Regular\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Size2\Regular\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.899</Modified>
+      <Modified>2017-08-21T17:37:08.660</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Size3\Regular\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Size3\Regular\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.924</Modified>
+      <Modified>2017-08-21T17:37:08.660</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Size4\Regular\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Size4\Regular\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.944</Modified>
+      <Modified>2017-08-21T17:37:08.660</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Typewriter\Regular\BasicLatin.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Typewriter\Regular\BasicLatin.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.961</Modified>
+      <Modified>2017-08-21T17:37:08.660</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Typewriter\Regular\CombDiacritMarks.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Typewriter\Regular\CombDiacritMarks.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.975</Modified>
+      <Modified>2017-08-21T17:37:08.660</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Typewriter\Regular\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Typewriter\Regular\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:58.991</Modified>
+      <Modified>2017-08-21T17:37:08.676</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Typewriter\Regular\Other.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Typewriter\Regular\Other.js</PackagePath>
-      <Modified>2017-08-21T13:27:59.005</Modified>
+      <Modified>2017-08-21T17:37:08.676</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\WinChrome\Regular\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\WinChrome\Regular\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:59.023</Modified>
+      <Modified>2017-08-21T17:37:08.676</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\WinIE6\Regular\AMS.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\WinIE6\Regular\AMS.js</PackagePath>
-      <Modified>2017-08-21T13:27:59.029</Modified>
+      <Modified>2017-08-21T17:37:08.676</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\WinIE6\Regular\Bold.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\WinIE6\Regular\Bold.js</PackagePath>
-      <Modified>2017-08-21T13:27:59.053</Modified>
+      <Modified>2017-08-21T17:37:08.676</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\WinIE6\Regular\Main.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\WinIE6\Regular\Main.js</PackagePath>
-      <Modified>2017-08-21T13:27:59.072</Modified>
+      <Modified>2017-08-21T17:37:08.676</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\imageFonts.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\imageFonts.js</PackagePath>
-      <Modified>2017-08-21T13:27:59.110</Modified>
+      <Modified>2017-08-21T17:37:08.729</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\jax\output\HTML-CSS\jax.js">
       <PackagePath>www\js\MathJax\jax\output\HTML-CSS\jax.js</PackagePath>
-      <Modified>2017-08-21T13:27:59.170</Modified>
+      <Modified>2017-08-21T17:37:08.792</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\MathJax.js">
       <PackagePath>www\js\MathJax\MathJax.js</PackagePath>
-      <Modified>2017-08-21T13:27:59.385</Modified>
+      <Modified>2017-08-21T17:37:06.605</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\invalid_keypress.mp3">
       <PackagePath>www\js\MathJax\extensions\a11y\invalid_keypress.mp3</PackagePath>
-      <Modified>2017-08-11T06:35:39.036</Modified>
+      <Modified>2017-08-21T17:37:07.444</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\invalid_keypress.ogg">
       <PackagePath>www\js\MathJax\extensions\a11y\invalid_keypress.ogg</PackagePath>
-      <Modified>2017-08-11T06:35:39.036</Modified>
+      <Modified>2017-08-21T17:37:07.448</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\.htaccess">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\.htaccess</PackagePath>
-      <Modified>2017-08-11T06:35:39.083</Modified>
+      <Modified>2017-08-21T17:37:07.595</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-21T16:15:43.699</Modified>
+      <Modified>2017-08-22T19:00:33.462</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>

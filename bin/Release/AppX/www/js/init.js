@@ -32,6 +32,17 @@ params['cssUITheme'] = getCookie('cssUITheme') || 'light'; //Set default to 'lig
 params['imageDisplay'] = getCookie('imageDisplay') || true; //Set default to display images from Zim
 params['imageDisplay'] = params['imageDisplay'] == "false" ? false : (params['imageDisplay'] == "true" ? true : params['imageDisplay']);
 params['useMathJax'] = params['useMathJax'] || true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images
+params['storedFile'] = getCookie('lastSelectedArchive') || ""; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename and place file in default storage
+params['falFolderToken'] = params['falFolderToken'] || "zimfilestore";
+if (params['storedFile'] && Windows && Windows.Storage) { //UWP
+    Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.getFolderAsync(params['falFolderToken']).done(function (folder) {
+        if (folder) params['pickedFolder'] = folder;
+    }, function (error) {
+        params['pickedFolder'] = {};
+        }
+    );
+}
+
 
 function getCookie(cname) {
     var name = cname + "=";
