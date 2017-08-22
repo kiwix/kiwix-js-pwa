@@ -46,7 +46,7 @@
     }
 
     [role=region] > footer {
-        background: rgba(51,122,183,.2);
+        background: rgba(51,122,183,0.1);
         right: 0;
         bottom: 0;
         left: 0;
@@ -80,6 +80,11 @@
 .form-control {
     margin-top: 0.3px;
     /*box-shadow: none !important;*/
+}
+
+.dark .form-control {
+    color: lightgray;
+    background: #222;
 }
 
 .articleIFrame {
@@ -134,7 +139,7 @@
 }
 
 .darkfooter {
-    background: rgba(47,79,79,.5) !important;
+    background: rgba(47,79,79,0.3) !important;
 }
 
 .glyphicon {

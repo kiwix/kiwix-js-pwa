@@ -190,7 +190,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
     });
     
     $('#btnRescanDeviceStorage').on("click", function(e) {
-        searchForArchivesInStorage();
+        if (storages.length) {
+            searchForArchivesInStorage();
+        } else {
+            displayFileSelect();
+            $('archiveFiles').click();
+        }
     });
     // Bottom bar :
     $('#btnBack').on('click', function(e) {
@@ -221,6 +226,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
             $('#navbarToggle').click();
         }
+        document.getElementById('btnConfigure').classList.remove("active");
         clearFindInArticle();
         // Show the selected content in the page
         $('#about').hide();
@@ -253,6 +259,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
             $('#navbarToggle').click();
         }
+        document.getElementById('btnConfigure').classList.add("active");
         clearFindInArticle();
         // Show the selected content in the page
         $('#about').hide();
@@ -276,6 +283,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
             $('#navbarToggle').click();
         }
+        document.getElementById('btnConfigure').classList.remove("active");
         clearFindInArticle();
         // Show the selected content in the page
         $('#about').show();
@@ -361,7 +369,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         document.getElementById('cssWikiDarkThemeCheck').checked = params['cssTheme'] == 'dark' ? true : false;
         if (params['cssTheme'] == "dark") document.getElementById('footer').classList.add("darkfooter");
         document.getElementById('cssUIDarkThemeCheck').checked = params['cssUITheme'] == 'dark' ? true : false;
-        if (params['cssUITheme'] == 'dark') cssUIThemeSet('dark');
+        cssUIThemeSet(params['cssUITheme']);
         $('input:radio[name=cssInjectionMode]').filter('[value="' + params['cssSource'] + '"]').prop('checked', true);
     });
 
@@ -556,9 +564,21 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             populateDropDownListOfArchives(directories);
         }
         else {
-            searchForArchivesInStorage();
+            if (storages.length) {
+                searchForArchivesInStorage();
+            } else {
+                displayFileSelect();
+                if (document.getElementById('archiveFiles').files && document.getElementById('archiveFiles').files.length > 0) {
+                    // Archive files are already selected, 
+                    setLocalArchiveFromFileSelect();
+                }
+                else {
+                    $("#btnConfigure").click();
+                }
+            }
         }
     }
+
     function searchForArchivesInStorage() {
         // If DeviceStorage is available, we look for archives in it
         $("#btnConfigure").click();
@@ -573,13 +593,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         });
     }
 
-    if (storages !== null && storages.length > 0) {
+    if (Windows && Windows.Storage || (storages !== null && storages.length > 0)) {
         // Make a fake first access to device storage, in order to ask the user for confirmation if necessary.
         // This way, it is only done once at this moment, instead of being done several times in callbacks
         // After that, we can start looking for archives
         //storages[0].get("fake-file-to-read").then(searchForArchivesInPreferencesOrStorage,
                                                   //searchForArchivesInPreferencesOrStorage);
-        searchForArchivesInPreferencesOrStorage;
+        searchForArchivesInPreferencesOrStorage();
     }
     else {
         // If DeviceStorage is not available, we display the file select components
@@ -642,7 +662,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         }
         // Store the list of archives in a cookie, to avoid rescanning at each start
         cookies.setItem("listOfArchives", archiveDirectories.join('|'), Infinity);
-        
+        comboArchiveList.size = comboArchiveList.length;
+
         $('#archiveList').on('change', setLocalArchiveFromArchiveList);
         if (comboArchiveList.options.length > 0) {
             var lastSelectedArchive = cookies.getItem("lastSelectedArchive");
@@ -696,10 +717,37 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 if (storages.length === 1) {
                     selectedStorage = storages[0];
                 }
-                else {
-                    alert("Something weird happened with the DeviceStorage API : found a directory without prefix : "
-                        + archiveDirectory + ", but there were " + storages.length
-                        + " storages found with getDeviceStorages instead of 1");
+                else { //IT'S NOT FREAKIN FFOS!!!!!!!!!!
+                    //console.log("Something weird happened with the DeviceStorage API : found a directory without prefix : "
+                    //    + archiveDirectory + ", but there were " + storages.length
+                    //    + " storages found with getDeviceStorages instead of 1");
+                    //Patched for UWP support:
+                    if (params['pickedFolder'] && Windows && Windows.Storage) {
+                        var query = params['pickedFolder'].createFileQuery();
+                        query.getFilesAsync().done(function (files){
+                            var file;
+                            if (files) {
+                                for (i = 0; i < files.length; i++) {
+                                    if (files[i].name == archiveDirectory) {
+                                        file = files[i];
+                                        break;
+                                    }
+                                }
+                            }
+                            if (file) {
+                                cookies.setItem("lastSelectedArchive", archiveDirectory, Infinity);
+                                selectedStorage = MSApp.createFileFromStorageFile(file);
+                                archiveDirectory = "";
+                                selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage([selectedStorage], archiveDirectory, function (archive) {
+                                    // The archive is set : go back to home page to start searching
+                                    $("#btnHome").click();
+                                });
+                            } else {
+                                console.error("The picked file could not be found in the selected folder!");
+                            }
+                        });
+                        return;
+                    }
                 }
             }
             selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
@@ -716,8 +764,83 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
      */
     function displayFileSelect() {
         $('#openLocalFiles').show();
-        $('#archiveFiles').on('change', setLocalArchiveFromFileSelect);
+        var comboArchiveList = document.getElementById('archiveList'); 
+        if (comboArchiveList.length > 0) { comboArchiveList.size = comboArchiveList.length;}
+        //$('#archiveFile').on('change', setLocalArchiveFromFileSelect);
+        $('#archiveFiles').on('click', pickFolderUWP); //UWP FilePicker [kiwix-js-windows #3]
     }
+
+    function pickFolderUWP() { //Support UWP FilePicker [kiwix-js-windows #3]
+        // Clean scenario output
+        //WinJS.log && WinJS.log("", "sample", "status");
+
+        // Create the picker object and set options
+        var folderPicker = new Windows.Storage.Pickers.FolderPicker;
+        folderPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.downloads;
+        // Filter folder contents
+        folderPicker.fileTypeFilter.replaceAll(["*"]);
+        //folderPicker.fileTypeFilter.replaceAll(".zim", ".zimaa");
+
+        folderPicker.pickSingleFolderAsync().then(function (folder) {
+            if (folder) {
+                // Application now has read/write access to all contents in the picked folder (including sub-folder contents)
+                // Cache folder so the contents can be accessed at a later time
+                Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.addOrReplace(params['falFolderToken'], folder);
+                params['pickedFolder'] = folder;
+                // Query the folder.
+                var query = folder.createFileQuery();
+                query.getFilesAsync().done(function (files) {
+                    // Display file list with storage provider and availability.
+                    var archiveDisplay = document.getElementById('chooseArchiveFromLocalStorage');
+                    if (!files) {
+                        archiveDisplay.style.display = "inline";
+                        archiveDisplay.textContent = "<b>There are no files in the selected folder! Please choose another folder.</b>";
+                        return;
+                    }
+                    var archiveList = [];
+                    files.forEach(function (file) {
+                        if (file.fileType == ".zim" || file.fileType == ".zima") { 
+                        // Create an entry in the list for the item.
+                        //var list = document.getElementById("archiveList");
+                        //var listItemElement = document.createElement("option");
+                            //archiveList.push(file.folderRelativeId.replace(/\\/g, "/"));
+                            //archiveList.push(file.path.replace(/\\/g, "/"));
+                            archiveList.push(file.name);
+                        }
+                        //listItemElement.value = file.name;
+                        //listItemElement.textContent = file.name;
+
+                        //// Show the item's provider (This PC, OneDrive, Network, or Application Content).
+                        //listItemElement.textContent += ": On " + file.provider.displayName;
+
+                        //// Show if the item is available (SkyDrive items are usually available when
+                        //// online or when they are marked for "always available offline").
+                        //listItemElement.textContent += " (";
+                        //if (file.isAvailable) {
+                        //    listItemElement.textContent += "available";
+                        //} else {
+                        //    listItemElement.textContent += "not available";
+                        //}
+                        //listItemElement.textContent += ")";
+
+                        //list.appendChild(listItemElement);
+                    });
+                    if (archiveList.length) {
+                        document.getElementById('noZIMFound').style.display = "none";
+                        populateDropDownListOfArchives(archiveList);
+                    } else {
+                        archiveDisplay.style.display = "inline";
+                        document.getElementById('noZIMFound').style.display = "inline";
+                        return;
+                    }
+                });
+            } else {
+                // The picker was dismissed with no selected file
+                console.log("User closed folder picker without picking a file");
+            }
+        });
+    }
+
 
     function setLocalArchiveFromFileList(files) {
         selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
@@ -1002,6 +1125,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         console.timeEnd("Time to HTML load");
         console.log("Loading stylesheets...");
         console.time("Time to First Paint");
+        //return;
 
         $('#articleList').hide();
 
