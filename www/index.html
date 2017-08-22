@@ -40,7 +40,7 @@
     <link href="css/bootstrap-theme.css" rel="stylesheet" media="screen" />
 </head>
 <body role="application">
-    <section id="search-article" role="region">
+    <section id="search-article" role="region" class="dark">
         <header id="top">
             <nav id="navbar" role="navigation">
                 <div class="navbar-header" id="container">
@@ -215,18 +215,24 @@
                 <h2>Configuration</h2>
                 This application needs a ZIM archive to work. If you did not download one yet, please see the About section
                 <div id="openLocalFiles" style="display: none;">
-                    Please select the .zim file (or all the .zimaa, .zimab etc in case of a split ZIM file)<br />
-                    <input type="file" id="archiveFiles" multiple class="btn" accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" /><br />
-                    <strong>Only Wikimedia contents (wiki*.zim* files) have been tested</strong> for now. There are known bugs on other contents, and audio/video/dynamic contents are not supported for now.<br />
+                    Please select the .zim file (or <b>all of the .zimaa, .zimab, etc. files</b> in the case of a split ZIM file):<br /> <br />
+                    <input type="button" class="btn btn-default" value="Select a specific ZIM file" id="archiveFile" multiple accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />&nbsp;&nbsp;<br />
+                    <span style="clear:left"><strong>Only Wikimedia content (wiki*.zim* files) have been tested</strong> well with this app.
+                    There are known bugs with other content, and audio/video/dynamic content is not supported for now.</span><br /><br />
+                    <input type="button" class="btn btn-default" value="Select folder with ZIM files" id="archiveFiles" multiple accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />&nbsp;&nbsp;<br />
+                    <span style="clear:left">Use this option to produce a list of a number of ZIM files in a particular folder, which you can select from below.</span>
                 </div>
                 <div id="scanningForArchives" style="display: none;">
                     <br /> Scanning for archives... Please wait <img src="img/spinner.gif" alt="Please wait..." />
                 </div>
                 <div id="chooseArchiveFromLocalStorage" style="display: none;">
                     <br /> Please select the archive you want to use : <select id="archiveList" class="form-control"></select>
-                    <br /> Click <a id="btnRescanDeviceStorage">here</a> to rescan your SD Cards and internal memory
+                    <br /><input type="button" class="btn btn-default" value="Rescan storage" id="btnRescanDeviceStorage" />&nbsp;&nbsp;  
+                    Click  to rescan app storage or to select a file or folder manually
+                </div><br />
+                <div id="noZIMFound" style="display: none;">
+                    <br /><p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
                 </div>
-                <br />
                 <h2>Display settings</h2>
                 <table>
                     <tr>
