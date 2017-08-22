@@ -747,6 +747,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                             }
                         });
                         return;
+                    } else if (params['pickedFile'] && Windows && Windows.Storage) {
+                        selectedStorage = MSApp.createFileFromStorageFile(params['pickedFile']);
+                        //selectedStorage = params['pickedFile'];
+                        setLocalArchiveFromFileList([selectedStorage]);
                     }
                 }
             }
@@ -767,19 +771,36 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         var comboArchiveList = document.getElementById('archiveList'); 
         if (comboArchiveList.length > 0) { comboArchiveList.size = comboArchiveList.length;}
         //$('#archiveFile').on('change', setLocalArchiveFromFileSelect);
-        $('#archiveFiles').on('click', pickFolderUWP); //UWP FilePicker [kiwix-js-windows #3]
+        $('#archiveFile').on('click', pickFileUWP); //UWP FilePicker [kiwix-js-windows #3]
+        $('#archiveFiles').on('click', pickFolderUWP); //UWP FolderPicker 
+    }
+
+    function pickFileUWP() { //Support UWP FilePicker [kiwix-js-windows #3]
+        // Create the picker object and set options
+        var filePicker = new Windows.Storage.Pickers.FileOpenPicker;
+        filePicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.downloads;
+        // Filter folder contents
+        filePicker.fileTypeFilter.replaceAll([".zim"]);
+
+        filePicker.pickSingleFileAsync().then(function (file) {
+            if (file) {
+                // Cache file so the contents can be accessed at a later time
+                Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.addOrReplace(params['falFileToken'], file);
+                params['pickedFile'] = file;
+                params['pickedFolder'] = "";
+                cookies.setItem("lastSelectedArchive", file.name, Infinity);
+                populateDropDownListOfArchives([file.name]);
+            } else {
+                // The picker was dismissed with no selected file
+                console.log("User closed folder picker without picking a file");
+            }
+        });
     }
 
     function pickFolderUWP() { //Support UWP FilePicker [kiwix-js-windows #3]
-        // Clean scenario output
-        //WinJS.log && WinJS.log("", "sample", "status");
-
-        // Create the picker object and set options
         var folderPicker = new Windows.Storage.Pickers.FolderPicker;
         folderPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.downloads;
-        // Filter folder contents
         folderPicker.fileTypeFilter.replaceAll(["*"]);
-        //folderPicker.fileTypeFilter.replaceAll(".zim", ".zimaa");
 
         folderPicker.pickSingleFolderAsync().then(function (folder) {
             if (folder) {
@@ -794,15 +815,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                     var archiveDisplay = document.getElementById('chooseArchiveFromLocalStorage');
                     if (!files) {
                         archiveDisplay.style.display = "inline";
-                        archiveDisplay.textContent = "<b>There are no files in the selected folder! Please choose another folder.</b>";
+                        document.getElementById('noZIMFound').style.display = "inline";
                         return;
                     }
                     var archiveList = [];
                     files.forEach(function (file) {
-                        if (file.fileType == ".zim" || file.fileType == ".zima") { 
-                        // Create an entry in the list for the item.
-                        //var list = document.getElementById("archiveList");
-                        //var listItemElement = document.createElement("option");
+                        if (file.fileType == ".zim" || file.fileType == ".zima") {
+                            // Create an entry in the list for the item.
+                            //var list = document.getElementById("archiveList");
+                            //var listItemElement = document.createElement("option");
                             //archiveList.push(file.folderRelativeId.replace(/\\/g, "/"));
                             //archiveList.push(file.path.replace(/\\/g, "/"));
                             archiveList.push(file.name);

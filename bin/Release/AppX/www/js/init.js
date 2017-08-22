@@ -33,14 +33,20 @@ params['imageDisplay'] = getCookie('imageDisplay') || true; //Set default to dis
 params['imageDisplay'] = params['imageDisplay'] == "false" ? false : (params['imageDisplay'] == "true" ? true : params['imageDisplay']);
 params['useMathJax'] = params['useMathJax'] || true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images
 params['storedFile'] = getCookie('lastSelectedArchive') || ""; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename and place file in default storage
+params['falFileToken'] = params['falFileToken'] || "zimfile";
 params['falFolderToken'] = params['falFolderToken'] || "zimfilestore";
 if (params['storedFile'] && Windows && Windows.Storage) { //UWP
-    Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.getFolderAsync(params['falFolderToken']).done(function (folder) {
-        if (folder) params['pickedFolder'] = folder;
-    }, function (error) {
-        params['pickedFolder'] = {};
-        }
-    );
+    var StorageApplicationPermissions = Windows.Storage.AccessCache.StorageApplicationPermissions;
+    if (StorageApplicationPermissions.futureAccessList.containsItem(params['falFileToken'])) {
+        StorageApplicationPermissions.futureAccessList.getFileAsync(params['falFileToken']).done(function (file) {
+            if (file) params['pickedFile'] = file;
+        });
+    }
+    if (StorageApplicationPermissions.futureAccessList.containsItem(params['falFolderToken'])) {
+        StorageApplicationPermissions.futureAccessList.getFolderAsync(params['falFolderToken']).done(function (folder) {
+            if (folder) params['pickedFolder'] = folder;
+        });
+    }
 }
 
 
