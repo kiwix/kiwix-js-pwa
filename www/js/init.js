@@ -32,11 +32,15 @@ params['cssTheme'] = getCookie('cssTheme') || 'light'; //Set default to 'light' 
 params['cssUITheme'] = getCookie('cssUITheme') || 'light'; //Set default to 'light' or 'dark' to use respective themes for UI
 params['imageDisplay'] = getCookie('imageDisplay') || true; //Set default to display images from Zim
 params['imageDisplay'] = params['imageDisplay'] == "false" ? false : (params['imageDisplay'] == "true" ? true : params['imageDisplay']);
-params['useMathJax'] = params['useMathJax'] || true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images
-params['storedFile'] = getCookie('lastSelectedArchive') || ""; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename and place file in default storage
+params['useMathJax'] = params['useMathJax'] || true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
+params['storedFile'] = getCookie('lastSelectedArchive') || "wikipedia_en_ray_charles_2015-06.zimaa"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['falFileToken'] = params['falFileToken'] || "zimfile";
 params['falFolderToken'] = params['falFolderToken'] || "zimfilestore";
-if (params['storedFile'] && Windows && Windows.Storage) { //UWP
+params['localStorage'] = params['localStorage'] || ""; //These will be set programmatically below
+params['pickedFile'] = params['pickeFile'] || "";
+params['pickedFolder'] = params['pickedFolder'] || "";
+
+if (params['storedFile'] && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') { //UWP
     //DEV change "archives" below if you wish to store local archives in a different location in the installation package
     Windows.ApplicationModel.Package.current.installedLocation.getFolderAsync("archives").done(function (folder) {
         if (folder) params['localStorage'] = folder;
