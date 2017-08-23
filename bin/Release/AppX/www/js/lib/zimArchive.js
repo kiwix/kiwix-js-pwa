@@ -62,8 +62,7 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
             var fileArray = [].slice.call(fileList);
             // The constructor has been called with an array of File/Blob parameter
             createZimfile(fileArray);
-        }
-        else {
+        } else {
             if (/.*zim..$/.test(path)) {
                 // splitted archive
                 that._searchArchiveParts(storage, path.slice(0, -2)).then(function(fileArray) {
@@ -71,8 +70,7 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
                 }, function(error) {
                     alert("Error reading files in splitted archive " + path + ": " + error);
                 });
-            }
-            else {
+            } else {
                 storage.get(path).then(function(file) {
                     createZimfile([file]);
                 }, function(error) {
@@ -83,9 +81,9 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
     };
 
     /**
-     * Searches the directory for all parts of a splitted archive.
+     * Searches the directory for all parts of a split archive.
      * @param {Storage} storage storage interface
-     * @param {String} prefixPath path to the splitted files, missing the "aa" / "ab" / ... suffix.
+     * @param {String} prefixPath path to the split files, missing the "aa" / "ab" / ... suffix.
      * @returns {Promise} that resolves to the array of file objects found.
      */
     ZIMArchive.prototype._searchArchiveParts = function(storage, prefixPath) {

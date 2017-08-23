@@ -32,10 +32,70 @@
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-22T22:34:38.309</Modified>
+      <Modified>2017-08-23T13:15:45.669</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimaa">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimaa</PackagePath>
+      <Modified>2017-06-07T06:55:52.314</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimab">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimab</PackagePath>
+      <Modified>2017-06-07T06:55:52.333</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimac">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimac</PackagePath>
+      <Modified>2017-06-07T06:55:52.354</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimad">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimad</PackagePath>
+      <Modified>2017-06-07T06:55:52.373</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimae">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimae</PackagePath>
+      <Modified>2017-06-07T06:55:52.393</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimaf">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimaf</PackagePath>
+      <Modified>2017-06-07T06:55:52.414</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimag">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimag</PackagePath>
+      <Modified>2017-06-07T06:55:52.433</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimah">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimah</PackagePath>
+      <Modified>2017-06-07T06:55:52.454</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimai">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimai</PackagePath>
+      <Modified>2017-06-07T06:55:52.473</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimaj">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimaj</PackagePath>
+      <Modified>2017-06-07T06:55:52.493</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimak">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimak</PackagePath>
+      <Modified>2017-06-07T06:55:52.524</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimal">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimal</PackagePath>
+      <Modified>2017-06-07T06:55:52.547</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimam">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimam</PackagePath>
+      <Modified>2017-06-07T06:55:52.568</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.ziman">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.ziman</PackagePath>
+      <Modified>2017-06-07T06:55:52.590</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimao">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimao</PackagePath>
+      <Modified>2017-06-07T06:55:52.613</Modified>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\images\BadgeLogo.scale-100.png">
       <PackagePath>images\BadgeLogo.scale-100.png</PackagePath>
       <Modified>2017-06-16T16:31:46.516</Modified>
@@ -399,7 +459,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\css\app.css">
       <PackagePath>www\css\app.css</PackagePath>
-      <Modified>2017-08-22T19:51:04.182</Modified>
+      <Modified>2017-08-23T12:03:02.768</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\css\bootstrap-theme.css">
       <PackagePath>www\css\bootstrap-theme.css</PackagePath>
@@ -415,7 +475,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\index.html">
       <PackagePath>www\index.html</PackagePath>
-      <Modified>2017-08-22T19:36:31.780</Modified>
+      <Modified>2017-08-23T12:49:13.533</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\favicon.ico">
       <PackagePath>www\favicon.ico</PackagePath>
@@ -543,11 +603,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-08-22T22:16:22.322</Modified>
+      <Modified>2017-08-23T13:14:12.160</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
-      <Modified>2017-08-22T21:04:52.910</Modified>
+      <Modified>2017-08-23T13:15:28.105</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\abstractFilesystemAccess.js">
       <PackagePath>www\js\lib\abstractFilesystemAccess.js</PackagePath>
@@ -599,7 +659,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\zimArchive.js">
       <PackagePath>www\js\lib\zimArchive.js</PackagePath>
-      <Modified>2017-08-12T13:30:01.500</Modified>
+      <Modified>2017-08-23T07:10:20.371</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\zimArchiveLoader.js">
       <PackagePath>www\js\lib\zimArchiveLoader.js</PackagePath>
@@ -611,7 +671,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\zimfile.js">
       <PackagePath>www\js\lib\zimfile.js</PackagePath>
-      <Modified>2017-08-21T17:37:08.945</Modified>
+      <Modified>2017-08-23T09:11:05.884</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\config\config.js">
       <PackagePath>www\js\MathJax\config\config.js</PackagePath>
@@ -1468,7 +1528,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-22T19:00:33.462</Modified>
+      <Modified>2017-08-23T10:02:58.575</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>
