@@ -158,7 +158,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                                 var fullTotal = localSearch.countFullMatches(val);
                                 var partialTotal = localSearch.countPartialMatches();
                                 fullTotal = fullTotal > partialTotal ? partialTotal : fullTotal;
-                                document.getElementById('matches').innerHTML = '<a id="scrollLink" href="#">Full: ' + fullTotal + '</a>'; 
+                                document.getElementById('matches').innerHTML = '<a id="scrollLink" href="#">Full: ' + fullTotal + '</a>';
                                 document.getElementById('partial').innerHTML = "Partial: " + partialTotal;
                                 document.getElementById('scrollLink').addEventListener('click', function () {
                                     localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
@@ -168,699 +168,728 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                             } else {
                                 document.getElementById('matches').innerHTML = "Full: 0";
                                 document.getElementById('partial').innerHTML = "Partial: 0";
-                            } 
+                            }
                         }, 500);
                     }
                 }, false);
             }
         });
 
-    $("#btnRandomArticle").on("click", function(e) {
-        $('#prefix').val("");
-        clearFindInArticle();
-        goToRandomArticle();
-        $("#welcomeText").hide();
-        $('#articleList').hide();
-        $('#articleListHeaderMessage').hide();
-        $("#readingArticle").hide();
-        $('#searchingForArticles').hide();
-        if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
-            $('#navbarToggle').click();
-        }
-    });
-    
-    $('#btnRescanDeviceStorage').on("click", function(e) {
-        if (storages.length) {
-            searchForArchivesInStorage();
-        } else {
-            displayFileSelect();
-            $('archiveFiles').click();
-        }
-    });
-    // Bottom bar :
-    $('#btnBack').on('click', function(e) {
-        clearFindInArticle();
-        history.back();
-        return false;
-    });
-    $('#btnForward').on('click', function(e) {
-        clearFindInArticle();
-        history.forward();
-        return false;
-    });
-    $('#btnHomeBottom').on('click', function(e) {
-        $('#btnHome').click();
-        return false;
-    });
-    $('#btnTop').on('click', function(e) {
-        $("#articleContent").contents().scrollTop(0);
-        // We return true, so that the link to #top is still triggered (useful in the About section)
-        return true;
-    });
-    // Top menu :
-    $('#btnHome').on('click', function(e) {
-        // Highlight the selected section in the navbar
-        $('#liHomeNav').attr("class","active");
-        $('#liConfigureNav').attr("class","");
-        $('#liAboutNav').attr("class","");
-        if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
-            $('#navbarToggle').click();
-        }
-        document.getElementById('btnConfigure').classList.remove("active");
-        clearFindInArticle();
-        // Show the selected content in the page
-        $('#about').hide();
-        $('#configuration').hide();
-        $('#formArticleSearch').show();
-        $("#welcomeText").show();
-        $('#articleList').show();
-        $('#articleListHeaderMessage').show();
-        $('#articleContent').show();
-        // Give the focus to the search field, and clean up the page contents
-        $("#prefix").val("");
-        $('#prefix').focus();
-        $("#articleList").empty();
-        $('#articleListHeaderMessage').empty();
-        $("#readingArticle").hide();
-        $("#articleContent").hide();
-        $("#articleContent").contents().empty();
-        $('#searchingForArticles').hide();
-        if (selectedArchive !== null && selectedArchive.isReady()) {
+        $("#btnRandomArticle").on("click", function (e) {
+            $('#prefix').val("");
+            clearFindInArticle();
+            goToRandomArticle();
             $("#welcomeText").hide();
-            goToMainArticle();
-        }
-        return false;
-    });
-    $('#btnConfigure').on('click', function(e) {
-        // Highlight the selected section in the navbar
-        $('#liHomeNav').attr("class","");
-        $('#liConfigureNav').attr("class","active");
-        $('#liAboutNav').attr("class","");
-        if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
-            $('#navbarToggle').click();
-        }
-        document.getElementById('btnConfigure').classList.add("active");
-        clearFindInArticle();
-        // Show the selected content in the page
-        $('#about').hide();
-        $('#configuration').show();
-        //$('#formArticleSearch').hide();
-        $("#welcomeText").hide();
-        $('#articleList').hide();
-        $('#articleListHeaderMessage').hide();
-        $("#readingArticle").hide();
-        $("#articleContent").hide();
-        $('#articleContent').hide();
-        $('#searchingForArticles').hide();
-        refreshAPIStatus();
-        return false;
-    });
-    $('#btnAbout').on('click', function(e) {
-        // Highlight the selected section in the navbar
-        $('#liHomeNav').attr("class","");
-        $('#liConfigureNav').attr("class","");
-        $('#liAboutNav').attr("class","active");
-        if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
-            $('#navbarToggle').click();
-        }
-        document.getElementById('btnConfigure').classList.remove("active");
-        clearFindInArticle();
-        // Show the selected content in the page
-        $('#about').show();
-        $('#configuration').hide();
-        //$('#formArticleSearch').hide();
-        $("#welcomeText").hide();
-        $('#articleList').hide();
-        $('#articleListHeaderMessage').hide();
-        $("#readingArticle").hide();
-        $("#articleContent").hide();
-        $('#articleContent').hide();
-        $('#searchingForArticles').hide();
-        return false;
-    });
-    $('input:radio[name=contentInjectionMode]').on('change', function(e) {
-        if (checkWarnServiceWorkerMode(this.value)) {
-            document.getElementById('returntoArticle_top').innerHTML = "";
-            document.getElementById('returntoArticle_bottom').innerHTML = "";
-            // Do the necessary to enable or disable the Service Worker
-            setContentInjectionMode(this.value);
-        }
-        else {
-            setContentInjectionMode('jquery');
-        }
-    });
-    $('input:checkbox[name=cssCacheMode]').on('change', function (e) {
-        params['cssCache'] = this.checked ? true : false;
-        cookies.setItem('cssCache', params['cssCache'], Infinity);
-    });
-    $('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
-        params['imageDisplay'] = this.checked ? true : false;
-        cookies.setItem('imageDisplay', params['imageDisplay'], Infinity);
-    });
-    $('input:checkbox[name=cssUIDarkTheme]').on('change', function (e) {
-        params['cssUITheme'] = this.checked ? 'dark' : 'light';
-        cookies.setItem('cssUITheme', params['cssUITheme'], Infinity);
-        cssUIThemeSet(params['cssUITheme']);
-    });
-
-    function cssUIThemeSet(value) {
-        if (value == 'dark') {
-            document.getElementById('search-article').classList.add("dark");
-            document.getElementById('article').classList.add("dark");
-            document.getElementById('navbar').classList.remove("navbar-default");
-            document.getElementById('navbar').classList.add("dark");
-            document.getElementById('archiveFiles').classList.add("dark");
-            document.getElementById('archiveFiles').classList.remove("btn");
-            document.getElementById('container').classList.add("dark");
-            document.getElementById('findInArticle').classList.add("dark");
-            document.getElementById('prefix').classList.add("dark");
-            var elements = document.querySelectorAll(".settings");
-            for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid darkgray"; } 
-        }
-        if (value == 'light') {
-            document.getElementById('search-article').classList.remove("dark");
-            document.getElementById('article').classList.remove("dark");
-            document.getElementById('navbar').classList.add("navbar-default");
-            document.getElementById('navbar').classList.remove("dark");
-            document.getElementById('archiveFiles').classList.remove("dark");
-            document.getElementById('archiveFiles').classList.add("btn");
-            document.getElementById('container').classList.remove("dark");
-            document.getElementById('findInArticle').classList.remove("dark");
-            document.getElementById('prefix').classList.remove("dark");
-            var elements = document.querySelectorAll(".settings");
-            for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid black"; }
-        }
-    }
-
-    $('input:checkbox[name=cssWikiDarkTheme]').on('change', function (e) {
-        params['cssTheme'] = this.checked ? 'dark' : 'light';
-        cookies.setItem('cssTheme', params['cssTheme'], Infinity);
-        if (this.checked) document.getElementById('footer').classList.add("darkfooter");
-        if (!this.checked) document.getElementById('footer').classList.remove("darkfooter");
-    });
-    $('input:radio[name=cssInjectionMode]').on('click', function (e) {
-        params['cssSource'] = this.value;
-        cookies.setItem('cssSource', params['cssSource'], Infinity);
-    });
-    $(document).ready(function (e) {
-        // Set checkbox for cssCache and radio for cssSource
-        document.getElementById('cssCacheModeCheck').checked = params['cssCache'];
-        document.getElementById('imageDisplayModeCheck').checked = params['imageDisplay'];
-        document.getElementById('cssWikiDarkThemeCheck').checked = params['cssTheme'] == 'dark' ? true : false;
-        if (params['cssTheme'] == "dark") document.getElementById('footer').classList.add("darkfooter");
-        document.getElementById('cssUIDarkThemeCheck').checked = params['cssUITheme'] == 'dark' ? true : false;
-        cssUIThemeSet(params['cssUITheme']);
-        $('input:radio[name=cssInjectionMode]').filter('[value="' + params['cssSource'] + '"]').prop('checked', true);
-    });
-
-    /**
-     * Displays or refreshes the API status shown to the user
-     */
-    function refreshAPIStatus() {
-        if (isMessageChannelAvailable()) {
-            $('#messageChannelStatus').html("MessageChannel API available");
-            $('#messageChannelStatus').removeClass("apiAvailable apiUnavailable")
-                    .addClass("apiAvailable");
-        } else {
-            $('#messageChannelStatus').html("MessageChannel API unavailable");
-            $('#messageChannelStatus').removeClass("apiAvailable apiUnavailable")
-                    .addClass("apiUnavailable");
-        }
-        if (isServiceWorkerAvailable()) {
-            if (isServiceWorkerReady()) {
-                $('#serviceWorkerStatus').html("ServiceWorker API available, and registered");
-                $('#serviceWorkerStatus').removeClass("apiAvailable apiUnavailable")
-                        .addClass("apiAvailable");
-            } else {
-                $('#serviceWorkerStatus').html("ServiceWorker API available, but not registered");
-                $('#serviceWorkerStatus').removeClass("apiAvailable apiUnavailable")
-                        .addClass("apiUnavailable");
+            $('#articleList').hide();
+            $('#articleListHeaderMessage').hide();
+            $("#readingArticle").hide();
+            $('#searchingForArticles').hide();
+            if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
+                $('#navbarToggle').click();
             }
-        } else {
-            $('#serviceWorkerStatus').html("ServiceWorker API unavailable");
-            $('#serviceWorkerStatus').removeClass("apiAvailable apiUnavailable")
-                    .addClass("apiUnavailable");
-        }
-    }
-    
-    var contentInjectionMode;
-    
-    /**
-     * Sets the given injection mode.
-     * This involves registering (or re-enabling) the Service Worker if necessary
-     * It also refreshes the API status for the user afterwards.
-     * 
-     * @param {String} value The chosen content injection mode : 'jquery' or 'serviceworker'
-     */
-    function setContentInjectionMode(value) {
-        if (value === 'jquery') {
-            if (isServiceWorkerReady()) {
-                // We need to disable the ServiceWorker
-                // Unregistering it does not seem to work as expected : the ServiceWorker
-                // is indeed unregistered but still active...
-                // So we have to disable it manually (even if it's still registered and active)
-                navigator.serviceWorker.controller.postMessage({'action': 'disable'});
-                messageChannel = null;
-            }
-            refreshAPIStatus();
-        } else if (value === 'serviceworker') {
-            if (!isServiceWorkerAvailable()) {
-                alert("The ServiceWorker API is not available on your device. Falling back to JQuery mode");
-                setContentInjectionMode('jquery');
+        });
+
+        $('#btnRescanDeviceStorage').on("click", function (e) {
+            if (params['localStorage']) {
+                scanUWPFolderforArchives(params['localStorage']);
                 return;
             }
-            if (!isMessageChannelAvailable()) {
-                alert("The MessageChannel API is not available on your device. Falling back to JQuery mode");
-                setContentInjectionMode('jquery');
-                return;
-            }
-            
-            if (!messageChannel) {
-                // Let's create the messageChannel for the 2-way communication
-                // with the Service Worker
-                messageChannel = new MessageChannel();
-                messageChannel.port1.onmessage = handleMessageChannelMessage;
-            }
-                    
-            if (!isServiceWorkerReady()) {
-                $('#serviceWorkerStatus').html("ServiceWorker API available : trying to register it...");
-                navigator.serviceWorker.register('../service-worker.js').then(function (reg) {
-                    console.log('serviceWorker registered', reg);
-                    serviceWorkerRegistration = reg;
-                    refreshAPIStatus();
-                    
-                    // We need to wait for the ServiceWorker to be activated
-                    // before sending the first init message
-                    var serviceWorker = reg.installing || reg.waiting || reg.active;
-                    serviceWorker.addEventListener('statechange', function(statechangeevent) {
-                        if (statechangeevent.target.state === 'activated') {
-                            console.log("try to post an init message to ServiceWorker");
-                            navigator.serviceWorker.controller.postMessage({'action': 'init'}, [messageChannel.port2]);
-                            console.log("init message sent to ServiceWorker");
-                        }
-                    });
-                }, function (err) {
-                    console.error('error while registering serviceWorker', err);
-                    refreshAPIStatus();
-                });
-            } else {
-                console.log("try to re-post an init message to ServiceWorker, to re-enable it in case it was disabled");
-                navigator.serviceWorker.controller.postMessage({'action': 'init'}, [messageChannel.port2]);
-                console.log("init message sent to ServiceWorker");
-            }
-        }
-        $('input:radio[name=contentInjectionMode]').prop('checked', false);
-        $('input:radio[name=contentInjectionMode]').filter('[value="' + value + '"]').prop('checked', true);
-        contentInjectionMode = value;
-        // Save the value in a cookie, so that to be able to keep it after a reload/restart
-        cookies.setItem('lastContentInjectionMode', value, Infinity);
-    }
-    
-    /**
-     * If the ServiceWorker mode is selected, warn the user before activating it
-     * @param chosenContentInjectionMode The mode that the user has chosen
-     */
-    function checkWarnServiceWorkerMode(chosenContentInjectionMode) {
-        if (chosenContentInjectionMode === 'serviceworker' && !cookies.hasItem("warnedServiceWorkerMode")) {
-            // The user selected the "serviceworker" mode, which is still unstable
-            // So let's display a warning to the user
-
-            // If the focus is on the search field, we have to move it,
-            // else the keyboard hides the message
-            if ($("#prefix").is(":focus")) {
-                $("searchArticles").focus();
-            }
-            if (confirm("The 'Service Worker' mode is still UNSTABLE for now."
-                + " It happens that the application needs to be reinstalled (or the ServiceWorker manually removed)."
-                + " Please confirm with OK that you're ready to face this kind of bugs, or click Cancel to stay in 'jQuery' mode.")) {
-                // We will not display this warning again for one day
-                cookies.setItem("warnedServiceWorkerMode", true, 86400);
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    // At launch, we try to set the last content injection mode (stored in a cookie)
-    var lastContentInjectionMode = cookies.getItem('lastContentInjectionMode');
-    if (lastContentInjectionMode) {
-        setContentInjectionMode(lastContentInjectionMode);
-    }
-    else {
-        setContentInjectionMode('jquery');
-    }
-
-    var serviceWorkerRegistration = null;
-    
-    /**
-     * Tells if the ServiceWorker API is available
-     * https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker
-     * @returns {Boolean}
-     */
-    function isServiceWorkerAvailable() {
-        return ('serviceWorker' in navigator);
-    }
-    
-    /**
-     * Tells if the MessageChannel API is available
-     * https://developer.mozilla.org/en-US/docs/Web/API/MessageChannel
-     * @returns {Boolean}
-     */
-    function isMessageChannelAvailable() {
-        try{
-            var dummyMessageChannel = new MessageChannel();
-            if (dummyMessageChannel) return true;
-        }
-        catch (e){
-            return false;
-        }
-        return false;
-    }
-    
-    /**
-     * Tells if the ServiceWorker is registered, and ready to capture HTTP requests
-     * and inject content in articles.
-     * @returns {Boolean}
-     */
-    function isServiceWorkerReady() {
-        // Return true if the serviceWorkerRegistration is not null and not undefined
-        return (serviceWorkerRegistration);
-    }
-    
-    /**
-     * 
-     * @type Array.<StorageFirefoxOS>
-     */
-    var storages = [];
-    //var storages = [appFolder.path];  //UWP
-    function searchForArchivesInPreferencesOrStorage() {
-        // First see if the list of archives is stored in the cookie
-        var listOfArchivesFromCookie = cookies.getItem("listOfArchives");
-        if (listOfArchivesFromCookie !== null && listOfArchivesFromCookie !== undefined && listOfArchivesFromCookie !== "") {
-            var directories = listOfArchivesFromCookie.split('|');
-            populateDropDownListOfArchives(directories);
-        }
-        else {
             if (storages.length) {
                 searchForArchivesInStorage();
             } else {
                 displayFileSelect();
-                if (document.getElementById('archiveFiles').files && document.getElementById('archiveFiles').files.length > 0) {
-                    // Archive files are already selected, 
-                    setLocalArchiveFromFileSelect();
-                }
-                else {
-                    $("#btnConfigure").click();
-                }
+                $('archiveFiles').click();
             }
-        }
-    }
-
-    function searchForArchivesInStorage() {
-        // If DeviceStorage is available, we look for archives in it
-        $("#btnConfigure").click();
-        $('#scanningForArchives').show();
-        zimArchiveLoader.scanForArchives(storages, populateDropDownListOfArchives);
-    }
-
-    if ($.isFunction(navigator.getDeviceStorages)) {
-        // The method getDeviceStorages is available (FxOS>=1.1)
-        storages = $.map(navigator.getDeviceStorages("sdcard"), function(s) {
-            return new abstractFilesystemAccess.StorageFirefoxOS(s);
         });
-    }
-
-    if (Windows && Windows.Storage || (storages !== null && storages.length > 0)) {
-        // Make a fake first access to device storage, in order to ask the user for confirmation if necessary.
-        // This way, it is only done once at this moment, instead of being done several times in callbacks
-        // After that, we can start looking for archives
-        //storages[0].get("fake-file-to-read").then(searchForArchivesInPreferencesOrStorage,
-                                                  //searchForArchivesInPreferencesOrStorage);
-        searchForArchivesInPreferencesOrStorage();
-    }
-    else {
-        // If DeviceStorage is not available, we display the file select components
-        displayFileSelect();
-        if (document.getElementById('archiveFiles').files && document.getElementById('archiveFiles').files.length>0) {
-            // Archive files are already selected, 
-            setLocalArchiveFromFileSelect();
-        }
-        else {
-            $("#btnConfigure").click();
-        }
-    }
-
-
-    // Display the article when the user goes back in the browser history
-    window.onpopstate = function(event) {
-        if (event.state) {
-            var title = event.state.title;
-            var titleSearch = event.state.titleSearch;
-            
-            $('#prefix').val("");
-            $("#welcomeText").hide();
-            $("#readingArticle").hide();
+        // Bottom bar :
+        $('#btnBack').on('click', function (e) {
+            clearFindInArticle();
+            history.back();
+            return false;
+        });
+        $('#btnForward').on('click', function (e) {
+            clearFindInArticle();
+            history.forward();
+            return false;
+        });
+        $('#btnHomeBottom').on('click', function (e) {
+            $('#btnHome').click();
+            return false;
+        });
+        $('#btnTop').on('click', function (e) {
+            $("#articleContent").contents().scrollTop(0);
+            // We return true, so that the link to #top is still triggered (useful in the About section)
+            return true;
+        });
+        // Top menu :
+        $('#btnHome').on('click', function (e) {
+            // Highlight the selected section in the navbar
+            $('#liHomeNav').attr("class", "active");
+            $('#liConfigureNav').attr("class", "");
+            $('#liAboutNav').attr("class", "");
             if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
                 $('#navbarToggle').click();
             }
-            $('#searchingForArticles').hide();
+            document.getElementById('btnConfigure').classList.remove("active");
+            document.getElementById('btnAbout').classList.remove("active");
+            clearFindInArticle();
+            // Show the selected content in the page
+            $('#about').hide();
             $('#configuration').hide();
+            $('#formArticleSearch').show();
+            $("#welcomeText").show();
+            $('#articleList').show();
+            $('#articleListHeaderMessage').show();
+            $('#articleContent').show();
+            // Give the focus to the search field, and clean up the page contents
+            $("#prefix").val("");
+            $('#prefix').focus();
+            $("#articleList").empty();
+            $('#articleListHeaderMessage').empty();
+            $("#readingArticle").hide();
+            $("#articleContent").hide();
+            $("#articleContent").contents().empty();
+            $('#searchingForArticles').hide();
+            if (selectedArchive !== null && selectedArchive.isReady()) {
+                $("#welcomeText").hide();
+                goToMainArticle();
+            }
+            return false;
+        });
+        $('#btnConfigure').on('click', function (e) {
+            // Highlight the selected section in the navbar
+            $('#liHomeNav').attr("class", "");
+            $('#liConfigureNav').attr("class", "active");
+            $('#liAboutNav').attr("class", "");
+            if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
+                $('#navbarToggle').click();
+            }
+            document.getElementById('btnAbout').classList.remove("active");
+            document.getElementById('btnConfigure').classList.add("active");
+            clearFindInArticle();
+            // Show the selected content in the page
+            $('#about').hide();
+            $('#configuration').show();
+            //$('#formArticleSearch').hide();
+            $("#welcomeText").hide();
             $('#articleList').hide();
             $('#articleListHeaderMessage').hide();
-            $('#articleContent').contents().empty();
-            
-            if (title && !(""===title)) {
-                goToArticle(title);
+            $("#readingArticle").hide();
+            $("#articleContent").hide();
+            $('#articleContent').hide();
+            $('#searchingForArticles').hide();
+            refreshAPIStatus();
+            if (params['localStorage'] && (!params['pickedFolder'] || !params['pickedFile'])) {
+                params['pickedFolder'] = params['localStorage'];
             }
-            else if (titleSearch && !(""===titleSearch)) {
-                $('#prefix').val(titleSearch);
-                searchDirEntriesFromPrefix($('#prefix').val());
+            return false;
+        });
+        $('#btnAbout').on('click', function (e) {
+            // Highlight the selected section in the navbar
+            $('#liHomeNav').attr("class", "");
+            $('#liConfigureNav').attr("class", "");
+            $('#liAboutNav').attr("class", "active");
+            if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
+                $('#navbarToggle').click();
             }
-        }
-    };
-    
-    /**
-     * Populate the drop-down list of archives with the given list
-     * @param {Array.<String>} archiveDirectories
-     */
-    function populateDropDownListOfArchives(archiveDirectories) {
-        $('#scanningForArchives').hide();
-        $('#chooseArchiveFromLocalStorage').show();
-        var comboArchiveList = document.getElementById('archiveList');
-        comboArchiveList.options.length = 0;
-        for (var i = 0; i < archiveDirectories.length; i++) {
-            var archiveDirectory = archiveDirectories[i];
-            if (archiveDirectory === "/") {
-                alert("It looks like you have put some archive files at the root of your sdcard (or internal storage). Please move them in a subdirectory");
-            }
-            else {
-                comboArchiveList.options[i] = new Option(archiveDirectory, archiveDirectory);
-            }
-        }
-        // Store the list of archives in a cookie, to avoid rescanning at each start
-        cookies.setItem("listOfArchives", archiveDirectories.join('|'), Infinity);
-        comboArchiveList.size = comboArchiveList.length;
-
-        $('#archiveList').on('change', setLocalArchiveFromArchiveList);
-        if (comboArchiveList.options.length > 0) {
-            var lastSelectedArchive = cookies.getItem("lastSelectedArchive");
-            if (lastSelectedArchive !== null && lastSelectedArchive !== undefined && lastSelectedArchive !== "") {
-                // Attempt to select the corresponding item in the list, if it exists
-                if ($("#archiveList option[value='"+lastSelectedArchive+"']").length > 0) {
-                    $("#archiveList").val(lastSelectedArchive);
-                }
-            }
-            // Set the localArchive as the last selected (or the first one if it has never been selected)
-            setLocalArchiveFromArchiveList();
-        }
-        else {
-            alert("Welcome to Kiwix! This application needs at least a ZIM file in your SD-card (or internal storage). Please download one and put it on the device (see About section). Also check that your device is not connected to a computer through USB device storage (which often locks the SD-card content)");
-            $("#btnAbout").click();
-            var isAndroid = (navigator.userAgent.indexOf("Android") !== -1);
-            if (isAndroid) {
-                alert("You seem to be using an Android device. Be aware that there is a bug on Firefox, that prevents finding Wikipedia archives in a SD-card (at least on some devices. See about section). Please put the archive in the internal storage if the application can't find it.");
-            }
-        }
-    }
-
-    /**
-     * Sets the localArchive from the selected archive in the drop-down list
-     */
-    function setLocalArchiveFromArchiveList() {
-        var archiveDirectory = $('#archiveList').val();
-        if (archiveDirectory && archiveDirectory.length > 0) {
-            // Now, try to find which DeviceStorage has been selected by the user
-            // It is the prefix of the archive directory
-            var regexpStorageName = /^\/([^\/]+)\//;
-            var regexpResults = regexpStorageName.exec(archiveDirectory);
-            var selectedStorage = null;
-            if (regexpResults && regexpResults.length>0) {
-                var selectedStorageName = regexpResults[1];
-                for (var i=0; i<storages.length; i++) {
-                    var storage = storages[i];
-                    if (selectedStorageName === storage.storageName) {
-                        // We found the selected storage
-                        selectedStorage = storage;
-                    }
-                }
-                if (selectedStorage === null) {
-                    alert("Unable to find which device storage corresponds to directory " + archiveDirectory);
-                }
+            document.getElementById('btnConfigure').classList.remove("active");
+            document.getElementById('btnAbout').classList.add("active");
+            clearFindInArticle();
+            // Show the selected content in the page
+            $('#about').show();
+            $('#configuration').hide();
+            //$('#formArticleSearch').hide();
+            $("#welcomeText").hide();
+            $('#articleList').hide();
+            $('#articleListHeaderMessage').hide();
+            $("#readingArticle").hide();
+            $("#articleContent").hide();
+            $('#articleContent').hide();
+            $('#searchingForArticles').hide();
+            return false;
+        });
+        $('input:radio[name=contentInjectionMode]').on('change', function (e) {
+            if (checkWarnServiceWorkerMode(this.value)) {
+                document.getElementById('returntoArticle_top').innerHTML = "";
+                document.getElementById('returntoArticle_bottom').innerHTML = "";
+                // Do the necessary to enable or disable the Service Worker
+                setContentInjectionMode(this.value);
             }
             else {
-                // This happens when the archiveDirectory is not prefixed by the name of the storage
-                // (in the Simulator, or with FxOs 1.0, or probably on devices that only have one device storage)
-                // In this case, we use the first storage of the list (there should be only one)
-                if (storages.length === 1) {
-                    selectedStorage = storages[0];
+                setContentInjectionMode('jquery');
+            }
+        });
+        $('input:checkbox[name=cssCacheMode]').on('change', function (e) {
+            params['cssCache'] = this.checked ? true : false;
+            cookies.setItem('cssCache', params['cssCache'], Infinity);
+        });
+        $('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
+            params['imageDisplay'] = this.checked ? true : false;
+            cookies.setItem('imageDisplay', params['imageDisplay'], Infinity);
+        });
+        $('input:checkbox[name=cssUIDarkTheme]').on('change', function (e) {
+            params['cssUITheme'] = this.checked ? 'dark' : 'light';
+            cookies.setItem('cssUITheme', params['cssUITheme'], Infinity);
+            cssUIThemeSet(params['cssUITheme']);
+        });
+
+        function cssUIThemeSet(value) {
+            if (value == 'dark') {
+                document.getElementById('search-article').classList.add("dark");
+                document.getElementById('article').classList.add("dark");
+                document.getElementById('navbar').classList.remove("navbar-default");
+                document.getElementById('navbar').classList.add("dark");
+                document.getElementById('archiveFiles').classList.add("dark");
+                document.getElementById('archiveFiles').classList.remove("btn");
+                document.getElementById('container').classList.add("dark");
+                document.getElementById('findInArticle').classList.add("dark");
+                document.getElementById('prefix').classList.add("dark");
+                var elements = document.querySelectorAll(".settings");
+                for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid darkgray"; }
+            }
+            if (value == 'light') {
+                document.getElementById('search-article').classList.remove("dark");
+                document.getElementById('article').classList.remove("dark");
+                document.getElementById('navbar').classList.add("navbar-default");
+                document.getElementById('navbar').classList.remove("dark");
+                document.getElementById('archiveFiles').classList.remove("dark");
+                document.getElementById('archiveFiles').classList.add("btn");
+                document.getElementById('container').classList.remove("dark");
+                document.getElementById('findInArticle').classList.remove("dark");
+                document.getElementById('prefix').classList.remove("dark");
+                var elements = document.querySelectorAll(".settings");
+                for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid black"; }
+            }
+        }
+
+        $('input:checkbox[name=cssWikiDarkTheme]').on('change', function (e) {
+            params['cssTheme'] = this.checked ? 'dark' : 'light';
+            cookies.setItem('cssTheme', params['cssTheme'], Infinity);
+            if (this.checked) document.getElementById('footer').classList.add("darkfooter");
+            if (!this.checked) document.getElementById('footer').classList.remove("darkfooter");
+        });
+        $('input:radio[name=cssInjectionMode]').on('click', function (e) {
+            params['cssSource'] = this.value;
+            cookies.setItem('cssSource', params['cssSource'], Infinity);
+        });
+        $(document).ready(function (e) {
+            // Set checkbox for cssCache and radio for cssSource
+            document.getElementById('cssCacheModeCheck').checked = params['cssCache'];
+            document.getElementById('imageDisplayModeCheck').checked = params['imageDisplay'];
+            document.getElementById('cssWikiDarkThemeCheck').checked = params['cssTheme'] == 'dark' ? true : false;
+            if (params['cssTheme'] == "dark") document.getElementById('footer').classList.add("darkfooter");
+            document.getElementById('cssUIDarkThemeCheck').checked = params['cssUITheme'] == 'dark' ? true : false;
+            cssUIThemeSet(params['cssUITheme']);
+            $('input:radio[name=cssInjectionMode]').filter('[value="' + params['cssSource'] + '"]').prop('checked', true);
+            //First run of new version code
+            if (cookies.getItem('version') != params['version']) {
+                document.getElementById('myModal').style.display = "block";
+                document.getElementsByClassName("close")[0].onclick = function () {
+                    document.getElementById('myModal').style.display = "none";
                 }
-                else { //IT'S NOT FREAKIN FFOS!!!!!!!!!!
-                    //console.log("Something weird happened with the DeviceStorage API : found a directory without prefix : "
-                    //    + archiveDirectory + ", but there were " + storages.length
-                    //    + " storages found with getDeviceStorages instead of 1");
-                    //Patched for UWP support:
-                    if (params['pickedFolder'] && Windows && Windows.Storage) {
-                        var query = params['pickedFolder'].createFileQuery();
-                        query.getFilesAsync().done(function (files){
-                            var file;
-                            if (files) {
-                                for (i = 0; i < files.length; i++) {
-                                    if (files[i].name == archiveDirectory) {
-                                        file = files[i];
-                                        break;
-                                    }
-                                }
-                            }
-                            if (file) {
-                                cookies.setItem("lastSelectedArchive", archiveDirectory, Infinity);
-                                selectedStorage = MSApp.createFileFromStorageFile(file);
-                                archiveDirectory = "";
-                                selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage([selectedStorage], archiveDirectory, function (archive) {
-                                    // The archive is set : go back to home page to start searching
-                                    $("#btnHome").click();
-                                });
-                            } else {
-                                console.error("The picked file could not be found in the selected folder!");
+                cookies.setItem('version', params['version'], Infinity);
+            }
+
+        });
+
+        /**
+         * Displays or refreshes the API status shown to the user
+         */
+        function refreshAPIStatus() {
+            if (isMessageChannelAvailable()) {
+                $('#messageChannelStatus').html("MessageChannel API available");
+                $('#messageChannelStatus').removeClass("apiAvailable apiUnavailable")
+                    .addClass("apiAvailable");
+            } else {
+                $('#messageChannelStatus').html("MessageChannel API unavailable");
+                $('#messageChannelStatus').removeClass("apiAvailable apiUnavailable")
+                    .addClass("apiUnavailable");
+            }
+            if (isServiceWorkerAvailable()) {
+                if (isServiceWorkerReady()) {
+                    $('#serviceWorkerStatus').html("ServiceWorker API available, and registered");
+                    $('#serviceWorkerStatus').removeClass("apiAvailable apiUnavailable")
+                        .addClass("apiAvailable");
+                } else {
+                    $('#serviceWorkerStatus').html("ServiceWorker API available, but not registered");
+                    $('#serviceWorkerStatus').removeClass("apiAvailable apiUnavailable")
+                        .addClass("apiUnavailable");
+                }
+            } else {
+                $('#serviceWorkerStatus').html("ServiceWorker API unavailable");
+                $('#serviceWorkerStatus').removeClass("apiAvailable apiUnavailable")
+                    .addClass("apiUnavailable");
+            }
+        }
+
+        var contentInjectionMode;
+
+        /**
+         * Sets the given injection mode.
+         * This involves registering (or re-enabling) the Service Worker if necessary
+         * It also refreshes the API status for the user afterwards.
+         * 
+         * @param {String} value The chosen content injection mode : 'jquery' or 'serviceworker'
+         */
+        function setContentInjectionMode(value) {
+            if (value === 'jquery') {
+                if (isServiceWorkerReady()) {
+                    // We need to disable the ServiceWorker
+                    // Unregistering it does not seem to work as expected : the ServiceWorker
+                    // is indeed unregistered but still active...
+                    // So we have to disable it manually (even if it's still registered and active)
+                    navigator.serviceWorker.controller.postMessage({ 'action': 'disable' });
+                    messageChannel = null;
+                }
+                refreshAPIStatus();
+            } else if (value === 'serviceworker') {
+                if (!isServiceWorkerAvailable()) {
+                    alert("The ServiceWorker API is not available on your device. Falling back to JQuery mode");
+                    setContentInjectionMode('jquery');
+                    return;
+                }
+                if (!isMessageChannelAvailable()) {
+                    alert("The MessageChannel API is not available on your device. Falling back to JQuery mode");
+                    setContentInjectionMode('jquery');
+                    return;
+                }
+
+                if (!messageChannel) {
+                    // Let's create the messageChannel for the 2-way communication
+                    // with the Service Worker
+                    messageChannel = new MessageChannel();
+                    messageChannel.port1.onmessage = handleMessageChannelMessage;
+                }
+
+                if (!isServiceWorkerReady()) {
+                    $('#serviceWorkerStatus').html("ServiceWorker API available : trying to register it...");
+                    navigator.serviceWorker.register('../service-worker.js').then(function (reg) {
+                        console.log('serviceWorker registered', reg);
+                        serviceWorkerRegistration = reg;
+                        refreshAPIStatus();
+
+                        // We need to wait for the ServiceWorker to be activated
+                        // before sending the first init message
+                        var serviceWorker = reg.installing || reg.waiting || reg.active;
+                        serviceWorker.addEventListener('statechange', function (statechangeevent) {
+                            if (statechangeevent.target.state === 'activated') {
+                                console.log("try to post an init message to ServiceWorker");
+                                navigator.serviceWorker.controller.postMessage({ 'action': 'init' }, [messageChannel.port2]);
+                                console.log("init message sent to ServiceWorker");
                             }
                         });
-                        return;
-                    } else if (params['pickedFile'] && Windows && Windows.Storage) {
-                        selectedStorage = MSApp.createFileFromStorageFile(params['pickedFile']);
-                        //selectedStorage = params['pickedFile'];
-                        setLocalArchiveFromFileList([selectedStorage]);
+                    }, function (err) {
+                        console.error('error while registering serviceWorker', err);
+                        refreshAPIStatus();
+                    });
+                } else {
+                    console.log("try to re-post an init message to ServiceWorker, to re-enable it in case it was disabled");
+                    navigator.serviceWorker.controller.postMessage({ 'action': 'init' }, [messageChannel.port2]);
+                    console.log("init message sent to ServiceWorker");
+                }
+            }
+            $('input:radio[name=contentInjectionMode]').prop('checked', false);
+            $('input:radio[name=contentInjectionMode]').filter('[value="' + value + '"]').prop('checked', true);
+            contentInjectionMode = value;
+            // Save the value in a cookie, so that to be able to keep it after a reload/restart
+            cookies.setItem('lastContentInjectionMode', value, Infinity);
+        }
+
+        /**
+         * If the ServiceWorker mode is selected, warn the user before activating it
+         * @param chosenContentInjectionMode The mode that the user has chosen
+         */
+        function checkWarnServiceWorkerMode(chosenContentInjectionMode) {
+            if (chosenContentInjectionMode === 'serviceworker' && !cookies.hasItem("warnedServiceWorkerMode")) {
+                // The user selected the "serviceworker" mode, which is still unstable
+                // So let's display a warning to the user
+
+                // If the focus is on the search field, we have to move it,
+                // else the keyboard hides the message
+                if ($("#prefix").is(":focus")) {
+                    $("searchArticles").focus();
+                }
+                if (confirm("The 'Service Worker' mode is still UNSTABLE for now."
+                    + " It happens that the application needs to be reinstalled (or the ServiceWorker manually removed)."
+                    + " Please confirm with OK that you're ready to face this kind of bugs, or click Cancel to stay in 'jQuery' mode.")) {
+                    // We will not display this warning again for one day
+                    cookies.setItem("warnedServiceWorkerMode", true, 86400);
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // At launch, we try to set the last content injection mode (stored in a cookie)
+        var lastContentInjectionMode = cookies.getItem('lastContentInjectionMode');
+        if (lastContentInjectionMode) {
+            setContentInjectionMode(lastContentInjectionMode);
+        }
+        else {
+            setContentInjectionMode('jquery');
+        }
+
+        var serviceWorkerRegistration = null;
+
+        /**
+         * Tells if the ServiceWorker API is available
+         * https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker
+         * @returns {Boolean}
+         */
+        function isServiceWorkerAvailable() {
+            return ('serviceWorker' in navigator);
+        }
+
+        /**
+         * Tells if the MessageChannel API is available
+         * https://developer.mozilla.org/en-US/docs/Web/API/MessageChannel
+         * @returns {Boolean}
+         */
+        function isMessageChannelAvailable() {
+            try {
+                var dummyMessageChannel = new MessageChannel();
+                if (dummyMessageChannel) return true;
+            }
+            catch (e) {
+                return false;
+            }
+            return false;
+        }
+
+        /**
+         * Tells if the ServiceWorker is registered, and ready to capture HTTP requests
+         * and inject content in articles.
+         * @returns {Boolean}
+         */
+        function isServiceWorkerReady() {
+            // Return true if the serviceWorkerRegistration is not null and not undefined
+            return (serviceWorkerRegistration);
+        }
+
+        /**
+         * 
+         * @type Array.<StorageFirefoxOS>
+         */
+        var storages = [];
+        //var storages = [appFolder.path];  //UWP
+        function searchForArchivesInPreferencesOrStorage() {
+            // First see if the list of archives is stored in the cookie
+            var listOfArchivesFromCookie = cookies.getItem("listOfArchives");
+            if (listOfArchivesFromCookie !== null && listOfArchivesFromCookie !== undefined && listOfArchivesFromCookie !== "") {
+                var directories = listOfArchivesFromCookie.split('|');
+                populateDropDownListOfArchives(directories);
+            }
+            else {
+                if (storages.length) {
+                    searchForArchivesInStorage();
+                } else {
+                    displayFileSelect();
+                    if (document.getElementById('archiveFiles').files && document.getElementById('archiveFiles').files.length > 0) {
+                        // Archive files are already selected, 
+                        setLocalArchiveFromFileSelect();
+                    }
+                    else {
+                        $("#btnConfigure").click();
                     }
                 }
             }
-            selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
-                cookies.setItem("lastSelectedArchive", archiveDirectory, Infinity);
-                // The archive is set : go back to home page to start searching
-                $("#btnHome").click();
-            });
-            
         }
-    }
 
-    /**
-     * Displays the zone to select files from the archive
-     */
-    function displayFileSelect() {
-        $('#openLocalFiles').show();
-        var comboArchiveList = document.getElementById('archiveList'); 
-        if (comboArchiveList.length > 0) { comboArchiveList.size = comboArchiveList.length;}
-        //$('#archiveFile').on('change', setLocalArchiveFromFileSelect);
-        $('#archiveFile').on('click', pickFileUWP); //UWP FilePicker [kiwix-js-windows #3]
-        $('#archiveFiles').on('click', pickFolderUWP); //UWP FolderPicker 
-    }
+        function searchForArchivesInStorage() {
+            // If DeviceStorage is available, we look for archives in it
+            $("#btnConfigure").click();
+            $('#scanningForArchives').show();
+            zimArchiveLoader.scanForArchives(storages, populateDropDownListOfArchives);
+        }
 
-    function pickFileUWP() { //Support UWP FilePicker [kiwix-js-windows #3]
-        // Create the picker object and set options
-        var filePicker = new Windows.Storage.Pickers.FileOpenPicker;
-        filePicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.downloads;
-        // Filter folder contents
-        filePicker.fileTypeFilter.replaceAll([".zim"]);
+        if ($.isFunction(navigator.getDeviceStorages)) {
+            // The method getDeviceStorages is available (FxOS>=1.1)
+            storages = $.map(navigator.getDeviceStorages("sdcard"), function (s) {
+                return new abstractFilesystemAccess.StorageFirefoxOS(s);
+            });
+        }
 
-        filePicker.pickSingleFileAsync().then(function (file) {
-            if (file) {
-                // Cache file so the contents can be accessed at a later time
-                Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.addOrReplace(params['falFileToken'], file);
-                params['pickedFile'] = file;
-                params['pickedFolder'] = "";
-                cookies.setItem("lastSelectedArchive", file.name, Infinity);
-                populateDropDownListOfArchives([file.name]);
-            } else {
-                // The picker was dismissed with no selected file
-                console.log("User closed folder picker without picking a file");
+        if (Windows && Windows.Storage || (storages !== null && storages.length > 0)) {
+            // Make a fake first access to device storage, in order to ask the user for confirmation if necessary.
+            // This way, it is only done once at this moment, instead of being done several times in callbacks
+            // After that, we can start looking for archives
+            //storages[0].get("fake-file-to-read").then(searchForArchivesInPreferencesOrStorage,
+            //searchForArchivesInPreferencesOrStorage);
+            searchForArchivesInPreferencesOrStorage();
+        }
+        else {
+            // If DeviceStorage is not available, we display the file select components
+            displayFileSelect();
+            if (document.getElementById('archiveFiles').files && document.getElementById('archiveFiles').files.length > 0) {
+                // Archive files are already selected, 
+                setLocalArchiveFromFileSelect();
             }
-        });
-    }
+            else {
+                $("#btnConfigure").click();
+            }
+        }
 
-    function pickFolderUWP() { //Support UWP FilePicker [kiwix-js-windows #3]
-        var folderPicker = new Windows.Storage.Pickers.FolderPicker;
-        folderPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.downloads;
-        folderPicker.fileTypeFilter.replaceAll(["*"]);
 
-        folderPicker.pickSingleFolderAsync().then(function (folder) {
-            if (folder) {
-                // Application now has read/write access to all contents in the picked folder (including sub-folder contents)
-                // Cache folder so the contents can be accessed at a later time
-                Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.addOrReplace(params['falFolderToken'], folder);
-                params['pickedFolder'] = folder;
-                // Query the folder.
-                var query = folder.createFileQuery();
-                query.getFilesAsync().done(function (files) {
-                    // Display file list with storage provider and availability.
-                    var archiveDisplay = document.getElementById('chooseArchiveFromLocalStorage');
-                    if (!files) {
-                        archiveDisplay.style.display = "inline";
-                        document.getElementById('noZIMFound').style.display = "inline";
-                        return;
+        // Display the article when the user goes back in the browser history
+        window.onpopstate = function (event) {
+            if (event.state) {
+                var title = event.state.title;
+                var titleSearch = event.state.titleSearch;
+
+                $('#prefix').val("");
+                $("#welcomeText").hide();
+                $("#readingArticle").hide();
+                if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
+                    $('#navbarToggle').click();
+                }
+                $('#searchingForArticles').hide();
+                $('#configuration').hide();
+                $('#articleList').hide();
+                $('#articleListHeaderMessage').hide();
+                $('#articleContent').contents().empty();
+
+                if (title && !("" === title)) {
+                    goToArticle(title);
+                }
+                else if (titleSearch && !("" === titleSearch)) {
+                    $('#prefix').val(titleSearch);
+                    searchDirEntriesFromPrefix($('#prefix').val());
+                }
+            }
+        };
+
+        /**
+         * Populate the drop-down list of archives with the given list
+         * @param {Array.<String>} archiveDirectories
+         */
+        function populateDropDownListOfArchives(archiveDirectories) {
+            $('#scanningForArchives').hide();
+            $('#chooseArchiveFromLocalStorage').show();
+            var comboArchiveList = document.getElementById('archiveList');
+            comboArchiveList.options.length = 0;
+            for (var i = 0; i < archiveDirectories.length; i++) {
+                var archiveDirectory = archiveDirectories[i];
+                if (archiveDirectory === "/") {
+                    alert("It looks like you have put some archive files at the root of your sdcard (or internal storage). Please move them in a subdirectory");
+                }
+                else {
+                    comboArchiveList.options[i] = new Option(archiveDirectory, archiveDirectory);
+                }
+            }
+            // Store the list of archives in a cookie, to avoid rescanning at each start
+            cookies.setItem("listOfArchives", archiveDirectories.join('|'), Infinity);
+            comboArchiveList.size = comboArchiveList.length;
+
+            $('#archiveList').on('change', setLocalArchiveFromArchiveList);
+            if (comboArchiveList.options.length > 0) {
+                var lastSelectedArchive = cookies.getItem("lastSelectedArchive");
+                if (lastSelectedArchive !== null && lastSelectedArchive !== undefined && lastSelectedArchive !== "") {
+                    // Attempt to select the corresponding item in the list, if it exists
+                    if ($("#archiveList option[value='" + lastSelectedArchive + "']").length > 0) {
+                        $("#archiveList").val(lastSelectedArchive);
                     }
-                    var archiveList = [];
-                    files.forEach(function (file) {
-                        if (file.fileType == ".zim" || file.fileType == ".zima") {
-                            // Create an entry in the list for the item.
-                            //var list = document.getElementById("archiveList");
-                            //var listItemElement = document.createElement("option");
-                            //archiveList.push(file.folderRelativeId.replace(/\\/g, "/"));
-                            //archiveList.push(file.path.replace(/\\/g, "/"));
-                            archiveList.push(file.name);
+                }
+                // Set the localArchive as the last selected (or the first one if it has never been selected)
+                setLocalArchiveFromArchiveList();
+            }
+            else {
+                alert("Welcome to Kiwix! This application needs at least a ZIM file in your SD-card (or internal storage). Please download one and put it on the device (see About section). Also check that your device is not connected to a computer through USB device storage (which often locks the SD-card content)");
+                $("#btnAbout").click();
+                var isAndroid = (navigator.userAgent.indexOf("Android") !== -1);
+                if (isAndroid) {
+                    alert("You seem to be using an Android device. Be aware that there is a bug on Firefox, that prevents finding Wikipedia archives in a SD-card (at least on some devices. See about section). Please put the archive in the internal storage if the application can't find it.");
+                }
+            }
+        }
+
+        /**
+         * Sets the localArchive from the selected archive in the drop-down list
+         */
+        function setLocalArchiveFromArchiveList() {
+            var archiveDirectory = $('#archiveList').val();
+            if (archiveDirectory && archiveDirectory.length > 0) {
+                // Now, try to find which DeviceStorage has been selected by the user
+                // It is the prefix of the archive directory
+                var regexpStorageName = /^\/([^\/]+)\//;
+                var regexpResults = regexpStorageName.exec(archiveDirectory);
+                var selectedStorage = null;
+                if (regexpResults && regexpResults.length > 0) {
+                    var selectedStorageName = regexpResults[1];
+                    for (var i = 0; i < storages.length; i++) {
+                        var storage = storages[i];
+                        if (selectedStorageName === storage.storageName) {
+                            // We found the selected storage
+                            selectedStorage = storage;
                         }
-                        //listItemElement.value = file.name;
-                        //listItemElement.textContent = file.name;
+                    }
+                    if (selectedStorage === null) {
+                        alert("Unable to find which device storage corresponds to directory " + archiveDirectory);
+                    }
+                }
+                else {
+                    // This happens when the archiveDirectory is not prefixed by the name of the storage
+                    // (in the Simulator, or with FxOs 1.0, or probably on devices that only have one device storage)
+                    // In this case, we use the first storage of the list (there should be only one)
+                    if (storages.length === 1) {
+                        selectedStorage = storages[0];
+                    }
+                    else { //IT'S NOT FREAKIN FFOS!!!!!!!!!!
+                        //console.log("Something weird happened with the DeviceStorage API : found a directory without prefix : "
+                        //    + archiveDirectory + ", but there were " + storages.length
+                        //    + " storages found with getDeviceStorages instead of 1");
+                        //Patched for UWP support:
+                        if (params['pickedFolder'] && Windows && Windows.Storage) {
+                            var query = params['pickedFolder'].createFileQuery();
+                            query.getFilesAsync().done(function (files) {
+                                var file;
+                                if (files) {
+                                    for (var i = 0; i < files.length; i++) {
+                                        if (files[i].name == archiveDirectory) {
+                                            file = files[i];
+                                            break;
+                                        }
+                                    }
+                                    if (file) {
+                                        var fileset = [];
+                                        if (/\.zim\w\w$/i.test(file.name)) {
+                                            var genericFileName = file.name.replace(/(.*)\.zim\w\w$/i, "$1");
+                                            var testFileName = new RegExp(genericFileName + '\\.zim\\w\\w$');
+                                            for (var i = 0; i < files.length; i++) {
+                                                if (testFileName.test(files[i].name)) {
+                                                    //MsAppp.createFileFromStorageFile converts a UWP storage file object into a standard JavaScript web file object
+                                                    fileset.push(MSApp.createFileFromStorageFile(files[i]));
+                                                }
+                                            }
+                                        } else {
+                                            //MsAppp.createFileFromStorageFile converts a UWP storage file object into a standard JavaScript web file object
+                                            fileset = [MSApp.createFileFromStorageFile(file)];
+                                        }
+                                    }
+                                }
+                                if (fileset && fileset.length) {
+                                    if (archiveDirectory != params['storedFile']) {
+                                        cookies.setItem("lastSelectedArchive", archiveDirectory, Infinity);
+                                        params['storedFile'] = archiveDirectory;
+                                    }
+                                    selectedStorage = fileset;
+                                    archiveDirectory = "";
+                                    //selectedStorage = "";
+                                    //archiveDirectory = MSApp.createFileFromStorageFile(file);
+                                    selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
+                                        // The archive is set : go back to home page to start searching
+                                        $('#btnHome').click();
+                                    });
+                                } else {
+                                    console.error("The picked file could not be found in the selected folder!");
+                                    var archiveList = [];
+                                    for (var i = 0; i < files.length; i++) {
+                                        if (/\.zima?a?$/i.test(files[i].name)) {
+                                            archiveList.push(files[i].name);
+                                        }
+                                    }
+                                    populateDropDownListOfArchives(archiveList);
+                                    $('#btnConfigure').click();
+                                }
+                            });
+                            return;
+                        } else if (params['pickedFile'] && Windows && Windows.Storage) {
+                            selectedStorage = MSApp.createFileFromStorageFile(params['pickedFile']);
+                            //selectedStorage = params['pickedFile'];
+                            setLocalArchiveFromFileList([selectedStorage]);
+                        }
+                    }
+                }
+                selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
+                    cookies.setItem("lastSelectedArchive", archiveDirectory, Infinity);
+                    // The archive is set : go back to home page to start searching
+                    $("#btnHome").click();
+                });
 
-                        //// Show the item's provider (This PC, OneDrive, Network, or Application Content).
-                        //listItemElement.textContent += ": On " + file.provider.displayName;
+            }
+        }
 
-                        //// Show if the item is available (SkyDrive items are usually available when
-                        //// online or when they are marked for "always available offline").
-                        //listItemElement.textContent += " (";
-                        //if (file.isAvailable) {
-                        //    listItemElement.textContent += "available";
-                        //} else {
-                        //    listItemElement.textContent += "not available";
-                        //}
-                        //listItemElement.textContent += ")";
+        /**
+         * Displays the zone to select files from the archive
+         */
+        function displayFileSelect() {
+            $('#openLocalFiles').show();
+            var comboArchiveList = document.getElementById('archiveList');
+            if (comboArchiveList.length > 0) { comboArchiveList.size = comboArchiveList.length; }
+            //$('#archiveFile').on('change', setLocalArchiveFromFileSelect);
+            $('#archiveFile').on('click', pickFileUWP); //UWP FilePicker [kiwix-js-windows #3]
+            $('#archiveFiles').on('click', pickFolderUWP); //UWP FolderPicker 
+        }
 
-                        //list.appendChild(listItemElement);
-                    });
-                    if (archiveList.length) {
-                        document.getElementById('noZIMFound').style.display = "none";
-                        populateDropDownListOfArchives(archiveList);
-                    } else {
-                        archiveDisplay.style.display = "inline";
-                        document.getElementById('noZIMFound').style.display = "inline";
-                        return;
+        function pickFileUWP() { //Support UWP FilePicker [kiwix-js-windows #3]
+            // Create the picker object and set options
+            var filePicker = new Windows.Storage.Pickers.FileOpenPicker;
+            filePicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.downloads;
+            // Filter folder contents
+            filePicker.fileTypeFilter.replaceAll([".zim"]);
+
+            filePicker.pickSingleFileAsync().then(function (file) {
+                if (file) {
+                    // Cache file so the contents can be accessed at a later time
+                    Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.addOrReplace(params['falFileToken'], file);
+                    params['pickedFile'] = file;
+                    params['pickedFolder'] = "";
+                    cookies.setItem("lastSelectedArchive", file.name, Infinity);
+                    populateDropDownListOfArchives([file.name]);
+                } else {
+                    // The picker was dismissed with no selected file
+                    console.log("User closed folder picker without picking a file");
+                }
+            });
+        }
+
+        function pickFolderUWP() { //Support UWP FilePicker [kiwix-js-windows #3]
+            var folderPicker = new Windows.Storage.Pickers.FolderPicker;
+            folderPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.downloads;
+            folderPicker.fileTypeFilter.replaceAll([".zim", ".dat", ".idx", ".txt", ".zimaa"]);
+
+            folderPicker.pickSingleFolderAsync().then(scanUWPFolderForArchives(folder));
+        }
+
+        function scanUWPFolderforArchives (folder) {
+        if (folder) {
+            // Application now has read/write access to all contents in the picked folder (including sub-folder contents)
+            // Cache folder so the contents can be accessed at a later time
+            Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.addOrReplace(params['falFolderToken'], folder);
+            params['pickedFolder'] = folder;
+            // Query the folder.
+            var query = folder.createFileQuery();
+            query.getFilesAsync().done(function (files) {
+                // Display file list with storage provider and availability.
+                var archiveDisplay = document.getElementById('chooseArchiveFromLocalStorage');
+                if (!files) {
+                    archiveDisplay.style.display = "inline";
+                    document.getElementById('noZIMFound').style.display = "inline";
+                    return;
+                }
+                var archiveList = [];
+                files.forEach(function (file) {
+                    if (file.fileType == ".zim" || file.fileType == ".zimaa") {
+                        archiveList.push(file.name);
                     }
                 });
-            } else {
-                // The picker was dismissed with no selected file
-                console.log("User closed folder picker without picking a file");
-            }
-        });
+                if (archiveList.length) {
+                    document.getElementById('noZIMFound').style.display = "none";
+                    populateDropDownListOfArchives(archiveList);
+                } else {
+                    archiveDisplay.style.display = "inline";
+                    document.getElementById('noZIMFound').style.display = "inline";
+                    return;
+                }
+            });
+        } else {
+            // The picker was dismissed with no selected file
+            console.log("User closed folder picker without picking a file");
+        }
     }
+    
 
 
     function setLocalArchiveFromFileList(files) {
@@ -956,9 +985,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             $('#searchingForArticles').hide();
             // We have to remove the focus from the search field,
             // so that the keyboard does not stay above the message
-            $("#searchArticles").focus();
+            $('#searchArticles').focus();
             alert("Archive not set : please select an archive");
-            $("#btnConfigure").click();
+            $('#btnConfigure').click();
         }
     }
 
