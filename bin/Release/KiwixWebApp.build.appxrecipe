@@ -25,6 +25,51 @@
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimaa">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimaa</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimab">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimab</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimac">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimac</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimad">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimad</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimae">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimae</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimaf">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimaf</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimag">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimag</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimah">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimah</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimai">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimai</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimaj">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimaj</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimak">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimak</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimal">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimal</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimam">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimam</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.ziman">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.ziman</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\archives\wikipedia_en_ray_charles_2015-06.zimao">
+      <PackagePath>archives\wikipedia_en_ray_charles_2015-06.zimao</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\images\BadgeLogo.scale-100.png">
       <PackagePath>images\BadgeLogo.scale-100.png</PackagePath>
     </AppxPackagedFile>

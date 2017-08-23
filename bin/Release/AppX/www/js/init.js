@@ -22,6 +22,7 @@
  */
 'use strict';
 var params = {};
+params['version'] = "0.8.2 Beta"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 var results = params['results'] || 15; //Number of search results to display
 params['cssSource'] = getCookie('cssSource') || "auto"; //Set default to "auto", "desktop" or "mobile"
 params['cssCache'] = getCookie('cssCache') || true; //Set default to true to use cached CSS, false to use Zim only
@@ -36,6 +37,10 @@ params['storedFile'] = getCookie('lastSelectedArchive') || ""; //For packaged Ki
 params['falFileToken'] = params['falFileToken'] || "zimfile";
 params['falFolderToken'] = params['falFolderToken'] || "zimfilestore";
 if (params['storedFile'] && Windows && Windows.Storage) { //UWP
+    //DEV change "archives" below if you wish to store local archives in a different location in the installation package
+    Windows.ApplicationModel.Package.current.installedLocation.getFolderAsync("archives").done(function (folder) {
+        if (folder) params['localStorage'] = folder;
+    });
     var StorageApplicationPermissions = Windows.Storage.AccessCache.StorageApplicationPermissions;
     if (StorageApplicationPermissions.futureAccessList.containsItem(params['falFileToken'])) {
         StorageApplicationPermissions.futureAccessList.getFileAsync(params['falFileToken']).done(function (file) {
