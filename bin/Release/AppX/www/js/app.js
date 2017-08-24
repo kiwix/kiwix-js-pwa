@@ -317,16 +317,39 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         // See if this can be simplified.... (but note that keyboard users might not click)
         $('#archiveList').on('change', function () {
             console.log("***Archive List change event fired")
-            setLocalArchiveFromArchiveList()
+            $('#openLocalFiles').hide();
+            setLocalArchiveFromArchiveList();
         });
         $('#archiveList').on('click', function () {
             console.log("***Archive List click event fired: checking length of options list")
             var comboArchiveList = document.getElementById('archiveList');
             if (comboArchiveList.options.length == 1) {
                 console.log("***Only one item, so, fire away...");
+                $('#openLocalFiles').hide();
                 setLocalArchiveFromArchiveList();
             }
         });
+
+        $('#archiveFile').on('click', function () {
+            if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
+                //UWP FilePicker [kiwix-js-windows #3]
+                pickFileUWP();
+            } else {
+                //@TODO enable and provide classic filepicker
+            }
+        }); 
+        $('#archiveFiles').on('click', function () {
+            if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
+                //UWP FolderPicker
+                pickFolderUWP();
+            } else {
+                //@TODO hide folderpicker
+            }
+        }); 
+        //Legacy logic : replace with above sections
+        //$('#archiveFile').on('change', setLocalArchiveFromFileSelect);
+        
+
         $('input:radio[name=contentInjectionMode]').on('change', function (e) {
             if (checkWarnServiceWorkerMode(this.value)) {
                 document.getElementById('returntoArticle_top').innerHTML = "";
@@ -710,14 +733,19 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             //$(comboArchiveList).on('click', setLocalArchiveFromArchiveList());
             if (comboArchiveList.options.length > 0) {
                 var lastSelectedArchive = cookies.getItem("lastSelectedArchive") || params['storedFile'];
-                if (lastSelectedArchive !== null && lastSelectedArchive !== undefined && lastSelectedArchive !== "") {
+                if ((lastSelectedArchive !== null && lastSelectedArchive !== undefined && lastSelectedArchive !== "")
+                    || comboArchiveList.options.length == 1) { //Either we have previously chosen a file, or there is only one file
                     // Attempt to select the corresponding item in the list, if it exists
+                    var success = false;
                     if ($("#archiveList option[value='" + lastSelectedArchive + "']").length > 0) {
                         $("#archiveList").val(lastSelectedArchive);
+                        success = true;
+                    }
+                    // Set the localArchive as the last selected (if none has been selected previously, wait for user input)
+                    if (success || comboArchiveList.options.length == 1) {
+                        setLocalArchiveFromArchiveList();
                     }
                 }
-                // Set the localArchive as the last selected (or the first one if it has never been selected)
-                setLocalArchiveFromArchiveList();
             }
             else {
                 alert("Welcome to Kiwix! This application needs at least a ZIM file in your SD-card (or internal storage). Please download one and put it on the device (see About section). Also check that your device is not connected to a computer through USB device storage (which often locks the SD-card content)");
@@ -808,6 +836,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                                             $('#btnConfigure').click()
                                             params['rescan'] = false;
                                         } else {
+                                            $('#openLocalFiles').hide();
                                             $('#btnHome').click();
                                         }
                                     });
@@ -824,17 +853,30 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                                 }
                             });
                             return;
-                        } else if (params['pickedFile'] && Windows && Windows.Storage) {
-                            selectedStorage = MSApp.createFileFromStorageFile(params['pickedFile']);
-                            //selectedStorage = params['pickedFile'];
-                            setLocalArchiveFromFileList([selectedStorage]);
+                        } else { //Check if user previously picked a specific file rather than a folder
+                            if (params['pickedFile'] && typeof MSApp !== 'undefined') {
+                                selectedStorage = MSApp.createFileFromStorageFile(params['pickedFile']);
+                                setLocalArchiveFromFileList([selectedStorage]);
+                                return;
+                            }
+                        }
+                        //There was no picked file or folder, so we'll try setting the default localStorage
+                        if (!params['pickedFolder']) {
+                            //@TODO - check if this does anything or if you now need to call scanUWPFolder, or would that create a loop?
+                            params['pickedFolder'] = params['localStorage'];
                         }
                     }
                 }
                 selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
                     cookies.setItem("lastSelectedArchive", archiveDirectory, Infinity);
                     // The archive is set : go back to home page to start searching
-                    $("#btnHome").click();
+                    if (params['rescan']) {
+                        $('#btnConfigure').click()
+                        params['rescan'] = false;
+                    } else {
+                        $('#openLocalFiles').hide();
+                        $('#btnHome').click();
+                    }
                 });
 
             }
@@ -849,12 +891,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             //Make archive list combo box fit the number of files
             //var comboArchiveList = document.getElementById('archiveList');
             //if (comboArchiveList.length > 0) { comboArchiveList.size = comboArchiveList.length; }
-            if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
-                $('#archiveFile').on('click', pickFileUWP); //UWP FilePicker [kiwix-js-windows #3]
-                $('#archiveFiles').on('click', pickFolderUWP); //UWP FolderPicker
-            } else {
-                $('#archiveFile').on('change', setLocalArchiveFromFileSelect);
-            }
         }
 
         function pickFileUWP() { //Support UWP FilePicker [kiwix-js-windows #3]
@@ -893,41 +929,41 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
 
         function scanUWPFolderforArchives (folder) {
             if (folder) {
-            // Application now has read/write access to all contents in the picked folder (including sub-folder contents)
-            // Cache folder so the contents can be accessed at a later time
-            Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.addOrReplace(params['falFolderToken'], folder);
-            params['pickedFolder'] = folder;
-            // Query the folder.
-            var query = folder.createFileQuery();
-            query.getFilesAsync().done(function (files) {
-                // Display file list
-                var archiveDisplay = document.getElementById('chooseArchiveFromLocalStorage');
-                if (!files) {
-                    archiveDisplay.style.display = "inline";
-                    document.getElementById('noZIMFound').style.display = "inline";
-                    return;
-                }
-                var archiveList = [];
-                files.forEach(function (file) {
-                    if (file.fileType == ".zim" || file.fileType == ".zimaa") {
-                        archiveList.push(file.name);
+                // Application now has read/write access to all contents in the picked folder (including sub-folder contents)
+                // Cache folder so the contents can be accessed at a later time
+                Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.addOrReplace(params['falFolderToken'], folder);
+                params['pickedFolder'] = folder;
+                // Query the folder.
+                var query = folder.createFileQuery();
+                query.getFilesAsync().done(function (files) {
+                    // Display file list
+                    var archiveDisplay = document.getElementById('chooseArchiveFromLocalStorage');
+                    if (files) {
+                        var archiveList = [];
+                        files.forEach(function (file) {
+                            if (file.fileType == ".zim" || file.fileType == ".zimaa") {
+                                archiveList.push(file.name);
+                            }
+                        });
+                        if (archiveList.length) {
+                            document.getElementById('noZIMFound').style.display = "none";
+                            populateDropDownListOfArchives(archiveList);
+                            return;
+                        }
                     }
-                });
-                if (archiveList.length) {
-                    document.getElementById('noZIMFound').style.display = "none";
-                    populateDropDownListOfArchives(archiveList);
-                } else {
                     archiveDisplay.style.display = "inline";
                     document.getElementById('noZIMFound').style.display = "inline";
-                    return;
-                }
+                    document.getElementById('archiveList').options.length = 0;
+                    document.getElementById('archiveList').size = 0;
+                    params['pickedFolder'] = "";
+                    Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.remove(params['falFolderToken']);
+                return;
             });
         } else {
             // The picker was dismissed with no selected file
             console.log("User closed folder picker without picking a file");
         }
     }
-    
 
 
     function setLocalArchiveFromFileList(files) {
