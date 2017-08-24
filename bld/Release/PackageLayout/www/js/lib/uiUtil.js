@@ -96,7 +96,7 @@ define([], function() {
         shortTitle = shortTitle == title ? shortTitle : shortTitle + "..."; 
         var link = '<h4><a href="#" onclick="$(\'#configuration\').hide();$(\'#formArticleSearch\').show();' +
             '$(\'#articleContent\').show();$(\'#liHomeNav\').attr(\'class\',\'active\');$(\'#liConfigureNav\').attr(\'class\', \'\');' +
-            '$(\'#liAboutNav\').attr(\'class\', \'\');">&lt;&lt; Return to ' + shortTitle + '</a></h4>';
+            '$(\'#liAboutNav\').attr(\'class\', \'\');document.getElementById(\'btnConfigure\').classList.remove(\'active\');">&lt;&lt; Return to ' + shortTitle + '</a></h4>';
         document.getElementById("returntoArticle_top").innerHTML = link;
         document.getElementById("returntoArticle_bottom").innerHTML = link;
     }

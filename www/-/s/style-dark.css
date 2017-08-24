@@ -46,7 +46,7 @@ a, .CategoryTreeToggle, #toc a, #toc a span, body .ui-button {
     color: lightblue !important;
 }
 
-td[style*=background] a:first-child {
+td[style*=background]:not([class*="translations"]) a:first-child {
     color: dimgray !important
 }
 
@@ -133,16 +133,15 @@ html, body {
     background-color: #181818 !important;
   }
 
-  table, input, button, select, textarea:not([class*="mw-editfont"]),
-  tr[style*="background: antiquewhite;"], #toc, td[style*="background-color"], td[style*="background:#F5FAFF"],
-  #mw-content-text div[style*="background: #"], .vevent td, .referencetooltip li, .suggestions,
-  .mw-ui-button[style*="background"], .mw-ui-button[style*="background"] *, .wikiEditor-ui,
-  table.navbox.collapsible tr:nth-child(2) > td, div.menu, .oo-ui-popupWidget-popup,
-  .oo-ui-buttonElement-button, .mw-notification, .mwe-popups, .mwe-popups-is-not-tall, .mwe-popups-is-tall,
-  .ui-widget-content, .oo-ui-window-body, #pagehistory li.selected, .tracklist tr
-  {
+table, input, button, select, textarea:not([class*="mw-editfont"]),
+tr[style*="background: antiquewhite;"], #toc, td[style*="background-color"], td[style*="background:#F5FAFF"],
+td[style*="background:WhiteSmoke"], td[style*="background:GhostWhite"], td[style*="background:#f5"], #mw-content-text div[style*="background: #"], .vevent td, .referencetooltip li, .suggestions,
+.mw-ui-button[style*="background"], .mw-ui-button[style*="background"] *, .wikiEditor-ui,
+table.navbox.collapsible tr:nth-child(2) > td, div.menu, .oo-ui-popupWidget-popup,
+.oo-ui-buttonElement-button, .mw-notification, .mwe-popups, .mwe-popups-is-not-tall, .mwe-popups-is-tall,
+.ui-widget-content, .oo-ui-window-body, #pagehistory li.selected, .tracklist tr {
     background-color: #222 !important;
-  }
+}
 
 .navbox th, .climate-table th, .wikitable th, .navbox-title, th[bgcolor], td[bgcolor], th[style*="background"] {
     background-color: darkslategray !important;

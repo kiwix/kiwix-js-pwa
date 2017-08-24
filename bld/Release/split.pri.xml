@@ -7,6 +7,83 @@
 			<TargetSize>256,16,24,32,48</TargetSize>
 		</Qualifiers>
 		<ResourceMapSubtree name="Files">
+			<ResourceMapSubtree name="archives">
+				<NamedResource name="wikipedia_en_ray_charles_2015-06.zimaa" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/archives/wikipedia_en_ray_charles_2015-06.zimaa">
+					<Candidate type="Path">
+						<Value>archives\wikipedia_en_ray_charles_2015-06.zimaa</Value>
+					</Candidate>
+				</NamedResource>
+				<NamedResource name="wikipedia_en_ray_charles_2015-06.zimab" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/archives/wikipedia_en_ray_charles_2015-06.zimab">
+					<Candidate type="Path">
+						<Value>archives\wikipedia_en_ray_charles_2015-06.zimab</Value>
+					</Candidate>
+				</NamedResource>
+				<NamedResource name="wikipedia_en_ray_charles_2015-06.zimac" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/archives/wikipedia_en_ray_charles_2015-06.zimac">
+					<Candidate type="Path">
+						<Value>archives\wikipedia_en_ray_charles_2015-06.zimac</Value>
+					</Candidate>
+				</NamedResource>
+				<NamedResource name="wikipedia_en_ray_charles_2015-06.zimad" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/archives/wikipedia_en_ray_charles_2015-06.zimad">
+					<Candidate type="Path">
+						<Value>archives\wikipedia_en_ray_charles_2015-06.zimad</Value>
+					</Candidate>
+				</NamedResource>
+				<NamedResource name="wikipedia_en_ray_charles_2015-06.zimae" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/archives/wikipedia_en_ray_charles_2015-06.zimae">
+					<Candidate type="Path">
+						<Value>archives\wikipedia_en_ray_charles_2015-06.zimae</Value>
+					</Candidate>
+				</NamedResource>
+				<NamedResource name="wikipedia_en_ray_charles_2015-06.zimaf" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/archives/wikipedia_en_ray_charles_2015-06.zimaf">
+					<Candidate type="Path">
+						<Value>archives\wikipedia_en_ray_charles_2015-06.zimaf</Value>
+					</Candidate>
+				</NamedResource>
+				<NamedResource name="wikipedia_en_ray_charles_2015-06.zimag" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/archives/wikipedia_en_ray_charles_2015-06.zimag">
+					<Candidate type="Path">
+						<Value>archives\wikipedia_en_ray_charles_2015-06.zimag</Value>
+					</Candidate>
+				</NamedResource>
+				<NamedResource name="wikipedia_en_ray_charles_2015-06.zimah" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/archives/wikipedia_en_ray_charles_2015-06.zimah">
+					<Candidate type="Path">
+						<Value>archives\wikipedia_en_ray_charles_2015-06.zimah</Value>
+					</Candidate>
+				</NamedResource>
+				<NamedResource name="wikipedia_en_ray_charles_2015-06.zimai" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/archives/wikipedia_en_ray_charles_2015-06.zimai">
+					<Candidate type="Path">
+						<Value>archives\wikipedia_en_ray_charles_2015-06.zimai</Value>
+					</Candidate>
+				</NamedResource>
+				<NamedResource name="wikipedia_en_ray_charles_2015-06.zimaj" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/archives/wikipedia_en_ray_charles_2015-06.zimaj">
+					<Candidate type="Path">
+						<Value>archives\wikipedia_en_ray_charles_2015-06.zimaj</Value>
+					</Candidate>
+				</NamedResource>
+				<NamedResource name="wikipedia_en_ray_charles_2015-06.zimak" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/archives/wikipedia_en_ray_charles_2015-06.zimak">
+					<Candidate type="Path">
+						<Value>archives\wikipedia_en_ray_charles_2015-06.zimak</Value>
+					</Candidate>
+				</NamedResource>
+				<NamedResource name="wikipedia_en_ray_charles_2015-06.zimal" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/archives/wikipedia_en_ray_charles_2015-06.zimal">
+					<Candidate type="Path">
+						<Value>archives\wikipedia_en_ray_charles_2015-06.zimal</Value>
+					</Candidate>
+				</NamedResource>
+				<NamedResource name="wikipedia_en_ray_charles_2015-06.zimam" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/archives/wikipedia_en_ray_charles_2015-06.zimam">
+					<Candidate type="Path">
+						<Value>archives\wikipedia_en_ray_charles_2015-06.zimam</Value>
+					</Candidate>
+				</NamedResource>
+				<NamedResource name="wikipedia_en_ray_charles_2015-06.ziman" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/archives/wikipedia_en_ray_charles_2015-06.ziman">
+					<Candidate type="Path">
+						<Value>archives\wikipedia_en_ray_charles_2015-06.ziman</Value>
+					</Candidate>
+				</NamedResource>
+				<NamedResource name="wikipedia_en_ray_charles_2015-06.zimao" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/archives/wikipedia_en_ray_charles_2015-06.zimao">
+					<Candidate type="Path">
+						<Value>archives\wikipedia_en_ray_charles_2015-06.zimao</Value>
+					</Candidate>
+				</NamedResource>
+			</ResourceMapSubtree>
 			<ResourceMapSubtree name="images">
 				<NamedResource name="BadgeLogo.png" uri="ms-resource://a1a5e0b9-13d4-41fb-810d-518949f03df4/Files/images/BadgeLogo.png">
 					<Candidate qualifiers="Scale-200" isDefault="true" type="Path">
