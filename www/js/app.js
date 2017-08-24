@@ -103,6 +103,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         }), false;
 
         var localSearch = {};
+        var firstRun = false;
 
         function clearFindInArticle() {
             document.getElementById('findInArticle').value = "";
@@ -248,7 +249,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             $('#articleContent').show();
             // Give the focus to the search field, and clean up the page contents
             $("#prefix").val("");
-            $('#prefix').focus();
+            if (!firstRun) {
+                $('#prefix').focus();
+                firstRun = false;
+            }
             $("#articleList").empty();
             $('#articleListHeaderMessage').empty();
             $("#readingArticle").hide();
@@ -284,7 +288,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             $('#articleContent').hide();
             $('#searchingForArticles').hide();
             refreshAPIStatus();
-            if (params['localStorage'] && (!params['pickedFolder'] || !params['pickedFile'])) {
+            //If user hadn't previously picked a folder or a file, resort to the local storage folder (UWP functionality)
+            if (params['localStorage'] && !params['pickedFolder'] && !params['pickedFile']) {
                 params['pickedFolder'] = params['localStorage'];
             }
             return false;
@@ -321,13 +326,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             setLocalArchiveFromArchiveList();
         });
         $('#archiveList').on('click', function () {
-            console.log("***Archive List click event fired: checking length of options list")
-            var comboArchiveList = document.getElementById('archiveList');
-            if (comboArchiveList.options.length == 1) {
-                console.log("***Only one item, so, fire away...");
+            console.log("***Archive List click event fired:  ***WHY***??? checking length of options list...")
+            //Doh, why are you testing for this? Surely you want to jump to the file if it's been clicked on? There was a reason @REMIND_ME....
+            //var comboArchiveList = document.getElementById('archiveList');
+            //if (comboArchiveList.options.length == 1) {
+                //console.log("***Only one item, so, fire away...");
                 $('#openLocalFiles').hide();
                 setLocalArchiveFromArchiveList();
-            }
+            //}
         });
 
         $('#archiveFile').on('click', function () {
@@ -425,6 +431,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             $('input:radio[name=cssInjectionMode]').filter('[value="' + params['cssSource'] + '"]').prop('checked', true);
             //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
             if (cookies.getItem('version') != params['version']) {
+                firstRun = true;
                 document.getElementById('myModal').style.display = "block";
                 document.getElementsByClassName("close")[0].onclick = function () {
                     document.getElementById('myModal').style.display = "none";
@@ -905,8 +912,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                     // Cache file so the contents can be accessed at a later time
                     Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.addOrReplace(params['falFileToken'], file);
                     params['pickedFile'] = file;
+                    Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.remove(params['falFolderToken']);
                     params['pickedFolder'] = "";
                     cookies.setItem("lastSelectedArchive", file.name, Infinity);
+                    document.getElementById('openLocalFiles').style.display = "none";
                     populateDropDownListOfArchives([file.name]);
                 } else {
                     // The picker was dismissed with no selected file
@@ -1381,9 +1390,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 if (/^h1$/i.test(heading.tagName))
                     dropup = dropup + '<li><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
                 else if (/^h2$/i.test(heading.tagName))
-                    dropup = dropup + '<li style="font-size:80%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                    dropup = dropup + '<li style="font-size:90%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
                 else if (/^h3$/i.test(heading.tagName))
-                    dropup = dropup + '<li style="font-size:60%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                    dropup = dropup + '<li style="font-size:75%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
                 //Skip smaller headings (if there are any) to avoid making list too long
             });
             dropup = dropup + '</ul></span>'
