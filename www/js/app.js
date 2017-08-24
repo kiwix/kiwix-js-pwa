@@ -1376,15 +1376,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
             var tableOfContents = new uiUtil.toc(innerDoc);
             var headings = tableOfContents.getHeadingObjects();
-            var dropup = '<span class="dropup"><button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Contents <span class="caret"></span> </button> <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">';
+            var dropup = '<span class="dropup"><button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Contents <span class="caret"></span> </button> <ul class="dropdown-menu" aria-labelledby="dropdownMenu2" style="max-height:' + window.innerHeight * 0.75 + 'px; overflow-y: auto;">';
             headings.forEach(function (heading) {
                 if (/^h1$/i.test(heading.tagName))
                     dropup = dropup + '<li><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
                 else if (/^h2$/i.test(heading.tagName))
-                    dropup = dropup + '<li class="small"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
-                //else
-                //Currently skip smaller headings until toc scrolling works
-                //dropup = ...
+                    dropup = dropup + '<li style="font-size:80%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                else if (/^h3$/i.test(heading.tagName))
+                    dropup = dropup + '<li style="font-size:60%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                //Skip smaller headings (if there are any) to avoid making list too long
             });
             dropup = dropup + '</ul></span>'
             $("#appStatus").removeClass().html(dropup);
