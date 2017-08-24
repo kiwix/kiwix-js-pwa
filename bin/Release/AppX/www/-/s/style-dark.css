@@ -128,7 +128,7 @@ html, body {
     color: #b9b9b9 !important;
   }
 
-  td[style*="background:#FFFFFF"], .jfk-bubble, .navpopup
+  td[style*="background:#FFFFFF"], .jfk-bubble, .navpopup, div span[style*="background-color:#FFFF"]
   {
     background-color: #181818 !important;
   }
