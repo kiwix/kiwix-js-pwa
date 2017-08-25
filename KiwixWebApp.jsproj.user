@@ -21,6 +21,6 @@
     <WindowsPhoneEmulatorID>F0AB49D8-754C-4531-A635-E6B4395FD39A;Mobile Emulator 10.0.15063.0 QHD 5.2 inch 3GB</WindowsPhoneEmulatorID>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebuggerFlavor>AppHostLocalDebugger</DebuggerFlavor>
+    <DebuggerFlavor>AppHostDeviceDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>
