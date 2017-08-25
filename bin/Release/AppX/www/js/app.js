@@ -218,6 +218,30 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             history.forward();
             return false;
         });
+        document.getElementById('articleContent').contentDocument.body.style.fontSize = params['relativeFontSize'] + "%";
+        $('#btnZoomin').on('click', function (e) {
+            params['relativeFontSize'] += 5;
+            document.getElementById('articleContent').contentDocument.body.style.fontSize = params['relativeFontSize'] + "%";
+            document.getElementById('lblZoom').innerHTML = params['relativeFontSize'] + "%";
+            document.getElementById('lblZoom').style = "position:absolute;right: " + window.innerWidth / 3 + "px;bottom:5px;";
+            setTimeout(function () {
+                document.getElementById('lblZoom').innerHTML = "";
+            }, 1000);
+            cookies.setItem('relativeFontSize', params['relativeFontSize'], Infinity);
+            return false;
+        });
+        $('#btnZoomout').on('click', function (e) {
+            params['relativeFontSize'] -= 5;
+            document.getElementById('articleContent').contentDocument.body.style.fontSize = params['relativeFontSize'] + "%";
+            document.getElementById('lblZoom').innerHTML = params['relativeFontSize'] + "%";
+            document.getElementById('lblZoom').style = "position:absolute;left: " + window.innerWidth / 3 + "px;bottom:5px;";
+            setTimeout(function () {
+                document.getElementById('lblZoom').innerHTML = "";
+            }, 1000);
+            cookies.setItem('relativeFontSize', params['relativeFontSize'], Infinity);
+            return false;
+        });
+
         $('#btnHomeBottom').on('click', function (e) {
             $('#btnHome').click();
             return false;
