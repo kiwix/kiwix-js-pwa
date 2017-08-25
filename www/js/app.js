@@ -33,7 +33,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
          * Maximum number of articles to display in a search
          * @type Integer
          */
-        var MAX_SEARCH_RESULT_SIZE = module.config().results; //This is set in init.js
+        var MAX_SEARCH_RESULT_SIZE = params['results']; //This values is controlled in init.js, as are all params variables
 
         //TESTING
         // Get the app's installation folder.
