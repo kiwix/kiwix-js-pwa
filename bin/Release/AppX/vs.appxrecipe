@@ -20,19 +20,19 @@
     <WindowsSdkPath>
     </WindowsSdkPath>
     <LayoutDir>C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppX</LayoutDir>
-    <RegisteredManifestChecksum>4A21FBBBC79F8793951FEA88C420BEBFA4BC8ADD657CD13BA5A042E686FD7BCE</RegisteredManifestChecksum>
-    <RegisteredPackageMoniker>a1a5e0b9-13d4-41fb-810d-518949f03df4_0.8.0.0_neutral__zfxmafgedzx24</RegisteredPackageMoniker>
-    <RegisteredUserModeAppID>a1a5e0b9-13d4-41fb-810d-518949f03df4_zfxmafgedzx24!App</RegisteredUserModeAppID>
-    <RegisteredPackageID>a1a5e0b9-13d4-41fb-810d-518949f03df4</RegisteredPackageID>
+    <RegisteredManifestChecksum>7133B2376A3D682BE4A070D95772B739036E7588AC0E40E35C9BE51F78EC05FA</RegisteredManifestChecksum>
+    <RegisteredPackageMoniker>Kiwix.KiwixJS_0.8.5.0_neutral__zfxmafgedzx24</RegisteredPackageMoniker>
+    <RegisteredUserModeAppID>Kiwix.KiwixJS_zfxmafgedzx24!App</RegisteredUserModeAppID>
+    <RegisteredPackageID>Kiwix.KiwixJS</RegisteredPackageID>
     <RegisteredPackagePublisher>CN=geoff</RegisteredPackagePublisher>
-    <RegisteredVersion>0.8.0.0</RegisteredVersion>
+    <RegisteredVersion>0.8.5.0</RegisteredVersion>
     <JitOptimizationSuppressed>True</JitOptimizationSuppressed>
   </PropertyGroup>
   <ItemGroup>
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-24T14:39:53.530</Modified>
+      <Modified>2017-08-25T06:51:30.623</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -471,11 +471,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\A\dummyArticle.html">
       <PackagePath>www\A\dummyArticle.html</PackagePath>
-      <Modified>2017-08-22T19:14:25.255</Modified>
+      <Modified>2017-08-25T06:32:07.167</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\index.html">
       <PackagePath>www\index.html</PackagePath>
-      <Modified>2017-08-24T11:34:47.272</Modified>
+      <Modified>2017-08-25T06:50:45.087</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\favicon.ico">
       <PackagePath>www\favicon.ico</PackagePath>
@@ -603,11 +603,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-08-24T14:19:03.169</Modified>
+      <Modified>2017-08-25T06:51:14.625</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
-      <Modified>2017-08-24T07:49:37.275</Modified>
+      <Modified>2017-08-24T21:46:57.488</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\abstractFilesystemAccess.js">
       <PackagePath>www\js\lib\abstractFilesystemAccess.js</PackagePath>
@@ -1528,7 +1528,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-24T13:26:39.041</Modified>
+      <Modified>2017-08-24T21:06:07.078</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>
