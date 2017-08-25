@@ -23,8 +23,8 @@
 'use strict';
 var params = {};
 params['version'] = "0.8.2 Beta"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
-var results = params['results'] || 15; //Number of search results to display
-params['relativeFontSize'] = ~~(getCookie('relativeFontSize') || "100");
+params['results'] = params['results'] || 15; //Number of search results to display
+params['relativeFontSize'] = ~~(getCookie('relativeFontSize') || "100"); //Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
 params['cssSource'] = getCookie('cssSource') || "auto"; //Set default to "auto", "desktop" or "mobile"
 params['cssCache'] = getCookie('cssCache') || true; //Set default to true to use cached CSS, false to use Zim only
 //Convert string values of true / false to Boolean without disturbing any Boolean already set:
@@ -78,7 +78,7 @@ function getCookie(cname) {
 
 require.config({
     baseUrl: 'js/lib',
-    config: { '../app': { results: results, params: params } },
+    config: { '../app': { params: params } },
     paths: {
         'jquery': 'jquery-3.2.1.slim',
         //'bootstrap': 'bootstrap'
