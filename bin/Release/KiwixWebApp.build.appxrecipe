@@ -1153,7 +1153,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\.htaccess">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\.htaccess</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\resources.pri">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
