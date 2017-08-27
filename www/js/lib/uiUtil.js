@@ -94,11 +94,31 @@ define([], function() {
         //Abbreviate title if necessary
         var shortTitle = title.substring(0, 25);
         shortTitle = shortTitle == title ? shortTitle : shortTitle + "..."; 
-        var link = '<h4><a href="#" onclick="$(\'#configuration\').hide();$(\'#formArticleSearch\').show();' +
-            '$(\'#articleContent\').show();$(\'#liHomeNav\').attr(\'class\',\'active\');$(\'#liConfigureNav\').attr(\'class\', \'\');' +
-            '$(\'#liAboutNav\').attr(\'class\', \'\');document.getElementById(\'btnConfigure\').classList.remove(\'active\');">&lt;&lt; Return to ' + shortTitle + '</a></h4>';
+        var link = '<h4><a href="#">&lt;&lt; Return to ' + shortTitle + '</a></h4>';
+        var rtnFunction = `(function () {
+            $('#configuration').hide();
+            $('#about').hide();
+            if (params.cssTheme == "light" && params.cssUITheme == "dark") {
+                document.getElementById('search-article').classList.remove("dark");
+                document.getElementById('findInArticle').classList.remove("dark");
+                document.getElementById('prefix').classList.remove("dark");
+            }
+            $('#formArticleSearch').show();
+            $('#articleContent').show();
+            $('#liHomeNav').attr('class', 'active');
+            $('#liConfigureNav').attr('class', '');
+            $('#liAboutNav').attr('class', '');
+            document.getElementById('btnConfigure').classList.remove('active');
+            document.getElementById('btnAbout').classList.remove('active');
+            if (params.themeChanged) {
+                params.themeChanged = false;
+                var thisURL = decodeURIComponent(history.state.title); 
+                goToArticle(thisURL);
+            }
+        })`;
         document.getElementById("returntoArticle_top").innerHTML = link;
         document.getElementById("returntoArticle_bottom").innerHTML = link;
+        return rtnFunction;
     }
 
     function poll(msg) {

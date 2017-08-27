@@ -254,21 +254,34 @@
                 <h2>Configuration</h2>
                 This application needs a ZIM archive to work. If you have not downloaded one yet, please see the <a href="#" onclick="$('#btnAbout').click();">About</a> section.<br /><br />
                 <div id="openLocalFiles" style="display: none;">
-                    If you have downloaded one single ZIM archive (<strong>not</strong> split into .zimaa, .zimab, etc.), please select it with the following button:<br /> <br />
-                    <input type="button" class="btn btn-default" value="Select a specific ZIM file" id="archiveFile" accept=".zim" />&nbsp;&nbsp;<br /><br />
-                    <span style="clear:left"><strong>Only Wikimedia content (wiki*.zim* files) have been tested</strong> well with this app.
-                    There are known bugs with other content, and audio/video/dynamic content is not supported for now.</span><br /><br />
-                    If your ZIM archive is split into multiple files (.zimaa, .zimab, etc.) or if you have more than one archive in a folder and would like to be able to switch easily between them, please choose the <strong>folder</strong> containing your ZIM archive(s) with the following button:<br /><br />
-                    <input type="button" class="btn btn-default" value="Select folder with ZIM files" id="archiveFiles" multiple accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />&nbsp;&nbsp;<br /><br />
+                    If you have downloaded one single (unsplit) ZIM archive, select it with the <b>left</b> button.
+                    If your ZIM archive is split into multiple files (.zimaa, .zimab, etc.) or if you have more than one archive in a folder,
+                    select the <strong>folder</strong> containing your ZIM archive(s) with the <b>right</b> button.<br /> <br />
+                    <input type="button" class="btn btn-default" value="Select a specific ZIM file" id="archiveFile" accept=".zim" />&nbsp;&nbsp;&nbsp;
+                    <input type="button" class="btn btn-default" value="Select folder with ZIM files" id="archiveFiles" accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
+                    <input style="display:none;" type="file" class="btn btn-default" value="Select folder with ZIM files" id="archiveFilesLegacy" multiple accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
+                    <br /><br />
+                    <span style="clear:left">
+                        <strong>Only Wikimedia content (wiki*.zim* files) have been tested</strong> well with this app.
+                        There are known bugs with other content, and audio/video/dynamic content is not yet supported.
+                    </span><br /><br />
                 </div>
                 <div id="scanningForArchives" style="display: none;">
                     <br /> Scanning for archives... Please wait <img src="img/spinner.gif" alt="Please wait..." />
                 </div>
                 <div id="chooseArchiveFromLocalStorage" style="display: none;">
-                    <span style="clear:left">If your ZIM archive is listed below, please select it, or if you wish to search for different archives, tap the Rescan button:</span><br /><br />
-                    <select id="archiveList" class="form-control"></select>
-                    <br /><input type="button" class="btn btn-default" value="Rescan storage" id="btnRescanDeviceStorage" />&nbsp;&nbsp;  
-                    Click  to rescan app storage or to select a file or folder manually
+                    <span style="clear:left">Please select the ZIM archive you wish to use, or tap the Rescan button to seacrch for more archives:</span><br /><br />
+                    <select id="archiveList" class="form-control"></select><br />
+                    <table>
+                        <tr>
+                            <td style="vertical-align:top;">
+                                <input type="button" class="btn btn-default" value="Rescan storage" id="btnRescanDeviceStorage" />&nbsp;&nbsp;&nbsp;
+                            </td>
+                            <td style="vertical-align:top;">
+                                Tap  to rescan app storage or to select a file or folder manually
+                            </td>
+                        </tr>
+                    </table>
                 </div><br />
                 <div id="noZIMFound" style="display: none;">
                     <br /><p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
@@ -277,57 +290,91 @@
                 <table>
                     <tr>
                         <td style="vertical-align:top; min-width : 16em;">
-                            <div id="cssSettingsDiv" class="settings">
-                                <p>Please select the display style:</p>
-                                <p style="text-indent: -22px; margin-left: 20px;">
-                                    <input name="cssInjectionMode" id="cssModeAutoRadio" type="radio" value="auto">
-                                    <b>&nbsp;Select style automatically</b> (<i>recommended</i>: matches the ZIM style)
-                                </p>
-                                <p style="text-indent: -22px; margin-left: 20px;">
-                                    <input name="cssInjectionMode" id="cssModeDesktopRadio" type="radio" value="desktop">
-                                    <b>&nbsp;Use Wikimedia desktop display style</b> (and transform if necessary)
-                                </p>                               
-                                <p style="text-indent: -22px; margin-left: 20px;">
-                                    <input type="radio" name="cssInjectionMode" value="mobile" id="cssModeMobileRadio">
-                                    <b>&nbsp;Use Wikimedia mobile display style</b> (and transform if necessary)
-                                </p>
+                            <div class="panel panel-info" id="cssSettingsDiv">
+                                <div class="panel-heading">Please select the display style:</div>
+                                <div class="panel-body">
+                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                        <input name="cssInjectionMode" id="cssModeAutoRadio" type="radio" value="auto">
+                                        <b>&nbsp;Select style automatically</b> (<i>recommended</i>: matches the ZIM style)
+                                    </p>
+                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                        <input name="cssInjectionMode" id="cssModeDesktopRadio" type="radio" value="desktop">
+                                        <b>&nbsp;Use Wikimedia desktop display style</b> (and transform if necessary)
+                                    </p>
+                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                        <input name="cssInjectionMode" id="cssModeMobileRadio" type="radio" value="mobile">
+                                        <b>&nbsp;Use Wikimedia mobile display style</b> (and transform if necessary)
+                                    </p>
+                                </div>
                             </div>
-                            <div id="displaySettingsDiv" class="settings">
-                                <p>Please select the display option:</p>
-                                <p style="text-indent: -22px; margin-left: 20px;">
-                                    <input type="checkbox" name="cssCacheMode" id="cssCacheModeCheck">
-                                    <b>&nbsp;Use locally cached display styles</b> (<i>recommended</i> for Wikipedia ZIM)
-                                </p>
-                                <p style="text-indent: -22px; margin-left: 20px;">
-                                    <input type="checkbox" name="imageDisplayMode" id="imageDisplayModeCheck">
-                                    <b>&nbsp;Display images if any</b> (if you hide them, click on <span style="background-color:lightblue; color:black;">blue area</span> to display one-by-one)
-                                </p>
+                            <div class="panel panel-info" id="displaySettingsDiv">
+                                <div class="panel-heading">Please select the display option:</div>
+                                <div class="panel-body">
+                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                        <input type="checkbox" name="cssCacheMode" id="cssCacheModeCheck">
+                                        <b>&nbsp;Use locally cached display styles</b> (<i>recommended</i> for Wikipedia ZIM)
+                                    </p>
+                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                        <input type="checkbox" name="imageDisplayMode" id="imageDisplayModeCheck">
+                                        <b>&nbsp;Display images if any</b> (if you hide them, click on <span style="background-color:lightblue; color:black;">&nbsp;blue area&nbsp;</span> to display one-by-one)
+                                    </p>
+                                </div>
                             </div>
-                            <div id="displayThemeDiv" class="settings" style="clear: left;">
-                                <p>Here you may select a dark theme for night reading:</p>
-                                <p style="text-indent: -22px; margin-left: 20px;">
-                                    <input type="checkbox" name="cssUIDarkTheme" id="cssUIDarkThemeCheck">
-                                    <b>&nbsp;Use a dark theme for the user interface</b>
-                                </p>
-                                <p style="text-indent: -22px; margin-left: 20px;">
-                                    <input type="checkbox" name="cssWikiDarkTheme" id="cssWikiDarkThemeCheck">
-                                    <b>&nbsp;Use a dark theme for Wikimedia articles</b> (<i>experimental</i> and may only work for Wikipedia ZIM files)
-                                </p>
+                            <div id="displayThemeDiv" class="panel panel-info" style="clear: left;">
+                                <div class="panel-heading">Here you may select a dark theme for night reading:</div>
+                                <div class="panel-body">
+                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                        <input type="checkbox" name="cssUIDarkTheme" id="cssUIDarkThemeCheck">
+                                        <b>&nbsp;Use a dark theme for the user interface</b>
+                                    </p>
+                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                        <input type="checkbox" name="cssWikiDarkTheme" id="cssWikiDarkThemeCheck">
+                                        <b>&nbsp;Use a dark theme for Wikimedia articles</b> (<i>experimental</i> and may only work for Wikipedia ZIM files)
+                                    </p>
+                                </div>
                             </div>
                         </td>
                     </tr>
                 </table>
                 <div id="returntoArticle_bottom" style="text-align: center;"></div>
                 <h2>Expert settings</h2>
-                <div id="contentInjectionModeDiv">
-                    Do not touch unless you know what you're doing. <br />
-                    Content injection mode : <br />
-                    <input type="radio" name="contentInjectionMode" value="jquery" id="jQueryModeRadio" checked><label for="jQueryModeRadio">&nbsp; JQuery</label> (slow and memory hungry, but safer)
-                    <br>
-                    <input type="radio" name="contentInjectionMode" value="serviceworker" id="serviceworkerModeRadio"><label for="serviceworkerModeRadio">&nbsp; ServiceWorker</label> (faster but unstable, and not supported by all platforms. In particular, Firefox extensions do not allow ServiceWorkers for now)
-                </div>
-                <div id="serviceWorkerStatus"></div>
-                <div id="messageChannelStatus"></div>
+                <table>
+                    <tr>
+                        <td style="vertical-align:top; min-width : 16em;">
+                            <div class="panel panel-warning" style="min-width: 16em" id="mathsProcessingMode">
+                                <div class="panel-heading">Mathematical and chemical equations and symbols:</div>
+                                <div class="panel-body">
+                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                        <input type="radio" name="useMathJax" id="useMathJaxRadioTrue" value="true">
+                                        <b>&nbsp;Typeset TeX equations with MathJax</b> (<i>recommended</i>: very fast, but not all symbols supported in all languages; will use SVG fallbacks if TeX string not available)
+                                    </p>
+                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                        <input type="radio" name="useMathJax" id="useMathJaxRadioFalse" value="false">
+                                        <b>&nbsp;Use SVG fallback images</b> (very slow and memory hungry, but will dislplay all symbols)
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="panel panel-danger" style="min-width: 16em" id="contentInjectionModeDiv">
+                                <div class="panel-heading">Do not touch unless you know what you're doing!</div>
+                                <div class="panel-body">
+                                    <p>Content injection mode:</p>
+                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                        <input type="radio" name="contentInjectionMode" value="jquery" id="jQueryModeRadio" checked>
+                                        <b>&nbsp;JQuery</b> (slow and memory hungry, but safer)
+                                    </p>
+                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                        <input type="radio" name="contentInjectionMode" value="serviceworker" id="serviceworkerModeRadio">
+                                        <b>&nbsp;ServiceWorker</b> (faster but unstable, and not supported by all platforms)
+                                    </p>
+                                </div>
+                            </div>
+                            <div id="serviceWorkerStatus"></div>
+                            <div id="messageChannelStatus"></div>
+                        </td>
+                    </tr>
+                </table>
+                <br />
+                <br />
                 <br />
             </div>
             <div id="welcomeText" class="container category-padding">

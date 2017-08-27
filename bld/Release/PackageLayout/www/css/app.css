@@ -29,40 +29,44 @@
     overflow-x: hidden;
 }
 
-    [role=region] > header {
-        /*margin: .5rem 0 1rem 0;*/
-        margin: 0 0.75em 0 1px;
-        text-align: center;
-    }
+[role=region] > header {
+    /*margin: .5rem 0 1rem 0;*/
+    margin: 0 0.75em 0 1px;
+    text-align: center;
+}
 
-        [role=region] > header > h1 {
-            margin: 0;
-            text-shadow: 0 1px 1px rgba(0,0,0,.4);
-        }
+[role=region] > header > h1 {
+    margin: 0;
+    text-shadow: 0 1px 1px rgba(0,0,0,.4);
+}
 
-    [role=region] > .view-content {
-        margin: 0;
-        position: relative; /*Fixes #250 Random button display bug in W10M */
-    }
+[role=region] > .view-content {
+    margin: 0;
+    position: relative; /*Fixes #250 Random button display bug in W10M */
+}
 
-    [role=region] > footer {
-        background: rgba(51,122,183,0.1);
-        right: 0;
-        bottom: 0;
-        left: 0;
-        position: fixed;
-        text-align: center;
-    }
+[role=region] > footer {
+    background: rgba(51,122,183,0.1);
+    right: 0;
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    text-align: center;
+}
 
-        [role=region] > footer > menu[role=toolbar] {
-            margin: 0;
-            padding: 0;
-        }
+[role=region] > footer > menu[role=toolbar] {
+    margin: 0;
+    padding: 0;
+}
 
 #navigationButtons .restrictedSize {
     max-width: 80%;
     margin-left: auto;
     margin-right: auto;
+}
+
+body {
+    background-color: whitesmoke !important;
 }
 
 .nopadding {
@@ -159,11 +163,22 @@ footer .glyphicon {
     color: lightblue;
 }
 
-.dark {
+.dark, .dark .panel {
     color: lightgray !important;
-    background-color: #222 !important;
+    background: #222 !important;
     border-color: darkgray;
 }
+
+.dark .panel-heading {
+    color: lightgray !important;
+    background: darkslategray !important;
+    border-color: darkgray;
+}
+
+    .dark .panel-warning .panel-heading {
+        background: #808000 !important;
+    }
+
 
 .dark a {
     color: lightblue !important;
