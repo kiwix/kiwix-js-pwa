@@ -176,9 +176,13 @@ footer .glyphicon {
 }
 
     .dark .panel-warning .panel-heading {
-        background: #808000 !important;
+        background: #333300 !important;
     }
 
+
+    .dark .panel-danger .panel-heading {
+        background: #330000 !important;
+    }
 
 .dark a {
     color: lightblue !important;
