@@ -465,6 +465,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         $('input:radio[name=cssInjectionMode]').on('click', function (e) {
             params.cssSource = this.value;
             cookies.setItem('cssSource', params.cssSource, Infinity);
+            params.themeChanged = true;
+        });
+        $('input:radio[name=useMathJax]').on('click', function (e) {
+            params.useMathJax = this.value;
+            cookies.setItem('useMathJax', params.useMathJax, Infinity);
+            params.themeChanged = true;
         });
         $(document).ready(function (e) {
             // Set initial behaviour (see also init.js)
@@ -1472,7 +1478,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
 
                 //Load MathJax if required and if not already loaded
                 if (containsMathSVG) {
-                    if (!window.frames[0].MathJax) {
+                    if (params.useMathJax && !window.frames[0].MathJax) {
                         var doc = $("#articleContent").contents()[0];
                         var script = doc.createElement("script");
                         script.type = "text/javascript";

@@ -841,10 +841,11 @@ a.edit_section_button.android:active:before {
     content: ':';
 }
 
-#content .hlist dd:after, #content .hlist li:after {
-    content: ' ?? ';
+#content .hlist dd::after, .hlist li::after {
+    content: " · ";
     font-weight: bold;
 }
+
 
 #content .hlist dd:last-child:after, #content .hlist dt:last-child:after, #content .hlist li:last-child:after {
     content: none;
@@ -1421,11 +1422,11 @@ div.toctitle {
     content: ":";
 }
 
-.hlist dd:after, .hlist li:after {
-    content: " ??";
+.hlist dd::after, .hlist li::after {
+    content: " · ";
     font-weight: bold;
-    padding: 0 0.3em;
 }
+
 
 .hlist dd:last-child:after, .hlist dt:last-child:after, .hlist li:last-child:after {
     content: none;
