@@ -415,6 +415,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         $('input:checkbox[name=cssCacheMode]').on('change', function (e) {
             params.cssCache = this.checked ? true : false;
             cookies.setItem('cssCache', params.cssCache, Infinity);
+            params.themeChanged = true;
         });
         $('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
             params.imageDisplay = this.checked ? true : false;
@@ -885,6 +886,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                                     archiveDirectory = "";
                                     //selectedStorage = "";
                                     //archiveDirectory = MSApp.createFileFromStorageFile(file);
+                                    // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
+                                    if (cssBlobCache)
+                                        cssBlobCache = new Map();
+                                    //if (cssDirEntryCache)
+                                    //    cssDirEntryCache = new Map();
                                     selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
                                         // The archive is set : go back to home page to start searching
                                         if (params.rescan) {
@@ -984,7 +990,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             });
         }
 
-        function scanUWPFolderforArchives (folder) {
+        function scanUWPFolderforArchives(folder) {
             if (folder) {
                 // Application now has read/write access to all contents in the picked folder (including sub-folder contents)
                 // Cache folder so the contents can be accessed at a later time
@@ -1024,11 +1030,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
 
 
     function setLocalArchiveFromFileList(files) {
+            // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
+            if (cssBlobCache)
+                cssBlobCache = new Map();
+            //if (cssDirEntryCache)
+            //    cssDirEntryCache = new Map();
         selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
             // The archive is set : go back to home page to start searching
             $("#btnHome").click();
         });
     }
+
     /**
      * Sets the localArchive from the File selects populated by user
      */
@@ -1066,7 +1078,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         request.send(null);
         return deferred.promise;
     }
-    
+
     /**
      * This is used in the testing interface to inject remote archives
      */
@@ -1088,12 +1100,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
     function onKeyUpPrefix(evt) {
         // Use a timeout, so that very quick typing does not cause a lot of overhead
         // It is also necessary for the words suggestions to work inside Firefox OS
-        if(window.timeoutKeyUpPrefix) {
+        if (window.timeoutKeyUpPrefix) {
             window.clearTimeout(window.timeoutKeyUpPrefix);
         }
         window.timeoutKeyUpPrefix = window.setTimeout(function() {
             var prefix = $("#prefix").val();
-            if (prefix && prefix.length>0) {
+            if (prefix && prefix.length > 0) {
                 $('#searchArticles').click();
             }
         }
@@ -1154,11 +1166,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         for (var i = 0; i < dirEntryArray.length; i++) {
             var dirEntry = dirEntryArray[i];
             
-            articleListDivHtml += "<a href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g,"&apos;")
+            articleListDivHtml += "<a href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g, "&apos;")
                     + "' class='list-group-item'>" + dirEntry.title + "</a>";
         }
         articleListDiv.html(articleListDivHtml);
-        $("#articleList a").on("click",handleTitleClick);
+        $("#articleList a").on("click", handleTitleClick);
         $('#searchingForArticles').hide();
         $('#articleList').show();
         $('#articleListHeaderMessage').show();
@@ -1288,6 +1300,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
     // This matches the title of a mw-offliner (Type2) Wikimedia ZIM file, specifically 
     //var regexpType2ZIMTitle = /id\s*=\s*['"][^'"]*title_0[^"']*["'][^>]*>\s*([^<]+)\s*</i;
 
+        // Stores a url to direntry mapping and is refered to/updated anytime there is a css lookup 
+        // When archive changes these caches should be reset. 
+        // Currently happens only in setLocalArchiveFromFileList and setLocalArchiveFromArchiveList.
+        //var cssDirEntryCache = new Map(); //This one is never hit!
+        var cssBlobCache = new Map();
 
 
     /**
@@ -1351,7 +1368,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                     var zimLink = decodeURIComponent(uiUtil.removeUrlParameters(linkArray[2]));
                     /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
                     var filteredLink = transformStyles.filterCSS(zimLink, zimType, cssCache, cssSource, i);
-                    //blobArray[i] = filteredLink.zl; //This line is a mistake! It fills blobArray too quickly and doesn't trigger waiting for primises...
+                    //blobArray[i] = filteredLink.zl; //This line is a mistake! It fills blobArray too quickly and doesn't trigger waiting for promises...
                     //filteredLink.rtnFunction == "injectCSS" ? injectCSS() : resolveCSS(filteredLink.zl, i); 
                     if (filteredLink.rtnFunction == "injectCSS") { blobArray[i] = filteredLink.zl; injectCSS() } else { resolveCSS(filteredLink.zl, i); }
                 } else {
@@ -1362,24 +1379,32 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         }
 
         function resolveCSS(title, index) {
-            selectedArchive.getDirEntryByTitle(title).then(
-            function (dirEntry) {
-                selectedArchive.readBinaryFile(dirEntry,
-                    function (readableTitle, content, namespace, url) {
-                //DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
-                    //var cssContent = util.uintToString(content);
-                    var cssBlob = new Blob([content], { type: 'text/css' }, { oneTimeOnly: true });
-                    var newURL = [namespace + "/" + url, URL.createObjectURL(cssBlob)];
-                    //blobArray[index] = newURL; //Don't bother with "index" -- you don't need to track the order of the blobs TODO: delete this logic
-                    blobArray.push(newURL);
-                    injectCSS(); //DO NOT move this: it must run within .then function to pass correct values
-                });
-            }).fail(function (e) {
-                console.error("could not find DirEntry for CSS : " + title, e);
-                //blobArray[index] = title;
-                blobArray.push(title);
+            if (cssBlobCache && cssBlobCache.has(title)) {
+                console.log("*** cssBlobCache hit ***");
+                blobArray.push([title, cssBlobCache.get(title)]);
                 injectCSS();
-            });
+            } else {
+                selectedArchive.getDirEntryByTitle(title)
+                    .then(function (dirEntry) {
+                        uiUtil.poll("Attempting to resolve CSS link #" + index + " [" + title.substring(0, 30) + "] from ZIM file...");
+                        return selectedArchive.readBinaryFile(dirEntry,
+                            function (readableTitle, content, namespace, url) {
+                        //DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
+                                //var cssContent = util.uintToString(content);
+                                var cssBlob = new Blob([content], { type: 'text/css' });
+                                var newURL = [namespace + "/" + url, URL.createObjectURL(cssBlob)];
+                                blobArray.push(newURL);
+                                if (cssBlobCache)
+                                    cssBlobCache.set(newURL[0], newURL[1]); 
+                                injectCSS(); //DO NOT move this: it must run within .then function to pass correct values
+                            });
+                    }).fail(function (e) {
+                        console.error("could not find DirEntry for CSS : " + title, e);
+                        //@TODO Change this to push an array of [title, title] afters simplified code in injectCSS()
+                        blobArray.push(title);
+                        injectCSS();
+                    });
+            }
         }
 
         function injectCSS() {

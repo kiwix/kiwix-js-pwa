@@ -80,7 +80,6 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 zl = zl.match(/^(?:\.\.\/|\/)+(-\/.*)$/)[1]; //Remove the directory path
                 console.log("Attempting to resolve CSS link #" + i + " [" + zl + "] from ZIM file..." +
                     (cc ? "\n(Consider adding file #" + i + " to the local filesystem)" : ""));
-                uiUtil.poll("Attempting to resolve CSS link #" + i + " [" + zl.substring(0, 30) + "] from ZIM file...");
                 rtnFunction = "resolveCSS";
                 return { zl: zl, rtnFunction: rtnFunction };
             }
