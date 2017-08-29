@@ -28,7 +28,12 @@
 td:not([style*="background"]), p, li, th:not([style*="background"]), caption, div,
 /*span:not([class*="color"]):not([class*="wikEd"]),*/
 p code, label code, dl code {
-    color: lightgray;
+    color: lightgray !important;
+}
+
+
+blockquote {
+    background-color: transparent !important;
 }
 
   td[style*="color"], td span[style*="color"] {
@@ -46,7 +51,7 @@ a, .CategoryTreeToggle, #toc a, #toc a span, body .ui-button {
     color: lightblue !important;
 }
 
-td[style*=background]:not([class*="translations"]) a:first-child {
+td[style*="background"]:not([class*="translations"]):not([style*="transparent"]) a:first-child {
     color: dimgray !important
 }
 
@@ -134,7 +139,7 @@ html, body {
   }
 
 table, input, button, select, textarea:not([class*="mw-editfont"]),
-tr[style*="background: antiquewhite;"], #toc, td[style*="background-color"], td[style*="background:#F5FAFF"],
+tr[style*="background: antiquewhite;"], #toc, td[style*="background-color"], td[style*="background:#F5FAFF"], td[style*="background:#F8"],
 td[style*="background:WhiteSmoke"], td[style*="background:GhostWhite"], td[style*="background:#f5"], #mw-content-text div[style*="background: #"], .vevent td, .referencetooltip li, .suggestions,
 .mw-ui-button[style*="background"], .mw-ui-button[style*="background"] *, .wikiEditor-ui,
 table.navbox.collapsible tr:nth-child(2) > td, div.menu, .oo-ui-popupWidget-popup,
@@ -146,6 +151,7 @@ table.navbox.collapsible tr:nth-child(2) > td, div.menu, .oo-ui-popupWidget-popu
 .navbox th, .climate-table th, .wikitable th, .navbox-title, th[bgcolor], td[bgcolor], th[style*="background"] {
     background-color: darkslategray !important;
     border-color: #555 !important;
+    color: lightgray;
 }
 
 tr[bgcolor] {
@@ -324,9 +330,13 @@ td[style*="border-bottom"] {
     color: #fff !important;
   }
 
-  span[style*="color:black"] {
-      color: whitesmoke !important;
-  }
+span[style*="color:black"] { 
+    color: whitesmoke !important;
+}
+
+span[style*="color:#555"] {
+    color: darkgray !important;
+}
 
   .CategoryTreeEmptyBullet {
     color: #ccc !important;

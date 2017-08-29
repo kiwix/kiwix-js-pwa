@@ -171,7 +171,7 @@ footer .glyphicon {
 
 .dark .panel-heading {
     color: lightgray !important;
-    background: darkslategray !important;
+    background: #12303b !important;
     border-color: darkgray;
 }
 
