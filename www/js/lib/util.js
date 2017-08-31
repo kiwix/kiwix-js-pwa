@@ -738,7 +738,7 @@ define(['q'], function(q) {
             //Reduce size of header
                 doc = doc.replace(/<h1\b([^>]*>[^<]*<\/)h1>/ig, "<h3$1h3>");
             //Limit height of pre box and prevent word wrapping
-                doc = doc.replace(/<pre>/i, '<div class="panel panel-success"><pre class="panel-heading">$#$#</pre>\r\n<pre class="panel panel-body" style="max-height:360px; word-wrap:normal; margin-bottom:10px;">');
+                doc = doc.replace(/<pre>/i, '<div class="panel panel-success"><pre class="panel-heading" style="overflow-x: hidden; word-wrap: normal;">$#$#</pre>\r\n<pre class="panel panel-body" style="max-height:360px; word-wrap:normal; margin-bottom:10px;">');
             //Remove hr at end of page and add extra </div>           
                 doc = doc.replace(/<hr\b[^>]*>(\s*<\/pre>)/i, "$1</div>");
             //Move header into panel-header (NB regex is deliberately redundant to increase specificity of search)
