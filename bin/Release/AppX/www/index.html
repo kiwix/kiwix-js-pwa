@@ -165,7 +165,7 @@
                 from <a href="http://download.kiwix.org/zim" target="_blank">http://download.kiwix.org/zim/</a>, with a regular computer.
                 <strong>Currently only Wikimedia contents (ZIM files in wiki* subdirectories, for instance <a href="http://download.kiwix.org/zim/wikipedia/" target="_blank">http://download.kiwix.org/zim/wikipedia/</a>) have been tested</strong>.
                 There are known bugs when reading other contents; and audio/video/dynamic contents are not supported for now.
-                <br />For a quick test, you can start with the <a href="http://download.kiwix.org/zim/wikipedia/wikipedia_en_ray_charles_2015-06.zim" target="_blank">"Ray Charles" ZIM file</a> : it contains some wikipedia articles about Ray Charles.
+                <br />For a quick test, you can start with the <a href="http://download.kiwix.org/zim/wikipedia/wikipedia_en_ray_charles_2015-06.zim.meta4" target="_blank">"Ray Charles" ZIM file</a> : it contains some wikipedia articles about Ray Charles.
                 <br />After that, you can download materials in your language. Check the size before you download files as many of the files are large (several Gigabytes).
                 <br />If the file is larger than 2 GB, it might not be supported by your device if your storage is formatted using a FAT filesystem. If so, it's possible to split the material into several 2GB files : see <a href="http://www.kiwix.org/wiki/FAQ">the Kiwix FAQ</a>
                 <br />
@@ -251,45 +251,65 @@
             </div>
             <div id="configuration" style="display: none;" class="category-padding">
                 <div id="returntoArticle_top" style="text-align: center;"></div>
-                <h2>Configuration</h2>
-                This application needs a ZIM archive to work. If you have not downloaded one yet, please see the <a href="#" onclick="$('#btnAbout').click();">About</a> section.<br /><br />
-                <div id="openLocalFiles" style="display: none;">
-                    If you have downloaded one single (unsplit) ZIM archive, select it with the <b>left</b> button.
-                    If your ZIM archive is split into multiple files (.zimaa, .zimab, etc.) or if you have more than one archive in a folder,
-                    select the <strong>folder</strong> containing your ZIM archive(s) with the <b>right</b> button.<br /> <br />
-                    <input type="button" class="btn btn-default" value="Select a specific ZIM file" id="archiveFile" accept=".zim" />&nbsp;&nbsp;&nbsp;
-                    <input type="button" class="btn btn-default" value="Select folder with ZIM files" id="archiveFiles" accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
-                    <input style="display:none;" type="file" class="btn btn-default" value="Select folder with ZIM files" id="archiveFilesLegacy" multiple accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
-                    <br /><br />
-                    <span style="clear:left">
-                        <strong>Only Wikimedia content (wiki*.zim* files) have been tested</strong> well with this app.
-                        There are known bugs with other content, and audio/video/dynamic content is not yet supported.
-                    </span><br /><br />
+                <div class="container">
+                    <div class="row">
+                        <div class="column">
+                            <h2>Configuration</h2>
+                            This application needs a ZIM archive to work. If you have not downloaded one yet, please open the <a href="#downloads">download links panel</a> or see the <a href="#" onclick="$('#btnAbout').click();">About</a> section.<br /><br />
+                            <div id="openLocalFiles" style="display: none;">
+                                If you have downloaded one single (unsplit) ZIM archive, select it with the <b>left</b> button.
+                                If your ZIM archive is split into multiple files (.zimaa, .zimab, etc.) or if you have more than one archive in a folder,
+                                select the <strong>folder</strong> containing your ZIM archive(s) with the <b>right</b> button.<br /> <br />
+                                <input type="button" class="btn btn-default" value="Select a specific ZIM file" id="archiveFile" accept=".zim" />&nbsp;&nbsp;&nbsp;
+                                <input type="button" class="btn btn-default" value="Select folder with ZIM files" id="archiveFiles" accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
+                                <input style="display:none;" type="file" class="btn btn-default" value="Select folder with ZIM files" id="archiveFilesLegacy" multiple accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
+                                <br /><br />
+                                <span style="clear:left">
+                                    <strong>Only Wikimedia content (wiki*.zim* files) have been tested</strong> well with this app.
+                                    There are known bugs with other content, and audio/video/dynamic content is not yet supported.
+                                </span><br /><br />
+                            </div>
+                            <div id="scanningForArchives" style="display: none;">
+                                <br /> Scanning for archives... Please wait <img src="img/spinner.gif" alt="Please wait..." />
+                            </div>
+                            <div id="chooseArchiveFromLocalStorage" style="display: none;">
+                                <span style="clear:left">Please select the ZIM archive you wish to use, or tap the Rescan button to seacrch for more archives:</span><br /><br />
+                                <select id="archiveList" class="form-control"></select><br />
+                                <table>
+                                    <tr>
+                                        <td style="vertical-align:top;">
+                                            <input type="button" class="btn btn-default" value="Rescan storage" id="btnRescanDeviceStorage" />&nbsp;&nbsp;&nbsp;
+                                        </td>
+                                        <td style="vertical-align:top;">
+                                            Tap  to rescan app storage or to select a file or folder manually
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div id="noZIMFound" style="display: none;">
+                                <br /><p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div id="scanningForArchives" style="display: none;">
-                    <br /> Scanning for archives... Please wait <img src="img/spinner.gif" alt="Please wait..." />
+                <div id="downloads" class="container">
+                    <div class="row">
+                        <div class="column">
+                            <h3>Download links</h3>
+                            <p>
+                                <i>Warning:</i> this requires and will use an Internet connection
+                                <br />Files can be very large, <b>do not attempt to download over a mobile connection!</b>
+                                <br /><a id="downloadTrigger" href="#">Open full list of download links</a>
+                            </p>
+                            <div id="downloadLinks" style="display: none;"></div>
+                        </div>
+                    </div>
                 </div>
-                <div id="chooseArchiveFromLocalStorage" style="display: none;">
-                    <span style="clear:left">Please select the ZIM archive you wish to use, or tap the Rescan button to seacrch for more archives:</span><br /><br />
-                    <select id="archiveList" class="form-control"></select><br />
-                    <table>
-                        <tr>
-                            <td style="vertical-align:top;">
-                                <input type="button" class="btn btn-default" value="Rescan storage" id="btnRescanDeviceStorage" />&nbsp;&nbsp;&nbsp;
-                            </td>
-                            <td style="vertical-align:top;">
-                                Tap  to rescan app storage or to select a file or folder manually
-                            </td>
-                        </tr>
-                    </table>
-                </div><br />
-                <div id="noZIMFound" style="display: none;">
-                    <br /><p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
-                </div>
-                <h2>Display settings</h2>
-                <table>
-                    <tr>
-                        <td style="vertical-align:top; min-width : 16em;">
+
+                <div class="container">
+                    <h3>Display settings</h3>
+                    <div class="row">
+                        <div class="column">
                             <div class="panel panel-info" id="cssSettingsDiv">
                                 <div class="panel-heading">Please select the display style:</div>
                                 <div class="panel-body">
@@ -333,14 +353,14 @@
                                     </p>
                                 </div>
                             </div>
-                        </td>
-                    </tr>
-                </table>
+                        </div>
+                    </div>
+                </div>
                 <div id="returntoArticle_bottom" style="text-align: center;"></div>
-                <h2>Expert settings</h2>
-                <table>
-                    <tr>
-                        <td style="vertical-align:top; min-width : 16em;">
+                <div class="container">
+                    <h3>Expert settings</h3>
+                    <div class="row">
+                        <div class="column">
                             <div class="panel panel-warning" style="min-width: 16em" id="mathsProcessingMode">
                                 <div class="panel-heading">Mathematical and chemical equations and symbols:</div>
                                 <div class="panel-body">
@@ -370,29 +390,29 @@
                             </div>
                             <div id="serviceWorkerStatus"></div>
                             <div id="messageChannelStatus"></div>
-                        </td>
-                    </tr>
-                </table>
-                <br />
-                <br />
-                <br />
-            </div>
-            <div id="welcomeText" class="container category-padding">
-                You can search the content of your ZIM archive by typing in the above search field.
-                <br />It will suggest articles starting with the letters you type.
-            </div>
-            <!-- List of articles matching the typed prefix -->
-            <div id="articleListWithHeader" class="container">
-                <span id="articleListHeaderMessage"></span>
-                <div id="articleList" class="list-group">
+                        </div>
+                    </div>
                 </div>
+                <br />
+                <br />
+                <br />
             </div>
-            <div id="readingArticle" style="display: none;" class="container">
-                <p>Reading article <span id="articleName"></span> from archive... Please wait <img src="img/spinner.gif" alt="Please wait..." /></p>
-                <div id="progressMessage"><p></p></div>
-            </div>
-            <iframe id="articleContent" src="A/dummyArticle.html" class="articleIFrame">&nbsp;</iframe>
-        </article>
+                    <div id="welcomeText" class="container category-padding">
+                        You can search the content of your ZIM archive by typing in the above search field.
+                        <br />It will suggest articles starting with the letters you type.
+                    </div>
+                    <!-- List of articles matching the typed prefix -->
+                    <div id="articleListWithHeader" class="container">
+                        <span id="articleListHeaderMessage"></span>
+                        <div id="articleList" class="list-group">
+                        </div>
+                    </div>
+                    <div id="readingArticle" style="display: none;" class="container">
+                        <p>Reading article <span id="articleName"></span> from archive... Please wait <img src="img/spinner.gif" alt="Please wait..." /></p>
+                        <div id="progressMessage"><p></p></div>
+                    </div>
+                    <iframe id="articleContent" src="A/dummyArticle.html" class="articleIFrame">&nbsp;</iframe>
+</article>
         <footer id="footer">
             <div id="navigationButtons" class="btn-toolbar">
                 <!-- We need to restrict the size of this navbar,

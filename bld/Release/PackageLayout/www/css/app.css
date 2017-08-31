@@ -209,7 +209,7 @@ footer .glyphicon {
     background-color: darkslategray !important;
 }
 
-.dark .btn-default, .dark .input-group-addon {
+.dark .btn-default, .dark .input-group-addon, .dark pre {
     background: #222 !important;
     color: lightgray !important;
     text-shadow: none;
