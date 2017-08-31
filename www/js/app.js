@@ -327,6 +327,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             $("#articleContent").hide();
             $('#articleContent').hide();
             $('#searchingForArticles').hide();
+            $('#downloadLinks').hide();
             refreshAPIStatus();
             //If user hadn't previously picked a folder or a file, resort to the local storage folder (UWP functionality)
             if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
@@ -397,9 +398,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 //@TODO hide folderpicker
             }
         }); 
-        //Legacy logic : replace with above sections
-        //$('#archiveFile').on('change', setLocalArchiveFromFileSelect);
-        
+        document.getElementById('downloadTrigger').addEventListener('click', function () {
+            util.requestDownloadLinks(params.kiwixDownloadLink);
+        });
 
         $('input:radio[name=contentInjectionMode]').on('change', function (e) {
             if (checkWarnServiceWorkerMode(this.value)) {
