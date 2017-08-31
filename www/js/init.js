@@ -24,6 +24,7 @@
 var params = {};
 params['version'] = "0.8.2 Beta"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 params['storedFile'] = getCookie('lastSelectedArchive') || "wikipedia_en_ray_charles_2015-06.zimaa"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
+params['kiwixDownloadLink'] = "http://download.kiwix.org/zim/"; //Include final slash
 
 params['results'] = params['results'] || 15; //Number of search results to display
 params['relativeFontSize'] = ~~(getCookie('relativeFontSize') || "100"); //Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
