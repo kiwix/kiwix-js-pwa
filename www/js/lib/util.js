@@ -694,6 +694,84 @@ define(['q'], function(q) {
 
     }
 
+    function requestDownloadLinks(URL) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var doc = this.responseText;
+                var downloadLinks = document.getElementById('downloadLinks');
+                if (/\.meta4$/i.test(URL)) {
+                    //It's the metalink with download links
+                    var linkArray = doc.match(/<url\b[^>]*>[^<]*<\/url>/ig);
+                    var size = doc.match(/<size>(\d+)<\/size>/i);
+                    //Filter value (add commas if required)
+                    size = size.length ? size[1] : "";
+                    var megabytes = size ? Math.round(size * 10 / (1024 * 1024)) / 10 : size;
+                    //Use the lookbehind reversal trick to add commas....
+                    size = size.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
+                    doc = "";
+                    //NB we'ere intentionally discarding first link to kiwix.org (not to zim)
+                    var mirrorservice = false;
+                    for (var i = 1; i < linkArray.length; i++) {
+                        if (/mirrorservice\.org/i.test(linkArray[i])) {
+                            mirrorservice = true;
+                            doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li>*** Server has download bug, see note ***<br />$1</li>\r\n');
+                        } else {
+                            doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li><a href="$1" target="_blank">$1</a></li>\r\n');
+                        }
+                    }
+                    var fullDoc = '<div class="panel panel-body" style="overflow-y: auto;">\r\n<h4>We found the following links to your file</h4>\r\n<h5';
+                    if (megabytes > 200) fullDoc += ' style="color:red;"';
+                    fullDoc += '>WARNING: file size is <b>' + (megabytes ? megabytes + 'Mb' : 'unnown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
+                    if (megabytes > 200) fullDoc += '<b>Consider using a torrent download method: see <a href="#" onclick="$(\'#btnAbout\').click();">About</a> section</b>\r\n';
+                    fullDoc += '<p><i>Links will open in a new browser window</i></p><ol>\r\n' + doc + '</ol>\r\n';
+                    if (mirrorservice) fullDoc += '*** Note: mirrorservice.org currently has a download bug with ZIM archives: on some browsers it will download the ZIM file as plain text in browser window<br /><br />';
+                    fullDoc += '<a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^\/]*\.meta4$/i, "\/") +'">&lt;&lt; Back to list of files</a></pre>';
+                    downloadLinks.innerHTML = fullDoc;
+                    document.getElementById('returnLink').addEventListener('click', function (e) {
+                        requestDownloadLinks(this.dataset.kiwixDl);
+                    });
+                    return;
+                }
+            //Remove images
+                var doc = doc.replace(/<img\b[^>]*>\s*/ig, "");
+            //Reduce size of header
+                doc = doc.replace(/<h1\b([^>]*>[^<]*<\/)h1>/ig, "<h3$1h3>");
+            //Limit height of pre box and prevent word wrapping
+                doc = doc.replace(/<pre>/i, '<div class="panel panel-success"><pre class="panel-heading">$#$#</pre>\r\n<pre class="panel panel-body" style="max-height:360px; word-wrap:normal; margin-bottom:10px;">');
+            //Remove hr at end of page and add extra </div>           
+                doc = doc.replace(/<hr\b[^>]*>(\s*<\/pre>)/i, "$1</div>");
+            //Move header into panel-header (NB regex is deliberately redundant to increase specificity of search)
+                doc = doc.replace(/\$\#\$\#([\s\S]+?)(<a\s+href[^>]+>name<[\s\S]+?last\s+modified<[\s\S]+?)<hr>\s*/i, "$2$1");
+                if (/\dK|\dM|\dG/.test(doc)) {
+                //Swap size and date fields to make file size more prominent on narrow screens
+                    doc = doc.replace(/(<a\b[^>]*>last\s+modified<\/a>)(\s+)(<a\b[^>]*>size<\/a>)/ig, "$3$2$1");
+                    doc = doc.replace(/(\d\d-\w{3}-\d{4}\s\d\d\:\d\d)(\s+)(\d[\d.\w]+)\s+$/img, "$3$2$1");
+                }
+                downloadLinks.innerHTML = doc;
+                var links = downloadLinks.getElementsByTagName("a");
+                for (var i = 0; i < links.length; i++) {
+                    //Store the href - seems it's not useful?
+                    //links[i].setAttribute("data-kiwix-dl", links[i].href);
+                    links[i].href = "#";
+                    links[i].addEventListener('click', function (e) {
+                        var replaceURL = URL + this.text;
+                        if (/\.zim$/i.test(this.text))
+                            replaceURL = replaceURL + ".meta4";
+                        if (/parent\s*directory/i.test(this.text))
+                            replaceURL = URL.replace(/\/[^\/]*\/$/i, "\/");
+                        requestDownloadLinks(replaceURL);
+                    });
+                }
+                //Toggle display of download panel -- bug: causes whole div to close if clicking on a link...
+                //downloadLinks.style.display = downloadLinks.style.display == "none" ? "inline" : "none";
+                downloadLinks.style.display = "inline";
+            }
+        };
+        xhttp.open("GET", URL, true);
+        xhttp.send();
+    }
+
 
     /**
      * Functions and classes exposed by this module
@@ -717,6 +795,7 @@ define(['q'], function(q) {
         leftShift: leftShift,
         matchOuter: matchOuter,
         matchInner: matchInner,
-        Hilitor: Hilitor
+        Hilitor: Hilitor,
+        requestDownloadLinks: requestDownloadLinks
     };
 });
