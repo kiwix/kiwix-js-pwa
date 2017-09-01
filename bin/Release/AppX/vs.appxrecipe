@@ -32,7 +32,7 @@
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-09-01T12:03:24.182</Modified>
+      <Modified>2017-09-01T17:35:55.254</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -459,7 +459,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\css\app.css">
       <PackagePath>www\css\app.css</PackagePath>
-      <Modified>2017-08-30T11:50:47.343</Modified>
+      <Modified>2017-09-01T15:08:26.565</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\css\bootstrap-theme.css">
       <PackagePath>www\css\bootstrap-theme.css</PackagePath>
@@ -627,7 +627,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\kiwixServe.js">
       <PackagePath>www\js\lib\kiwixServe.js</PackagePath>
-      <Modified>2017-09-01T12:03:14.501</Modified>
+      <Modified>2017-09-01T17:35:46.718</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\q.js">
       <PackagePath>www\js\lib\q.js</PackagePath>
@@ -1532,7 +1532,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-09-01T12:02:47.117</Modified>
+      <Modified>2017-09-01T13:52:38.931</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>
