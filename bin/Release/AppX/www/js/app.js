@@ -26,8 +26,8 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFilesystemAccess', 'q', 'module', 'transformStyles'],
-    function ($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess, q, module, transformStyles) {
+define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFilesystemAccess', 'q', 'module', 'transformStyles', 'kiwixServe'],
+    function ($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess, q, module, transformStyles, kiwixServe) {
 
         /**
          * Maximum number of articles to display in a search
@@ -328,6 +328,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             $('#articleContent').hide();
             $('#searchingForArticles').hide();
             $('#downloadLinks').hide();
+            $('#serverResponse').hide();
             refreshAPIStatus();
             //If user hadn't previously picked a folder or a file, resort to the local storage folder (UWP functionality)
             if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
@@ -399,7 +400,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             }
         }); 
         document.getElementById('downloadTrigger').addEventListener('click', function () {
-            util.requestDownloadLinks(params.kiwixDownloadLink);
+            kiwixServe.requestDownloadLinks(params.kiwixDownloadLink);
         });
 
         $('input:radio[name=contentInjectionMode]').on('change', function (e) {
