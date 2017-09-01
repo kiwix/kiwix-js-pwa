@@ -1,5 +1,5 @@
 ﻿/**
- * transformCSS.js: Provides transformations in CSS of Wikipedia articles contained in the ZIM file
+ * transformStyles.js: Provides transformations in CSS of Wikipedia articles contained in the ZIM file
  * This allows the user to choose the presentation style for the page to be viewed.
  * Currently available are "mobile" and "desktop" display modes.
  * 
@@ -122,7 +122,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                     if (paras.length) {
                         for (var g = 0; g < 3; g++) {
                             //Check if the paragraph is a proper sentence, i.e. contains at least 50 non-HTML-delimetered non-full-stop characters, followed by a punctuation character
-                            if (/[^.]{50,}[^.]*[.,;:?!-]/.test(paras[g].replace(/<[^>]*>/g, ""))) { matched = true; break; }
+                            if (paras[g] && /[^.]{50,}[^.]*[.,;:?!-]/.test(paras[g].replace(/<[^>]*>/g, ""))) { matched = true; break; }
                         }
                         if (matched) {
                             //Swap table and first matched paragraph, but mark lead paragraph first

@@ -112,6 +112,7 @@ www\js\lib\abstractFilesystemAccess.js
 www\js\lib\bootstrap.min.js
 www\js\lib\cookies.js
 www\js\lib\jquery-3.2.1.slim.js
+www\js\lib\kiwixServe.js
 www\js\lib\q.js
 www\js\lib\require.js
 www\js\lib\transformStyles.js
