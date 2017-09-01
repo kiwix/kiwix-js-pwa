@@ -154,10 +154,13 @@ footer .glyphicon {
     color: lightblue;
 }
 
-.dropdown-menu, .dropdown-menu a {
-    background-color: rgba(255,255,255,0.7) !important;
+pre {
+    font-weight: bold;
 }
 
+.dropdown-menu, .dropdown-menu a {
+    background: rgba(255,255,255,0.7) !important;
+}
 
 .darkfooter .glyphicon, .dark .glyphicon {
     color: lightblue;
@@ -186,6 +189,17 @@ footer .glyphicon {
 
 .dark a {
     color: lightblue !important;
+}
+
+.dark .dropdown {
+    color: #222 !important;
+    background-color: lightblue !important;
+    border-color: lightgray !important;
+}
+
+.dark .dropdown option:focus, .dark .dropdown option:hover {
+    color: lightblue !important;
+    background: darkslategray !important;
 }
 
 .darkfooter .dropdown-menu, .darkfooter .dropdown-menu a {
