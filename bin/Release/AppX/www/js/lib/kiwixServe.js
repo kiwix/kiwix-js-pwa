@@ -336,8 +336,14 @@ define([], function () {
     };
 
     function requestDownloadLinks(URL, lang) {
+        if (!URL) {
+            document.getElementById('serverResponse').innerHTML = "Unrecognized filetype, please try different link";
+            document.getElementById('serverResponse').style.display = "inline";
+            return;
+        }
         var xhttp = new XMLHttpRequest();
-        var xhttpTimeout = setTimeout(ajaxTimeout, 10000);
+        //DEV: timeout set here to 20s; if this isn't long enough for your target countries, increase
+        var xhttpTimeout = setTimeout(ajaxTimeout, 20000);
         function ajaxTimeout() {
             xhttp.abort();
             document.getElementById('serverResponse').innerHTML = "Connection attempt timed out (failed)";
@@ -356,17 +362,17 @@ define([], function () {
                     //It's the metalink with download links
                     var linkArray = doc.match(/<url\b[^>]*>[^<]*<\/url>/ig);
                     var size = doc.match(/<size>(\d+)<\/size>/i);
-                    //Filter value (add commas if required)
+                    //Filter value (add comma separators if required)
                     size = size.length ? size[1] : "";
                     var megabytes = size ? Math.round(size * 10 / (1024 * 1024)) / 10 : size;
                     //Use the lookbehind reversal trick to add commas....
                     size = size.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
                     var megabytes$ = megabytes.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
                     doc = "";
-                    //NB we'ere intentionally discarding first link to kiwix.org (not to zim)
                     var mirrorservice = false;
-                    for (var i = 1; i < linkArray.length; i++) {
-                        if (/mirrorservice\.org/i.test(linkArray[i])) {
+                    for (var i = 1; i < linkArray.length; i++) { //NB we'ere intentionally discarding first link to kiwix.org (not to zim)
+                        //ZIP files work fine with mirrorservice, so test for ZIM type only
+                        if (/\.zim\.meta4$/i.test(URL) && /mirrorservice\.org/i.test(linkArray[i])) {
                             mirrorservice = true;
                             doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li>*** Server has download bug, see note ***<br />$1</li>\r\n');
                         } else {
@@ -377,8 +383,18 @@ define([], function () {
                     var bodyDoc = "<h5";
                     bodyDoc += megabytes > 200 ? ' style="color:red;"> WARNING: ' : '>';
                     bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unnown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
-                    if (megabytes > 4000) bodyDoc += '<p style="color:red;">This file is larger than the maximum file size permitted on an SD card formatted as FAT32 (max size is approx. 4GB). If your card or other storage area is formatted in this way, you will need to download a split version of this file: see <a href="http://wiki.kiwix.org/wiki/FAQ/en">Frequently Asked Questions</a>.</p>\r\n';
                     if (megabytes > 200) bodyDoc += '<p><b>Consider using a torrent download method: see <a href="#" onclick="$(\'#btnAbout\').click();">About</a> section</b></p>\r\n';
+                    if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
+                        bodyDoc += '<p style="color:red;">This archive is larger than the maximum file size permitted on an SD card formatted as FAT32 (max size is approx. 4GB). If your card or other storage area is formatted in this way, you will need to download a split version of this file: see <a href="http://wiki.kiwix.org/wiki/FAQ/en">Frequently Asked Questions</a>.</p>\r\n';
+                        bodyDoc += '<p><b>To browse for a split version of this archive click here: <a id="portable" href="#" data-kiwix-dl="' +
+                            URL.replace(/\/zim\/.*$/m, "/portable/") + '">' + URL.replace(/\/zim\/.*$/m, "/portable/") + '</a>.</b></p>\r\n';
+                    }
+                    if (/\.zip\.meta4$/i.test(URL)) {
+                        if (megabytes > 4000) bodyDoc += '<p style="color:red;">This ZIP file contains a split version of the archive, but the ZIP itself is larger than the maximum file size permitted on an SD card formatted as FAT32. You will need to save it in a non-FAT32 location (e.g. a PC hard drive).</p>\r\n';
+                        bodyDoc += '<p>INSTRUCTIONS: You may need to open this ZIP file on a regular computer. After you have downloaded it, open the ZIP in\r\n' +
+                            'File Explorer. You will need to extract the contents of the folder <span style="font-family: monospace;"><b>&gt; data &gt; content</b></span>,\r\n' +
+                            'and transfer ALL of the files there to an accessible folder on your device. After that, you can search for the folder in this app (see above).</p>\r\n';
+                    }
                     bodyDoc += '<p><i>Links will open in a new browser window</i></p><ol>\r\n' + doc + '</ol>\r\n';
                     if (mirrorservice) bodyDoc += '*** Note: mirrorservice.org currently has a download bug with ZIM archives: on some browsers it will download the ZIM file as plain text in browser window<br /><br />';
                     bodyDoc += '<a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^\/]*\.meta4$/i, "\/") + '">&lt;&lt; Back to list of files</a><br /><br />';
@@ -397,11 +413,16 @@ define([], function () {
                     //Add event listener for click on return link, to go back to list of archives
                     document.getElementById('returnLink').addEventListener('click', function (e) {
                         var langSel = document.getElementById("langs");
-                        //var langID = langSel ? langSel.options[langSel.selectedIndex].value : "";
                         var langID = langSel ? langs.value : "";
                         langID = langID == "All" ? "" : langID;
                         requestDownloadLinks(this.dataset.kiwixDl, langID);
                     });
+                    //Add event listener for split archive link, if necessary
+                    if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
+                        document.getElementById('portable').addEventListener('click', function (e) {
+                            requestDownloadLinks(this.dataset.kiwixDl);
+                        });
+                    }
                     return;
                 }
                 //Remove images
@@ -421,7 +442,7 @@ define([], function () {
                     doc = doc.replace(/(<a\b[^>]*>last\s+modified<\/a>\s*)(<a\b[^>]*>size<\/a>\s*)/ig, "$2$1");
                     doc = doc.replace(/(\d\d-\w{3}-\d{4}\s\d\d\:\d\d\s+)(\d[\d.\w]+\s+)$/img, "$2$1");
                 }
-                if (/^[^_\n\r]+_([^_]+)_.+\.zim.+$/m.test(doc)) {
+                if (/^[^_\n\r]+_([^_]+)_.+\.zi[mp].+$/m.test(doc)) {
                     //Delete all lines without a wiki pattern from language list
                     var langList = doc.replace(/^(?![^_\n\r]+_(\w+)_.+$).*[\r\n]*/mg, "");
                     //Get list of all languages
@@ -442,7 +463,7 @@ define([], function () {
                         doc = doc.replace(/<\/h3>/i, '</h3><p>Filter list by language code: ' + dropdown + '</p>');
                     }
                     //Add language spans to doc
-                    doc = doc.replace(/^([^_\n\r]+_([^_]+)_.+\.zim.+)$[\n\r]*/img, '<span class="wikiLang" lang="$2">$1<br /></span>');
+                    doc = doc.replace(/^([^_\n\r]+_([^_]+)_.+\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2">$1<br /></span>');
                 }
                 downloadLinks.innerHTML = doc;
                 if (lang) {
@@ -484,10 +505,15 @@ define([], function () {
                         //var langID = langSel ? langSel.options[langSel.selectedIndex].value : "";
                         var langID = langSel ? langs.value : "";
                         var replaceURL = URL + this.text;
-                        if (/\.zim$/i.test(this.text))
+                        //Allow both zim and zip format
+                        if (/\.zi[mp]$/i.test(this.text)) {
                             replaceURL = replaceURL + ".meta4";
-                        if (/parent\s*directory/i.test(this.text))
+                        } else if (/parent\s*directory/i.test(this.text)) {
                             replaceURL = URL.replace(/\/[^\/]*\/$/i, "\/");
+                        } else if (!/\/$/.test(this.text)) {
+                            //Unrecognized filetype and it's not a directory, so prevent potentially harmful download
+                            replaceURL = "";
+                        }
                         requestDownloadLinks(replaceURL, langID);
                     });
                 }

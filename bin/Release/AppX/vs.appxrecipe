@@ -32,7 +32,7 @@
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-09-02T08:26:16.956</Modified>
+      <Modified>2017-09-02T11:58:46.080</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -627,7 +627,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\kiwixServe.js">
       <PackagePath>www\js\lib\kiwixServe.js</PackagePath>
-      <Modified>2017-09-02T08:26:04.183</Modified>
+      <Modified>2017-09-02T11:58:19.134</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\q.js">
       <PackagePath>www\js\lib\q.js</PackagePath>
