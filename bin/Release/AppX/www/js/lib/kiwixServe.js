@@ -337,12 +337,19 @@ define([], function () {
 
     function requestDownloadLinks(URL, lang) {
         var xhttp = new XMLHttpRequest();
+        var xhttpTimeout = setTimeout(ajaxTimeout, 10000);
+        function ajaxTimeout() {
+            xhttp.abort();
+            document.getElementById('serverResponse').innerHTML = "Connection attempt timed out (failed)";
+            document.getElementById('serverResponse').style.display = "inline";
+        }
         xhttp.onreadystatechange = function () {
             var downloadLinks = document.getElementById('downloadLinks');
             var serverResponse = document.getElementById('serverResponse');
             serverResponse.innerHTML = "Server response: Waiting...";
             serverResponse.style.display = "inline";
             if (this.readyState == 4 && this.status == 200) {
+                clearTimeout(xhttpTimeout);
                 serverResponse.innerHTML = "Server response: 200 OK (data received)";
                 var doc = this.responseText;
                 if (/\.meta4$/i.test(URL)) {
