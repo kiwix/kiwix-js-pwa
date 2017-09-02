@@ -400,7 +400,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             }
         }); 
         document.getElementById('downloadTrigger').addEventListener('click', function () {
-            kiwixServe.requestDownloadLinks(params.kiwixDownloadLink);
+            kiwixServe.requestXhttpData(params.kiwixDownloadLink);
         });
 
         $('input:radio[name=contentInjectionMode]').on('change', function (e) {
@@ -413,6 +413,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             else {
                 setContentInjectionMode('jquery');
             }
+        });
+        $('input:checkbox[name=allowInternetAccess]').on('change', function (e) {
+            params.allowInternetAccess = this.checked ? true : false;
+            document.getElementById('serverResponse').style.display = "none";
+            if (!this.checked) {
+                document.getElementById('downloadLinks').style.display = "none";
+            }
+            //NB do not store this value in a cookie -- should be enabled by the user on a per-session basis only
         });
         $('input:checkbox[name=cssCacheMode]').on('change', function (e) {
             params.cssCache = this.checked ? true : false;
@@ -431,8 +439,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
 
         function cssUIThemeSet(value) {
             if (value == 'dark') {
-                document.getElementById('search-article').classList.add("dark");
-                document.getElementById('article').classList.add("dark");
+                document.getElementsByTagName('body')[0].classList.add("dark");
+                //document.getElementById('article').classList.add("dark");
                 //document.getElementById('navbar').classList.remove("navbar-default");
                 //document.getElementById('navbar').classList.add("dark");
                 document.getElementById('archiveFilesLegacy').classList.add("dark");
@@ -444,8 +452,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid darkgray"; }
             }
             if (value == 'light') {
+                document.getElementsByTagName('body')[0].classList.remove("dark");
                 document.getElementById('search-article').classList.remove("dark");
-                document.getElementById('article').classList.remove("dark");
+                //document.getElementById('article').classList.remove("dark");
                 //document.getElementById('navbar').classList.add("navbar-default");
                 //document.getElementById('navbar').classList.remove("dark");
                 document.getElementById('archiveFilesLegacy').classList.remove("dark");

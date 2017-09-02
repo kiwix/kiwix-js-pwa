@@ -37,7 +37,7 @@ params['cssUITheme'] = getCookie('cssUITheme') || 'light'; //Set default to 'lig
 params['imageDisplay'] = getCookie('imageDisplay') != null ? getCookie('imageDisplay') : true; //Set default to display images from Zim
 //params['imageDisplay'] = params['imageDisplay'] == "false" ? false : (params['imageDisplay'] == "true" ? true : params['imageDisplay']);
 params['useMathJax'] = getCookie('useMathJax') != null ? getCookie('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
-//params['useMathJax'] = params['useMathJax'] == "false" ? false : (params['useMathJax'] == "true" ? true : params['useMathJax']);
+params['allowInternetAccess'] = params['allowInternetAccess'] || false; //Set default to false to prevent accidental Intenet data usage (do not get value from cookie, should be explicitly set by user on a per-session basis)
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['falFileToken'] = params['falFileToken'] || "zimfile"; //UWP support
@@ -78,27 +78,8 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
 function getCookie(name) {
     var regexp = new RegExp('(?:^|;)\\s*' + name + '=([^;]+)(?:;|$)');
     var result = document.cookie.match(regexp);
-    return (result === null) ? null : result[1] == "true" ? true : result[1] == "false" ? false : result[1];
+    return result === null ? null : result[1] == "true" ? true : result[1] == "false" ? false : result[1];
 }
-
-//Slow.....
-//function getCookie(cname) {
-//    var name = cname + "=";
-//    var decodedCookie = decodeURIComponent(document.cookie);
-//    var ca = decodedCookie.split(';');
-//    for (var i = 0; i < ca.length; i++) {
-//        var c = ca[i];
-//        while (c.charAt(0) == ' ') {
-//            c = c.substring(1);
-//        }
-//        if (c.indexOf(name) == 0) {
-//            var rtnValue = c.substring(name.length, c.length);
-//            //rtnValue = rtnValue == "true" ? true : rtnValue == "false" ? false : rtnValue;
-//            return rtnValue;
-//        }
-//    }
-//    return "";
-//} 
 
 require.config({
     baseUrl: 'js/lib',
