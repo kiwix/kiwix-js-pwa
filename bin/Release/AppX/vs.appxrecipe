@@ -32,7 +32,7 @@
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-09-01T17:35:55.254</Modified>
+      <Modified>2017-09-02T08:26:16.956</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -627,7 +627,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\kiwixServe.js">
       <PackagePath>www\js\lib\kiwixServe.js</PackagePath>
-      <Modified>2017-09-01T17:35:46.718</Modified>
+      <Modified>2017-09-02T08:26:04.183</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\lib\q.js">
       <PackagePath>www\js\lib\q.js</PackagePath>
@@ -1532,7 +1532,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-09-01T13:52:38.931</Modified>
+      <Modified>2017-09-02T08:02:43.629</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>
