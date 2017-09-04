@@ -245,6 +245,33 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             cookies.setItem('relativeFontSize', params.relativeFontSize, Infinity);
             return false;
         });
+        setRelativeUIFontSize(params.relativeUIFontSize);
+        $('#relativeUIFontSizeSlider').on('change', function () {
+            setRelativeUIFontSize(this.value);
+        });
+        function setRelativeUIFontSize(value) {
+            value = ~~value;
+            document.getElementById('spinnerVal').innerHTML = value + "%";
+            document.getElementById('search-article').style.fontSize = value + "%";
+            document.getElementById('relativeUIFontSizeSlider').value = value;
+            var forms = document.querySelectorAll('.form-control');
+            for (var i = 0; i < forms.length; i++) {
+                forms[i].style.fontSize = ~~(value * 14 / 100) + "px";
+            }
+            var buttons = document.querySelectorAll('.btn');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].style.fontSize = ~~(value * 14 / 100) + "px";
+            }
+            var heads = document.querySelectorAll("h1, h2, h3, h4");
+            for (var i = 0; i < heads.length; i++) {
+                heads[i].style.fontSize = value + "%";
+            }
+            document.getElementById('prefix').style.height = ~~(value * 14 / 100) * 1.4285 + 14 + "px";
+            if (value != params.relativeUIFontSize) {
+                params.relativeUIFontSize = value;
+                cookies.setItem('relativeUIFontSize', value, Infinity);
+            }
+        }
 
         $('#btnHomeBottom').on('click', function (e) {
             $('#btnHome').click();
@@ -1516,7 +1543,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
             var tableOfContents = new uiUtil.toc(innerDoc);
             var headings = tableOfContents.getHeadingObjects();
-            var dropup = '<span class="dropup"><button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Contents <span class="caret"></span> </button> <ul class="dropdown-menu" aria-labelledby="dropdownMenu2" style="max-height:' + window.innerHeight * 0.75 + 'px; overflow-y: auto;">';
+            var dropup = '<span class="dropup"><button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" style="font-size:' +
+                ~~(params.relativeUIFontSize * 0.14) + 'px;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Contents <span class="caret"></span> </button> <ul class="dropdown-menu" aria-labelledby="dropdownMenu2" style="max-height:' + window.innerHeight * 0.75 + 'px; overflow-y: auto;">';
             headings.forEach(function (heading) {
                 if (/^h1$/i.test(heading.tagName))
                     dropup = dropup + '<li style="font-size:' + params.relativeFontSize + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';

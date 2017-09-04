@@ -330,54 +330,60 @@
                 </div>
 
                 <div class="container">
-                    <h3>Display settings</h3>
                     <div class="row">
+                        <h3>Display settings</h3>
                         <div class="column">
                             <div class="panel panel-info" id="cssSettingsDiv">
                                 <div class="panel-heading">Please select the display style:</div>
                                 <div class="panel-body">
-                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                    <label class="radio">
                                         <input name="cssInjectionMode" id="cssModeAutoRadio" type="radio" value="auto">
-                                        <b>&nbsp;Select style automatically</b> (<i>recommended</i>: matches the ZIM style)
-                                    </p>
-                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                        <b>Select style automatically</b> (<i>recommended</i>: matches the ZIM style)
+                                    </label>
+                                    <label class="radio">
                                         <input name="cssInjectionMode" id="cssModeDesktopRadio" type="radio" value="desktop">
-                                        <b>&nbsp;Use Wikimedia desktop display style</b> (and transform if necessary)
-                                    </p>
-                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                        <b>Use Wikimedia desktop display style</b> (and transform if necessary)
+                                    </label>
+                                    <label class="radio">
                                         <input name="cssInjectionMode" id="cssModeMobileRadio" type="radio" value="mobile">
-                                        <b>&nbsp;Use Wikimedia mobile display style</b> (and transform if necessary)
-                                    </p>
+                                        <b>Use Wikimedia mobile display style</b> (and transform if necessary)
+                                    </label>
                                 </div>
                             </div>
                             <div class="panel panel-info" id="displaySettingsDiv">
                                 <div class="panel-heading">Please select the display option:</div>
                                 <div class="panel-body">
-                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                    <label class="checkbox">
                                         <input type="checkbox" name="hideToolbar" id="hideToolbarCheck">
-                                        <b>&nbsp;Hide the top toolbar while scrolling</b> (if hidden, tap the arrow on the bottom toolbar once to reveal, twice to return to top of page)
-                                    </p>
-                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                        <b>Hide the top toolbar while scrolling</b> (if hidden, tap the arrow on the bottom toolbar once to reveal, twice to return to top of page)
+                                    </label>
+                                    <label>
+                                        <b>Change size of buttons and fonts for the User Interface:</b>
+                                        <input type="range" name="relativeUIFontSize" id="relativeUIFontSizeSlider" min="10" max="200" step="5" value="100" size="10">
+                                        Current value: <b><span id="spinnerVal">100%</span></b><br />
+                                        (to change <b>article</b> font size, use controls in bottom toolbar)
+                                    </label>
+                                    <label class="checkbox">
                                         <input type="checkbox" name="cssCacheMode" id="cssCacheModeCheck">
-                                        <b>&nbsp;Use locally cached display styles</b> (<i>recommended</i> for Wikipedia ZIM)
-                                    </p>
-                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                        <b>Use locally cached display styles</b> (<i>recommended</i> for Wikipedia ZIM)
+                                    </label>
+                                    <label class="checkbox">
                                         <input type="checkbox" name="imageDisplayMode" id="imageDisplayModeCheck">
-                                        <b>&nbsp;Display images if any</b> (if you hide them, click on <span style="background-color:lightblue; color:black;">&nbsp;blue area&nbsp;</span> to display one-by-one)
-                                    </p>
+                                        <b>Display images if any</b> (if you hide them, click on <span style="background-color:lightblue; color:black;">&nbsp;blue area&nbsp;</span> to display one-by-one)
+                                    </label>
                                 </div>
                             </div>
                             <div id="displayThemeDiv" class="panel panel-info" style="clear: left;">
                                 <div class="panel-heading">Here you may select a dark theme for night reading:</div>
                                 <div class="panel-body">
-                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                    <label class="checkbox">
                                         <input type="checkbox" name="cssUIDarkTheme" id="cssUIDarkThemeCheck">
-                                        <b>&nbsp;Use a dark theme for the user interface</b>
-                                    </p>
-                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                        <b>Use a dark theme for the user interface</b>
+                                    </label>
+                                    <label class="checkbox">
                                         <input type="checkbox" name="cssWikiDarkTheme" id="cssWikiDarkThemeCheck">
-                                        <b>&nbsp;Use a dark theme for Wikimedia articles</b> (<i>experimental</i> and may only work for Wikipedia ZIM files)
-                                    </p>
+                                        <b>Use a dark theme for Wikimedia articles</b> (<i>experimental</i> and may only work for Wikipedia ZIM files)
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -385,38 +391,37 @@
                 </div>
                 <div id="returntoArticle_bottom" style="text-align: center;"></div>
                 <div class="container">
-                    <h3>Expert settings</h3>
                     <div class="row">
+                        <h3>Expert settings</h3>
                         <div class="column">
                             <div class="panel panel-warning" style="min-width: 16em" id="mathsProcessingMode">
                                 <div class="panel-heading">Mathematical and chemical equations and symbols:</div>
                                 <div class="panel-body">
-                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                    <label class="radio">
                                         <input type="radio" name="useMathJax" id="useMathJaxRadioTrue" value="true">
-                                        <b>&nbsp;Typeset TeX equations with MathJax</b> (<i>recommended</i>: very fast, but not all symbols supported in all languages; will use SVG fallbacks if TeX string not available)
-                                    </p>
-                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                        <b>Typeset TeX equations with MathJax</b> (<i>recommended</i>: very fast, but not all symbols supported in all languages; will use SVG fallbacks if TeX string not available)
+                                    </label>
+                                    <label class="radio">
                                         <input type="radio" name="useMathJax" id="useMathJaxRadioFalse" value="false">
-                                        <b>&nbsp;Use SVG fallback images</b> (very slow and memory hungry, but will dislplay all symbols)
-                                    </p>
+                                        <b>Use SVG fallback images</b> (very slow and memory hungry, but will dislplay all symbols)
+                                    </label>
                                 </div>
                             </div>
-                            <div class="panel panel-danger" style="min-width: 16em" id="contentInjectionModeDiv">
-                                <div class="panel-heading">Do not touch unless you know what you're doing!</div>
+                            <div class="panel panel-danger" id="contentInjectionModeDiv">
+                                <div class="panel-heading">Content injection mode: do not touch unless you know what you're doing!</div>
                                 <div class="panel-body">
-                                    <p>Content injection mode:</p>
-                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                    <label class="radio">
                                         <input type="radio" name="contentInjectionMode" value="jquery" id="jQueryModeRadio" checked>
-                                        <b>&nbsp;JQuery</b> (slow and memory hungry, but safer)
-                                    </p>
-                                    <p style="text-indent: -22px; margin-left: 20px;">
+                                        <b>JQuery</b> (slow and memory hungry, but safer)
+                                    </label>
+                                    <label class="radio">
                                         <input type="radio" name="contentInjectionMode" value="serviceworker" id="serviceworkerModeRadio">
-                                        <b>&nbsp;ServiceWorker</b> (faster but unstable, and not supported by all platforms)
-                                    </p>
+                                        <b>ServiceWorker</b> (faster but unstable, and not supported by all platforms)
+                                    </label>
+                                    <div id="serviceWorkerStatus"></div>
+                                    <div id="messageChannelStatus"></div>
                                 </div>
                             </div>
-                            <div id="serviceWorkerStatus"></div>
-                            <div id="messageChannelStatus"></div>
                         </div>
                     </div>
                 </div>
