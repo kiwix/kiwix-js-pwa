@@ -92,6 +92,7 @@ body {
 }
 
 .articleIFrame {
+    /*height: 2000px;*/
     width: 100%;
     border: 0;
 }

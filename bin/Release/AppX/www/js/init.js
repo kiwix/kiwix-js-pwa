@@ -35,9 +35,8 @@ params['cssCache'] = getCookie('cssCache') != null ? getCookie('cssCache') : tru
 params['cssTheme'] = getCookie('cssTheme') || 'light'; //Set default to 'light' or 'dark' to use respective themes for Wiki articles
 params['cssUITheme'] = getCookie('cssUITheme') || 'light'; //Set default to 'light' or 'dark' to use respective themes for UI
 params['imageDisplay'] = getCookie('imageDisplay') != null ? getCookie('imageDisplay') : true; //Set default to display images from Zim
-//params['imageDisplay'] = params['imageDisplay'] == "false" ? false : (params['imageDisplay'] == "true" ? true : params['imageDisplay']);
+params['hideToolbar'] = getCookie('hideToolbar') != null ? getCookie('hideToolbar') : false; //Set default to hide the top toolbar on scroll
 params['useMathJax'] = getCookie('useMathJax') != null ? getCookie('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
-params['allowInternetAccess'] = params['allowInternetAccess'] || false; //Set default to false to prevent accidental Intenet data usage (do not get value from cookie, should be explicitly set by user on a per-session basis)
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['falFileToken'] = params['falFileToken'] || "zimfile"; //UWP support
@@ -46,10 +45,12 @@ params['localStorage'] = params['localStorage'] || "";
 params['pickedFile'] = params['pickeFile'] || "";
 params['pickedFolder'] = params['pickedFolder'] || "";
 params['themeChanged'] = params['themeChanged'] || false;
+params['allowInternetAccess'] = params['allowInternetAccess'] || false; //Do not get value from cookie, should be explicitly set by user on a per-session basis
 
 //Initialize checkbox and radio values
 document.getElementById('cssCacheModeCheck').checked = params.cssCache;
 document.getElementById('imageDisplayModeCheck').checked = params.imageDisplay;
+document.getElementById('hideToolbarCheck').checked = params.hideToolbar;
 document.getElementById('cssWikiDarkThemeCheck').checked = params.cssTheme == 'dark' ? true : false;
 document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme == 'dark' ? true : false;
 document.getElementById('useMathJaxRadio' + (params.useMathJax ? 'True' : 'False')).checked = true;
