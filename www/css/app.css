@@ -59,6 +59,11 @@
     padding: 0;
 }
 
+label {
+    font-weight: normal !important;
+    margin-left: 20px;
+}
+
 #navigationButtons .restrictedSize {
     max-width: 80%;
     margin-left: auto;

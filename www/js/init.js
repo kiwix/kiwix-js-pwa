@@ -27,7 +27,9 @@ params['storedFile'] = getCookie('lastSelectedArchive') || "wikipedia_en_ray_cha
 params['kiwixDownloadLink'] = "http://download.kiwix.org/zim/"; //Include final slash
 
 params['results'] = params['results'] || 15; //Number of search results to display
-params['relativeFontSize'] = ~~(getCookie('relativeFontSize') || "100"); //Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
+params['relativeFontSize'] = ~~(getCookie('relativeFontSize') || 100); //Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
+var x = getCookie('relativeUIFontSize');
+params['relativeUIFontSize'] = ~~(getCookie('relativeUIFontSize') || 100); //Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
 params['cssSource'] = getCookie('cssSource') || "auto"; //Set default to "auto", "desktop" or "mobile"
 params['cssCache'] = getCookie('cssCache') != null ? getCookie('cssCache') : true; //Set default to true to use cached CSS, false to use Zim only
 //Convert string values of true / false to Boolean without disturbing any Boolean already set:
@@ -79,7 +81,7 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
 function getCookie(name) {
     var regexp = new RegExp('(?:^|;)\\s*' + name + '=([^;]+)(?:;|$)');
     var result = document.cookie.match(regexp);
-    return result === null ? null : result[1] == "true" ? true : result[1] == "false" ? false : result[1];
+    return result === null || result[1] == "undefined" ? null : result[1] == "true" ? true : result[1] == "false" ? false : result[1];
 }
 
 require.config({
