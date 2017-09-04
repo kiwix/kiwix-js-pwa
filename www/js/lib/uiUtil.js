@@ -94,7 +94,7 @@ define([], function() {
         //Abbreviate title if necessary
         var shortTitle = title.substring(0, 25);
         shortTitle = shortTitle == title ? shortTitle : shortTitle + "..."; 
-        var link = '<h4><a href="#">&lt;&lt; Return to ' + shortTitle + '</a></h4>';
+        var link = '<h4 style="font-size:' + params.relativeUIFontSize + '%;"><a href="#">&lt;&lt; Return to ' + shortTitle + '</a></h4>';
         var rtnFunction = `(function () {
             $('#configuration').hide();
             $('#about').hide();
