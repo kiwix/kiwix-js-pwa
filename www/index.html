@@ -39,7 +39,7 @@
     <link href="css/bootstrap.css" rel="stylesheet" media="screen" />
     <link href="css/bootstrap-theme.css" rel="stylesheet" media="screen" />
 </head>
-<body role="application">
+<body role="application" class="dark">
     <!-- Modal info -->
     <div id="myModal" class="modal">
 
@@ -76,7 +76,7 @@
          </div>
 
     </div> 
-    <section id="search-article" role="region" class="dark">
+    <section id="search-article" role="region">
         <header id="top">
             <nav id="navbar" role="navigation">
                 <div class="navbar-header" id="container">
@@ -354,6 +354,10 @@
                                 <div class="panel-heading">Please select the display option:</div>
                                 <div class="panel-body">
                                     <p style="text-indent: -22px; margin-left: 20px;">
+                                        <input type="checkbox" name="hideToolbar" id="hideToolbarCheck">
+                                        <b>&nbsp;Hide the top toolbar while scrolling</b> (if hidden, tap the arrow on the bottom toolbar once to reveal, twice to return to top of page)
+                                    </p>
+                                    <p style="text-indent: -22px; margin-left: 20px;">
                                         <input type="checkbox" name="cssCacheMode" id="cssCacheModeCheck">
                                         <b>&nbsp;Use locally cached display styles</b> (<i>recommended</i> for Wikipedia ZIM)
                                     </p>
@@ -442,14 +446,14 @@
                 to avoid the top button to be in the scrollbar area :
                 on a device, it can trigger a "page down" of the scrollbar -->
                 <!-- div class="restrictedSize" -->
-                        <span class="label label-default" id="lblZoom"></span>
-                        <a class="btn btn-primary btn-sm pull-left" id="btnHomeBottom" title="Home"><span class="glyphicon glyphicon-home"></span></a>
-                        <a class="btn btn-sm col-sm-pull-3" id="btnZoomout" title="Zoom out"><span class="glyphicon glyphicon-zoom-out"></span></a>
-                        <a class="btn btn-sm" id="btnBack" title="Back"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>&nbsp;
-                        <span id="appStatus"></span>
-                        <a class="btn btn-sm" id="btnForward" title="Forward"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
-                        <a class="btn btn-sm col-sm-pull-7" id="btnZoomin" title="Zoom in"><span class="glyphicon glyphicon-zoom-in"></span></a>
-                        <a class="btn btn-primary btn-sm pull-right" id="btnTop" title="Top" href="#top" style="margin-right: 1em;"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                    <span class="label label-default" id="lblZoom"></span>
+                    <a class="btn btn-primary btn-sm pull-left" id="btnHomeBottom" title="Home"><span class="glyphicon glyphicon-home"></span></a>
+                    <a class="btn btn-sm pull-left" id="btnBack" title="Back" style="margin-left:0.9em;"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>
+                    <a class="btn btn-sm col-sm-pull-3" id="btnZoomout" title="Zoom out" style="margin-right:0.4em;"><span class="glyphicon glyphicon-zoom-out"></span></a>
+                    <span id="appStatus"></span>
+                    <a class="btn btn-sm col-sm-pull-7" id="btnZoomin" title="Zoom in"><span class="glyphicon glyphicon-zoom-in"></span></a>
+                    <a class="btn btn-primary btn-sm pull-right" id="btnTop" title="Top" href="#top" style="margin-right: 1em;"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                    <a class="btn btn-sm pull-right" id="btnForward" title="Forward" style="margin-right:0.5em;"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
                 <!-- /div -->
             </div>
         </footer>
