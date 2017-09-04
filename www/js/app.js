@@ -52,11 +52,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
          * Resize the IFrame height, so that it fills the whole available height in the window
          */
         function resizeIFrame() {
-            var height = $(window).outerHeight()
-                - $("#top").outerHeight(true)
-                - $("#articleListWithHeader").outerHeight(true)
-                // TODO : this 5 should be dynamically computed, and not hard-coded
-                - 5;
+            var height = $(window).outerHeight() + 100;
+            //        - $("#top").outerHeight(true)
+            //        - $("#articleListWithHeader").outerHeight(true)
+            //        // TODO : this 5 should be dynamically computed, and not hard-coded
+            //        - 5;
             $(".articleIFrame").css("height", height + "px");
         }
         $(document).ready(resizeIFrame);
@@ -251,7 +251,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             return false;
         });
         $('#btnTop').on('click', function (e) {
+            //Ensures toolbar is shown after hidden
+            var thisdoc = document.getElementById('top');
+            if (params.hideToolbar && thisdoc.style.zIndex == "0") {
+                thisdoc.style.zIndex = "1";
+                document.getElementById('article').style.paddingTop = "38px";
+                return;
+            }
+            thisdoc.style.zIndex = "0";
+            document.getElementById('article').style.paddingTop = "0";
             $("#articleContent").contents().scrollTop(0);
+            $("#search-article").scrollTop(0);
             // We return true, so that the link to #top is still triggered (useful in the About section)
             return true;
         });
@@ -377,9 +387,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             //Doh, why are you testing for this? Surely you want to jump to the file if it's been clicked on? There was a reason @REMIND_ME....
             //var comboArchiveList = document.getElementById('archiveList');
             //if (comboArchiveList.options.length == 1) {
-                //console.log("***Only one item, so, fire away...");
-                $('#openLocalFiles').hide();
-                setLocalArchiveFromArchiveList();
+            //console.log("***Only one item, so, fire away...");
+            $('#openLocalFiles').hide();
+            setLocalArchiveFromArchiveList();
             //}
         });
 
@@ -390,7 +400,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             } else {
                 //@TODO enable and provide classic filepicker
             }
-        }); 
+        });
         $('#archiveFiles').on('click', function () {
             if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 //UWP FolderPicker
@@ -398,7 +408,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             } else {
                 //@TODO hide folderpicker
             }
-        }); 
+        });
         document.getElementById('downloadTrigger').addEventListener('click', function () {
             kiwixServe.requestXhttpData(params.kiwixDownloadLink);
         });
@@ -431,6 +441,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             params.imageDisplay = this.checked ? true : false;
             cookies.setItem('imageDisplay', params.imageDisplay, Infinity);
         });
+        $('input:checkbox[name=hideToolbar]').on('change', function (e) {
+            params.hideToolbar = this.checked ? true : false;
+            cookies.setItem('hideToolbar', params.hideToolbar, Infinity);
+            checkToolbar();
+        });
         $('input:checkbox[name=cssUIDarkTheme]').on('change', function (e) {
             params.cssUITheme = this.checked ? 'dark' : 'light';
             cookies.setItem('cssUITheme', params.cssUITheme, Infinity);
@@ -453,7 +468,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             }
             if (value == 'light') {
                 document.getElementsByTagName('body')[0].classList.remove("dark");
-                document.getElementById('search-article').classList.remove("dark");
+                //document.getElementById('search-article').classList.remove("dark");
                 //document.getElementById('article').classList.remove("dark");
                 //document.getElementById('navbar').classList.add("navbar-default");
                 //document.getElementById('navbar').classList.remove("dark");
@@ -484,6 +499,38 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             cookies.setItem('useMathJax', params.useMathJax, Infinity);
             params.themeChanged = true;
         });
+        function checkToolbar() {
+            var thisdoc = document.getElementById('top');
+            if (!params.hideToolbar) {
+                var thisdoc = document.getElementById('top');
+                thisdoc.style.position = "fixed";
+                thisdoc.style.zIndex = "1";
+                document.getElementById('article').style.paddingTop = "38px";
+                return;
+            }
+            document.getElementById('article').style.paddingTop = "0";
+            thisdoc.style.position = "relative";
+            window.frames[0].removeEventListener('scroll', hideToolbar);
+            window.frames[0].addEventListener('scroll', hideToolbar); 
+            function hideToolbar() {
+                if (params.hideToolbar) {
+                    var thisdoc = document.getElementById('top');
+                    if (window.frames[0].frameElement.contentDocument.body.scrollTop == 0) {
+                        var thisdoc = document.getElementById('top');
+                        thisdoc.style.position = "relative";
+                        document.getElementById('article').style.paddingTop = "0";
+                        thisdoc.style.zIndex = "0";
+                        return;
+                        //thisdoc.style.zIndex = "0";
+                    }
+                    if (!thisdoc.style.position || thisdoc.style.position == "relative") {
+                        document.getElementById('top').style.position = "fixed";
+                        //thisdoc.style.zIndex = "0";
+                    }
+                }
+            }
+        }
+
         $(document).ready(function (e) {
             // Set initial behaviour (see also init.js)
             if (params.cssTheme == "dark") document.getElementById('footer').classList.add("darkfooter");
@@ -1472,11 +1519,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             var dropup = '<span class="dropup"><button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Contents <span class="caret"></span> </button> <ul class="dropdown-menu" aria-labelledby="dropdownMenu2" style="max-height:' + window.innerHeight * 0.75 + 'px; overflow-y: auto;">';
             headings.forEach(function (heading) {
                 if (/^h1$/i.test(heading.tagName))
-                    dropup = dropup + '<li><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                    dropup = dropup + '<li style="font-size:' + params.relativeFontSize + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
                 else if (/^h2$/i.test(heading.tagName))
-                    dropup = dropup + '<li style="font-size:90%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                    dropup = dropup + '<li style="font-size:' + ~~(params.relativeFontSize * 0.9) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
                 else if (/^h3$/i.test(heading.tagName))
-                    dropup = dropup + '<li style="font-size:75%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                    dropup = dropup + '<li style="font-size:' + ~~(params.relativeFontSize * 0.75) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
                 //Skip smaller headings (if there are any) to avoid making list too long
             });
             dropup = dropup + '</ul></span>'
@@ -1498,6 +1545,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             $("#articleContent").contents().scrollTop(0);
             $('#articleContent').contents().find('body').html(htmlArticle);
 
+            checkToolbar();
             setupTableOfContents();
 
             var makeLink = uiUtil.makeReturnLink(dirEntry); //[kiwix-js #127]
@@ -1583,8 +1631,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 //This prevents transparency from working in the bottom toolbar. Setting the style
                 //for iframe height + 30 fixes the issue, and has no effect on other browsers
                 var ele = document.getElementById('articleContent');
-                var y = ~~ele.style.height.match(/[\d.]+/)[0];
-                y += 30;
+                var y = window.outerHeight + 100; //~~ele.style.height.match(/[\d.]+/)[0];
+                //y += 30;
                 ele.style.height = y + "px";
 
                 loadImages();

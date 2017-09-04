@@ -92,6 +92,7 @@ body {
 }
 
 .articleIFrame {
+    /*height: 2000px;*/
     width: 100%;
     border: 0;
 }
@@ -166,7 +167,13 @@ pre {
     color: lightblue;
 }
 
-.dark, .dark .panel {
+.dark {
+    color: lightgray !important;
+    background: black !important;
+    border-color: darkgray;
+}
+
+.dark .panel {
     color: lightgray !important;
     background: #222 !important;
     border-color: darkgray;
@@ -189,6 +196,11 @@ pre {
 
 .dark a {
     color: lightblue !important;
+}
+
+.dropdown {
+    width: 100%;
+    max-width: 300px;
 }
 
 .dark .dropdown {

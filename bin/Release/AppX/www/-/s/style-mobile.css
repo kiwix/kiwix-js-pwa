@@ -4255,10 +4255,6 @@ i > dfn {
     font-style: italic;
 }
 
-blockquote {
-    quotes: "" "";
-}
-
 .pas-sur-mobile {
     display: none;
 }
