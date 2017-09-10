@@ -52,15 +52,50 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
          * Resize the IFrame height, so that it fills the whole available height in the window
          */
         function resizeIFrame() {
-            var height = $(window).outerHeight() + 100;
-            //        - $("#top").outerHeight(true)
-            //        - $("#articleListWithHeader").outerHeight(true)
-            //        // TODO : this 5 should be dynamically computed, and not hard-coded
-            //        - 5;
+            var height = $(window).outerHeight()
+                - $("#top").outerHeight(true)
+                - $("#articleListWithHeader").outerHeight(true)
+                // TODO : this 5 should be dynamically computed, and not hard-coded
+                //- 5;
+                + 50; //Try adding extra space to get pesky x-scrollbar out of way
             $(".articleIFrame").css("height", height + "px");
+            if (params.hideToolbar) document.getElementById('scrollbox').style.height = height + "px";
+            var ToCList = document.getElementById('ToCList');
+            if (typeof ToCList !== "undefined") {
+                ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
+                ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
+            }
+            if (window.outerWidth <= 470) {
+                document.getElementById('dropup').classList.remove('col-xs-4');
+                document.getElementById('dropup').classList.add('col-xs-3');
+                var colXS2 = document.querySelectorAll('.col-xs-2');
+                if (colXS2.length && window.outerWidth <= 360) {
+                    for (var i = 0; i < colXS2.length; i++) {
+                        colXS2[i].classList.remove('col-xs-2');
+                        colXS2[i].classList.add('col-xs-1');
+                    }
+                } else if (window.outerWidth > 360 && !colXS2.length) {
+                    document.getElementById('btnHomeBottom').classList.remove('col-xs-1');
+                    document.getElementById('btnHomeBottom').classList.add('col-xs-2');
+                    document.getElementById('btnTop').classList.remove('col-xs-1');
+                    document.getElementById('btnTop').classList.add('col-xs-2');
+                }
+            } else {
+                document.getElementById('dropup').classList.remove('col-xs-3');
+                document.getElementById('dropup').classList.add('col-xs-4');
+            }
         }
         $(document).ready(resizeIFrame);
         $(window).resize(resizeIFrame);
+
+        //Polyfill scrollStopped event
+        $.fn.scrollStopped = function (callback) {
+            var that = this, $this = $(that);
+            $this.scroll(function (ev) {
+                clearTimeout($this.data('scrollTimeout'));
+                $this.data('scrollTimeout', setTimeout(callback.bind(that), 250, ev));
+            });
+        }
 
         // Define behavior of HTML elements
         $('#searchArticles').on('click', function (e) {
@@ -70,6 +105,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             $("#readingArticle").hide();
             $("#articleContent").hide();
             clearFindInArticle();
+            //Re-enable top-level scrolling
+            document.getElementById('top').style.position = "relative";
+            document.getElementById('scrollbox').style.position = "fixed";
+            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
+            //document.getElementById('search-article').style.overflow = "auto";
             if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
                 $('#navbarToggle').click();
             }
@@ -264,9 +304,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             }
             var heads = document.querySelectorAll("h1, h2, h3, h4");
             for (var i = 0; i < heads.length; i++) {
-                heads[i].style.fontSize = value + "%";
+                var multiplier = 1;
+                var head = heads[i].tagName;
+                multiplier = head == "H4" ? 1.4 : head == "H3" ? 1.9 : head == "H2" ? 2.3 : head == "H1" ? 2.8 : multiplier; 
+                heads[i].style.fontSize = ~~(value * 0.14 * multiplier) + "px";
             }
-            document.getElementById('prefix').style.height = ~~(value * 14 / 100) * 1.4285 + 14 + "px";
+            document.getElementById('displaySettingsDiv').scrollIntoView();
+            //document.getElementById('prefix').style.height = ~~(value * 14 / 100) * 1.4285 + 14 + "px";
             if (value != params.relativeUIFontSize) {
                 params.relativeUIFontSize = value;
                 cookies.setItem('relativeUIFontSize', value, Infinity);
@@ -280,13 +324,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         $('#btnTop').on('click', function (e) {
             //Ensures toolbar is shown after hidden
             var thisdoc = document.getElementById('top');
-            if (params.hideToolbar && thisdoc.style.zIndex == "0") {
-                thisdoc.style.zIndex = "1";
-                document.getElementById('article').style.paddingTop = "38px";
-                return;
-            }
-            thisdoc.style.zIndex = "0";
-            document.getElementById('article').style.paddingTop = "0";
+            thisdoc.style.zIndex = "1";
+            if (params.hideToolbar && thisdoc.style.zIndex == "0") return;
+            //document.getElementById('article').style.marginTop = "46px";
             $("#articleContent").contents().scrollTop(0);
             $("#search-article").scrollTop(0);
             // We return true, so that the link to #top is still triggered (useful in the About section)
@@ -367,6 +407,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             $('#downloadLinks').hide();
             $('#serverResponse').hide();
             refreshAPIStatus();
+            //Re-enable top-level scrolling
+            document.getElementById('top').style.position = "relative";
+            document.getElementById('scrollbox').style.position = "fixed";
+            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
+            document.getElementById('search-article').style.overflowY = "auto";
+
             //If user hadn't previously picked a folder or a file, resort to the local storage folder (UWP functionality)
             if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
                 params.pickedFolder = params.localStorage;
@@ -400,6 +446,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             $("#articleContent").hide();
             $('#articleContent').hide();
             $('#searchingForArticles').hide();
+            //Re-enable top-level scrolling
+            document.getElementById('top').style.position = "relative";
+            document.getElementById('scrollbox').style.position = "fixed";
+            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
+            document.getElementById('search-article').style.overflowY = "auto";
             return false;
         });
         // TODO: I've set up two event listeners below because the archive list doesn't "change" if there is only one element in it
@@ -471,7 +522,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         $('input:checkbox[name=hideToolbar]').on('change', function (e) {
             params.hideToolbar = this.checked ? true : false;
             cookies.setItem('hideToolbar', params.hideToolbar, Infinity);
-            checkToolbar();
+            //checkToolbar();
         });
         $('input:checkbox[name=cssUIDarkTheme]').on('change', function (e) {
             params.cssUITheme = this.checked ? 'dark' : 'light';
@@ -492,10 +543,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 document.getElementById('prefix').classList.add("dark");
                 var elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid darkgray"; }
+                document.getElementById('kiwixIcon').src = "./img/icons/kiwix-trans-32.png";
             }
             if (value == 'light') {
                 document.getElementsByTagName('body')[0].classList.remove("dark");
-                //document.getElementById('search-article').classList.remove("dark");
+                document.getElementById('search-article').classList.remove("dark");
                 //document.getElementById('article').classList.remove("dark");
                 //document.getElementById('navbar').classList.add("navbar-default");
                 //document.getElementById('navbar').classList.remove("dark");
@@ -506,6 +558,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 document.getElementById('prefix').classList.remove("dark");
                 var elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid black"; }
+                document.getElementById('kiwixIcon').src = "./img/icons/kiwix-blue-32.png";
             }
         }
 
@@ -526,34 +579,39 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             cookies.setItem('useMathJax', params.useMathJax, Infinity);
             params.themeChanged = true;
         });
+
         function checkToolbar() {
             var thisdoc = document.getElementById('top');
+            var scrollbox = document.getElementById('scrollbox');
             if (!params.hideToolbar) {
-                var thisdoc = document.getElementById('top');
+                thisdoc.style.display="block";
                 thisdoc.style.position = "fixed";
                 thisdoc.style.zIndex = "1";
-                document.getElementById('article').style.paddingTop = "38px";
+                scrollbox.style.position = "relative";
+                scrollbox.style.height = "55px";
+                resizeIFrame();
                 return;
             }
-            document.getElementById('article').style.paddingTop = "0";
-            thisdoc.style.position = "relative";
-            window.frames[0].removeEventListener('scroll', hideToolbar);
-            window.frames[0].addEventListener('scroll', hideToolbar); 
-            function hideToolbar() {
-                if (params.hideToolbar) {
-                    var thisdoc = document.getElementById('top');
-                    if (window.frames[0].frameElement.contentDocument.body.scrollTop == 0) {
-                        var thisdoc = document.getElementById('top');
-                        thisdoc.style.position = "relative";
-                        document.getElementById('article').style.paddingTop = "0";
-                        thisdoc.style.zIndex = "0";
-                        return;
-                        //thisdoc.style.zIndex = "0";
-                    }
-                    if (!thisdoc.style.position || thisdoc.style.position == "relative") {
-                        document.getElementById('top').style.position = "fixed";
-                        //thisdoc.style.zIndex = "0";
-                    }
+            scrollbox.style.position = "fixed";
+            thisdoc.style.zIndex = "0";
+            resizeIFrame();
+            if (typeof tryHideToolber !== "undefined") window.frames[0].removeEventListener('scroll', tryHideToolbar);
+            var tryHideToolbar = function () { hideToolbar(); }
+            window.frames[0].addEventListener('scroll', tryHideToolbar, true);
+            function hideToolbar(lastypos) {
+                var ypos = window.frames[0].frameElement.contentDocument.body.scrollTop;
+                var thisdoc = document.getElementById('top');
+                //Immediately hide toolbar if not at top
+                if (params.hideToolbar && ypos) thisdoc.style.display = "none";
+                //As function runs on start of scroll, give 0.25s to find out if user has stopped scrolling
+                if (typeof lastypos !== "undefined" && lastypos == ypos) {
+                    //We've stropped scrolling, do we need to re-enable?
+                    if (!ypos) thisdoc.style.display = "block";
+                } else {
+                    var wait = setTimeout(function () {
+                        clearTimeout(wait);
+                        hideToolbar(ypos);
+                    }, 250, ypos);
                 }
             }
         }
@@ -567,10 +625,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
             if (cookies.getItem('version') != params.version) {
                 firstRun = true;
-                document.getElementById('myModal').style.display = "block";
-                document.getElementsByClassName("close")[0].onclick = function () {
-                    document.getElementById('myModal').style.display = "none";
-                }
+                $('#myModal').modal({ backdrop: "static" });
+                //document.getElementById('myModal').style.display = "block";
+                //document.getElementsByClassName("closeme")[0].onclick = function () {
+                //    document.getElementById('myModal').style.display = "none";
+                //}
                 cookies.setItem('version', params.version, Infinity);
             }
         });
@@ -792,6 +851,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             }
         }
 
+// @STORAGE AUTOLOAD STARTS HERE
         if ($.isFunction(navigator.getDeviceStorages)) {
             // The method getDeviceStorages is available (FxOS>=1.1)
             storages = $.map(navigator.getDeviceStorages("sdcard"), function (s) {
@@ -1008,8 +1068,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                         }
                         //There was no picked file or folder, so we'll try setting the default localStorage
                         if (!params.pickedFolder) {
-                            //@TODO - check if this does anything or if you now need to call scanUWPFolder, or would that create a loop?
-                            params.pickedFolder = params.localStorage;
+                            //This gets called, for example, if the picked folder or picked file are in FutureAccessList but now are
+                            //no longer accessible. There will be a (handled) error in cosole log, and params.pickedFolder and params.pickedFile will be blank
+                            params.rescan = true;
+                            if (params.localStorage) {
+                                scanUWPFolderforArchives(params.localStorage);
+                            } else {
+                                $('#btnConfigure').click();
+                            }
+                            return;
                         }
                     }
                 }
@@ -1412,6 +1479,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
 
         $('#articleList').hide();
 
+        //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
+        //so add some whitespace at the end of the document
+        htmlArticle = htmlArticle.replace(/(<\/body>)/i, "<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n$1");
+
         //Fast-replace img src with data-kiwixsrc and hide image [kiwix-js #272]
         htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)src(\s*=)/ig, "$1data-kiwixsrc$2");
         if (!params.imageDisplay) {
@@ -1543,20 +1614,22 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
             var tableOfContents = new uiUtil.toc(innerDoc);
             var headings = tableOfContents.getHeadingObjects();
-            var dropup = '<span class="dropup"><button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" style="font-size:' +
-                ~~(params.relativeUIFontSize * 0.14) + 'px;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Contents <span class="caret"></span> </button> <ul class="dropdown-menu" aria-labelledby="dropdownMenu2" style="max-height:' + window.innerHeight * 0.75 + 'px; overflow-y: auto;">';
+            document.getElementById('dropup').style.fontSize = ~~(params.relativeUIFontSize * 0.14) + "px";
+            var dropup = "";
             headings.forEach(function (heading) {
                 if (/^h1$/i.test(heading.tagName))
-                    dropup = dropup + '<li style="font-size:' + params.relativeFontSize + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                    dropup += '<li style="font-size:' + params.relativeFontSize + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
                 else if (/^h2$/i.test(heading.tagName))
-                    dropup = dropup + '<li style="font-size:' + ~~(params.relativeFontSize * 0.9) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                    dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.9) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
                 else if (/^h3$/i.test(heading.tagName))
-                    dropup = dropup + '<li style="font-size:' + ~~(params.relativeFontSize * 0.75) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                    dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.75) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
                 //Skip smaller headings (if there are any) to avoid making list too long
             });
-            dropup = dropup + '</ul></span>'
-            $("#appStatus").removeClass().html(dropup);
-            $("#appStatus").find("a").each(function() {
+            var ToCList = document.getElementById('ToCList');
+            ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
+            ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
+            ToCList.innerHTML = dropup;
+            $('#ToCList').find('a').each(function () {
                 $(this).on("click", function () {
                     window.frames[0].frameElement.contentWindow.location.hash = this.dataset.headingId;
                 });
@@ -1573,8 +1646,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             $("#articleContent").contents().scrollTop(0);
             $('#articleContent').contents().find('body').html(htmlArticle);
 
-            checkToolbar();
             setupTableOfContents();
+            //Hide top-level scrolling -- gets rid of interfering useless scroll bar, but re-enable for Config and About pages
+            document.getElementById('search-article').scrollTop = 0;
+            document.getElementById('search-article').style.overflow = "hidden";
+            checkToolbar();
 
             var makeLink = uiUtil.makeReturnLink(dirEntry); //[kiwix-js #127]
             var linkListener = eval(makeLink);
@@ -1658,10 +1734,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 //FFOS doesn't calculate the iframe window height correctly for newly loaded articles (at least in the simulator)
                 //This prevents transparency from working in the bottom toolbar. Setting the style
                 //for iframe height + 30 fixes the issue, and has no effect on other browsers
-                var ele = document.getElementById('articleContent');
-                var y = window.outerHeight + 100; //~~ele.style.height.match(/[\d.]+/)[0];
-                //y += 30;
-                ele.style.height = y + "px";
+                //var ele = document.getElementById('articleContent');
+                //var y = ~~ele.style.height.match(/[\d.]+/)[0];
+                //y += 50;
+                //ele.style.height = y + "px";
+                resizeIFrame();
 
                 loadImages();
                 //loadJavascript(); //Disabled for now, since it does nothing
@@ -1708,14 +1785,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
 
             //Set up a listener function for onscroll event
             if (allImages > prefetchSliceSize) {
-                //Polyfill scrollStopped event
-                $.fn.scrollStopped = function (callback) {
-                    var that = this, $this = $(that);
-                    $this.scroll(function (ev) {
-                        clearTimeout($this.data('scrollTimeout'));
-                        $this.data('scrollTimeout', setTimeout(callback.bind(that), 250, ev));
-                    });
-                }
                 $("#articleContent").contents().scrollStopped(prepareImages);
             }
             if (allImages) {

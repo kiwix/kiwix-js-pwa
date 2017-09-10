@@ -88,7 +88,6 @@ www\-\s\vector.css
 www\A\dummyArticle.html
 www\css\app.css
 www\css\bootstrap.css
-www\css\bootstrap-theme.css
 www\favicon.ico
 www\fonts\glyphicons-halflings-regular.eot
 www\fonts\glyphicons-halflings-regular.svg
@@ -101,7 +100,11 @@ www\I\s\Icons-mini-file_acrobat.gif
 www\I\s\magnify-clip-ltr.png
 www\I\s\spinner.gif
 www\img\icons\kiwix-19.png
+www\img\icons\kiwix-32.png
+www\img\icons\kiwix-38.png
 www\img\icons\kiwix-60.png
+www\img\icons\kiwix-blue-32.png
+www\img\icons\kiwix-trans-32.png
 www\img\Kiwix_icon_transparent_600x600.png
 www\img\lightBlue.png
 www\img\spinner.gif

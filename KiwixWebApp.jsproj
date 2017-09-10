@@ -153,7 +153,6 @@
     <Content Include="www\-\s\vector.css" />
     <Content Include="www\A\dummyArticle.html" />
     <Content Include="www\css\app.css" />
-    <Content Include="www\css\bootstrap-theme.css" />
     <Content Include="www\css\bootstrap.css" />
     <Content Include="www\favicon.ico" />
     <Content Include="www\fonts\glyphicons-halflings-regular.eot" />
@@ -162,7 +161,11 @@
     <Content Include="www\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="www\fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="www\img\icons\kiwix-19.png" />
+    <Content Include="www\img\icons\kiwix-32.png" />
+    <Content Include="www\img\icons\kiwix-38.png" />
     <Content Include="www\img\icons\kiwix-60.png" />
+    <Content Include="www\img\icons\kiwix-blue-32.png" />
+    <Content Include="www\img\icons\kiwix-trans-32.png" />
     <Content Include="www\img\Kiwix_icon_transparent_600x600.png" />
     <Content Include="www\img\lightBlue.png" />
     <Content Include="www\img\spinner.gif" />
