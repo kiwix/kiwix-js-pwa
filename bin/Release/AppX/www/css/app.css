@@ -31,7 +31,8 @@
 
 [role=region] > header {
     /*margin: .5rem 0 1rem 0;*/
-    margin: 0 0.75em 0 1px;
+    /*margin: 0 0.75em 0 1px;*/
+    margin-left: 1px;
     text-align: center;
 }
 
@@ -86,9 +87,24 @@ body {
     height: 0;
 }
 
-.form-control {
-    margin-top: 0.3px;
+#btnHome {
+    padding: 8px 16px;
+}
+
+.form-control:not([id^="findInArticle"]) {
+    margin-top: 5px;
     /*box-shadow: none !important;*/
+}
+
+.container-fluid {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.navbar-inverse {
+    background-color: #d9edf7 !important;
+    border-color: #d9edf7 !important;
+    margin-bottom: 0 !important;
 }
 
 .dark .form-control {
@@ -97,13 +113,14 @@ body {
 }
 
 .articleIFrame {
-    /*height: 2000px;*/
+    position: fixed;
     width: 100%;
     border: 0;
 }
 
 .category-padding {
-    margin: 0 1rem 0 1rem;
+    margin: 0 auto;
+    max-width: 800px;
 }
 
 .apiAvailable {
@@ -131,33 +148,36 @@ body {
     background: inherit;
 }
 
-.btn-sm, .btn-lg {
-    background: rgba(51,122,183,0.7) !important;
+nav .btn-primary {
+    background: #d9edf7 !important;
+    border-color: #d9edf7 !important;
+    margin-top: 3px;
+}
+
+.dark nav .btn-primary, .dark .navbar-inverse {
+    background: #222 !important;
+    border-color: #222 !important;
+}
+
+.glyphicon {
+    color: darkblue;
+}
+
+.btn-sm, .btn-lg, .btn-default {
+    /* background-color: rgba(51,122,183,0.7) !important; */
+    background-color: rgba(217,237,247,0.8) !important;
     border: transparent !important;
-    float: none !important;
-    color: whitesmoke !important;
+    /*color: whitesmoke !important;*/
+    color: darkblue !important;
     font-weight: bold !important;
 }
 
 .btn {
-    margin-bottom: 1px !important;
     z-index:initial !important;
-}
-
-.darkfooter .btn-sm {
-    background: rgba(47,79,79,0.7) !important;
 }
 
 .darkfooter {
     background: rgba(47,79,79,0.3) !important;
-}
-
-.glyphicon {
-    color: #337ab7;
-}
-
-footer .glyphicon {
-    color: lightblue;
 }
 
 pre {
@@ -199,10 +219,6 @@ pre {
         background: #330000 !important;
     }
 
-.dark a {
-    color: lightblue !important;
-}
-
 .dropdown {
     width: 100%;
     max-width: 300px;
@@ -242,51 +258,27 @@ pre {
 
 .dark .btn-default, .dark .input-group-addon, .dark pre {
     background: #222 !important;
+    border-color: #222 !important;
     color: lightgray !important;
     text-shadow: none;
 }
 
-/* Modal (background) */
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+.dark a {
+    color: lightblue !important;
 }
 
-/* Modal Content/Box */
-.modal-content {
-    background-color: #fefefe;
-    margin: 10% auto; /* 15% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
-    overflow: auto; /* Enable scroll if needed */
-    max-height: 85%;
-    width: 80%; /* Could be more or less, depending on screen size */
+.darkfooter .btn-default {
+    background: rgba(34,34,34,0.8) !important;
+    color: lightblue !important;
 }
 
-/* The Close Button */
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
 
-.close:hover, .close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-} 
-
-
-/* Réduction de la taille des éléments en haut pour les petits écrans */
 @media (max-width: 768px) {
+    /*Increase touchability of bottom buttons*/
+    footer .btn-default {
+        font-size: 120% !important;
+    }
+
     /* Pour réduire la taille du menu en haut */
     .navbar {
         min-height: 20px !important;
@@ -296,11 +288,11 @@ pre {
     /*padding-top: 2px !important;
         padding-bottom: 1px !important;
         height: 25px !important;
-    }*/
+    }
 
     .navbar-nav a {
         padding-bottom: 15px !important;
-    }
+    }*/
 
     .navbar-toggle {
         padding-top: 2px !important;
@@ -327,11 +319,11 @@ pre {
             padding-top: 15px !important;
         }
 
-    .col-md-offset-1 {
+    /*.col-md-offset-1 {
         padding-left: 5px !important;
     }
 
-    /*[role=region] > header {
+    [role=region] > header {
         margin-bottom: 10px !important;
     }*/
     /* Pour supprimer l'espace entre la zone de recherche et l'iframe 
@@ -344,7 +336,7 @@ pre {
         padding-bottom: 5px !important;
     } */
 
-    .dropdown-menu {
+    /*.dropdown-menu {
         font-size: 20px !important;
     }
 
@@ -352,7 +344,7 @@ pre {
         font-size: 10px !important;
     }
 
-    /* Pour réduire la taille des boutons en haut de l'écran 
+     Pour réduire la taille des boutons en haut de l'écran 
     .btn-xs, .btn-sm, .btn-default, .btn-group-xs > .btn, .btn-group-sm > .btn {
         font-size: 10px !important;
     }*/
@@ -362,4 +354,9 @@ pre {
         padding-bottom: 1px !important;
         font-size: 16px !important;
     }*/
+}
+@media (max-width: 440px) {
+    .btn-primary {
+        padding: 5px !important;
+    }
 }
