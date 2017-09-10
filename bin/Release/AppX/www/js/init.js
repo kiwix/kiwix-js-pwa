@@ -63,16 +63,22 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
     //DEV change "archives" below if you wish to store local archives in a different location in the installation package
     Windows.ApplicationModel.Package.current.installedLocation.getFolderAsync("archives").done(function (folder) {
         if (folder) params.localStorage = folder;
+    }, function (err) {
+        console.error("This app doesn't appear to have access to local storage!");
     });
-    var StorageApplicationPermissions = Windows.Storage.AccessCache.StorageApplicationPermissions;
-    if (StorageApplicationPermissions.futureAccessList.containsItem(params.falFileToken)) {
-        StorageApplicationPermissions.futureAccessList.getFileAsync(params.falFileToken).done(function (file) {
+    var futureAccessList = Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList;
+    if (futureAccessList.containsItem(params.falFileToken)) {
+        futureAccessList.getFileAsync(params.falFileToken).done(function (file) {
             if (file) params.pickedFile = file;
+        }, function (err) {
+            console.error("The previously picked file is no longer accessible: " + err.message);
         });
     }
-    if (StorageApplicationPermissions.futureAccessList.containsItem(params.falFolderToken)) {
-        StorageApplicationPermissions.futureAccessList.getFolderAsync(params.falFolderToken).done(function (folder) {
+    if (futureAccessList.containsItem(params.falFolderToken)) {
+        futureAccessList.getFolderAsync(params.falFolderToken).then(function (folder) {
             if (folder) params.pickedFolder = folder;
+        }, function (err) {
+            console.error("The previously picked folder is no longer accessible: " + err.message);
         });
     }
 }
