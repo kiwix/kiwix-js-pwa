@@ -188,6 +188,10 @@ pre {
     background: rgba(255,255,255,0.7) !important;
 }
 
+    .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
+        background-color: #337ab7 !important;
+    }
+
 .darkfooter .glyphicon, .dark .glyphicon {
     color: lightblue;
 }
@@ -246,7 +250,7 @@ pre {
     background: darkslategray !important;
 }
 
-.dark .list-group-item {
+.dark .list-group-item, .modal .dark .close {
     color: lightblue !important;
     background-color: #222 !important;
 }
@@ -270,6 +274,15 @@ pre {
 .darkfooter .btn-default {
     background: rgba(34,34,34,0.8) !important;
     color: lightblue !important;
+}
+
+.modal-dialog {
+    width: 90% !important;
+    margin: 5% !important;
+}
+
+.modal-content, .modal-content .dark {
+    background: #222 !important;
 }
 
 
