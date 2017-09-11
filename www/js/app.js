@@ -219,6 +219,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         $("#btnRandomArticle").on("click", function (e) {
             $('#prefix').val("");
             clearFindInArticle();
+            //Re-enable top-level scrolling
+            document.getElementById('top').style.position = "relative";
+            document.getElementById('scrollbox').style.position = "fixed";
+            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
             goToRandomArticle();
             $("#welcomeText").hide();
             $('#articleList').hide();
@@ -344,6 +348,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             document.getElementById('btnConfigure').classList.remove("active");
             document.getElementById('btnAbout').classList.remove("active");
             clearFindInArticle();
+            //Re-enable top-level scrolling
+            document.getElementById('top').style.position = "relative";
+            document.getElementById('scrollbox').style.position = "fixed";
+            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
             //Use the "light" navbar if the content is "light" (otherwise it looks shite....)
             if (params.cssTheme == "light" && params.cssUITheme == "dark") {
                 document.getElementById('search-article').classList.remove("dark");
@@ -543,7 +551,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 document.getElementById('prefix').classList.add("dark");
                 var elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid darkgray"; }
-                document.getElementById('kiwixIcon').src = "./img/icons/kiwix-trans-32.png";
+                document.getElementById('kiwixIcon').src = "./img/icons/kiwix-32.png";
             }
             if (value == 'light') {
                 document.getElementsByTagName('body')[0].classList.remove("dark");
@@ -588,7 +596,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 thisdoc.style.position = "fixed";
                 thisdoc.style.zIndex = "1";
                 scrollbox.style.position = "relative";
-                scrollbox.style.height = "55px";
+                scrollbox.style.height = "50px"; //Cannot be larger or else on Windows Mobile (at least) and probably other mobile, the top bar gets covered by iframe
                 resizeIFrame();
                 return;
             }
@@ -1491,6 +1499,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 '$1height="36" src="../img/lightBlue.png" style="color: lightblue; background-color: lightblue;" ' +
                 'data-kiwixheight$2');
         }
+        //Remove erroneous content frequently on front page
+        htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, "");
+        htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, "");
+
      //TESTING - find out whether document contains MathSVGs
         //var containsMathSVG = /\.svg\s*['"][^>]+mwe-math-fallback-image|mwe-math-fallback-image[^>]+\.svg\s*['"]/i.test(htmlArticle);
         //Version below will match any type of fallback image so long as there is an alt string
@@ -1723,6 +1735,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                         }
                         $(this).on('click', function (e) {
                             clearFindInArticle();
+                            //Re-enable top-level scrolling
+                            document.getElementById('top').style.position = "relative";
+                            document.getElementById('scrollbox').style.position = "fixed";
+                            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
                             var decodedURL = decodeURIComponent(url);
                             pushBrowserHistoryState(decodedURL);
                             goToArticle(decodedURL);
