@@ -53,13 +53,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
          */
         function resizeIFrame() {
             var height = $(window).outerHeight()
-                - $("#top").outerHeight(true)
+                //- $("#top").outerHeight(true)
                 - $("#articleListWithHeader").outerHeight(true)
                 // TODO : this 5 should be dynamically computed, and not hard-coded
                 //- 5;
-                + 50; //Try adding extra space to get pesky x-scrollbar out of way
+                + 10; //Try adding extra space to get pesky x-scrollbar out of way
             $(".articleIFrame").css("height", height + "px");
-            if (params.hideToolbar) document.getElementById('scrollbox').style.height = height + "px";
+            if (params.hideToolbar && document.getElementById('articleContent').style.display == "none") document.getElementById('scrollbox').style.height = height + "px";
             var ToCList = document.getElementById('ToCList');
             if (typeof ToCList !== "undefined") {
                 ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
@@ -328,8 +328,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         $('#btnTop').on('click', function (e) {
             //Ensures toolbar is shown after hidden
             var thisdoc = document.getElementById('top');
-            thisdoc.style.zIndex = "1";
-            if (params.hideToolbar && thisdoc.style.zIndex == "0") return;
+            if (params.hideToolbar && thisdoc.style.zIndex == "0") {
+                params.hideToolbar = false;
+                checkToolbar();
+                params.hideToolbar = true;
+                return
+            };
             //document.getElementById('article').style.marginTop = "46px";
             $("#articleContent").contents().scrollTop(0);
             $("#search-article").scrollTop(0);
@@ -418,9 +422,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             //Re-enable top-level scrolling
             document.getElementById('top').style.position = "relative";
             document.getElementById('scrollbox').style.position = "fixed";
-            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
+            document.getElementById('scrollbox').style.height = document.documentElement.clientHeight + "px";
             document.getElementById('search-article').style.overflowY = "auto";
-
+            
             //If user hadn't previously picked a folder or a file, resort to the local storage folder (UWP functionality)
             if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
                 params.pickedFolder = params.localStorage;
@@ -457,7 +461,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             //Re-enable top-level scrolling
             document.getElementById('top').style.position = "relative";
             document.getElementById('scrollbox').style.position = "fixed";
-            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
+            document.getElementById('scrollbox').style.height = document.documentElement.clientHeight + "px";
             document.getElementById('search-article').style.overflowY = "auto";
             return false;
         });
@@ -596,25 +600,37 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 thisdoc.style.position = "fixed";
                 thisdoc.style.zIndex = "1";
                 scrollbox.style.position = "relative";
-                scrollbox.style.height = "50px"; //Cannot be larger or else on Windows Mobile (at least) and probably other mobile, the top bar gets covered by iframe
+                scrollbox.style.height = ~~document.getElementById('top').getBoundingClientRect().height + "px"; //Cannot be larger or else on Windows Mobile (at least) and probably other mobile, the top bar gets covered by iframe
                 resizeIFrame();
                 return;
             }
-            scrollbox.style.position = "fixed";
+            thisdoc.style.position = "relative";
             thisdoc.style.zIndex = "0";
+            scrollbox.style.position = "fixed";
             resizeIFrame();
             if (typeof tryHideToolber !== "undefined") window.frames[0].removeEventListener('scroll', tryHideToolbar);
             var tryHideToolbar = function () { hideToolbar(); }
             window.frames[0].addEventListener('scroll', tryHideToolbar, true);
             function hideToolbar(lastypos) {
+                if (!params.hideToolbar) return;
+                //Don't hide toolbar if search is open
+                if (document.getElementById('row2').style.display != "none") return;
                 var ypos = window.frames[0].frameElement.contentDocument.body.scrollTop;
                 var thisdoc = document.getElementById('top');
                 //Immediately hide toolbar if not at top
-                if (params.hideToolbar && ypos) thisdoc.style.display = "none";
+                if (params.hideToolbar && ypos) {
+                    thisdoc.style.display = "none";
+                    scrollbox.style.position = "fixed";
+                    thisdoc.style.zIndex = "0";
+                }
                 //As function runs on start of scroll, give 0.25s to find out if user has stopped scrolling
                 if (typeof lastypos !== "undefined" && lastypos == ypos) {
                     //We've stropped scrolling, do we need to re-enable?
-                    if (!ypos) thisdoc.style.display = "block";
+                    if (!ypos) {
+                        params.hideToolbar = false;
+                        checkToolbar();
+                        params.hideToolbar = true;
+                    }
                 } else {
                     var wait = setTimeout(function () {
                         clearTimeout(wait);
@@ -1662,8 +1678,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             //Hide top-level scrolling -- gets rid of interfering useless scroll bar, but re-enable for Config and About pages
             document.getElementById('search-article').scrollTop = 0;
             document.getElementById('search-article').style.overflow = "hidden";
-            checkToolbar();
-
+            
             var makeLink = uiUtil.makeReturnLink(dirEntry); //[kiwix-js #127]
             var linkListener = eval(makeLink);
             //Prevent multiple listeners being attached on each browse
@@ -1671,6 +1686,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             document.getElementById("returntoArticle_top").addEventListener('click', linkListener);
             document.getElementById("returntoArticle_bottom").removeEventListener('click', linkListener);
             document.getElementById("returntoArticle_bottom").addEventListener('click', linkListener);
+
+            checkToolbar();
 
             // If the ServiceWorker is not useable, we need to fallback to parse the DOM
             // to inject math images, and replace some links with javascript calls
@@ -1747,6 +1764,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                     }
                 });
 
+                //@TODO - check that this is now taken care of by checkToolbar() (includes resizeIframe() ) just before jQuery mode check above
                 //FFOS doesn't calculate the iframe window height correctly for newly loaded articles (at least in the simulator)
                 //This prevents transparency from working in the bottom toolbar. Setting the style
                 //for iframe height + 30 fixes the issue, and has no effect on other browsers
@@ -1754,7 +1772,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 //var y = ~~ele.style.height.match(/[\d.]+/)[0];
                 //y += 50;
                 //ele.style.height = y + "px";
-                resizeIFrame();
+                //resizeIFrame();
 
                 loadImages();
                 //loadJavascript(); //Disabled for now, since it does nothing
