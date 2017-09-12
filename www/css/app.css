@@ -88,12 +88,18 @@ body {
 }
 
 #btnHome {
-    padding: 8px 16px;
+    padding: 0px 1em !important;
 }
 
 .form-control:not([id^="findInArticle"]) {
-    margin-top: 5px;
+    margin-top: 5px !important;
+    margin-bottom: 5px !important;
     /*box-shadow: none !important;*/
+}
+
+.form-control:not([id^="archiveList"]) {
+    height: 2.2em !important;
+    padding: 5px 1em !important;
 }
 
 .container-fluid {
@@ -148,10 +154,15 @@ body {
     background: inherit;
 }
 
-nav .btn-primary {
+.navbar {
+    min-height: 0px !important;
+}
+
+nav .btn-primary, .input-group-addon {
     background: #d9edf7 !important;
     border-color: #d9edf7 !important;
     margin-top: 3px;
+    padding: 5px 1em !important;
 }
 
 .dark nav .btn-primary, .dark .navbar-inverse {
