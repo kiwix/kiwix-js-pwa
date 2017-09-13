@@ -95,6 +95,7 @@ require.config({
     config: { '../app': { params: params } },
     paths: {
         'jquery': 'jquery-3.2.1.slim',
+        //'jquery': 'jquery-3.2.1',
         //'bootstrap': 'bootstrap'
         'bootstrap': 'bootstrap.min' //GK testing
     },
