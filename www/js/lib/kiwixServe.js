@@ -353,6 +353,8 @@ define([], function () {
             xhttp.abort();
             document.getElementById('serverResponse').innerHTML = "Connection attempt timed out (failed)";
             document.getElementById('serverResponse').style.display = "inline";
+            serverError();
+            return;
         }
         xhttp.onreadystatechange = function () {
             var downloadLinks = document.getElementById('downloadLinks');
@@ -368,6 +370,7 @@ define([], function () {
                 } else if (this.status == 0 && window.location.protocol == "file:") {
                     document.getElementById('serverResponse').innerHTML = 'Cannot use XMLHttpRequest with file:// protocol';
                     document.getElementById('serverResponse').style.display = "inline";
+                    serverError();
                     return;
                 }
             } else {
@@ -376,6 +379,15 @@ define([], function () {
         };
         xhttp.open("GET", URL, true);
         xhttp.send(null);
+
+        function serverError() {
+            var errormessage = document.getElementById('downloadLinks');
+            errormessage.innerHTML = '<span style="font-weight:bold;font-family:consolas,monospace;">' +
+                '<p style="color:salmon;">Unable to access the server. Please see message below for reason.</p>' +
+                '<p>You can either try again or else open this link in a new browser window:<br />' +
+                '<a href="' + params.kiwixDownloadLink + '" target="_blank">' + params.kiwixDownloadLink + '</a></p><br />';
+            errormessage.style.display = "block";
+        }
 
         function processXhttpData(doc) {
             if (/\.meta4$/i.test(URL)) {
@@ -402,12 +414,15 @@ define([], function () {
                 var headerDoc = 'We found the following links to your file:';
                 var bodyDoc = "<h5";
                 bodyDoc += megabytes > 200 ? ' style="color:red;"> WARNING: ' : '>';
-                bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unnown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
-                if (megabytes > 200) bodyDoc += '<p><b>Consider using a torrent download method: see <a href="#" onclick="$(\'#btnAbout\').click();">About</a> section</b></p>\r\n';
+                bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unknown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
+                if (megabytes > 100) bodyDoc += '<p><b>Consider using BitTorrent to download file:</b></p>\r\n' + 
+                    '<p><b>BitTorrent link</b>: <a href="' + URL.replace(/\.meta4$/, ".torrent") + '" target="_blank">' +
+                    URL.replace(/\.meta4$/, ".torrent") + '</a></p>';
                 if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
                     bodyDoc += '<p style="color:red;">This archive is larger than the maximum file size permitted on an SD card formatted as FAT32 (max size is approx. 4GB). If your card or other storage area is formatted in this way, you will need to download a split version of this file: see <a href="http://wiki.kiwix.org/wiki/FAQ/en">Frequently Asked Questions</a>.</p>\r\n';
                     bodyDoc += '<p><b>To browse for a split version of this archive click here: <a id="portable" href="#" data-kiwix-dl="' +
-                        URL.replace(/\/zim\/.*$/m, "/portable/") + '">' + URL.replace(/\/zim\/.*$/m, "/portable/") + '</a>.</b></p>\r\n';
+                        URL.replace(/\/zim\/([^/]+\/).*$/m, "/portable/$1") + '">' + URL.replace(/\/zim\/([^/]+\/).*$/m, "/portable/$1") +
+                        '</a>.</b></p>\r\n';
                 }
                 if (/\.zip\.meta4$/i.test(URL)) {
                     if (megabytes > 4000) bodyDoc += '<p style="color:red;">This ZIP file contains a split version of the archive, but the ZIP itself is larger than the maximum file size permitted on an SD card formatted as FAT32. You will need to save it in a non-FAT32 location (e.g. a PC hard drive).</p>\r\n';
@@ -440,7 +455,10 @@ define([], function () {
                 //Add event listener for split archive link, if necessary
                 if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
                     document.getElementById('portable').addEventListener('click', function (e) {
-                        requesXhttpData(this.dataset.kiwixDl);
+                        var langSel = document.getElementById("langs");
+                        var langID = langSel ? langs.value : "";
+                        langID = langID == "All" ? "" : langID;
+                        requestXhttpData(this.dataset.kiwixDl, langID);
                     });
                 }
                 return;
