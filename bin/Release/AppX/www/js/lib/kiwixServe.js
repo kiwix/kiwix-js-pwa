@@ -365,13 +365,17 @@ define([], function () {
                     clearTimeout(xhttpTimeout);
                     serverResponse.innerHTML = "Server response: " + this.status + " " + this.statusText + " (data received)";
                     processXhttpData(this.responseText, lang);
+                } else if (this.status == 0 && window.location.protocol == "file:") {
+                    document.getElementById('serverResponse').innerHTML = 'Cannot use XMLHttpRequest with file:// protocol';
+                    document.getElementById('serverResponse').style.display = "inline";
+                    return;
                 }
             } else {
                 serverResponse.innerHTML = "Server response: " + this.status + "/" + this.readyState + " " + this.statusText + " Waiting...";
             }
         };
         xhttp.open("GET", URL, true);
-        xhttp.send();
+        xhttp.send(null);
 
         function processXhttpData(doc) {
             if (/\.meta4$/i.test(URL)) {
