@@ -429,6 +429,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
                 params.pickedFolder = params.localStorage;
             }
+            if (typeof Windows === 'undefined') {
+                //If not UWP, display legacy File Select
+                document.getElementById('archiveFile').style.display = "none";
+                document.getElementById('archiveFiles').style.display = "none";
+                document.getElementById('UWPInstructions').style.display = "none";
+                document.getElementById('instructions').style.display = "inline";
+                document.getElementById('archiveFilesLegacy').style.display = "inline";
+                $('#archiveFilesLegacy').on('change', setLocalArchiveFromFileSelect)
+            }
             return false;
         });
         $('#btnAbout').on('click', function (e) {
@@ -1124,6 +1133,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
          */
         function displayFileSelect() {
             $('#openLocalFiles').show();
+            if (typeof Windows === 'undefined') {
+                //If not UWP, display legacy File Select
+                $('#btnConfigure').click();
+            }
             //TODO - check if this is necessary or if it causes the archiveList change event to fire 
             //Make archive list combo box fit the number of files
             //var comboArchiveList = document.getElementById('archiveList');
@@ -1221,7 +1234,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
      * Sets the localArchive from the File selects populated by user
      */
     function setLocalArchiveFromFileSelect() {
-        setLocalArchiveFromFileList(document.getElementById('archiveFiles').files);
+        setLocalArchiveFromFileList(document.getElementById('archiveFilesLegacy').files);
     }
 
     /**
