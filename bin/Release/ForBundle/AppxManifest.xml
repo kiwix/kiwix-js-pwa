@@ -7,7 +7,7 @@
 
     For more information on package manifest files, see http://go.microsoft.com/fwlink/?LinkID=241727
   -->
-  <Identity Name="Kiwix.KiwixJS" Version="0.8.5.0" Publisher="CN=geoff" ProcessorArchitecture="neutral" />
+  <Identity Name="Kiwix.KiwixJS" Version="0.8.6.0" Publisher="CN=geoff" ProcessorArchitecture="neutral" />
   <mp:PhoneIdentity PhoneProductId="a1a5e0b9-13d4-41fb-810d-518949f03df4" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Kiwix JS</DisplayName>
@@ -55,12 +55,15 @@
         </uap:InitialRotationPreference>
       </uap:VisualElements>
       <Extensions>
-        <uap:Extension Category="windows.fileSavePicker">
-          <uap:FileSavePicker>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="zimarchive">
+            <uap:DisplayName>ZIM Archive</uap:DisplayName>
+            <uap:InfoTip>Compressed ZIM FIle Archive</uap:InfoTip>
             <uap:SupportedFileTypes>
-              <uap:SupportsAnyFileType />
+              <uap:FileType ContentType="application/zlib">.zim</uap:FileType>
+              <uap:FileType ContentType="application/zlib">.zimaa</uap:FileType>
             </uap:SupportedFileTypes>
-          </uap:FileSavePicker>
+          </uap:FileTypeAssociation>
         </uap:Extension>
       </Extensions>
     </Application>
@@ -73,10 +76,10 @@
     <build:Item Name="VisualStudio" Version="15.0" />
     <build:Item Name="VisualStudioEdition" Value="Microsoft Visual Studio Community 2017" />
     <build:Item Name="OperatingSystem" Version="10.0.15063.0 (WinBuild.160101.0800)" />
-    <build:Item Name="Microsoft.Build.AppxPackage.dll" Version="15.0.26419.1" />
+    <build:Item Name="Microsoft.Build.AppxPackage.dll" Version="15.0.26720.2" />
     <build:Item Name="ProjectGUID" Value="a1a5e0b9-13d4-41fb-810d-518949f03df4" />
     <build:Item Name="OptimizingToolset" Value="None" />
     <build:Item Name="TargetRuntime" Value="AppHost" />
-    <build:Item Name="MakePri.exe" Version="10.0.15063.137 (WinBuild.160101.0800)" />
+    <build:Item Name="MakePri.exe" Version="10.0.15063.468 (WinBuild.160101.0800)" />
   </build:Metadata>
 </Package>

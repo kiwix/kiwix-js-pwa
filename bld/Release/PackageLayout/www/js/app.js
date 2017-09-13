@@ -26,14 +26,14 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFilesystemAccess', 'q', 'module', 'transformStyles'],
-    function ($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess, q, module, transformStyles) {
+define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFilesystemAccess', 'q', 'module', 'transformStyles', 'kiwixServe'],
+    function ($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess, q, module, transformStyles, kiwixServe) {
 
         /**
          * Maximum number of articles to display in a search
          * @type Integer
          */
-        var MAX_SEARCH_RESULT_SIZE = module.config().results; //This is set in init.js
+        var MAX_SEARCH_RESULT_SIZE = params.results; //This value is controlled in init.js, as are all parameters
 
         //TESTING
         // Get the app's installation folder.
@@ -53,14 +53,49 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
          */
         function resizeIFrame() {
             var height = $(window).outerHeight()
-                - $("#top").outerHeight(true)
+                //- $("#top").outerHeight(true)
                 - $("#articleListWithHeader").outerHeight(true)
                 // TODO : this 5 should be dynamically computed, and not hard-coded
-                - 5;
+                //- 5;
+                + 10; //Try adding extra space to get pesky x-scrollbar out of way
             $(".articleIFrame").css("height", height + "px");
+            if (params.hideToolbar && document.getElementById('articleContent').style.display == "none") document.getElementById('scrollbox').style.height = height + "px";
+            var ToCList = document.getElementById('ToCList');
+            if (typeof ToCList !== "undefined") {
+                ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
+                ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
+            }
+            if (window.outerWidth <= 470) {
+                document.getElementById('dropup').classList.remove('col-xs-4');
+                document.getElementById('dropup').classList.add('col-xs-3');
+                var colXS2 = document.querySelectorAll('.col-xs-2');
+                if (colXS2.length && window.outerWidth <= 360) {
+                    for (var i = 0; i < colXS2.length; i++) {
+                        colXS2[i].classList.remove('col-xs-2');
+                        colXS2[i].classList.add('col-xs-1');
+                    }
+                } else if (window.outerWidth > 360 && !colXS2.length) {
+                    document.getElementById('btnHomeBottom').classList.remove('col-xs-1');
+                    document.getElementById('btnHomeBottom').classList.add('col-xs-2');
+                    document.getElementById('btnTop').classList.remove('col-xs-1');
+                    document.getElementById('btnTop').classList.add('col-xs-2');
+                }
+            } else {
+                document.getElementById('dropup').classList.remove('col-xs-3');
+                document.getElementById('dropup').classList.add('col-xs-4');
+            }
         }
         $(document).ready(resizeIFrame);
         $(window).resize(resizeIFrame);
+
+        //Polyfill scrollStopped event
+        $.fn.scrollStopped = function (callback) {
+            var that = this, $this = $(that);
+            $this.scroll(function (ev) {
+                clearTimeout($this.data('scrollTimeout'));
+                $this.data('scrollTimeout', setTimeout(callback.bind(that), 250, ev));
+            });
+        }
 
         // Define behavior of HTML elements
         $('#searchArticles').on('click', function (e) {
@@ -70,6 +105,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             $("#readingArticle").hide();
             $("#articleContent").hide();
             clearFindInArticle();
+            //Re-enable top-level scrolling
+            document.getElementById('top').style.position = "relative";
+            document.getElementById('scrollbox').style.position = "fixed";
+            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
+            //document.getElementById('search-article').style.overflow = "auto";
             if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
                 $('#navbarToggle').click();
             }
@@ -179,6 +219,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         $("#btnRandomArticle").on("click", function (e) {
             $('#prefix').val("");
             clearFindInArticle();
+            //Re-enable top-level scrolling
+            document.getElementById('top').style.position = "relative";
+            document.getElementById('scrollbox').style.position = "fixed";
+            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
             goToRandomArticle();
             $("#welcomeText").hide();
             $('#articleList').hide();
@@ -194,10 +238,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             document.getElementById('returntoArticle_top').innerHTML = "";
             document.getElementById('returntoArticle_bottom').innerHTML = "";
             //Stop app from jumping straight into to first archive if user initiated the scan (to give user a chance to select the archive manually)
-            params['rescan'] = true;
+            params.rescan = true;
             //Reload any ZIM files in local storage (whcih the usar can't otherwise select with the filepicker)
-            if (params['localStorage']) {
-                scanUWPFolderforArchives(params['localStorage']);
+            if (params.localStorage) {
+                scanUWPFolderforArchives(params.localStorage);
             }
             if (storages.length) {
                 searchForArchivesInStorage();
@@ -209,6 +253,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         });
         // Bottom bar :
         $('#btnBack').on('click', function (e) {
+            if (document.getElementById('articleContent').style.display == "none") {
+                $('#returntoArticle_top').click();
+                return false;
+            }
             clearFindInArticle();
             history.back();
             return false;
@@ -218,36 +266,77 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             history.forward();
             return false;
         });
-        document.getElementById('articleContent').contentDocument.body.style.fontSize = params['relativeFontSize'] + "%";
+        document.getElementById('articleContent').contentDocument.body.style.fontSize = params.relativeFontSize + "%";
         $('#btnZoomin').on('click', function (e) {
-            params['relativeFontSize'] += 5;
-            document.getElementById('articleContent').contentDocument.body.style.fontSize = params['relativeFontSize'] + "%";
-            document.getElementById('lblZoom').innerHTML = params['relativeFontSize'] + "%";
+            params.relativeFontSize += 5;
+            document.getElementById('articleContent').contentDocument.body.style.fontSize = params.relativeFontSize + "%";
+            document.getElementById('lblZoom').innerHTML = params.relativeFontSize + "%";
             document.getElementById('lblZoom').style = "position:absolute;right: " + window.innerWidth / 3 + "px;bottom:5px;z-index:50;";
             setTimeout(function () {
                 document.getElementById('lblZoom').innerHTML = "";
             }, 1000);
-            cookies.setItem('relativeFontSize', params['relativeFontSize'], Infinity);
+            cookies.setItem('relativeFontSize', params.relativeFontSize, Infinity);
             return false;
         });
         $('#btnZoomout').on('click', function (e) {
-            params['relativeFontSize'] -= 5;
-            document.getElementById('articleContent').contentDocument.body.style.fontSize = params['relativeFontSize'] + "%";
-            document.getElementById('lblZoom').innerHTML = params['relativeFontSize'] + "%";
+            params.relativeFontSize -= 5;
+            document.getElementById('articleContent').contentDocument.body.style.fontSize = params.relativeFontSize + "%";
+            document.getElementById('lblZoom').innerHTML = params.relativeFontSize + "%";
             document.getElementById('lblZoom').style = "position:absolute;left: " + window.innerWidth / 3 + "px;bottom:5px;z-index:50;";
             setTimeout(function () {
                 document.getElementById('lblZoom').innerHTML = "";
             }, 1000);
-            cookies.setItem('relativeFontSize', params['relativeFontSize'], Infinity);
+            cookies.setItem('relativeFontSize', params.relativeFontSize, Infinity);
             return false;
         });
+        setRelativeUIFontSize(params.relativeUIFontSize);
+        $('#relativeUIFontSizeSlider').on('change', function () {
+            setRelativeUIFontSize(this.value);
+        });
+        function setRelativeUIFontSize(value) {
+            value = ~~value;
+            document.getElementById('spinnerVal').innerHTML = value + "%";
+            document.getElementById('search-article').style.fontSize = value + "%";
+            document.getElementById('relativeUIFontSizeSlider').value = value;
+            var forms = document.querySelectorAll('.form-control');
+            for (var i = 0; i < forms.length; i++) {
+                forms[i].style.fontSize = ~~(value * 14 / 100) + "px";
+            }
+            var buttons = document.querySelectorAll('.btn');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].style.fontSize = ~~(value * 14 / 100) + "px";
+            }
+            var heads = document.querySelectorAll("h1, h2, h3, h4");
+            for (var i = 0; i < heads.length; i++) {
+                var multiplier = 1;
+                var head = heads[i].tagName;
+                multiplier = head == "H4" ? 1.4 : head == "H3" ? 1.9 : head == "H2" ? 2.3 : head == "H1" ? 2.8 : multiplier; 
+                heads[i].style.fontSize = ~~(value * 0.14 * multiplier) + "px";
+            }
+            document.getElementById('displaySettingsDiv').scrollIntoView();
+            //document.getElementById('prefix').style.height = ~~(value * 14 / 100) * 1.4285 + 14 + "px";
+            if (value != params.relativeUIFontSize) {
+                params.relativeUIFontSize = value;
+                cookies.setItem('relativeUIFontSize', value, Infinity);
+            }
+        }
 
         $('#btnHomeBottom').on('click', function (e) {
             $('#btnHome').click();
             return false;
         });
         $('#btnTop').on('click', function (e) {
+            //Ensures toolbar is shown after hidden
+            var thisdoc = document.getElementById('top');
+            if (params.hideToolbar && thisdoc.style.zIndex == "0") {
+                params.hideToolbar = false;
+                checkToolbar();
+                params.hideToolbar = true;
+                return
+            };
+            //document.getElementById('article').style.marginTop = "46px";
             $("#articleContent").contents().scrollTop(0);
+            $("#search-article").scrollTop(0);
             // We return true, so that the link to #top is still triggered (useful in the About section)
             return true;
         });
@@ -263,6 +352,16 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             document.getElementById('btnConfigure').classList.remove("active");
             document.getElementById('btnAbout').classList.remove("active");
             clearFindInArticle();
+            //Re-enable top-level scrolling
+            document.getElementById('top').style.position = "relative";
+            document.getElementById('scrollbox').style.position = "fixed";
+            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
+            //Use the "light" navbar if the content is "light" (otherwise it looks shite....)
+            if (params.cssTheme == "light" && params.cssUITheme == "dark") {
+                document.getElementById('search-article').classList.remove("dark");
+                document.getElementById('findInArticle').classList.remove("dark");
+                document.getElementById('prefix').classList.remove("dark");
+            }
             // Show the selected content in the page
             $('#about').hide();
             $('#configuration').hide();
@@ -300,6 +399,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             document.getElementById('btnAbout').classList.remove("active");
             document.getElementById('btnConfigure').classList.add("active");
             clearFindInArticle();
+            //Return navbar to dark state if we switched it earlier
+            if (params.cssTheme == "light" && params.cssUITheme == "dark") {
+                document.getElementById('search-article').classList.add("dark");
+                document.getElementById('findInArticle').classList.add("dark");
+                document.getElementById('prefix').classList.add("dark");
+            }
             // Show the selected content in the page
             $('#about').hide();
             $('#configuration').show();
@@ -311,10 +416,18 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             $("#articleContent").hide();
             $('#articleContent').hide();
             $('#searchingForArticles').hide();
+            $('#downloadLinks').hide();
+            $('#serverResponse').hide();
             refreshAPIStatus();
+            //Re-enable top-level scrolling
+            document.getElementById('top').style.position = "relative";
+            document.getElementById('scrollbox').style.position = "fixed";
+            document.getElementById('scrollbox').style.height = document.documentElement.clientHeight + "px";
+            document.getElementById('search-article').style.overflowY = "auto";
+            
             //If user hadn't previously picked a folder or a file, resort to the local storage folder (UWP functionality)
-            if (params['localStorage'] && !params['pickedFolder'] && !params['pickedFile']) {
-                params['pickedFolder'] = params['localStorage'];
+            if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
+                params.pickedFolder = params.localStorage;
             }
             return false;
         });
@@ -329,6 +442,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             document.getElementById('btnConfigure').classList.remove("active");
             document.getElementById('btnAbout').classList.add("active");
             clearFindInArticle();
+            if (params.cssTheme == "light" && params.cssUITheme == "dark") {
+                document.getElementById('search-article').classList.add("dark");
+                document.getElementById('findInArticle').classList.add("dark");
+                document.getElementById('prefix').classList.add("dark");
+            }
             // Show the selected content in the page
             $('#about').show();
             $('#configuration').hide();
@@ -340,6 +458,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             $("#articleContent").hide();
             $('#articleContent').hide();
             $('#searchingForArticles').hide();
+            //Re-enable top-level scrolling
+            document.getElementById('top').style.position = "relative";
+            document.getElementById('scrollbox').style.position = "fixed";
+            document.getElementById('scrollbox').style.height = document.documentElement.clientHeight + "px";
+            document.getElementById('search-article').style.overflowY = "auto";
             return false;
         });
         // TODO: I've set up two event listeners below because the archive list doesn't "change" if there is only one element in it
@@ -354,9 +477,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             //Doh, why are you testing for this? Surely you want to jump to the file if it's been clicked on? There was a reason @REMIND_ME....
             //var comboArchiveList = document.getElementById('archiveList');
             //if (comboArchiveList.options.length == 1) {
-                //console.log("***Only one item, so, fire away...");
-                $('#openLocalFiles').hide();
-                setLocalArchiveFromArchiveList();
+            //console.log("***Only one item, so, fire away...");
+            $('#openLocalFiles').hide();
+            setLocalArchiveFromArchiveList();
             //}
         });
 
@@ -367,7 +490,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             } else {
                 //@TODO enable and provide classic filepicker
             }
-        }); 
+        });
         $('#archiveFiles').on('click', function () {
             if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 //UWP FolderPicker
@@ -375,10 +498,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             } else {
                 //@TODO hide folderpicker
             }
-        }); 
-        //Legacy logic : replace with above sections
-        //$('#archiveFile').on('change', setLocalArchiveFromFileSelect);
-        
+        });
+        document.getElementById('downloadTrigger').addEventListener('click', function () {
+            kiwixServe.requestXhttpData(params.kiwixDownloadLink);
+        });
 
         $('input:radio[name=contentInjectionMode]').on('change', function (e) {
             if (checkWarnServiceWorkerMode(this.value)) {
@@ -391,78 +514,148 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 setContentInjectionMode('jquery');
             }
         });
+        $('input:checkbox[name=allowInternetAccess]').on('change', function (e) {
+            params.allowInternetAccess = this.checked ? true : false;
+            document.getElementById('serverResponse').style.display = "none";
+            if (!this.checked) {
+                document.getElementById('downloadLinks').style.display = "none";
+            }
+            //NB do not store this value in a cookie -- should be enabled by the user on a per-session basis only
+        });
         $('input:checkbox[name=cssCacheMode]').on('change', function (e) {
-            params['cssCache'] = this.checked ? true : false;
-            cookies.setItem('cssCache', params['cssCache'], Infinity);
+            params.cssCache = this.checked ? true : false;
+            cookies.setItem('cssCache', params.cssCache, Infinity);
+            params.themeChanged = true;
         });
         $('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
-            params['imageDisplay'] = this.checked ? true : false;
-            cookies.setItem('imageDisplay', params['imageDisplay'], Infinity);
+            params.imageDisplay = this.checked ? true : false;
+            cookies.setItem('imageDisplay', params.imageDisplay, Infinity);
+        });
+        $('input:checkbox[name=hideToolbar]').on('change', function (e) {
+            params.hideToolbar = this.checked ? true : false;
+            cookies.setItem('hideToolbar', params.hideToolbar, Infinity);
+            //checkToolbar();
         });
         $('input:checkbox[name=cssUIDarkTheme]').on('change', function (e) {
-            params['cssUITheme'] = this.checked ? 'dark' : 'light';
-            cookies.setItem('cssUITheme', params['cssUITheme'], Infinity);
-            cssUIThemeSet(params['cssUITheme']);
+            params.cssUITheme = this.checked ? 'dark' : 'light';
+            cookies.setItem('cssUITheme', params.cssUITheme, Infinity);
+            cssUIThemeSet(params.cssUITheme);
         });
 
         function cssUIThemeSet(value) {
             if (value == 'dark') {
-                document.getElementById('search-article').classList.add("dark");
-                document.getElementById('article').classList.add("dark");
-                document.getElementById('navbar').classList.remove("navbar-default");
-                document.getElementById('navbar').classList.add("dark");
-                document.getElementById('archiveFiles').classList.add("dark");
-                document.getElementById('archiveFiles').classList.remove("btn");
-                document.getElementById('container').classList.add("dark");
+                document.getElementsByTagName('body')[0].classList.add("dark");
+                //document.getElementById('article').classList.add("dark");
+                //document.getElementById('navbar').classList.remove("navbar-default");
+                //document.getElementById('navbar').classList.add("dark");
+                document.getElementById('archiveFilesLegacy').classList.add("dark");
+                document.getElementById('archiveFilesLegacy').classList.remove("btn");
+                //document.getElementById('container').classList.add("dark");
                 document.getElementById('findInArticle').classList.add("dark");
                 document.getElementById('prefix').classList.add("dark");
                 var elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid darkgray"; }
+                document.getElementById('kiwixIcon').src = "./img/icons/kiwix-32.png";
             }
             if (value == 'light') {
+                document.getElementsByTagName('body')[0].classList.remove("dark");
                 document.getElementById('search-article').classList.remove("dark");
-                document.getElementById('article').classList.remove("dark");
-                document.getElementById('navbar').classList.add("navbar-default");
-                document.getElementById('navbar').classList.remove("dark");
-                document.getElementById('archiveFiles').classList.remove("dark");
-                document.getElementById('archiveFiles').classList.add("btn");
-                document.getElementById('container').classList.remove("dark");
+                //document.getElementById('article').classList.remove("dark");
+                //document.getElementById('navbar').classList.add("navbar-default");
+                //document.getElementById('navbar').classList.remove("dark");
+                document.getElementById('archiveFilesLegacy').classList.remove("dark");
+                document.getElementById('archiveFilesLegacy').classList.add("btn");
+                //document.getElementById('container').classList.remove("dark");
                 document.getElementById('findInArticle').classList.remove("dark");
                 document.getElementById('prefix').classList.remove("dark");
                 var elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid black"; }
+                document.getElementById('kiwixIcon').src = "./img/icons/kiwix-blue-32.png";
             }
         }
 
         $('input:checkbox[name=cssWikiDarkTheme]').on('change', function (e) {
-            params['cssTheme'] = this.checked ? 'dark' : 'light';
-            cookies.setItem('cssTheme', params['cssTheme'], Infinity);
+            params.cssTheme = this.checked ? 'dark' : 'light';
+            cookies.setItem('cssTheme', params.cssTheme, Infinity);
             if (this.checked) document.getElementById('footer').classList.add("darkfooter");
             if (!this.checked) document.getElementById('footer').classList.remove("darkfooter");
+            params.themeChanged = true;
         });
         $('input:radio[name=cssInjectionMode]').on('click', function (e) {
-            params['cssSource'] = this.value;
-            cookies.setItem('cssSource', params['cssSource'], Infinity);
+            params.cssSource = this.value;
+            cookies.setItem('cssSource', params.cssSource, Infinity);
+            params.themeChanged = true;
         });
-        $(document).ready(function (e) {
-            // Set checkbox for cssCache and radio for cssSource
-            document.getElementById('cssCacheModeCheck').checked = params['cssCache'];
-            document.getElementById('imageDisplayModeCheck').checked = params['imageDisplay'];
-            document.getElementById('cssWikiDarkThemeCheck').checked = params['cssTheme'] == 'dark' ? true : false;
-            if (params['cssTheme'] == "dark") document.getElementById('footer').classList.add("darkfooter");
-            document.getElementById('cssUIDarkThemeCheck').checked = params['cssUITheme'] == 'dark' ? true : false;
-            cssUIThemeSet(params['cssUITheme']);
-            $('input:radio[name=cssInjectionMode]').filter('[value="' + params['cssSource'] + '"]').prop('checked', true);
-            //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
-            if (cookies.getItem('version') != params['version']) {
-                firstRun = true;
-                document.getElementById('myModal').style.display = "block";
-                document.getElementsByClassName("close")[0].onclick = function () {
-                    document.getElementById('myModal').style.display = "none";
-                }
-                cookies.setItem('version', params['version'], Infinity);
-            }
+        $('input:radio[name=useMathJax]').on('click', function (e) {
+            params.useMathJax = this.value;
+            cookies.setItem('useMathJax', params.useMathJax, Infinity);
+            params.themeChanged = true;
+        });
 
+        function checkToolbar() {
+            var thisdoc = document.getElementById('top');
+            var scrollbox = document.getElementById('scrollbox');
+            if (!params.hideToolbar) {
+                thisdoc.style.display="block";
+                thisdoc.style.position = "fixed";
+                thisdoc.style.zIndex = "1";
+                scrollbox.style.position = "relative";
+                scrollbox.style.height = ~~document.getElementById('top').getBoundingClientRect().height + "px"; //Cannot be larger or else on Windows Mobile (at least) and probably other mobile, the top bar gets covered by iframe
+                resizeIFrame();
+                return;
+            }
+            thisdoc.style.position = "relative";
+            thisdoc.style.zIndex = "0";
+            scrollbox.style.position = "fixed";
+            resizeIFrame();
+            if (typeof tryHideToolber !== "undefined") window.frames[0].removeEventListener('scroll', tryHideToolbar);
+            var tryHideToolbar = function () { hideToolbar(); }
+            window.frames[0].addEventListener('scroll', tryHideToolbar, true);
+            function hideToolbar(lastypos) {
+                if (!params.hideToolbar) return;
+                //Don't hide toolbar if search is open
+                if (document.getElementById('row2').style.display != "none") return;
+                var ypos = window.frames[0].frameElement.contentDocument.body.scrollTop;
+                var thisdoc = document.getElementById('top');
+                //Immediately hide toolbar if not at top
+                if (params.hideToolbar && ypos) {
+                    thisdoc.style.display = "none";
+                    scrollbox.style.position = "fixed";
+                    thisdoc.style.zIndex = "0";
+                }
+                //As function runs on start of scroll, give 0.25s to find out if user has stopped scrolling
+                if (typeof lastypos !== "undefined" && lastypos == ypos) {
+                    //We've stropped scrolling, do we need to re-enable?
+                    if (!ypos) {
+                        params.hideToolbar = false;
+                        checkToolbar();
+                        params.hideToolbar = true;
+                    }
+                } else {
+                    var wait = setTimeout(function () {
+                        clearTimeout(wait);
+                        hideToolbar(ypos);
+                    }, 250, ypos);
+                }
+            }
+        }
+
+        $(document).ready(function (e) {
+            // Set initial behaviour (see also init.js)
+            if (params.cssTheme == "dark") document.getElementById('footer').classList.add("darkfooter");
+            cssUIThemeSet(params.cssUITheme);
+            //@TODO - this is initialization code, and should be in init.js (withoug jQuery)
+            $('input:radio[name=cssInjectionMode]').filter('[value="' + params.cssSource + '"]').prop('checked', true);
+            //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
+            if (cookies.getItem('version') != params.version) {
+                firstRun = true;
+                $('#myModal').modal({ backdrop: "static" });
+                //document.getElementById('myModal').style.display = "block";
+                //document.getElementsByClassName("closeme")[0].onclick = function () {
+                //    document.getElementById('myModal').style.display = "none";
+                //}
+                cookies.setItem('version', params.version, Infinity);
+            }
         });
 
         /**
@@ -656,7 +849,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 populateDropDownListOfArchives(directories);
             }
             else {
-                if (storages.length || params['localStorage']) {
+                if (storages.length || params.localStorage) {
                     searchForArchivesInStorage();
                 } else {
                     displayFileSelect();
@@ -675,13 +868,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             // If DeviceStorage is available, we look for archives in it
             $("#btnConfigure").click();
             $('#scanningForArchives').show();
-            if (params['localStorage'] && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
-                scanUWPFolderforArchives(params['localStorage']);
+            if (params.localStorage && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
+                scanUWPFolderforArchives(params.localStorage);
             } else {
                 zimArchiveLoader.scanForArchives(storages, populateDropDownListOfArchives);
             }
         }
 
+// @STORAGE AUTOLOAD STARTS HERE
         if ($.isFunction(navigator.getDeviceStorages)) {
             // The method getDeviceStorages is available (FxOS>=1.1)
             storages = $.map(navigator.getDeviceStorages("sdcard"), function (s) {
@@ -763,7 +957,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             //$('#archiveList').on('mouseup', setLocalArchiveFromArchiveList());
             //$(comboArchiveList).on('click', setLocalArchiveFromArchiveList());
             if (comboArchiveList.options.length > 0) {
-                var lastSelectedArchive = cookies.getItem("lastSelectedArchive") || params['storedFile'];
+                var lastSelectedArchive = cookies.getItem("lastSelectedArchive") || params.storedFile;
                 if ((lastSelectedArchive !== null && lastSelectedArchive !== undefined && lastSelectedArchive !== "")
                     || comboArchiveList.options.length == 1) { //Either we have previously chosen a file, or there is only one file
                     // Attempt to select the corresponding item in the list, if it exists
@@ -824,8 +1018,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                         //    + archiveDirectory + ", but there were " + storages.length
                         //    + " storages found with getDeviceStorages instead of 1");
                         //Patched for UWP support:
-                        if (params['pickedFolder'] && Windows && Windows.Storage) {
-                            var query = params['pickedFolder'].createFileQuery();
+                        if (params.pickedFolder && Windows && Windows.Storage) {
+                            var query = params.pickedFolder.createFileQuery();
                             query.getFilesAsync().done(function (files) {
                                 var file;
                                 if (files) {
@@ -853,19 +1047,24 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                                     }
                                 }
                                 if (fileset && fileset.length) {
-                                    if (archiveDirectory != params['storedFile']) {
+                                    if (archiveDirectory != params.storedFile) {
                                         cookies.setItem("lastSelectedArchive", archiveDirectory, Infinity);
-                                        params['storedFile'] = archiveDirectory;
+                                        params.storedFile = archiveDirectory;
                                     }
                                     selectedStorage = fileset;
                                     archiveDirectory = "";
                                     //selectedStorage = "";
                                     //archiveDirectory = MSApp.createFileFromStorageFile(file);
+                                    // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
+                                    if (cssBlobCache)
+                                        cssBlobCache = new Map();
+                                    //if (cssDirEntryCache)
+                                    //    cssDirEntryCache = new Map();
                                     selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
                                         // The archive is set : go back to home page to start searching
-                                        if (params['rescan']) {
+                                        if (params.rescan) {
                                             $('#btnConfigure').click()
-                                            params['rescan'] = false;
+                                            params.rescan = false;
                                         } else {
                                             $('#openLocalFiles').hide();
                                             $('#btnHome').click();
@@ -885,25 +1084,32 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                             });
                             return;
                         } else { //Check if user previously picked a specific file rather than a folder
-                            if (params['pickedFile'] && typeof MSApp !== 'undefined') {
-                                selectedStorage = MSApp.createFileFromStorageFile(params['pickedFile']);
+                            if (params.pickedFile && typeof MSApp !== 'undefined') {
+                                selectedStorage = MSApp.createFileFromStorageFile(params.pickedFile);
                                 setLocalArchiveFromFileList([selectedStorage]);
                                 return;
                             }
                         }
                         //There was no picked file or folder, so we'll try setting the default localStorage
-                        if (!params['pickedFolder']) {
-                            //@TODO - check if this does anything or if you now need to call scanUWPFolder, or would that create a loop?
-                            params['pickedFolder'] = params['localStorage'];
+                        if (!params.pickedFolder) {
+                            //This gets called, for example, if the picked folder or picked file are in FutureAccessList but now are
+                            //no longer accessible. There will be a (handled) error in cosole log, and params.pickedFolder and params.pickedFile will be blank
+                            params.rescan = true;
+                            if (params.localStorage) {
+                                scanUWPFolderforArchives(params.localStorage);
+                            } else {
+                                $('#btnConfigure').click();
+                            }
+                            return;
                         }
                     }
                 }
                 selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
                     cookies.setItem("lastSelectedArchive", archiveDirectory, Infinity);
                     // The archive is set : go back to home page to start searching
-                    if (params['rescan']) {
+                    if (params.rescan) {
                         $('#btnConfigure').click()
-                        params['rescan'] = false;
+                        params.rescan = false;
                     } else {
                         $('#openLocalFiles').hide();
                         $('#btnHome').click();
@@ -934,10 +1140,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             filePicker.pickSingleFileAsync().then(function (file) {
                 if (file) {
                     // Cache file so the contents can be accessed at a later time
-                    Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.addOrReplace(params['falFileToken'], file);
-                    params['pickedFile'] = file;
-                    Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.remove(params['falFolderToken']);
-                    params['pickedFolder'] = "";
+                    Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.addOrReplace(params.falFileToken, file);
+                    params.pickedFile = file;
+                    Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.remove(params.falFolderToken);
+                    params.pickedFolder = "";
                     cookies.setItem("lastSelectedArchive", file.name, Infinity);
                     document.getElementById('openLocalFiles').style.display = "none";
                     populateDropDownListOfArchives([file.name]);
@@ -960,12 +1166,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             });
         }
 
-        function scanUWPFolderforArchives (folder) {
+        function scanUWPFolderforArchives(folder) {
             if (folder) {
                 // Application now has read/write access to all contents in the picked folder (including sub-folder contents)
                 // Cache folder so the contents can be accessed at a later time
-                Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.addOrReplace(params['falFolderToken'], folder);
-                params['pickedFolder'] = folder;
+                Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.addOrReplace(params.falFolderToken, folder);
+                params.pickedFolder = folder;
                 // Query the folder.
                 var query = folder.createFileQuery();
                 query.getFilesAsync().done(function (files) {
@@ -988,8 +1194,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                     document.getElementById('noZIMFound').style.display = "inline";
                     document.getElementById('archiveList').options.length = 0;
                     document.getElementById('archiveList').size = 0;
-                    params['pickedFolder'] = "";
-                    Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.remove(params['falFolderToken']);
+                    params.pickedFolder = "";
+                    Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.remove(params.falFolderToken);
                 return;
             });
         } else {
@@ -1000,11 +1206,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
 
 
     function setLocalArchiveFromFileList(files) {
+            // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
+            if (cssBlobCache)
+                cssBlobCache = new Map();
+            //if (cssDirEntryCache)
+            //    cssDirEntryCache = new Map();
         selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
             // The archive is set : go back to home page to start searching
             $("#btnHome").click();
         });
     }
+
     /**
      * Sets the localArchive from the File selects populated by user
      */
@@ -1042,7 +1254,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         request.send(null);
         return deferred.promise;
     }
-    
+
     /**
      * This is used in the testing interface to inject remote archives
      */
@@ -1064,12 +1276,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
     function onKeyUpPrefix(evt) {
         // Use a timeout, so that very quick typing does not cause a lot of overhead
         // It is also necessary for the words suggestions to work inside Firefox OS
-        if(window.timeoutKeyUpPrefix) {
+        if (window.timeoutKeyUpPrefix) {
             window.clearTimeout(window.timeoutKeyUpPrefix);
         }
         window.timeoutKeyUpPrefix = window.setTimeout(function() {
             var prefix = $("#prefix").val();
-            if (prefix && prefix.length>0) {
+            if (prefix && prefix.length > 0) {
                 $('#searchArticles').click();
             }
         }
@@ -1130,11 +1342,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         for (var i = 0; i < dirEntryArray.length; i++) {
             var dirEntry = dirEntryArray[i];
             
-            articleListDivHtml += "<a href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g,"&apos;")
+            articleListDivHtml += "<a href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g, "&apos;")
                     + "' class='list-group-item'>" + dirEntry.title + "</a>";
         }
         articleListDiv.html(articleListDivHtml);
-        $("#articleList a").on("click",handleTitleClick);
+        $("#articleList a").on("click", handleTitleClick);
         $('#searchingForArticles').hide();
         $('#articleList').show();
         $('#articleListHeaderMessage').show();
@@ -1264,6 +1476,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
     // This matches the title of a mw-offliner (Type2) Wikimedia ZIM file, specifically 
     //var regexpType2ZIMTitle = /id\s*=\s*['"][^'"]*title_0[^"']*["'][^>]*>\s*([^<]+)\s*</i;
 
+        // Stores a url to direntry mapping and is refered to/updated anytime there is a css lookup 
+        // When archive changes these caches should be reset. 
+        // Currently happens only in setLocalArchiveFromFileList and setLocalArchiveFromArchiveList.
+        //var cssDirEntryCache = new Map(); //This one is never hit!
+        var cssBlobCache = new Map();
 
 
     /**
@@ -1286,14 +1503,22 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
 
         $('#articleList').hide();
 
+        //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
+        //so add some whitespace at the end of the document
+        htmlArticle = htmlArticle.replace(/(<\/body>)/i, "<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n$1");
+
         //Fast-replace img src with data-kiwixsrc and hide image [kiwix-js #272]
         htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)src(\s*=)/ig, "$1data-kiwixsrc$2");
-        if (!params['imageDisplay']) {
+        if (!params.imageDisplay) {
             //Ensure 36px clickable image height so user can request images by clicking [kiwix-js #173]
             htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)height(\s*=\s*)/ig,
                 '$1height="36" src="../img/lightBlue.png" style="color: lightblue; background-color: lightblue;" ' +
                 'data-kiwixheight$2');
         }
+        //Remove erroneous content frequently on front page
+        htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, "");
+        htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, "");
+
      //TESTING - find out whether document contains MathSVGs
         //var containsMathSVG = /\.svg\s*['"][^>]+mwe-math-fallback-image|mwe-math-fallback-image[^>]+\.svg\s*['"]/i.test(htmlArticle);
         //Version below will match any type of fallback image so long as there is an alt string
@@ -1303,8 +1528,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         //Set up blobArray of promises
         var cssArray = htmlArticle.match(regexpSheetHref);
         var blobArray = [];
-        var cssSource = params['cssSource'];
-        var cssCache = params['cssCache'];
+        var cssSource = params.cssSource;
+        var cssCache = params.cssCache;
         var zimType = "";
         getBLOB(cssArray);
 
@@ -1327,7 +1552,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                     var zimLink = decodeURIComponent(uiUtil.removeUrlParameters(linkArray[2]));
                     /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
                     var filteredLink = transformStyles.filterCSS(zimLink, zimType, cssCache, cssSource, i);
-                    //blobArray[i] = filteredLink.zl; //This line is a mistake! It fills blobArray too quickly and doesn't trigger waiting for primises...
+                    //blobArray[i] = filteredLink.zl; //This line is a mistake! It fills blobArray too quickly and doesn't trigger waiting for promises...
                     //filteredLink.rtnFunction == "injectCSS" ? injectCSS() : resolveCSS(filteredLink.zl, i); 
                     if (filteredLink.rtnFunction == "injectCSS") { blobArray[i] = filteredLink.zl; injectCSS() } else { resolveCSS(filteredLink.zl, i); }
                 } else {
@@ -1338,24 +1563,32 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         }
 
         function resolveCSS(title, index) {
-            selectedArchive.getDirEntryByTitle(title).then(
-            function (dirEntry) {
-                selectedArchive.readBinaryFile(dirEntry,
-                    function (readableTitle, content, namespace, url) {
-                //DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
-                    //var cssContent = util.uintToString(content);
-                    var cssBlob = new Blob([content], { type: 'text/css' }, { oneTimeOnly: true });
-                    var newURL = [namespace + "/" + url, URL.createObjectURL(cssBlob)];
-                    //blobArray[index] = newURL; //Don't bother with "index" -- you don't need to track the order of the blobs TODO: delete this logic
-                    blobArray.push(newURL);
-                    injectCSS(); //DO NOT move this: it must run within .then function to pass correct values
-                });
-            }).fail(function (e) {
-                console.error("could not find DirEntry for CSS : " + title, e);
-                //blobArray[index] = title;
-                blobArray.push(title);
+            if (cssBlobCache && cssBlobCache.has(title)) {
+                console.log("*** cssBlobCache hit ***");
+                blobArray.push([title, cssBlobCache.get(title)]);
                 injectCSS();
-            });
+            } else {
+                selectedArchive.getDirEntryByTitle(title)
+                    .then(function (dirEntry) {
+                        uiUtil.poll("Attempting to resolve CSS link #" + index + " [" + title.substring(0, 30) + "] from ZIM file...");
+                        return selectedArchive.readBinaryFile(dirEntry,
+                            function (readableTitle, content, namespace, url) {
+                        //DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
+                                //var cssContent = util.uintToString(content);
+                                var cssBlob = new Blob([content], { type: 'text/css' });
+                                var newURL = [namespace + "/" + url, URL.createObjectURL(cssBlob)];
+                                blobArray.push(newURL);
+                                if (cssBlobCache)
+                                    cssBlobCache.set(newURL[0], newURL[1]); 
+                                injectCSS(); //DO NOT move this: it must run within .then function to pass correct values
+                            });
+                    }).fail(function (e) {
+                        console.error("could not find DirEntry for CSS : " + title, e);
+                        //@TODO Change this to push an array of [title, title] afters simplified code in injectCSS()
+                        blobArray.push(title);
+                        injectCSS();
+                    });
+            }
         }
 
         function injectCSS() {
@@ -1409,19 +1642,22 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
             var tableOfContents = new uiUtil.toc(innerDoc);
             var headings = tableOfContents.getHeadingObjects();
-            var dropup = '<span class="dropup"><button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Contents <span class="caret"></span> </button> <ul class="dropdown-menu" aria-labelledby="dropdownMenu2" style="max-height:' + window.innerHeight * 0.75 + 'px; overflow-y: auto;">';
+            document.getElementById('dropup').style.fontSize = ~~(params.relativeUIFontSize * 0.14) + "px";
+            var dropup = "";
             headings.forEach(function (heading) {
                 if (/^h1$/i.test(heading.tagName))
-                    dropup = dropup + '<li><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                    dropup += '<li style="font-size:' + params.relativeFontSize + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
                 else if (/^h2$/i.test(heading.tagName))
-                    dropup = dropup + '<li style="font-size:90%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                    dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.9) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
                 else if (/^h3$/i.test(heading.tagName))
-                    dropup = dropup + '<li style="font-size:75%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                    dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.75) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
                 //Skip smaller headings (if there are any) to avoid making list too long
             });
-            dropup = dropup + '</ul></span>'
-            $("#appStatus").removeClass().html(dropup);
-            $("#appStatus").find("a").each(function() {
+            var ToCList = document.getElementById('ToCList');
+            ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
+            ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
+            ToCList.innerHTML = dropup;
+            $('#ToCList').find('a').each(function () {
                 $(this).on("click", function () {
                     window.frames[0].frameElement.contentWindow.location.hash = this.dataset.headingId;
                 });
@@ -1439,8 +1675,19 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             $('#articleContent').contents().find('body').html(htmlArticle);
 
             setupTableOfContents();
+            //Hide top-level scrolling -- gets rid of interfering useless scroll bar, but re-enable for Config and About pages
+            document.getElementById('search-article').scrollTop = 0;
+            document.getElementById('search-article').style.overflow = "hidden";
+            
+            var makeLink = uiUtil.makeReturnLink(dirEntry); //[kiwix-js #127]
+            var linkListener = eval(makeLink);
+            //Prevent multiple listeners being attached on each browse
+            document.getElementById("returntoArticle_top").removeEventListener('click', linkListener);
+            document.getElementById("returntoArticle_top").addEventListener('click', linkListener);
+            document.getElementById("returntoArticle_bottom").removeEventListener('click', linkListener);
+            document.getElementById("returntoArticle_bottom").addEventListener('click', linkListener);
 
-            uiUtil.makeReturnLink(dirEntry); //[kiwix-js #127]
+            checkToolbar();
 
             // If the ServiceWorker is not useable, we need to fallback to parse the DOM
             // to inject math images, and replace some links with javascript calls
@@ -1448,7 +1695,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
 
                 //Load MathJax if required and if not already loaded
                 if (containsMathSVG) {
-                    if (!window.frames[0].MathJax) {
+                    if (params.useMathJax && !window.frames[0].MathJax) {
                         var doc = $("#articleContent").contents()[0];
                         var script = doc.createElement("script");
                         script.type = "text/javascript";
@@ -1505,6 +1752,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                         }
                         $(this).on('click', function (e) {
                             clearFindInArticle();
+                            //Re-enable top-level scrolling
+                            document.getElementById('top').style.position = "relative";
+                            document.getElementById('scrollbox').style.position = "fixed";
+                            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
                             var decodedURL = decodeURIComponent(url);
                             pushBrowserHistoryState(decodedURL);
                             goToArticle(decodedURL);
@@ -1513,13 +1764,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                     }
                 });
 
+                //@TODO - check that this is now taken care of by checkToolbar() (includes resizeIframe() ) just before jQuery mode check above
                 //FFOS doesn't calculate the iframe window height correctly for newly loaded articles (at least in the simulator)
                 //This prevents transparency from working in the bottom toolbar. Setting the style
                 //for iframe height + 30 fixes the issue, and has no effect on other browsers
-                var ele = document.getElementById('articleContent');
-                var y = ~~ele.style.height.match(/[\d.]+/)[0];
-                y += 30;
-                ele.style.height = y + "px";
+                //var ele = document.getElementById('articleContent');
+                //var y = ~~ele.style.height.match(/[\d.]+/)[0];
+                //y += 50;
+                //ele.style.height = y + "px";
+                //resizeIFrame();
 
                 loadImages();
                 //loadJavascript(); //Disabled for now, since it does nothing
@@ -1555,7 +1808,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         var initialSVGRun = true;
         var prefetchSlice = [];
         var windowScroll = true;
-        var imageDisplay = params['imageDisplay'];
+        var imageDisplay = params.imageDisplay;
 
         //Establish master image array
         var images = $('#articleContent').contents().find('body').find('img');
@@ -1566,14 +1819,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
 
             //Set up a listener function for onscroll event
             if (allImages > prefetchSliceSize) {
-                //Polyfill scrollStopped event
-                $.fn.scrollStopped = function (callback) {
-                    var that = this, $this = $(that);
-                    $this.scroll(function (ev) {
-                        clearTimeout($this.data('scrollTimeout'));
-                        $this.data('scrollTimeout', setTimeout(callback.bind(that), 250, ev));
-                    });
-                }
                 $("#articleContent").contents().scrollStopped(prepareImages);
             }
             if (allImages) {
@@ -1755,7 +2000,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
 
                     if (svgSlice.length) {
                         //Use the MathJax method of typesetting formulae if user has requested this
-                        if (params['useMathJax'] && window.frames[0].MathJax) {
+                        if (params.useMathJax && window.frames[0].MathJax) {
                             /*/If MathJax has not yet completed a typesetting run, discard non-visible SVGs to speed up the initial typesetting operation
                             if (initialSVGRun && svgGroup1.length > 0) {
                                 svgSlice = svgGroup1;

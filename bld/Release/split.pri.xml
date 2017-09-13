@@ -296,11 +296,6 @@
 							<Value>www\css\app.css</Value>
 						</Candidate>
 					</NamedResource>
-					<NamedResource name="bootstrap-theme.css" uri="ms-resource://Kiwix.KiwixJS/Files/www/css/bootstrap-theme.css">
-						<Candidate type="Path">
-							<Value>www\css\bootstrap-theme.css</Value>
-						</Candidate>
-					</NamedResource>
 					<NamedResource name="bootstrap.css" uri="ms-resource://Kiwix.KiwixJS/Files/www/css/bootstrap.css">
 						<Candidate type="Path">
 							<Value>www\css\bootstrap.css</Value>
@@ -385,9 +380,29 @@
 								<Value>www\img\icons\kiwix-19.png</Value>
 							</Candidate>
 						</NamedResource>
+						<NamedResource name="kiwix-32.png" uri="ms-resource://Kiwix.KiwixJS/Files/www/img/icons/kiwix-32.png">
+							<Candidate type="Path">
+								<Value>www\img\icons\kiwix-32.png</Value>
+							</Candidate>
+						</NamedResource>
+						<NamedResource name="kiwix-38.png" uri="ms-resource://Kiwix.KiwixJS/Files/www/img/icons/kiwix-38.png">
+							<Candidate type="Path">
+								<Value>www\img\icons\kiwix-38.png</Value>
+							</Candidate>
+						</NamedResource>
 						<NamedResource name="kiwix-60.png" uri="ms-resource://Kiwix.KiwixJS/Files/www/img/icons/kiwix-60.png">
 							<Candidate type="Path">
 								<Value>www\img\icons\kiwix-60.png</Value>
+							</Candidate>
+						</NamedResource>
+						<NamedResource name="kiwix-blue-32.png" uri="ms-resource://Kiwix.KiwixJS/Files/www/img/icons/kiwix-blue-32.png">
+							<Candidate type="Path">
+								<Value>www\img\icons\kiwix-blue-32.png</Value>
+							</Candidate>
+						</NamedResource>
+						<NamedResource name="kiwix-trans-32.png" uri="ms-resource://Kiwix.KiwixJS/Files/www/img/icons/kiwix-trans-32.png">
+							<Candidate type="Path">
+								<Value>www\img\icons\kiwix-trans-32.png</Value>
 							</Candidate>
 						</NamedResource>
 					</ResourceMapSubtree>
@@ -422,6 +437,11 @@
 						<NamedResource name="jquery-3.2.1.slim.js" uri="ms-resource://Kiwix.KiwixJS/Files/www/js/lib/jquery-3.2.1.slim.js">
 							<Candidate type="Path">
 								<Value>www\js\lib\jquery-3.2.1.slim.js</Value>
+							</Candidate>
+						</NamedResource>
+						<NamedResource name="kiwixServe.js" uri="ms-resource://Kiwix.KiwixJS/Files/www/js/lib/kiwixServe.js">
+							<Candidate type="Path">
+								<Value>www\js\lib\kiwixServe.js</Value>
 							</Candidate>
 						</NamedResource>
 						<NamedResource name="q.js" uri="ms-resource://Kiwix.KiwixJS/Files/www/js/lib/q.js">
