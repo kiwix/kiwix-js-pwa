@@ -39,380 +39,440 @@
     <link href="css/bootstrap.css" rel="stylesheet" media="screen" />
     <link href="css/bootstrap-theme.css" rel="stylesheet" media="screen" />
 </head>
-<body role="application">
+<body role="application" class="dark">
     <!-- Modal info -->
     <div id="myModal" class="modal">
-
-        <!-- Modal content -->
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Welcome to Kiwix JS for Windows</h2>
-            <h3>Please read this important information!</h3>
-            <p>This application is packaged with only a basic ZIM archive (about a Jazz musician) so that you can get a feel
-            for how offline Wikipedia browsing works.</p>
-            <p>If you haven't already downloaded an offline ZIM archive and stored it on your device, <strong>please see the About section</strong>
-            (icon top right).</p>
-            <p>For the full experience you <strong>must</strong> download a ZIM archive and store it on your device!</p>
-            <p>Alternatively, you can install one of the pre-packaged versions of Wikivoyage, Wiktionary or Wikimed form the Store.</p>
-            <p>
-                Kiwix JS is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
-                improving the app are very welcome: see About section.
-            </p>
-            <h3>New Features in Version 0.9.0</h3>
-            <ul>
-                <li>Added auto-loading of ZIM archives on device storage</li>
-                <li>Enabled in-page search / highlighting with Ctrl-F / Alt-F or tap on search button</li>
-                <li>Enabled UWP Future Access List so that users do not need to pick their ZIM file every time</li>
-                <li>Added a dark-themed User Interface - please see Config section to enable it</li>
-                <li>Added an experimental Wikipedia Dark Theme</li>
-                <li>A new, cleaner, minimalistic User Interface</li>
-                <li>Equations are now typeset using MathJax, if the original TeX string is available, otherwise the (slow) fallback images are used</li>
-                <li>User can choose whether to transform the layout using the Wikipedia mobile or desktop styles - see Config section</li>
-                <li>If your device is slow, you can disable the display of images, and extract them one-by-one as needed - see Config</li>
-            </ul>
-            <p>&nbsp;</p>
-            <p>&nbsp;</p>
-            <p>&nbsp;</p>
-         </div>
-
-    </div> 
-    <section id="search-article" role="region" class="dark">
-        <header id="top">
-            <nav id="navbar" role="navigation">
-                <div class="navbar-header" id="container">
-                <!-- Deprecated... Brand and toggle get grouped for better mobile display 
-
-                    <a class="navbar-brand">Kiwix JS 0.x (beta)</a>
-                    <ul class="nav navbar-nav">
-                        <li id="liHomeNav"><a id="btnHome" href="#">Home</a></li>
-                        <li class="active" id="liConfigureNav"><a id="btnConfigure" href="#">Configure</a></li>
-                        <li id="liAboutNav"><a id="btnAbout" href="#">About</a></li>
+        <div class="modal-dialog">
+            <div class="modal-content dark">
+                <div class="modal-body">
+                    <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
+                    <h2>Welcome to Kiwix JS for Windows</h2>
+                    <h3>Please read this important information!</h3>
+                    <p>
+                        This application is packaged with only a basic ZIM archive (about a Jazz musician) so that you can get a feel
+                        for how offline Wikipedia browsing works.
+                    </p>
+                    <p>
+                        You will need to downloaded an offline ZIM archive and store it on your device. You can do this from the
+                        <b>Configuration page <span class="glyphicon glyphicon-wrench"></span></b>, or else see the 
+                        <b>About page <span class="glyphicon glyphicon-info-sign"></span></b> for more information.
+                    </p>
+                    <p>
+                        For the full experience you <strong>must</strong> download a ZIM archive and store it on your device! Alternatively, you can install one of the
+                        pre-packaged versions of Wikivoyage, Wiktionary or Wikimed from the Store.
+                    </p>
+                    <p>
+                        Kiwix JS is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
+                        improving the app are very welcome: see About section.
+                    </p>
+                    <h3>New Features in Version 0.9.0</h3>
+                    <ul>
+                        <li>Added auto-loading of ZIM archives on device storage</li>
+                        <li>Enabled in-page search / highlighting with Ctrl-F / Alt-F or tap on search button</li>
+                        <li>Enabled UWP Future Access List so that users do not need to pick their ZIM file every time</li>
+                        <li>Added a dark-themed User Interface - please see Config section to enable it</li>
+                        <li>Added an experimental Wikipedia Dark Theme</li>
+                        <li>Added ability to change the font size for articles and the UI</li>
+                        <li>A new, cleaner, minimalistic User Interface</li>
+                        <li>Equations are now typeset using MathJax, if the original TeX string is available, otherwise the (slow) fallback images are used</li>
+                        <li>User can choose whether to transform the layout using the Wikipedia mobile or desktop styles - see Config section</li>
+                        <li>If your device is slow, you can disable the display of images, and extract them one-by-one as needed - see Config</li>
                     </ul>
                 </div>
-                <!-- Collect the nav links, forms, and other content for toggling
-                <div class="navbar-collapse navbar-ex1-collapse collapse" aria-expanded="false" style="height: 1px;">
-
-                </div><!-- /.navbar-collapse --
-            </nav> -->
-<!-- Deprecated...
-            <div class="container" id="container">
-                <form id="formArticleSearch">
-                    <div class="row" id="row">
-                        <span class="nopadding col-md-offset-1 col-sm-offset-1 col-md-8 col-sm-8 col-xs-7">
-                            <span class="input-group">
-                                <input type="search" id="prefix" placeholder="Search..." class="form-control" />
-                                <span class="input-group-btn">
-                                    <a class="btn btn-default" id="searchArticles"><span class="glyphicon glyphicon-search"></span></a>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="button" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section id="search-article" role="region">
+        <header id="top">
+            <nav id="navbar" class="navbar navbar-inverse" role="navigation">
+                <div class="container-fluid">
+                    <div class="navbar-header" id="container">
+                        <form id="formArticleSearch">
+                            <div class="" id="row">
+                                <span class="input-group">
+                                    <span class="input-group-btn">
+                                        <!-- button id="btnHome" type="button" class="btn btn-default" -->
+                                        <a id="btnHome" title="Home" class="btn btn-primary"><img id="kiwixIcon" style="margin-left:5px;" src="./img/icons/kiwix-blue-32.png" /></a>
+                                        <!--/--button-->
+                                    </span>
+                                    <input type="search" id="prefix" placeholder="Search..."
+                                           class="form-control" />
+                                    <span class="input-group-btn">
+                                        <a class="btn btn-primary" title="Article Search" id="searchArticles" style="display:none;"><span class="glyphicon glyphicon-book"></span></a>
+                                        <a class="btn btn-primary" title="Alt-F: Find and highlight text in article..." id="findText"><span class="glyphicon glyphicon-search"></span></a>
+                                        <a class="btn btn-primary" title="Random Article" id="btnRandomArticle"><span class="glyphicon glyphicon-random"></span></a>
+                                        <a class="btn btn-primary" title="Settings" id="btnConfigure"><span class="glyphicon glyphicon-wrench"></span></a>
+                                        <a class="btn btn-primary" title="About" id="btnAbout" style="margin-right:5px;"><span class="glyphicon glyphicon-info-sign"></span></a>
+                                    </span>
                                 </span>
-                            </span>
-                        </span>
-                        <span class="nopadding col-md-2 col-sm-2 col-xs-5">
-                            <span class="btn-group btn-group-xs">
-                                <a class="btn btn-default btn-xs" id="btnRandomArticle"><span class="glyphicon glyphicon-random"></span><small><br />Random</small></a>
-                            </span>
-                        </span>
+                            </div>
+                            <div class="" id="row2" style="display:none;">
+                                <span class="input-group" style="padding-bottom: 5px; padding-left: 15px; margin-left: 5px;">
+                                    <input class="form-control" id="findInArticle" style="display:inline;" type="search" placeholder="Highlight in article...">
+                                    <span class="input-group-addon" id="matches">Full: 0</span>
+                                    <span class="input-group-addon" id="partial">Partial: 0</span>
+                                </span>
+                            </div>
+                        </form>
                     </div>
-                    <div id="searchingForArticles" class="floating" style="display: none;">
-                        <img src="img/spinner.gif" alt="Please wait..." />
-                    </div> -->
-                    <form id="formArticleSearch">
-                        <div class="" id="row">
-                            <span class="input-group">
-                                <span class="input-group-btn">
-                                    <!-- button id="btnHome" type="button" class="btn btn-default" -->
-                                    <a id="btnHome" title="Home" class="btn btn-default"><img src="./img/icons/kiwix-19.png" /></a>
-                                    <!--/--button-->
-                                </span>
-                                <input type="search" id="prefix" placeholder="Search..."
-                                       class="form-control" />
-                                <span class="input-group-btn">
-                                    <a class="btn btn-default" title="Article Search" id="searchArticles"><span class="glyphicon glyphicon-book"></span></a>
-                                    <a class="btn btn-default" title="Alt-F: Find and highlight text in article..." id="findText"><span class="glyphicon glyphicon-search"></span></a>
-                                    <a class="btn btn-default" title="Random Article" id="btnRandomArticle"><span class="glyphicon glyphicon-random"></span></a>
-                                    <a class="btn btn-default" title="Settings" id="btnConfigure"><span class="glyphicon glyphicon-wrench"></span></a>
-                                    <a class="btn btn-default" title="About" id="btnAbout"><span class="glyphicon glyphicon-info-sign"></span></a>
-                                </span>
-                            </span>
-                        </div>
-                        <div class="" id="row2" style="display:none;">
-                            <span class="input-group">
-                                <input class="form-control" id="findInArticle" style="display:inline;" type="search" placeholder="Highlight in article...">
-                                <span class="input-group-addon" id="matches">Full: 0</span>
-                                <span class="input-group-addon" id="partial">Partial: 0</span>
-                            </span>
-                        </div>
-                    </form>
                 </div>
             </nav>
         </header>
         <article class="view-content" id="article">
-            <div id="about" style="display: none;" class="category-padding">
-                <h2>
-                    <img src="img/icons/kiwix-60.png" alt="Kiwix icon" />
-                    Kiwix JS Windows: Offline Wikipedia Viewer <small>(Version 0.9 Beta)</small>
-                </h2>
-                <br />Official site : <a href="http://www.kiwix.org/" target="_blank">http://www.kiwix.org/</a>
-                <br />
-                <br />If your Internet access is expensive/rare/slow/unreliable/watched/censored, you still can browse amazing amounts of knowledge and culture.
-                <br />The content is packages in file archives called ZIM files.
-                <br />Once you have downloaded material from the Kiwix website, you will be able to read material from Wikipedia and many other sources.
-                <br />You can search among the article titles, and read any of these articles offline, without needing Internet access.
-                <br />All the content of Wikipedia is inside your device (including the images). It might also work with any content in the <a href="http://www.openzim.org//wiki/OpenZIM">OpenZIM format</a>, but has been only tested on the Wikipedia ones.
-                <br />
-                <br />Note : the original version this application was designed for <a href="http://dumpathome.evopedia.info/dumps/finished/">Evopedia archives</a> and it's still compatible with it, but this format and <a href="http://www.evopedia.info">project</a> are now discontinued.
-                <h3>Usage</h3>
-                <h4>Step 1 : download some content</h4>
-                from <a href="http://download.kiwix.org/zim" target="_blank">http://download.kiwix.org/zim/</a>, with a regular computer.
-                <strong>Currently only Wikimedia contents (ZIM files in wiki* subdirectories, for instance <a href="http://download.kiwix.org/zim/wikipedia/" target="_blank">http://download.kiwix.org/zim/wikipedia/</a>) have been tested</strong>.
-                There are known bugs when reading other contents; and audio/video/dynamic contents are not supported for now.
-                <br />For a quick test, you can start with the <a href="http://download.kiwix.org/zim/wikipedia/wikipedia_en_ray_charles_2015-06.zim" target="_blank">"Ray Charles" ZIM file</a> : it contains some wikipedia articles about Ray Charles.
-                <br />After that, you can download materials in your language. Check the size before you download files as many of the files are large (several Gigabytes).
-                <br />If the file is larger than 2 GB, it might not be supported by your device if your storage is formatted using a FAT filesystem. If so, it's possible to split the material into several 2GB files : see <a href="http://www.kiwix.org/wiki/FAQ">the Kiwix FAQ</a>
-                <br />
-                <h4>Step 2 : copy the content onto your device</h4>
-                If you have enough space, you can put several archives.
-                <h4>Step 3 : open the extension, go to the "Configure" menu and select your ZIM file</h4>
-                <h4>Step 4 : enjoy Wikipedia offline!</h4>
-                <h3>Privacy policy</h3>
-                <h4>Short answer :</h4>
-                This application works offline. We do not collect any of your personal data and don't even know what you are doing with this application.
-                <br /><h4>Longer answer :</h4>
-                If you nevertheless believe your Internet access can be watched and/or if you are extremely cautious, you should shut down your 3G and Wifi access before using the application.
-                <br />This application only reads the archive files of your device : it does not read any other files.
-                <h3>Feedback / helping / contributing</h3>
-                This application is still a work in progress. There are many bugs and improvements that need to be done. In particular :
-                <ul>
-                    <li><a href="https://github.com/kiwix/kiwix-js/issues/114" target="_blank">Issue #114</a> : Add a way to easily download ZIM files directly to the device</li>
-                    <li><a href="https://github.com/kiwix/kiwix-js/issues/13" target="_blank">Issue #13</a> : All the user interface is in English : we plan to translate it at least into French. If you feel able to translate it in your language, please contact us</li>
-                    <li><a href="https://github.com/kiwix/kiwix-js/issues/172" target="_blank">Issue #172</a> and <a href="https://github.com/kiwix/kiwix-js/issues/152" target="_blank">#152</a> : Handle video and javascript content</li>
-                    <li><a href="https://github.com/kiwix/kiwix-js/issues/126" target="_blank">Issue #126</a> : Load the welcome page at first startup</li>
-                    <li><a href="https://github.com/kiwix/kiwix-js/issues/117" target="_blank">Issue #117</a> : Better handle upper/lowercase and accents/diacritics in title search</li>
-                    <li>Performance improvements etc.</li>
-                </ul>
-                Suggestions and patches/pull requests are welcome : the source code is on <a href="https://github.com/kiwix/kiwix-js-windows" target="_blank">github</a>.
-                The <a href="https://github.com/kiwix/kiwix-js-windows/issues" target="_blank">bugtracker</a> is on github too. We use it as our roadmap.
-                    <br />Alternatively, you can send your feedback <a href="mailto:egk10@cam.ac.uk?subject=%5BKiwix%5D%20Feedback%20about%20Kiwix%20JS">by email</a>.
-                <br />In all cases, please give as much detail as you can : which device you are using, which version of Kiwix, which archive, which articles etc.
-                <br />
-                <br />If you like the Kiwix project and use it, please consider giving donations :
-                <ul>
-                    <li>to the Wikimedia foundation, to help maintaining their servers and article contents. See the <a href="https://donate.wikimedia.org/" target="_blank">donation page</a></li>
-                    <li>to Kiwix, to help maintaining the ZIM files and applications. There is a donation button in  the <a href="http://www.kiwix.org">home page of kiwix.org</a></li>
-                </ul>
-                You can also help by :
-                <ul>
-                    <li>Adding articles or improving the existing ones, by <a href="https://en.wikipedia.org/wiki/Wikipedia:Introduction" target="_blank">editing online wikipedia articles</a></li>
-                    <li><a href="http://www.kiwix.org/wiki/Special:MyLanguage/Participate" target="_blank">Participating</a> in the Kiwix project</li>
-                </ul>
-                <h3>Credits</h3>
-                We have to distribute some thanks to :
-                <ul>
-                    <li>Kelson and all the Kiwix community for welcoming peter-x, mossroy, jaifroid and sharun-s onto this project</li>
-                    <li>Wikipedia teams and contributors to help spreading knowledge to everybody</li>
-                    <li>All the developers of libraries and tools we use for releasing them as Free software (see Licence paragraph)</li>
-                </ul>
-                <h3>Licence information</h3>
-                Copyright 2013-2017 Mossroy, Peter-x and contributors
-                <br />Jaifroid for the adaptation to the Universal Windows Platform
-                <br />
-                <br />This application is licensed under the GPL v3 license :
-                <br />
-                <i>
-                    <br />Kiwix is free software: you can redistribute it and/or modify
-                    <br />it under the terms of the GNU General Public Licence as published by
-                    <br />the Free Software Foundation, either version 3 of the Licence, or
-                    <br />(at your option) any later version.
+            <div id="scrollbox" class="container" style="position:fixed;overflow:auto;width:100%;">
+                <div id="about" style="display: none;" class="category-padding">
+                    <h2>
+                        <img src="img/icons/kiwix-60.png" alt="Kiwix icon" />
+                        Kiwix JS Windows
+                    </h2>
+                    <h3 style="margin-top:0;">
+                        Offline Wikipedia Viewer <small>(Version 0.9 Beta)</small>
+                    </h3>
+                    <p>Official site : <a href="http://www.kiwix.org/" target="_blank">http://www.kiwix.org/</a></p>
+                    <p>
+                        If your Internet access is expensive / slow / unreliable / watched / censored, you can still have offline access to a huge repository of knowledge and culture.
+                    </p>
+                    <p>
+                        Offline Wikipedia and other content is packaged in file archives called ZIM files.
+                    </p>
+                    <p>
+                        Once you have downloaded one or more archives from the Kiwix website, you will be able to read material from Wikipedia and many other sources
+                        even if you are undertaking a long plane journey, hiking, and travelling or living in areas of weak Internet access.
+                    </p>
+                    <p>
+                        You can search through article titles and read any of these articles completely offline.
+                    </p>
+                    <p>
+                        You can have the entire content of Wikipedia in your language (including the images) in your pocket.
+                    </p>
+                    <p>
+                        Offline archives use the <a href="http://www.openzim.org//wiki/OpenZIM">OpenZIM format</a>, but note that this app has been only tested extensively on
+                        Wikipedia-related archives (e.g., Wikipedia, Wikivoyage, Wikimed, Wiktionary
+                    </p>
+                    <h3>Usage</h3>
+                    <h4>Step 1: download some content</h4>
+                    <p>
+                        You can browse the Kiwix repository on the <a href="#" onclick="$('#btnConfigure').click();">Configuration</a> page, and it will provide instructions according to the type of file you download.
+                        Alternatively, visit <a href="http://download.kiwix.org/zim" target="_blank">http://download.kiwix.org/zim/</a> using a regular computer.
+                        <strong>Currently only Wikimedia contents (ZIM files in wiki* subdirectories) have been tested fully</strong>.
+                        There are known bugs when reading other contents; and audio/video/dynamic content is not currently supported.
+                    </p>
+                    <p>
+                        Note that some of these ZIM archives are very large indeed (several gigabytes), especially if you want the archives with pictures. Archives without
+                        pictures (look out for "nopic" in the filename) are generally much smaller. <b>Important</b>: if the file is larger than 4 GB, it might not be supported by
+                        your device if your storage (e.g. microSD card) is formatted using a FAT filesystem. If so, it's possible to split the material into several 2GB files, or
+                        to download pre-split files: see <a href="http://www.kiwix.org/wiki/FAQ">the Kiwix FAQ</a>.
+                    </p>
+                    <h4>Step 2: copy the content onto your device</h4>
+                    <p>
+                        If you have enough space, you can put several archives on your device storage. You will generally need to use a USB cable to copy the ZIM archive(s) to an
+                        accessible location on your device, such as the SD card or the main storage area if there is enough space there.
+                    </p>
+                    <h4>Step 3: open this app, go to the "Configure" menu and select your ZIM file</h4>
+                    <p>
+                        If you have downloaded more than one archive, or you have a split ZIM archive consisting of several 2GB files, then you will need to pick the <b>folder</b>
+                        that contains these files. If you have just one unsplit ZIM archive, you can instead pick the <b>file</b> direclty, using the respective buttons on the
+                        <a href="#" onclick="$('#btnConfigure').click();">Configuration</a> page.
+                    </p>
+                    <h4>Step 4: enjoy Wikipedia offline!</h4>
+                    <h3>Privacy policy</h3>
+                    <h4>Short answer:</h4>
+                    <p>
+                        Kiwix JS Windows works entirely offline unless you specifically request otherwise on the Configuration page. We do not collect any of your personal data
+                        and don't even know what you are doing with this application.
+                    </p>
+                    <h4>Longer answer:</h4>
+                    <p>
+                        Kiwix JS Windows will only access the Kiwix download server if you specifically request it to find and display download links for ZIM archives on the Configuration page.
+                        You can disable even this Internet access with an option on the same page. If you nevertheless believe your Internet access can be watched and/or if you are
+                        extremely cautious, you should shut down your 3G and WiFi access before using the application.
+                    </p>
+                    <p>This application only reads the archive files of your device: it is not capable of reading any other files.</p>
+                    <h3>Feedback / helping / contributing</h3>
+                    <p>This application is still a work in progress. There are many bugs that need fixing and improvements that need to be implemented. In particular:</p>
+                    <ul>
+                        <li><a href="https://github.com/kiwix/kiwix-js/issues/13" target="_blank">Issue #13</a>: All the user interface is in English : we plan to translate it at least into French. If you feel able to translate it in your language, please contact us</li>
+                        <li><a href="https://github.com/kiwix/kiwix-js/issues/172" target="_blank">Issue #172</a> and <a href="https://github.com/kiwix/kiwix-js/issues/152" target="_blank">#152</a>: Handle video and javascript content</li>
+                        <li><a href="https://github.com/kiwix/kiwix-js/issues/117" target="_blank">Issue #117</a> : Better handle upper/lowercase and accents/diacritics in title search</li>
+                        <li>Performance improvements etc.</li>
+                    </ul>
+                    <p>
+                        Suggestions and patches/pull requests are welcome: the source code is on <a href="https://github.com/kiwix/kiwix-js-windows" target="_blank">github</a>.
+                        The <a href="https://github.com/kiwix/kiwix-js-windows/issues" target="_blank">Kiwix JS Windows issue tracker</a> is on GitHub too, though also check the <a href="https://github.com/kiwix/kiwix-js/issues" target="_blank">tracker for Kiwix JS</a> as a lot
+                        of the development is done for both apps.
+                    </p>
+                    <p>
+                        Alternatively, you can send your feedback <a href="mailto:egk10@cam.ac.uk?subject=%5BKiwix%5D%20Feedback%20about%20Kiwix%20JS">by email</a>.
+                    </p>
+                    <p>
+                        In all cases, please give as much detail as you can: which device you are using, which version of Kiwix, which archive, which articles etc.
+                    </p>
+                    <p>If you like the Kiwix project and use it, please consider giving donations:</p>
+                    <ul>
+                        <li>to the Wikimedia foundation, to help maintaining their servers and article contents. See the <a href="https://donate.wikimedia.org/" target="_blank">donation page</a></li>
+                        <li>to Kiwix, to help maintaining the ZIM files and applications. There is a donation button in  the <a href="http://www.kiwix.org">home page of kiwix.org</a></li>
+                    </ul>
+                    <p>You can also help by:</p>
+                    <ul>
+                        <li>Adding articles or improving the existing ones, by <a href="https://en.wikipedia.org/wiki/Wikipedia:Introduction" target="_blank">editing online Wikipedia articles</a></li>
+                        <li><a href="http://www.kiwix.org/wiki/Special:MyLanguage/Participate" target="_blank">Participating</a> in the Kiwix project</li>
+                    </ul>
+                    <h3>Credits</h3>
+                    <p>Thanks are due to:</p>
+                    <ul>
+                        <li>Kelson and all the Kiwix community for welcoming peter-x, mossroy, jaifroid and sharun-s onto this project</li>
+                        <li>Wikipedia teams and contributors for helping to spread knowledge to everybody</li>
+                        <li>All the developers of libraries and tools we use for releasing them as Free software (see Licence paragraph)</li>
+                    </ul>
+                    <h3>Licence information</h3>
+                    <p>
+                        Copyright 2013-2017 Mossroy, Peter-x and contributors
+                        <br />Jaifroid for the adaptation to the Universal Windows Platform
+                        <br />
+                        <br />This application is licensed under the GPL v3 licence:
+                        <br />
+                        <i>
+                            <br />Kiwix is free software: you can redistribute it and/or modify
+                            <br />it under the terms of the GNU General Public Licence as published by
+                            <br />the Free Software Foundation, either version 3 of the Licence, or
+                            <br />(at your option) any later version.
+                            <br />
+                            <br />Kiwix is distributed in the hope that it will be useful,
+                            <br />but WITHOUT ANY WARRANTY; without even the implied warranty of
+                            <br />MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+                            <br />GNU General Public Licence for more details.
+                            <br />
+                            <br />You should have received a copy of the GNU General Public Licence
+                            <br />along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>
+                        </i>
+                    </p>
+                    <p>Main libraries and ressources used:</p>
+                    <ul>
+                        <li><a href="http://jquery.com/" target="_blank">jQuery</a> 2, released under the <a href="http://jquery.org/license" target="_blank">MIT licence</a></li>
+                        <li><a href="http://getbootstrap.com/" target="_blank">Bootstrap</a> 3, released under the <a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache licence 2.0</a>, which includes icons from <a href="http://glyphicons.com/">Glyphicons</a></li>
+                        <li><a href="http://www.requirejs.org/" target="_blank">RequireJS</a> 2, released under the <a href="https://github.com/jrburke/requirejs/blob/master/LICENSE" target="_blank">MIT licence or new BSD licence</a></li>
+                        <li><a href="http://qunitjs.com/" target="_blank">QUnit</a> 2, released under the <a href="http://jquery.org/license" target="_blank">MIT licence</a></li>
+                        <li>Kiwix logo from <a href="http://www.kiwix.org/" target="_blank">kiwix.org</a>, released under the <a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution Share Alike</a></li>
+                        <li>OpenZIM specifications from <a href="http://www.openzim.org//wiki/OpenZIM" target="_blank">www.openzim.org</a>, released under the <a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution Share Alike</a></li>
+                        <li>Emscripten to generate a XZ decompressor in javascript : <a href="https://github.com/kripken/emscripten" target="_blank">https://github.com/kripken/emscripten</a>, released under the <a href="https://github.com/kripken/emscripten" target="_blank">MIT licence</a></li>
+                        <li><a href="http://tukaani.org/xz/embedded.html">XZ Embedded</a> (the XZ library converted to Javascript with Emscripten), in public domain</li>
+                        <li><a href="http://www.mathjax.org/">MathJax</a> for typesetting mathematical and chemical equations, released under the <a href="https://github.com/mathjax/MathJax/blob/master/LICENSE">Apache 2.0 licence</a></li>
+                        <li><a href="http://www.the-art-of-web.com/javascript/search-highlight/">Hilitor</a> for finding and hilighting text inside an article, released under <a href="http://www.the-art-of-web.com/copyright.html">this licence</a></li>
+                    </ul>
+                    <h3>Other platforms/versions</h3>
+                    <p>Other Kiwix clients exist on various platforms. See the official site : <a href="http://www.kiwix.org/" target="_blank">http://www.kiwix.org/</a>.</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                </div>
+                <div id="configuration" style="display: none;" class="container category-padding">
+                    <div id="returntoArticle_top" style="text-align:center;padding-top:20px;"></div>
+                    <div class="row">
+                        <h2 style="margin-top:0;">Configuration</h2>
+                        <p>This application needs a ZIM archive to work. You can get one from the <a href="#downloads">download links panel</a>.</p>
+                    </div>
+                    <div id="openLocalFiles" style="display: none;">
+                        <div class="row">
+                            <p>
+                                If you have a single (unsplit) ZIM archive, use the <b>first</b> button.<br />
+                                For a split archive (.zimaa, .zimab, etc.) or multiple archives, use the <b>second</b> button.
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <input type="button" class="btn btn-primary" value="Select single archive" id="archiveFile" accept=".zim" />
+                            </div>
+                            <div class="col-xs-6">
+                                <input type="button" class="btn btn-primary" value="Select folder" id="archiveFiles" accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
+                            </div>
+                            <input style="display:none;" type="file" class="btn btn-primary" value="Select folder with ZIM files" id="archiveFilesLegacy" multiple accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <p style="padding-top:0.5em;"><strong>Only Wikimedia contents (wiki*.zim* files)</strong> have been tested well with this app.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="scanningForArchives" style="display: none;">
+                        <br /> Scanning for archives... Please wait <img src="img/spinner.gif" alt="Please wait..." />
+                    </div>
+                    <div id="chooseArchiveFromLocalStorage" style="display: none;">
+                        <div class="row">
+                            <p>Archives found on this device (tap Rescan for more):</p>
+                            <div class="col-xs-12">
+                                <select id="archiveList" class="form-control"></select><br />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <input style="float:left;margin-right:1em;" type="button" class="btn btn-primary" value="Rescan storage" id="btnRescanDeviceStorage" />
+                                <p>Tap to rescan app storage or to select a file or folder manually</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="noZIMFound" style="display: none;">
+                        <br /><p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
+                    </div>
+                    <div id="downloads">
+                        <div class="row">
+                            <div class="column">
+                                <h3>Download links</h3>
+                                <p>
+                                    Files can be very large, <b>do not attempt to download using mobile data!</b>
+                                    <br /><a id="downloadTrigger" href="#">Open full list of download links</a>: <i>Warning:</i> this will use data
+                                </p>
+                                <p>
+                                    <input type="checkbox" name="allowInternetAccess" id="allowInternetAccessCheck">
+                                    <b>&nbsp;Allow Internet access?</b>
+                                </p>
+                                <div id="downloadLinks" style="display: none;"></div>
+                                <pre id="serverResponse" class="panel-footer" style="display:none;"></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="row">
+                            <h3>Display settings</h3>
+                            <div class="column">
+                                <div class="panel panel-info" id="cssSettingsDiv">
+                                    <div class="panel-heading">Display style:</div>
+                                    <div class="panel-body">
+                                        <label class="radio">
+                                            <input name="cssInjectionMode" id="cssModeAutoRadio" type="radio" value="auto">
+                                            <b>Select style automatically</b> (<i>recommended</i>: matches the ZIM style)
+                                        </label>
+                                        <label class="radio">
+                                            <input name="cssInjectionMode" id="cssModeDesktopRadio" type="radio" value="desktop">
+                                            <b>Use Wikimedia desktop style</b> (and transform if necessary)
+                                        </label>
+                                        <label class="radio">
+                                            <input name="cssInjectionMode" id="cssModeMobileRadio" type="radio" value="mobile">
+                                            <b>Use Wikimedia mobile style</b> (and transform if necessary)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="panel panel-info" id="displaySettingsDiv">
+                                    <div class="panel-heading">Display options:</div>
+                                    <div class="panel-body">
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="hideToolbar" id="hideToolbarCheck">
+                                            <b>Hide top toolbar while scrolling</b> (tap <span class="glyphicon glyphicon-arrow-up"></span> once to reveal)
+                                        </label>
+                                        <label>
+                                            <b>Change font size for the User Interface:</b>
+                                            <input type="range" name="relativeUIFontSize" id="relativeUIFontSizeSlider" min="60" max="200" step="5" value="100" size="10">
+                                            Current value: <b><span id="spinnerVal">100%</span></b><br />
+                                            (to change <b>article</b> font size, tap <span class="glyphicon glyphicon-zoom-in"></span> and <span class="glyphicon glyphicon-zoom-out"></span>)
+                                        </label>
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="cssCacheMode" id="cssCacheModeCheck">
+                                            <b>Use locally cached display styles</b> (<i>recommended</i> for Wikipedia ZIM)
+                                        </label>
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="imageDisplayMode" id="imageDisplayModeCheck">
+                                            <b>Display images if any</b> (if hidden, tap the <span style="background-color:lightblue; color:black;">&nbsp;blue area&nbsp;</span> to display one-by-one)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div id="displayThemeDiv" class="panel panel-info" style="clear: left;">
+                                    <div class="panel-heading">Dark mode:</div>
+                                    <div class="panel-body">
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="cssUIDarkTheme" id="cssUIDarkThemeCheck">
+                                            <b>Use dark mode for User Interface</b>
+                                        </label>
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="cssWikiDarkTheme" id="cssWikiDarkThemeCheck">
+                                            <b>Use dark theme for Wikimedia articles</b> (<i>experimental</i>: may only work with Wikipedia)
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="returntoArticle_bottom" style="text-align:center;"></div>
+                    <div>
+                        <div class="row">
+                            <h3>Expert settings</h3>
+                            <div class="column">
+                                <div class="panel panel-warning" style="min-width:16em;" id="mathsProcessingMode">
+                                    <div class="panel-heading">Mathematical and chemical equations and symbols:</div>
+                                    <div class="panel-body">
+                                        <label class="radio">
+                                            <input type="radio" name="useMathJax" id="useMathJaxRadioTrue" value="true">
+                                            <b>Typeset TeX equations with MathJax</b> (<i>recommended</i>: very fast, but not all symbols supported in all languages; will use SVG fallbacks if TeX string not available)
+                                        </label>
+                                        <label class="radio">
+                                            <input type="radio" name="useMathJax" id="useMathJaxRadioFalse" value="false">
+                                            <b>Use SVG fallback images</b> (very slow and memory hungry, but will dislplay all symbols)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="panel panel-danger" id="contentInjectionModeDiv">
+                                    <div class="panel-heading">Content injection mode: do not touch unless you know what you're doing!</div>
+                                    <div class="panel-body">
+                                        <label class="radio">
+                                            <input type="radio" name="contentInjectionMode" value="jquery" id="jQueryModeRadio" checked>
+                                            <b>JQuery</b> (slow and memory hungry, but safer)
+                                        </label>
+                                        <label class="radio">
+                                            <input type="radio" name="contentInjectionMode" value="serviceworker" id="serviceworkerModeRadio">
+                                            <b>ServiceWorker</b> (faster but unstable, and not supported by all platforms)
+                                        </label>
+                                        <div id="serviceWorkerStatus"></div>
+                                        <div id="messageChannelStatus"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <br />
-                    <br />Kiwix is distributed in the hope that it will be useful,
-                    <br />but WITHOUT ANY WARRANTY; without even the implied warranty of
-                    <br />MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-                    <br />GNU General Public License for more details.
                     <br />
-                    <br />You should have received a copy of the GNU General Public Licence
-                    <br />along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>
-                </i>
-                <br />
-                <br />Main libraries and ressources used :
-                <ul>
-                    <li><a href="http://jquery.com/" target="_blank">jQuery</a> 2, released under the <a href="http://jquery.org/license" target="_blank">MIT license</a></li>
-                    <li><a href="http://getbootstrap.com/" target="_blank">Bootstrap</a> 3, released under the <a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache license 2.0</a>, which includes icons from <a href="http://glyphicons.com/">Glyphicons</a></li>
-                    <li><a href="http://www.requirejs.org/" target="_blank">RequireJS</a> 2, released under the <a href="https://github.com/jrburke/requirejs/blob/master/LICENSE" target="_blank">MIT license or new BSD license</a></li>
-                    <li><a href="http://qunitjs.com/" target="_blank">QUnit</a> 2, released under the <a href="http://jquery.org/license" target="_blank">MIT license</a></li>
-                    <li>Kiwix logo from <a href="http://www.kiwix.org/" target="_blank">kiwix.org</a>, released under the <a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution Share Alike</a></li>
-                    <li>OpenZIM specifications from <a href="http://www.openzim.org//wiki/OpenZIM" target="_blank">www.openzim.org</a>, released under the <a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution Share Alike</a></li>
-                    <li>Emscripten to generate a XZ decompressor in javascript : <a href="https://github.com/kripken/emscripten" target="_blank">https://github.com/kripken/emscripten</a>, released under the <a href="https://github.com/kripken/emscripten" target="_blank">MIT license</a></li>
-                    <li><a href="http://tukaani.org/xz/embedded.html">XZ Embedded</a> (the XZ library converted to Javascript with Emscripten), in public domain</li>
-                </ul>
-                <h3>Other platforms/versions</h3>
-                Other Kiwix clients exist on various platforms. See the official site : <a href="http://www.kiwix.org/" target="_blank">http://www.kiwix.org/</a>
-                <p>&nbsp;</p>
-                <p>&nbsp;</p>
-                <p>&nbsp;</p>
-            </div>
-            <div id="configuration" style="display: none;" class="category-padding">
-                <div id="returntoArticle_top" style="text-align: center;"></div>
-                <h2>Configuration</h2>
-                This application needs a ZIM archive to work. If you have not downloaded one yet, please see the <a href="#" onclick="$('#btnAbout').click();">About</a> section.<br /><br />
-                <div id="openLocalFiles" style="display: none;">
-                    If you have downloaded one single (unsplit) ZIM archive, select it with the <b>left</b> button.
-                    If your ZIM archive is split into multiple files (.zimaa, .zimab, etc.) or if you have more than one archive in a folder,
-                    select the <strong>folder</strong> containing your ZIM archive(s) with the <b>right</b> button.<br /> <br />
-                    <input type="button" class="btn btn-default" value="Select a specific ZIM file" id="archiveFile" accept=".zim" />&nbsp;&nbsp;&nbsp;
-                    <input type="button" class="btn btn-default" value="Select folder with ZIM files" id="archiveFiles" accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
-                    <input style="display:none;" type="file" class="btn btn-default" value="Select folder with ZIM files" id="archiveFilesLegacy" multiple accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
-                    <br /><br />
-                    <span style="clear:left">
-                        <strong>Only Wikimedia content (wiki*.zim* files) have been tested</strong> well with this app.
-                        There are known bugs with other content, and audio/video/dynamic content is not yet supported.
-                    </span><br /><br />
+                    <br />
                 </div>
-                <div id="scanningForArchives" style="display: none;">
-                    <br /> Scanning for archives... Please wait <img src="img/spinner.gif" alt="Please wait..." />
+                <div id="welcomeText" class="container category-padding">
+                    You can search the content of your ZIM archive by typing in the above search field.
+                    <br />It will suggest articles starting with the letters you type.
                 </div>
-                <div id="chooseArchiveFromLocalStorage" style="display: none;">
-                    <span style="clear:left">Please select the ZIM archive you wish to use, or tap the Rescan button to seacrch for more archives:</span><br /><br />
-                    <select id="archiveList" class="form-control"></select><br />
-                    <table>
-                        <tr>
-                            <td style="vertical-align:top;">
-                                <input type="button" class="btn btn-default" value="Rescan storage" id="btnRescanDeviceStorage" />&nbsp;&nbsp;&nbsp;
-                            </td>
-                            <td style="vertical-align:top;">
-                                Tap  to rescan app storage or to select a file or folder manually
-                            </td>
-                        </tr>
-                    </table>
-                </div><br />
-                <div id="noZIMFound" style="display: none;">
-                    <br /><p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
+                <!-- List of articles matching the typed prefix -->
+                <div id="articleListWithHeader" class="container">
+                    <span id="articleListHeaderMessage"></span>
+                    <div id="articleList" class="list-group">
+                    </div>
                 </div>
-                <h2>Display settings</h2>
-                <table>
-                    <tr>
-                        <td style="vertical-align:top; min-width : 16em;">
-                            <div class="panel panel-info" id="cssSettingsDiv">
-                                <div class="panel-heading">Please select the display style:</div>
-                                <div class="panel-body">
-                                    <p style="text-indent: -22px; margin-left: 20px;">
-                                        <input name="cssInjectionMode" id="cssModeAutoRadio" type="radio" value="auto">
-                                        <b>&nbsp;Select style automatically</b> (<i>recommended</i>: matches the ZIM style)
-                                    </p>
-                                    <p style="text-indent: -22px; margin-left: 20px;">
-                                        <input name="cssInjectionMode" id="cssModeDesktopRadio" type="radio" value="desktop">
-                                        <b>&nbsp;Use Wikimedia desktop display style</b> (and transform if necessary)
-                                    </p>
-                                    <p style="text-indent: -22px; margin-left: 20px;">
-                                        <input name="cssInjectionMode" id="cssModeMobileRadio" type="radio" value="mobile">
-                                        <b>&nbsp;Use Wikimedia mobile display style</b> (and transform if necessary)
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="panel panel-info" id="displaySettingsDiv">
-                                <div class="panel-heading">Please select the display option:</div>
-                                <div class="panel-body">
-                                    <p style="text-indent: -22px; margin-left: 20px;">
-                                        <input type="checkbox" name="cssCacheMode" id="cssCacheModeCheck">
-                                        <b>&nbsp;Use locally cached display styles</b> (<i>recommended</i> for Wikipedia ZIM)
-                                    </p>
-                                    <p style="text-indent: -22px; margin-left: 20px;">
-                                        <input type="checkbox" name="imageDisplayMode" id="imageDisplayModeCheck">
-                                        <b>&nbsp;Display images if any</b> (if you hide them, click on <span style="background-color:lightblue; color:black;">&nbsp;blue area&nbsp;</span> to display one-by-one)
-                                    </p>
-                                </div>
-                            </div>
-                            <div id="displayThemeDiv" class="panel panel-info" style="clear: left;">
-                                <div class="panel-heading">Here you may select a dark theme for night reading:</div>
-                                <div class="panel-body">
-                                    <p style="text-indent: -22px; margin-left: 20px;">
-                                        <input type="checkbox" name="cssUIDarkTheme" id="cssUIDarkThemeCheck">
-                                        <b>&nbsp;Use a dark theme for the user interface</b>
-                                    </p>
-                                    <p style="text-indent: -22px; margin-left: 20px;">
-                                        <input type="checkbox" name="cssWikiDarkTheme" id="cssWikiDarkThemeCheck">
-                                        <b>&nbsp;Use a dark theme for Wikimedia articles</b> (<i>experimental</i> and may only work for Wikipedia ZIM files)
-                                    </p>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                <div id="returntoArticle_bottom" style="text-align: center;"></div>
-                <h2>Expert settings</h2>
-                <table>
-                    <tr>
-                        <td style="vertical-align:top; min-width : 16em;">
-                            <div class="panel panel-warning" style="min-width: 16em" id="mathsProcessingMode">
-                                <div class="panel-heading">Mathematical and chemical equations and symbols:</div>
-                                <div class="panel-body">
-                                    <p style="text-indent: -22px; margin-left: 20px;">
-                                        <input type="radio" name="useMathJax" id="useMathJaxRadioTrue" value="true">
-                                        <b>&nbsp;Typeset TeX equations with MathJax</b> (<i>recommended</i>: very fast, but not all symbols supported in all languages; will use SVG fallbacks if TeX string not available)
-                                    </p>
-                                    <p style="text-indent: -22px; margin-left: 20px;">
-                                        <input type="radio" name="useMathJax" id="useMathJaxRadioFalse" value="false">
-                                        <b>&nbsp;Use SVG fallback images</b> (very slow and memory hungry, but will dislplay all symbols)
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="panel panel-danger" style="min-width: 16em" id="contentInjectionModeDiv">
-                                <div class="panel-heading">Do not touch unless you know what you're doing!</div>
-                                <div class="panel-body">
-                                    <p>Content injection mode:</p>
-                                    <p style="text-indent: -22px; margin-left: 20px;">
-                                        <input type="radio" name="contentInjectionMode" value="jquery" id="jQueryModeRadio" checked>
-                                        <b>&nbsp;JQuery</b> (slow and memory hungry, but safer)
-                                    </p>
-                                    <p style="text-indent: -22px; margin-left: 20px;">
-                                        <input type="radio" name="contentInjectionMode" value="serviceworker" id="serviceworkerModeRadio">
-                                        <b>&nbsp;ServiceWorker</b> (faster but unstable, and not supported by all platforms)
-                                    </p>
-                                </div>
-                            </div>
-                            <div id="serviceWorkerStatus"></div>
-                            <div id="messageChannelStatus"></div>
-                        </td>
-                    </tr>
-                </table>
-                <br />
-                <br />
-                <br />
-            </div>
-            <div id="welcomeText" class="container category-padding">
-                You can search the content of your ZIM archive by typing in the above search field.
-                <br />It will suggest articles starting with the letters you type.
-            </div>
-            <!-- List of articles matching the typed prefix -->
-            <div id="articleListWithHeader" class="container">
-                <span id="articleListHeaderMessage"></span>
-                <div id="articleList" class="list-group">
+                <div id="readingArticle" style="display: none;" class="container">
+                    <p>Reading article <span id="articleName"></span> from archive... Please wait <img src="img/spinner.gif" alt="Please wait..." /></p>
+                    <div id="progressMessage"><p></p></div>
                 </div>
-            </div>
-            <div id="readingArticle" style="display: none;" class="container">
-                <p>Reading article <span id="articleName"></span> from archive... Please wait <img src="img/spinner.gif" alt="Please wait..." /></p>
-                <div id="progressMessage"><p></p></div>
             </div>
             <iframe id="articleContent" src="A/dummyArticle.html" class="articleIFrame">&nbsp;</iframe>
         </article>
         <footer id="footer">
             <div id="navigationButtons" class="btn-toolbar">
-                <!-- We need to restrict the size of this navbar,
-                to avoid the top button to be in the scrollbar area :
-                on a device, it can trigger a "page down" of the scrollbar -->
-                <!-- div class="restrictedSize" -->
-                        <span class="label label-default" id="lblZoom"></span>
-                        <a class="btn btn-primary btn-sm pull-left" id="btnHomeBottom" title="Home"><span class="glyphicon glyphicon-home"></span></a>
-                        <a class="btn btn-sm col-sm-pull-3" id="btnZoomout" title="Zoom out"><span class="glyphicon glyphicon-zoom-out"></span></a>
-                        <a class="btn btn-sm" id="btnBack" title="Back"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>&nbsp;
-                        <span id="appStatus"></span>
-                        <a class="btn btn-sm" id="btnForward" title="Forward"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
-                        <a class="btn btn-sm col-sm-pull-7" id="btnZoomin" title="Zoom in"><span class="glyphicon glyphicon-zoom-in"></span></a>
-                        <a class="btn btn-primary btn-sm pull-right" id="btnTop" title="Top" href="#top" style="margin-right: 1em;"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                <!-- /div -->
+                <div class="container-fluid">
+                    <a class="btn btn-default col-xs-2" id="btnHomeBottom" title="Home"><span class="glyphicon glyphicon-home"></span></a>
+                    <a class="btn btn-default col-xs-1" id="btnBack" title="Back"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>
+                    <a class="btn btn-default col-xs-1" id="btnForward" title="Forward"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
+                    <div class="dropup">
+                        <a href="#" class="btn btn-default dropdown-toggle col-xs-4" role="button" id="dropup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <b>&nbsp;ToC&nbsp;</b>
+                            <span class="caret"></span>
+                        </a>
+                        <ul id="ToCList" class="dropdown-menu" style="overflow-y:auto;"></ul>
+                    </div>
+                    <a class="btn btn-default col-xs-1" id="btnZoomout" title="Zoom out"><span class="glyphicon glyphicon-zoom-out"></span></a>
+                    <a class="btn btn-default col-xs-1" id="btnZoomin" title="Zoom in"><span class="glyphicon glyphicon-zoom-in"></span></a>
+                    <span class="label label-default" id="lblZoom"></span>
+                    <a class="btn btn-default col-xs-2" id="btnTop" title="Top" href="#top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                </div>
             </div>
         </footer>
     </section>
-    <!--script type="text/javascript" src="js/lib/xzdec.js"></!--script>-->
-    <script type="text/javascript" src="js/lib/lzma.js"></script>
+    <script type="text/javascript" src="js/lib/xzdec.js"></script>
     <!-- Using require.js, a module system for javascript, include the
          js files. This loads "main.js", which in turn can load other
          files, all handled by require.js:

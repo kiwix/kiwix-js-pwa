@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" IgnorableNamespaces="uap mp uap3">
-  <Identity Name="Kiwix.KiwixJS" Version="0.8.5.0" Publisher="CN=geoff" />
+  <Identity Name="Kiwix.KiwixJS" Version="0.8.6.0" Publisher="CN=geoff" />
   <mp:PhoneIdentity PhoneProductId="a1a5e0b9-13d4-41fb-810d-518949f03df4" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Kiwix JS</DisplayName>
@@ -39,7 +39,6 @@
           <uap:FileTypeAssociation Name="zimarchive">
             <uap:DisplayName>ZIM Archive</uap:DisplayName>
             <uap:InfoTip>Compressed ZIM FIle Archive</uap:InfoTip>
-            <uap:EditFlags OpenIsSafe="true" />
             <uap:SupportedFileTypes>
               <uap:FileType ContentType="application/zlib">.zim</uap:FileType>
               <uap:FileType ContentType="application/zlib">.zimaa</uap:FileType>
@@ -51,7 +50,6 @@
   </Applications>
   <Capabilities>
     <Capability Name="internetClient" />
-    <uap:Capability Name="removableStorage" />
     <DeviceCapability Name="location" />
   </Capabilities>
 </Package>

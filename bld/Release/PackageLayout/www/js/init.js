@@ -23,62 +23,76 @@
 'use strict';
 var params = {};
 params['version'] = "0.8.2 Beta"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
-var results = params['results'] || 15; //Number of search results to display
-params['relativeFontSize'] = ~~(getCookie('relativeFontSize') || "100");
+params['storedFile'] = getCookie('lastSelectedArchive') || "wikipedia_en_ray_charles_2015-06.zimaa"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
+params['kiwixDownloadLink'] = "http://download.kiwix.org/zim/"; //Include final slash
+
+params['results'] = params['results'] || 15; //Number of search results to display
+params['relativeFontSize'] = ~~(getCookie('relativeFontSize') || 100); //Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
+var x = getCookie('relativeUIFontSize');
+params['relativeUIFontSize'] = ~~(getCookie('relativeUIFontSize') || 100); //Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
 params['cssSource'] = getCookie('cssSource') || "auto"; //Set default to "auto", "desktop" or "mobile"
-params['cssCache'] = getCookie('cssCache') || true; //Set default to true to use cached CSS, false to use Zim only
+params['cssCache'] = getCookie('cssCache') != null ? getCookie('cssCache') : true; //Set default to true to use cached CSS, false to use Zim only
 //Convert string values of true / false to Boolean without disturbing any Boolean already set:
-params['cssCache'] = params['cssCache'] == "false" ? false : (params['cssCache'] == "true" ? true : params['cssCache']);
+//params['cssCache'] = params['cssCache'] == "false" ? false : (params['cssCache'] == "true" ? true : params['cssCache']);
 params['cssTheme'] = getCookie('cssTheme') || 'light'; //Set default to 'light' or 'dark' to use respective themes for Wiki articles
 params['cssUITheme'] = getCookie('cssUITheme') || 'light'; //Set default to 'light' or 'dark' to use respective themes for UI
-params['imageDisplay'] = getCookie('imageDisplay') || true; //Set default to display images from Zim
-params['imageDisplay'] = params['imageDisplay'] == "false" ? false : (params['imageDisplay'] == "true" ? true : params['imageDisplay']);
-params['useMathJax'] = params['useMathJax'] || true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
-params['storedFile'] = getCookie('lastSelectedArchive') || "wikipedia_en_ray_charles_2015-06.zimaa"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
-params['falFileToken'] = params['falFileToken'] || "zimfile";
-params['falFolderToken'] = params['falFolderToken'] || "zimfilestore";
-params['localStorage'] = params['localStorage'] || ""; //These will be set programmatically below
+params['imageDisplay'] = getCookie('imageDisplay') != null ? getCookie('imageDisplay') : true; //Set default to display images from Zim
+params['hideToolbar'] = getCookie('hideToolbar') != null ? getCookie('hideToolbar') : false; //Set default to hide the top toolbar on scroll
+params['useMathJax'] = getCookie('useMathJax') != null ? getCookie('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
+
+//Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
+params['falFileToken'] = params['falFileToken'] || "zimfile"; //UWP support
+params['falFolderToken'] = params['falFolderToken'] || "zimfilestore"; //UWP support
+params['localStorage'] = params['localStorage'] || "";
 params['pickedFile'] = params['pickeFile'] || "";
 params['pickedFolder'] = params['pickedFolder'] || "";
+params['themeChanged'] = params['themeChanged'] || false;
+params['allowInternetAccess'] = params['allowInternetAccess'] || false; //Do not get value from cookie, should be explicitly set by user on a per-session basis
 
-if (params['storedFile'] && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') { //UWP
+//Initialize checkbox and radio values
+document.getElementById('cssCacheModeCheck').checked = params.cssCache;
+document.getElementById('imageDisplayModeCheck').checked = params.imageDisplay;
+document.getElementById('hideToolbarCheck').checked = params.hideToolbar;
+document.getElementById('cssWikiDarkThemeCheck').checked = params.cssTheme == 'dark' ? true : false;
+document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme == 'dark' ? true : false;
+document.getElementById('useMathJaxRadio' + (params.useMathJax ? 'True' : 'False')).checked = true;
+
+
+//Set up storage types
+if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') { //UWP
     //DEV change "archives" below if you wish to store local archives in a different location in the installation package
     Windows.ApplicationModel.Package.current.installedLocation.getFolderAsync("archives").done(function (folder) {
-        if (folder) params['localStorage'] = folder;
+        if (folder) params.localStorage = folder;
+    }, function (err) {
+        console.error("This app doesn't appear to have access to local storage!");
     });
-    var StorageApplicationPermissions = Windows.Storage.AccessCache.StorageApplicationPermissions;
-    if (StorageApplicationPermissions.futureAccessList.containsItem(params['falFileToken'])) {
-        StorageApplicationPermissions.futureAccessList.getFileAsync(params['falFileToken']).done(function (file) {
-            if (file) params['pickedFile'] = file;
+    var futureAccessList = Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList;
+    if (futureAccessList.containsItem(params.falFileToken)) {
+        futureAccessList.getFileAsync(params.falFileToken).done(function (file) {
+            if (file) params.pickedFile = file;
+        }, function (err) {
+            console.error("The previously picked file is no longer accessible: " + err.message);
         });
     }
-    if (StorageApplicationPermissions.futureAccessList.containsItem(params['falFolderToken'])) {
-        StorageApplicationPermissions.futureAccessList.getFolderAsync(params['falFolderToken']).done(function (folder) {
-            if (folder) params['pickedFolder'] = folder;
+    if (futureAccessList.containsItem(params.falFolderToken)) {
+        futureAccessList.getFolderAsync(params.falFolderToken).then(function (folder) {
+            if (folder) params.pickedFolder = folder;
+        }, function (err) {
+            console.error("The previously picked folder is no longer accessible: " + err.message);
         });
     }
 }
 
 
-function getCookie(cname) {
-    var name = cname + "=";
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var ca = decodedCookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-        }
-    }
-    return "";
-} 
+function getCookie(name) {
+    var regexp = new RegExp('(?:^|;)\\s*' + name + '=([^;]+)(?:;|$)');
+    var result = document.cookie.match(regexp);
+    return result === null || result[1] == "undefined" ? null : result[1] == "true" ? true : result[1] == "false" ? false : result[1];
+}
 
 require.config({
     baseUrl: 'js/lib',
-    config: { '../app': { results: results, params: params } },
+    config: { '../app': { params: params } },
     paths: {
         'jquery': 'jquery-3.2.1.slim',
         //'bootstrap': 'bootstrap'
