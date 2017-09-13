@@ -7,7 +7,7 @@
 
     For more information on package manifest files, see http://go.microsoft.com/fwlink/?LinkID=241727
   -->
-  <Identity Name="Kiwix.KiwixJS" Version="0.8.5.0" Publisher="CN=geoff" ProcessorArchitecture="neutral" />
+  <Identity Name="Kiwix.KiwixJS" Version="0.8.6.0" Publisher="CN=geoff" ProcessorArchitecture="neutral" />
   <mp:PhoneIdentity PhoneProductId="a1a5e0b9-13d4-41fb-810d-518949f03df4" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Kiwix JS</DisplayName>
@@ -46,7 +46,6 @@
           <uap:FileTypeAssociation Name="zimarchive">
             <uap:DisplayName>ZIM Archive</uap:DisplayName>
             <uap:InfoTip>Compressed ZIM FIle Archive</uap:InfoTip>
-            <uap:EditFlags OpenIsSafe="true" />
             <uap:SupportedFileTypes>
               <uap:FileType ContentType="application/zlib">.zim</uap:FileType>
               <uap:FileType ContentType="application/zlib">.zimaa</uap:FileType>
@@ -58,7 +57,6 @@
   </Applications>
   <Capabilities>
     <Capability Name="internetClient" />
-    <uap:Capability Name="removableStorage" />
     <DeviceCapability Name="location" />
   </Capabilities>
   <build:Metadata>
