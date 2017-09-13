@@ -1,101 +1,101 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type='text/xsl' href='C:\ProgramData\Windows App Certification Kit\results.xsl'?>
-<REPORT xml:lang="en-GB" OVERALL_RESULT="PASS" VERSION="10.0.15063.137" LATEST_VERSION="TRUE" UPDATE_DOWNLOAD_URL="" TOOLSET_ARCHITECTURE="x64" SecureBoot="FALSE" APP_TYPE="UapApp" PUBLISHER_DISPLAY_NAME="CN=geoff" APP_NAME="" APP_VERSION="" OSVERSION="10.0.15063.0" OS="Microsoft Windows 10 Pro" PER_USER_APPLICATION="" PARTIAL_RUN="FALSE" LCID="2057" VALIDATION_TYPE="UI" ReportGenerationTime="24-8-2017 5:25:07 pm" ID="d4fe5e694ff0f2044f0bc195834bf312">
+<REPORT xml:lang="en-GB" OVERALL_RESULT="PASS" VERSION="10.0.15063.468" LATEST_VERSION="TRUE" UPDATE_DOWNLOAD_URL="" TOOLSET_ARCHITECTURE="x64" SecureBoot="FALSE" APP_TYPE="UapApp" PUBLISHER_DISPLAY_NAME="CN=geoff" APP_NAME="" APP_VERSION="" OSVERSION="10.0.15063.0" OS="Microsoft Windows 10 Pro" PER_USER_APPLICATION="" PARTIAL_RUN="FALSE" LCID="2057" VALIDATION_TYPE="UI" ReportGenerationTime="13-9-2017 1:46:57 pm" ID="ec5ef0701225ca240589e8fe7d9a4bec">
   <REQUIREMENTS>
     <REQUIREMENT NUMBER="10" TITLE="Deployment and launch tests" RATIONALE="Application failures such as crashes and hangs are a major disruption to users and cause frustration. Eliminating such failures improves application stability and reliability, and overall, provides users with a better application experience.">
-      <TEST INDEX="50" NAME="Bytecode generation" DESCRIPTION="Byte code generation should be able to complete successfully for packages containing an HTML5 Windows Store app." EXECUTIONTIME="00h:00m:00s.93ms" OPTIONAL="FALSE">
+      <TEST INDEX="50" NAME="Bytecode generation" DESCRIPTION="Byte code generation should be able to complete successfully for packages containing an HTML5 Windows Store app." EXECUTIONTIME="00h:00m:00s.94ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="79" NAME="Background tasks cancelation handler" DESCRIPTION="App should implement event handler to handle background task cancelation request." EXECUTIONTIME="00h:00m:20s.33ms" OPTIONAL="FALSE">
+      <TEST INDEX="79" NAME="Background tasks cancelation handler" DESCRIPTION="App should implement event handler to handle background task cancelation request." EXECUTIONTIME="00h:00m:20s.03ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="81" NAME="Platform version launch" DESCRIPTION="App should not mis-use OSVersionInfo API to provide users functionality that is specific to the OS." EXECUTIONTIME="00h:00m:17s.93ms" OPTIONAL="FALSE">
+      <TEST INDEX="81" NAME="Platform version launch" DESCRIPTION="App should not mis-use OSVersionInfo API to provide users functionality that is specific to the OS." EXECUTIONTIME="00h:00m:17s.90ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="47" NAME="App launch" DESCRIPTION="App launch tests." EXECUTIONTIME="00h:00m:17s.86ms" OPTIONAL="FALSE">
+      <TEST INDEX="47" NAME="App launch" DESCRIPTION="App launch tests." EXECUTIONTIME="00h:00m:17s.72ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="21" NAME="Crashes and hangs" DESCRIPTION="Do not crash or hang during the testing process." EXECUTIONTIME="00h:00m:01s.91ms" OPTIONAL="FALSE">
+      <TEST INDEX="21" NAME="Crashes and hangs" DESCRIPTION="Do not crash or hang during the testing process." EXECUTIONTIME="00h:00m:01s.96ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="12" TITLE="Package compliance test" RATIONALE="The package manifest was missing one or more required attributes.">
-      <TEST INDEX="77" NAME="Application count" DESCRIPTION="One package should not define more than one app in the manifest." EXECUTIONTIME="00h:00m:00s.75ms" OPTIONAL="FALSE">
+      <TEST INDEX="77" NAME="Application count" DESCRIPTION="One package should not define more than one app in the manifest." EXECUTIONTIME="00h:00m:00s.76ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="31" NAME="App manifest" DESCRIPTION="App manifest must include valid entries for all required fields." EXECUTIONTIME="00h:00m:00s.90ms" OPTIONAL="FALSE">
+      <TEST INDEX="31" NAME="App manifest" DESCRIPTION="App manifest must include valid entries for all required fields." EXECUTIONTIME="00h:00m:00s.83ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="74" NAME="Bundle manifest" DESCRIPTION="Bundle manifest must include valid entries for all required fields." EXECUTIONTIME="00h:00m:00s.86ms" OPTIONAL="FALSE">
+      <TEST INDEX="74" NAME="Bundle manifest" DESCRIPTION="Bundle manifest must include valid entries for all required fields." EXECUTIONTIME="00h:00m:00s.81ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="75" NAME="Package size" DESCRIPTION="Package file size should not be greater than 4 gigabytes." EXECUTIONTIME="00h:00m:00s.81ms" OPTIONAL="FALSE">
+      <TEST INDEX="75" NAME="Package size" DESCRIPTION="Package file size should not be greater than 4 gigabytes." EXECUTIONTIME="00h:00m:00s.85ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="83" NAME="Restricted namespace" DESCRIPTION="Check if any restricted namespace is referenced in the appx manifest." EXECUTIONTIME="00h:00m:00s.83ms" OPTIONAL="FALSE">
+      <TEST INDEX="83" NAME="Restricted namespace" DESCRIPTION="Check if any restricted namespace is referenced in the appx manifest." EXECUTIONTIME="00h:00m:00s.74ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="14" TITLE="Windows security features test" RATIONALE="Applications must opt-into Windows security features.">
-      <TEST INDEX="33" NAME="Binary analyzer" DESCRIPTION="Analysis of security features enabled on binaries" EXECUTIONTIME="00h:00m:01s.32ms" OPTIONAL="FALSE">
+      <TEST INDEX="33" NAME="Binary analyzer" DESCRIPTION="Analysis of security features enabled on binaries" EXECUTIONTIME="00h:00m:01s.38ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="70" NAME="Banned file analyzer" DESCRIPTION="Analysis of application to detect known insecure files" EXECUTIONTIME="00h:00m:00s.77ms" OPTIONAL="FALSE">
+      <TEST INDEX="70" NAME="Banned file analyzer" DESCRIPTION="Analysis of application to detect known insecure files" EXECUTIONTIME="00h:00m:00s.81ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="62" NAME="Private code signing" DESCRIPTION="App should not package private code signing key files." EXECUTIONTIME="00h:00m:00s.83ms" OPTIONAL="FALSE">
+      <TEST INDEX="62" NAME="Private code signing" DESCRIPTION="App should not package private code signing key files." EXECUTIONTIME="00h:00m:00s.78ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="15" TITLE="Supported API test" RATIONALE="The application should only refer to the APIs allowed by the Windows SDK for Windows Store Apps.">
-      <TEST INDEX="38" NAME="Supported APIs" DESCRIPTION="Windows Store App must only use supported platform APIs." EXECUTIONTIME="00h:00m:01s.05ms" OPTIONAL="FALSE">
+      <TEST INDEX="38" NAME="Supported APIs" DESCRIPTION="Windows Store App must only use supported platform APIs." EXECUTIONTIME="00h:00m:01s.06ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="19" TITLE="App manifest resources tests" RATIONALE="The App Package Manifest should have valid resources defined in the resources.pri file, as per the App Packaging Specification and App Manifest Schema.">
-      <TEST INDEX="45" NAME="App resources" DESCRIPTION="The package should have valid resources defined in the resources.pri file." EXECUTIONTIME="00h:00m:00s.71ms" OPTIONAL="FALSE">
+      <TEST INDEX="45" NAME="App resources" DESCRIPTION="The package should have valid resources defined in the resources.pri file." EXECUTIONTIME="00h:00m:00s.66ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="61" NAME="Branding" DESCRIPTION="App should not use the default images packed by windows SDK samples or Visual Studio." EXECUTIONTIME="00h:00m:01s.30ms" OPTIONAL="FALSE">
+      <TEST INDEX="61" NAME="Branding" DESCRIPTION="App should not use the default images packed by windows SDK samples or Visual Studio." EXECUTIONTIME="00h:00m:01s.31ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="20" TITLE="Debug configuration test" RATIONALE="The App should not install any debug binaries.">
-      <TEST INDEX="46" NAME="Debug configuration" DESCRIPTION="The App should not install any debug binaries." EXECUTIONTIME="00h:00m:01s.08ms" OPTIONAL="FALSE">
+      <TEST INDEX="46" NAME="Debug configuration" DESCRIPTION="The App should not install any debug binaries." EXECUTIONTIME="00h:00m:00s.95ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="21" TITLE="File encoding test" RATIONALE="Packages containing an HTML5 Windows Store app must have correct file encoding.">
-      <TEST INDEX="49" NAME="UTF-8 file encoding" DESCRIPTION="Packages containing an HTML5 Windows Store app must have correct file encoding." EXECUTIONTIME="00h:00m:00s.86ms" OPTIONAL="FALSE">
+      <TEST INDEX="49" NAME="UTF-8 file encoding" DESCRIPTION="Packages containing an HTML5 Windows Store app must have correct file encoding." EXECUTIONTIME="00h:00m:00s.85ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="23" TITLE="App Capabilities test" RATIONALE="Packages declaring special-use capabilities will have to provide justifications during the onboarding process.">
-      <TEST INDEX="52" NAME="Special use capabilities" DESCRIPTION="Packages declaring special-use capabilities will have to provide justifications during the onboarding process." EXECUTIONTIME="00h:00m:00s.79ms" OPTIONAL="FALSE">
+      <TEST INDEX="52" NAME="Special use capabilities" DESCRIPTION="Packages declaring special-use capabilities will have to provide justifications during the onboarding process." EXECUTIONTIME="00h:00m:00s.78ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="24" TITLE="Windows Runtime metadata validation" RATIONALE="Metadata needs to be conformant and consistent across all generation sources.">
-      <TEST INDEX="56" NAME="ExclusiveTo attribute" DESCRIPTION="A class must not implement an interface that is marked ExclusiveTo another class." EXECUTIONTIME="00h:00m:07s.23ms" OPTIONAL="FALSE">
+      <TEST INDEX="56" NAME="ExclusiveTo attribute" DESCRIPTION="A class must not implement an interface that is marked ExclusiveTo another class." EXECUTIONTIME="00h:00m:07s.65ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
@@ -103,35 +103,35 @@
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="55" NAME="Type name case-sensitivity" DESCRIPTION="Namespace and type names must not vary only by casing." EXECUTIONTIME="00h:00m:00s.71ms" OPTIONAL="FALSE">
+      <TEST INDEX="55" NAME="Type name case-sensitivity" DESCRIPTION="Namespace and type names must not vary only by casing." EXECUTIONTIME="00h:00m:00s.73ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="54" NAME="Type name correctness" DESCRIPTION="Only system types can be in the Windows namespace and no types can be in the global namespace." EXECUTIONTIME="00h:00m:00s.71ms" OPTIONAL="FALSE">
+      <TEST INDEX="54" NAME="Type name correctness" DESCRIPTION="Only system types can be in the Windows namespace and no types can be in the global namespace." EXECUTIONTIME="00h:00m:00s.78ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="58" NAME="General metadata correctness" DESCRIPTION="Metadata files must meet various requirements in order to be valid and correct." EXECUTIONTIME="00h:00m:07s.34ms" OPTIONAL="FALSE">
+      <TEST INDEX="58" NAME="General metadata correctness" DESCRIPTION="Metadata files must meet various requirements in order to be valid and correct." EXECUTIONTIME="00h:00m:07s.48ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="53" NAME="Properties" DESCRIPTION="Write-only and indexer properties may not be used. Corresponding getter and setter methods must match in type." EXECUTIONTIME="00h:00m:00s.78ms" OPTIONAL="FALSE">
+      <TEST INDEX="53" NAME="Properties" DESCRIPTION="Write-only and indexer properties may not be used. Corresponding getter and setter methods must match in type." EXECUTIONTIME="00h:00m:00s.73ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="25" TITLE="Package sanity test" RATIONALE="Validation of the app package contents to ensure correctness.">
-      <TEST INDEX="63" NAME="Platform appropriate files" DESCRIPTION="App should not install files that do not match the target processor architecture." EXECUTIONTIME="00h:00m:00s.85ms" OPTIONAL="FALSE">
+      <TEST INDEX="63" NAME="Platform appropriate files" DESCRIPTION="App should not install files that do not match the target processor architecture." EXECUTIONTIME="00h:00m:00s.80ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
-      <TEST INDEX="66" NAME="Supported directory structure check" DESCRIPTION="Validate each file in the package for that the file name length should be less than MAX_PATH." EXECUTIONTIME="00h:00m:00s.81ms" OPTIONAL="FALSE">
+      <TEST INDEX="66" NAME="Supported directory structure check" DESCRIPTION="Validate each file in the package for that the file name length should be less than MAX_PATH." EXECUTIONTIME="00h:00m:00s.84ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
     </REQUIREMENT>
     <REQUIREMENT NUMBER="27" TITLE="Resource Usage Test" RATIONALE="WinJS background tasks need to call close() to free resource.">
-      <TEST INDEX="68" NAME="WinJS background task" DESCRIPTION="WinJS background tasks need to call close() to free resource." EXECUTIONTIME="00h:00m:00s.89ms" OPTIONAL="FALSE">
+      <TEST INDEX="68" NAME="WinJS background task" DESCRIPTION="WinJS background tasks need to call close() to free resource." EXECUTIONTIME="00h:00m:00s.81ms" OPTIONAL="FALSE">
         <MESSAGES />
         <RESULT><![CDATA[PASS]]></RESULT>
       </TEST>
@@ -139,12 +139,12 @@
   </REQUIREMENTS>
   <APPLICATIONS>
     <Installed_Programs>
-      <Program Name="Kiwix.KiwixJS" Type="Application" Source="AppxPackage" Publisher="CN=geoff" Version="0.8.5.0" Language="2057" InstallDate="08/24/2017 16:22:59" OSVersionAtInstallTime="10.0.0.15063" RootDirPath="c:\program files\windowsapps\kiwix.kiwixjs_0.8.5.0_neutral__zfxmafgedzx24" Id="0000e1da6def6438426965c1fc90357374ad00000908">
+      <Program Name="Kiwix.KiwixJS" Type="Application" Source="AppxPackage" Publisher="CN=geoff" Version="0.8.6.0" Language="2057" InstallDate="09/13/2017 12:44:44" OSVersionAtInstallTime="10.0.0.15063" RootDirPath="c:\program files\windowsapps\kiwix.kiwixjs_0.8.6.0_neutral__zfxmafgedzx24" Id="0000392b444d8ae2cf6babc7c37678082e6300000908">
         <Indicators>
           <WindowsStoreAppManifestIndicators>
-            <PackageManifest PackageFullName="Kiwix.KiwixJS_0.8.5.0_neutral__zfxmafgedzx24">
+            <PackageManifest PackageFullName="Kiwix.KiwixJS_0.8.6.0_neutral__zfxmafgedzx24">
               <Package>
-                <Identity Name="Kiwix.KiwixJS" Version="0.8.5.0" Publisher="CN=geoff" ProcessorArchitecture="neutral" />
+                <Identity Name="Kiwix.KiwixJS" Version="0.8.6.0" Publisher="CN=geoff" ProcessorArchitecture="neutral" />
                 <PhoneIdentity PhoneProductId="a1a5e0b9-13d4-41fb-810d-518949f03df4" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
                 <Properties>
                   <DisplayName>Kiwix JS</DisplayName>
@@ -180,12 +180,15 @@
                       </InitialRotationPreference>
                     </VisualElements>
                     <Extensions>
-                      <Extension Category="windows.fileSavePicker">
-                        <FileSavePicker>
+                      <Extension Category="windows.fileTypeAssociation">
+                        <FileTypeAssociation Name="zimarchive">
+                          <DisplayName>ZIM Archive</DisplayName>
+                          <InfoTip>Compressed ZIM FIle Archive</InfoTip>
                           <SupportedFileTypes>
-                            <SupportsAnyFileType />
+                            <FileType ContentType="application/zlib">.zim</FileType>
+                            <FileType ContentType="application/zlib">.zimaa</FileType>
                           </SupportedFileTypes>
-                        </FileSavePicker>
+                        </FileTypeAssociation>
                       </Extension>
                     </Extensions>
                   </Application>
@@ -198,30 +201,30 @@
             </PackageManifest>
             <BundleManifest PackageFamilyName="Kiwix.KiwixJS_zfxmafgedzx24">
               <Bundle SchemaVersion="3.0">
-                <Identity Name="Kiwix.KiwixJS" Publisher="CN=geoff" Version="0.8.5.0" />
+                <Identity Name="Kiwix.KiwixJS" Publisher="CN=geoff" Version="0.8.6.0" />
                 <Packages>
-                  <Package Type="application" Version="0.8.5.0" Architecture="neutral" FileName="KiwixWebApp_0.8.5.0_AnyCPU.appx" Offset="61" Size="3286749">
+                  <Package Type="application" Version="0.8.6.0" Architecture="neutral" FileName="KiwixWebApp_0.8.6.0_AnyCPU.appx" Offset="61" Size="3288655">
                     <Resources>
                       <Resource Language="EN-GB" />
                       <Resource Scale="200" />
                     </Resources>
                   </Package>
-                  <Package Type="resource" Version="0.8.5.0" ResourceId="split.scale-100" FileName="KiwixWebApp_0.8.5.0_scale-100.appx" Offset="3286898" Size="100485">
+                  <Package Type="resource" Version="0.8.6.0" ResourceId="split.scale-100" FileName="KiwixWebApp_0.8.6.0_scale-100.appx" Offset="3288804" Size="100483">
                     <Resources>
                       <Resource Scale="100" />
                     </Resources>
                   </Package>
-                  <Package Type="resource" Version="0.8.5.0" ResourceId="split.scale-125" FileName="KiwixWebApp_0.8.5.0_scale-125.appx" Offset="3387471" Size="131612">
+                  <Package Type="resource" Version="0.8.6.0" ResourceId="split.scale-125" FileName="KiwixWebApp_0.8.6.0_scale-125.appx" Offset="3389375" Size="131616">
                     <Resources>
                       <Resource Scale="125" />
                     </Resources>
                   </Package>
-                  <Package Type="resource" Version="0.8.5.0" ResourceId="split.scale-150" FileName="KiwixWebApp_0.8.5.0_scale-150.appx" Offset="3519171" Size="161258">
+                  <Package Type="resource" Version="0.8.6.0" ResourceId="split.scale-150" FileName="KiwixWebApp_0.8.6.0_scale-150.appx" Offset="3521079" Size="161256">
                     <Resources>
                       <Resource Scale="150" />
                     </Resources>
                   </Package>
-                  <Package Type="resource" Version="0.8.5.0" ResourceId="split.scale-400" FileName="KiwixWebApp_0.8.5.0_scale-400.appx" Offset="3680517" Size="619779">
+                  <Package Type="resource" Version="0.8.6.0" ResourceId="split.scale-400" FileName="KiwixWebApp_0.8.6.0_scale-400.appx" Offset="3682423" Size="619788">
                     <Resources>
                       <Resource Scale="400" />
                     </Resources>
@@ -238,7 +241,7 @@
     </Installed_Programs>
   </APPLICATIONS>
   <DEPENDENCY_INFORMATION>
-    <AitStaticAnalysis ProgramId="0000e1da6def6438426965c1fc90357374ad00000904" AnalysisVersion="1.60" DictionaryVersion="3.1" Type="Package" Id="Kiwix.KiwixJS_0.8.5.0_neutral__zfxmafgedzx24">
+    <AitStaticAnalysis ProgramId="0000392b444d8ae2cf6babc7c37678082e6300000904" AnalysisVersion="1.60" DictionaryVersion="3.1" Type="Package" Id="Kiwix.KiwixJS_0.8.6.0_neutral__zfxmafgedzx24">
       <AitFile ErrorCode="0" Name="math_characters.js" Id="000000123c1ef5114b87a3312519f384dec7ebb118c9" />
       <AitFile ErrorCode="0" Name="color.js" Id="00000190a2521d458cec0fc9081e5063d6a5f259a1ac" />
       <AitFile ErrorCode="0" Name="HelpDialog.js" Id="000002ae00ac7a1eff2516c87d382333840eb3ac14c9">
@@ -290,6 +293,15 @@
         </AitCategory>
       </AitFile>
       <AitFile ErrorCode="0" Name="SuppMathOperators.js" Id="0000058911934a6244ed50544d246b9d36d224abb0bc" />
+      <AitFile ErrorCode="0" Name="uiUtil.js" Id="0000059783ef605db29dac93d4debbb9659adf0865fd">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="URL.createObjectURL" />
+          <AitFeature Name="URL.revokeObjectURL" />
+          <AitFeature Name="document.getElementById" />
+          <AitFeature Name="window.innerHeight" />
+        </AitCategory>
+      </AitFile>
+      <AitFile ErrorCode="0" Name="index.html" Id="0000074df9a0a52420ce992d3e467ef1b4573ac3ab3b" />
       <AitFile ErrorCode="0" Name="CombDiacritMarks.js" Id="00000a9175ffa7dc8ee8abc30e9f0f8b74c47d7b5653" />
       <AitFile ErrorCode="0" Name="CombDiacritMarks.js" Id="00000b2d255b0a2c4212e7878e9b304897054d0b57b2" />
       <AitFile ErrorCode="0" Name="BasicLatin.js" Id="00000b98287c0e47db0621a44880c64335da1b3c39a0" />
@@ -342,6 +354,11 @@
       <AitFile ErrorCode="0" Name="PUA.js" Id="000023cd766473c5acba5af764a46ec39d01133b07b4" />
       <AitFile ErrorCode="0" Name="hebrew_letters.js" Id="0000258a5aa306f69cf9413f35f55c9bd370917e4f7e" />
       <AitFile ErrorCode="0" Name="CombDiactForSymbols.js" Id="000026c786c5e30b0e795db4e9f9d0bc9b6f5bce6b08" />
+      <AitFile ErrorCode="0" Name="transformStyles.js" Id="0000294ce0e3acf6e634c1e81f86d11b0dd2035639df">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.getElementById" />
+        </AitCategory>
+      </AitFile>
       <AitFile ErrorCode="0" Name="mathjax-sre.js" Id="000029e838c7959d0835dfbd76ab12aa5ab35208ab73">
         <AitCategory Id="WRTJavaScript">
           <AitFeature Name="document.createElement" />
@@ -417,14 +434,6 @@
       </AitFile>
       <AitFile ErrorCode="0" Name="latin-mathfonts.js" Id="000036e2b4a75cbee28ce9ad625adb16c713d14c6e01" />
       <AitFile ErrorCode="0" Name="Other.js" Id="000039f676089e81f70a28b2e2566f9544430e295827" />
-      <AitFile ErrorCode="0" Name="uiUtil.js" Id="00003abfe3a4ef14b0b733d86ae533661d10cdfbee0e">
-        <AitCategory Id="WRTJavaScript">
-          <AitFeature Name="URL.createObjectURL" />
-          <AitFeature Name="URL.revokeObjectURL" />
-          <AitFeature Name="document.getElementById" />
-          <AitFeature Name="window.innerHeight" />
-        </AitCategory>
-      </AitFile>
       <AitFile ErrorCode="0" Name="latin-upper-double-accent.js" Id="00003ad8c35b611440cd1ca098730f348b3b2eaa656f" />
       <AitFile ErrorCode="0" Name="config.js" Id="00003c399be45beea2d00833990be61aa7750dbffa7b" />
       <AitFile ErrorCode="0" Name="fontdata.js" Id="00003c88eb71aebf52d784bede6026d89dea49caf208">
@@ -517,6 +526,12 @@
           <AitFeature Name="window.attachEvent" />
         </AitCategory>
       </AitFile>
+      <AitFile ErrorCode="0" Name="kiwixServe.js" Id="00006a6e24439e096f6d7e088010cafa1d315451e56a">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="document.getElementById" />
+          <AitFeature Name="document.querySelectorAll" />
+        </AitCategory>
+      </AitFile>
       <AitFile ErrorCode="0" Name="HTML.js" Id="00006aac96f491de34fa1440839b5f72817bd8a620d3" />
       <AitFile ErrorCode="0" Name="Arrows.js" Id="00006cb6b42f52ca4190e3ef942d080b0efbcf335378" />
       <AitFile ErrorCode="0" Name="fast-preview.js" Id="00006cc67dd9fa44b0483497cdc7a8df1b3de8e4651c">
@@ -531,7 +546,6 @@
           <AitFeature Name="document.getElementById" />
         </AitCategory>
       </AitFile>
-      <AitFile ErrorCode="0" Name="index.html" Id="00006f0d57e7c68915171d598866f71a68f9eddbb534" />
       <AitFile ErrorCode="0" Name="GreekAndCoptic.js" Id="00007036836b4973d278679bbbedafcf61996f1f4a67" />
       <AitFile ErrorCode="0" Name="SpacingModLetters.js" Id="0000714fa1b75586a40bcaf494c860f688dacfaeceb0" />
       <AitFile ErrorCode="0" Name="multiline.js" Id="000071ec7bf712e0c8d8b10dd9c89452b57c268b46fb">
@@ -551,6 +565,38 @@
       <AitFile ErrorCode="0" Name="config.js" Id="0000761cac6ef87e76842ebca1ffca876621b3e4171b" />
       <AitFile ErrorCode="0" Name="Main.js" Id="000077bf5f5dc8d45a2d4cb189b6c74d308299f1f906" />
       <AitFile ErrorCode="0" Name="math_delimiters.js" Id="000078805086146409ddda5f82fa34a45af417ba79ea" />
+      <AitFile ErrorCode="0" Name="app.js" Id="0000791968b21a0543d95a5fc77be6e00766d098630b">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="MSApp.createFileFromStorageFile" />
+          <AitFeature Name="URL.createObjectURL" />
+          <AitFeature Name="URL.revokeObjectURL..." />
+          <AitFeature Name="Windows.ApplicationModel.Package.current.installedLocation" />
+          <AitFeature Name="Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.addOrReplace" />
+          <AitFeature Name="Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.remove" />
+          <AitFeature Name="Windows.Storage.Pickers.FileOpenPicker" />
+          <AitFeature Name="Windows.Storage.Pickers.FolderPicker" />
+          <AitFeature Name="Windows.Storage.Pickers.PickerLocationId.downloads" />
+          <AitFeature Name="document.createElement" />
+          <AitFeature Name="document.documentElement.clientHeight" />
+          <AitFeature Name="document.getElementById" />
+          <AitFeature Name="document.getElementsByClassName" />
+          <AitFeature Name="document.getElementsByTagName" />
+          <AitFeature Name="document.querySelectorAll" />
+          <AitFeature Name="navigator.getDeviceStorages" />
+          <AitFeature Name="navigator.serviceWorker.controller.postMessage" />
+          <AitFeature Name="navigator.serviceWorker.register" />
+          <AitFeature Name="navigator.userAgent.indexOf" />
+          <AitFeature Name="window.clearTimeout" />
+          <AitFeature Name="window.history.pushState" />
+          <AitFeature Name="window.innerHeight" />
+          <AitFeature Name="window.innerWidth" />
+          <AitFeature Name="window.onpopstate" />
+          <AitFeature Name="window.outerWidth" />
+          <AitFeature Name="window.setRemoteArchives" />
+          <AitFeature Name="window.setTimeout" />
+          <AitFeature Name="window.timeoutKeyUpPrefix" />
+        </AitCategory>
+      </AitFile>
       <AitFile ErrorCode="0" Name="handle-floats.js" Id="0000797641738e7a74ef8726306cdd493c29c8fc403d" />
       <AitFile ErrorCode="0" Name="temperature.js" Id="00007a00e6cb99f96a6a3738b0946fe5f079cb643d78" />
       <AitFile ErrorCode="0" Name="Latin1Supplement.js" Id="00007a571bc8f55ec31e3a55e4bf34d198798ab29081" />
@@ -596,34 +642,6 @@
           <AitFeature Name="window.innerWidth" />
         </AitCategory>
       </AitFile>
-      <AitFile ErrorCode="0" Name="app.js" Id="00008d3b35fe3561f4f314550e9370ef4ef989bfc3a4">
-        <AitCategory Id="WRTJavaScript">
-          <AitFeature Name="MSApp.createFileFromStorageFile" />
-          <AitFeature Name="URL.createObjectURL" />
-          <AitFeature Name="URL.revokeObjectURL..." />
-          <AitFeature Name="Windows.ApplicationModel.Package.current.installedLocation" />
-          <AitFeature Name="Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.addOrReplace" />
-          <AitFeature Name="Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.remove" />
-          <AitFeature Name="Windows.Storage.Pickers.FileOpenPicker" />
-          <AitFeature Name="Windows.Storage.Pickers.FolderPicker" />
-          <AitFeature Name="Windows.Storage.Pickers.PickerLocationId.downloads" />
-          <AitFeature Name="document.createElement" />
-          <AitFeature Name="document.getElementById" />
-          <AitFeature Name="document.getElementsByClassName" />
-          <AitFeature Name="document.querySelectorAll" />
-          <AitFeature Name="navigator.getDeviceStorages" />
-          <AitFeature Name="navigator.serviceWorker.controller.postMessage" />
-          <AitFeature Name="navigator.serviceWorker.register" />
-          <AitFeature Name="navigator.userAgent.indexOf" />
-          <AitFeature Name="window.clearTimeout" />
-          <AitFeature Name="window.history.pushState" />
-          <AitFeature Name="window.innerHeight" />
-          <AitFeature Name="window.onpopstate" />
-          <AitFeature Name="window.setRemoteArchives" />
-          <AitFeature Name="window.setTimeout" />
-          <AitFeature Name="window.timeoutKeyUpPrefix" />
-        </AitCategory>
-      </AitFile>
       <AitFile ErrorCode="0" Name="CombDiacritMarks.js" Id="00008d5c5fef5b17196547006a680e1be978a3531eb4" />
       <AitFile ErrorCode="0" Name="energy.js" Id="00008e7f50a1924076efe5e12624f58dc1bda746c395" />
       <AitFile ErrorCode="0" Name="math_angles.js" Id="00008f140a0ced29d992bc4645ce72da8baa5e86f975" />
@@ -646,11 +664,6 @@
       <AitFile ErrorCode="0" Name="Other.js" Id="00009912431ff7ced24694521b78c8af19e1cf2d2640" />
       <AitFile ErrorCode="0" Name="Bold.js" Id="00009b2d8a5dc2cb0666030788cf6c3784a328d100ad" />
       <AitFile ErrorCode="0" Name="CombDiacritMarks.js" Id="00009b81be42af928698ee960099e33ce4f23117bf5a" />
-      <AitFile ErrorCode="0" Name="transformStyles.js" Id="00009ccb5a6b54e5cd85c5fe1c7acb513c7337374255">
-        <AitCategory Id="WRTJavaScript">
-          <AitFeature Name="document.getElementById" />
-        </AitCategory>
-      </AitFile>
       <AitFile ErrorCode="0" Name="math_whitespace.js" Id="00009ceabf1c1ed80f952402fcab273f7df1281f42ca" />
       <AitFile ErrorCode="0" Name="SupplementalArrowsA.js" Id="00009d10ecdf6268417c41be09a7803edd6b62c0a75b" />
       <AitFile ErrorCode="0" Name="math_symbols.js" Id="0000a0a72bce9816ce6c40e739b42597a5eb065797bb" />
@@ -812,12 +825,6 @@
       <AitFile ErrorCode="0" Name="CHTML-preview.js" Id="0000d88b7e8bb52d68b2c79865ba66fa4beef01241c8" />
       <AitFile ErrorCode="0" Name="mathmaps_ie.js" Id="0000d923185a898f1de95fdac134553affe7f9654fc5" />
       <AitFile ErrorCode="0" Name="CombDiacritMarks.js" Id="0000d9517e07adc5cacb3086e7f58b032ba65c4ebcf1" />
-      <AitFile ErrorCode="0" Name="init.js" Id="0000da22cf2a5a7c6a1fe9561f3b0b2979c44a3c0a56">
-        <AitCategory Id="WRTJavaScript">
-          <AitFeature Name="Windows.ApplicationModel.Package.current.installedLocation.getFolderAsync" />
-          <AitFeature Name="Windows.Storage.AccessCache.StorageApplicationPermissions" />
-        </AitCategory>
-      </AitFile>
       <AitFile ErrorCode="0" Name="maction.js" Id="0000db3fc14c74b149655885410a5f8ecdab2e67b0f8">
         <AitCategory Id="WRTJavaScript">
           <AitFeature Name="document.body.scrollLeft" />
@@ -859,6 +866,14 @@
       </AitFile>
       <AitFile ErrorCode="0" Name="MathOperators.js" Id="0000f1db967ea0bd42a258ed3b35486d0995fa549ac5" />
       <AitFile ErrorCode="0" Name="begingroup.js" Id="0000f284fc6c4799accfac7296366f2b74fde42d14ae" />
+      <AitFile ErrorCode="0" Name="init.js" Id="0000f5d8c72c6b503fa62a58cb5ee537ca3d52e47e03">
+        <AitCategory Id="WRTJavaScript">
+          <AitFeature Name="Windows.ApplicationModel.Package.current.installedLocation.getFolderAsync" />
+          <AitFeature Name="Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList" />
+          <AitFeature Name="document.cookie.match" />
+          <AitFeature Name="document.getElementById" />
+        </AitCategory>
+      </AitFile>
       <AitFile ErrorCode="0" Name="GreekAndCoptic.js" Id="0000f71d56106853025f59ab32fe6408acac1f0b1718" />
       <AitFile ErrorCode="0" Name="CombDiacritMarks.js" Id="0000f93e0acd0164ae6644a48d3d267cccbd302c47da" />
       <AitFile ErrorCode="0" Name="AMScd.js" Id="0000fd2c4112dcbe3742f4903fb9a1b512a255b7e2e1" />
