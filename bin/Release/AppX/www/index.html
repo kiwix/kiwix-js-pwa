@@ -324,19 +324,22 @@
                     </div>
                     <div id="downloads">
                         <div class="row">
-                            <div class="column">
-                                <h3>Download links</h3>
+                            <h3>Download links</h3>
+                            <p>
+                                Files can be very large, <b>do not attempt to download using mobile data!</b>
+                            </p>
+                            <div class="col-xs-12">
                                 <p>
-                                    Files can be very large, <b>do not attempt to download using mobile data!</b>
-                                    <br /><a id="downloadTrigger" href="#">Open full list of download links</a>: <i>Warning:</i> this will use data
+                                    <input id="downloadTrigger" type="button" class="btn btn-primary" value="Open library" style="float:left;margin-right:1em;">
+                                    Opens library of archives for download:<br /><i>Warning:</i> this will use data
                                 </p>
                                 <p>
                                     <input type="checkbox" name="allowInternetAccess" id="allowInternetAccessCheck">
                                     <b>&nbsp;Allow Internet access?</b>
                                 </p>
-                                <div id="downloadLinks" style="display: none;"></div>
-                                <pre id="serverResponse" class="panel-footer" style="display:none;"></pre>
                             </div>
+                            <div id="downloadLinks" style="display: none;"></div>
+                            <pre id="serverResponse" class="panel-footer" style="display:none;"></pre>
                         </div>
                     </div>
 
