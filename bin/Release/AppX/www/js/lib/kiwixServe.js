@@ -78,6 +78,7 @@ define([], function () {
         far: 'فارسی (Farsi)',
         el: 'Ελληνικά (Greek)',
         en: 'English (English)',
+        eng: 'English (English)',
         eo: 'Esperanto (Esperanto)',
         es: 'Español (Spanish)',
         et: 'Eesti (Estonian)',
@@ -366,7 +367,7 @@ define([], function () {
                 if (this.status == 200) {
                     clearTimeout(xhttpTimeout);
                     serverResponse.innerHTML = "Server response: " + this.status + " " + this.statusText + " (data received)";
-                    processXhttpData(this.responseText, lang);
+                    processXhttpData(this.responseText);
                 } else if (this.status == 0 && window.location.protocol == "file:") {
                     document.getElementById('serverResponse').innerHTML = 'Cannot use XMLHttpRequest with file:// protocol';
                     document.getElementById('serverResponse').style.display = "inline";
@@ -503,7 +504,7 @@ define([], function () {
                     doc = doc.replace(/<\/h3>/i, '</h3><p>Filter list by language code:&nbsp;&nbsp;' + dropdown + '</p>');
                 }
                 //Add language spans to doc
-                doc = doc.replace(/^([^_\n\r]+_([^_]+)_.+\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2">$1<br /></span>');
+                doc = doc.replace(/^([^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2">$1<br /></span>');
             }
             downloadLinks.innerHTML = doc;
             if (lang) {
