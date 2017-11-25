@@ -34,7 +34,7 @@ params['cssSource'] = getCookie('cssSource') || "auto"; //Set default to "auto",
 params['cssCache'] = getCookie('cssCache') != null ? getCookie('cssCache') : true; //Set default to true to use cached CSS, false to use Zim only
 //Convert string values of true / false to Boolean without disturbing any Boolean already set:
 //params['cssCache'] = params['cssCache'] == "false" ? false : (params['cssCache'] == "true" ? true : params['cssCache']);
-params['cssTheme'] = getCookie('cssTheme') || 'light'; //Set default to 'light' or 'dark' to use respective themes for Wiki articles
+params['cssTheme'] = getCookie('cssTheme') || 'light'; //Set default to 'light', 'dark' or 'invert' to use respective themes for articles
 params['cssUITheme'] = getCookie('cssUITheme') || 'light'; //Set default to 'light' or 'dark' to use respective themes for UI
 params['imageDisplay'] = getCookie('imageDisplay') != null ? getCookie('imageDisplay') : true; //Set default to display images from Zim
 params['hideToolbar'] = getCookie('hideToolbar') != null ? getCookie('hideToolbar') : false; //Set default to hide the top toolbar on scroll
@@ -53,7 +53,9 @@ params['allowInternetAccess'] = params['allowInternetAccess'] || false; //Do not
 document.getElementById('cssCacheModeCheck').checked = params.cssCache;
 document.getElementById('imageDisplayModeCheck').checked = params.imageDisplay;
 document.getElementById('hideToolbarCheck').checked = params.hideToolbar;
-document.getElementById('cssWikiDarkThemeCheck').checked = params.cssTheme == 'dark' ? true : false;
+document.getElementById('cssWikiDarkThemeCheck').checked = params.cssTheme == 'dark' ? true : params.cssTheme == 'invert' ? true : false;
+document.getElementById('darkInvert').style.display = params.cssTheme == 'dark' ? "inline" : params.cssTheme == 'invert' ? "inline" : "none";
+document.getElementById('cssWikiDarkThemeInvertCheck').checked = params.cssTheme == 'invert' ? true : false;
 document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme == 'dark' ? true : false;
 document.getElementById('useMathJaxRadio' + (params.useMathJax ? 'True' : 'False')).checked = true;
 
