@@ -120,6 +120,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         });
         $('#prefix').on('keyup', function (e) {
             if (selectedArchive !== null && selectedArchive.isReady()) {
+                if (e.which == 40) {
+                    var articleResults = document.querySelectorAll('.list-group-item');
+                    if (articleResults && articleResults.length) {
+                        articleResults[0].focus();
+                    }
+                }    
                 onKeyUpPrefix(e);
             }
         });
@@ -558,6 +564,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 //document.getElementById('navbar').classList.remove("navbar-default");
                 //document.getElementById('navbar').classList.add("dark");
                 document.getElementById('archiveFilesLegacy').classList.add("dark");
+                document.getElementById('footer').classList.add("darkfooter");
                 document.getElementById('archiveFilesLegacy').classList.remove("btn");
                 //document.getElementById('container').classList.add("dark");
                 document.getElementById('findInArticle').classList.add("dark");
@@ -572,6 +579,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 //document.getElementById('article').classList.remove("dark");
                 //document.getElementById('navbar').classList.add("navbar-default");
                 //document.getElementById('navbar').classList.remove("dark");
+                document.getElementById('footer').classList.remove("darkfooter");
                 document.getElementById('archiveFilesLegacy').classList.remove("dark");
                 document.getElementById('archiveFilesLegacy').classList.add("btn");
                 //document.getElementById('container').classList.remove("dark");
@@ -585,10 +593,18 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
 
         $('input:checkbox[name=cssWikiDarkTheme]').on('change', function (e) {
             params.cssTheme = this.checked ? 'dark' : 'light';
-            cookies.setItem('cssTheme', params.cssTheme, Infinity);
+            if (!this.checked) document.getElementById('cssWikiDarkThemeInvertCheck').checked = false; 
             if (this.checked) document.getElementById('footer').classList.add("darkfooter");
             if (!this.checked) document.getElementById('footer').classList.remove("darkfooter");
+            document.getElementById('darkInvert').style.display = this.checked ? "inline" : "none"; 
+            params.cssTheme = document.getElementById('cssWikiDarkThemeInvertCheck').checked && params.cssTheme == 'dark' ? 'invert' : params.cssTheme;
+            cookies.setItem('cssTheme', params.cssTheme, Infinity);
             params.themeChanged = true;
+        });
+        $('input:checkbox[name=cssWikiDarkThemeInvert]').on('change', function (e) {
+            if (params.cssTheme == "light" && this.checked) document.getElementById('cssWikiDarkThemeInvertCheck').checked = true;
+            params.cssTheme = this.checked ? 'invert' : params.cssTheme;
+            cookies.setItem('cssTheme', params.cssTheme, Infinity);
         });
         $('input:radio[name=cssInjectionMode]').on('click', function (e) {
             params.cssSource = this.value;
@@ -1550,6 +1566,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         function getBLOB(arr) {
             var testCSS = arr.join();
             zimType = /-\/s\/style\.css/i.test(testCSS) ? "desktop" : zimType;
+            zimType = /-\/static\/main\.css/i.test(testCSS) ? "desktop" : zimType; //Support stackexchange
             zimType = /minerva|mobile/i.test(testCSS) ? "mobile" : zimType;
             cssSource = cssSource == "auto" ? zimType : cssSource; //Default to in-built zimType if user has selected automatic detection of styles
             if (/minerva/i.test(testCSS) && (cssCache || zimType != cssSource)) {
@@ -1762,6 +1779,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                         // Remove the initial slash if it's an absolute URL
                         else if (url.substring(0, 1) === "/") {
                             url = url.substring(1);
+                        }
+                        //Supports stackexchange
+                        else if (url.substring(0, 6) == "../../") {
+                            url = url.substring(6);
+                            //This should match a stackexchange URL and replace with short form
+                            url = url.replace(/([^/]+\/\d+)\/[^/]+(\.html?)/, "$1$2");
                         }
                         $(this).on('click', function (e) {
                             clearFindInArticle();

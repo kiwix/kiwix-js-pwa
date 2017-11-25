@@ -413,7 +413,9 @@ define([], function () {
                     }
                 }
                 var headerDoc = 'We found the following links to your file:';
-                var bodyDoc = "<h5";
+                var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^\/]*\.meta4$/i, "\/") + '">&lt;&lt; Back to list of files</a></p>\r\n';
+                bodyDoc += /\/ted\//i.test(URL) ? '<h4 style="color:red">IMPORTANT: <b>TED TALKS</b> are not yet supported by this app due to lack of video playback capability</h4>\r\n<p>We apologize for the inconvenience. You may download the file here, and other playback solutions may be available from <a href="http://kiwix.org">Kiwix</a>.' : ""; 
+                bodyDoc += "<h5";
                 bodyDoc += megabytes > 200 ? ' style="color:red;"> WARNING: ' : '>';
                 bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unknown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
                 if (megabytes > 100) bodyDoc += '<p><b>Consider using BitTorrent to download file:</b></p>\r\n' + 
@@ -432,8 +434,8 @@ define([], function () {
                         'and transfer ALL of the files there to an accessible folder on your device. After that, you can search for the folder in this app (see above).</p>\r\n';
                 }
                 bodyDoc += '<p><i>Links will open in a new browser window</i></p><ol>\r\n' + doc + '</ol>\r\n';
-                if (mirrorservice) bodyDoc += '*** Note: mirrorservice.org currently has a download bug with ZIM archives: on some browsers it will download the ZIM file as plain text in browser window<br /><br />';
-                bodyDoc += '<a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^\/]*\.meta4$/i, "\/") + '">&lt;&lt; Back to list of files</a><br /><br />';
+                if (mirrorservice) bodyDoc += '*** Note: mirrorservice.org currently has a download bug with ZIM archives: on some browsers it will download the ZIM file as plain text in browser window';
+                bodyDoc += '<br /><br />';
                 var header = document.getElementById('dl-panel-heading');
                 header.outerHTML = header.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + headerDoc + '</div>');
                 var body = document.getElementById('dl-panel-body');
@@ -467,7 +469,7 @@ define([], function () {
             //Remove images
             var doc = doc.replace(/<img\b[^>]*>\s*/ig, "");
             //Reduce size of header
-            doc = doc.replace(/<h1\b([^>]*>[^<]*<\/)h1>/ig, "<h3$1h3>");
+            doc = doc.replace(/<h1\b[^>]*>([^<]*)<\/h1>/ig, '<h3 id="indexHeader">$1</h3>');
             //Limit height of pre box and prevent word wrapping
             doc = doc.replace(/<pre>/i, '<div class="panel panel-success">\r\n' +
                 '<pre id="dl-panel-heading" class="panel-heading" style="overflow-x:auto;word-wrap:normal;">$#$#</pre>\r\n' +
@@ -481,7 +483,7 @@ define([], function () {
                 doc = doc.replace(/(<a\b[^>]*>last\s+modified<\/a>\s*)(<a\b[^>]*>size<\/a>\s*)/ig, "$2$1");
                 doc = doc.replace(/(\d\d-\w{3}-\d{4}\s\d\d\:\d\d\s+)(\d[\d.\w]+\s+)$/img, "$2$1");
             }
-            if (/^[^_\n\r]+_([^_]+)_.+\.zi[mp].+$/m.test(doc)) {
+            if (/^[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$/m.test(doc)) {
                 //Delete all lines without a wiki pattern from language list
                 var langList = doc.replace(/^(?![^_\n\r]+_(\w+)_.+$).*[\r\n]*/mg, "");
                 //Get list of all languages
@@ -553,9 +555,10 @@ define([], function () {
                     requestXhttpData(replaceURL, langID);
                 });
             }
-            //Toggle display of download panel -- bug: causes whole div to close if clicking on a link...
-            //downloadLinks.style.display = downloadLinks.style.display == "none" ? "inline" : "none";
+            //Display the finished panel
             downloadLinks.style.display = "inline";
+            document.getElementById('indexHeader').scrollIntoView();
+            document.getElementById('scrollbox').scrollTop += 65;
         }
     }
 
