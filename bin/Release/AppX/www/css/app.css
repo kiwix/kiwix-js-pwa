@@ -252,7 +252,7 @@ pre {
 
 .darkfooter .dropdown-menu, .darkfooter .dropdown-menu a {
     color: lightblue !important;
-    background-color: rgba(34,34,34,0.6) !important;
+    background: rgba(34,34,34,0.6) !important;
     border-color: darkgray;
 }
 
