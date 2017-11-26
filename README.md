@@ -38,5 +38,23 @@ archives. If your SD card is formatted as exFAT or NTFS, you can use either, but
 Our intention is to make this app available in the Windows Store, when ready.
 
 The authors of the HTML5 app for Kiwix did all the work. Their source code runs almost "as is" on
-the UWP platform. This initial port for Windows 10 (Mobile) is by Geoffrey Kantaris. I can be contacted
+the UWP platform. This port for Windows 10 (Mobile) is by Geoffrey Kantaris. I can be contacted
 by email: egk10 at cam ac uk.
+
+# Privacy Policy
+Short answer:
+
+	Kiwix JS Windows works entirely offline unless you specifically request otherwise on the Configuration page.
+	We do not collect any of your personal data and don't even know what you are doing with this application.
+
+Longer answer:
+
+	Kiwix JS Windows will only access the Kiwix download server if you specifically request it to find and display
+	download links for ZIM archives on the Configuration page.
+    
+	You can disable even this Internet access with an option on the same page. If you nevertheless believe your
+	Internet access can be watched and/or if you are extremely cautious, you should shut down your 3G and WiFi
+	access before using the application.
+    
+	This application only reads the archive files of your device: it is not capable of reading any other files.
+                    

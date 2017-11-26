@@ -8,8 +8,8 @@
     <TargetOsDescription>Windows 10.0</TargetOsDescription>
     <SolutionConfiguration>Release|AnyCPU</SolutionConfiguration>
     <PackageArchitecture>neutral</PackageArchitecture>
-    <PackageIdentityName>a1a5e0b9-13d4-41fb-810d-518949f03df4</PackageIdentityName>
-    <PackageIdentityPublisher>CN=geoff</PackageIdentityPublisher>
+    <PackageIdentityName>e24e2495-242c-4a73-808b-ee5233e84c83</PackageIdentityName>
+    <PackageIdentityPublisher>CN=0A5438F5-EEA6-4300-9B77-E45BBD148885</PackageIdentityPublisher>
     <IntermediateOutputPath>C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\Release\</IntermediateOutputPath>
     <RemoteDeploymentType></RemoteDeploymentType>
     <PackageRegistrationPath></PackageRegistrationPath>
@@ -1165,7 +1165,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\MathJax\extensions\a11y\mathmaps\.htaccess">
       <PackagePath>www\js\MathJax\extensions\a11y\mathmaps\.htaccess</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\resources.pri">
+    <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
