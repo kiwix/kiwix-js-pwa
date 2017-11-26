@@ -8,8 +8,8 @@
     <TargetOsDescription>Windows 10.0</TargetOsDescription>
     <SolutionConfiguration>Release|AnyCPU</SolutionConfiguration>
     <PackageArchitecture>neutral</PackageArchitecture>
-    <PackageIdentityName>a1a5e0b9-13d4-41fb-810d-518949f03df4</PackageIdentityName>
-    <PackageIdentityPublisher>CN=geoff</PackageIdentityPublisher>
+    <PackageIdentityName>e24e2495-242c-4a73-808b-ee5233e84c83</PackageIdentityName>
+    <PackageIdentityPublisher>CN=0A5438F5-EEA6-4300-9B77-E45BBD148885</PackageIdentityPublisher>
     <IntermediateOutputPath>C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\Release\</IntermediateOutputPath>
     <RemoteDeploymentType>
     </RemoteDeploymentType>
@@ -20,19 +20,19 @@
     <WindowsSdkPath>
     </WindowsSdkPath>
     <LayoutDir>C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppX</LayoutDir>
-    <RegisteredManifestChecksum>B936BD7BD91AAF32F4562C16AA473E3158195355537283D88567D6770E2F2578</RegisteredManifestChecksum>
-    <RegisteredPackageMoniker>Kiwix.KiwixJS_0.8.6.0_neutral__zfxmafgedzx24</RegisteredPackageMoniker>
-    <RegisteredUserModeAppID>Kiwix.KiwixJS_zfxmafgedzx24!App</RegisteredUserModeAppID>
+    <RegisteredManifestChecksum>EB4939FA94EB6E1AF05DC9654901C4F07800BDF2DCDD8288EBA094597EE9E5A7</RegisteredManifestChecksum>
+    <RegisteredPackageMoniker>Kiwix.KiwixJS_0.9.0.0_neutral__mc3511b08yc0e</RegisteredPackageMoniker>
+    <RegisteredUserModeAppID>Kiwix.KiwixJS_mc3511b08yc0e!App</RegisteredUserModeAppID>
     <RegisteredPackageID>Kiwix.KiwixJS</RegisteredPackageID>
-    <RegisteredPackagePublisher>CN=geoff</RegisteredPackagePublisher>
-    <RegisteredVersion>0.8.6.0</RegisteredVersion>
+    <RegisteredPackagePublisher>CN=0A5438F5-EEA6-4300-9B77-E45BBD148885</RegisteredPackagePublisher>
+    <RegisteredVersion>0.9.0.0</RegisteredVersion>
     <JitOptimizationSuppressed>True</JitOptimizationSuppressed>
   </PropertyGroup>
   <ItemGroup>
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-11-25T16:38:27.656</Modified>
+      <Modified>2017-11-26T17:44:09.474</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -1544,7 +1544,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-09-15T07:33:34.495</Modified>
+      <Modified>2017-11-26T17:44:09.242</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>
