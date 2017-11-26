@@ -7,8 +7,8 @@
 
     For more information on package manifest files, see http://go.microsoft.com/fwlink/?LinkID=241727
   -->
-  <Identity Name="Kiwix.KiwixJS" Version="0.8.6.0" Publisher="CN=geoff" ProcessorArchitecture="neutral" />
-  <mp:PhoneIdentity PhoneProductId="a1a5e0b9-13d4-41fb-810d-518949f03df4" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="Kiwix.KiwixJS" Version="0.9.0.0" Publisher="CN=0A5438F5-EEA6-4300-9B77-E45BBD148885" ProcessorArchitecture="neutral" />
+  <mp:PhoneIdentity PhoneProductId="e24e2495-242c-4a73-808b-ee5233e84c83" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Kiwix JS</DisplayName>
     <PublisherDisplayName>Kiwix</PublisherDisplayName>
@@ -57,7 +57,6 @@
   </Applications>
   <Capabilities>
     <Capability Name="internetClient" />
-    <DeviceCapability Name="location" />
   </Capabilities>
   <build:Metadata>
     <build:Item Name="VisualStudio" Version="15.0" />

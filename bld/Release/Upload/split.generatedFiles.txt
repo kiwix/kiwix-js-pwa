@@ -1,0 +1,10 @@
+bld\Release\Upload\split.pri
+bld\Release\Upload\split.map.txt
+bld\Release\Upload\split.scale-100.pri
+bld\Release\Upload\split.scale-100.map.txt
+bld\Release\Upload\split.scale-125.pri
+bld\Release\Upload\split.scale-125.map.txt
+bld\Release\Upload\split.scale-150.pri
+bld\Release\Upload\split.scale-150.map.txt
+bld\Release\Upload\split.scale-400.pri
+bld\Release\Upload\split.scale-400.map.txt
