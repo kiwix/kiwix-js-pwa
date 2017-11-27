@@ -1,15 +1,17 @@
 # Kiwix JS for Windows
-Port of the Kiwix JS app for Windows 10 Universal Windows Platform
+Development of the Kiwix JS app for Windows 10 Universal Windows Platform
 
 This is a port of the Kiwix Offline Wikipedia (and other Wiki) reader for UWP on Windows 10.
 It enables offline reading of a ZIM file downloaded from the Kiwix repository, including full
 Wikipedia versions with or without images in many different languages. It has only been tested 
-on Wikipedia ZIM files to date.
+fully on Wikimedia ZIM files to date.
 
-This is a simple port of the HTML5 web app provided on this git-hub repository. This port is
-primarily intended for Windows Mobile, but it should run as a UWP Store App on any Windows 10
-platform: x86, x64, ARM, on Mobile, tablets, Xbox, Holographic and PC. It has been tested on
-Lumia 950XL (Mobile), Tablet/PC x64 (Windows 10), and a Windows 10 Mobile VM.
+This began as a simple port of the HTML5 web app provided on this git-hub repository, although
+significant development has been undertaken to add functionality and to make the app sit happily
+with the Universal Windows Platform. This port is primarily intended for Windows Mobile, but it
+should run as a UWP Store App on any Windows 10 platform: x86, x64, ARM, on Mobile, tablets, Xbox,
+Surface Hub, Holographic and PC. It has been tested on Lumia 950XL (Mobile), Tablet/PC x64 
+(Windows 10), and a Windows 10 Mobile VM.
 
 If you would like to test the current build on a Windows Mobile device running Windows 10 Mobile,
 download the .appxbundle under AppPackages/KiwixWebApp_0.x.x.x_Test/ and save it in your
@@ -26,20 +28,21 @@ to do this). Turn on Developer mode (Settings / Update and security / For develo
 in File Explorer, Right-click the Add-AppDevPackage.ps1 inside the folder and choose to run with PowerShell.
 You may be prompted to install the developer's certificate.
 
-You will need a ZIM file to work with this app. For testing, you can download the Ray Charles ZIM
-file in the tests folder on this repository. You only need the wikipedia_en_ray_charles_2015-06.zim
-file, not all the files ending .zimaa, .zimab, etc., as these are more cumbersome to use on mobile.
-Place the file in an accessible location on your device, and use the Browse button in the app to
-open it. Download further files from http://wiki.kiwix.org/wiki/Content_in_all_languages. The single
-non-indexed ZIM files work best. However, if you plan to store your ZIM file on an SD card formatted
-as FAT32, you will only be able to use the split files (.zimaa, .zimab, etc.) in the pre-indexed
+You will need a ZIM file to work with this app. For testing, it comes packaged with the Ray Charles ZIM.
+You can download other ZIM archives from the setup page in the app (the download completes in the browser).
+Place the file in an accessible location on your device, and use the Rescan Storage button in the app to
+display buttons that let you pick the file or the file's folder.
+
+Alternatively, you can download files from http://wiki.kiwix.org/wiki/Content_in_all_languages on a regular
+PC. The single non-indexed ZIM files work best. However, if you plan to store your ZIM file on an SD card 
+formatted as FAT32, you will only be able to use the split files (.zimaa, .zimab, etc.) in the pre-indexed
 archives. If your SD card is formatted as exFAT or NTFS, you can use either, but single file is easiest.
 
-Our intention is to make this app available in the Windows Store, when ready.
+The app is currently undergoing certification for the Windows Store.
 
 The authors of the HTML5 app for Kiwix did all the work. Their source code runs almost "as is" on
-the UWP platform. This port for Windows 10 (Mobile) is by Geoffrey Kantaris. I can be contacted
-by email: egk10 at cam ac uk.
+the UWP platform, which is testament to how well written their app is. This port and further development 
+for Windows 10 (Mobile) is by Geoffrey Kantaris. I can be contacted by email: egk10 at cam ac uk.
 
 # Privacy Policy
 Short answer:
