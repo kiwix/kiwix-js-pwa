@@ -6,7 +6,7 @@ If you prefer not to use the Microsoft Store, please follow the instructions bel
 previous installation of Kiwix JS Windows before you follow this procedure:
 
 If you would like to test the current build on a Windows Mobile device running Windows 10 Mobile,
-download the .appxbundle under AppPackages/KiwixWebApp_0.x.x.x_Test/ and save it in your
+download the .appxbundle under AppPackages/KiwixWebApp_0.x.x.x_AnyCPU_Test/ and save it in your
 downloads folder, or other accessible folder, on the phone. Enable Developer mode on your device
 (Settings / Updates and security / For developers). Open the File Explorer on the phone, navigate
 to the downloads folder and tap the KiwixWebApp bundle. You will be asked if you wish to install,
@@ -15,7 +15,7 @@ icon to appear in the All Apps list. You will also need to download a ZIM file t
 (see below).
 
 Installation on a Windows 10 PC involves sideloading with the PowerShell script. Download the full 
-AppPackages/KiwixWebApp_0.x.x.x_Test/ folder to your PC (you can use https://minhaskamal.github.io/DownGit
+AppPackages/KiwixWebApp_0.x.x.x_AnyCPU_Test/ folder to your PC (you can use https://minhaskamal.github.io/DownGit
 to do this). Turn on Developer mode (Settings / Update and security / For developers). Open the folder
 in File Explorer, Right-click the Add-AppDevPackage.ps1 inside the folder and choose to run with PowerShell.
 You may be prompted to install the developer's certificate.
