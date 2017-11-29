@@ -1,12 +1,13 @@
 # Installation Instructions (Windows 10 Mobile or PC required)
 The easiest way to install Kiwix JS Windows is from the Microsoft Store:
+
 https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j
  
 If you prefer not to use the Microsoft Store, please follow the instructions below. Uninstall any
 previous installation of Kiwix JS Windows before you follow this procedure:
 
 If you would like to test the current build on a Windows Mobile device running Windows 10 Mobile,
-download the .appxbundle under AppPackages/KiwixWebApp_0.x.x.x_AnyCPU_Test/ and save it in your
+download the .appx or .appxbundle under AppPackages/KiwixWebApp_0.x.x.x_AnyCPU_Test/ and save it in your
 downloads folder, or other accessible folder, on the phone. Enable Developer mode on your device
 (Settings / Updates and security / For developers). Open the File Explorer on the phone, navigate
 to the downloads folder and tap the KiwixWebApp bundle. You will be asked if you wish to install,
