@@ -1,1 +1,1 @@
-C:\Users\geoff\Source\Repos\kiwix-js-windows\AppPackages\KiwixWebApp_0.9.0.0_AnyCPU_Test\KiwixWebApp_0.9.0.0_AnyCPU.appx
+C:\Users\geoff\Source\Repos\kiwix-js-windows\AppPackages\KiwixWebApp_0.9.1.0_Test\KiwixWebApp_0.9.1.0_AnyCPU.appxbundle
