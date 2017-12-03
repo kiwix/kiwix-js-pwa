@@ -979,6 +979,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             // Store the list of archives in a cookie, to avoid rescanning at each start
             cookies.setItem("listOfArchives", archiveDirectories.join('|'), Infinity);
             comboArchiveList.size = comboArchiveList.length;
+            //Kiwix-Js-Windows #23 - remove dropdown caret if only one archive
+            if (comboArchiveList.length > 1) comboArchiveList.removeAttribute("multiple");
+            if (comboArchiveList.length == 1) comboArchiveList.setAttribute("multiple", "1");
             if (comboArchiveList.options.length > 0) {
                 document.getElementById('archiveNumber').innerHTML = "<b>" + comboArchiveList.length + "</b> Archive" + (comboArchiveList.length > 1 ? "s" : "");
                 var lastSelectedArchive = cookies.getItem("lastSelectedArchive") || params.storedFile;

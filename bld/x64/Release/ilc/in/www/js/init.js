@@ -22,7 +22,7 @@
  */
 'use strict';
 var params = {};
-params['version'] = "0.8.2 Beta"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "0.9.3 Beta"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 params['storedFile'] = getCookie('lastSelectedArchive') || "wikipedia_en_ray_charles_2015-06.zimaa"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['kiwixDownloadLink'] = "http://download.kiwix.org/zim/"; //Include final slash
 

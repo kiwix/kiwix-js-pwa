@@ -47,6 +47,12 @@
                 <div class="modal-body">
                     <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
                     <h2>Welcome to Kiwix JS for Windows</h2>
+                    <h3>Fixes in 0.9.3 (beta)</h3>
+                    <ul>
+                        <li>Workaround for mis-aligned toolbar icons on smaller screens</li>
+                        <li>Fixed rogue HTML showing in some pages from recent ZIM archives</li>
+                        <li>Better experience when scanning local storage for archives</li>
+                    </ul>
                     <h3>Please read this important information!</h3>
                     <p>
                         This application is packaged with only a basic ZIM archive (about a Jazz musician) so that you can get a feel
@@ -96,10 +102,10 @@
                                     <span class="input-group-btn">
                                         <!-- button id="btnHome" type="button" class="btn btn-default" -->
                                         <a id="btnHome" title="Home" class="btn btn-primary"><img id="kiwixIcon" style="margin-left:5px;" src="./img/icons/kiwix-blue-32.png" /></a>
-                                        <!--/--button-->
+                                        <!--button -->
                                     </span>
                                     <input type="search" id="prefix" placeholder="Search..."
-                                           class="form-control" style="max-width:45%;" />
+                                           class="form-control" />
                                     <span class="input-group-btn">
                                         <a class="btn btn-primary" title="Article Search" id="searchArticles" style="display:none;"><span class="glyphicon glyphicon-book"></span></a>
                                         <a class="btn btn-primary" title="Alt-F: Find and highlight text in article..." id="findText"><span class="glyphicon glyphicon-search"></span></a>
