@@ -47,7 +47,7 @@
 }
 
 [role=region] > footer {
-    background: rgba(51,122,183,0.1);
+    background: rgba(217,237,247,0.8);
     right: 0;
     bottom: 0;
     left: 0;
@@ -175,8 +175,7 @@ nav .btn-primary, .input-group-addon {
 }
 
 .btn-sm, .btn-lg, .btn-default {
-    /* background-color: rgba(51,122,183,0.7) !important; */
-    background-color: rgba(217,237,247,0.8) !important;
+    background-color: rgba(217,237,247,0) !important;
     border: transparent !important;
     /*color: whitesmoke !important;*/
     color: darkblue !important;
@@ -188,7 +187,7 @@ nav .btn-primary, .input-group-addon {
 }
 
 .darkfooter {
-    background: rgba(47,79,79,0.3) !important;
+    background: rgba(34,34,34,0.8) !important;
 }
 
 pre {
@@ -283,7 +282,7 @@ pre {
 }
 
 .darkfooter .btn-default {
-    background: rgba(34,34,34,0.8) !important;
+    background: rgba(34,34,34,0) !important;
     color: lightblue !important;
 }
 
