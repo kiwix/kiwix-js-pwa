@@ -3,7 +3,7 @@ The easiest way to install Kiwix JS Windows is from the Microsoft Store:
 
 https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j
  
-If you prefer not to use the Microsoft Store or wish to test a differet build, please follow the
+If you prefer not to use the Microsoft Store or wish to test a different build, please follow the
 instructions below. Uninstall any previous installation of Kiwix JS Windows before you follow this
 procedure:
 
