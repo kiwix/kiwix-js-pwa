@@ -979,9 +979,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             // Store the list of archives in a cookie, to avoid rescanning at each start
             cookies.setItem("listOfArchives", archiveDirectories.join('|'), Infinity);
             comboArchiveList.size = comboArchiveList.length;
-            //$('#archiveList').on('mouseup', setLocalArchiveFromArchiveList());
-            //$(comboArchiveList).on('click', setLocalArchiveFromArchiveList());
             if (comboArchiveList.options.length > 0) {
+                document.getElementById('archiveNumber').innerHTML = "<b>" + comboArchiveList.length + "</b> Archive" + (comboArchiveList.length > 1 ? "s" : "");
                 var lastSelectedArchive = cookies.getItem("lastSelectedArchive") || params.storedFile;
                 if ((lastSelectedArchive !== null && lastSelectedArchive !== undefined && lastSelectedArchive !== "")
                     || comboArchiveList.options.length == 1) { //Either we have previously chosen a file, or there is only one file

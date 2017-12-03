@@ -307,15 +307,15 @@
                     </div>
                     <div id="chooseArchiveFromLocalStorage" style="display: none;">
                         <div class="row">
-                            <p>Archives found on this device (tap Rescan for more):</p>
+                            <p><span id="archiveNumber">Archives</span> found on this device (tap "Select storage" for more):</p>
                             <div class="col-xs-12">
-                                <select id="archiveList" class="form-control"></select><br />
+                                <select id="archiveList" class="form-control" multiple></select><br />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-xs-12">
-                                <input style="float:left;margin-right:1em;" type="button" class="btn btn-primary" value="Rescan storage" id="btnRescanDeviceStorage" />
-                                <p>Tap to rescan app storage or to select a file or folder manually</p>
+                                <input style="float:left;margin-right:1em;" type="button" class="btn btn-primary" value="Select storage" id="btnRescanDeviceStorage" />
+                                <p>Tap to select app's local storage or to select a file or folder manually</p>
                             </div>
                         </div>
                     </div>
