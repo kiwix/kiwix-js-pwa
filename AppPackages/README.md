@@ -7,7 +7,7 @@ If you prefer not to use the Microsoft Store or wish to test a differet build, p
 instructions below. Uninstall any previous installation of Kiwix JS Windows before you follow this
 procedure:
 
-# Windows 10 Mobile
+## Windows 10 Mobile
 Download the .appx or .appxbundle under AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/ and save it in
 your downloads folder, or other accessible folder, on the phone. Enable Developer mode on your device
 (Settings / Updates and security / For developers). Open the File Explorer on the phone, navigate
@@ -16,7 +16,7 @@ but it then installs silently in the background. Be patient: it can take a minut
 icon to appear in the All Apps list. You will also need to download a ZIM file to use with the app
 (see below).
 
-# Windows 10 Tablet / PC
+## Windows 10 Tablet / PC
 You may be able to use the built-in App Installer. If the build is signed (builds intended for the 
 Microsoft Store) and you have Windows 10 Fall Creators Update, then download the .appx or .appxbundle 
 under AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/ and save it in your downloads folder, or other 
@@ -30,7 +30,7 @@ https://minhaskamal.github.io/DownGit to do this). Open the folder in File Explo
 Add-AppDevPackage.ps1 inside the folder and choose to run with PowerShell. You may be prompted to install
 the developer's certificate.
 
-# All platforms
+## Download a ZIM archive (all platforms)
 You will need a ZIM file to work with this app. For testing, it comes packaged with the Ray Charles ZIM.
 You can download other ZIM archives from the setup page in the app (the download completes in the browser).
 Place the file in an accessible location on your device, and use the Rescan Storage button in the app to
