@@ -382,11 +382,11 @@ pre {
 @media (max-width: 440px) {
     /*.btn-primary {
         font-size: 12px !important;
-    }*/
+    }
     .input-group-btn {
         display: inline !important;
     }
     #btnHome {
         float: left;
-    }
+    }*/
 }
