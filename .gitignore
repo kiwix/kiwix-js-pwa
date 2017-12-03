@@ -6,3 +6,6 @@ KiwixWebApp.jsproj.user
 *.user
 *.user
 *.user
+/KiwixWebApp.jsproj.user
+/bld
+/bin
