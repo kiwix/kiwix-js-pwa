@@ -13,20 +13,12 @@ should run as a UWP Store App on any Windows 10 platform: x86, x64, ARM, on Mobi
 Surface Hub, Holographic and PC. It has been tested on Lumia 950XL (Mobile), Tablet/PC x64 
 (Windows 10), and a Windows 10 Mobile VM.
 
-If you would like to test the current build on a Windows Mobile device running Windows 10 Mobile,
-download the .appxbundle under AppPackages/KiwixWebApp_0.x.x.x_Test/ and save it in your
-downloads folder, or other accessible folder, on the phone. Enable Developer mode on your device
-(Settings / Updates and security / For developers). Open the File Explorer on the phone, navigate
-to the downloads folder and tap the KiwixWebApp bundle. You will be asked if you wish to install,
-but it then installs silently in the background. Be patient: it can take a minute or so for the Kiwix
-icon to appear in the All Apps list. You will also need to download a ZIM file to use with the app
-(see below).
+The app is currently installable from the Microsoft Store at:
 
-Installation on a Windows 10 PC involves sideloading with the PowerShell script. Download the full 
-AppPackages/KiwixWebApp_0.x.x.x_Test/ folder to your PC (you can use https://minhaskamal.github.io/DownGit
-to do this). Turn on Developer mode (Settings / Update and security / For developers). Open the folder
-in File Explorer, Right-click the Add-AppDevPackage.ps1 inside the folder and choose to run with PowerShell.
-You may be prompted to install the developer's certificate.
+https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j
+
+However, if you would like to test a newer or different build, please see the instructions provided
+under the AppPackages directory here: https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages. 
 
 You will need a ZIM file to work with this app. For testing, it comes packaged with the Ray Charles ZIM.
 You can download other ZIM archives from the setup page in the app (the download completes in the browser).
