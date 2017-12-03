@@ -32,7 +32,7 @@
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-12-03T09:04:43.025</Modified>
+      <Modified>2017-12-03T09:42:38.471</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -1544,7 +1544,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-12-03T07:52:06.070</Modified>
+      <Modified>2017-12-03T09:42:38.155</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>
