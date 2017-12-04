@@ -46,4 +46,6 @@ C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\Release\qualifiers.txt
 C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\Release\qualifiers.txt.intermediate
 C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\Release\MultipleQualifiersPerDimensionFound.txt
 C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\Release\ProjectArchitectures.txt
-C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri
+C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\resources.pri
+C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\Upload\AppxManifest.xml
+C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\Upload\KiwixWebApp.build.appxrecipe
