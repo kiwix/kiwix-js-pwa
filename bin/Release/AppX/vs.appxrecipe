@@ -20,19 +20,19 @@
     <WindowsSdkPath>
     </WindowsSdkPath>
     <LayoutDir>C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppX</LayoutDir>
-    <RegisteredManifestChecksum>14336D6502227BCB76DCBF2B57FA1697C8EB333F2F7678531DB27A3F33CBAEA1</RegisteredManifestChecksum>
-    <RegisteredPackageMoniker>Kiwix.KiwixJS_0.9.2.0_neutral__mc3511b08yc0e</RegisteredPackageMoniker>
+    <RegisteredManifestChecksum>5CE8688771B5CF073703EF14FD201D369FA638FCBD0924963FEA71C5441275DC</RegisteredManifestChecksum>
+    <RegisteredPackageMoniker>Kiwix.KiwixJS_0.9.3.0_neutral__mc3511b08yc0e</RegisteredPackageMoniker>
     <RegisteredUserModeAppID>Kiwix.KiwixJS_mc3511b08yc0e!App</RegisteredUserModeAppID>
     <RegisteredPackageID>Kiwix.KiwixJS</RegisteredPackageID>
     <RegisteredPackagePublisher>CN=0A5438F5-EEA6-4300-9B77-E45BBD148885</RegisteredPackagePublisher>
-    <RegisteredVersion>0.9.2.0</RegisteredVersion>
+    <RegisteredVersion>0.9.3.0</RegisteredVersion>
     <JitOptimizationSuppressed>True</JitOptimizationSuppressed>
   </PropertyGroup>
   <ItemGroup>
     <AppXManifest Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-12-03T23:55:29.913</Modified>
+      <Modified>2017-12-06T21:51:12.556</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -615,7 +615,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\app.js">
       <PackagePath>www\js\app.js</PackagePath>
-      <Modified>2017-12-03T23:30:43.193</Modified>
+      <Modified>2017-12-06T21:30:28.903</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\www\js\init.js">
       <PackagePath>www\js\init.js</PackagePath>
@@ -1544,7 +1544,7 @@
     <AppxPackagedFile Include="C:\Users\geoff\Source\Repos\kiwix-js-windows\bin\Release\ReverseMap\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-12-03T23:55:29.640</Modified>
+      <Modified>2017-12-06T21:16:16.717</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>
