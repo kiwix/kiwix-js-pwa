@@ -1610,7 +1610,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                         return selectedArchive.readBinaryFile(dirEntry,
                             function (readableTitle, content, namespace, url) {
                         //DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
-                                var cssContent = util.uintToString(content);
+                                //var cssContent = util.uintToString(content);
                                 var cssBlob = new Blob([content], { type: 'text/css' });
                                 var newURL = [namespace + "/" + url, URL.createObjectURL(cssBlob)];
                                 blobArray.push(newURL);
