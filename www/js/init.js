@@ -2,7 +2,7 @@
  * init.js : Configuration for the library require.js
  * This file handles the dependencies between javascript libraries
  * 
- * Copyright 2013-2014 Mossroy and contributors
+ * Copyright 2013-2018 Mossroy and contributors
  * License GPL v3:
  * 
  * This file is part of Kiwix.
@@ -24,6 +24,7 @@
 var params = {};
 params['version'] = "0.9.3 Beta"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 params['storedFile'] = getCookie('lastSelectedArchive') || "wikipedia_en_ray_charles_2015-06.zimaa"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
+params['fileVersion'] = "wikipedia_en_ray_charles_2015-06"; //Use generic name for actual file, and give version here
 params['kiwixDownloadLink'] = "http://download.kiwix.org/zim/"; //Include final slash
 
 params['results'] = params['results'] || 15; //Number of search results to display
