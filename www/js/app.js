@@ -672,7 +672,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             //@TODO - this is initialization code, and should be in init.js (withoug jQuery)
             $('input:radio[name=cssInjectionMode]').filter('[value="' + params.cssSource + '"]').prop('checked', true);
             //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
-            //var test = cookies.getItem('version');
             if (cookies.getItem('version') != params.version) {
                 firstRun = true;
                 $('#myModal').modal({ backdrop: "static" });
@@ -1122,7 +1121,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                         if (!params.pickedFolder) {
                             //This gets called, for example, if the picked folder or picked file are in FutureAccessList but now are
                             //no longer accessible. There will be a (handled) error in cosole log, and params.pickedFolder and params.pickedFile will be blank
-                            params.rescan = true;
+                            //params.rescan = true;
                             if (params.localStorage) {
                                 scanUWPFolderforArchives(params.localStorage);
                             } else {
