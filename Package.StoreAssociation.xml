@@ -358,16 +358,15 @@
     <Language Code="zu-za" InMinimumRequirementSet="true" />
   </SupportedLocales>
   <ProductReservedInfo>
-    <MainPackageIdentityName>Kiwix.KiwixJS</MainPackageIdentityName>
+    <MainPackageIdentityName>Kiwix.KiwixJSWikivoyage</MainPackageIdentityName>
     <ReservedNames>
-      <ReservedName>Kiwix JS</ReservedName>
-      <ReservedName>Kiwix JS Beta</ReservedName>
+      <ReservedName>Kiwix JS Wikivoyage</ReservedName>
     </ReservedNames>
   </ProductReservedInfo>
   <AccountPackageIdentityNames>
     <MainPackageIdentityName>Kiwix.Kiwix</MainPackageIdentityName>
-    <MainPackageIdentityName>Kiwix.KiwixJSWikivoyage</MainPackageIdentityName>
+    <MainPackageIdentityName>Kiwix.KiwixJS</MainPackageIdentityName>
     <MainPackageIdentityName>Kiwix.Piboxinstaller</MainPackageIdentityName>
   </AccountPackageIdentityNames>
-  <PackageInfoList LandingUrl="https://developer.microsoft.com/dashboard/Application?appId=9P8SLZ4J979J" />
+  <PackageInfoList LandingUrl="https://developer.microsoft.com/dashboard/Application?appId=9P18KS453XB6" />
 </StoreAssociation>
