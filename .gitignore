@@ -1,13 +1,8 @@
 #Exclude Visual Studio cache
 /.vs/
 *.user
-*.jsproj
-*.sln
 *.pfx
-Package.StoreAssociation.xml
 _pkginfo.txt
-package.appxmanifest
-KiwixWebApp.jsproj
 /bld/
 /bin/
 /BundleArtifacts/
