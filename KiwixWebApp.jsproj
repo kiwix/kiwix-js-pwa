@@ -42,10 +42,6 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>a1a5e0b9-13d4-41fb-810d-518949f03df4</ProjectGuid>
   </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
-    <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
-  </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup Condition="'$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0'">
     <VisualStudioVersion>14.0</VisualStudioVersion>
@@ -61,26 +57,15 @@
     <PackageCertificateKeyFile>KiwixWebApp_StoreKey.pfx</PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
-    <AppxBundle>Always</AppxBundle>
+    <AppxBundle>Auto</AppxBundle>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
     <PackageCertificateThumbprint>95BFD8354C5B02AB76ED8D0DBCE7D830A871BA54</PackageCertificateThumbprint>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="archives\wikipedia_en_ray_charles_2015-06.zimaa" />
-    <Content Include="archives\wikipedia_en_ray_charles_2015-06.zimab" />
-    <Content Include="archives\wikipedia_en_ray_charles_2015-06.zimac" />
-    <Content Include="archives\wikipedia_en_ray_charles_2015-06.zimad" />
-    <Content Include="archives\wikipedia_en_ray_charles_2015-06.zimae" />
-    <Content Include="archives\wikipedia_en_ray_charles_2015-06.zimaf" />
-    <Content Include="archives\wikipedia_en_ray_charles_2015-06.zimag" />
-    <Content Include="archives\wikipedia_en_ray_charles_2015-06.zimah" />
-    <Content Include="archives\wikipedia_en_ray_charles_2015-06.zimai" />
-    <Content Include="archives\wikipedia_en_ray_charles_2015-06.zimaj" />
-    <Content Include="archives\wikipedia_en_ray_charles_2015-06.zimak" />
-    <Content Include="archives\wikipedia_en_ray_charles_2015-06.zimal" />
-    <Content Include="archives\wikipedia_en_ray_charles_2015-06.zimam" />
-    <Content Include="archives\wikipedia_en_ray_charles_2015-06.ziman" />
-    <Content Include="archives\wikipedia_en_ray_charles_2015-06.zimao" />
+    <AppxManifest Include="package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+    <Content Include="archives\wikivoyage_en_all_novid_2017-12.zim" />
     <Content Include="images\BadgeLogo.scale-100.png" />
     <Content Include="images\BadgeLogo.scale-125.png" />
     <Content Include="images\BadgeLogo.scale-150.png" />
@@ -132,6 +117,7 @@
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="images\Wide310x150Logo.scale-400.png" />
     <None Include="Package.StoreAssociation.xml" />
+    <None Include="KiwixWebApp_StoreKey.pfx" />
     <Content Include="www\-\s\css_modules\content.parsoid.css" />
     <Content Include="www\-\s\css_modules\ext.cite.a11y.css" />
     <Content Include="www\-\s\css_modules\ext.cite.styles.css" />
@@ -150,14 +136,13 @@
     <Content Include="www\-\s\css_modules\mw.MediaWikiPlayer.loader.css" />
     <Content Include="www\-\s\css_modules\mw.PopUpMediaTransform.css" />
     <Content Include="www\-\s\css_modules\mw.TMHGalleryHook.js.css" />
-    <Content Include="www\-\s\style-dark-invert.css" />
     <Content Include="www\-\s\style-dark.css" />
     <Content Include="www\-\s\style-mobile.css" />
     <Content Include="www\-\s\style.css" />
     <Content Include="www\-\s\vector.css" />
+    <Content Include="www\A\dummyArticle.html" />
     <Content Include="www\css\app.css" />
     <Content Include="www\css\bootstrap.css" />
-    <Content Include="www\dummyArticle.html" />
     <Content Include="www\favicon.ico" />
     <Content Include="www\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="www\fonts\glyphicons-halflings-regular.svg" />
@@ -170,9 +155,6 @@
     <Content Include="www\img\icons\kiwix-60.png" />
     <Content Include="www\img\icons\kiwix-blue-32.png" />
     <Content Include="www\img\icons\kiwix-trans-32.png" />
-    <Content Include="www\img\icons\map_marker-18px.png" />
-    <Content Include="www\img\icons\wikivoyage-black-32.png" />
-    <Content Include="www\img\icons\wikivoyage-white-32.png" />
     <Content Include="www\img\Kiwix_icon_transparent_600x600.png" />
     <Content Include="www\img\lightBlue.png" />
     <Content Include="www\img\spinner.gif" />
@@ -435,14 +417,10 @@
     <Content Include="www\js\MathJax\jax\output\HTML-CSS\imageFonts.js" />
     <Content Include="www\js\MathJax\jax\output\HTML-CSS\jax.js" />
     <Content Include="www\js\MathJax\MathJax.js" />
+    <None Include="KiwixWebApp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4a0dddb5-7a95-4fbf-97cc-616d07737a77}" />
-  </ItemGroup>
-  <ItemGroup>
-    <AppxManifest Include="package.appxmanifest">
-      <SubType>Designer</SubType>
-    </AppxManifest>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
