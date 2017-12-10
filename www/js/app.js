@@ -26,8 +26,8 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module', 'transformStyles', 'kiwixServe'],
-    function ($, zimArchiveLoader, util, uiUtil, cookies, q, module, transformStyles, kiwixServe) {
+define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFilesystemAccess', 'q', 'module', 'transformStyles', 'kiwixServe'],
+    function ($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess, q, module, transformStyles, kiwixServe) {
 
         /**
          * Maximum number of articles to display in a search
@@ -66,23 +66,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
             }
             if (window.outerWidth <= 470) {
-                document.getElementById('dropup').classList.remove('col-xs-4');
-                document.getElementById('dropup').classList.add('col-xs-3');
-                //var colXS2 = document.querySelectorAll('.col-xs-2');
-                //if (colXS2.length && window.outerWidth <= 360) {
-                //    for (var i = 0; i < colXS2.length; i++) {
-                //        colXS2[i].classList.remove('col-xs-2');
-                //        colXS2[i].classList.add('col-xs-1');
-                //    }
-                if (window.outerWidth <= 360) {
-                    //document.getElementById('btnHomeBottom').classList.remove('col-xs-2');
-                    //document.getElementById('btnHomeBottom').classList.add('col-xs-1');
-                    document.getElementById('btnTop').classList.remove('col-xs-2');
-                    document.getElementById('btnTop').classList.add('col-xs-1');
-                //} else if (window.outerWidth > 360 && !colXS2.length) {
-                } else {
-                    //document.getElementById('btnHomeBottom').classList.remove('col-xs-1');
-                    //document.getElementById('btnHomeBottom').classList.add('col-xs-2');
+                //document.getElementById('dropup').classList.remove('col-xs-4');
+                //document.getElementById('dropup').classList.add('col-xs-3');
+                var colXS2 = document.querySelectorAll('.col-xs-2');
+                if (colXS2.length && window.outerWidth <= 360) {
+                    for (var i = 0; i < colXS2.length; i++) {
+                        colXS2[i].classList.remove('col-xs-2');
+                        colXS2[i].classList.add('col-xs-1');
+                    }
+                } else if (window.outerWidth > 360 && !colXS2.length) {
+                    document.getElementById('btnHomeBottom').classList.remove('col-xs-1');
+                    document.getElementById('btnHomeBottom').classList.add('col-xs-2');
                     document.getElementById('btnTop').classList.remove('col-xs-1');
                     document.getElementById('btnTop').classList.add('col-xs-2');
                 }
@@ -577,7 +571,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 document.getElementById('prefix').classList.add("dark");
                 var elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid darkgray"; }
-                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(cookies.getItem('lastSelectedArchive')) ? "./img/icons/wikivoyage-white-32.png" : "./img/icons/kiwix-32.png";
+                document.getElementById('kiwixIcon').src = "./img/icons/kiwix-32.png";
             }
             if (value == 'light') {
                 document.getElementsByTagName('body')[0].classList.remove("dark");
@@ -593,7 +587,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 document.getElementById('prefix').classList.remove("dark");
                 var elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid black"; }
-                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(cookies.getItem('lastSelectedArchive')) ? "./img/icons/wikivoyage-black-32.png" : "./img/icons/kiwix-blue-32.png";
+                document.getElementById('kiwixIcon').src = "./img/icons/kiwix-blue-32.png";
             }
         }
 
@@ -609,17 +603,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         });
         $('input:checkbox[name=cssWikiDarkThemeInvert]').on('change', function (e) {
             if (params.cssTheme == "light" && this.checked) document.getElementById('cssWikiDarkThemeInvertCheck').checked = true;
-            params.cssTheme = this.checked ? 'invert' : 'dark';
+            params.cssTheme = this.checked ? 'invert' : params.cssTheme;
             cookies.setItem('cssTheme', params.cssTheme, Infinity);
-            params.themeChanged = true;
-        });
-        $('input:checkbox[name=rememberLastPage]').on('change', function (e) {
-            if (params.rememberLastPage && this.checked) document.getElementById('rememberLastPageCheck').checked = true;
-            params.rememberLastPage = this.checked ? true : false;
-            cookies.setItem('rememberLastPage', params.rememberLastPage, Infinity);
-            if (!params.rememberLastPage) {
-                cookies.setItem('lastPageVisit', "", Infinity);
-            }
         });
         $('input:radio[name=cssInjectionMode]').on('click', function (e) {
             params.cssSource = this.value;
@@ -630,13 +615,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             params.useMathJax = this.value;
             cookies.setItem('useMathJax', params.useMathJax, Infinity);
             params.themeChanged = true;
-        });
-        $('input:checkbox[name=displayFileSelectors]').on('change', function (e) {
-            params.showFileSelectors = this.checked ? true : false;
-            document.getElementById('hideFileSelectors').style.display = params.showFileSelectors ? "block" : "none";
-            document.getElementById('downloadLinksText').style.display = params.showFileSelectors ? "inline" : "none";
-            cookies.setItem('showFileSelectors', params.showFileSelectors, Infinity);
-            if (params.showFileSelectors) document.getElementById('configuration').scrollIntoView();
         });
 
         function checkToolbar() {
@@ -693,16 +671,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             cssUIThemeSet(params.cssUITheme);
             //@TODO - this is initialization code, and should be in init.js (withoug jQuery)
             $('input:radio[name=cssInjectionMode]').filter('[value="' + params.cssSource + '"]').prop('checked', true);
-            //DEV this hides file selectors if it is a packaged file -- add your own packaged file test to regex below
-            if (/wikivoyage|wikimed/i.test(params.fileVersion)) {
-                document.getElementById('packagedAppFileSelectors').style.display = "block";
-                document.getElementById('hideFileSelectors').style.display = "none";
-                document.getElementById('downloadLinksText').style.display = "none";
-                if (params.showFileSelectors) {
-                    document.getElementById('hideFileSelectors').style.display = "block";
-                    document.getElementById('downloadLinksText').style.display = "inline";
-                }
-            }
+            document.getElementById('version').innerHTML = params.version;
+            document.getElementById('fileVersion').innerHTML = params.fileVersion;
             //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
             if (cookies.getItem('version') != params.version) {
                 firstRun = true;
@@ -1024,7 +994,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     if ($("#archiveList option[value='" + lastSelectedArchive + "']").length > 0) {
                         $("#archiveList").val(lastSelectedArchive);
                         success = true;
-                        cookies.setItem("lastSelectedArchive", lastSelectedArchive, Infinity);
                     }
                     // Set the localArchive as the last selected (if none has been selected previously, wait for user input)
                     if (success || comboArchiveList.options.length == 1) {
@@ -1047,7 +1016,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          */
         function setLocalArchiveFromArchiveList() {
             var archiveDirectory = $('#archiveList').val();
-            document.getElementById('kiwixIcon').src = /wikivoyage/i.test(archiveDirectory) ? params.cssUITheme == "light" ? "./img/icons/wikivoyage-black-32.png" : "./img/icons/wikivoyage-white-32.png" : params.cssUITheme == "light" ? "./img/icons/kiwix-blue-32.png" : "./img/icons/kiwix-32.png";
             if (archiveDirectory && archiveDirectory.length > 0) {
                 // Now, try to find which DeviceStorage has been selected by the user
                 // It is the prefix of the archive directory
@@ -1124,16 +1092,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                     selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
                                         // The archive is set : go back to home page to start searching
                                         if (params.rescan) {
-                                            $('#btnConfigure').click();
+                                            $('#btnConfigure').click()
                                             params.rescan = false;
                                         } else {
                                             $('#openLocalFiles').hide();
-                                            if (params.rememberLastPage && ~params.lastPageVisit.indexOf(selectedArchive._file._files[0].name)) {
-                                                var lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
-                                                goToArticle(lastPage);
-                                            } else {
-                                                $('#btnHome').click();
-                                            }
+                                            $('#btnHome').click();
                                         }
                                     });
                                 } else {
@@ -1283,12 +1246,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //    cssDirEntryCache = new Map();
         selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
             // The archive is set : go back to home page to start searching
-            if (params.rememberLastPage && ~params.lastPageVisit.indexOf(selectedArchive._file._files[0].name)) {
-                var lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
-                goToArticle(lastPage);
-            } else {
-                $("#btnHome").click();
-            }
+            $("#btnHome").click();
         });
     }
 
@@ -1446,7 +1404,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         $("#prefix").val("");
         findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId);
         var dirEntry = selectedArchive.parseDirEntryId(dirEntryId);
-        pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
+        pushBrowserHistoryState(dirEntry.url);
         return false;
     }
     
@@ -1519,7 +1477,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         selectedArchive.resolveRedirect(dirEntry, readFile);
                     } else {
                         console.log("Reading binary file...");
-                        selectedArchive.readBinaryFile(dirEntry, function(fileDirEntry, content) {
+                        selectedArchive.readBinaryFile(dirEntry, function(readableTitle, content) {
                             messagePort.postMessage({'action': 'giveContent', 'title' : title, 'content': content});
                             console.log("content sent to ServiceWorker");
                         });
@@ -1536,12 +1494,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
     };
     
     // Compile some regular expressions needed to modify links
-    // Pattern to find the path in a url
+    var regexpImageLink = /^.?\/?[^:]+:(.*)/;
     var regexpPath = /^(.*\/)[^\/]+$/;
-    // Pattern to find a ZIM URL (with its namespace) - see http://www.openzim.org/wiki/ZIM_file_format#Namespaces
-    var regexpZIMUrlWithNamespace = /(?:^|\/)([-ABIJMUVWX]\/.+)/;
-    // Pattern to match a local anchor in a href
-    var regexpLocalAnchorHref = /^#/;
     // These regular expressions match both relative and absolute URLs
     // Since late 2014, all ZIM files should use relative URLs
     var regexpImageUrl = /^(?:\.\.\/|\/)+(I\/.*)$/;
@@ -1584,11 +1538,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
         //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
         //so add some whitespace at the end of the document
-        htmlArticle = htmlArticle.replace(/(dditional terms may apply for the media files[^<]+<\/div>\s*)/i, "$1\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n");
-
-        //@TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
-        htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, "<a href=\"$1.html\">$2</a>");
-        htmlArticle = htmlArticle.replace(/&lt;(\/?)(i|b|em|strong)&gt;/ig, "<$1$2>");
+        htmlArticle = htmlArticle.replace(/(<\/body>)/i, "<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n$1");
 
         //Fast-replace img src with data-kiwixsrc and hide image [kiwix-js #272]
         htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)src(\s*=)/ig, "$1data-kiwixsrc$2");
@@ -1602,13 +1552,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, "");
         htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, "");
 
-        //Put misplaced hatnote header back in its correct position @TODO remove this when fixed in mw-offliner
-        var hatnote = htmlArticle.match(/<div\s+[^>]+\bhatnote\b[^>]+>Not to be confused with[\s\S]+?<\/div>\s*/i);
-        if (hatnote && hatnote.length) {
-            htmlArticle = htmlArticle.replace(hatnote, "");
-            htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnote);
-        }
-        
      //TESTING - find out whether document contains MathSVGs
         //var containsMathSVG = /\.svg\s*['"][^>]+mwe-math-fallback-image|mwe-math-fallback-image[^>]+\.svg\s*['"]/i.test(htmlArticle);
         //Version below will match any type of fallback image so long as there is an alt string
@@ -1667,11 +1610,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     .then(function (dirEntry) {
                         uiUtil.poll("Attempting to resolve CSS link #" + index + " [" + title.substring(0, 30) + "] from ZIM file...");
                         return selectedArchive.readBinaryFile(dirEntry,
-                            function (fileDirEntry, content) {
+                            function (readableTitle, content, namespace, url) {
                         //DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
                                 //var cssContent = util.uintToString(content);
                                 var cssBlob = new Blob([content], { type: 'text/css' });
-                                var newURL = [fileDirEntry.namespace + "/" + fileDirEntry.url, URL.createObjectURL(cssBlob)];
+                                var newURL = [namespace + "/" + url, URL.createObjectURL(cssBlob)];
                                 blobArray.push(newURL);
                                 if (cssBlobCache)
                                     cssBlobCache.set(newURL[0], newURL[1]); 
@@ -1767,34 +1710,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             $("#articleContent").show();
             // Scroll the iframe to its top
             $("#articleContent").contents().scrollTop(0);
-
-            //Adapt German Wikivoyage POI data format
-            var regexpGeoLocationDE = /<span\s+class\s?=\s?"[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<span[^>]+listing-name[^>]+>([^<]+)<\/span>)/ig;
-            htmlArticle = htmlArticle.replace(regexpGeoLocationDE, function (match, latitude, longitude, href, id) {
-                return '<a href="bingmaps:?collection=point.' + latitude + '_' + longitude + '_' + encodeURIComponent(id.replace(/_/g, " ")) +
-                    '">\r\n<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;margin-top:5px !important" />\r\n</a>' + href;
-            });
-            
-            //Adapt English Wikivoyage POI data format
-            var regexpGeoLocationEN = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
-            htmlArticle = htmlArticle.replace(regexpGeoLocationEN, function (match, p1, latitude, longitude, p4, p5, p6, id) {
-                return p1 + "bingmaps:?collection=point." + latitude + "_" + longitude + "_" +
-                    encodeURIComponent(id.replace(/_/g, " ")).replace(/\.(\w\w)/g, "%$1") +
-                    (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Map marker" title="Show this place on a map" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" >' + p6 + id;
-            });
-
-            //Clean up remaining geo: links
-            htmlArticle = htmlArticle.replace(/href\s*=\s*"\s*geo:([\d.-]+),([\d.-]+)/ig, 'href="bingmaps:?collection=point.$1_$2');
-
-            //Setup footnote backlinks if the ZIM doesn't have any
-            htmlArticle = htmlArticle.replace(/<li\s+id\s*=\s*"cite_note-([^"]+)"\s*>(?![^/]+↑)/ig, function (match, p1) {
-                var fnSearchRegxp = new RegExp('id\\s*=\\s*"(cite[-_]ref[-_]' + p1.replace(/[-_]/g,"[-_]") + '[^"]*)', "i");
-                var fnReturnMatch = htmlArticle.match(fnSearchRegxp);
-                var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : "";
-                return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>'; 
-            });
-
-            //Inject htmlArticle into iframe
             $('#articleContent').contents().find('body').html(htmlArticle);
 
             setupTableOfContents();
@@ -1802,7 +1717,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('search-article').scrollTop = 0;
             document.getElementById('search-article').style.overflow = "hidden";
             
-            var makeLink = uiUtil.makeReturnLink(dirEntry.title); //[kiwix-js #127]
+            var makeLink = uiUtil.makeReturnLink(dirEntry); //[kiwix-js #127]
             var linkListener = eval(makeLink);
             //Prevent multiple listeners being attached on each browse
             document.getElementById("returntoArticle_top").removeEventListener('click', linkListener);
@@ -1826,56 +1741,82 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         doc.head.appendChild(script);
                     }
                 }
-            // Compute base URL
-            var urlPath = regexpPath.test(dirEntry.url) ? urlPath = dirEntry.url.match(regexpPath)[1] : "";
-            var baseUrl = dirEntry.namespace + "/" + urlPath;
-            // Create (or replace) the "base" tag with our base URL
-            $('#articleContent').contents().find('head').find("base").detach();
-            $('#articleContent').contents().find('head').append("<base href='" + baseUrl + "'>");
-            
-            var currentProtocol = location.protocol;
-            var currentHost = location.host;
 
                 // Convert links into javascript calls
                 $('#articleContent').contents().find('body').find('a').each(function () {
-                var href = $(this).attr("href");
-                // Compute current link's url (with its namespace), if applicable
-                var zimUrl = regexpZIMUrlWithNamespace.test(this.href) ? this.href.match(regexpZIMUrlWithNamespace)[1] : "";
-                if (href === null || href === undefined) {
-                    // No href attribute
-                }
-                else if (href.length === 0) {
-                    // It's a link with an empty href, pointing to the current page.
-                    // Because of the base tag, we need to modify it
+                    // Store current link's url
+                    var url = $(this).attr("href");
+                    if (url === null || url === undefined) {
+                        return;
+                    }
+                    var lowerCaseUrl = url.toLowerCase();
+                    var cssClass = $(this).attr("class");
+
+                    if (cssClass === "new") {
+                        // It's a link to a missing article : display a message
                         $(this).on('click', function (e) {
+                            alert("Missing article in Wikipedia");
                             return false;
                         });
                     }
-                else if (regexpLocalAnchorHref.test(href)) {
-                    // It's an anchor link : we need to make it work with javascript
-                    // because of the base tag
-                    $(this).on('click', function(e) {
-                        $('#articleContent').first()[0].contentWindow.location.hash = href;
-                        return false;
-                    });
+                    else if (url.slice(0, 1) === "#") {
+                        // It's an anchor link : do nothing
                     }
-                else if (this.protocol !== currentProtocol
-                    || this.host !== currentHost) {
-                    // It's an external URL : we should open it in a new tab
+                    else if (url.substring(0, 4) === "http") {
+                        // It's an external link : open in a new tab
+                        $(this).attr("target", "_blank");
+                    }
+                    else if (url.match(regexpImageLink)
+                        && (util.endsWith(lowerCaseUrl, ".png")
+                            || util.endsWith(lowerCaseUrl, ".svg")
+                            || util.endsWith(lowerCaseUrl, ".jpg")
+                            || util.endsWith(lowerCaseUrl, ".jpeg"))) {
+                        // It's a link to a file of Wikipedia : change the URL to the online version and open in a new tab
+                        var onlineWikipediaUrl = url.replace(regexpImageLink, "https://" + selectedArchive._language + ".wikipedia.org/wiki/File:$1");
+                        $(this).attr("href", onlineWikipediaUrl);
                         $(this).attr("target", "_blank");
                     }
                     else {
                         // It's a link to another article
                         // Add an onclick event to go to this article
                         // instead of following the link
+
+                        if (url.substring(0, 2) === "./") {
+                            url = url.substring(2);
+                        }
+                        // Remove the initial slash if it's an absolute URL
+                        else if (url.substring(0, 1) === "/") {
+                            url = url.substring(1);
+                        }
+                        //Supports stackexchange
+                        else if (url.substring(0, 6) == "../../") {
+                            url = url.substring(6);
+                            //This should match a stackexchange URL and replace with short form
+                            url = url.replace(/([^/]+\/\d+)\/[^/]+(\.html?)/, "$1$2");
+                        }
                         $(this).on('click', function (e) {
-                        var decodedURL = decodeURIComponent(zimUrl);
+                            clearFindInArticle();
+                            //Re-enable top-level scrolling
+                            document.getElementById('top').style.position = "relative";
+                            document.getElementById('scrollbox').style.position = "fixed";
+                            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
+                            var decodedURL = decodeURIComponent(url);
                             pushBrowserHistoryState(decodedURL);
                             goToArticle(decodedURL);
                             return false;
                         });
                     }
                 });
+
+                //@TODO - check that this is now taken care of by checkToolbar() (includes resizeIframe() ) just before jQuery mode check above
+                //FFOS doesn't calculate the iframe window height correctly for newly loaded articles (at least in the simulator)
+                //This prevents transparency from working in the bottom toolbar. Setting the style
+                //for iframe height + 30 fixes the issue, and has no effect on other browsers
+                //var ele = document.getElementById('articleContent');
+                //var y = ~~ele.style.height.match(/[\d.]+/)[0];
+                //y += 50;
+                //ele.style.height = y + "px";
+                //resizeIFrame();
 
                 loadImages();
                 //loadJavascript(); //Disabled for now, since it does nothing
@@ -2217,8 +2158,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 if (imageMatch) {
                     var title = decodeURIComponent(imageMatch[1]);
                     selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                        selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                            var url = fileDirEntry.url;
+                        selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content, namespace, url) {
                             var mimetype = url.match(/\.(\w{2,4})$/);
                             mimetype = mimetype ? "image/" + mimetype[1].toLowerCase() : "image";
                             mimetype = /\.jpg$/i.test(url) ? "image/jpeg" : mimetype;
@@ -2294,7 +2234,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     if (dirEntry === null)
                         console.log("Error: js file not found: " + title);
                     else
-                        selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                        selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content) {
                             // TODO : I have to disable javascript for now
                             // var jsContent = encodeURIComponent(util.uintToString(content));
                             //script.attr("src", 'data:text/javascript;charset=UTF-8,' + jsContent);
@@ -2321,10 +2261,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             stateObj.title = title;
             urlParameters = "?title=" + title;
             stateLabel = "Wikipedia Article : " + title;
-            if (params.rememberLastPage) {
-                params.lastPageVisit = encodeURIComponent(title) + "@kiwixKey@" + selectedArchive._file._files[0].name;
-                cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
-            }
         }
         else if (titleSearch && !(""===titleSearch)) {
             stateObj.titleSearch = titleSearch;
@@ -2343,25 +2279,18 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
      * @param {String} title
      */
     function goToArticle(title) {
-        clearFindInArticle();
-        //Re-enable top-level scrolling
-        document.getElementById('top').style.position = "relative";
-        document.getElementById('scrollbox').style.position = "fixed";
-        document.getElementById('scrollbox').style.height = window.innerHeight + "px";
-        $("#readingArticle").show();
         selectedArchive.getDirEntryByTitle(title).then(function(dirEntry) {
             if (dirEntry === null || dirEntry === undefined) {
                 $("#readingArticle").hide();
-                $("#articleContent").show();
-                console.error("Article with title " + title + " not found in the archive");
-                goToMainArticle();
+                alert("Article with title " + title + " not found in the archive");
             }
             else {
                 $("#articleName").html(title);
+                $("#readingArticle").show();
                 $('#articleContent').contents().find('body').html("");
                 readArticle(dirEntry);
             }
-        }).fail(function() { console.error("Error reading article with title " + title); });
+        }).fail(function() { alert("Error reading article with title " + title); });
     }
     
     function goToRandomArticle() {
@@ -2373,7 +2302,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             else {
                 if (dirEntry.namespace === 'A') {
                     $("#articleName").html(dirEntry.title);
-                    pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
+                    pushBrowserHistoryState(dirEntry.url);
                     $("#readingArticle").show();
                     $('#articleContent').contents().find('body').html("");
                     readArticle(dirEntry);
