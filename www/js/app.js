@@ -571,7 +571,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 document.getElementById('prefix').classList.add("dark");
                 var elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid darkgray"; }
-                document.getElementById('kiwixIcon').src = "./img/icons/kiwix-32.png";
+                document.getElementById('kiwixIcon').src = "./img/icons/wikivoyage-trans-32.png";
             }
             if (value == 'light') {
                 document.getElementsByTagName('body')[0].classList.remove("dark");
@@ -587,7 +587,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 document.getElementById('prefix').classList.remove("dark");
                 var elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid black"; }
-                document.getElementById('kiwixIcon').src = "./img/icons/kiwix-blue-32.png";
+                document.getElementById('kiwixIcon').src = "./img/icons/wikivoyage-trans-32.png";
             }
         }
 
