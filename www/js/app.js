@@ -672,6 +672,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             //@TODO - this is initialization code, and should be in init.js (withoug jQuery)
             $('input:radio[name=cssInjectionMode]').filter('[value="' + params.cssSource + '"]').prop('checked', true);
             //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
+            //var test = cookies.getItem('version');
             if (cookies.getItem('version') != params.version) {
                 firstRun = true;
                 $('#myModal').modal({ backdrop: "static" });
