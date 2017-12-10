@@ -117,6 +117,8 @@
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="images\Wide310x150Logo.scale-400.png" />
     <None Include="Package.StoreAssociation.xml" />
+    <Content Include="images\Wikivoyage_220x220.png" />
+    <Content Include="images\Wikivoyage_400x400.png" />
     <Content Include="www\-\s\css_modules\content.parsoid.css" />
     <Content Include="www\-\s\css_modules\ext.cite.a11y.css" />
     <Content Include="www\-\s\css_modules\ext.cite.styles.css" />
@@ -157,7 +159,6 @@
     <Content Include="www\img\Kiwix_icon_transparent_600x600.png" />
     <Content Include="www\img\lightBlue.png" />
     <Content Include="www\img\spinner.gif" />
-    <Content Include="www\img\Wikivoyage_220x220.png" />
     <Content Include="www\index.html" />
     <Content Include="www\I\s\Checker-16x16.png" />
     <Content Include="www\I\s\cog-sprite.png" />
