@@ -1,8 +1,10 @@
 #Exclude Visual Studio cache
 /.vs/
-KiwixWebApp.jsproj.user
 *.user
+*.jsproj
+*.sln
+*.pfx
 /bld
 /bin
-KiwixWebApp.jsproj
+/BundleArtifacts
 /archives/*.zim
