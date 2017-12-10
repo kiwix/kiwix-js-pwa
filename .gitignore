@@ -1,12 +1,8 @@
 #Exclude Visual Studio cache
 /.vs/
 KiwixWebApp.jsproj.user
-KiwixWebApp.jsproj.user
-KiwixWebApp.jsproj.user
 *.user
-*.user
-*.user
-/KiwixWebApp.jsproj.user
 /bld
 /bin
 KiwixWebApp.jsproj
+/archives/*.zim
