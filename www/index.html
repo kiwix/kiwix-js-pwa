@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Kiwix JS for Windows</title>
+    <title>Kiwix JS Wikivoyage for Windows</title>
     <meta name="description" content="Offline Wikipedia reader">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!--
@@ -12,9 +12,10 @@
     Main authors of this application :
     Mossroy - mossroy@mossroy.fr
     Peter-x - https://github.com/peter-x
-    Jaifroid - Adapted for UWP for Windows 10 and Windows Mobile 10 : Geoffrey Kantaris egk10@cam.ac.uk
 
-    Copyright 2013-2018 Mossroy, Peter-x, Jaifroid, sharun-s and other contributors
+    Adapted for UWP for Windows 10 and Windows Mobile 10 : Geoffrey Kantaris egk10@cam.ac.uk
+
+    Copyright 2013-2017 Mossroy, Peter-x and contributors
     License GPL v3:
 
     This file is part of Kiwix.
@@ -45,43 +46,44 @@
             <div class="modal-content dark">
                 <div class="modal-body">
                     <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
-                    <h2>Welcome to Kiwix JS for Windows</h2>
-                    <h3>Changes in 0.9.7 (beta)</h3>
+                    <h2>Welcome to Kiwix JS Wikivoyage for Windows</h2>
+                    <h3>Fixes in 0.9.3 (beta)</h3>
                     <ul>
-                        <li>Fixed missing icon for external hyperlinks</li>
-                        <li>Fixed bugs in mobile to desktop transform</li>
-                        <li>Fixed stacking of infoboxes and images on mobile displays</li>
-                        <li>Fixed last-visited page sometimes not being remembered</li>
-                        <li>Dark mode by simple inversion now works</li>
+                        <li>Workaround for mis-aligned toolbar icons on smaller screens</li>
+                        <li>Fixed rogue HTML showing in some pages from recent ZIM archives</li>
+                        <li>Better experience when scanning local storage for archives</li>
                     </ul>
                     <h3>Please read this important information!</h3>
                     <p>
-                        This application is packaged with only a basic ZIM archive (about a Jazz musician) so that you can get a feel
-                        for how offline Wikipedia browsing works.
+                        This application is packaged with the Wikivoyage offline ZIM archive.
                     </p>
                     <p>
-                        You will need to downloaded an offline ZIM archive and store it on your device. You can do this from the
+                        You may download and use other ZIM archives (such as Wikipedia, Wiktionary, Wikimedicine) from the
                         <b>Configuration page <span class="glyphicon glyphicon-wrench"></span></b>, or else see the 
                         <b>About page <span class="glyphicon glyphicon-info-sign"></span></b> for more information.
                     </p>
                     <p>
-                        For the full experience you <strong>must</strong> download a ZIM archive and store it on your device! Alternatively, if you only want Wikivoyage in English look for "Wikivoyage by Kiwix" in the Store and install that app instead.
+                        We aim to keep the Wikivoyage archive in this app as up to date as possible, and you should receive automatic updates via the 
+                        Microsoft Store. Please note that if you donwload an updated version of the Wikivoyage file from the Configuration page<span class="glyphicon glyphicon-wrench"></span>,
+                        the version you download will <b>not</b> update the version stored in this app, and you will use double the amount of storage space space on your device.
+                        This behavour is part of the built-in security of the OS, and we cannot change it. Therefore we advise you to wait for an automatic update from the Store.
                     </p>
                     <p>
                         Kiwix JS is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
                         improving the app are very welcome: see About section.
                     </p>
-                    <h3>Features in Version 0.9</h3>
+                    <h3>New Features in Version 0.9.0</h3>
                     <ul>
-                        <li>Compatible with Continuum!</li>
-                        <li>Wikivoyage pages (English and German) display map location markers for places that have geo-location. Tap to open the Maps app at location</li>
-                        <li>Last-visited page is remembered between sessions. Selectable in the settings</li>
-                        <li>Now supports links in Stackexchage ZIMs (equations not yet supported)</li>
-                        <li>In-page search / highlighting with Ctrl-F / Alt-F or tap on search button</li>
-                        <li>Dark-themed User Interface and dark-themed content - see Config menu</li>
-                        <li>Equations are now typeset using MathJax, if the original TeX string is available</li>
-                        <li>Transform the layout using the Wikipedia mobile or desktop styles</li>
-                        <li>If your device is slow, you can disable the display of images, and extract them one-by-one as needed</li>
+                        <li>Added auto-loading of ZIM archives on device storage</li>
+                        <li>Enabled in-page search / highlighting with Ctrl-F / Alt-F or tap on search button</li>
+                        <li>Enabled UWP Future Access List so that users do not need to pick their ZIM file every time</li>
+                        <li>Added a dark-themed User Interface - please see Config section to enable it</li>
+                        <li>Added an experimental Wikipedia Dark Theme</li>
+                        <li>Added ability to change the font size for articles and the UI</li>
+                        <li>A new, cleaner, minimalistic User Interface</li>
+                        <li>Equations are now typeset using MathJax, if the original TeX string is available, otherwise the (slow) fallback images are used</li>
+                        <li>User can choose whether to transform the layout using the Wikipedia mobile or desktop styles - see Config section</li>
+                        <li>If your device is slow, you can disable the display of images, and extract them one-by-one as needed - see Config</li>
                     </ul>
                 </div>
                 <div class="modal-footer">
@@ -91,7 +93,7 @@
         </div>
     </div>
     <section id="search-article" role="region">
-        <header id="top" style="width:100%;">
+        <header id="top">
             <nav id="navbar" class="navbar navbar-inverse" role="navigation">
                 <div class="container-fluid">
                     <div class="navbar-header" id="container">
@@ -131,21 +133,21 @@
                 <div id="about" style="display: none;" class="category-padding">
                     <h2>
                         <img src="img/icons/kiwix-60.png" alt="Kiwix icon" />
-                        Kiwix JS Windows
+                        Kiwix JS Wikivoyage for Windows
                     </h2>
                     <h3 style="margin-top:0;">
-                        Offline Wikipedia Viewer <small>(Version <span id="version"></span>)</small>
+                        Offline Wikivoyage Viewer <small>(Version 0.9 Beta)</small>
                     </h3>
-                    <p><small>Packaged ZIM archive: <b><span id="fileVersion"></span></b></small></p>
                     <p>Official site : <a href="http://www.kiwix.org/" target="_blank">http://www.kiwix.org/</a></p>
                     <p>
-                        If your Internet access is expensive / slow / unreliable / watched / censored, you can still gain offline access to a huge
-                        repository of knowledge and culture.
+                        If your Internet access is expensive / slow / unreliable / watched / censored, you can still have offline access to a huge repository of knowledge and culture.
                     </p>
                     <p>
-                        To use this app, you will need to download one or more archives (called ZIM archives) from the Kiwix website. You will then have
-                        offline access to Wikipedia, Wiktionary, Wikivoyage and many other sources even if you are undertaking a long plane journey, hiking, 
-                        and travelling or living in areas with weak Internet access.
+                        Offline Wikivoyage and other content is packaged in file archives called ZIM files.
+                    </p>
+                    <p>
+                        As well as Wikivoyage, you may download one or more archives from the Kiwix website, enabling yout to read material from Wikipedia and many other sources
+                        even if you are undertaking a long plane journey, hiking, and travelling or living in areas of weak Internet access.
                     </p>
                     <p>
                         You can search through article titles and read any of these articles completely offline.
@@ -155,22 +157,15 @@
                     </p>
                     <p>
                         Offline archives use the <a href="http://www.openzim.org//wiki/OpenZIM">OpenZIM format</a>, but note that this app has been only tested extensively on
-                        Wikipedia-related archives (e.g., Wikipedia, Wikivoyage, Wikimed, Wiktionary).
+                        Wikipedia-related archives (e.g., Wikipedia, Wikivoyage, Wikimed, Wiktionary
                     </p>
-                    <p>
-                        On some Wikivoyage (English and German) pages
-                        you will see a map location marker: <img src="../www/img/icons/map_marker-18px.png" />. Tap this icon to open
-                        the <b>Maps app</b> at the selected location. This will work offline if you have downloaded the map for the relevant country
-                        in the Windows Settings for <b>Offline Maps</b>.
-                    </p>
-
                     <h3>Usage</h3>
                     <h4>Step 1: download some content</h4>
                     <p>
                         You can browse the Kiwix repository on the <a href="#" onclick="$('#btnConfigure').click();">Configuration</a> page, and it will provide instructions according to the type of file you download.
                         Alternatively, visit <a href="http://download.kiwix.org/zim" target="_blank">http://download.kiwix.org/zim/</a> using a regular computer.
                         <strong>Currently only Wikimedia contents (ZIM files in wiki* subdirectories) have been tested fully</strong>.
-                        There are known bugs when reading other content, and audio/video/dynamic content is not currently supported.
+                        There are known bugs when reading other contents; and audio/video/dynamic content is not currently supported.
                     </p>
                     <p>
                         Note that some of these ZIM archives are very large indeed (several gigabytes), especially if you want the archives with pictures. Archives without
@@ -180,19 +175,16 @@
                     </p>
                     <h4>Step 2: copy the content onto your device</h4>
                     <p>
-                        If you have enough space, you can put several archives on your device storage. If you download the content directly in the app, note the location
-                        of the saved file when you get the notification that it has completed. If you downloaded via a PC, you will generally need to use a USB
-                        cable to copy the ZIM archive(s) to an accessible location on your device, such as the SD card or the main storage area if there is enough
-                        space there. 
+                        If you have enough space, you can put several archives on your device storage. You will generally need to use a USB cable to copy the ZIM archive(s) to an
+                        accessible location on your device, such as the SD card or the main storage area if there is enough space there.
                     </p>
                     <h4>Step 3: open this app, go to the "Configure" menu and select your ZIM file</h4>
                     <p>
-                        On the Configuration page, tap the "Select storage" button. If you have downloaded more than one archive, or you have a split ZIM archive
-                        consisting of several 2GB files, then you will need to pick the <b>folder</b> that contains these files. If you have just one unsplit ZIM
-                        archive, you can instead pick the <b>file</b> direclty, using the respective buttons on the
-                        <a href="#" onclick="$('#btnConfigure').click();">Configuration</a> page (note that these buttons only appear after you tap "Select Storage").
+                        If you have downloaded more than one archive, or you have a split ZIM archive consisting of several 2GB files, then you will need to pick the <b>folder</b>
+                        that contains these files. If you have just one unsplit ZIM archive, you can instead pick the <b>file</b> direclty, using the respective buttons on the
+                        <a href="#" onclick="$('#btnConfigure').click();">Configuration</a> page.
                     </p>
-                    <h4>Step 4: enjoy your content offline!</h4>
+                    <h4>Step 4: enjoy Wikipedia offline!</h4>
                     <h3>Privacy policy</h3>
                     <h4>Short answer:</h4>
                     <p>
@@ -206,16 +198,10 @@
                         extremely cautious, you should shut down your 3G and WiFi access before using the application.
                     </p>
                     <p>This application only reads the archive files of your device: it is not capable of reading any other files.</p>
-                    <p>
-                        By default, this application will remember your last-visited page between sessions using a local cookie that is accessible
-                        only by this app on this device. If you are accessing sensitive information that you do not wish to be displayed next time
-                        you open this app, we recommend that you <a href="#privacy" onclick="$('#btnConfigure').click();">turn this option off</a>
-                        in the Configuration options.
-                    </p>
                     <h3>Feedback / helping / contributing</h3>
                     <p>This application is still a work in progress. There are many bugs that need fixing and improvements that need to be implemented. In particular:</p>
                     <ul>
-                        <li><a href="https://github.com/kiwix/kiwix-js/issues/13" target="_blank">Issue #13</a>: All the user interface is in English : we plan to translate it at least into French and Spanish. If you feel able to translate it in your language, please contact us</li>
+                        <li><a href="https://github.com/kiwix/kiwix-js/issues/13" target="_blank">Issue #13</a>: All the user interface is in English : we plan to translate it at least into French. If you feel able to translate it in your language, please contact us</li>
                         <li><a href="https://github.com/kiwix/kiwix-js/issues/172" target="_blank">Issue #172</a> and <a href="https://github.com/kiwix/kiwix-js/issues/152" target="_blank">#152</a>: Handle video and javascript content</li>
                         <li><a href="https://github.com/kiwix/kiwix-js/issues/117" target="_blank">Issue #117</a> : Better handle upper/lowercase and accents/diacritics in title search</li>
                         <li>Performance improvements etc.</li>
@@ -250,7 +236,7 @@
                     </ul>
                     <h3>Licence information</h3>
                     <p>
-                        Copyright 2013-2018 Mossroy, Peter-x, Jaifroid, sharun-s and other contributors
+                        Copyright 2013-2017 Mossroy, Peter-x and contributors
                         <br />Jaifroid for the adaptation to the Universal Windows Platform
                         <br />
                         <br />This application is licensed under the GPL v3 licence:
@@ -293,9 +279,8 @@
                     <div id="returntoArticle_top" style="text-align:center;padding-top:20px;"></div>
                     <div class="row">
                         <h2 style="margin-top:0;">Configuration</h2>
-                        <p>This application needs a ZIM archive to work.<span id="downloadLinksText"> You can get one from the <a href="#downloads">download links panel</a>.</span></p>
+                        <p>This app is packaged with the Wikivoyage ZIM archive. You can get more archives from the <a href="#downloads">download links panel</a>.</p>
                     </div>
-                    <div id="hideFileSelectors">
                     <div id="openLocalFiles" style="display: none;">
                         <div id="UWPInstructions" class="row">
                             <p>
@@ -363,7 +348,6 @@
                             <div id="downloadLinks" style="display: none;"></div>
                             <pre id="serverResponse" class="panel-footer" style="display:none;"></pre>
                         </div>
-                    </div>
                     </div>
 
                     <div>
@@ -433,22 +417,6 @@
                     <div id="returntoArticle_bottom" style="text-align:center;"></div>
                     <div>
                         <div class="row">
-                            <h3 id="privacy">Privacy settings</h3>
-                            <div class="column">
-                                <div class="panel panel-warning" style="min-width:16em;" id="dataPersistence">
-                                    <div class="panel-heading">Persistence of data:</div>
-                                    <div class="panel-body">
-                                        <label class="checkbox">
-                                            <input type="checkbox" name="rememberLastPage" id="rememberLastPageCheck">
-                                            <b>Remember last-visited page</b> and re-open on next app launch
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="row">
                             <h3>Expert settings</h3>
                             <div class="column">
                                 <div class="panel panel-warning" style="min-width:16em;" id="mathsProcessingMode">
@@ -461,15 +429,6 @@
                                         <label class="radio">
                                             <input type="radio" name="useMathJax" id="useMathJaxRadioFalse" value="false">
                                             <b>Use SVG fallback images</b> (very slow and memory hungry, but will dislplay all symbols)
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="panel panel-warning" style="min-width:16em; display: none;" id="packagedAppFileSelectors">
-                                    <div class="panel-heading">Display hidden ZIM archive selectors:</div>
-                                    <div class="panel-body">
-                                        <label class="checkbox">
-                                            <input type="checkbox" name="displayFileSelectors" id="displayFileSelectorsCheck">
-                                            <b>Display selectors</b> for files and folders : <i>only use this for downloading <b>Wikivoyage</b> in other languages</i>. If you wish to open different ZIM files, you should instead download Kiwix JS from the Store, as this app is optimized for its packaged contents
                                         </label>
                                     </div>
                                 </div>
@@ -510,11 +469,11 @@
                     <div id="progressMessage"><p></p></div>
                 </div>
             </div>
-                <iframe id="articleContent" src="dummyArticle.html" class="articleIFrame">&nbsp;</iframe>
+            <iframe id="articleContent" src="A/dummyArticle.html" class="articleIFrame">&nbsp;</iframe>
         </article>
         <footer id="footer">
-            <div id="navigationButtons" class="btn-group btn-group-justified">
-                <div class="row">
+            <div id="navigationButtons" class="btn-toolbar">
+                <div class="container-fluid">
                     <a class="btn btn-default col-xs-2" id="btnHomeBottom" title="Home"><span class="glyphicon glyphicon-home"></span></a>
                     <a class="btn btn-default col-xs-1" id="btnBack" title="Back"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>
                     <a class="btn btn-default col-xs-1" id="btnForward" title="Forward"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>

@@ -2,7 +2,7 @@
  * init.js : Configuration for the library require.js
  * This file handles the dependencies between javascript libraries
  * 
- * Copyright 2013-2018 Mossroy and contributors
+ * Copyright 2013-2014 Mossroy and contributors
  * License GPL v3:
  * 
  * This file is part of Kiwix.
@@ -22,9 +22,8 @@
  */
 'use strict';
 var params = {};
-params['version'] = "0.9.7 Beta"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
-params['storedFile'] = getCookie('lastSelectedArchive') || "wikipedia_en_ray_charles_2015-06.zimaa"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
-params['fileVersion'] = "wikipedia_en_ray_charles_2015-06"; //Use generic name for actual file, and give version here
+params['version'] = "0.9.3 Wikivoyage Beta"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
+params['storedFile'] = getCookie('lastSelectedArchive') || "wikivoyage_en_all_novid_2017-12.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['kiwixDownloadLink'] = "http://download.kiwix.org/zim/"; //Include final slash
 
 params['results'] = params['results'] || 15; //Number of search results to display
@@ -39,9 +38,7 @@ params['cssTheme'] = getCookie('cssTheme') || 'light'; //Set default to 'light',
 params['cssUITheme'] = getCookie('cssUITheme') || 'light'; //Set default to 'light' or 'dark' to use respective themes for UI
 params['imageDisplay'] = getCookie('imageDisplay') != null ? getCookie('imageDisplay') : true; //Set default to display images from Zim
 params['hideToolbar'] = getCookie('hideToolbar') != null ? getCookie('hideToolbar') : false; //Set default to hide the top toolbar on scroll
-params['rememberLastPage'] = getCookie('rememberLastPage') != null ? getCookie('rememberLastPage') : true; //Set default option to remember the last visited page between sessions
 params['useMathJax'] = getCookie('useMathJax') != null ? getCookie('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
-params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['falFileToken'] = params['falFileToken'] || "zimfile"; //UWP support
@@ -49,12 +46,10 @@ params['falFolderToken'] = params['falFolderToken'] || "zimfilestore"; //UWP sup
 params['localStorage'] = params['localStorage'] || "";
 params['pickedFile'] = params['pickeFile'] || "";
 params['pickedFolder'] = params['pickedFolder'] || "";
-params['lastPageVisit'] = getCookie('lastPageVisit') || "";
-params['lastPageVisit'] = params['lastPageVisit'] ? decodeURIComponent(params['lastPageVisit']) : "";
 params['themeChanged'] = params['themeChanged'] || false;
 params['allowInternetAccess'] = params['allowInternetAccess'] || false; //Do not get value from cookie, should be explicitly set by user on a per-session basis
 
-//Initialize checkbox, radio and other values
+//Initialize checkbox and radio values
 document.getElementById('cssCacheModeCheck').checked = params.cssCache;
 document.getElementById('imageDisplayModeCheck').checked = params.imageDisplay;
 document.getElementById('hideToolbarCheck').checked = params.hideToolbar;
@@ -63,10 +58,7 @@ document.getElementById('darkInvert').style.display = params.cssTheme == 'dark' 
 document.getElementById('cssWikiDarkThemeInvertCheck').checked = params.cssTheme == 'invert' ? true : false;
 document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme == 'dark' ? true : false;
 document.getElementById('useMathJaxRadio' + (params.useMathJax ? 'True' : 'False')).checked = true;
-document.getElementById('rememberLastPageCheck').checked = params.rememberLastPage;
-document.getElementById('displayFileSelectorsCheck').checked = params.showFileSelectors;
-document.getElementById('version').innerHTML = params.version;
-document.getElementById('fileVersion').innerHTML = params.fileVersion;
+
 
 //Set up storage types
 if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') { //UWP
