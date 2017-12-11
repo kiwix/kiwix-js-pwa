@@ -164,6 +164,7 @@
     <Content Include="www\img\icons\kiwix-60.png" />
     <Content Include="www\img\icons\kiwix-blue-32.png" />
     <Content Include="www\img\icons\kiwix-trans-32.png" />
+    <Content Include="www\img\icons\wikivoyage-trans-32.png" />
     <Content Include="www\img\Kiwix_icon_transparent_600x600.png" />
     <Content Include="www\img\lightBlue.png" />
     <Content Include="www\img\spinner.gif" />
