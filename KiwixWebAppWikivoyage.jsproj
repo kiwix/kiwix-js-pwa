@@ -153,6 +153,7 @@
     <Content Include="www\img\icons\kiwix-19.png" />
     <Content Include="www\img\icons\kiwix-32.png" />
     <Content Include="www\img\icons\kiwix-38.png" />
+    <Content Include="www\img\icons\kiwix-blue-32.png" />
     <Content Include="www\img\icons\kiwix-trans-32.png" />
     <Content Include="www\img\icons\wikivoyage-90.png" />
     <Content Include="www\img\icons\wikivoyage-trans-32.png" />
