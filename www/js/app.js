@@ -571,7 +571,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 document.getElementById('prefix').classList.add("dark");
                 var elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid darkgray"; }
-                document.getElementById('kiwixIcon').src = "./img/icons/wikivoyage-trans-32.png";
+                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(cookies.getItem('lastSelectedArchive')) ? "./img/icons/wikivoyage-trans-32.png" : "./img/icons/kiwix-32.png";
             }
             if (value == 'light') {
                 document.getElementsByTagName('body')[0].classList.remove("dark");
@@ -587,7 +587,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 document.getElementById('prefix').classList.remove("dark");
                 var elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid black"; }
-                document.getElementById('kiwixIcon').src = "./img/icons/wikivoyage-trans-32.png";
+                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(cookies.getItem('lastSelectedArchive')) ? "./img/icons/wikivoyage-trans-32.png" : "./img/icons/kiwix-blue-32.png";
             }
         }
 
@@ -1016,6 +1016,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
          */
         function setLocalArchiveFromArchiveList() {
             var archiveDirectory = $('#archiveList').val();
+            document.getElementById('kiwixIcon').src = /wikivoyage/i.test(archiveDirectory) ? "./img/icons/wikivoyage-trans-32.png" : params.cssUITheme == "light" ? "./img/icons/kiwix-blue-32.png" : "./img/icons/kiwix-32.png";
             if (archiveDirectory && archiveDirectory.length > 0) {
                 // Now, try to find which DeviceStorage has been selected by the user
                 // It is the prefix of the archive directory
