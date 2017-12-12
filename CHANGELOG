@@ -1,4 +1,4 @@
-## Version 0.9.3 (beta)
+## Release 0.9.3 (beta)
 * WORKAROUND: Mis-aligned toolbar icons on smaller screens
 * FIX: Rogue HTML showing in some pages from recent ZIM archives
 * ENHANCEMENT: Better experience when scanning local storage for archives
