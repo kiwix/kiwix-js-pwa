@@ -1,0 +1,18 @@
+## Release 0.9.3 (beta)
+* WORKAROUND: Mis-aligned toolbar icons on smaller screens
+* FIX: Rogue HTML showing in some pages from recent ZIM archives
+* ENHANCEMENT: Better experience when scanning local storage for archives
+
+## Release 0.9.0 (beta)
+* ENHANCEMENT: Auto-loading of ZIM archives on device storage
+* ENHANCEMENT: In-page search / highlighting with Ctrl-F / Alt-F or tap on search button
+* ENHANCEMENT: Uses UWP APIs for sotrage: Future Access List so that users do not need to pick their ZIM file every time
+* ENHANCEMENT: Dark-themed User Interface
+* ENHANCEMENT: Experimental Wikipedia Dark Theme
+* ENHANCEMENT: Font scaling for articles and for the UI
+* ENHANCEMENT: Cleaner, minimalistic UI (eliminated hamburger menu due to poor navigability)
+* FIX: Display of SVG files is handled by careful queuing of images to send to the decompressor (fixes hang in articles with many equations)
+* ENHANCEMENT: If the TeX string of an equation is available, it will be typeset using MathJax (huge speed improvement)
+* ENHANCEMENT: Transform the layout of Wikipedia articles from desktop to mobile style and vice versa (experimental)
+* ENHANCEMENT: Disable the display of images, and extract them one-by-one as needed (for slow devices)
+* ENHANCEMENT: Only send images in current viewport to the decompressor, and prefetch configurable (by developer) number of images from above and below the viewport
