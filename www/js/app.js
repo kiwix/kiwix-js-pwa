@@ -1783,19 +1783,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                         // Add an onclick event to go to this article
                         // instead of following the link
 
-                        if (url.substring(0, 2) === "./") {
-                            url = url.substring(2);
-                        }
-                        // Remove the initial slash if it's an absolute URL
-                        else if (url.substring(0, 1) === "/") {
-                            url = url.substring(1);
-                        }
-                        //Supports stackexchange
-                        else if (url.substring(0, 6) == "../../") {
-                            url = url.substring(6);
-                            //This should match a stackexchange URL and replace with short form
-                            url = url.replace(/([^/]+\/\d+)\/[^/]+(\.html?)/, "$1$2");
-                        }
+                        //Get rid of any absolute or relative prefixes (../, ./../, /../.., etc.)
+                        url = url.replace(/^[.\/]*([\S\s]+)$/, "$1");
+
                         $(this).on('click', function (e) {
                             clearFindInArticle();
                             //Re-enable top-level scrolling
@@ -2284,7 +2274,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         selectedArchive.getDirEntryByTitle(title).then(function(dirEntry) {
             if (dirEntry === null || dirEntry === undefined) {
                 $("#readingArticle").hide();
-                alert("Article with title " + title + " not found in the archive");
+                console.error("Article with title " + title + " not found in the archive");
             }
             else {
                 $("#articleName").html(title);
