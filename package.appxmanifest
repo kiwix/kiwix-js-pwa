@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" IgnorableNamespaces="uap mp uap3">
-  <Identity Name="Kiwix.WikivoyagebyKiwix" Version="0.9.3.0" Publisher="CN=0A5438F5-EEA6-4300-9B77-E45BBD148885" />
+  <Identity Name="Kiwix.WikivoyagebyKiwix" Version="0.9.4.0" Publisher="CN=0A5438F5-EEA6-4300-9B77-E45BBD148885" />
   <mp:PhoneIdentity PhoneProductId="677c6763-79ed-42f5-9ba1-c60a30f56c1f" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Wikivoyage by Kiwix</DisplayName>
