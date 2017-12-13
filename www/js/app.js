@@ -994,6 +994,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                     if ($("#archiveList option[value='" + lastSelectedArchive + "']").length > 0) {
                         $("#archiveList").val(lastSelectedArchive);
                         success = true;
+                        cookies.setItem("lastSelectedArchive", lastSelectedArchive, Infinity);
                     }
                     // Set the localArchive as the last selected (if none has been selected previously, wait for user input)
                     if (success || comboArchiveList.options.length == 1) {
