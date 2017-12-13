@@ -1786,12 +1786,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                         //Get rid of any absolute or relative prefixes (../, ./../, /../.., etc.)
                         url = url.replace(/^[.\/]*([\S\s]+)$/, "$1");
 
-                        //Add namespace if there is an intermedial slash (supports Stackexchange)
-                        //url = url.replace(/^([^\/]+\/[^\/]+[\S\s]+)$/, "A/$1");
-
-                        //This experimentally shortens the URL for Stackexchange, but I'm not sure it's necessary...
-                        //url = url.replace(/([^/]+\/\d+)\/[^/]+(\.html?)/, "A/$1$2");
-
                         $(this).on('click', function (e) {
                             clearFindInArticle();
                             //Re-enable top-level scrolling
