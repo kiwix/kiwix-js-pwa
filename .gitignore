@@ -7,3 +7,5 @@ _pkginfo.txt
 /bin/
 /BundleArtifacts/
 /archives/*.zim
+/AppPackages/*wikivoyage*
+
