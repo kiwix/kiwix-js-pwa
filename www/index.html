@@ -71,15 +71,14 @@
                         Kiwix JS is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
                         improving the app are very welcome: see About section.
                     </p>
-                    <h3>New Features in Version 0.9.0</h3>
+                    <h3>New Features in Version 0.9.5</h3>
                     <ul>
+                        <li>Now supports links in Stackexchage ZIMs (note that equations are not yet supported in Stackexchange)</li>
                         <li>Added auto-loading of ZIM archives on device storage</li>
                         <li>Enabled in-page search / highlighting with Ctrl-F / Alt-F or tap on search button</li>
                         <li>Enabled UWP Future Access List so that users do not need to pick their ZIM file every time</li>
-                        <li>Added a dark-themed User Interface - please see Config section to enable it</li>
-                        <li>Added an experimental Wikipedia Dark Theme</li>
+                        <li>Added a dark-themed User Interface and dark-themed content - please see Config section to enable it</li>
                         <li>Added ability to change the font size for articles and the UI</li>
-                        <li>A new, cleaner, minimalistic User Interface</li>
                         <li>Equations are now typeset using MathJax, if the original TeX string is available, otherwise the (slow) fallback images are used</li>
                         <li>User can choose whether to transform the layout using the Wikipedia mobile or desktop styles - see Config section</li>
                         <li>If your device is slow, you can disable the display of images, and extract them one-by-one as needed - see Config</li>
@@ -164,7 +163,7 @@
                         You can browse the Kiwix repository on the <a href="#" onclick="$('#btnConfigure').click();">Configuration</a> page, and it will provide instructions according to the type of file you download.
                         Alternatively, visit <a href="http://download.kiwix.org/zim" target="_blank">http://download.kiwix.org/zim/</a> using a regular computer.
                         <strong>Currently only Wikimedia contents (ZIM files in wiki* subdirectories) have been tested fully</strong>.
-                        There are known bugs when reading other contents; and audio/video/dynamic content is not currently supported.
+                        There are known bugs when reading other content, and audio/video/dynamic content is not currently supported.
                     </p>
                     <p>
                         Note that some of these ZIM archives are very large indeed (several gigabytes), especially if you want the archives with pictures. Archives without
@@ -174,16 +173,19 @@
                     </p>
                     <h4>Step 2: copy the content onto your device</h4>
                     <p>
-                        If you have enough space, you can put several archives on your device storage. You will generally need to use a USB cable to copy the ZIM archive(s) to an
-                        accessible location on your device, such as the SD card or the main storage area if there is enough space there.
+                        If you have enough space, you can put several archives on your device storage. If you download the content directly in the app, note the location
+                        of the saved file when you get the notification that it has completed. If you downloaded via a PC, you will generally need to use a USB
+                        cable to copy the ZIM archive(s) to an accessible location on your device, such as the SD card or the main storage area if there is enough
+                        space there. 
                     </p>
                     <h4>Step 3: open this app, go to the "Configure" menu and select your ZIM file</h4>
                     <p>
-                        If you have downloaded more than one archive, or you have a split ZIM archive consisting of several 2GB files, then you will need to pick the <b>folder</b>
-                        that contains these files. If you have just one unsplit ZIM archive, you can instead pick the <b>file</b> direclty, using the respective buttons on the
-                        <a href="#" onclick="$('#btnConfigure').click();">Configuration</a> page.
+                        On the Configuration page, tap the "Select storage" button. If you have downloaded more than one archive, or you have a split ZIM archive
+                        consisting of several 2GB files, then you will need to pick the <b>folder</b> that contains these files. If you have just one unsplit ZIM
+                        archive, you can instead pick the <b>file</b> direclty, using the respective buttons on the
+                        <a href="#" onclick="$('#btnConfigure').click();">Configuration</a> page (note that these buttons only appear after you tap "Select Storage").
                     </p>
-                    <h4>Step 4: enjoy Wikipedia offline!</h4>
+                    <h4>Step 4: enjoy your content offline!</h4>
                     <h3>Privacy policy</h3>
                     <h4>Short answer:</h4>
                     <p>
@@ -197,10 +199,15 @@
                         extremely cautious, you should shut down your 3G and WiFi access before using the application.
                     </p>
                     <p>This application only reads the archive files of your device: it is not capable of reading any other files.</p>
+                    <p>
+                        By default, this application will remember your last-visited page between sessions using a local cookie that is accessible
+                        only by this app on this device. If you are accessing sensitive information that you do not wish to be displayed next time
+                        you open this app, we recommend that you <b>turn this option off</b> in the Configuration options.
+                    </p>
                     <h3>Feedback / helping / contributing</h3>
                     <p>This application is still a work in progress. There are many bugs that need fixing and improvements that need to be implemented. In particular:</p>
                     <ul>
-                        <li><a href="https://github.com/kiwix/kiwix-js/issues/13" target="_blank">Issue #13</a>: All the user interface is in English : we plan to translate it at least into French. If you feel able to translate it in your language, please contact us</li>
+                        <li><a href="https://github.com/kiwix/kiwix-js/issues/13" target="_blank">Issue #13</a>: All the user interface is in English : we plan to translate it at least into French and Spanish. If you feel able to translate it in your language, please contact us</li>
                         <li><a href="https://github.com/kiwix/kiwix-js/issues/172" target="_blank">Issue #172</a> and <a href="https://github.com/kiwix/kiwix-js/issues/152" target="_blank">#152</a>: Handle video and javascript content</li>
                         <li><a href="https://github.com/kiwix/kiwix-js/issues/117" target="_blank">Issue #117</a> : Better handle upper/lowercase and accents/diacritics in title search</li>
                         <li>Performance improvements etc.</li>
@@ -235,7 +242,7 @@
                     </ul>
                     <h3>Licence information</h3>
                     <p>
-                        Copyright 2013-2017 Mossroy, Peter-x and contributors
+                        Copyright 2013-2018 Mossroy, Peter-x and contributors
                         <br />Jaifroid for the adaptation to the Universal Windows Platform
                         <br />
                         <br />This application is licensed under the GPL v3 licence:
