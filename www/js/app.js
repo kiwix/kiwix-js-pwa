@@ -571,7 +571,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 document.getElementById('prefix').classList.add("dark");
                 var elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid darkgray"; }
-                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(cookies.getItem('lastSelectedArchive')) ? "./img/icons/wikivoyage-trans-32.png" : "./img/icons/kiwix-32.png";
+                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(cookies.getItem('lastSelectedArchive')) ? "./img/icons/wikivoyage-white-32.png" : "./img/icons/kiwix-32.png";
             }
             if (value == 'light') {
                 document.getElementsByTagName('body')[0].classList.remove("dark");
@@ -587,7 +587,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 document.getElementById('prefix').classList.remove("dark");
                 var elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid black"; }
-                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(cookies.getItem('lastSelectedArchive')) ? "./img/icons/wikivoyage-trans-32.png" : "./img/icons/kiwix-blue-32.png";
+                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(cookies.getItem('lastSelectedArchive')) ? "./img/icons/wikivoyage-black-32.png" : "./img/icons/kiwix-blue-32.png";
             }
         }
 
@@ -1017,7 +1017,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
          */
         function setLocalArchiveFromArchiveList() {
             var archiveDirectory = $('#archiveList').val();
-            document.getElementById('kiwixIcon').src = /wikivoyage/i.test(archiveDirectory) ? "./img/icons/wikivoyage-trans-32.png" : params.cssUITheme == "light" ? "./img/icons/kiwix-blue-32.png" : "./img/icons/kiwix-32.png";
+            document.getElementById('kiwixIcon').src = /wikivoyage/i.test(archiveDirectory) ? params.cssUITheme == "light" ? "./img/icons/wikivoyage-black-32.png" : "./img/icons/wikivoyage-white-32.png" : params.cssUITheme == "light" ? "./img/icons/kiwix-blue-32.png" : "./img/icons/kiwix-32.png";
             if (archiveDirectory && archiveDirectory.length > 0) {
                 // Now, try to find which DeviceStorage has been selected by the user
                 // It is the prefix of the archive directory
@@ -1785,13 +1785,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
 
                         //Get rid of any absolute or relative prefixes (../, ./../, /../.., etc.)
                         url = url.replace(/^[.\/]*([\S\s]+)$/, "$1");
+                        //Some Stackexchange links (e.g. "duplicate" and "related" questions) are missing the "question" path, so add it back
+                        //Regex matches a pattern that looks like: 1234/what-is-mathematics.html and changes to: question/1234/what-is-mathematics.html
+                        url = url.replace(/^(\d+\/[\s\S]+\.html?)$/ig, "question/$1");
 
                         $(this).on('click', function (e) {
-                            clearFindInArticle();
-                            //Re-enable top-level scrolling
-                            document.getElementById('top').style.position = "relative";
-                            document.getElementById('scrollbox').style.position = "fixed";
-                            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
                             var decodedURL = decodeURIComponent(url);
                             pushBrowserHistoryState(decodedURL);
                             goToArticle(decodedURL);
@@ -2271,18 +2269,24 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
      * @param {String} title
      */
     function goToArticle(title) {
+        clearFindInArticle();
+        //Re-enable top-level scrolling
+        document.getElementById('top').style.position = "relative";
+        document.getElementById('scrollbox').style.position = "fixed";
+        document.getElementById('scrollbox').style.height = window.innerHeight + "px";
+        $("#readingArticle").show();
         selectedArchive.getDirEntryByTitle(title).then(function(dirEntry) {
             if (dirEntry === null || dirEntry === undefined) {
                 $("#readingArticle").hide();
+                $("#articleContent").show();
                 console.error("Article with title " + title + " not found in the archive");
             }
             else {
                 $("#articleName").html(title);
-                $("#readingArticle").show();
                 $('#articleContent').contents().find('body').html("");
                 readArticle(dirEntry);
             }
-        }).fail(function() { alert("Error reading article with title " + title); });
+        }).fail(function() { console.error("Error reading article with title " + title); });
     }
     
     function goToRandomArticle() {

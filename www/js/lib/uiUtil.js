@@ -116,8 +116,10 @@ define([], function() {
             document.getElementById('search-article').scrollTop = 0;
             if (params.themeChanged) {
                 params.themeChanged = false;
-                var thisURL = decodeURIComponent(history.state.title); 
-                goToArticle(thisURL);
+                if (history.state !== null) { 
+                    var thisURL = decodeURIComponent(history.state.title);
+                    goToArticle(thisURL);
+                }
             }
         })`;
         document.getElementById("returntoArticle_top").innerHTML = link;
