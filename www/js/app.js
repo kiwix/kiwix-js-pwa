@@ -606,6 +606,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             params.cssTheme = this.checked ? 'invert' : params.cssTheme;
             cookies.setItem('cssTheme', params.cssTheme, Infinity);
         });
+        $('input:checkbox[name=rememberLastPage]').on('change', function (e) {
+            if (params.rememberLastPage && this.checked) document.getElementById('rememberLastPageCheck').checked = true;
+            params.rememberLastPage = this.checked ? true : false;
+            cookies.setItem('rememberLastPage', params.rememberLastPage, Infinity);
+            if (!params.rememberLastPage) {
+                cookies.setItem('lastPageVisit', "", Infinity);
+            }
+        });
         $('input:radio[name=cssInjectionMode]').on('click', function (e) {
             params.cssSource = this.value;
             cookies.setItem('cssSource', params.cssSource, Infinity);
@@ -1094,11 +1102,16 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                                     selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
                                         // The archive is set : go back to home page to start searching
                                         if (params.rescan) {
-                                            $('#btnConfigure').click()
+                                            $('#btnConfigure').click();
                                             params.rescan = false;
                                         } else {
                                             $('#openLocalFiles').hide();
-                                            $('#btnHome').click();
+                                            if (params.rememberLastPage && ~params.lastPageVisit.indexOf(selectedArchive._file._files[0].name)) {
+                                                var lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
+                                                goToArticle(lastPage);
+                                            } else {
+                                                $('#btnHome').click();
+                                            }
                                         }
                                     });
                                 } else {
@@ -2251,6 +2264,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             stateObj.title = title;
             urlParameters = "?title=" + title;
             stateLabel = "Wikipedia Article : " + title;
+            if (params.rememberLastPage) {
+                params.lastPageVisit = encodeURIComponent(title) + "@kiwixKey@" + selectedArchive._file._files[0].name;
+                cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
+            }
         }
         else if (titleSearch && !(""===titleSearch)) {
             stateObj.titleSearch = titleSearch;
