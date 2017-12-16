@@ -27,4 +27,8 @@ Longer answer:
 	access before using the application.
     
 	This application only reads the archive files of your device: it is not capable of reading any other files.
+
+	By default, this application will remember your last-visited page between sessions using a local cookie that is accessible
+    only by this app on this device. If you are accessing sensitive information that you do not wish to be displayed next time
+    you open this app, we recommend that you turn this option off in the Configuration page.
                     
