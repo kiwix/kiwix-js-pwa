@@ -1728,6 +1728,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             $("#articleContent").show();
             // Scroll the iframe to its top
             $("#articleContent").contents().scrollTop(0);
+
+            //Attach Wikivoyage POI IDs to the POI Href field
+            htmlArticle = htmlArticle.replace(/(href\s?=\s?"geo:[^"]+")([\s\S]+?<span\b[\s\S]+?id\s?=\s?")([^"]+)/ig, "$1 data-kiwixpoid=\"$3\"$2$3");
+
             $('#articleContent').contents().find('body').html(htmlArticle);
 
             setupTableOfContents();
@@ -1786,7 +1790,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                     }
                     else if (/^geo:/.test(url)) {
                         //DEV Line below makes this work on Windows 10 Mobile - on other devices, e.g. using Google Maps, line could be removed
-                        $(this).attr("href", url.replace(/^geo:([^,]+),([^,]+)/, "bingmaps:?collection=point.$1_$2"));
+                        var poid = $(this).attr("data-kiwixpoid").replace(/_/g, " ");
+                        $(this).attr("href", url.replace(/^geo:([^,]+),([^,]+)/, "bingmaps:?collection=point.$1_$2_" + poid));
                         $(this).attr("target", "_blank");
                     }
                     else if (/^tel:/.test(url)) {
