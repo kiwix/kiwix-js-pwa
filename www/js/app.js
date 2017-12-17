@@ -1784,6 +1784,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                         // It's an external link : open in a new tab
                         $(this).attr("target", "_blank");
                     }
+                    else if (/^geo:/.test(url)) {
+                        //DEV Line below makes this work on Windows 10 Mobile - on other devices, e.g. using Google Maps, line could be removed
+                        $(this).attr("href", url.replace(/^geo:([^,]+),([^,]+)/, "bingmaps:?collection=point.$1_$2"));
+                        $(this).attr("target", "_blank");
+                    }
+                    else if (/^tel:/.test(url)) {
+                        $(this).attr("target", "_blank");
+                    }
                     else if (url.match(regexpImageLink)
                         && (util.endsWith(lowerCaseUrl, ".png")
                             || util.endsWith(lowerCaseUrl, ".svg")
