@@ -1557,6 +1557,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
 
         //@TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
         htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, "<a href=\"$1.html\">$2</a>");
+        htmlArticle = htmlArticle.replace(/&lt;(\/?)(i|b|em|strong)&gt;/ig, "<$1$2>");
 
         //Fast-replace img src with data-kiwixsrc and hide image [kiwix-js #272]
         htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)src(\s*=)/ig, "$1data-kiwixsrc$2");
@@ -1729,9 +1730,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             // Scroll the iframe to its top
             $("#articleContent").contents().scrollTop(0);
 
-            //Attach Wikivoyage POI IDs to the POI Href field
-            htmlArticle = htmlArticle.replace(/(href\s?=\s?"geo:[^"]+")([\s\S]+?<span\b[\s\S]+?id\s?=\s?")([^"]+)/ig, "$1 data-kiwixpoid=\"$3\"$2$3");
+            //Fast-attach Wikivoyage POI IDs to the POI Href field without using extremely slow jQuery
+            var regexpGeoLocation = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
+            htmlArticle = htmlArticle.replace(regexpGeoLocation, function (match, p1, p2, p3, p4, p5, p6, p7, p8) {
+                return p1 + "bingmaps:?collection=point." + p2 + "_" + p3 + "_" +
+                    encodeURIComponent(p7.replace(/_/g, " ")).replace(/\.(\w\w)/g, "%$1") +
+                    (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Show on map" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-10px !important;" >' + p6 + p7;
+            });
 
+            //Inject htmlArticle into iframe
             $('#articleContent').contents().find('body').html(htmlArticle);
 
             setupTableOfContents();
@@ -1788,10 +1795,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                         // It's an external link : open in a new tab
                         $(this).attr("target", "_blank");
                     }
+                    else if (/^bingmaps:/.test(url)) {
+                        $(this).attr("target", "_blank");
+                    }
                     else if (/^geo:/.test(url)) {
-                        //DEV Line below makes this work on Windows 10 Mobile - on other devices, e.g. using Google Maps, line could be removed
-                        var poid = $(this).attr("data-kiwixpoid").replace(/_/g, " ");
-                        $(this).attr("href", url.replace(/^geo:([^,]+),([^,]+)/, "bingmaps:?collection=point.$1_$2_" + poid));
                         $(this).attr("target", "_blank");
                     }
                     else if (/^tel:/.test(url)) {
@@ -1826,16 +1833,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                         });
                     }
                 });
-
-                //@TODO - check that this is now taken care of by checkToolbar() (includes resizeIframe() ) just before jQuery mode check above
-                //FFOS doesn't calculate the iframe window height correctly for newly loaded articles (at least in the simulator)
-                //This prevents transparency from working in the bottom toolbar. Setting the style
-                //for iframe height + 30 fixes the issue, and has no effect on other browsers
-                //var ele = document.getElementById('articleContent');
-                //var y = ~~ele.style.height.match(/[\d.]+/)[0];
-                //y += 50;
-                //ele.style.height = y + "px";
-                //resizeIFrame();
 
                 loadImages();
                 //loadJavascript(); //Disabled for now, since it does nothing
