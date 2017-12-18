@@ -1735,7 +1735,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             htmlArticle = htmlArticle.replace(regexpGeoLocation, function (match, p1, p2, p3, p4, p5, p6, p7, p8) {
                 return p1 + "bingmaps:?collection=point." + p2 + "_" + p3 + "_" +
                     encodeURIComponent(p7.replace(/_/g, " ")).replace(/\.(\w\w)/g, "%$1") +
-                    (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Show on map" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-10px !important;" >' + p6 + p7;
+                    (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Map marker" title="Show this place on a map" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" >' + p6 + p7;
             });
 
             //Inject htmlArticle into iframe
