@@ -606,6 +606,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             params.cssTheme = this.checked ? 'invert' : params.cssTheme;
             cookies.setItem('cssTheme', params.cssTheme, Infinity);
         });
+        $('input:checkbox[name=rememberLastPage]').on('change', function (e) {
+            if (params.rememberLastPage && this.checked) document.getElementById('rememberLastPageCheck').checked = true;
+            params.rememberLastPage = this.checked ? true : false;
+            cookies.setItem('rememberLastPage', params.rememberLastPage, Infinity);
+            if (!params.rememberLastPage) {
+                cookies.setItem('lastPageVisit', "", Infinity);
+            }
+        });
         $('input:radio[name=cssInjectionMode]').on('click', function (e) {
             params.cssSource = this.value;
             cookies.setItem('cssSource', params.cssSource, Infinity);
@@ -994,6 +1002,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                     if ($("#archiveList option[value='" + lastSelectedArchive + "']").length > 0) {
                         $("#archiveList").val(lastSelectedArchive);
                         success = true;
+                        cookies.setItem("lastSelectedArchive", lastSelectedArchive, Infinity);
                     }
                     // Set the localArchive as the last selected (if none has been selected previously, wait for user input)
                     if (success || comboArchiveList.options.length == 1) {
@@ -1093,11 +1102,16 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                                     selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
                                         // The archive is set : go back to home page to start searching
                                         if (params.rescan) {
-                                            $('#btnConfigure').click()
+                                            $('#btnConfigure').click();
                                             params.rescan = false;
                                         } else {
                                             $('#openLocalFiles').hide();
-                                            $('#btnHome').click();
+                                            if (params.rememberLastPage && ~params.lastPageVisit.indexOf(selectedArchive._file._files[0].name)) {
+                                                var lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
+                                                goToArticle(lastPage);
+                                            } else {
+                                                $('#btnHome').click();
+                                            }
                                         }
                                     });
                                 } else {
@@ -1539,7 +1553,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
 
         //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
         //so add some whitespace at the end of the document
-        htmlArticle = htmlArticle.replace(/(<\/body>)/i, "<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n$1");
+        htmlArticle = htmlArticle.replace(/(dditional terms may apply for the media files[^<]+<\/div>\s*)/i, "$1\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n");
+
+        //@TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
+        htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, "<a href=\"$1.html\">$2</a>");
+        htmlArticle = htmlArticle.replace(/&lt;(\/?)(i|b|em|strong)&gt;/ig, "<$1$2>");
 
         //Fast-replace img src with data-kiwixsrc and hide image [kiwix-js #272]
         htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)src(\s*=)/ig, "$1data-kiwixsrc$2");
@@ -1711,6 +1729,16 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             $("#articleContent").show();
             // Scroll the iframe to its top
             $("#articleContent").contents().scrollTop(0);
+
+            //Fast-attach Wikivoyage POI IDs to the POI Href field without using extremely slow jQuery
+            var regexpGeoLocation = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
+            htmlArticle = htmlArticle.replace(regexpGeoLocation, function (match, p1, p2, p3, p4, p5, p6, p7, p8) {
+                return p1 + "bingmaps:?collection=point." + p2 + "_" + p3 + "_" +
+                    encodeURIComponent(p7.replace(/_/g, " ")).replace(/\.(\w\w)/g, "%$1") +
+                    (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Show on map" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-10px !important;" >' + p6 + p7;
+            });
+
+            //Inject htmlArticle into iframe
             $('#articleContent').contents().find('body').html(htmlArticle);
 
             setupTableOfContents();
@@ -1767,6 +1795,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                         // It's an external link : open in a new tab
                         $(this).attr("target", "_blank");
                     }
+                    else if (/^bingmaps:/.test(url)) {
+                        $(this).attr("target", "_blank");
+                    }
+                    else if (/^geo:/.test(url)) {
+                        $(this).attr("target", "_blank");
+                    }
+                    else if (/^tel:/.test(url)) {
+                        $(this).attr("target", "_blank");
+                    }
                     else if (url.match(regexpImageLink)
                         && (util.endsWith(lowerCaseUrl, ".png")
                             || util.endsWith(lowerCaseUrl, ".svg")
@@ -1783,10 +1820,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                         // instead of following the link
 
                         //Get rid of any absolute or relative prefixes (../, ./../, /../.., etc.)
-                        url = url.replace(/^[.\/]*([\S\s]+)$/, "$1");
+                        url = url.replace(/^[.\/]*([\s\S]+)$/, "$1");
                         //Some Stackexchange links (e.g. "duplicate" and "related" questions) are missing the "question" path, so add it back
-                        //Regex matches a pattern that looks like: 1234/what-is-mathematics.html and changes to: question/1234/what-is-mathematics.html
-                        url = url.replace(/^(\d+\/[\s\S]+\.html?)$/ig, "question/$1");
+                        //Regex matches a pattern that looks like: 1234/what-is-mathematics.html and changes to: question/1234/what-is-mathematics.html. Some references are 1234.html so this also adds question to such patterns
+                        url = url.replace(/^(\d+(?:\/[\s\S]+)?\.html?)$/i, "question/$1");
 
                         $(this).on('click', function (e) {
                             var decodedURL = decodeURIComponent(url);
@@ -1796,16 +1833,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                         });
                     }
                 });
-
-                //@TODO - check that this is now taken care of by checkToolbar() (includes resizeIframe() ) just before jQuery mode check above
-                //FFOS doesn't calculate the iframe window height correctly for newly loaded articles (at least in the simulator)
-                //This prevents transparency from working in the bottom toolbar. Setting the style
-                //for iframe height + 30 fixes the issue, and has no effect on other browsers
-                //var ele = document.getElementById('articleContent');
-                //var y = ~~ele.style.height.match(/[\d.]+/)[0];
-                //y += 50;
-                //ele.style.height = y + "px";
-                //resizeIFrame();
 
                 loadImages();
                 //loadJavascript(); //Disabled for now, since it does nothing
@@ -2250,6 +2277,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             stateObj.title = title;
             urlParameters = "?title=" + title;
             stateLabel = "Wikipedia Article : " + title;
+            if (params.rememberLastPage) {
+                params.lastPageVisit = encodeURIComponent(title) + "@kiwixKey@" + selectedArchive._file._files[0].name;
+                cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
+            }
         }
         else if (titleSearch && !(""===titleSearch)) {
             stateObj.titleSearch = titleSearch;
