@@ -1730,12 +1730,19 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             // Scroll the iframe to its top
             $("#articleContent").contents().scrollTop(0);
 
-            //Fast-attach Wikivoyage POI IDs to the POI Href field without using extremely slow jQuery
-            var regexpGeoLocation = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
-            htmlArticle = htmlArticle.replace(regexpGeoLocation, function (match, p1, p2, p3, p4, p5, p6, p7, p8) {
-                return p1 + "bingmaps:?collection=point." + p2 + "_" + p3 + "_" +
-                    encodeURIComponent(p7.replace(/_/g, " ")).replace(/\.(\w\w)/g, "%$1") +
-                    (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Map marker" title="Show this place on a map" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" >' + p6 + p7;
+            //Adapt German Wikivoyage POI data format
+            var regexpGeoLocationDE = /<span\s+class\s?=\s?"[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<span[^>]+listing-name[^>]+>([^<]+)<\/span>)/ig;
+            htmlArticle = htmlArticle.replace(regexpGeoLocationDE, function (match, latitude, longitude, href, id) {
+                return '<a href="bingmaps:?collection=point.' + latitude + '_' + longitude + '_' + encodeURIComponent(id.replace(/_/g, " ")) +
+                    '">\r\n<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" />\r\n</a>' + href;
+            });
+
+            //Adapt English Wikivoyage POI data format
+            var regexpGeoLocationEN = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
+            htmlArticle = htmlArticle.replace(regexpGeoLocationEN, function (match, p1, latitude, longitude, p4, p5, p6, id) {
+                return p1 + "bingmaps:?collection=point." + latitude + "_" + longitude + "_" +
+                    encodeURIComponent(id.replace(/_/g, " ")).replace(/\.(\w\w)/g, "%$1") +
+                    (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Map marker" title="Show this place on a map" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" >' + p6 + id;
             });
 
             //Inject htmlArticle into iframe
