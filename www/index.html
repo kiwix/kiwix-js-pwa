@@ -71,8 +71,10 @@
                         Kiwix JS is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
                         improving the app are very welcome: see About section.
                     </p>
-                    <h3>New Features in Version 0.9.5</h3>
+                    <h3>New Features in Version 0.9.6</h3>
                     <ul>
+                        <li>Wikivoyage pages (English and German) will now display a map location marker for places that have geo-location data. Tap the icon to open the Maps app at this location</li>
+                        <li>The app now remembers the last page you visited before closing the app, and will resume from that page. You can turn this option off in the settings</li>
                         <li>Now supports links in Stackexchage ZIMs (note that equations are not yet supported in Stackexchange)</li>
                         <li>Added auto-loading of ZIM archives on device storage</li>
                         <li>Enabled in-page search / highlighting with Ctrl-F / Alt-F or tap on search button</li>
@@ -148,6 +150,12 @@
                         and travelling or living in areas with weak Internet access.
                     </p>
                     <p>
+                        On some pages
+                        you will see a map location marker: <img src="../www/img/icons/map_marker-18px.png" />. Tap this icon to open
+                        the <b>Maps app</b> at the selected location. This will work offline if you have downloaded the map for the relevant country
+                        in the Windows Settings for <b>Offline Maps</b>.
+                    </p>
+<p>
                         You can search through article titles and read any of these articles completely offline.
                     </p>
                     <p>
@@ -202,7 +210,8 @@
                     <p>
                         By default, this application will remember your last-visited page between sessions using a local cookie that is accessible
                         only by this app on this device. If you are accessing sensitive information that you do not wish to be displayed next time
-                        you open this app, we recommend that you <b>turn this option off</b> in the Configuration options.
+                        you open this app, we recommend that you <a href="#privacy" onclick="$('#btnConfigure').click();">turn this option off</a>
+                        in the Configuration options.
                     </p>
                     <h3>Feedback / helping / contributing</h3>
                     <p>This application is still a work in progress. There are many bugs that need fixing and improvements that need to be implemented. In particular:</p>
@@ -423,7 +432,7 @@
                     <div id="returntoArticle_bottom" style="text-align:center;"></div>
                     <div>
                         <div class="row">
-                            <h3>Privacy settings</h3>
+                            <h3 id="privacy">Privacy settings</h3>
                             <div class="column">
                                 <div class="panel panel-warning" style="min-width:16em;" id="dataPersistence">
                                     <div class="panel-heading">Persistence of data:</div>
