@@ -61,7 +61,7 @@
     <PackageCertificateKeyFile>KiwixWebApp_StoreKey.pfx</PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
-    <AppxBundle>Auto</AppxBundle>
+    <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
     <PackageCertificateThumbprint>95BFD8354C5B02AB76ED8D0DBCE7D830A871BA54</PackageCertificateThumbprint>
   </PropertyGroup>
