@@ -49,29 +49,38 @@
                     <h2>Welcome Wikivoyage by Kiwix!</h2>
                     <h3>Please read this important information!</h3>
                     <p>
-                        This application is packaged with the Wikivoyage offline ZIM archive.
+                        This application is packaged with the Wikivoyage offline ZIM archive in <b>English</b>.
                     </p>
                     <p>
-                        You may download and use other ZIM archives (such as Wikipedia, Wiktionary, Wikimedicine) from the
-                        <b>Configuration page <span class="glyphicon glyphicon-wrench"></span></b>, or else see the 
-                        <b>About page <span class="glyphicon glyphicon-info-sign"></span></b> for more information.
+                        You may download and use other ZIM archives in other languages (including Wikipedia, Wiktionary, Wikimedicine)
+                        from the <b>Configuration page <span class="glyphicon glyphicon-wrench"></span></b>, but if you regularly want
+                        to use this app with a non-Wikivoyage archive, we recommend you install <b>Kiwix JS</b> from the Store and keep
+                        this as a dedicated Wikivoyage app.
                     </p>
                     <p>
                         We aim to keep this Wikivoyage as up to date as possible, and you should receive automatic updates via the Microsoft Store.
-                        Please check the <b>About page <span class="glyphicon glyphicon-info-sign"></span></b> for information about the currently installed
-                        ZIM archive file.
-
-                        WARNING: Donwloading an updated version from the Configuration page<span class="glyphicon glyphicon-wrench"></span> will
-                        <b>not</b> update the packaged version stored in this app, and you will use <b>double the amount of storage space space</b>
-                        on your device. This is a security feature of the OS, and we cannot change it. We advise you to wait for an update from
-                        the Store.
+                        Please check the <b>About page <span class="glyphicon glyphicon-info-sign"></span></b> for information about the currently
+                        installed ZIM archive file.
+                    </p>
+                    <p>
+                        <b>WARNING:</b> Donwloading an updated version from the Configuration page<span class="glyphicon glyphicon-wrench"></span>
+                        will <b>not</b> update the packaged version stored in this app, and you will use <b>double the amount of storage space
+                        space</b> on your device. This is a security feature of the OS, and we cannot change it. We advise you to wait for an 
+                        update from the Store.
+                    </p>
+                    <p>
+                        On some pages you will see a map location marker: <img style="position:relative;top:-5px" src="../www/img/icons/map_marker-18px.png" />. Tap this icon to open
+                        the <b>Maps app</b> at the selected location. This will work offline if you have downloaded the map for the relevant country
+                        in the Windows Settings for <b>Offline Maps</b>.
                     </p>
                     <p>
                         Wikivoyage by Kiwix is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
                         improving the app are very welcome: see About section.
                     </p>
-                    <h3>New features in Version 0.9.5</h3>
+                    <h3>New features in Version 0.9.6</h3>
                     <ul>
+                        <li>Wikivoyage pages (English and German) will now display a map location marker for places that have geo-location data. Tap the icon to open the Maps app at this location</li>
+                        <li>The app now remembers the last page you visited before closing the app, and will resume from that page. You can turn this option off in the settings</li>
                         <li>Now supports links in Stackexchage ZIMs (note that equations are not yet supported in Stackexchange)</li>
                         <li>Added auto-loading of ZIM archives on device storage (enables packaged versions such as Wikivoyage)</li>
                         <li>Enabled in-page search / highlighting with Ctrl-F / Alt-F or tap on search button</li>
@@ -148,7 +157,14 @@
                         in Wikivoyage.
                     </p>
                     <p>
-                        Remember, you can search through article titles and read any of these articles <b>completely offline</b>.
+                        If you would like to use this app mainly for non-Wikivoyage archives, we recommend you install 
+                        <b>Kiwix JS</b> from the Store and keep this as a dedicated Wikivoyage app.
+                    </p>
+                    <p>
+                        Remember, you can search through article titles and read any of these articles <b>completely offline</b>. On some pages
+                        you will see a map location marker: <img src="../www/img/icons/map_marker-18px.png" />. Tap this icon to open
+                        the <b>Maps app</b> at the selected location. This will work offline if you have downloaded the map for the relevant country
+                        in the Windows Settings for <b>Offline Maps</b>.
                     </p>
                     <p>
                         Offline archives use the <a href="http://www.openzim.org//wiki/OpenZIM">OpenZIM format</a>, but note that this app has
@@ -200,7 +216,8 @@
                     <p>
                         By default, this application will remember your last-visited page between sessions using a local cookie that is accessible
                         only by this app on this device. If you are accessing sensitive information that you do not wish to be displayed next time
-                        you open this app, we recommend that you <b>turn this option off</b> in the Configuration options.
+                        you open this app, we recommend that you <a href="#privacy" onclick="$('#btnConfigure').click();">turn this option off</a>
+                        in the Configuration options.
                     </p>
                     <h3>Feedback / helping / contributing</h3>
                     <p>This application is still a work in progress. There are many bugs that need fixing and improvements that need to be implemented. In particular:</p>
@@ -421,7 +438,7 @@
                     <div id="returntoArticle_bottom" style="text-align:center;"></div>
                     <div>
                         <div class="row">
-                            <h3>Privacy settings</h3>
+                            <h3 id="privacy">Privacy settings</h3>
                             <div class="column">
                                 <div class="panel panel-warning" style="min-width:16em;" id="dataPersistence">
                                     <div class="panel-heading">Persistence of data:</div>
