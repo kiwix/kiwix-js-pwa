@@ -161,7 +161,11 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             uiUtil.poll("mobile" ? "Transforming display style to desktop..." : "Optimizing cached styles for desktop display...");
             //If it's in mobile position, move info-box above lead paragraph like on Wikipedia desktop
             //html = html.replace(/((?:<span\s*>\s*)?<p\b[^>]*>(?:(?=([^<]+))\2|<(?!p\b[^>]*>))*?<\/p>(?:<\/span\s*>)?[^<]*)([\s\S]*?)(<table\s*(?=[^>]*infobox)[\s\S]+?<\/table>)/i, "$4$3$1");
-            html = zim == "mobile" ? html.replace(/((?:<span\s*>\s*)?<p\b[\s\S]+?)(<table\s*(?=[^>]*(?:infobox|vertical-navbox|qbRight|wikitable))[\s\S]+?<\/table>)/i, "$2\r\n$1") : html;
+            if (zim == "mobile") {
+                var tableBox = util.matchOuter(html, '<table\\b[^>]+?(?:infobox|vertical-navbox|qbRight|wikitable)[^>]+>', '</table>', 'i');
+                html = tableBox ? html.replace(tableBox, "@@@KiwixSep@@@") : html;
+                html = tableBox ? html.replace(/((?:<span\s*>\s*)?<p\b[\s\S]+?)@@@KiwixSep@@@/i, tableBox + "\r\n$1") : html;
+            }
             //Ensure white background colour
             html = html.replace(/class\s*=\s*["']\s*mw-body\s*["']\s*/ig, 'style="background-color: white; padding: 1em; border-width: 0px; max-width: 55.8em; margin: 0 auto 0 auto;"');
             //Void empty header title
