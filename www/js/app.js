@@ -1745,6 +1745,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                     (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Map marker" title="Show this place on a map" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" >' + p6 + id;
             });
 
+            //Setup footnote backlinks if the ZIM doesn't have any
+            htmlArticle = htmlArticle.replace(/<li\s+id\s*=\s*"cite_note-([^"]+)"\s*>(?![^/]+↑)/ig, function (match, p1) {
+                var fnSearchRegxp = new RegExp('id\\s*=\\s*"(cite[-_]ref[-_]' + p1.replace(/[-_]/g,"[-_]") + '[^"]*)', "i");
+                var fnReturnMatch = htmlArticle.match(fnSearchRegxp);
+                var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : "";
+                return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>'; 
+            });
+
             //Inject htmlArticle into iframe
             $('#articleContent').contents().find('body').html(htmlArticle);
 
