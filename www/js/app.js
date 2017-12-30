@@ -1419,7 +1419,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         $("#prefix").val("");
         findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId);
         var dirEntry = selectedArchive.parseDirEntryId(dirEntryId);
-        pushBrowserHistoryState(dirEntry.url);
+        pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
         return false;
     }
     
@@ -1492,7 +1492,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                         selectedArchive.resolveRedirect(dirEntry, readFile);
                     } else {
                         console.log("Reading binary file...");
-                        selectedArchive.readBinaryFile(dirEntry, function(readableTitle, content) {
+                        selectedArchive.readBinaryFile(dirEntry, function(fileDirEntry, content) {
                             messagePort.postMessage({'action': 'giveContent', 'title' : title, 'content': content});
                             console.log("content sent to ServiceWorker");
                         });
@@ -1509,8 +1509,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
     };
     
     // Compile some regular expressions needed to modify links
-    var regexpImageLink = /^.?\/?[^:]+:(.*)/;
+    // Pattern to find the path in a url
     var regexpPath = /^(.*\/)[^\/]+$/;
+    // Pattern to find a ZIM URL (with its namespace) - see http://www.openzim.org/wiki/ZIM_file_format#Namespaces
+    var regexpZIMUrlWithNamespace = /(?:^|\/)([-ABIJMUVWX]\/.+)/;
+    // Pattern to match a local anchor in a href
+    var regexpLocalAnchorHref = /^#/;
     // These regular expressions match both relative and absolute URLs
     // Since late 2014, all ZIM files should use relative URLs
     var regexpImageUrl = /^(?:\.\.\/|\/)+(I\/.*)$/;
@@ -1629,11 +1633,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                     .then(function (dirEntry) {
                         uiUtil.poll("Attempting to resolve CSS link #" + index + " [" + title.substring(0, 30) + "] from ZIM file...");
                         return selectedArchive.readBinaryFile(dirEntry,
-                            function (readableTitle, content, namespace, url) {
+                            function (fileDirEntry, content) {
                         //DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
                                 //var cssContent = util.uintToString(content);
                                 var cssBlob = new Blob([content], { type: 'text/css' });
-                                var newURL = [namespace + "/" + url, URL.createObjectURL(cssBlob)];
+                                var newURL = [fileDirEntry.namespace + "/" + fileDirEntry.url, URL.createObjectURL(cssBlob)];
                                 blobArray.push(newURL);
                                 if (cssBlobCache)
                                     cssBlobCache.set(newURL[0], newURL[1]); 
@@ -1746,7 +1750,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             document.getElementById('search-article').scrollTop = 0;
             document.getElementById('search-article').style.overflow = "hidden";
             
-            var makeLink = uiUtil.makeReturnLink(dirEntry); //[kiwix-js #127]
+            var makeLink = uiUtil.makeReturnLink(dirEntry.title); //[kiwix-js #127]
             var linkListener = eval(makeLink);
             //Prevent multiple listeners being attached on each browse
             document.getElementById("returntoArticle_top").removeEventListener('click', linkListener);
@@ -1770,63 +1774,50 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                         doc.head.appendChild(script);
                     }
                 }
+            // Compute base URL
+            var urlPath = regexpPath.test(dirEntry.url) ? urlPath = dirEntry.url.match(regexpPath)[1] : "";
+            var baseUrl = dirEntry.namespace + "/" + urlPath;
+            // Create (or replace) the "base" tag with our base URL
+            $('#articleContent').contents().find('head').find("base").detach();
+            $('#articleContent').contents().find('head').append("<base href='" + baseUrl + "'>");
+            
+            var currentProtocol = location.protocol;
+            var currentHost = location.host;
 
                 // Convert links into javascript calls
                 $('#articleContent').contents().find('body').find('a').each(function () {
-                    // Store current link's url
-                    var url = $(this).attr("href");
-                    if (url === null || url === undefined) {
-                        return;
-                    }
-                    var lowerCaseUrl = url.toLowerCase();
-                    var cssClass = $(this).attr("class");
-
-                    if (cssClass === "new") {
-                        // It's a link to a missing article : display a message
+                var href = $(this).attr("href");
+                // Compute current link's url (with its namespace), if applicable
+                var zimUrl = regexpZIMUrlWithNamespace.test(this.href) ? this.href.match(regexpZIMUrlWithNamespace)[1] : "";
+                if (href === null || href === undefined) {
+                    // No href attribute
+                }
+                else if (href.length === 0) {
+                    // It's a link with an empty href, pointing to the current page.
+                    // Because of the base tag, we need to modify it
                         $(this).on('click', function (e) {
-                            alert("Missing article in Wikipedia");
                             return false;
                         });
                     }
-                    else if (url.slice(0, 1) === "#") {
-                        // It's an anchor link : do nothing
+                else if (regexpLocalAnchorHref.test(href)) {
+                    // It's an anchor link : we need to make it work with javascript
+                    // because of the base tag
+                    $(this).on('click', function(e) {
+                        $('#articleContent').first()[0].contentWindow.location.hash = href;
+                        return false;
+                    });
                     }
-                    else if (url.substring(0, 4) === "http") {
-                        // It's an external link : open in a new tab
-                        $(this).attr("target", "_blank");
-                    }
-                    else if (/^bingmaps:/.test(url)) {
-                        $(this).attr("target", "_blank");
-                    }
-                    else if (/^geo:/.test(url)) {
-                        $(this).attr("target", "_blank");
-                    }
-                    else if (/^tel:/.test(url)) {
-                        $(this).attr("target", "_blank");
-                    }
-                    else if (url.match(regexpImageLink)
-                        && (util.endsWith(lowerCaseUrl, ".png")
-                            || util.endsWith(lowerCaseUrl, ".svg")
-                            || util.endsWith(lowerCaseUrl, ".jpg")
-                            || util.endsWith(lowerCaseUrl, ".jpeg"))) {
-                        // It's a link to a file of Wikipedia : change the URL to the online version and open in a new tab
-                        var onlineWikipediaUrl = url.replace(regexpImageLink, "https://" + selectedArchive._language + ".wikipedia.org/wiki/File:$1");
-                        $(this).attr("href", onlineWikipediaUrl);
+                else if (this.protocol !== currentProtocol
+                    || this.host !== currentHost) {
+                    // It's an external URL : we should open it in a new tab
                         $(this).attr("target", "_blank");
                     }
                     else {
                         // It's a link to another article
                         // Add an onclick event to go to this article
                         // instead of following the link
-
-                        //Get rid of any absolute or relative prefixes (../, ./../, /../.., etc.)
-                        url = url.replace(/^[.\/]*([\s\S]+)$/, "$1");
-                        //Some Stackexchange links (e.g. "duplicate" and "related" questions) are missing the "question" path, so add it back
-                        //Regex matches a pattern that looks like: 1234/what-is-mathematics.html and changes to: question/1234/what-is-mathematics.html. Some references are 1234.html so this also adds question to such patterns
-                        url = url.replace(/^(\d+(?:\/[\s\S]+)?\.html?)$/i, "question/$1");
-
                         $(this).on('click', function (e) {
-                            var decodedURL = decodeURIComponent(url);
+                        var decodedURL = decodeURIComponent(zimUrl);
                             pushBrowserHistoryState(decodedURL);
                             goToArticle(decodedURL);
                             return false;
@@ -2174,7 +2165,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 if (imageMatch) {
                     var title = decodeURIComponent(imageMatch[1]);
                     selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                        selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content, namespace, url) {
+                        selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                            var url = fileDirEntry.url;
                             var mimetype = url.match(/\.(\w{2,4})$/);
                             mimetype = mimetype ? "image/" + mimetype[1].toLowerCase() : "image";
                             mimetype = /\.jpg$/i.test(url) ? "image/jpeg" : mimetype;
@@ -2250,7 +2242,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                     if (dirEntry === null)
                         console.log("Error: js file not found: " + title);
                     else
-                        selectedArchive.readBinaryFile(dirEntry, function (readableTitle, content) {
+                        selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                             // TODO : I have to disable javascript for now
                             // var jsContent = encodeURIComponent(util.uintToString(content));
                             //script.attr("src", 'data:text/javascript;charset=UTF-8,' + jsContent);
