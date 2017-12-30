@@ -145,9 +145,9 @@
     <Content Include="www\-\s\style-mobile.css" />
     <Content Include="www\-\s\style.css" />
     <Content Include="www\-\s\vector.css" />
-    <Content Include="www\A\dummyArticle.html" />
     <Content Include="www\css\app.css" />
     <Content Include="www\css\bootstrap.css" />
+    <Content Include="www\dummyArticle.html" />
     <Content Include="www\favicon.ico" />
     <Content Include="www\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="www\fonts\glyphicons-halflings-regular.svg" />
