@@ -24,6 +24,59 @@ cite,dfn{font-style:inherit}q{quotes:'"' '"' "'" "'"}blockquote{overflow:hidden;
 
 div.infobox_v3{padding:5px;width:25em;background:#f9f9f9;border:1px solid #aaa;clear:right;float:right;font-size:0.9em;line-height:1.4;margin:0 0 0.5em 1em;max-width:325px;word-wrap:break-word}.infobox_v3 .entete{display:table;height:45px;width:100%;font-weight:bold;text-align:center;font-size:1.4em;line-height:1.1;margin-bottom:10px;background-color:#dfedff}.infobox_v3 .entete > div{display:table-cell;vertical-align:middle;padding:3px}.infobox_v3:not(.large) .entete.icon > div{padding:3px 48px}.infobox_v3 .images{text-align:center;display:flex;justify-content:space-around;align-items:center}.infobox_v3 .images a{max-width:100%;flex:0 0 auto}.infobox_v3 .deux-images a{max-width:48%}.infobox_v3 .images img{max-width:100%;height:auto}.infobox_v3 .legend{font-size:0.9em;text-align:center;margin:5px 0 8px 0}.infobox_v3 table{width:100%;margin:5px 0;table-layout:fixed;border-collapse:collapse}.infobox_v3 th[scope="col"]{text-align:center;word-wrap:normal}.infobox_v3 th[scope=row]{text-align:left;padding-right:10px;width:8em;max-width:140px;word-wrap:normal}.infobox_v3 th[scope=row],.infobox_v3 td{padding-top:4px;vertical-align:super}.infobox_v3 th[scope=row].middle{vertical-align:middle}.infobox_v3.bordered th[scope=row],.infobox_v3.bordered td{padding-bottom:4px;border-top:1px solid #dfedff}.infobox_v3.bordered caption.bordered{margin:0 0 -1px 0}.infobox_v3 tr.left td{text-align:left}.infobox_v3 tr.vborder td{border-left:1px dotted #aaa}.infobox_v3 tr.vborder td:first-child{border-left:none}.infobox_v3 td.data{text-align:center}.infobox_v3 tr:first-child ul:first-child{margin-top:0}.infobox_v3 p.bloc,.infobox_v3 caption{font-weight:bold;text-align:center;line-height:1.1;margin:0 0 5px 0;padding:4px;background:#dfedff}.infobox_v3 p.bloc{margin:5px 0}.infobox_v3 caption.bordered,.infobox_v3 p.bordered{border-top:1px solid #dfedff;border-bottom:1px solid #dfedff;background:transparent}.infobox_v3 .bordered.navbar,.infobox_v3 .bordered.nav{padding-top:4px;border-bottom:0}.infobox_v3 caption.hidden{margin:0 !important;padding:0 !important}.infobox_v3 .hr{font-size:1px;line-height:1px;margin:5px 0;background-color:#dfedff}.infobox_v3 .hr.collapse{margin:5px 0 -8px 0}.infobox_v3 .navbar{text-align:right;font-size:0.8em;line-height:1.1;margin:8px 0 0}.infobox_v3 .navbar .plainlinks{float:left}.infobox_v3 .overflow{overflow:hidden}.infobox_v3 .prev a,.infobox_v3 .prev_bloc{background:url(//upload.wikimedia.org/wikipedia/commons/thumb/4/49/ArrowLeftNavbox.svg/12px-ArrowLeftNavbox.svg.png) no-repeat left center;float:left;max-width:40%;padding:0 0 0 18px;text-align:left}.infobox_v3 .next a,.infobox_v3 .next_bloc{background:url(//upload.wikimedia.org/wikipedia/commons/thumb/1/10/ArrowRightNavbox.svg/12px-ArrowRightNavbox.svg.png) no-repeat right center;float:right;max-width:40%;padding:0 18px 0 0;text-align:right}.infobox_v3 table.maillot-equipe td{padding:0}.infobox_v3 table.maillot-equipe{table-layout:auto}
 
+.qbRightDiv {
+    clear: right;
+    float: right;
+    margin: 0 0 0.5em 1em;
+}
+
+.qbDiv, .qbRightDiv {
+    box-sizing: border-box;
+    overflow: hidden;
+    border: 1px solid #6cc8f3;
+    border-radius: 5px;
+}
+
+.qb .qbHeader {
+    text-align: center;
+    color: #004f80;
+    padding: 0.3em 0.35em;
+    font-size: 1.2em;
+    background: #f0f0f0;
+    border-top: 1px solid #c0c0c0;
+}
+
+.qb th {
+    padding: 2px 0.4em;
+    vertical-align: baseline;
+    text-align: left;
+    font-weight: bold;
+}
+
+.qb td {
+    padding: 2px 0.4em;
+    vertical-align: baseline;
+}
+
+.qbImage {
+    text-align: center;
+    padding: 5px 2px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.qbImage div.tright, .qbImage .thumb.tright {
+    float: none;
+    margin: 0;
+    padding: 0;
+}
+
+.content figure .thumbinner, .content .thumbinner {
+    margin: 0 1.4em 0 0;
+    max-width: 100% !important;
+}
+
+
 /* end   http://en.wikipedia.org/w/load.php?debug=false&lang=en&modules=ext.uls.interlanguage%7Cext.visualEditor.desktopArticleTarget.noscript%7Cext.wikimediaBadges%7Cmediawiki.legacy.commonPrint%2Cshared%7Cmediawiki.sectionAnchor%7Cmediawiki.skinning.interface%7Cskins.vector.styles&only=styles&skin=vector */
 
 /* start https://en.wikipedia.org/wiki/Mediawiki:offline.css?action=raw */

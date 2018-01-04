@@ -44,3 +44,86 @@ sup,sub{line-height:0.75em}dfn{font-style:normal;font-weight:bold}i > dfn{font-s
 
 h3 .mw-headline {padding-top:1em;}
 
+.qbRightDiv {
+    clear: right;
+    float: right;
+    margin: 0 0 0.5em 1em;
+}
+
+.qbDiv, .qbRightDiv {
+    box-sizing: border-box;
+    overflow: hidden;
+    border: 1px solid #6cc8f3;
+    border-radius: 5px;
+}
+
+.qb .qbHeader {
+    text-align: center;
+    color: #004f80;
+    padding: 0.3em 0.35em;
+    font-size: 1.2em;
+    background: #f0f0f0;
+    border-top: 1px solid #c0c0c0;
+}
+
+.qb th {
+    padding: 2px 0.4em;
+    vertical-align: baseline;
+    text-align: left;
+    font-weight: bold;
+}
+
+.qb td {
+    padding: 2px 0.4em;
+    vertical-align: baseline;
+}
+
+.qbImage {
+    text-align: center;
+    padding: 5px 2px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.qbImage div.tright, .qbImage .thumb.tright {
+    float: none;
+    margin: 0;
+    padding: 0;
+}
+
+.content figure .thumbinner, .content .thumbinner {
+    margin: 0 1.4em 0 0;
+    max-width: 100% !important;
+}
+
+
+@media all and (max-width:600px) {
+
+    .content table.qb, .content div.qb, .content .tabbedContainers, .content .ImageGroup, .qbDiv .qb, .qbRightDiv .qb {
+        width: 100% !important;
+    }
+
+    .qb tbody {
+        width: 100%;
+        display: table !important;
+    }
+
+    .qbImage div {
+        float: none !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .qbRightDiv {
+        width: auto !important;
+    }
+
+    .qbRightDiv, .qbRight, .qbLeft {
+        clear: both;
+        float: none;
+    }
+
+}
+
+
+
