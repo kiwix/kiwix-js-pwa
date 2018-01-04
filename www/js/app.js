@@ -1740,7 +1740,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 return '<a href="bingmaps:?collection=point.' + latitude + '_' + longitude + '_' + encodeURIComponent(id.replace(/_/g, " ")) +
                     '">\r\n<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;margin-top:5px !important" />\r\n</a>' + href;
             });
-
+            
             //Adapt English Wikivoyage POI data format
             var regexpGeoLocationEN = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
             htmlArticle = htmlArticle.replace(regexpGeoLocationEN, function (match, p1, latitude, longitude, p4, p5, p6, id) {
@@ -1748,6 +1748,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                     encodeURIComponent(id.replace(/_/g, " ")).replace(/\.(\w\w)/g, "%$1") +
                     (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Map marker" title="Show this place on a map" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" >' + p6 + id;
             });
+
+            //Clean up remaining geo: links
+            htmlArticle = htmlArticle.replace(/href\s*=\s*"\s*geo:([\d.]+),([\d.]+)/ig, 'href="bingmaps:?collection=point.$1_$2');
 
             //Setup footnote backlinks if the ZIM doesn't have any
             htmlArticle = htmlArticle.replace(/<li\s+id\s*=\s*"cite_note-([^"]+)"\s*>(?![^/]+↑)/ig, function (match, p1) {
