@@ -163,8 +163,17 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             //html = html.replace(/((?:<span\s*>\s*)?<p\b[^>]*>(?:(?=([^<]+))\2|<(?!p\b[^>]*>))*?<\/p>(?:<\/span\s*>)?[^<]*)([\s\S]*?)(<table\s*(?=[^>]*infobox)[\s\S]+?<\/table>)/i, "$4$3$1");
             if (zim == "mobile") {
                 var tableBox = util.matchOuter(html, '<table\\b[^>]+?(?:infobox|vertical-navbox|qbRight|wikitable)[^>]+>', '</table>', 'i');
-                html = tableBox ? html.replace(tableBox, "@@@KiwixSep@@@") : html;
-                html = tableBox ? html.replace(/((?:<span\s*>\s*)?<p\b[\s\S]+?)@@@KiwixSep@@@/i, tableBox + "\r\n$1") : html;
+                if (!(tableBox && tableBox.length)) {
+                    //If above failed we may have div style infobox
+                    tableBox = util.matchOuter(html, '<div\\b[^>]+?(?:qbRight)[^>]+>', '</div>', 'i');
+                }
+                //html = tableBox && tableBox.length ? html.replace(tableBox, "@@@KiwixSep@@@") : html;
+                if (tableBox && tableBox.length) {
+                    html = html.replace(tableBox, "@@@KiwixSep@@@");
+                    html = html.replace(/((?:<span\s*>\s*)?<p\b[\s\S]+?)@@@KiwixSep@@@/i, tableBox + "\r\n$1");
+                    //Do the replacement below just in case above regex failed
+                    html = html.replace(/@@@KiwixSep@@@/, tableBox);
+                }
             }
             //Ensure white background colour
             html = html.replace(/class\s*=\s*["']\s*mw-body\s*["']\s*/ig, 'style="background-color: white; padding: 1em; border-width: 0px; max-width: 55.8em; margin: 0 auto 0 auto;"');
