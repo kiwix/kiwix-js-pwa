@@ -168,11 +168,12 @@ tr[bgcolor] {
   }
 
 table[style*="background-color:#fff;"], .search-form fieldset, table.ambox, tr[style*="background-color: #fff;"],
-.mw-ui-button[style*="background-color:#008B6D"], tr[style*="background-color: #f5faff;"],
+.mw-ui-button[style*="background-color:#008B6D"], tr[style*="background-color: #f5faff;"], tr[style*="background:#EF"], tr[style*="background:#FF"],
 tr[style*="background:#E9E9E9"] > *, table.infobox.hproduct > tbody > tr[style*="background: #F0F0F0;"],
 td[style*="background:lightgray"], td[style*="background:#f0f0f0"], td[style*="background:#eeeeff"], td[style*="background:#e8e8e8"],
 td[style*="background:#ddddff"], td[style*="background:#efefef"], td[style*="background:#e9e9e9"], td[style*="background:#f1f1f1"],
-.oo-ui-buttonElement-button:hover, .tracklist tr[style*="background-color:#f7f7f7"], caption[style*="background:#e3e3e3"] { background-color: #282828 !important;
+.oo-ui-buttonElement-button:hover, .tracklist tr[style*="background-color:#f7f7f7"], caption[style*="background:#e3e3e3"] {
+    background-color: #282828 !important;
 }
 
   table.wikitable > tr > th, table.wikitable > * > tr > th, div.barbox > table > tbody > tr > th
@@ -336,7 +337,7 @@ span[style*="color:black"] {
     color: whitesmoke !important;
 }
 
-span[style*="color:#555"] {
+span[style*="color:#555"], span[style*="background-color:#EE"] {
     color: darkgray !important;
 }
 

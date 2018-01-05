@@ -76,6 +76,12 @@ div.infobox_v3{padding:5px;width:25em;background:#f9f9f9;border:1px solid #aaa;c
     max-width: 100% !important;
 }
 
+div.float-right, table.float-right, ul.float-right, .float-right {
+    float: right;
+    margin: 1em 0 1em 1em;
+}
+
+
 
 /* end   http://en.wikipedia.org/w/load.php?debug=false&lang=en&modules=ext.uls.interlanguage%7Cext.visualEditor.desktopArticleTarget.noscript%7Cext.wikimediaBadges%7Cmediawiki.legacy.commonPrint%2Cshared%7Cmediawiki.sectionAnchor%7Cmediawiki.skinning.interface%7Cskins.vector.styles&only=styles&skin=vector */
 
