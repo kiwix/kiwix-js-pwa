@@ -87,7 +87,6 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
     }
 
     function toMobileCSS(html, zim, cc, cs, css) {
-        var cssTheme = document.getElementById("cssWikiDarkThemeCheck").checked ? "dark" : "light";
         //DEV: Careful not to add styles twice...
         //NB Can't relocate to filterCSS function above because it filters styles serially and code would be called for every style...
         if (zim != cs) { //If ZIM doesn't match user-requested style, add in stylesheets if they're missing
@@ -140,15 +139,14 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             html = html.match(/table\s+(?=[^>]*class\s*=\s*["'][^"']*(?:infobox|vertical-navbox|qbRight|wikitable))/i) ? html.replace(/(<h2\s+[^<]*<\/h2>)/ig, '<div style="width: 60%;">$1</div>') : html;
         }
         //Add dark theme if requested
-        css += (cssTheme == "dark") ? '<link href="../-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (cssTheme == "invert") ? '<link href="../-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' :"";
-        html = (cssTheme == "dark") ? html.replace(/(<h1\s+[^>]*)background-color\s*:\s*white;\s*/i, "$1") : html;
-        html = (cssTheme == "dark") ? html.replace(/(<div\s+[^>]*)background-image\s*:\s*linear-gradient[^;]+white[^;]*;\s*/i, "$1") : html;
+        css += (params.cssTheme == "dark") ? '<link href="../-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="../-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' :"";
+        html = (params.cssTheme == "dark") ? html.replace(/(<h1\s+[^>]*)background-color\s*:\s*white;\s*/i, "$1") : html;
+        html = (params.cssTheme == "dark") ? html.replace(/(<div\s+[^>]*)background-image\s*:\s*linear-gradient[^;]+white[^;]*;\s*/i, "$1") : html;
 
         return { html : html, css : css };
     }
 
     function toDesktopCSS(html, zim, cc, cs, css) {
-        var cssTheme = document.getElementById("cssWikiDarkThemeCheck").checked ? "dark" : "light";
         if (cc || (zim != cs)) {
             if (/class\s*=\s*["']gallery/i.test(html) && !/gallery/i.test(css)) {
                 console.log("Inserting missing css required for gallery display [mediawiki.page.gallery.styles.css]...");
@@ -181,9 +179,9 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             html = html.replace(/<h1\s*[^>]+titleHeading[^>]+>\s*<\/h1>\s*/ig, "");
         }
         //Add dark theme if requested
-        css += (cssTheme == "dark") ? '<link href="../-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (cssTheme == "invert") ? '<link href="../-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
-        html = (cssTheme == "dark") ? html.replace(/(<h1\s+[^>]*)background-color:\s*white;\s*/i, "$1") : html;
-        html = (cssTheme == "dark") ? html.replace(/(<div\s+[^>]*)background-image\s*:\s*linear-gradient[^;]+white[^;]*;\s*/i, "$1") : html;
+        css += (params.cssTheme == "dark") ? '<link href="../-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="../-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
+        html = (params.cssTheme == "dark") ? html.replace(/(<h1\s+[^>]*)background-color:\s*white;\s*/i, "$1") : html;
+        html = (params.cssTheme == "dark") ? html.replace(/(<div\s+[^>]*)background-image\s*:\s*linear-gradient[^;]+white[^;]*;\s*/i, "$1") : html;
 
         return { html : html, css : css };
     }
