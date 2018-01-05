@@ -603,8 +603,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
         });
         $('input:checkbox[name=cssWikiDarkThemeInvert]').on('change', function (e) {
             if (params.cssTheme == "light" && this.checked) document.getElementById('cssWikiDarkThemeInvertCheck').checked = true;
-            params.cssTheme = this.checked ? 'invert' : params.cssTheme;
+            params.cssTheme = this.checked ? 'invert' : 'dark';
             cookies.setItem('cssTheme', params.cssTheme, Infinity);
+            params.themeChanged = true;
         });
         $('input:checkbox[name=rememberLastPage]').on('change', function (e) {
             if (params.rememberLastPage && this.checked) document.getElementById('rememberLastPageCheck').checked = true;
@@ -1261,7 +1262,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             //    cssDirEntryCache = new Map();
         selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
             // The archive is set : go back to home page to start searching
-            $("#btnHome").click();
+            if (params.rememberLastPage && ~params.lastPageVisit.indexOf(selectedArchive._file._files[0].name)) {
+                var lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
+                goToArticle(lastPage);
+            } else {
+                $("#btnHome").click();
+            }
         });
     }
 
