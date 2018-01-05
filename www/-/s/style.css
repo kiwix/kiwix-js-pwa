@@ -30,6 +30,12 @@ div.infobox_v3{padding:5px;width:25em;background:#f9f9f9;border:1px solid #aaa;c
     margin: 0 0 0.5em 1em;
 }
 
+.qbRight {
+    clear: right;
+    float: right;
+    margin-left: 1em;
+}
+
 .qbDiv, .qbRightDiv {
     box-sizing: border-box;
     overflow: hidden;
@@ -77,6 +83,7 @@ div.infobox_v3{padding:5px;width:25em;background:#f9f9f9;border:1px solid #aaa;c
 }
 
 div.float-right, table.float-right, ul.float-right, .float-right {
+    clear: right;
     float: right;
     margin: 1em 0 1em 1em;
 }
