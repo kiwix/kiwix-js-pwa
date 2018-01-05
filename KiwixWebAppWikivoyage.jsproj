@@ -141,6 +141,7 @@
     <Content Include="www\-\s\css_modules\mw.MediaWikiPlayer.loader.css" />
     <Content Include="www\-\s\css_modules\mw.PopUpMediaTransform.css" />
     <Content Include="www\-\s\css_modules\mw.TMHGalleryHook.js.css" />
+    <Content Include="www\-\s\style-dark-invert.css" />
     <Content Include="www\-\s\style-dark.css" />
     <Content Include="www\-\s\style-mobile.css" />
     <Content Include="www\-\s\style.css" />
