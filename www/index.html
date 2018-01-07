@@ -296,8 +296,9 @@
                     <div id="returntoArticle_top" style="text-align:center;padding-top:20px;"></div>
                     <div class="row">
                         <h2 style="margin-top:0;">Configuration</h2>
-                        <p>This application needs a ZIM archive to work. You can get one from the <a href="#downloads">download links panel</a>.</p>
+                        <p>This application needs a ZIM archive to work.<span id="downloadLinksText"> You can get one from the <a href="#downloads">download links panel</a>.</span></p>
                     </div>
+                    <div id="hideFileSelectors">
                     <div id="openLocalFiles" style="display: none;">
                         <div id="UWPInstructions" class="row">
                             <p>
@@ -365,6 +366,7 @@
                             <div id="downloadLinks" style="display: none;"></div>
                             <pre id="serverResponse" class="panel-footer" style="display:none;"></pre>
                         </div>
+                    </div>
                     </div>
 
                     <div>
@@ -462,6 +464,15 @@
                                         <label class="radio">
                                             <input type="radio" name="useMathJax" id="useMathJaxRadioFalse" value="false">
                                             <b>Use SVG fallback images</b> (very slow and memory hungry, but will dislplay all symbols)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="panel panel-warning" style="min-width:16em; display: none;" id="packagedAppFileSelectors">
+                                    <div class="panel-heading">Display hidden ZIM archive selectors:</div>
+                                    <div class="panel-body">
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="displayFileSelectors" id="displayFileSelectorsCheck">
+                                            <b>Display selectors</b> for files and folders (<i><b>not</b> recommended:</i> if you wish to open different ZIM files, you should instead download Kiwix JS from the Store, as this app is optimized for its packaged contents)
                                         </label>
                                     </div>
                                 </div>
