@@ -39,7 +39,9 @@ params['cssTheme'] = getCookie('cssTheme') || 'light'; //Set default to 'light',
 params['cssUITheme'] = getCookie('cssUITheme') || 'light'; //Set default to 'light' or 'dark' to use respective themes for UI
 params['imageDisplay'] = getCookie('imageDisplay') != null ? getCookie('imageDisplay') : true; //Set default to display images from Zim
 params['hideToolbar'] = getCookie('hideToolbar') != null ? getCookie('hideToolbar') : false; //Set default to hide the top toolbar on scroll
+params['rememberLastPage'] = getCookie('rememberLastPage') != null ? getCookie('rememberLastPage') : true; //Set default option to remember the last visited page between sessions
 params['useMathJax'] = getCookie('useMathJax') != null ? getCookie('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
+params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['falFileToken'] = params['falFileToken'] || "zimfile"; //UWP support
@@ -47,10 +49,12 @@ params['falFolderToken'] = params['falFolderToken'] || "zimfilestore"; //UWP sup
 params['localStorage'] = params['localStorage'] || "";
 params['pickedFile'] = params['pickeFile'] || "";
 params['pickedFolder'] = params['pickedFolder'] || "";
+params['lastPageVisit'] = getCookie('lastPageVisit') || "";
+params['lastPageVisit'] = params['lastPageVisit'] ? decodeURIComponent(params['lastPageVisit']) : "";
 params['themeChanged'] = params['themeChanged'] || false;
 params['allowInternetAccess'] = params['allowInternetAccess'] || false; //Do not get value from cookie, should be explicitly set by user on a per-session basis
 
-//Initialize checkbox and radio values
+//Initialize checkbox, radio and other values
 document.getElementById('cssCacheModeCheck').checked = params.cssCache;
 document.getElementById('imageDisplayModeCheck').checked = params.imageDisplay;
 document.getElementById('hideToolbarCheck').checked = params.hideToolbar;
@@ -59,7 +63,10 @@ document.getElementById('darkInvert').style.display = params.cssTheme == 'dark' 
 document.getElementById('cssWikiDarkThemeInvertCheck').checked = params.cssTheme == 'invert' ? true : false;
 document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme == 'dark' ? true : false;
 document.getElementById('useMathJaxRadio' + (params.useMathJax ? 'True' : 'False')).checked = true;
-
+document.getElementById('rememberLastPageCheck').checked = params.rememberLastPage;
+document.getElementById('displayFileSelectorsCheck').checked = params.showFileSelectors;
+document.getElementById('version').innerHTML = params.version;
+document.getElementById('fileVersion').innerHTML = params.fileVersion;
 
 //Set up storage types
 if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') { //UWP

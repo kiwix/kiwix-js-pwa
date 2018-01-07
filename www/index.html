@@ -300,74 +300,76 @@
                     <div id="returntoArticle_top" style="text-align:center;padding-top:20px;"></div>
                     <div class="row">
                         <h2 style="margin-top:0;">Configuration</h2>
-                        <p>This app is packaged with the Wikivoyage ZIM archive. You can get more archives from the <a href="#downloads">download links panel</a>.</p>
+                        <p>This app is packaged with the Wikivoyage ZIM archive.<span id="downloadLinksText"> You can get more archives from the <a href="#downloads">download links panel</a>.</span></p>
                     </div>
-                    <div id="openLocalFiles" style="display: none;">
-                        <div id="UWPInstructions" class="row">
-                            <p>
-                                If you have a single (unsplit) ZIM archive, use the <b>first</b> button.<br />
-                                For a split archive (.zimaa, .zimab, etc.) or multiple archives, use the <b>second</b> button.
-                            </p>
-                        </div>
-                        <div id="instructions" class="row" style="display:none;">
-                            <p>
-                                Please choose the location of your ZIM archive.<br />
-                                For a split archive (.zimaa, .zimab, etc.) you must select <b>all</b> the split parts.
-                            </p>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-6">
-                                <input type="button" class="btn btn-primary" value="Select single archive" id="archiveFile" accept=".zim" />
-                            </div>
-                            <div class="col-xs-6">
-                                <input type="button" class="btn btn-primary" value="Select folder" id="archiveFiles" accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
-                            </div>
-                            <input style="display:none;" type="file" class="btn btn-primary" value="Select folder with ZIM files" id="archiveFilesLegacy" multiple accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <p style="padding-top:0.5em;"><strong>Only Wikimedia contents (wiki*.zim* files)</strong> have been tested well with this app.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="scanningForArchives" style="display: none;">
-                        <br /> Scanning for archives... Please wait <img src="img/spinner.gif" alt="Please wait..." />
-                    </div>
-                    <div id="chooseArchiveFromLocalStorage" style="display: none;">
-                        <div class="row">
-                            <p><span id="archiveNumber">Archives</span> found on this device (tap "Select storage" for more):</p>
-                            <div class="col-xs-12">
-                                <select id="archiveList" class="form-control" multiple></select><br />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <input style="float:left;margin-right:1em;" type="button" class="btn btn-primary" value="Select storage" id="btnRescanDeviceStorage" />
-                                <p>Tap to select app's local storage or to select a file or folder manually</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="noZIMFound" style="display: none;">
-                        <br /><p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
-                    </div>
-                    <div id="downloads">
-                        <div class="row">
-                            <h3>Download links</h3>
-                            <p>
-                                Files can be very large, <b>do not attempt to download using mobile data!</b>
-                            </p>
-                            <div class="col-xs-12">
+                    <div id="hideFileSelectors">
+                        <div id="openLocalFiles" style="display: none;">
+                            <div id="UWPInstructions" class="row">
                                 <p>
-                                    <input id="downloadTrigger" type="button" class="btn btn-primary" value="Open library" style="float:left;margin-right:1em;">
-                                    Opens library of archives for download:<br /><i>Warning:</i> this will use data
-                                </p>
-                                <p>
-                                    <input type="checkbox" name="allowInternetAccess" id="allowInternetAccessCheck">
-                                    <b>&nbsp;Allow Internet access?</b>
+                                    If you have a single (unsplit) ZIM archive, use the <b>first</b> button.<br />
+                                    For a split archive (.zimaa, .zimab, etc.) or multiple archives, use the <b>second</b> button.
                                 </p>
                             </div>
-                            <div id="downloadLinks" style="display: none;"></div>
-                            <pre id="serverResponse" class="panel-footer" style="display:none;"></pre>
+                            <div id="instructions" class="row" style="display:none;">
+                                <p>
+                                    Please choose the location of your ZIM archive.<br />
+                                    For a split archive (.zimaa, .zimab, etc.) you must select <b>all</b> the split parts.
+                                </p>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <input type="button" class="btn btn-primary" value="Select single archive" id="archiveFile" accept=".zim" />
+                                </div>
+                                <div class="col-xs-6">
+                                    <input type="button" class="btn btn-primary" value="Select folder" id="archiveFiles" accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
+                                </div>
+                                <input style="display:none;" type="file" class="btn btn-primary" value="Select folder with ZIM files" id="archiveFilesLegacy" multiple accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <p style="padding-top:0.5em;"><strong>Only Wikimedia contents (wiki*.zim* files)</strong> have been tested well with this app.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="scanningForArchives" style="display: none;">
+                            <br /> Scanning for archives... Please wait <img src="img/spinner.gif" alt="Please wait..." />
+                        </div>
+                        <div id="chooseArchiveFromLocalStorage" style="display: none;">
+                            <div class="row">
+                                <p><span id="archiveNumber">Archives</span> found on this device (tap "Select storage" for more):</p>
+                                <div class="col-xs-12">
+                                    <select id="archiveList" class="form-control" multiple></select><br />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <input style="float:left;margin-right:1em;" type="button" class="btn btn-primary" value="Select storage" id="btnRescanDeviceStorage" />
+                                    <p>Tap to select app's local storage or to select a file or folder manually</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="noZIMFound" style="display: none;">
+                            <br /><p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
+                        </div>
+                        <div id="downloads">
+                            <div class="row">
+                                <h3>Download links</h3>
+                                <p>
+                                    Files can be very large, <b>do not attempt to download using mobile data!</b>
+                                </p>
+                                <div class="col-xs-12">
+                                    <p>
+                                        <input id="downloadTrigger" type="button" class="btn btn-primary" value="Open library" style="float:left;margin-right:1em;">
+                                        Opens library of archives for download:<br /><i>Warning:</i> this will use data
+                                    </p>
+                                    <p>
+                                        <input type="checkbox" name="allowInternetAccess" id="allowInternetAccessCheck">
+                                        <b>&nbsp;Allow Internet access?</b>
+                                    </p>
+                                </div>
+                                <div id="downloadLinks" style="display: none;"></div>
+                                <pre id="serverResponse" class="panel-footer" style="display:none;"></pre>
+                            </div>
                         </div>
                     </div>
 
@@ -466,6 +468,15 @@
                                         <label class="radio">
                                             <input type="radio" name="useMathJax" id="useMathJaxRadioFalse" value="false">
                                             <b>Use SVG fallback images</b> (very slow and memory hungry, but will dislplay all symbols)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="panel panel-warning" style="min-width:16em; display: none;" id="packagedAppFileSelectors">
+                                    <div class="panel-heading">Display hidden ZIM archive selectors:</div>
+                                    <div class="panel-body">
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="displayFileSelectors" id="displayFileSelectorsCheck">
+                                            <b>Display selectors</b> for files and folders (<i><b>not</b> recommended:</i> if you wish to open different ZIM files, you should instead download Kiwix JS from the Store, as this app is optimized for its packaged contents)
                                         </label>
                                     </div>
                                 </div>

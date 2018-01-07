@@ -34,18 +34,6 @@
           <uap:Rotation Preference="landscapeFlipped" />
         </uap:InitialRotationPreference>
       </uap:VisualElements>
-      <Extensions>
-        <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="zimarchive">
-            <uap:DisplayName>ZIM Archive</uap:DisplayName>
-            <uap:InfoTip>Compressed ZIM FIle Archive</uap:InfoTip>
-            <uap:SupportedFileTypes>
-              <uap:FileType ContentType="application/zlib">.zim</uap:FileType>
-              <uap:FileType ContentType="application/zlib">.zimaa</uap:FileType>
-            </uap:SupportedFileTypes>
-          </uap:FileTypeAssociation>
-        </uap:Extension>
-      </Extensions>
     </Application>
   </Applications>
   <Capabilities>
