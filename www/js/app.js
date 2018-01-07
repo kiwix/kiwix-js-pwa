@@ -625,6 +625,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             cookies.setItem('useMathJax', params.useMathJax, Infinity);
             params.themeChanged = true;
         });
+        $('input:checkbox[name=displayFileSelectors]').on('change', function (e) {
+            params.showFileSelectors = this.checked ? true : false;
+            document.getElementById('hideFileSelectors').style.display = params.showFileSelectors ? "block" : "none";
+            document.getElementById('downloadLinksText').style.display = params.showFileSelectors ? "inline" : "none";
+            cookies.setItem('showFileSelectors', params.showFileSelectors, Infinity);
+            if (params.showFileSelectors) document.getElementById('configuration').scrollIntoView();
+        });
 
         function checkToolbar() {
             var thisdoc = document.getElementById('top');
@@ -680,8 +687,16 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
             cssUIThemeSet(params.cssUITheme);
             //@TODO - this is initialization code, and should be in init.js (withoug jQuery)
             $('input:radio[name=cssInjectionMode]').filter('[value="' + params.cssSource + '"]').prop('checked', true);
-            document.getElementById('version').innerHTML = params.version;
-            document.getElementById('fileVersion').innerHTML = params.fileVersion;
+            //DEV this hides file selectors if it is a packaged file -- add your own packaged file test to regex below
+            if (/wikivoyage|wikimed/i.test(params.storedFile)) {
+                document.getElementById('packagedAppFileSelectors').style.display = "block";
+                document.getElementById('hideFileSelectors').style.display = "none";
+                document.getElementById('downloadLinksText').style.display = "none";
+                if (params.showFileSelectors) {
+                    document.getElementById('hideFileSelectors').style.display = "block";
+                    document.getElementById('downloadLinksText').style.display = "inline";
+                }
+            }
             //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
             if (cookies.getItem('version') != params.version) {
                 firstRun = true;
