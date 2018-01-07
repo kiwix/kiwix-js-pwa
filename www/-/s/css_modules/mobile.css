@@ -20,7 +20,7 @@ table.infobox th, table.infobox td { /*Added GK*/
 }
 
 .mw-body h2, .mw-body h3, .mw-body h4, .mw-body h5, .mw-body h6 {
-    padding: 0.5em 0;
+    padding: 0.5em 0 0;
 }
 .mw-body h3, .mw-body h2 {
     /*clear: both;*/
