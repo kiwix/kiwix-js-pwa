@@ -1,3 +1,13 @@
+## Release 0.9.7 (beta)
+* UPDATE: January 2018 update of ZIM archive to <code>wikivoyage_en_all_novid_2018-01.zim
+* ENHANCEMENT: The app now hides the file selectors by default in the Config menu to avoid confusion and to encourage use of Kiwix JS for anything not related to Wikivoyage
+* FIX: Added icon indicating that a link is to an external web site
+* FIX: Bugs in mobile to desktop style transformation
+* FIX: Issue with infoboxes and images not stacking correctly on mobile displays
+* FIX: Support new-style infoboxes in German Wikivoyage
+* FIX: Last-visited page was not being remembered when user picked the file as a single archive
+* FIX: Bug which prevented the dark mode by simple inversion from functioning
+
 ## Release 0.9.6 (beta)
 * FIX: Prevent bottom toolbar from wrapping across two lines on small screens
 * ENHANCEMENT: Enabled autoloading of last-read page on app start (and privacy option to turn this off)
