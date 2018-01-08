@@ -12,10 +12,10 @@
     Main authors of this application :
     Mossroy - mossroy@mossroy.fr
     Peter-x - https://github.com/peter-x
+    Jaifroid - Adapted for UWP for Windows 10 and Windows Mobile 10 : Geoffrey Kantaris egk10@cam.ac.uk
 
-    Adapted for UWP for Windows 10 and Windows Mobile 10 : Geoffrey Kantaris egk10@cam.ac.uk
+    Copyright 2013-2018 Mossroy, Peter-x, Jaifroid, sharun-s and other contributors
 
-    Copyright 2013-2017 Mossroy, Peter-x and contributors
     License GPL v3:
 
     This file is part of Kiwix.
@@ -52,9 +52,8 @@
                         This application is packaged with the Wikivoyage offline ZIM archive in <b>English</b>.
                     </p>
                     <p>
-                        You may download and use other ZIM archives in other languages (including Wikipedia, Wiktionary, Wikimedicine)
-                        from the <b>Configuration page <span class="glyphicon glyphicon-wrench"></span></b>, but if you regularly want
-                        to use this app with a non-Wikivoyage archive, we recommend you install <b>Kiwix JS</b> from the Store and keep
+                        You may download and use Wikivoyage in other languages (see <b>About page <span class="glyphicon glyphicon-info-sign"></span></b> for instructions). If you want
+                        to use this app with a non-Wikivoyage archive, we <b>strongly</b> recommend you install <b>Kiwix JS</b> from the Store and keep
                         this as a dedicated Wikivoyage app.
                     </p>
                     <p>
@@ -64,8 +63,8 @@
                     </p>
                     <p>
                         <b>WARNING:</b> Donwloading an updated version from the Configuration page<span class="glyphicon glyphicon-wrench"></span>
-                        will <b>not</b> update the packaged version stored in this app, and you will use <b>double the amount of storage space
-                        space</b> on your device. This is a security feature of the OS, and we cannot change it. We advise you to wait for an 
+                        will <b>not</b> update the packaged version stored in this app, and you will use <b>double the amount of storage space</b>
+                        on your device. This is a security feature of the OS, and we cannot change it. We advise you to wait for an 
                         update from the Store.
                     </p>
                     <p>
@@ -81,7 +80,6 @@
                     <ul>
                         <li>Wikivoyage pages (English and German) will now display a map location marker for places that have geo-location data. Tap the icon to open the Maps app at this location</li>
                         <li>The app now remembers the last page you visited before closing the app, and will resume from that page. You can turn this option off in the settings</li>
-                        <li>Now supports links in Stackexchage ZIMs (note that equations are not yet supported in Stackexchange)</li>
                         <li>Added auto-loading of ZIM archives on device storage (enables packaged versions such as Wikivoyage)</li>
                         <li>Enabled in-page search / highlighting with Ctrl-F / Alt-F or tap on search button</li>
                         <li>Added a dark-themed User Interface and dark-themed content - please see Config section to enable it</li>
@@ -150,18 +148,13 @@
                         travel information by lack of access to the Internet, or by slow and unreliable access speeds.
                     </p>
                     <p>
-                        As well as Wikivoyage, you can download (in advance of your trip) one or more archives (called ZIM archives) from the Kiwix
-                        website, enabling you to consult material from Wikipedia, Wiki Medicine, Wiktionary and many other sources.
-                        You can even download Wikivoyage, Wikipedia or Wiktionary in different languages. While on the plane or train, you
+                        As well as Wikivoyage English, you can download (in advance of your trip) one or more Wikivoyage archives (called ZIM archives) in other languages from the Kiwix
+                        website. If you would like to have an offline copy of Wikipedia, Wiki Medicine, Wiktionary and many other sources, we recommend you install our sister app <b>Kiwix JS</b> from the Store and keep this as a dedicated Wikivoyage app. While on the plane or train, you
                         can consult in-depth historical information from an offline Wikipedia archive to supplement the practical information
                         in Wikivoyage.
                     </p>
                     <p>
-                        If you would like to use this app mainly for non-Wikivoyage archives, we recommend you install 
-                        <b>Kiwix JS</b> from the Store and keep this as a dedicated Wikivoyage app.
-                    </p>
-                    <p>
-                        Remember, you can search through article titles and read any of these articles <b>completely offline</b>. On some pages
+                        Remember, you can search through article titles and read any of these articles <b>completely offline</b>. On some Wikivoyage (English and German) pages
                         you will see a map location marker: <img src="../www/img/icons/map_marker-18px.png" />. Tap this icon to open
                         the <b>Maps app</b> at the selected location. This will work offline if you have downloaded the map for the relevant country
                         in the Windows Settings for <b>Offline Maps</b>.
@@ -170,21 +163,14 @@
                         Offline archives use the <a href="http://www.openzim.org//wiki/OpenZIM">OpenZIM format</a>, but note that this app has
                         only been tested extensively on Wikimedia archives (e.g., Wikipedia, Wikivoyage, Wikimed, Wiktionary).
                     </p>
-                    <h3>Adding more ZIM archives</h3>
+                    <h3>Adding Wikivoyage archives in other languages</h3>
                     <h4>Step 1: download some content</h4>
                     <p>
-                        You can browse the Kiwix repository on the <a href="#" onclick="$('#btnConfigure').click();">Configuration</a> page, and it will provide instructions according to the type of file you download.
+                        In the Configuration <span class="glyphicon glyphicon-wrench"></span> menu, go to <a href="#packagedAppFileSelectors" onclick="$('#btnConfigure').click();"><b>Expert settings</b></a> and check the option to <b>Display selectors</b>. Then check <b>Allow Internet access</b> and tap the <b>Open library</b> button. Locate your Wikivoyage ZIM file, and instructions will be provided to download the file on your device.
                         Alternatively, visit <a href="http://download.kiwix.org/zim" target="_blank">http://download.kiwix.org/zim/</a> using a regular computer.
-                        <strong>Currently only Wikimedia contents (ZIM files in wiki* subdirectories) have been tested fully</strong>.
-                        There are known bugs when reading other content, and audio/video/dynamic content is not currently supported.
+                        <strong>This app is optimized for Wikivoyage archives only</strong>. If you wish to use regularly other archive types with this app, you should instead obtain our sister app, <b>Kiwix JS</b> from the Store and keep this as a dedicated Wikivoyage app.
                     </p>
-                    <p>
-                        Note that some of these ZIM archives are very large indeed (several gigabytes), especially if you want the archives with pictures. Archives without
-                        pictures (look out for "nopic" in the filename) are generally much smaller. <b>Important</b>: if the file is larger than 4 GB, it might not be supported by
-                        your device if your storage (e.g. microSD card) is formatted using a FAT filesystem. If so, it's possible to split the material into several 2GB files, or
-                        to download pre-split files: see <a href="http://www.kiwix.org/wiki/FAQ">the Kiwix FAQ</a>.
-                    </p>
-                    <h4>Step 2: copy the content onto your device</h4>
+                    <h4>Step 2: download or copy the content onto your device</h4>
                     <p>
                         If you have enough space, you can put several archives on your device storage. If you download the content directly in the app, note the location
                         of the saved file when you get the notification that it has completed. If you downloaded via a PC, you will generally need to use a USB
@@ -193,7 +179,7 @@
                     </p>
                     <h4>Step 3: open this app, go to the "Configure" menu and select your ZIM file</h4>
                     <p>
-                        On the Configuration page, tap the "Select storage" button. If you have downloaded more than one archive, or you have a split ZIM archive
+                        On the Configuration page, tap the "Select storage" button (you will need to <b>Display selectors</b> under <b>Expert settings</b> if you didn't do this previously). If you have downloaded more than one archive, or you have a split ZIM archive
                         consisting of several 2GB files, then you will need to pick the <b>folder</b> that contains these files. If you have just one unsplit ZIM
                         archive, you can instead pick the <b>file</b> direclty, using the respective buttons on the
                         <a href="#" onclick="$('#btnConfigure').click();">Configuration</a> page (note that these buttons only appear after you tap "Select Storage").
@@ -257,7 +243,7 @@
                     </ul>
                     <h3>Licence information</h3>
                     <p>
-                        Copyright 2013-2018 Mossroy, Peter-x and contributors
+                        Copyright 2013-2018 Mossroy, Peter-x, Jaifroid, sharun-s and other contributors
                         <br />Jaifroid for the adaptation to the Universal Windows Platform
                         <br />
                         <br />This application is licensed under the GPL v3 licence:
@@ -476,7 +462,7 @@
                                     <div class="panel-body">
                                         <label class="checkbox">
                                             <input type="checkbox" name="displayFileSelectors" id="displayFileSelectorsCheck">
-                                            <b>Display selectors</b> for files and folders (<i><b>not</b> recommended:</i> if you wish to open different ZIM files, you should instead download Kiwix JS from the Store, as this app is optimized for its packaged contents)
+                                            <b>Display selectors</b> for files and folders (<i>only use this for downloading <b>Wikivoyage</b> in other languages:</i> if you wish to open different ZIM files, you should instead download Kiwix JS from the Store, as this app is optimized for its packaged contents)
                                         </label>
                                     </div>
                                 </div>
