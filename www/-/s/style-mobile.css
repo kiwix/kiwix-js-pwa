@@ -48,6 +48,7 @@ h3 .mw-headline {padding-top:1em;}
     clear: right;
     float: right;
     margin: 0 0 0.5em 1em;
+    max-width: 360px;
 }
 
 .qbDiv, .qbRightDiv {
@@ -96,8 +97,31 @@ h3 .mw-headline {padding-top:1em;}
     max-width: 100% !important;
 }
 
+@media all and (min-width:601px) {
+    div .thumb.tright {
+        float: right;
+        clear: right;
+        margin-left: 1.4em !important;
+    }
 
-@media all and (max-width:600px) {
+    div .thumb.tleft {
+        float: left;
+        clear: left;
+        margin-right: 1.4em !important;
+    }
+}
+
+@media all and (max-width:720px) {
+
+    .content .thumb .thumbinner {
+        display: -webkit-flex;
+        display: -moz-flex;
+        display: -ms-flexbox;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        align-content: flex-start;
+    }
 
     .content table.qb, .content div.qb, .content .tabbedContainers, .content .ImageGroup, .qbDiv .qb, .qbRightDiv .qb {
         width: 100% !important;
