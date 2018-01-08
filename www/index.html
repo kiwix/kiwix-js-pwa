@@ -46,13 +46,13 @@
                 <div class="modal-body">
                     <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
                     <h2>Welcome to Kiwix JS for Windows</h2>
-                    <h3>Changes in 0.9.6 (beta)</h3>
+                    <h3>Changes in 0.9.7 (beta)</h3>
                     <ul>
-                        <li>Fixed the toolbar accidentally wrapping across two lines on some screens</li>
-                        <li>The app now automatically resumes the page you were reading when you last closed it (option can be turned off in settings)</li>
-                        <li>Geo-location co-ordinates in Wikivoyage English and German can now open the Maps app to show the location</li>
-                        <li>You can now tap telephone numbers in Wikivoyage English and the contacts app will open (phone numbers need to have a tel: URI for this to work)</li>
-                        <li>Initial support has been added for Stackexchange ZIMs (in progress, but usable)</li>
+                        <li>Fixed lack of an icon indicating that a link is to an external web site</li>
+                        <li>Fixed bugs in mobile to desktop style transformation</li>
+                        <li>Fixed issue with infoboxes and images not stacking correctly on mobile displays, and support infoboxes in German Wikivoyage</li>
+                        <li>Fixed last-visited page not being remembered when user picked the file as a single archive</li>
+                        <li>Fixed a bug which prevented the dark mode by simple inversion from functioning</li>
                     </ul>
                     <h3>Please read this important information!</h3>
                     <p>
@@ -72,18 +72,18 @@
                         Kiwix JS is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
                         improving the app are very welcome: see About section.
                     </p>
-                    <h3>New Features in Version 0.9</h3>
+                    <h3>Features in Version 0.9</h3>
                     <ul>
-                        <li>Wikivoyage pages (English and German) will now display a map location marker for places that have geo-location data. Tap the icon to open the Maps app at this location</li>
-                        <li>The app now remembers the last page you visited before closing the app, and will resume from that page. You can turn this option off in the settings</li>
+                        <li>Compatible with Continuum!</li>
+                        <li>Wikivoyage pages (English and German) display a map location marker for places that have geo-location data. Tap the icon to open the Maps app at this location</li>
+                        <li>The app remembers the last page you visited before closing the app, and will resume from that page. You can turn this option off in the settings</li>
                         <li>Now supports links in Stackexchage ZIMs (note that equations are not yet supported in Stackexchange)</li>
                         <li>Added auto-loading of ZIM archives on device storage</li>
-                        <li>Enabled in-page search / highlighting with Ctrl-F / Alt-F or tap on search button</li>
-                        <li>Enabled UWP Future Access List so that users do not need to pick their ZIM file every time</li>
-                        <li>Added a dark-themed User Interface and dark-themed content - please see Config section to enable it</li>
+                        <li>In-page search / highlighting with Ctrl-F / Alt-F or tap on search button</li>
+                        <li>Dark-themed User Interface and dark-themed content - please see Config section to enable it</li>
                         <li>Added ability to change the font size for articles and the UI</li>
                         <li>Equations are now typeset using MathJax, if the original TeX string is available, otherwise the (slow) fallback images are used</li>
-                        <li>User can choose whether to transform the layout using the Wikipedia mobile or desktop styles - see Config section</li>
+                        <li>Option to transform the layout using the Wikipedia mobile or desktop styles</li>
                         <li>If your device is slow, you can disable the display of images, and extract them one-by-one as needed - see Config</li>
                     </ul>
                 </div>
@@ -472,7 +472,7 @@
                                     <div class="panel-body">
                                         <label class="checkbox">
                                             <input type="checkbox" name="displayFileSelectors" id="displayFileSelectorsCheck">
-                                            <b>Display selectors</b> for files and folders (<i><b>not</b> recommended:</i> if you wish to open different ZIM files, you should instead download Kiwix JS from the Store, as this app is optimized for its packaged contents)
+                                            <b>Display selectors</b> for files and folders : <i>only use this for downloading <b>Wikivoyage</b> in other languages</i>. If you wish to open different ZIM files, you should instead download Kiwix JS from the Store, as this app is optimized for its packaged contents)
                                         </label>
                                     </div>
                                 </div>
