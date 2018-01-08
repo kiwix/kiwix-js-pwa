@@ -44,13 +44,6 @@ sup,sub{line-height:0.75em}dfn{font-style:normal;font-weight:bold}i > dfn{font-s
 
 h3 .mw-headline {padding-top:1em;}
 
-.qbRightDiv {
-    clear: right;
-    float: right;
-    margin: 0 0 0.5em 1em;
-    max-width: 360px;
-}
-
 .qbDiv, .qbRightDiv {
     box-sizing: border-box;
     overflow: hidden;
@@ -109,6 +102,13 @@ h3 .mw-headline {padding-top:1em;}
         clear: left;
         margin-right: 1.4em !important;
     }
+
+    .qbRightDiv {
+        clear: right;
+        float: right;
+        margin: 0 0 0.5em 1em;
+        max-width: 360px;
+    }
 }
 
 @media all and (max-width:640px) {
@@ -140,13 +140,12 @@ h3 .mw-headline {padding-top:1em;}
         margin: 0 !important;
     }
 
-    .qbRightDiv {
-        width: auto !important;
-    }
-
     .qbRightDiv, .qbRight, .qbLeft {
         clear: both;
         float: none;
+        max-width: 480px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
 }
