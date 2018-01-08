@@ -102,11 +102,6 @@ body {
     padding: 5px 1em !important;
 }
 
-.container-fluid {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
-
 .navbar-inverse {
     background-color: #d9edf7 !important;
     border-color: #d9edf7 !important;
