@@ -1,4 +1,4 @@
-html, img, video {
+﻿html, img, video {
     /*-webkit-filter: invert(1) hue-rotate(180deg);*/
     filter: invert(1) hue-rotate(180deg);
 }
