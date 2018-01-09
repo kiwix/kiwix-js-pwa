@@ -66,17 +66,23 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
             }
             if (window.outerWidth <= 470) {
-                //document.getElementById('dropup').classList.remove('col-xs-4');
-                //document.getElementById('dropup').classList.add('col-xs-3');
-                var colXS2 = document.querySelectorAll('.col-xs-2');
-                if (colXS2.length && window.outerWidth <= 360) {
-                    for (var i = 0; i < colXS2.length; i++) {
-                        colXS2[i].classList.remove('col-xs-2');
-                        colXS2[i].classList.add('col-xs-1');
-                    }
-                } else if (window.outerWidth > 360 && !colXS2.length) {
-                    document.getElementById('btnHomeBottom').classList.remove('col-xs-1');
-                    document.getElementById('btnHomeBottom').classList.add('col-xs-2');
+                document.getElementById('dropup').classList.remove('col-xs-4');
+                document.getElementById('dropup').classList.add('col-xs-3');
+                //var colXS2 = document.querySelectorAll('.col-xs-2');
+                //if (colXS2.length && window.outerWidth <= 360) {
+                //    for (var i = 0; i < colXS2.length; i++) {
+                //        colXS2[i].classList.remove('col-xs-2');
+                //        colXS2[i].classList.add('col-xs-1');
+                //    }
+                if (window.outerWidth <= 360) {
+                    //document.getElementById('btnHomeBottom').classList.remove('col-xs-2');
+                    //document.getElementById('btnHomeBottom').classList.add('col-xs-1');
+                    document.getElementById('btnTop').classList.remove('col-xs-2');
+                    document.getElementById('btnTop').classList.add('col-xs-1');
+                //} else if (window.outerWidth > 360 && !colXS2.length) {
+                } else {
+                    //document.getElementById('btnHomeBottom').classList.remove('col-xs-1');
+                    //document.getElementById('btnHomeBottom').classList.add('col-xs-2');
                     document.getElementById('btnTop').classList.remove('col-xs-1');
                     document.getElementById('btnTop').classList.add('col-xs-2');
                 }
