@@ -2347,6 +2347,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFile
                 $("#readingArticle").hide();
                 $("#articleContent").show();
                 console.error("Article with title " + title + " not found in the archive");
+                goToMainArticle();
             }
             else {
                 $("#articleName").html(title);
