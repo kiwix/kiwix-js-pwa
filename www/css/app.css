@@ -30,8 +30,6 @@
 }
 
 [role=region] > header {
-    /*margin: .5rem 0 1rem 0;*/
-    /*margin: 0 0.75em 0 1px;*/
     margin-left: 1px;
     text-align: center;
 }
@@ -330,9 +328,9 @@ pre {
         margin-top: 0 !important;
         margin-bottom: 0 !important;
     }
-
-        .navbar-nav > li > a { /*Make sure these align correctly rather than stacking at full width - GK*/
-            float: left !important;
+        /*Make sure these align correctly rather than stacking at full width - GK*/
+        .navbar-nav > li > a {
+            /*float: left !important;*/
             /*Added this to prevent the buttons becoming so small*/
             padding-top: 15px !important;
         }
