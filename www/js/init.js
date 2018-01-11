@@ -109,7 +109,15 @@ require.config({
         //'jquery': 'jquery-3.2.1',
         //'bootstrap': 'bootstrap'
         'bootstrap': 'bootstrap.min'
+    },
+    shim: {
+        'jquery': {
+            exports: '$'
+        },
+        'bootstrap': {
+            deps: ['jquery']
+        }
     }
 });
 
-define(['../app']);
+define(['bootstrap','../app']);
