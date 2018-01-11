@@ -107,11 +107,11 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             //var test = html.getElementById("qbRight")
             if (zim == "desktop") {
                 var infobox = [];
-                if (/<table\b[^>]+(?:infobox|vertical-navbox|qbRight|wikitable)/i.test(html)) {
-                    infobox = util.matchOuter(html, '<table\\b[^>]+(?:infobox|vertical-navbox|qbRight|wikitable)[^>]+>', '</table>', 'i');
+                if (/<table\b[^>]+(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable)/i.test(html)) {
+                    infobox = util.matchOuter(html, '<table\\b[^>]+(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable)[^>]+>', '</table>', 'i');
                 } else {
-                    if (/<div\b[^>]+(?:infobox|vertical-navbox|qbRight|wikitable)/i.test(html)) {
-                        infobox = util.matchOuter(html, '<div\\b[^>]+(?:infobox|vertical-navbox|qbRight|wikitable)[^>]+>', '</div>', 'i');
+                    if (/<div\b[^>]+(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable)/i.test(html)) {
+                        infobox = util.matchOuter(html, '<div\\b[^>]+(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable)[^>]+>', '</div>', 'i');
                     }
                 }
                 if (infobox.length) {
@@ -134,9 +134,9 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             }
             //html = zim == "desktop" ? html.replace(/(<table\s+(?=[^>]*(?:infobox|vertical-navbox|qbRight))[\s\S]+?<\/table>[^<]*)((?:<span\s*>\s*)?<p\b[^>]*>(?:(?=([^<]+))\3|<(?!p\b[^>]*>))*?<\/p>(?:<span\s*>)?)/i, "$2\r\n$1") : html;
             //Set infobox styling hard-coded in Wikipedia mobile
-            html = html.replace(/(table\s+(?=[^>]*class\s*=\s*["'][^"']*(?:infobox|vertical-navbox|qbRight|wikitable))[^>]*style\s*=\s*["'][^"']+[^;'"]);?\s*["']/ig, '$1; position: relative; border: 1px solid #eaecf0; text-align: left; background-color: #f8f9fa;"');
+            html = html.replace(/(table\s+(?=[^>]*class\s*=\s*["'][^"']*(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable))[^>]*style\s*=\s*["'][^"']+[^;'"]);?\s*["']/ig, '$1; position: relative; border: 1px solid #eaecf0; text-align: left; background-color: #f8f9fa;"');
             //Wrap <h2> tags in <div> to control bottom border width if there's an infobox
-            html = html.match(/table\s+(?=[^>]*class\s*=\s*["'][^"']*(?:infobox|vertical-navbox|qbRight|wikitable))/i) ? html.replace(/(<h2\s+[^<]*<\/h2>)/ig, '<div style="width: 60%;">$1</div>') : html;
+            html = html.match(/table\s+(?=[^>]*class\s*=\s*["'][^"']*(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable))/i) ? html.replace(/(<h2\s+[^<]*<\/h2>)/ig, '<div style="width: 60%;">$1</div>') : html;
         }
         //Add dark theme if requested
         css += (params.cssTheme == "dark") ? '<link href="../-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="../-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' :"";
@@ -158,17 +158,15 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             console.log(zim == "mobile" ? "Transforming display style to desktop..." : "Optimizing cached styles for desktop display...");
             uiUtil.poll("mobile" ? "Transforming display style to desktop..." : "Optimizing cached styles for desktop display...");
             //If it's in mobile position, move info-box above lead paragraph like on Wikipedia desktop
-            //html = html.replace(/((?:<span\s*>\s*)?<p\b[^>]*>(?:(?=([^<]+))\2|<(?!p\b[^>]*>))*?<\/p>(?:<\/span\s*>)?[^<]*)([\s\S]*?)(<table\s*(?=[^>]*infobox)[\s\S]+?<\/table>)/i, "$4$3$1");
             if (zim == "mobile") {
-                var tableBox = util.matchOuter(html, '<table\\b[^>]+?(?:infobox|vertical-navbox|qbRight|wikitable)[^>]+>', '</table>', 'i');
-                if (!(tableBox && tableBox.length)) {
-                    //If above failed we may have div style infobox
-                    tableBox = util.matchOuter(html, '<div\\b[^>]+?(?:qbRight)[^>]+>', '</div>', 'i');
-                }
-                //html = tableBox && tableBox.length ? html.replace(tableBox, "@@@KiwixSep@@@") : html;
+                //Attempt to match div-style infobox first
+                var tableBox = util.matchOuter(html, '<div\\b[^>]+?(?:qbRight|wv-quickbar)[^>]+>', '</div>', 'i');
+                //If above failed we may have traditional table-style infobox
+                tableBox = !(tableBox && tableBox.length) ? util.matchOuter(html, '<table\\b[^>]+?(?:infobox|vertical-navbox|qbRight|wikitable)[^>]+>', '</table>', 'i') : tableBox;
                 if (tableBox && tableBox.length) {
                     html = html.replace(tableBox, "@@@KiwixSep@@@");
-                    html = html.replace(/((?:<span\s*>\s*)?<p\b[\s\S]+?)@@@KiwixSep@@@/i, tableBox + "\r\n$1");
+                    //Fiendish regex to match only innermost <p...>...</p> followed by Kiwix separator or <span ...><p ...>...</p></span> followed by small skpped <p> containing no more than 40 characters (this happens in Wikivoyage English)
+                    html = html.replace(/(<(?:(span\b)[^>]*>\s*<)?p\b[^>]*>(?:(?=([^<]+))\3|<(?!p\b))*?<\/p>\s*(?:<\/)?\2(?:>\s*)?(?:<p\b[\s\S]{1,40}<\/p>\s*)?)@@@KiwixSep@@@/i, tableBox + "\r\n$1");
                     //Do the replacement below just in case above regex failed
                     html = html.replace(/@@@KiwixSep@@@/, tableBox);
                 }
