@@ -1584,7 +1584,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
         //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
         //so add some whitespace at the end of the document
-        htmlArticle = htmlArticle.replace(/(dditional terms may apply for the media files[^<]+<\/div>\s*)/i, "$1\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n");
+        htmlArticle = htmlArticle.replace(/(dditional terms may apply for the media files[^<]+<\/div>\s*)/i, "$1\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n");
 
         //@TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
         htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, "<a href=\"$1.html\">$2</a>");
@@ -1602,6 +1602,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, "");
         htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, "");
 
+        //Put misplaced hatnote header back in its correct position @TODO remove this when fixed in mw-offliner
+        var hatnote = htmlArticle.match(/<div\s+[^>]+\bhatnote\b[^>]+>Not to be confused with[\s\S]+?<\/div>\s*/i);
+        if (hatnote && hatnote.length) {
+            htmlArticle = htmlArticle.replace(hatnote, "");
+            htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnote);
+        }
+        
      //TESTING - find out whether document contains MathSVGs
         //var containsMathSVG = /\.svg\s*['"][^>]+mwe-math-fallback-image|mwe-math-fallback-image[^>]+\.svg\s*['"]/i.test(htmlArticle);
         //Version below will match any type of fallback image so long as there is an alt string
