@@ -101,22 +101,15 @@ function getCookie(name) {
 }
 
 require.config({
+    //enforceDefine: true, //This is for debugging IE errors
     baseUrl: 'js/lib',
     config: { '../app': { params: params } },
     paths: {
         'jquery': 'jquery-3.2.1.slim',
         //'jquery': 'jquery-3.2.1',
         //'bootstrap': 'bootstrap'
-        'bootstrap': 'bootstrap.min' //GK testing
-    },
-    shim: {
-        'jquery' : {
-            exports : '$'
-        },
-        'bootstrap': {
-            deps: ['jquery']
-        }
+        'bootstrap': 'bootstrap.min'
     }
 });
 
-requirejs(['bootstrap', '../app']);
+define(['../app']);
