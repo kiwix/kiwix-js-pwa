@@ -26,8 +26,8 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'abstractFilesystemAccess', 'q', 'module', 'transformStyles', 'kiwixServe'],
-    function ($, zimArchiveLoader, util, uiUtil, cookies, abstractFilesystemAccess, q, module, transformStyles, kiwixServe) {
+define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module', 'transformStyles', 'kiwixServe'],
+    function ($, zimArchiveLoader, util, uiUtil, cookies, q, module, transformStyles, kiwixServe) {
 
         /**
          * Maximum number of articles to display in a search
