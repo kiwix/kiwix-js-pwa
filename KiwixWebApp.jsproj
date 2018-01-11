@@ -184,7 +184,6 @@
     <Content Include="www\I\s\spinner.gif" />
     <Content Include="www\js\app.js" />
     <Content Include="www\js\init.js" />
-    <Content Include="www\js\lib\abstractFilesystemAccess.js" />
     <Content Include="www\js\lib\bootstrap.min.js" />
     <Content Include="www\js\lib\cookies.js" />
     <Content Include="www\js\lib\jquery-3.2.1.slim.js" />
