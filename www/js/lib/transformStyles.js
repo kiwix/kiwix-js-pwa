@@ -164,11 +164,12 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 //If above failed we may have traditional table-style infobox
                 tableBox = !(tableBox && tableBox.length) ? util.matchOuter(html, '<table\\b[^>]+?(?:infobox|vertical-navbox|qbRight|wikitable)[^>]+>', '</table>', 'i') : tableBox;
                 if (tableBox && tableBox.length) {
-                    html = html.replace(tableBox, "@@@KiwixSep@@@");
+                    html = html.replace(tableBox, "");
                     //Fiendish regex to match only innermost <p...>...</p> followed by Kiwix separator or <span ...><p ...>...</p></span> followed by small skpped <p> containing no more than 40 characters (this happens in Wikivoyage English)
-                    html = html.replace(/(<(?:(span\b)[^>]*>\s*<)?p\b[^>]*>(?:(?=([^<]+))\3|<(?!p\b))*?<\/p>\s*(?:<\/)?\2(?:>\s*)?(?:<p\b[\s\S]{1,40}<\/p>\s*)?)@@@KiwixSep@@@/i, tableBox + "\r\n$1");
+                    //html = html.replace(/(<(?:(span\b)[^>]*>\s*<)?p\b[^>]*>(?:(?=([^<]+))\3|<(?!p\b))*?<\/p>\s*(?:<\/)?\2(?:>\s*)?(?:<p\b[\s\S]{1,40}<\/p>\s*(?:<span>\s*<\/span>\s*)?)?)@@@KiwixSep@@@/i, tableBox + "\r\n$1");
+                    html = html.replace(/(<\/h1>\s*)/i, "$1" + tableBox);
                     //Do the replacement below just in case above regex failed
-                    html = html.replace(/@@@KiwixSep@@@/, tableBox);
+                    //html = html.replace(/@@@KiwixSep@@@/, tableBox);
                 }
             }
             //Ensure white background colour
