@@ -66,17 +66,23 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
             }
             if (window.outerWidth <= 470) {
-                //document.getElementById('dropup').classList.remove('col-xs-4');
-                //document.getElementById('dropup').classList.add('col-xs-3');
-                var colXS2 = document.querySelectorAll('.col-xs-2');
-                if (colXS2.length && window.outerWidth <= 360) {
-                    for (var i = 0; i < colXS2.length; i++) {
-                        colXS2[i].classList.remove('col-xs-2');
-                        colXS2[i].classList.add('col-xs-1');
-                    }
-                } else if (window.outerWidth > 360 && !colXS2.length) {
-                    document.getElementById('btnHomeBottom').classList.remove('col-xs-1');
-                    document.getElementById('btnHomeBottom').classList.add('col-xs-2');
+                document.getElementById('dropup').classList.remove('col-xs-4');
+                document.getElementById('dropup').classList.add('col-xs-3');
+                //var colXS2 = document.querySelectorAll('.col-xs-2');
+                //if (colXS2.length && window.outerWidth <= 360) {
+                //    for (var i = 0; i < colXS2.length; i++) {
+                //        colXS2[i].classList.remove('col-xs-2');
+                //        colXS2[i].classList.add('col-xs-1');
+                //    }
+                if (window.outerWidth <= 360) {
+                    //document.getElementById('btnHomeBottom').classList.remove('col-xs-2');
+                    //document.getElementById('btnHomeBottom').classList.add('col-xs-1');
+                    document.getElementById('btnTop').classList.remove('col-xs-2');
+                    document.getElementById('btnTop').classList.add('col-xs-1');
+                //} else if (window.outerWidth > 360 && !colXS2.length) {
+                } else {
+                    //document.getElementById('btnHomeBottom').classList.remove('col-xs-1');
+                    //document.getElementById('btnHomeBottom').classList.add('col-xs-2');
                     document.getElementById('btnTop').classList.remove('col-xs-1');
                     document.getElementById('btnTop').classList.add('col-xs-2');
                 }
@@ -603,8 +609,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         });
         $('input:checkbox[name=cssWikiDarkThemeInvert]').on('change', function (e) {
             if (params.cssTheme == "light" && this.checked) document.getElementById('cssWikiDarkThemeInvertCheck').checked = true;
-            params.cssTheme = this.checked ? 'invert' : params.cssTheme;
+            params.cssTheme = this.checked ? 'invert' : 'dark';
             cookies.setItem('cssTheme', params.cssTheme, Infinity);
+            params.themeChanged = true;
         });
         $('input:checkbox[name=rememberLastPage]').on('change', function (e) {
             if (params.rememberLastPage && this.checked) document.getElementById('rememberLastPageCheck').checked = true;
@@ -687,7 +694,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //@TODO - this is initialization code, and should be in init.js (withoug jQuery)
             $('input:radio[name=cssInjectionMode]').filter('[value="' + params.cssSource + '"]').prop('checked', true);
             //DEV this hides file selectors if it is a packaged file -- add your own packaged file test to regex below
-            if (/wikivoyage|wikimed/i.test(params.storedFile)) {
+            if (/wikivoyage|wikimed/i.test(params.fileVersion)) {
                 document.getElementById('packagedAppFileSelectors').style.display = "block";
                 document.getElementById('hideFileSelectors').style.display = "none";
                 document.getElementById('downloadLinksText').style.display = "none";
@@ -1276,7 +1283,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //    cssDirEntryCache = new Map();
         selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
             // The archive is set : go back to home page to start searching
-            $("#btnHome").click();
+            if (params.rememberLastPage && ~params.lastPageVisit.indexOf(selectedArchive._file._files[0].name)) {
+                var lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
+                goToArticle(lastPage);
+            } else {
+                $("#btnHome").click();
+            }
         });
     }
 
@@ -1572,7 +1584,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
         //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
         //so add some whitespace at the end of the document
-        htmlArticle = htmlArticle.replace(/(dditional terms may apply for the media files[^<]+<\/div>\s*)/i, "$1\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n");
+        htmlArticle = htmlArticle.replace(/(dditional terms may apply for the media files[^<]+<\/div>\s*)/i, "$1\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n");
 
         //@TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
         htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, "<a href=\"$1.html\">$2</a>");
@@ -1590,6 +1602,19 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, "");
         htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, "");
 
+        //Put misplaced hatnote header back in its correct position @TODO remove this when fixed in mw-offliner
+        var hatnote = htmlArticle.match(/<div\s+[^>]+\bhatnote\b[^>]+>Not to be confused with[\s\S]+?<\/div>\s*/i);
+        if (hatnote && hatnote.length) {
+            htmlArticle = htmlArticle.replace(hatnote, "");
+            htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnote);
+        }
+        //Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
+        var noexcerpt = htmlArticle.match(/<dl>(?:[^<]|<(?!\/dl>))+?excerpt(?:[^<]|<(?!\/dl>))+?For other places with the same name(?:[^<]|<(?!\/dl>))+?<\/dl>\s*/i);
+        if (noexcerpt && noexcerpt.length) {
+            htmlArticle = htmlArticle.replace(noexcerpt, "");
+            htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + noexcerpt);
+        }
+        
      //TESTING - find out whether document contains MathSVGs
         //var containsMathSVG = /\.svg\s*['"][^>]+mwe-math-fallback-image|mwe-math-fallback-image[^>]+\.svg\s*['"]/i.test(htmlArticle);
         //Version below will match any type of fallback image so long as there is an alt string
@@ -1749,12 +1774,30 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             // Scroll the iframe to its top
             $("#articleContent").contents().scrollTop(0);
 
-            //Fast-attach Wikivoyage POI IDs to the POI Href field without using extremely slow jQuery
-            var regexpGeoLocation = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
-            htmlArticle = htmlArticle.replace(regexpGeoLocation, function (match, p1, p2, p3, p4, p5, p6, p7, p8) {
-                return p1 + "bingmaps:?collection=point." + p2 + "_" + p3 + "_" +
-                    encodeURIComponent(p7.replace(/_/g, " ")).replace(/\.(\w\w)/g, "%$1") +
-                    (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Show on map" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-10px !important;" >' + p6 + p7;
+            //Adapt German Wikivoyage POI data format
+            var regexpGeoLocationDE = /<span\s+class\s?=\s?"[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<span[^>]+listing-name[^>]+>([^<]+)<\/span>)/ig;
+            htmlArticle = htmlArticle.replace(regexpGeoLocationDE, function (match, latitude, longitude, href, id) {
+                return '<a href="bingmaps:?collection=point.' + latitude + '_' + longitude + '_' + encodeURIComponent(id.replace(/_/g, " ")) +
+                    '">\r\n<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;margin-top:5px !important" />\r\n</a>' + href;
+            });
+            
+            //Adapt English Wikivoyage POI data format
+            var regexpGeoLocationEN = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
+            htmlArticle = htmlArticle.replace(regexpGeoLocationEN, function (match, p1, latitude, longitude, p4, p5, p6, id) {
+                return p1 + "bingmaps:?collection=point." + latitude + "_" + longitude + "_" +
+                    encodeURIComponent(id.replace(/_/g, " ")).replace(/\.(\w\w)/g, "%$1") +
+                    (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Map marker" title="Show this place on a map" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" >' + p6 + id;
+            });
+
+            //Clean up remaining geo: links
+            htmlArticle = htmlArticle.replace(/href\s*=\s*"\s*geo:([\d.-]+),([\d.-]+)/ig, 'href="bingmaps:?collection=point.$1_$2');
+
+            //Setup footnote backlinks if the ZIM doesn't have any
+            htmlArticle = htmlArticle.replace(/<li\s+id\s*=\s*"cite_note-([^"]+)"\s*>(?![^/]+↑)/ig, function (match, p1) {
+                var fnSearchRegxp = new RegExp('id\\s*=\\s*"(cite[-_]ref[-_]' + p1.replace(/[-_]/g,"[-_]") + '[^"]*)', "i");
+                var fnReturnMatch = htmlArticle.match(fnSearchRegxp);
+                var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : "";
+                return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>'; 
             });
 
             //Inject htmlArticle into iframe
@@ -2317,6 +2360,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 $("#readingArticle").hide();
                 $("#articleContent").show();
                 console.error("Article with title " + title + " not found in the archive");
+                goToMainArticle();
             }
             else {
                 $("#articleName").html(title);
@@ -2335,7 +2379,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             else {
                 if (dirEntry.namespace === 'A') {
                     $("#articleName").html(dirEntry.title);
-                    pushBrowserHistoryState(dirEntry.url);
+                    pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
                     $("#readingArticle").show();
                     $('#articleContent').contents().find('body').html("");
                     readArticle(dirEntry);
