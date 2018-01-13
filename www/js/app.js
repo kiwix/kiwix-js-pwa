@@ -1608,6 +1608,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             htmlArticle = htmlArticle.replace(hatnote, "");
             htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnote);
         }
+        //Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
+        var noexcerpt = htmlArticle.match(/<dl>(?:[^<]|<(?!\/dl>))+?excerpt(?:[^<]|<(?!\/dl>))+?For other places with the same name(?:[^<]|<(?!\/dl>))+?<\/dl>\s*/i);
+        if (noexcerpt && noexcerpt.length) {
+            htmlArticle = htmlArticle.replace(noexcerpt, "");
+            htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + noexcerpt);
+        }
         
      //TESTING - find out whether document contains MathSVGs
         //var containsMathSVG = /\.svg\s*['"][^>]+mwe-math-fallback-image|mwe-math-fallback-image[^>]+\.svg\s*['"]/i.test(htmlArticle);
