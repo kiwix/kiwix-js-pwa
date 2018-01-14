@@ -104,7 +104,7 @@
         </div>
     </div>
     <section id="search-article" role="region">
-        <header id="top">
+        <header id="top" style="width:100%;">
             <nav id="navbar" class="navbar navbar-inverse" role="navigation">
                 <div class="container-fluid">
                     <div class="navbar-header" id="container">
@@ -470,7 +470,7 @@
                                     <div class="panel-body">
                                         <label class="checkbox">
                                             <input type="checkbox" name="displayFileSelectors" id="displayFileSelectorsCheck">
-                                            <b>Display selectors</b> for files and folders : <i>only use this for downloading <b>Wikivoyage</b> in other languages</i>. If you wish to open different ZIM files, you should instead download Kiwix JS from the Store, as this app is optimized for its packaged contents)
+                                            <b>Display selectors</b> for files and folders : <i>only use this for downloading <b>Wikivoyage</b> in other languages</i>. If you wish to open different ZIM files, you should instead download Kiwix JS from the Store, as this app is optimized for its packaged contents
                                         </label>
                                     </div>
                                 </div>
@@ -514,8 +514,7 @@
                 <iframe id="articleContent" src="dummyArticle.html" class="articleIFrame">&nbsp;</iframe>
         </article>
         <footer id="footer">
-            <div id="navigationButtons" class="btn-toolbar">
-                <div class="container-fluid">
+            <div id="navigationButtons" class="btn-group btn-group-justified">
                     <div class="row">
                         <a class="btn btn-default col-xs-2" id="btnHomeBottom" title="Home"><span class="glyphicon glyphicon-home"></span></a>
                         <a class="btn btn-default col-xs-1" id="btnBack" title="Back"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>
@@ -531,7 +530,6 @@
                         <a class="btn btn-default col-xs-1" id="btnZoomin" title="Zoom in"><span class="glyphicon glyphicon-zoom-in"></span></a>
                         <span class="label label-default" id="lblZoom"></span>
                         <a class="btn btn-default col-xs-2" id="btnTop" title="Top" href="#top"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                    </div>
                 </div>
             </div>
         </footer>
