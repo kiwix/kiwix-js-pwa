@@ -694,7 +694,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //@TODO - this is initialization code, and should be in init.js (withoug jQuery)
             $('input:radio[name=cssInjectionMode]').filter('[value="' + params.cssSource + '"]').prop('checked', true);
             //DEV this hides file selectors if it is a packaged file -- add your own packaged file test to regex below
-            if (/wikivoyage|wikimed/i.test(params.fileVersion)) {
+            if (/wikivoyage|medicine/i.test(params.fileVersion)) {
                 document.getElementById('packagedAppFileSelectors').style.display = "block";
                 document.getElementById('hideFileSelectors').style.display = "none";
                 document.getElementById('downloadLinksText').style.display = "none";

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Kiwix JS Wikivoyage for Windows</title>
+    <title>Kiwix JS WikiMed for Windows</title>
     <meta name="description" content="Offline Wikipedia reader">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!--
@@ -45,51 +45,44 @@
         <div class="modal-dialog">
             <div class="modal-content dark">
                 <div class="modal-body">
-                    <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
-                    <h2>Welcome to Wikivoyage by Kiwix!</h2>
-                    <h3>Changes in 0.9.7 (beta)</h3>
-                    <ul>
-                        <li>New ZIM archive (Jan 2018)</li>
-                        <li>File selectors/download links are now hidden by default in Config menu to avoid confusion (see <b>Expert settings</b> to re-enable)</li>
-                        <li>Fixed missing icon for external hyperlinks</li>
-                        <li>Fixed bugs in mobile to desktop transform</li>
-                        <li>Fixed stacking of infoboxes and images on mobile displays</li>
-                        <li>Fixed last-visited page sometimes not being remembered</li>
-                        <li>Dark mode by simple inversion now works</li>
-                    </ul>
+                    <h2>Welcome to WikiMed Medical Encyclopaedia!</h2>
                     <h3>Please read this important information!</h3>
                     <p>
-                        This application is packaged with the Wikivoyage offline ZIM archive in <b>English</b>.
+                        <b>WARNING:</b> The source of the information contained in this Medical Encyclopaedia is Wikipedia,
+                        and we do not and cannot guarantee the accuracy of the information it contains.
                     </p>
                     <p>
-                        You may download and use Wikivoyage in other languages (see <b>About page <span class="glyphicon glyphicon-info-sign"></span></b> for instructions). If you want
-                        to use this app with a non-Wikivoyage archive, we <b>strongly</b> recommend you install <b>Kiwix JS</b> from the Store and keep
-                        this as a dedicated Wikivoyage app.
+                        <em>In particular you <b>must not</b> use the information in this Encyclopaedia to diagnose or treat
+                        any illness or other medical condition.</em> The information here is <b>not</b> a substitute for
+                        professional medical advice. By using this app, you explicitly agree to these terms, and you will not
+                        hold Kiwix or Wikipedia responsible for your use or misuse of the information provided in this
+                        Encyclopaedia (press the "I Agree" button at the bottom of this page).
                     </p>
                     <p>
-                        We aim to keep this Wikivoyage as up to date as possible, and you should receive automatic updates via the Microsoft Store.
+                        This application is packaged with the WikiMed offline ZIM archive in <b>English</b>. You may download
+                        and use WikiMed in other languages (see <b>About page <span class="glyphicon glyphicon-info-sign"></span></b>
+                        for instructions). If you want to use this app with a non-WikiMed archive, we <b>strongly</b> 
+                        recommend you install <b>Kiwix JS</b> from the Store and keep this as a dedicated WikiMed app.
+                    </p>
+                    <p>
+                        We aim to keep this WikiMed as up to date as possible, and you should receive automatic updates via the Microsoft Store.
                         Please check the <b>About page <span class="glyphicon glyphicon-info-sign"></span></b> for information about the currently
                         installed ZIM archive file.
                     </p>
                     <p>
-                        <b>WARNING:</b> Donwloading an updated version from the Configuration page<span class="glyphicon glyphicon-wrench"></span>
-                        will <b>not</b> update the packaged version stored in this app, and you will use <b>double the amount of storage space</b>
-                        on your device. This is a security feature of the OS, and we cannot change it. We advise you to wait for an 
-                        update from the Store.
+                        <b>IMPORTANT:</b> Donwloading an updated version from the Configuration page<span class="glyphicon glyphicon-wrench"></span>
+                        will <b>not</b> update the packaged version stored in this app, and you will use <b>double the amount
+                        of storage space</b> on your device. This is a security feature of the OS, and we cannot change it. 
+                        We advise you to wait for an update from the Store.
                     </p>
                     <p>
-                        On some pages you will see a map location marker: <img style="position:relative;top:-5px" src="../www/img/icons/map_marker-18px.png" />. Tap to open
-                        the <b>Maps app</b> at the location. This will work offline if you have downloaded the map for the relevant country
-                        in the Windows Settings for <b>Offline Maps</b>.
-                    </p>
-                    <p>
-                        Wikivoyage by Kiwix is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
+                        WikiMed Offline Medical Encyclopaedia by Kiwix is <b>free</b> and <b>open source</b>. If you like it,
+                        please leave a positive review. Constructive feedback and help with
                         improving the app are very welcome: see About section.
                     </p>
                     <h3>Features in Version 0.9</h3>
                     <ul>
                         <li>Compatible with Continuum!</li>
-                        <li>Wikivoyage pages (English and German) display map location markers for places that have geo-location. Tap to open the Maps app at location</li>
                         <li>Last-visited page is remembered between sessions. Selectable in the settings</li>
                         <li>In-page search / highlighting with Ctrl-F / Alt-F or tap on search button</li>
                         <li>Dark-themed User Interface and dark-themed content - see Config menu</li>
@@ -98,7 +91,8 @@
                     </ul>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" type="button" data-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" type="button" data-dismiss="modal">I Agree*</button>
+                    <p>*If you do not agree, please uninstall this app now</p>
                 </div>
             </div>
         </div>
@@ -144,40 +138,45 @@
                 <div id="about" style="display: none;" class="category-padding">
                     <h2>
                         <img src="img/icons/wikivoyage-90.png" alt="Wikivoyage icon" />
-                        Wikivoyage by Kiwix
+                        WikiMed by Kiwix
                     </h2>
                     <h3 style="margin-top:0;">
-                        Offline Travel Guide <small>(Kiwix JS version <span id="version"></span>)</small>
+                        Offline Medical Encyclopaedia <small>(Kiwix JS version <span id="version"></span>)</small>
                     </h3>
                     <p><small>Packaged ZIM archive: <b><span id="fileVersion"></span></b></small></p>
                     <p>Official site : <a href="http://www.kiwix.org/" target="_blank">http://www.kiwix.org/</a></p>
                     <p>
-                        Wikivoyage Offline Travel Guide by Kiwix is a complete resource for travellers and tourists, or anyone interested in the
-                        locality they are visiting. This app functions completely offline, so you are not limited in your ability to consult
-                        travel information by lack of access to the Internet, or by slow and unreliable access speeds.
+                        WikiMed Offline Medical Encyclopaedia is a complete reference guide on medical subjects. However, the
+                        information source is Wikipedia, and we do not and cannot guarantee the accuracy of the information
+                        contained in this Encyclopaedia. Use the information as a guide for <b>research only</b>.
+                        <strong><em>Do not use it as a substitute for professional medical advice or for self-diagnosis,
+                            which can be dangerous.</em></strong> You <b>must not</b> use the information provided in this
+                        Encyclopaedia to diagnose or treat any illness or other medical condition. By using this Encyclopaedia,
+                        you agree to be bound by these conditions, and you will not hold Kiwix or Wikipedia responsible for any
+                        consequences that arise from the use or misuse of this Encyclopaedia.
                     </p>
                     <p>
-                        As well as Wikivoyage English, you can download (in advance of your trip) one or more Wikivoyage archives (called ZIM archives) in other languages from the Kiwix
-                        website. If you would like to have an offline copy of Wikipedia, Wiki Medicine, Wiktionary and many other sources, we recommend you install our sister app <b>Kiwix JS</b> from the Store and keep this as a dedicated Wikivoyage app. While on the plane or train, you
-                        can consult in-depth historical information from an offline Wikipedia archive to supplement the practical information
-                        in Wikivoyage.
+                        As well as WikiMed in English, you can download one or more WikiMed archives (called ZIM archives) in
+                        other languages from the Kiwix website. If you would like to have an offline copy of Wikivoyage,
+                        Wikipedia, Wiktionary and many other sources, we recommend you install our sister app <b>Kiwix JS</b>
+                        from the Store and keep this as a dedicated WikiMed app. We also have a dedicated Wikivoyage app in
+                        the Store.
                     </p>
                     <p>
-                        Remember, you can search through article titles and read any of these articles <b>completely offline</b>. On some Wikivoyage (English and German) pages
-                        you will see a map location marker: <img src="../www/img/icons/map_marker-18px.png" />. Tap this icon to open
-                        the <b>Maps app</b> at the selected location. This will work offline if you have downloaded the map for the relevant country
-                        in the Windows Settings for <b>Offline Maps</b>.
+                        Remember, you can search through article titles and read any of the articles in this Encyclopaedia
+                        <b>completely offline</b>.
                     </p>
                     <p>
-                        Offline archives use the <a href="http://www.openzim.org//wiki/OpenZIM">OpenZIM format</a>, but note that this app has
-                        only been tested extensively on Wikimedia archives (e.g., Wikipedia, Wikivoyage, Wikimed, Wiktionary).
+                        Offline archives use the <a href="http://www.openzim.org//wiki/OpenZIM">OpenZIM format</a>, but note
+                        that this app has only been tested extensively on Wikimedia archives (e.g., Wikipedia, Wikivoyage,
+                        Wikimed, Wiktionary).
                     </p>
-                    <h3>Adding Wikivoyage archives in other languages</h3>
+                    <h3>Adding WikiMed archives in other languages</h3>
                     <h4>Step 1: download some content</h4>
                     <p>
-                        In the Configuration <span class="glyphicon glyphicon-wrench"></span> menu, go to <a href="#packagedAppFileSelectors" onclick="$('#btnConfigure').click();"><b>Expert settings</b></a> and check the option to <b>Display selectors</b>. Then check <b>Allow Internet access</b> and tap the <b>Open library</b> button. Locate your Wikivoyage ZIM file, and instructions will be provided to download the file on your device.
+                        In the Configuration <span class="glyphicon glyphicon-wrench"></span> menu, go to <a href="#packagedAppFileSelectors" onclick="$('#btnConfigure').click();"><b>Expert settings</b></a> and check the option to <b>Display selectors</b>. Then check <b>Allow Internet access</b> and tap the <b>Open library</b> button. Locate your WikiMed ZIM file, and instructions will be provided to download the file on your device.
                         Alternatively, visit <a href="http://download.kiwix.org/zim" target="_blank">http://download.kiwix.org/zim/</a> using a regular computer.
-                        <strong>This app is optimized for Wikivoyage archives only</strong>. If you wish to use regularly other archive types with this app, you should instead obtain our sister app, <b>Kiwix JS</b> from the Store and keep this as a dedicated Wikivoyage app.
+                        <strong>This app is optimized for WikiMed archives only</strong>. If you wish to use regularly other archive types with this app, you should instead obtain our sister app, <b>Kiwix JS</b> from the Store and keep this as a dedicated WikiMed app.
                     </p>
                     <h4>Step 2: download or copy the content onto your device</h4>
                     <p>
@@ -197,12 +196,12 @@
                     <h3>Privacy policy</h3>
                     <h4>Short answer:</h4>
                     <p>
-                        Wikivoyage by Kiwix works entirely offline unless you specifically request otherwise on the Configuration page. We do not collect any of your personal data
+                        WikiMed by Kiwix works entirely offline unless you specifically request otherwise on the Configuration page. We do not collect any of your personal data
                         and don't even know what you are doing with this application.
                     </p>
                     <h4>Longer answer:</h4>
                     <p>
-                        Wikivoyage by Kiwix will only access the Kiwix download server if you specifically request it to find and display download links for ZIM archives on the Configuration page.
+                        WikiMed by Kiwix will only access the Kiwix download server if you specifically request it to find and display download links for ZIM archives on the Configuration page.
                         You can disable even this Internet access with an option on the same page. If you nevertheless believe your Internet access can be watched and/or if you are
                         extremely cautious, you should shut down your 3G and WiFi access before using the application.
                     </p>
@@ -294,7 +293,7 @@
                     <div id="returntoArticle_top" style="text-align:center;padding-top:20px;"></div>
                     <div class="row">
                         <h2 style="margin-top:0;">Configuration</h2>
-                        <p>This app is packaged with the Wikivoyage ZIM archive.<span id="downloadLinksText"> You can get more archives from the <a href="#downloads">download links panel</a>.</span></p>
+                        <p>This app is packaged with the WikiMed ZIM archive.<span id="downloadLinksText"> You can get more archives from the <a href="#downloads">download links panel</a>.</span></p>
                     </div>
                     <div id="hideFileSelectors">
                         <div id="openLocalFiles" style="display: none;">
@@ -470,7 +469,7 @@
                                     <div class="panel-body">
                                         <label class="checkbox">
                                             <input type="checkbox" name="displayFileSelectors" id="displayFileSelectorsCheck">
-                                            <b>Display selectors</b> for files and folders : <i>only use this for downloading <b>Wikivoyage</b> in other languages</i>. If you wish to open different ZIM files, you should instead download Kiwix JS from the Store, as this app is optimized for its packaged contents
+                                            <b>Display selectors</b> for files and folders : <i>only use this for downloading <b>WikiMed</b> in other languages</i>. If you wish to open different ZIM files, you should instead download Kiwix JS from the Store, as this app is optimized for its packaged contents
                                         </label>
                                     </div>
                                 </div>
