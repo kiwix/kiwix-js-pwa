@@ -105,7 +105,7 @@ h3 .mw-headline {padding-top:1em;}
 
     .qb.qbRight, .infobox, .infobox_v2, .infobox_v3, .qbRightDiv {
         clear: right;
-        float: right;
+        float: right !important;
         margin: 0 0 0.5em 1em !important;
         max-width: 320px;
     }
