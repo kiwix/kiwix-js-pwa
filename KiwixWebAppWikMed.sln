@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "KiwixWebAppWikivoyage", "KiwixWebAppWikivoyage.jsproj", "{A1A5E0B9-13D4-41FB-810D-518949F03DF4}"
+Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "KiwixWebAppWikiMed", "KiwixWebAppWikiMed.jsproj", "{A1A5E0B9-13D4-41FB-810D-518949F03DF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
