@@ -195,6 +195,16 @@ pre {
         background-color: #337ab7 !important;
     }
 
+.disclaimer {
+    background-color: lightyellow;
+    border-left: 6px solid gold;
+    padding: 10px 5px 1px 10px;
+}
+
+.dark .disclaimer {
+    background: #333300;
+}
+
 .darkfooter .glyphicon, .dark .glyphicon {
     color: lightblue;
 }
