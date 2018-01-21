@@ -577,7 +577,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 document.getElementById('prefix').classList.add("dark");
                 var elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid darkgray"; }
-                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(cookies.getItem('lastSelectedArchive')) ? "./img/icons/wikivoyage-white-32.png" : "./img/icons/kiwix-32.png";
+                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? "./img/icons/wikivoyage-white-32.png" : /medicine/i.test(params.storedFile) ? "./img/icons/wikimed-lightblue-32.png" : "./img/icons/kiwix-32.png";
             }
             if (value == 'light') {
                 document.getElementsByTagName('body')[0].classList.remove("dark");
@@ -593,7 +593,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 document.getElementById('prefix').classList.remove("dark");
                 var elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid black"; }
-                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(cookies.getItem('lastSelectedArchive')) ? "./img/icons/wikivoyage-black-32.png" : "./img/icons/kiwix-blue-32.png";
+                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? "./img/icons/wikivoyage-black-32.png" : /medicine/i.test(params.storedFile) ? "./img/icons/wikimed-blue-32.png" : "./img/icons/kiwix-blue-32.png";
             }
         }
 
