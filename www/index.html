@@ -45,18 +45,23 @@
         <div class="modal-dialog">
             <div class="modal-content dark">
                 <div class="modal-body">
-                    <h2>Welcome to WikiMed Offline Medical Wikipedia!</h2>
-                    <h3>Please read this important information!</h3>
-                    <p>
-                        <b>DISCLAIMER:</b> The medical information in this app comes from Wikipedia.
-                        <strong>Wikipedia does not give medical advice and Wikipedia is not a doctor.</strong> The information
-                        provided in this app is for the purposes of education and research. <em>This app must not be used as
-                        a substitute for professional medical advice.</em> 
-                    </p>
-                    <p>
-                        By using this application, you explicitly agree that you will not hold Kiwix, Wikipedia or anyone else
-                        responsible for your use or misuse of the information it contains.
-                    </p>
+                    <h2 style="font-size: 32px;">
+                        <img alt="WikiMed icon" src="img/icons/wikimed-90.png">
+                        Welcome to WikiMed!
+                    </h2>
+                    <h3>Please read this important information</h3>
+                    <div class="disclaimer">
+                        <p>
+                            <b>DISCLAIMER:</b> The medical information in this app comes from Wikipedia.
+                            <strong>Wikipedia does not give medical advice and Wikipedia is not a doctor.</strong>
+                            The information provided in this app is for the purposes of education and research.
+                            <em>This app must not be used as a substitute for professional medical advice.</em>
+                        </p>
+                        <p>
+                            By using this application, you explicitly agree that you will not hold Kiwix, Wikipedia or anyone
+                            else responsible for your use or misuse of the information it contains.
+                        </p>
+                    </div>
                     <p>
                         This app is packaged with the WikiMed offline ZIM archive in <b>English</b>. To download
                         other languages, see the <b>About page <span class="glyphicon glyphicon-info-sign">
@@ -99,7 +104,7 @@
                                 <span class="input-group">
                                     <span class="input-group-btn">
                                         <!-- button id="btnHome" type="button" class="btn btn-default" -->
-                                        <a id="btnHome" title="Home" class="btn btn-primary"><img id="kiwixIcon" style="margin-left:5px;" src="./img/icons/wikivoyage-black-32.png" /></a>
+                                        <a id="btnHome" title="Home" class="btn btn-primary"><img id="kiwixIcon" style="margin-left:5px;" src="./img/icons/wikimed-blue-32.png" /></a>
                                         <!--button -->
                                     </span>
                                     <input type="search" id="prefix" placeholder="Search..."
@@ -129,7 +134,7 @@
             <div id="scrollbox" class="container" style="position:fixed;overflow:auto;width:100%;">
                 <div id="about" style="display: none;" class="category-padding">
                     <h2>
-                        <img src="img/icons/wikivoyage-90.png" alt="Wikivoyage icon" />
+                        <img src="img/icons/wikimed-90.png" alt="WikiMed icon" />
                         WikiMed by Kiwix
                     </h2>
                     <h3 style="margin-top:0;">
@@ -137,7 +142,7 @@
                     </h3>
                     <p><small>Packaged ZIM archive: <b><span id="fileVersion"></span></b></small></p>
                     <p>Official site : <a href="http://www.kiwix.org/" target="_blank">http://www.kiwix.org/</a></p>
-                    <div style="color:black;background-color:lightyellow;border-left:6px solid gold;padding:10px 5px 1px 10px;">
+                    <div class="disclaimer">
                         <p><b>DISCLAIMER:</b></p>
                         <p>The medical information in this app comes from Wikipedia.</p>
                         <p><strong>Wikipedia does not give medical advice and Wikipedia is not a doctor.</strong></p>
@@ -145,7 +150,7 @@
                         application, you agree that you will not hold Kiwix, Wikipedia or anyone else responsible for your use or
                         misuse of the information it contains.</p>
                     </div>
-                    <p>
+                    <p style="padding-top: 10px;">
                         As well as WikiMed in English, you can download one or more WikiMed archives (called ZIM archives) in
                         other languages from the Kiwix website: see the instructions below. There are also two sister apps in
                         the Store: <a href="https://www.microsoft.com/store/p/wikivoyage-by-kiwix/9n5sb90q4jbj" target="_blank">
