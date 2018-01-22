@@ -135,6 +135,37 @@ define([], function() {
     }
 
     /**
+  * Initiates XMLHttpRequest
+  * Can be used for loading local files in app context
+  *
+  * @param {String} file
+  * @param {Function} callback
+  * @returns responseText, status
+  */
+    function XHR(file, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function (e) {
+            if (this.readyState == 4) {
+                callback(this.responseText, this.status);
+            }
+        };
+        var err = false;
+        try {
+            xhr.open('GET', file, true);
+        }
+        catch (e) {
+            console.log("Exception during GET request: " + e);
+            err = true;
+        }
+        if (!err) {
+            xhr.send();
+        } else {
+            callback("Error", 500);
+        }
+    }
+
+
+    /**
      * Functions and classes exposed by this module
      */
     return {
@@ -144,6 +175,7 @@ define([], function() {
         isElementInView: isElementInView,
         makeReturnLink: makeReturnLink,
         poll: poll,
-        clear: clear
+        clear: clear,
+        XHR: XHR
     };
 });
