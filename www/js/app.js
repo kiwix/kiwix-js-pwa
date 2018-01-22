@@ -1490,7 +1490,32 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             console.log("Initiating Document Ready timer...");
             console.time("Time to Document Ready");
 
-            selectedArchive.readArticle(dirEntry, displayArticleInForm);
+            //UWP-specific routine to load cached startup file
+            if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined' &&
+                dirEntry.url == decodeURIComponent(params.cachedStartPage)) {
+                var htmlContent;
+                var AppStorage = Windows.ApplicationModel.Package.current.installedLocation;
+                AppStorage.getFolderAsync('www\\A').done(function (folder) {
+                    folder.getFilesAsync().done(function (files) {
+                        for (var i = 0; i < files.length; i++) {
+                            if (files[i].displayName == params.cachedStartPage) {
+                                htmlContent = "found";
+                                break;
+                            }
+                        }
+                        if (htmlContent) {
+                            Windows.Storage.FileIO.readTextAsync(files[i]).done(function (content) {
+                                htmlContent = content;
+                                displayArticleInForm(dirEntry, htmlContent);
+                            });
+                        } else {
+                            selectedArchive.readArticle(dirEntry, displayArticleInForm);
+                        }
+                    });
+                });
+            } else {
+                selectedArchive.readArticle(dirEntry, displayArticleInForm);
+            }
         }
     }
     
@@ -2402,7 +2427,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             else {
                 if (dirEntry.namespace === 'A') {
                     $("#articleName").html(dirEntry.title);
-                    pushBrowserHistoryState(dirEntry.url);
+                    pushBrowserHistoryState('A/' + dirEntry.url);
                     $("#readingArticle").show();
                     $('#articleContent').contents().find('body').html("");
                     readArticle(dirEntry);
