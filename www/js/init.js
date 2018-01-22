@@ -25,16 +25,14 @@ var params = {};
 params['version'] = "0.9.7 WikiMed Beta"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 params['storedFile'] = getCookie('lastSelectedArchive') || "wikipedia_en_medicine.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['fileVersion'] = "wikipedia_en_medicine_novid_2018-01 (11-Jan-2018)"; //Use generic name for actual file, and give version here
+params['cachedStartPage'] = "Wikipedia%3AWikiProject_Medicine_Open_Textbook_of_Medicine2.html" || false; //If you have cached the start page for quick start, give its URI here
 params['kiwixDownloadLink'] = "http://download.kiwix.org/zim/"; //Include final slash
 
 params['results'] = params['results'] || 15; //Number of search results to display
 params['relativeFontSize'] = ~~(getCookie('relativeFontSize') || 100); //Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
-var x = getCookie('relativeUIFontSize');
 params['relativeUIFontSize'] = ~~(getCookie('relativeUIFontSize') || 100); //Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
 params['cssSource'] = getCookie('cssSource') || "auto"; //Set default to "auto", "desktop" or "mobile"
 params['cssCache'] = getCookie('cssCache') != null ? getCookie('cssCache') : true; //Set default to true to use cached CSS, false to use Zim only
-//Convert string values of true / false to Boolean without disturbing any Boolean already set:
-//params['cssCache'] = params['cssCache'] == "false" ? false : (params['cssCache'] == "true" ? true : params['cssCache']);
 params['cssTheme'] = getCookie('cssTheme') || 'light'; //Set default to 'light', 'dark' or 'invert' to use respective themes for articles
 params['cssUITheme'] = getCookie('cssUITheme') || 'light'; //Set default to 'light' or 'dark' to use respective themes for UI
 params['imageDisplay'] = getCookie('imageDisplay') != null ? getCookie('imageDisplay') : true; //Set default to display images from Zim
