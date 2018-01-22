@@ -72,8 +72,6 @@
     <Content Include="images\LargeTile.scale-150.png" />
     <Content Include="images\LargeTile.scale-200.png" />
     <Content Include="images\LargeTile.scale-400.png" />
-    <Content Include="images\MedLogoNoWiFi.svg" />
-    <Content Include="images\Med_logo_simpleicon_lightblue.png" />
     <Content Include="images\SmallTile.scale-100.png" />
     <Content Include="images\SmallTile.scale-125.png" />
     <Content Include="images\SmallTile.scale-150.png" />
@@ -115,13 +113,6 @@
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="images\Wide310x150Logo.scale-400.png" />
     <None Include="Package.StoreAssociation.xml" />
-    <Content Include="images\WikiMed_1400x1400.png" />
-    <Content Include="images\WikiMed_1600x1600.png" />
-    <Content Include="images\WikiMed_1800x1800.png" />
-    <Content Include="images\WikiMed_400x430.png" />
-    <Content Include="images\WikiMed_400x430_white.png" />
-    <Content Include="images\WikiMed_RedSnake_400x430.png" />
-    <Content Include="images\Wiki_Project_Med_Foundation_logo.svg" />
     <Content Include="www\-\s\css_modules\content.parsoid.css" />
     <Content Include="www\-\s\css_modules\ext.cite.a11y.css" />
     <Content Include="www\-\s\css_modules\ext.cite.styles.css" />
@@ -145,6 +136,7 @@
     <Content Include="www\-\s\style-mobile.css" />
     <Content Include="www\-\s\style.css" />
     <Content Include="www\-\s\vector.css" />
+    <Content Include="www\A\Wikipedia%253AWikiProject_Medicine_Open_Textbook_of_Medicine2.html.html" />
     <Content Include="www\css\app.css" />
     <Content Include="www\css\bootstrap.css" />
     <Content Include="www\dummyArticle.html" />
