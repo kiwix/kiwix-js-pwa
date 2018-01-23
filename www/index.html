@@ -136,7 +136,7 @@
                     <h3 style="margin-top:0;">
                         Offline Wikipedia Viewer <small>(Version <span id="version"></span>)</small>
                     </h3>
-                    <p><small>Packaged ZIM archive: <b><span id="fileVersion"></span></b></small></p>
+                    <p><small>Packaged ZIM archive: <b><span class="fileVersion"></span></b></small></p>
                     <p>Official site : <a href="http://www.kiwix.org/" target="_blank">http://www.kiwix.org/</a></p>
                     <p>
                         If your Internet access is expensive / slow / unreliable / watched / censored, you can still gain offline access to a huge
@@ -370,6 +370,23 @@
                         <div class="row">
                             <h3>Display settings</h3>
                             <div class="column">
+                                <div id="displayThemeDiv" class="panel panel-info" style="clear: left;">
+                                    <div class="panel-heading">Dark mode:</div>
+                                    <div class="panel-body">
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="cssUIDarkTheme" id="cssUIDarkThemeCheck">
+                                            <b>Use dark mode for User Interface</b>
+                                        </label>
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="cssWikiDarkTheme" id="cssWikiDarkThemeCheck">
+                                            <b>Use dark theme for articles</b> (<i>experimental</i>: may only work with Wikipedia)
+                                        </label>
+                                        <label id="darkInvert" style="display:none;" class="checkbox">
+                                            <input type="checkbox" name="cssWikiDarkThemeInvert" id="cssWikiDarkThemeInvertCheck">
+                                            <b>Use simple inversion for dark theme</b> (should work with all archive types)
+                                        </label>
+                                    </div>
+                                </div>
                                 <div class="panel panel-info" id="cssSettingsDiv">
                                     <div class="panel-heading">Display style:</div>
                                     <div class="panel-body">
@@ -410,26 +427,9 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div id="displayThemeDiv" class="panel panel-info" style="clear: left;">
-                                    <div class="panel-heading">Dark mode:</div>
-                                    <div class="panel-body">
-                                        <label class="checkbox">
-                                            <input type="checkbox" name="cssUIDarkTheme" id="cssUIDarkThemeCheck">
-                                            <b>Use dark mode for User Interface</b>
-                                        </label>
-                                        <label class="checkbox">
-                                            <input type="checkbox" name="cssWikiDarkTheme" id="cssWikiDarkThemeCheck">
-                                            <b>Use dark theme for articles</b> (<i>experimental</i>: may only work with Wikipedia)
-                                        </label>
-                                        <label id="darkInvert" style="display:none;" class="checkbox">
-                                            <input type="checkbox" name="cssWikiDarkThemeInvert" id="cssWikiDarkThemeInvertCheck">
-                                            <b>Use simple inversion for dark theme</b> (should work with all archive types)
-                                        </label>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
                     <div id="returntoArticle_bottom" style="text-align:center;"></div>
                     <div>
                         <div class="row">
