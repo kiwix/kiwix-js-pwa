@@ -140,7 +140,7 @@
                     <h3 style="margin-top:0;">
                         Offline Medical Wikipedia <small>(Kiwix JS version <span id="version"></span>)</small>
                     </h3>
-                    <p><small>Packaged ZIM archive: <b><span id="fileVersion"></span></b></small></p>
+                    <p><small>Packaged ZIM archive: <b><span class="fileVersion"></span></b></small></p>
                     <p>Official site : <a href="http://www.kiwix.org/" target="_blank">http://www.kiwix.org/</a></p>
                     <div class="disclaimer">
                         <p><b>DISCLAIMER:</b></p>
@@ -315,8 +315,8 @@
                     <div id="returntoArticle_top" style="text-align:center;padding-top:20px;"></div>
                     <div class="row">
                         <h2 style="margin-top:0;">Configuration</h2>
-                        <p>This app is packaged with the WikiMed ZIM archive.<span id="downloadLinksText"> You can get more
-                            archives from the <a href="#downloads">download links panel</a>.</span></p>
+                        <p>Packaged ZIM archive: <b><span class="fileVersion"></span></b></p>
+                        <p id="downloadLinksText">You can get more archives from the <a href="#downloads">download links panel</a>.</p><p></p>
                     </div>
                     <div id="hideFileSelectors">
                         <div id="openLocalFiles" style="display: none;">
@@ -393,6 +393,23 @@
                         <div class="row">
                             <h3>Display settings</h3>
                             <div class="column">
+                                <div id="displayThemeDiv" class="panel panel-info" style="clear: left;">
+                                    <div class="panel-heading">Dark mode:</div>
+                                    <div class="panel-body">
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="cssUIDarkTheme" id="cssUIDarkThemeCheck">
+                                            <b>Use dark mode for User Interface</b>
+                                        </label>
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="cssWikiDarkTheme" id="cssWikiDarkThemeCheck">
+                                            <b>Use dark theme for articles</b> (<i>experimental</i>: may only work with Wikipedia)
+                                        </label>
+                                        <label id="darkInvert" style="display:none;" class="checkbox">
+                                            <input type="checkbox" name="cssWikiDarkThemeInvert" id="cssWikiDarkThemeInvertCheck">
+                                            <b>Use simple inversion for dark theme</b> (should work with all archive types)
+                                        </label>
+                                    </div>
+                                </div>
                                 <div class="panel panel-info" id="cssSettingsDiv">
                                     <div class="panel-heading">Display style:</div>
                                     <div class="panel-body">
@@ -430,23 +447,6 @@
                                         <label class="checkbox">
                                             <input type="checkbox" name="imageDisplayMode" id="imageDisplayModeCheck">
                                             <b>Display images if any</b> (if hidden, tap the <span style="background-color:lightblue; color:black;">&nbsp;blue area&nbsp;</span> to display one-by-one)
-                                        </label>
-                                    </div>
-                                </div>
-                                <div id="displayThemeDiv" class="panel panel-info" style="clear: left;">
-                                    <div class="panel-heading">Dark mode:</div>
-                                    <div class="panel-body">
-                                        <label class="checkbox">
-                                            <input type="checkbox" name="cssUIDarkTheme" id="cssUIDarkThemeCheck">
-                                            <b>Use dark mode for User Interface</b>
-                                        </label>
-                                        <label class="checkbox">
-                                            <input type="checkbox" name="cssWikiDarkTheme" id="cssWikiDarkThemeCheck">
-                                            <b>Use dark theme for articles</b> (<i>experimental</i>: may only work with Wikipedia)
-                                        </label>
-                                        <label id="darkInvert" style="display:none;" class="checkbox">
-                                            <input type="checkbox" name="cssWikiDarkThemeInvert" id="cssWikiDarkThemeInvertCheck">
-                                            <b>Use simple inversion for dark theme</b> (should work with all archive types)
                                         </label>
                                     </div>
                                 </div>

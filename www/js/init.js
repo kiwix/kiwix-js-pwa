@@ -64,7 +64,10 @@ document.getElementById('useMathJaxRadio' + (params.useMathJax ? 'True' : 'False
 document.getElementById('rememberLastPageCheck').checked = params.rememberLastPage;
 document.getElementById('displayFileSelectorsCheck').checked = params.showFileSelectors;
 document.getElementById('version').innerHTML = params.version;
-document.getElementById('fileVersion').innerHTML = params.fileVersion;
+var versionDivs = document.getElementsByClassName('fileVersion');
+for (var i = 0; i < versionDivs.length; i++) {
+    versionDivs[i].innerHTML = i ? params['fileVersion'].replace(/\s+.+$/, "") : params['fileVersion'];
+}
 
 //Set up storage types
 if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') { //UWP
