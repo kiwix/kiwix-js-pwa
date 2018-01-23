@@ -1617,11 +1617,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, "");
         htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, "");
 
-        //Put misplaced hatnote header back in its correct position @TODO remove this when fixed in mw-offliner
-        var hatnote = htmlArticle.match(/<div\s+[^>]+\bhatnote\b[^>]+>Not to be confused with[\s\S]+?<\/div>\s*/i);
-        if (hatnote && hatnote.length) {
-            htmlArticle = htmlArticle.replace(hatnote, "");
-            htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnote);
+        //Put misplaced hatnote headers inside <h1> block back in correct position @TODO remove this when fixed in mw-offliner
+        var hatnote = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?((?:<div\s+[^>]+\bhatnote\b[\s\S]+?<\/div>\s*)+)/i);
+        if (hatnote && hatnote.length > 1) {
+            htmlArticle = htmlArticle.replace(hatnote[1], "");
+            htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnote[1]);
         }
         //Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
         var noexcerpt = htmlArticle.match(/<dl>(?:[^<]|<(?!\/dl>))+?excerpt(?:[^<]|<(?!\/dl>))+?For other places with the same name(?:[^<]|<(?!\/dl>))+?<\/dl>\s*/i);
