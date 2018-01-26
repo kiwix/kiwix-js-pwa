@@ -18,7 +18,7 @@
       <uap:ApplicationContentUriRules>
         <uap:Rule Match="ms-appx-web:///www/index.html" Type="include" WindowsRuntimeAccess="all" />
       </uap:ApplicationContentUriRules>
-      <uap:VisualElements DisplayName="WikiMed" Description="Wikivoyage offline travel guide by Kiwix" BackgroundColor="transparent" Square150x150Logo="images\Square150x150Logo.png" Square44x44Logo="images\Square44x44Logo.png">
+      <uap:VisualElements DisplayName="WikiMed" Description="WikiMed offline medical encyclopaedia by Kiwix" BackgroundColor="transparent" Square150x150Logo="images\Square150x150Logo.png" Square44x44Logo="images\Square44x44Logo.png">
         <uap:DefaultTile ShortName="WikiMed" Square310x310Logo="images\LargeTile.png" Wide310x150Logo="images\Wide310x150Logo.png" Square71x71Logo="images\SmallTile.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square150x150Logo" />
