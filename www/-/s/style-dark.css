@@ -137,8 +137,7 @@ html, body {
   }
 
 table, input, button, select, textarea:not([class*="mw-editfont"]),
-tr[style*="background: antiquewhite"], tr[style*="background-color:#ee"], tr[style*="background-color:#ff"], tr[style*="background-color:#FF"], #toc, td[style*="background-color"], td[style*="background:#F5FAFF"], td[style*="background:#F8"],
-td[style*="background:WhiteSmoke"], td[style*="background:GhostWhite"], td[style*="background:#f5"], #mw-content-text div[style*="background: #"], .vevent td, .referencetooltip li, .suggestions,
+tr[style*="background: antiquewhite"], tr[style*="background-color:#ee"], tr[style*="background-color:#ff"], tr[style*="background-color:#FF"], #toc, td[style*="background-color"], td[style*="background:#F5FAFF"], td[style*="background:#F8"], tr[style*="background:#f8"], tr[style*="background:#f4"], td[style*="background:WhiteSmoke"], td[style*="background:GhostWhite"], span[style*="background:moccasin"], td[style*="background:#f5"], #mw-content-text div[style*="background: #"], .vevent td, .referencetooltip li, .suggestions,
 .mw-ui-button[style*="background"], .mw-ui-button[style*="background"] *, .wikiEditor-ui,
 table.navbox.collapsible tr:nth-child(2) > td, div.menu, .oo-ui-popupWidget-popup,
 .oo-ui-buttonElement-button, .mw-notification, .mwe-popups, .mwe-popups-is-not-tall, .mwe-popups-is-tall,
