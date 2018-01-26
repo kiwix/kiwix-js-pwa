@@ -1,3 +1,9 @@
+## Release 0.9.8 (beta) WikiMed
+* ENHANCEMENT: Cache start page in the filesystem for quick start or return to home
+* WORKAROUND for hidden IPA pronunciation information on some WikiMed articles
+* WORKAROUND for misplaced hatnotes in mobile-style ZIMs
+* ENHANCEMENT: When selecting dark-themed UI, dark-theme is automatically selected for articles (it can then be deselected if required)
+
 ## Release 0.9.7 (beta)
 * UPDATE: January 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-01.zim
 * ENHANCEMENT: The Wikivoyage app now hides the file selectors by default in the Config menu to avoid confusion and to encourage use of Kiwix JS for anything not related to Wikivoyage
