@@ -15,12 +15,13 @@ If there are packages for sideloading this WikiMed branch, they will be located 
 Short answer:
 
 	WikiMed Offline Medical Wikipedia UWP works entirely offline unless you specifically request otherwise on the 
-	Configuration page. We do not collect any of your personal data and don't even know what you are doing with this application.
+	Configuration page. We do not collect any of your personal data and don't even know what you are doing with this 
+	application.
 
 Longer answer:
 
-	WikiMed Offline Medical Wikipedia UWP will only access the Kiwix download server if you specifically request it to find
-	and display download links for ZIM archives on the Configuration page.
+	WikiMed Offline Medical Wikipedia UWP will only access the Kiwix download server if you specifically request it to 
+	find and display download links for ZIM archives on the Configuration page.
     
 	You can disable even this Internet access with an option on the same page. If you nevertheless believe your
 	Internet access can be watched and/or if you are extremely cautious, you should shut down your 3G and WiFi
