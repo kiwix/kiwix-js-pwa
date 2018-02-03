@@ -1934,7 +1934,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
     //DEV: Set this to the number of images you want to prefetch after the on-screen images have been fetched
         var prefetchSliceSize = 20;
     //DEV: SVG images are currently very taxing: keep this number at 5 or below and test on your system with Sine.html
-        var svgSliceSize = 3;
+        var svgSliceSize = 2;
         var visibleSlice = [];
         var svgSlice = [];
         var svgGroup1 = [];
