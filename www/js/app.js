@@ -354,7 +354,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         });
         // Top menu :
         $('#btnHome').on('click', function (e) {
-            //setHomeTab();
             // Give the focus to the search field, and clean up the page contents
             if (!firstRun) {
                 $('#prefix').focus();
@@ -363,6 +362,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             $("#articleContent").hide();
             $("#articleContent").contents().empty();
             $('#searchingForArticles').hide();
+            $("#welcomeText").show();
+            $('#articleList').show();
+            $('#articleListHeaderMessage').show();
             if (selectedArchive !== null && selectedArchive.isReady()) {
                 $("#welcomeText").hide();
                 goToMainArticle();
@@ -395,14 +397,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             $('#about').hide();
             $('#configuration').hide();
             $('#formArticleSearch').show();
-            $("#welcomeText").show();
-            $('#articleList').show();
-            $('#articleListHeaderMessage').show();
             $('#articleContent').show();
             $("#prefix").val("");
             $("#articleList").empty();
+            $('#articleList').hide();
             $('#articleListHeaderMessage').empty();
             $("#readingArticle").hide();
+            $("#welcomeText").hide();
+            // Scroll the iframe to its top
+            $("#articleContent").contents().scrollTop(0);
         }
 
         $('#btnConfigure').on('click', function (e) {
@@ -1489,8 +1492,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             selectedArchive.resolveRedirect(dirEntry, readArticle);
         }
         else {
-            setHomeTab();
-
             //TESTING//
             console.log("Initiating HTML load...");
             console.time("Time to HTML load");
@@ -1600,8 +1601,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         console.log("Loading stylesheets...");
         console.time("Time to First Paint");
         //return;
-
-        $('#articleList').hide();
 
         //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
         //so add some whitespace at the end of the document
@@ -1791,13 +1790,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
 
         function injectHTML() {
-            //Void progress message
-            uiUtil.clear(); //Void progress messages
-            $("#readingArticle").hide();
-            $("#articleContent").show();
-            // Scroll the iframe to its top
-            $("#articleContent").contents().scrollTop(0);
-
             //Adapt German Wikivoyage POI data format
             var regexpGeoLocationDE = /<span\s+class\s?=\s?"[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<span[^>]+listing-name[^>]+>([^<]+)<\/span>)/ig;
             htmlArticle = htmlArticle.replace(regexpGeoLocationDE, function (match, latitude, longitude, href, id) {
@@ -1825,6 +1817,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             });
 
             //Inject htmlArticle into iframe
+            uiUtil.clear(); //Void progress messages
+            setHomeTab();
             $('#articleContent').contents().find('body').html(htmlArticle);
 
             setupTableOfContents();
@@ -1934,7 +1928,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
     //DEV: Set this to the number of images you want to prefetch after the on-screen images have been fetched
         var prefetchSliceSize = 20;
     //DEV: SVG images are currently very taxing: keep this number at 5 or below and test on your system with Sine.html
-        var svgSliceSize = 2;
+        var svgSliceSize = 1;
         var visibleSlice = [];
         var svgSlice = [];
         var svgGroup1 = [];
