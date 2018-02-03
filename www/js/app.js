@@ -1048,7 +1048,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          */
         function setLocalArchiveFromArchiveList() {
             var archiveDirectory = $('#archiveList').val();
-            document.getElementById('kiwixIcon').src = /wikivoyage/i.test(archiveDirectory) ? params.cssUITheme == "light" ? "./img/icons/wikivoyage-black-32.png" : "./img/icons/wikivoyage-white-32.png" : /medicine/i.test(archiveDirectory) ? params.cssUITheme == "light" ? "./img/icons/wikimed-lightblue-32.png" : "./img/icons/wikimed-blue-32.png" : params.cssUITheme == "light" ? "./img/icons/kiwix-blue-32.png" : "./img/icons/kiwix-32.png";
+            document.getElementById('kiwixIcon').src = /wikivoyage/i.test(archiveDirectory) ? params.cssUITheme == "light" ? "./img/icons/wikivoyage-black-32.png" : "./img/icons/wikivoyage-white-32.png" : /medicine/i.test(archiveDirectory) ? params.cssUITheme == "light" ? "./img/icons/wikimed-blue-32.png" : "./img/icons/wikimed-lightblue-32.png" : params.cssUITheme == "light" ? "./img/icons/kiwix-blue-32.png" : "./img/icons/kiwix-32.png";
             if (archiveDirectory && archiveDirectory.length > 0) {
                 // Now, try to find which DeviceStorage has been selected by the user
                 // It is the prefix of the archive directory
