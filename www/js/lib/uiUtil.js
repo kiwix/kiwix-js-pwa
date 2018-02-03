@@ -95,24 +95,7 @@ define([], function() {
         var shortTitle = title.substring(0, 25);
         shortTitle = shortTitle == title ? shortTitle : shortTitle + "..."; 
         var link = '<h4 style="font-size:' + ~~(params.relativeUIFontSize * 1.4 * 0.14) + 'px;"><a href="#">&lt;&lt; Return to ' + shortTitle + '</a></h4>';
-        var rtnFunction = "(function () { \
-            $('#configuration').hide(); \
-            $('#about').hide(); \
-            if (params.cssTheme == 'light' && params.cssUITheme == 'dark') { \
-                document.getElementById('search-article').classList.remove('dark'); \
-                document.getElementById('findInArticle').classList.remove('dark'); \
-                document.getElementById('prefix').classList.remove('dark'); \
-            } \
-            $('#formArticleSearch').show(); \
-            $('#articleContent').show(); \
-            $('#liHomeNav').attr('class', 'active'); \
-            $('#liConfigureNav').attr('class', ''); \
-            $('#liAboutNav').attr('class', ''); \
-            document.getElementById('btnConfigure').classList.remove('active'); \
-            document.getElementById('btnAbout').classList.remove('active'); \
-            document.getElementById('search-article').style.overflow = 'hidden'; \
-            checkToolbar(); \
-            document.getElementById('search-article').scrollTop = 0; \
+        rtnFunction = "(function () { setHomeTab(); \
             if (params.themeChanged) { \
                 params.themeChanged = false; \
                 if (history.state !== null) {  \

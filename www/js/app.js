@@ -354,6 +354,23 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         });
         // Top menu :
         $('#btnHome').on('click', function (e) {
+            //setHomeTab();
+            // Give the focus to the search field, and clean up the page contents
+            if (!firstRun) {
+                $('#prefix').focus();
+                firstRun = false;
+            }
+            $("#articleContent").hide();
+            $("#articleContent").contents().empty();
+            $('#searchingForArticles').hide();
+            if (selectedArchive !== null && selectedArchive.isReady()) {
+                $("#welcomeText").hide();
+                goToMainArticle();
+            }
+            return false;
+        });
+
+        function setHomeTab() {
             // Highlight the selected section in the navbar
             $('#liHomeNav').attr("class", "active");
             $('#liConfigureNav').attr("class", "");
@@ -382,24 +399,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             $('#articleList').show();
             $('#articleListHeaderMessage').show();
             $('#articleContent').show();
-            // Give the focus to the search field, and clean up the page contents
             $("#prefix").val("");
-            if (!firstRun) {
-                $('#prefix').focus();
-                firstRun = false;
-            }
             $("#articleList").empty();
             $('#articleListHeaderMessage').empty();
             $("#readingArticle").hide();
-            $("#articleContent").hide();
-            $("#articleContent").contents().empty();
-            $('#searchingForArticles').hide();
-            if (selectedArchive !== null && selectedArchive.isReady()) {
-                $("#welcomeText").hide();
-                goToMainArticle();
-            }
-            return false;
-        });
+        }
+
         $('#btnConfigure').on('click', function (e) {
             // Highlight the selected section in the navbar
             $('#liHomeNav').attr("class", "");
@@ -1484,6 +1489,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             selectedArchive.resolveRedirect(dirEntry, readArticle);
         }
         else {
+            setHomeTab();
 
             //TESTING//
             console.log("Initiating HTML load...");
