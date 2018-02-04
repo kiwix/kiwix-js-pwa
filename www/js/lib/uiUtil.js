@@ -104,8 +104,10 @@ define([], function() {
                 } \
             } \
         })";
-        document.getElementById("returntoArticle_top").innerHTML = link;
-        document.getElementById("returntoArticle_bottom").innerHTML = link;
+        var returnDivs = document.getElementsByClassName("returntoArticle");
+        for (var i = 0; i < returnDivs.length; i++) {
+            returnDivs[i].innerHTML = link;
+        }
         return rtnFunction;
     }
 

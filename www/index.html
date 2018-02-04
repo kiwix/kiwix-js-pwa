@@ -49,6 +49,18 @@
                         <img alt="WikiMed icon" src="img/icons/wikimed-90.png">
                         Welcome to&nbsp;WikiMed!
                     </h2>
+                    <div class="update">
+                        <h3 style="margin-top:0;">Changes in 0.9.9 (beta)</h3>
+                        <ul>
+                            <li>Loads landing page when an article is not found (instead of throwing an error)</li>
+                            <li>Improvements in infobox handling / placement</li>
+                            <li>Workaround for misplaced hatnotes in the archive</li>
+                            <li>Dedicated icon for WikiMed archives</li>
+                            <li>Activating dark theme for UI now activates article dark theme by default</li>
+                            <li>Reduced memory usage for decompression of SVG files</li>
+                            <li>Fixed error which caused Settings tab to remain activated after loading article</li>
+                        </ul>
+                    </div>
                     <h3>Please read this important information</h3>
                     <div class="disclaimer">
                         <p>
@@ -134,6 +146,7 @@
         <article class="view-content" id="article">
             <div id="scrollbox" class="container" style="position:fixed;overflow:auto;width:100%;">
                 <div id="about" style="display: none;" class="category-padding">
+                    <div class="returntoArticle" style="text-align:center;padding-top:20px;"></div>
                     <h2>
                         <img src="img/icons/wikimed-90.png" alt="WikiMed icon" />
                         WikiMed by Kiwix
@@ -309,11 +322,12 @@
                     <h3>Other platforms/versions</h3>
                     <p>Other Kiwix clients exist on various platforms. See the official site : <a href="http://www.kiwix.org/" target="_blank">http://www.kiwix.org/</a>.</p>
                     <p>&nbsp;</p>
+                    <div class="returntoArticle" style="text-align:center;"></div>
                     <p>&nbsp;</p>
                     <p>&nbsp;</p>
                 </div>
                 <div id="configuration" style="display: none;" class="container category-padding">
-                    <div id="returntoArticle_top" style="text-align:center;padding-top:20px;"></div>
+                    <div id="returntoArticle" class="returntoArticle" style="text-align:center;padding-top:20px;"></div>
                     <div class="row">
                         <h2 style="margin-top:0;">Configuration</h2>
                         <p>Packaged ZIM archive: <b><span class="fileVersion"></span></b></p>
@@ -454,7 +468,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="returntoArticle_bottom" style="text-align:center;"></div>
+                    <div class="returntoArticle" style="text-align:center;"></div>
                     <div>
                         <div class="row">
                             <h3 id="privacy">Privacy settings</h3>
@@ -515,6 +529,7 @@
                             </div>
                         </div>
                     </div>
+                    <div class="returntoArticle" style="text-align:center;"></div>
                     <br />
                     <br />
                     <br />

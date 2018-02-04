@@ -175,7 +175,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             var findInArticle = document.getElementById('findInArticle');
             if (searchDiv.style.display == 'none') {
                 searchDiv.style.display = "inline";
-                document.getElementById('findText').classList.add("active");
+                setActiveBtn('findText');
                 findInArticle.focus();
             } else {
                 clearFindInArticle();
@@ -229,26 +229,19 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         });
 
         $("#btnRandomArticle").on("click", function (e) {
-            $('#prefix').val("");
-            clearFindInArticle();
+            setHomeTab('btnRandomArticle');
             //Re-enable top-level scrolling
             document.getElementById('top').style.position = "relative";
             document.getElementById('scrollbox').style.position = "fixed";
             document.getElementById('scrollbox').style.height = window.innerHeight + "px";
             goToRandomArticle();
-            $("#welcomeText").hide();
-            $('#articleList').hide();
-            $('#articleListHeaderMessage').hide();
-            $("#readingArticle").hide();
-            $('#searchingForArticles').hide();
-            if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
-                $('#navbarToggle').click();
-            }
         });
 
         $('#btnRescanDeviceStorage').on("click", function (e) {
-            document.getElementById('returntoArticle_top').innerHTML = "";
-            document.getElementById('returntoArticle_bottom').innerHTML = "";
+            var returnDivs = document.getElementsByClassName("returntoArticle");
+            for (var i = 0; i < returnDivs.length; i++) {
+                returnDivs[i].innerHTML = "";
+            }
             //Stop app from jumping straight into to first archive if user initiated the scan (to give user a chance to select the archive manually)
             params.rescan = true;
             //Reload any ZIM files in local storage (whcih the usar can't otherwise select with the filepicker)
@@ -264,9 +257,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
         });
         // Bottom bar :
+        // @TODO Since bottom bar now hidden this code makes no sense, consider adding it to top home button instead
         $('#btnBack').on('click', function (e) {
             if (document.getElementById('articleContent').style.display == "none") {
-                $('#returntoArticle_top').click();
+                $('#returntoArticle').click();
                 return false;
             }
             clearFindInArticle();
@@ -354,25 +348,26 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         });
         // Top menu :
         $('#btnHome').on('click', function (e) {
+            setHomeTab('btnHome');
             // Give the focus to the search field, and clean up the page contents
             if (!firstRun) {
                 $('#prefix').focus();
                 firstRun = false;
             }
-            $("#articleContent").hide();
-            $("#articleContent").contents().empty();
+            $('#articleContent').hide();
+            $('#articleContent').contents().empty();
             $('#searchingForArticles').hide();
-            $("#welcomeText").show();
+            $('#welcomeText').show();
             $('#articleList').show();
             $('#articleListHeaderMessage').show();
             if (selectedArchive !== null && selectedArchive.isReady()) {
-                $("#welcomeText").hide();
+                $('#welcomeText').hide();
                 goToMainArticle();
             }
             return false;
         });
 
-        function setHomeTab() {
+        function setHomeTab(activeBtn) {
             // Highlight the selected section in the navbar
             $('#liHomeNav').attr("class", "active");
             $('#liConfigureNav').attr("class", "");
@@ -380,9 +375,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
                 $('#navbarToggle').click();
             }
-            document.getElementById('btnConfigure').classList.remove("active");
-            document.getElementById('btnAbout').classList.remove("active");
+            setActiveBtn(activeBtn);
             clearFindInArticle();
+            //Re-enable bottom toolbar display
+            document.getElementById('footer').style.display = "block";
             //Re-enable top-level scrolling
             document.getElementById('top').style.position = "relative";
             document.getElementById('scrollbox').style.position = "fixed";
@@ -408,6 +404,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             $("#articleContent").contents().scrollTop(0);
         }
 
+        function setActiveBtn(activeBtn) {
+            document.getElementById('btnHome').classList.remove("active");
+            document.getElementById('btnRandomArticle').classList.remove("active");
+            document.getElementById('btnConfigure').classList.remove("active");
+            document.getElementById('btnAbout').classList.remove("active");
+            if (activeBtn) {
+                var activeID = document.getElementById(activeBtn);
+                if (activeID) activeID.classList.add("active");
+            }
+        }
+
         $('#btnConfigure').on('click', function (e) {
             // Highlight the selected section in the navbar
             $('#liHomeNav').attr("class", "");
@@ -416,8 +423,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
                 $('#navbarToggle').click();
             }
-            document.getElementById('btnAbout').classList.remove("active");
-            document.getElementById('btnConfigure').classList.add("active");
+            setActiveBtn('btnConfigure');
             clearFindInArticle();
             //Return navbar to dark state if we switched it earlier
             if (params.cssTheme == "light" && params.cssUITheme == "dark") {
@@ -425,6 +431,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 document.getElementById('findInArticle').classList.add("dark");
                 document.getElementById('prefix').classList.add("dark");
             }
+            //Hide footer toolbar
+            document.getElementById('footer').style.display = "none";
             // Show the selected content in the page
             $('#about').hide();
             $('#configuration').show();
@@ -468,14 +476,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
                 $('#navbarToggle').click();
             }
-            document.getElementById('btnConfigure').classList.remove("active");
-            document.getElementById('btnAbout').classList.add("active");
+            setActiveBtn('btnAbout');
             clearFindInArticle();
             if (params.cssTheme == "light" && params.cssUITheme == "dark") {
                 document.getElementById('search-article').classList.add("dark");
                 document.getElementById('findInArticle').classList.add("dark");
                 document.getElementById('prefix').classList.add("dark");
             }
+            //Hide footer toolbar
+            document.getElementById('footer').style.display = "none";
             // Show the selected content in the page
             $('#about').show();
             $('#configuration').hide();
@@ -534,8 +543,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
         $('input:radio[name=contentInjectionMode]').on('change', function (e) {
             if (checkWarnServiceWorkerMode(this.value)) {
-                document.getElementById('returntoArticle_top').innerHTML = "";
-                document.getElementById('returntoArticle_bottom').innerHTML = "";
+                var returnDivs = document.getElementsByClassName("returntoArticle");
+                for (var i = 0; i < returnDivs.length; i++) {
+                    returnDivs[i].innerHTML = "";
+                }
                 // Do the necessary to enable or disable the Service Worker
                 setContentInjectionMode(this.value);
             }
@@ -1829,11 +1840,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             var makeLink = uiUtil.makeReturnLink(dirEntry.title); //[kiwix-js #127]
             var linkListener = eval(makeLink);
             //Prevent multiple listeners being attached on each browse
-            document.getElementById("returntoArticle_top").removeEventListener('click', linkListener);
-            document.getElementById("returntoArticle_top").addEventListener('click', linkListener);
-            document.getElementById("returntoArticle_bottom").removeEventListener('click', linkListener);
-            document.getElementById("returntoArticle_bottom").addEventListener('click', linkListener);
-
+            var returnDivs = document.getElementsByClassName("returntoArticle");
+            for (var i = 0; i < returnDivs.length; i++) {
+                returnDivs[i].removeEventListener('click', linkListener);
+                returnDivs[i].addEventListener('click', linkListener);
+            }
             checkToolbar();
 
             // If the ServiceWorker is not useable, we need to fallback to parse the DOM
