@@ -1,9 +1,14 @@
+## Release 0.9.9 (beta) WikiMed
+* ENHANCEMENT: 'Unclicking' a tab (Settings or About) now returns the user to the article
+* ENHANCEMENT: Clearer navigation signposting from About tab
+
 ## Release 0.9.8 (beta) WikiMed
-* ENHANCEMENT: Cache start page in the filesystem for quick start or return to home
+* FIX: Corrected dark-style backgrounds in some infoboxes on WikiMed 
 * WORKAROUND for hidden IPA pronunciation information on some WikiMed articles
 * WORKAROUND for misplaced hatnotes in mobile-style ZIMs
-* ENHANCEMENT: When selecting dark-themed UI, dark-theme is automatically selected for articles (it can then be deselected if required)
-* FIX: Corrected dark-style backgrounds in some infoboxes on WikiMed 
+* ENHANCEMENT: Cache start page in the filesystem for quick start or return to home
+* ENHANCEMENT: Activating dark theme for UI now activates article dark theme by default
+* ENHANCEMENT: Dedicated icon for WikiMed archives
 
 ## Release 0.9.7 (beta)
 * UPDATE: January 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-01.zim
