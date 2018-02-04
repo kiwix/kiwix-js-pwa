@@ -168,14 +168,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
         $('#findText').on('click', function (e) {
             var innerDocument = window.frames[0].frameElement.contentDocument || window.frames[0].frameElement.contentWindow.document;
-            if (innerDocument.body.innerHTML.length < 10) return;
-            innerDocument = innerDocument.body;
-            if (!innerDocument) return;
+            innerDocument = innerDocument ? innerDocument.body : null;
+            if (!innerDocument || innerDocument.innerHTML.length < 10) return;
             var searchDiv = document.getElementById('row2');
             var findInArticle = document.getElementById('findInArticle');
             if (searchDiv.style.display == 'none') {
+                setHomeTab('findText');
                 searchDiv.style.display = "inline";
-                setActiveBtn('findText');
                 findInArticle.focus();
             } else {
                 clearFindInArticle();
@@ -416,6 +415,19 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         }
 
         $('#btnConfigure').on('click', function (e) {
+            var searchDiv = document.getElementById('configuration');
+            if (searchDiv.style.display != 'none') {
+                setHomeTab();
+                if (params.themeChanged) {
+                    params.themeChanged = false;
+                    if (history.state !== null) {
+                        var thisURL = decodeURIComponent(history.state.title);
+                        goToArticle(thisURL);
+                    }
+                }
+                return;
+            }
+            setHomeTab('btnConfigure');
             // Highlight the selected section in the navbar
             $('#liHomeNav').attr("class", "");
             $('#liConfigureNav').attr("class", "active");
@@ -423,8 +435,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
                 $('#navbarToggle').click();
             }
-            setActiveBtn('btnConfigure');
-            clearFindInArticle();
             //Return navbar to dark state if we switched it earlier
             if (params.cssTheme == "light" && params.cssUITheme == "dark") {
                 document.getElementById('search-article').classList.add("dark");
@@ -434,16 +444,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //Hide footer toolbar
             document.getElementById('footer').style.display = "none";
             // Show the selected content in the page
-            $('#about').hide();
             $('#configuration').show();
-            //$('#formArticleSearch').hide();
-            $("#welcomeText").hide();
-            $('#articleList').hide();
-            $('#articleListHeaderMessage').hide();
-            $("#readingArticle").hide();
-            $("#articleContent").hide();
             $('#articleContent').hide();
-            $('#searchingForArticles').hide();
             $('#downloadLinks').hide();
             $('#serverResponse').hide();
             refreshAPIStatus();
@@ -469,6 +471,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             return false;
         });
         $('#btnAbout').on('click', function (e) {
+            //Check if we're 'unclicking' the button
+            var searchDiv = document.getElementById('about');
+            if (searchDiv.style.display != 'none') {
+                setHomeTab();
+                return;
+            }
             // Highlight the selected section in the navbar
             $('#liHomeNav').attr("class", "");
             $('#liConfigureNav').attr("class", "");
@@ -476,8 +484,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
                 $('#navbarToggle').click();
             }
-            setActiveBtn('btnAbout');
-            clearFindInArticle();
+            setHomeTab('btnAbout');
             if (params.cssTheme == "light" && params.cssUITheme == "dark") {
                 document.getElementById('search-article').classList.add("dark");
                 document.getElementById('findInArticle').classList.add("dark");
@@ -487,15 +494,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('footer').style.display = "none";
             // Show the selected content in the page
             $('#about').show();
-            $('#configuration').hide();
-            //$('#formArticleSearch').hide();
-            $("#welcomeText").hide();
-            $('#articleList').hide();
-            $('#articleListHeaderMessage').hide();
-            $("#readingArticle").hide();
-            $("#articleContent").hide();
             $('#articleContent').hide();
-            $('#searchingForArticles').hide();
             //Re-enable top-level scrolling
             document.getElementById('top').style.position = "relative";
             document.getElementById('scrollbox').style.position = "fixed";
