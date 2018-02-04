@@ -205,6 +205,17 @@ pre {
     background: #333300;
 }
 
+.update {
+    background-color: lightcyan;
+    border-left: 6px solid cyan;
+    padding: 10px 5px 1px 10px;
+}
+
+.dark .update {
+    background: #000033;
+    border-left: 6px solid midnightblue;
+}
+
 .darkfooter .glyphicon, .dark .glyphicon {
     color: lightblue;
 }
