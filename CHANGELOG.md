@@ -1,3 +1,13 @@
+## Release 0.9.9 (beta)
+* FIX: Reduced memory usage for decompressing multiple SVG images/equations to prevent crash on devices with 1GB RAM
+* FIX: Display bug causing Settings tab to remain selected after article load
+* FIX: Corrected dark-style backgrounds in some infoboxes on WikiMed
+* FIX: Loads landing page when an article is not found (instead of throwing an error)
+* WORKAROUND for misplaced hatnotes in mobile-style ZIMs
+* WORKAROUND for hidden IPA pronunciation information on some articles
+* ENHANCEMENT: Activating dark theme for UI now activates article dark theme by default
+* ENHANCEMENT: Dedicated icon for WikiMed archives
+
 ## Release 0.9.7 (beta)
 * UPDATE: January 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-01.zim
 * ENHANCEMENT: The Wikivoyage app now hides the file selectors by default in the Config menu to avoid confusion and to encourage use of Kiwix JS for anything not related to Wikivoyage
