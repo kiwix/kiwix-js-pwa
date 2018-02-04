@@ -5,6 +5,7 @@
 * FIX: Loads landing page when an article is not found (instead of throwing an error)
 * WORKAROUND for misplaced hatnotes in mobile-style ZIMs
 * WORKAROUND for hidden IPA pronunciation information on some articles
+* ENHANCEMENT: 'Unclicking' a tab (Settings or About) now returns the user to the article
 * ENHANCEMENT: Activating dark theme for UI now activates article dark theme by default
 * ENHANCEMENT: Dedicated icon for WikiMed archives
 
