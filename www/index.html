@@ -45,41 +45,52 @@
             <div class="modal-content dark">
                 <div class="modal-body">
                     <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
-                    <h2>Welcome to Kiwix JS for Windows</h2>
-                    <h3>Changes in 0.9.8.1 (beta)</h3>
-                    <ul>
-                        <li>This is a test build with svgSliceSize set to 1</li>
-                    </ul>
-                    <h3>Please read this important information!</h3>
-                    <p>
-                        This application is packaged with only a basic ZIM archive (about a Jazz musician) so that you can get a feel
-                        for how offline Wikipedia browsing works.
-                    </p>
-                    <p>
-                        You will need to downloaded an offline ZIM archive and store it on your device. You can do this from the
-                        <b>Configuration page <span class="glyphicon glyphicon-wrench"></span></b>, or else see the 
-                        <b>About page <span class="glyphicon glyphicon-info-sign"></span></b> for more information.
-                    </p>
-                    <p>
-                        For the full experience you <strong>must</strong> download a ZIM archive and store it on your device! Alternatively, if you only want Wikivoyage in English look for "Wikivoyage by Kiwix" in the Store and install that app instead.
-                    </p>
-                    <p>
-                        Kiwix JS is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
-                        improving the app are very welcome: see About section.
-                    </p>
-                    <h3>Features in Version 0.9</h3>
-                    <ul>
-                        <li>Compatible with Continuum!</li>
-                        <li>Wikivoyage pages (English and German) display map location markers for places that have geo-location. Tap to open the Maps app at location</li>
-                        <li>Last-visited page is remembered between sessions. Selectable in the settings</li>
-                        <li>Now supports links in Stackexchage ZIMs (equations not yet supported)</li>
-                        <li>In-page search / highlighting with Ctrl-F / Alt-F or tap on search button</li>
-                        <li>Dark-themed User Interface and dark-themed content - see Config menu</li>
-                        <li>Equations are now typeset using MathJax, if the original TeX string is available</li>
-                        <li>Transform the layout using the Wikipedia mobile or desktop styles</li>
-                        <li>If your device is slow, you can disable the display of images, and extract them one-by-one as needed</li>
-                    </ul>
-                </div>
+                    <h2 style="font-size: 32px">
+                        <img alt="Kiwix icon" src="img/icons/kiwix-90.png">
+                        Welcome to Kiwix&nbsp;JS for Windows
+                    </h2>
+                    <div class="update">
+                        <h3 style="margin-top:0;">Changes in 0.9.9 (beta)</h3>
+                        <ul>
+                            <li>Loads landing page when an article is not found (instead of throwing an error)</li>
+                            <li>Improvements in infobox handling / placement</li>
+                            <li>Workaround for misplaced hatnotes in the archive</li>
+                            <li>Dedicated icon for WikiMed archives</li>
+                            <li>Activating dark theme for UI now activates article dark theme by default</li>
+                            <li>Reduced memory usage for decompression of SVG files</li>
+                            <li>Fixed error which caused Settings tab to remain activated after loading article</li>
+                        </ul>
+                    </div>
+                        <h3>Please read this important information!</h3>
+                        <p>
+                            This application is packaged with only a basic ZIM archive (about a Jazz musician) so that you can get a feel
+                            for how offline Wikipedia browsing works.
+                        </p>
+                        <p>
+                            You will need to downloaded an offline ZIM archive and store it on your device. You can do this from the
+                            <b>Configuration page <span class="glyphicon glyphicon-wrench"></span></b>, or else see the
+                            <b>About page <span class="glyphicon glyphicon-info-sign"></span></b> for more information.
+                        </p>
+                        <p>
+                            For the full experience you <strong>must</strong> download a ZIM archive and store it on your device! Alternatively, if you only want Wikivoyage or WikiMed in English look for "Wikivoyage by Kiwix" or "WikiMed" in the Store and install those apps instead.
+                        </p>
+                        <p>
+                            Kiwix JS is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
+                            improving the app are very welcome: see About section.
+                        </p>
+                        <h3>Features in Version 0.9</h3>
+                        <ul>
+                            <li>Compatible with Continuum!</li>
+                            <li>Wikivoyage pages (English and German) display map location markers for places that have geo-location. Tap to open the Maps app at location</li>
+                            <li>Last-visited page is remembered between sessions. Selectable in the settings</li>
+                            <li>Now supports links in Stackexchage ZIMs (equations not yet supported)</li>
+                            <li>In-page search / highlighting with Ctrl-F / Alt-F or tap on search button</li>
+                            <li>Dark-themed User Interface and dark-themed content - see Config menu</li>
+                            <li>Equations are now typeset using MathJax, if the original TeX string is available</li>
+                            <li>Transform the layout using the Wikipedia mobile or desktop styles</li>
+                            <li>If your device is slow, you can disable the display of images, and extract them one-by-one as needed</li>
+                        </ul>
+                    </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary" type="button" data-dismiss="modal">Close</button>
                 </div>
@@ -125,6 +136,7 @@
         <article class="view-content" id="article">
             <div id="scrollbox" class="container" style="position:fixed;overflow:auto;width:100%;">
                 <div id="about" style="display: none;" class="category-padding">
+                    <div class="returntoArticle" style="text-align:center;padding-top:20px;"></div>
                     <h2>
                         <img src="img/icons/kiwix-60.png" alt="Kiwix icon" />
                         Kiwix JS Windows
@@ -282,11 +294,12 @@
                     <h3>Other platforms/versions</h3>
                     <p>Other Kiwix clients exist on various platforms. See the official site : <a href="http://www.kiwix.org/" target="_blank">http://www.kiwix.org/</a>.</p>
                     <p>&nbsp;</p>
+                    <div class="returntoArticle" style="text-align:center;"></div>
                     <p>&nbsp;</p>
                     <p>&nbsp;</p>
                 </div>
                 <div id="configuration" style="display: none;" class="container category-padding">
-                    <div id="returntoArticle_top" style="text-align:center;padding-top:20px;"></div>
+                    <div id="returntoArticle" class="returntoArticle" style="text-align:center;padding-top:20px;"></div>
                     <div class="row">
                         <h2 style="margin-top:0;">Configuration</h2>
                         <p>This application needs a ZIM archive to work.<span id="downloadLinksText"> You can get one from the <a href="#downloads">download links panel</a>.</span></p>
@@ -426,7 +439,7 @@
                                     </div>
                                 </div>
                             </div>
-                    <div id="returntoArticle_bottom" style="text-align:center;"></div>
+                    <div class="returntoArticle" style="text-align:center;"></div>
                     <div>
                         <div class="row">
                             <h3 id="privacy">Privacy settings</h3>
@@ -487,6 +500,7 @@
                             </div>
                         </div>
                     </div>
+                    <div class="returntoArticle" style="text-align:center;"></div>
                     <br />
                     <br />
                     <br />
