@@ -338,7 +338,7 @@ define([], function () {
 
     function requestXhttpData(URL, lang) {
         if (!params.allowInternetAccess) {
-            document.getElementById('serverResponse').innerHTML = "Internet Access blocked: select 'Allow Internet access'";
+            document.getElementById('serverResponse').innerHTML = "Blocked: select 'Allow Internet access'";
             document.getElementById('serverResponse').style.display = "inline";
             return;
         }
