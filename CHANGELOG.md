@@ -7,6 +7,7 @@
 * WORKAROUND for hidden IPA pronunciation information on some articles
 * ENHANCEMENT: 'Unclicking' a tab (Settings or About) now returns the user to the article
 * ENHANCEMENT: Activating dark theme for UI now activates article dark theme by default
+* ENHANCEMENT: Improved handling and display of file selectors
 * ENHANCEMENT: Dedicated icon for WikiMed archives
 
 ## Release 0.9.7 (beta)
