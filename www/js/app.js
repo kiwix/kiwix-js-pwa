@@ -452,6 +452,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('scrollbox').style.position = "fixed";
             document.getElementById('scrollbox').style.height = document.documentElement.clientHeight + "px";
             document.getElementById('search-article').style.overflowY = "auto";
+            if (document.getElementById('openLocalFiles').style.display == "none") {
+                document.getElementById('rescanStorage').style.display = "block";
+            }
             
             //If user hadn't previously picked a folder or a file, resort to the local storage folder (UWP functionality)
             if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
@@ -1014,6 +1017,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         function populateDropDownListOfArchives(archiveDirectories) {
             $('#scanningForArchives').hide();
             $('#chooseArchiveFromLocalStorage').show();
+            document.getElementById('rescanStorage').style.display = params.rescan ? "none" : "block";
+            document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
             var comboArchiveList = document.getElementById('archiveList');
             comboArchiveList.options.length = 0;
             for (var i = 0; i < archiveDirectories.length; i++) {
