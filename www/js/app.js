@@ -1131,8 +1131,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                     }
                                     selectedStorage = fileset;
                                     archiveDirectory = "";
-                                    //selectedStorage = "";
-                                    //archiveDirectory = MSApp.createFileFromStorageFile(file);
                                     // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
                                     if (cssBlobCache)
                                         cssBlobCache = new Map();
@@ -1451,13 +1449,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
      * @returns {Boolean}
      */
     function handleTitleClick(event) {
-
-        /*/TESTING//
-        console.log("Initiating HTML load...");
-        console.time("Time to HTML load");
-        console.log("Initiating Document Ready timer...");
-        console.time("Time to Document Ready"); */
-
         var dirEntryId = event.target.getAttribute("dirEntryId");
         $("#articleList").empty();
         $('#articleListHeaderMessage').empty();
