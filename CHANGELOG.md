@@ -1,5 +1,6 @@
 ## Release 0.9.9 (beta) WikiMed
 * ENHANCEMENT: 'Unclicking' a tab (Settings or About) now returns the user to the article
+* ENHANCEMENT: Improved handling and display of file selectors
 * ENHANCEMENT: Clearer navigation signposting from About tab
 
 ## Release 0.9.8 (beta) WikiMed
@@ -8,7 +9,6 @@
 * WORKAROUND for misplaced hatnotes in mobile-style ZIMs
 * ENHANCEMENT: Cache start page in the filesystem for quick start or return to home
 * ENHANCEMENT: Activating dark theme for UI now activates article dark theme by default
-* ENHANCEMENT: Improved handling and display of file selectors
 * ENHANCEMENT: Dedicated icon for WikiMed archives
 
 ## Release 0.9.7 (beta)
