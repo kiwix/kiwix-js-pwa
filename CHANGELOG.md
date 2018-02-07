@@ -2,12 +2,13 @@
 * FIX: Reduced memory usage for decompressing multiple SVG images/equations to prevent crash on devices with 1GB RAM
 * FIX: Display bug causing Settings tab to remain selected after article load
 * FIX: Corrected dark-style backgrounds in some infoboxes on WikiMed
-* FIX: Loads landing page when an article is not found (instead of throwing an error)
+* FIX: Loads landing page when an article is not found (instead of throwing a silent error)
 * WORKAROUND for misplaced hatnotes in mobile-style ZIMs
 * WORKAROUND for hidden IPA pronunciation information on some articles
 * ENHANCEMENT: 'Unclicking' a tab (Settings or About) now returns the user to the article
 * ENHANCEMENT: Activating dark theme for UI now activates article dark theme by default
 * ENHANCEMENT: Improved handling and display of file selectors
+* ENHANCEMENT: Clearer navigation signposting from About tab
 * ENHANCEMENT: Dedicated icon for WikiMed archives
 
 ## Release 0.9.7 (beta)
