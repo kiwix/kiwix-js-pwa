@@ -1282,9 +1282,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         }
                     }
                     archiveDisplay.style.display = "inline";
-                    document.getElementById('noZIMFound').style.display = "inline";
+                    document.getElementById('noZIMFound').style.display = "block";
+                    document.getElementById('openLocalFiles').style.display = "none";
+                    document.getElementById('rescanStorage').style.display = "block";
                     document.getElementById('archiveList').options.length = 0;
                     document.getElementById('archiveList').size = 0;
+                    document.getElementById('archiveNumber').innerHTML = "<b>0</b> Archives";
                     params.pickedFolder = "";
                     Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.remove(params.falFolderToken);
                 return;
