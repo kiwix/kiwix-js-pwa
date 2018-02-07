@@ -79,27 +79,27 @@
                     </p>
                     <div class="update">
                         <h3 style="margin-top:0;">Changes in 0.9.9 (beta)</h3>
-                        <ul>
-                            <li>Navigation enhancement: "unclicking" the Settings or About tabs returns you to article content</li>
-                            <li>Activating UI dark theme now activates article dark theme by default</li>
-                            <li>Reduced memory usage for decompressing SVG images (better for devices with 1GB RAM)</li>
-                            <li>Improved handling and display of file selectors</li>
-                            <li>Loads landing page when an article is not found (instead of throwing a silent error)</li>
-                            <li>Improvements in infobox handling / placement</li>
-                            <li>Workaround for misplaced hatnotes in the archive</li>
-                            <li>Dedicated icon for WikiMed archives</li>
-                            <li>Fixed error which caused Settings tab to remain activated after loading article</li>
+                        <ul style="padding-left: 15px;">
+                            <li>"Unclicking" Settings/About tabs returns you to article content</li>
+                            <li>Activating UI dark theme also activates article dark theme</li>
+                            <li>Reduced memory usage for SVG images (better for 1GB devices)</li>
+                            <li>Improved handling of file selectors</li>
+                            <li>Landing page loaded if article not found</li>
+                            <li>Improvements in infobox handling</li>
+                            <li>Workaround for misplaced hatnotes</li>
+                            <li>Dedicated icon for WikiMed</li>
+                            <li>Fixed Settings tab remaining activated after article load</li>
                         </ul>
                     </div>
                     <h3>Features in Version 0.9 Beta</h3>
-                    <ul>
+                        <ul style="padding-left:15px;">
                         <li>Compatible with Continuum!</li>
-                        <li>Front page (of ZIM) now cached for faster return to home page</li>
-                        <li>Last-visited page is remembered between sessions. Selectable in the settings</li>
-                        <li>In-page search / highlighting with Ctrl-F / Alt-F or tap on search button</li>
-                        <li>Dark-themed User Interface and dark-themed content - see Config menu</li>
-                        <li>Transform the layout using the Wikipedia mobile or desktop styles</li>
-                        <li>If your device is slow, you can disable the display of images, and extract them one-by-one as needed</li>
+                        <li>Front page (of ZIM) cached for faster return to home page</li>
+                        <li>Last-visited page remembered between sessions (optional)</li>
+                        <li>In-page search/highlighting (search button/Ctrl-F/Alt-F)</li>
+                        <li>Dark-theme for UI and content</li>
+                        <li>Transform layout: Wikipedia mobile or desktop styles</li>
+                        <li>Optionally disable images if device is slow</li>
                     </ul>
                 </div>
                 <div class="modal-footer">
@@ -346,6 +346,9 @@
                                     <select id="archiveList" class="form-control" multiple></select><br />
                                 </div>
                             </div>
+                            <div id="noZIMFound" style="display: none;">
+                                <p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
+                            </div>
                             <div id="openLocalFiles" style="display: none;">
                                 <div id="UWPInstructions" class="row">
                                     <p>
@@ -380,9 +383,6 @@
                                     <p>Tap to select app's local storage or to select a file or folder manually</p>
                                 </div>
                             </div>
-                        </div>
-                        <div id="noZIMFound" style="display: none;">
-                            <br /><p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
                         </div>
                         <div id="downloads">
                             <div class="row">
