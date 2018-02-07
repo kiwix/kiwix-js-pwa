@@ -1,9 +1,12 @@
-## Release 0.9.9 (beta) WikiMed
+## Release 0.9.9 WikiMed (beta)
+* FIX: Reduced memory usage for decompressing multiple SVG images/equations to prevent crash on devices with 1GB RAM
+* FIX: Display bug causing Settings tab to remain selected after article load
+* FIX: Loads landing page when an article is not found (instead of throwing a silent error)
 * ENHANCEMENT: 'Unclicking' a tab (Settings or About) now returns the user to the article
 * ENHANCEMENT: Improved handling and display of file selectors
 * ENHANCEMENT: Clearer navigation signposting from About tab
 
-## Release 0.9.8 (beta) WikiMed
+## Release 0.9.8 WikiMed (beta)
 * FIX: Corrected dark-style backgrounds in some infoboxes on WikiMed 
 * WORKAROUND for hidden IPA pronunciation information on some WikiMed articles
 * WORKAROUND for misplaced hatnotes in mobile-style ZIMs
