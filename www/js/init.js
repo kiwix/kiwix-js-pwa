@@ -22,8 +22,8 @@
  */
 'use strict';
 var params = {};
-params['version'] = "0.9.8 WikiMed Beta"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
-params['storedFile'] = getCookie('lastSelectedArchive') || "wikipedia_en_medicine.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
+params['version'] = "0.9.9 WikiMed Beta-dev"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
+params['packagedFile'] = "wikipedia_en_medicine.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['fileVersion'] = "wikipedia_en_medicine_novid_2018-01 (11-Jan-2018)"; //Use generic name for actual file, and give version here
 params['cachedStartPage'] = "Wikipedia%3AWikiProject_Medicine_Open_Textbook_of_Medicine2.html" || false; //If you have cached the start page for quick start, give its URI here
 params['kiwixDownloadLink'] = "http://download.kiwix.org/zim/"; //Include final slash
@@ -42,6 +42,7 @@ params['useMathJax'] = getCookie('useMathJax') != null ? getCookie('useMathJax')
 params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
+params['storedFile'] = getCookie('lastSelectedArchive') || params['packagedFile'];
 params['falFileToken'] = params['falFileToken'] || "zimfile"; //UWP support
 params['falFolderToken'] = params['falFolderToken'] || "zimfilestore"; //UWP support
 params['localStorage'] = params['localStorage'] || "";
@@ -66,8 +67,14 @@ document.getElementById('displayFileSelectorsCheck').checked = params.showFileSe
 document.getElementById('version').innerHTML = params.version;
 var versionDivs = document.getElementsByClassName('fileVersion');
 for (var i = 0; i < versionDivs.length; i++) {
-    versionDivs[i].innerHTML = i ? params['fileVersion'].replace(/\s+.+$/, "") : params['fileVersion'];
+    versionDivs[i].innerHTML = i ? params.fileVersion.replace(/\s+.+$/, "") : params['fileVersion'];
 }
+if (!params.showFileSelectors && params.packagedFile && params.storedFile && (params.storedFile != params.packagedFile)) {
+    var currentArchive = document.getElementById('currentArchive');
+    currentArchive.innerHTML = "Currently loaded archive: <b>" + params.storedFile.replace(/\.zim$/i, "") + "</b>";
+    currentArchive.style.display = "block";
+}
+
 
 //Set up storage types
 if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') { //UWP
