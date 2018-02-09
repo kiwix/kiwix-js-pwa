@@ -655,6 +655,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             params.showFileSelectors = this.checked ? true : false;
             document.getElementById('hideFileSelectors').style.display = params.showFileSelectors ? "block" : "none";
             document.getElementById('downloadLinksText').style.display = params.showFileSelectors ? "inline" : "none";
+            if (params.packagedFile && params.storedFile && (params.storedFile != params.packagedFile)) {
+                var currentArchive = document.getElementById('currentArchive');
+                currentArchive.innerHTML = "Currently loaded archive: <b>" + params.storedFile.replace(/\.zim$/i, "") + "</b>";
+                currentArchive.style.display = params.showFileSelectors ? "none" : "block";
+            }
             cookies.setItem('showFileSelectors', params.showFileSelectors, Infinity);
             if (params.showFileSelectors) document.getElementById('configuration').scrollIntoView();
         });
