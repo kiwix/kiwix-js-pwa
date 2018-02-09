@@ -212,8 +212,8 @@ pre {
 }
 
 .dark .update {
-    background: #000033;
-    border-left: 6px solid midnightblue;
+    background: black;
+    border-left: 6px solid grey;
 }
 
 .darkfooter .glyphicon, .dark .glyphicon {
