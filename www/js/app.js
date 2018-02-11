@@ -1152,13 +1152,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                         params.storedFile = archive._file._files[0].name;
                                         cookies.setItem('lastSelectedArchive', params.storedFile, Infinity);
                                         var reloadLink = document.getElementById('reloadPackagedArchive');
-                                        if (params.packagedFile != archive._file._files[0].name) {
-                                            reloadLink.style.display = 'inline';
-                                            reloadLink.removeEventListener('click', loadPackagedArchive);
-                                            reloadLink.addEventListener('click', loadPackagedArchive);
-                                        } else {
-                                            reloadLink.style.display = 'none';
-                                            document.getElementById('currentArchive').style.display = 'none';
+                                        if (reloadLink) {
+                                            if (params.packagedFile != archive._file._files[0].name) {
+                                                reloadLink.style.display = 'inline';
+                                                reloadLink.removeEventListener('click', loadPackagedArchive);
+                                                reloadLink.addEventListener('click', loadPackagedArchive);
+                                            } else {
+                                                reloadLink.style.display = 'none';
+                                                document.getElementById('currentArchive').style.display = 'none';
+                                            }
                                         }
                                         if (params.rescan) {
                                             $('#btnConfigure').click();
@@ -1327,13 +1329,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             params.storedFile = archive._file._files[0].name;
             cookies.setItem("lastSelectedArchive", params.storedFile, Infinity);
             var reloadLink = document.getElementById("reloadPackagedArchive");
-            if (params.packagedFile != archive._file._files[0].name) {
-                reloadLink.style.display = "inline";
-                reloadLink.removeEventListener("click", loadPackagedArchive);
-                reloadLink.addEventListener("click", loadPackagedArchive);
-            } else {
-                reloadLink.style.display = "none";
-                document.getElementById('currentArchive').style.display = 'none';
+            if (reloadLink) {
+                if (params.packagedFile != archive._file._files[0].name) {
+                    reloadLink.style.display = "inline";
+                    reloadLink.removeEventListener("click", loadPackagedArchive);
+                    reloadLink.addEventListener("click", loadPackagedArchive);
+                } else {
+                    reloadLink.style.display = "none";
+                    document.getElementById('currentArchive').style.display = 'none';
+                }
             }
             if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile)) {
                 var lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));

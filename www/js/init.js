@@ -72,8 +72,10 @@ for (var i = 0; i < versionDivs.length; i++) {
 }
 if (!params.showFileSelectors && params.packagedFile && params.storedFile && (params.storedFile != params.packagedFile)) {
     var currentArchive = document.getElementById('currentArchive');
-    currentArchive.innerHTML = "Currently loaded archive: <b>" + params.storedFile.replace(/\.zim$/i, "") + "</b>";
-    currentArchive.style.display = "block";
+    if (currentArchive) {
+        currentArchive.innerHTML = "Currently loaded archive: <b>" + params.storedFile.replace(/\.zim$/i, "") + "</b>";
+        currentArchive.style.display = "block";
+    }
 }
 
 
