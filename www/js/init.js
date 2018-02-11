@@ -39,7 +39,8 @@ params['imageDisplay'] = getCookie('imageDisplay') != null ? getCookie('imageDis
 params['hideToolbar'] = getCookie('hideToolbar') != null ? getCookie('hideToolbar') : false; //Set default to hide the top toolbar on scroll
 params['rememberLastPage'] = getCookie('rememberLastPage') != null ? getCookie('rememberLastPage') : true; //Set default option to remember the last visited page between sessions
 params['useMathJax'] = getCookie('useMathJax') != null ? getCookie('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
-params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
+//params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
+params['showFileSelectors'] = false; //This will cause file selectors to be hidden on each load of the app (by ignoring cookie)
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['storedFile'] = getCookie('lastSelectedArchive') || params['packagedFile'];

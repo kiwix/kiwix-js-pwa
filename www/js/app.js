@@ -305,9 +305,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             for (var i = 0; i < forms.length; i++) {
                 forms[i].style.fontSize = ~~(value * 14 / 100) + "px";
             }
-            var buttons = document.querySelectorAll('.btn');
+            var buttons = document.getElementsByClassName('btn');
             for (var i = 0; i < buttons.length; i++) {
-                buttons[i].style.fontSize = ~~(value * 14 / 100) + "px";
+                buttons[i].style.fontSize = buttons[i].id == "reloadPackagedArchive" ? ~~(value * 10 / 100) + "px" : ~~(value * 14 / 100) + "px";
             }
             var heads = document.querySelectorAll("h1, h2, h3, h4");
             for (var i = 0; i < heads.length; i++) {
@@ -349,7 +349,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             // Give the focus to the search field, and clean up the page contents
             if (!firstRun) {
                 $('#prefix').focus();
-                firstRun = false;
             }
             $('#articleContent').hide();
             $('#articleContent').contents().empty();
@@ -386,6 +385,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 document.getElementById('findInArticle').classList.remove("dark");
                 document.getElementById('prefix').classList.remove("dark");
             }
+            document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
             // Show the selected content in the page
             $('#about').hide();
             $('#configuration').hide();
@@ -653,6 +653,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         });
         $('input:checkbox[name=displayFileSelectors]').on('change', function (e) {
             params.showFileSelectors = this.checked ? true : false;
+            document.getElementById('rescanStorage').style.display = "block";
+            document.getElementById('openLocalFiles').style.display = "none";
             document.getElementById('hideFileSelectors').style.display = params.showFileSelectors ? "block" : "none";
             document.getElementById('downloadLinksText').style.display = params.showFileSelectors ? "inline" : "none";
             if (params.packagedFile && params.storedFile && (params.storedFile != params.packagedFile)) {
@@ -732,10 +734,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (cookies.getItem('version') != params.version) {
                 firstRun = true;
                 $('#myModal').modal({ backdrop: "static" });
-                //document.getElementById('myModal').style.display = "block";
-                //document.getElementsByClassName("closeme")[0].onclick = function () {
-                //    document.getElementById('myModal').style.display = "none";
-                //}
                 cookies.setItem('version', params.version, Infinity);
             }
         });
@@ -1042,8 +1040,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (comboArchiveList.length > 1) comboArchiveList.removeAttribute("multiple");
             if (comboArchiveList.length == 1) comboArchiveList.setAttribute("multiple", "1");
             if (comboArchiveList.options.length > 0) {
-                document.getElementById('archiveNumber').innerHTML = "<b>" + comboArchiveList.length + "</b> Archive" + (comboArchiveList.length > 1 ? "s" : "");
+                var plural = comboArchiveList.length > 1 ? "s" : "";
+                document.getElementById('archiveNumber').innerHTML = '<b>' + comboArchiveList.length + '</b> Archive' + plural + ' found in selected location (tap "Select storage" to change)';
                 var lastSelectedArchive = cookies.getItem("lastSelectedArchive") || params.storedFile;
+                params.storedFile = lastSelectedArchive;
                 if ((lastSelectedArchive !== null && lastSelectedArchive !== undefined && lastSelectedArchive !== "")
                     || comboArchiveList.options.length == 1) { //Either we have previously chosen a file, or there is only one file
                     // Attempt to select the corresponding item in the list, if it exists
@@ -1072,8 +1072,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         /**
          * Sets the localArchive from the selected archive in the drop-down list
          */
-        function setLocalArchiveFromArchiveList() {
-            var archiveDirectory = $('#archiveList').val();
+        function setLocalArchiveFromArchiveList(archiveDirectory) {
+            archiveDirectory = archiveDirectory || $('#archiveList').val();
             document.getElementById('kiwixIcon').src = /wikivoyage/i.test(archiveDirectory) ? params.cssUITheme == "light" ? "./img/icons/wikivoyage-black-32.png" : "./img/icons/wikivoyage-white-32.png" : /medicine/i.test(archiveDirectory) ? params.cssUITheme == "light" ? "./img/icons/wikimed-blue-32.png" : "./img/icons/wikimed-lightblue-32.png" : params.cssUITheme == "light" ? "./img/icons/kiwix-blue-32.png" : "./img/icons/kiwix-32.png";
             if (archiveDirectory && archiveDirectory.length > 0) {
                 // Now, try to find which DeviceStorage has been selected by the user
@@ -1135,10 +1135,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                     }
                                 }
                                 if (fileset && fileset.length) {
-                                    if (archiveDirectory != params.storedFile) {
-                                        cookies.setItem("lastSelectedArchive", archiveDirectory, Infinity);
-                                        params.storedFile = archiveDirectory;
-                                    }
+                                    //@TODO: check if this is redundant
+                                    //if (archiveDirectory != params.storedFile) {
+                                    //    params.storedFile = String(archiveDirectory);
+                                    //    cookies.setItem("lastSelectedArchive", params.storedFile, Infinity);
+                                    //}
                                     selectedStorage = fileset;
                                     archiveDirectory = "";
                                     // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
@@ -1148,6 +1149,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                     //    cssDirEntryCache = new Map();
                                     selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
                                         // The archive is set : go back to home page to start searching
+                                        params.storedFile = archive._file._files[0].name;
+                                        cookies.setItem('lastSelectedArchive', params.storedFile, Infinity);
+                                        var reloadLink = document.getElementById('reloadPackagedArchive');
+                                        if (params.packagedFile != archive._file._files[0].name) {
+                                            reloadLink.style.display = 'inline';
+                                            reloadLink.removeEventListener('click', loadPackagedArchive);
+                                            reloadLink.addEventListener('click', loadPackagedArchive);
+                                        } else {
+                                            reloadLink.style.display = 'none';
+                                            document.getElementById('currentArchive').style.display = 'none';
+                                        }
                                         if (params.rescan) {
                                             $('#btnConfigure').click();
                                             $('#btnConfigure').click();
@@ -1292,7 +1304,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     document.getElementById('rescanStorage').style.display = "block";
                     document.getElementById('archiveList').options.length = 0;
                     document.getElementById('archiveList').size = 0;
-                    document.getElementById('archiveNumber').innerHTML = "<b>0</b> Archives";
+                    document.getElementById('archiveNumber').innerHTML = '<b>0</b> Archives found in local storage (tap "Select storage" to select an archive location)';
                     params.pickedFolder = "";
                     Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.remove(params.falFolderToken);
                 return;
@@ -1312,13 +1324,34 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //    cssDirEntryCache = new Map();
         selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
             // The archive is set : go back to home page to start searching
-            if (params.rememberLastPage && ~params.lastPageVisit.indexOf(selectedArchive._file._files[0].name)) {
+            params.storedFile = archive._file._files[0].name;
+            cookies.setItem("lastSelectedArchive", params.storedFile, Infinity);
+            var reloadLink = document.getElementById("reloadPackagedArchive");
+            if (params.packagedFile != archive._file._files[0].name) {
+                reloadLink.style.display = "inline";
+                reloadLink.removeEventListener("click", loadPackagedArchive);
+                reloadLink.addEventListener("click", loadPackagedArchive);
+            } else {
+                reloadLink.style.display = "none";
+                document.getElementById('currentArchive').style.display = 'none';
+            }
+            if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile)) {
                 var lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
                 goToArticle(lastPage);
             } else {
                 $("#btnHome").click();
             }
         });
+    }
+
+    function loadPackagedArchive() {
+        params.rescan = false;
+        //Reload any ZIM files in local storage (whcih the user can't otherwise select with the filepicker)
+        if (params.packagedFile && params.localStorage) {
+            params.pickedFolder = params.localStorage;
+            scanUWPFolderforArchives(params.localStorage);
+            setLocalArchiveFromArchiveList(params.packagedFile);
+        }
     }
 
     /**

@@ -332,7 +332,9 @@
                     <div id="returntoArticle" class="returntoArticle" style="text-align:center;padding-top:20px;"></div>
                     <div class="row">
                         <h2 style="margin-top:0;">Configuration</h2>
-                        <p>Packaged ZIM archive: <b><span class="fileVersion"></span></b></p>
+                        <p>Packaged ZIM archive: <b><span class="fileVersion"></span></b>
+                            <button style="display:none;" id="reloadPackagedArchive" type="button" class="btn btn-primary btn-xs">Reload</button>
+                        </p>
                         <p id="currentArchive" style="display: none;"></p>
                         <p id="downloadLinksText">You can get more archives from the <a href="#downloads">download links panel</a>.</p><p></p>
                     </div>
@@ -342,7 +344,7 @@
                     </div>
                         <div id="chooseArchiveFromLocalStorage" style="display: none;">
                             <div class="row">
-                                <p><span id="archiveNumber">Archives</span> found on this device (tap "Select storage" to rescan):</p>
+                                <p><span id="archiveNumber">Archives found on this device (tap "Select storage" to rescan)</span>:</p>
                                 <div class="col-xs-12">
                                     <select id="archiveList" class="form-control" multiple></select><br />
                                 </div>
