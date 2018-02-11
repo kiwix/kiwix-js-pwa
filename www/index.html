@@ -382,8 +382,12 @@
                             </div>
                             <div id="rescanStorage"class="row">
                                 <div class="col-xs-12">
-                                    <input style="float:left;margin-right:1em;" type="button" class="btn btn-primary" value="Select storage" id="btnRescanDeviceStorage" />
-                                    <p>Tap to select app's local storage or to select a file or folder manually</p>
+                                    <table>
+                                        <tr>
+                                            <td><input style="float:left; margin-right:1em;" type="button" class="btn btn-primary" value="Select storage" id="btnRescanDeviceStorage" /></td>
+                                            <td style="width:100%;">Tap to select app's local storage or to select a file or folder</td>
+                                        </tr>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -394,13 +398,14 @@
                                     Files can be very large, <b>do not attempt to download using mobile data!</b>
                                 </p>
                                 <div class="col-xs-12">
-                                    <p>
-                                        <input id="downloadTrigger" type="button" class="btn btn-primary" value="Open library" style="float:left;margin-right:1em;">
-                                        Opens library of archives for download:<br /><i>Warning:</i> this will use data
-                                    </p>
-                                    <p>
-                                        <input type="checkbox" name="allowInternetAccess" id="allowInternetAccessCheck">
-                                        <b>&nbsp;Allow Internet access?</b>
+                                    <table>
+                                        <tr>
+                                            <td><input id="downloadTrigger" type="button" class="btn btn-primary" value="Open library" style="float:left; margin-right:1em;" /></td>
+                                            <td style="width:100%;">Opens library of archives for download:<br /><i>Warning:</i> this will use data</td>
+                                        </tr>
+                                    </table>
+                                    <p style="padding-top:10px;">
+                                        <input type="checkbox" name="allowInternetAccess" id="allowInternetAccessCheck"><b>&nbsp;Allow Internet access?</b>
                                     </p>
                                 </div>
                                 <div id="downloadLinks" style="display: none;"></div>
