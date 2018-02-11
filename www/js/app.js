@@ -1386,7 +1386,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             	}
                 else {
                     deferred.reject("HTTP status " + request.status + " when reading " + url);
-            }
+                }
             }
         };
         request.onabort = function (e) {
