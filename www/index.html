@@ -336,7 +336,7 @@
                             <button style="display:none;" id="reloadPackagedArchive" type="button" class="btn btn-primary btn-xs">Reload</button>
                         </p>
                         <p id="currentArchive" style="display: none;"></p>
-                        <p id="downloadLinksText">You can get more archives from the <a href="#downloads">download links panel</a>.</p><p></p>
+                        <p id="downloadLinksText">Get more archives from <a href="#downloads">Download links</a>.</p><p></p>
                     </div>
                     <div id="hideFileSelectors">
                         <div id="scanningForArchives" style="display: none;">
@@ -353,11 +353,21 @@
                                 <p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
                             </div>
                             <div id="openLocalFiles" style="display: none;">
+                                <div class="row">
+                                    <div class="col-xs-6">
+                                        <input type="button" class="btn btn-primary" value="Select archive" id="archiveFile" accept=".zim" />
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <input type="button" class="btn btn-primary" value="Select folder" id="archiveFiles" accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
+                                    </div>
+                                </div>
                                 <div id="UWPInstructions" class="row">
-                                    <p>
-                                        If you have a single (unsplit) ZIM archive, use the <b>first</b> button.<br />
-                                        For a split archive (.zimaa, .zimab, etc.) or multiple archives, use the <b>second</b> button.
-                                    </p>
+                                    <div class="col-xs-6">
+                                        <p>For a single unsplit archive</p>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <p>For multiple or split archives</p>
+                                    </div>
                                 </div>
                                 <div id="instructions" class="row" style="display:none;">
                                     <p>
@@ -366,12 +376,6 @@
                                     </p>
                                 </div>
                                 <div class="row">
-                                    <div class="col-xs-6">
-                                <input type="button" class="btn btn-primary" value="Select archive" id="archiveFile" accept=".zim" />
-                                    </div>
-                                    <div class="col-xs-6">
-                                        <input type="button" class="btn btn-primary" value="Select folder" id="archiveFiles" accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
-                                    </div>
                                     <input style="display:none;" type="file" class="btn btn-primary" value="Select folder with ZIM files" id="archiveFilesLegacy" multiple accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
                                 </div>
                                 <div class="row">
