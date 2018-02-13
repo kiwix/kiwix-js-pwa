@@ -1,3 +1,7 @@
+## Pending for Release 0.9.9.1 (beta)
+* FIX: Added more padding for content hidden under the bottom bar
+* ENHANCEMENT: Uncluttered the UI for file selection
+
 ## Release 0.9.9 (beta)
 * FIX: Reduced memory usage for decompressing multiple SVG images/equations to prevent crash on devices with 1GB RAM
 * FIX: Display bug causing Settings tab to remain selected after article load
