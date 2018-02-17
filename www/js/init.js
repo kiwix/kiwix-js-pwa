@@ -70,7 +70,7 @@ var versionDivs = document.getElementsByClassName('fileVersion');
 for (var i = 0; i < versionDivs.length; i++) {
     versionDivs[i].innerHTML = i ? params.fileVersion.replace(/\s+.+$/, "") : params['fileVersion'];
 }
-if (!params.showFileSelectors && params.packagedFile && params.storedFile && (params.storedFile != params.packagedFile)) {
+if (!params.showFileSelectors && params.packagedFile && params.storedFile && params.storedFile != params.packagedFile) {
     var currentArchive = document.getElementById('currentArchive');
     if (currentArchive) {
         currentArchive.innerHTML = "Currently loaded archive: <b>" + params.storedFile.replace(/\.zim$/i, "") + "</b>";
