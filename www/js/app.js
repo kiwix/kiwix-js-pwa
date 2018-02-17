@@ -1618,8 +1618,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
     // Since late 2014, all ZIM files should use relative URLs
     var regexpImageUrl = /^(?:\.\.\/|\/)+(I\/.*)$/;
     var regexpMetadataUrl = /^(?:\.\.\/|\/)+(-\/.*)$/;
-    // This matches the href of all <link> tags containing rel="stylesheet" in raw HTML
-    var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*href\s*=\s*["'])([^"']+)(["'][^>]*>)/ig;
+    // This matches the href of all <link> tags containing rel="stylesheet" in raw HTML unless commented out
+    var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*href\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
      // This matches the title between <title  attrs> ... </title>
     //var regexpArticleTitle = /<title\s*[^>]*>\s*([^<]+)\s*</i;
      // This matches the title of a Type1 Wikimedia ZIM file or any ZIM file using simple <h1 attrs....> Title </h1>
@@ -1690,9 +1690,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         htmlArticle = htmlArticle.replace(/(<span\b[^>]+?class\s*=\s*"[^"]+?mcs-ipa[^>]+?display:\s*)none/i, "$1inline");
         
      //TESTING - find out whether document contains MathSVGs
-        //var containsMathSVG = /\.svg\s*['"][^>]+mwe-math-fallback-image|mwe-math-fallback-image[^>]+\.svg\s*['"]/i.test(htmlArticle);
-        //Version below will match any type of fallback image so long as there is an alt string
         var containsMathSVG = /alt\s*=\s*['"][^'"]+['"][^>]+mwe-math-fallback-image|mwe-math-fallback-image[^>]+alt\s*=\s*['"][^'"]+['"]/i.test(htmlArticle);
+        //Attempt to match MathJax more generally
+        //var containsMathTeX = /\$(?:[^$<>]|<\s|\s>)+\$[\s<]/i.test(htmlArticle);
 
      //Preload stylesheets [kiwix-js @149]
         //Set up blobArray of promises
@@ -1701,7 +1701,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         var cssSource = params.cssSource;
         var cssCache = params.cssCache;
         var zimType = "";
-        getBLOB(cssArray);
+        if (cssArray) { getBLOB(cssArray); } else { injectHTML(); }
 
         //Extract CSS URLs from given array of links
         function getBLOB(arr) {
@@ -1804,7 +1804,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
                 console.log("All CSS resolved");
                 //$("#progressMessage").html(""); //Void progress messages
-                injectHTML(htmlArticle); //Pass the revised HTML to the image and JS subroutine...
+                injectHTML(); //Pass the revised HTML to the image and JS subroutine...
             } else {
                uiUtil.poll("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...");
                 //console.log("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...")
@@ -1890,23 +1890,28 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             // If the ServiceWorker is not useable, we need to fallback to parse the DOM
             // to inject math images, and replace some links with javascript calls
             if (contentInjectionMode === 'jquery') {
+                // Compute base URL
+                var urlPath = regexpPath.test(dirEntry.url) ? urlPath = dirEntry.url.match(regexpPath)[1] : "";
+                var baseUrl = dirEntry.namespace + "/" + urlPath;
+                // Create (or replace) the "base" tag with our base URL
+                $('#articleContent').contents().find('head').find("base").detach();
+                $('#articleContent').contents().find('head').append("<base href='" + baseUrl + "'>");
 
                 //Load MathJax if required and if not already loaded
+                //if (containsMathSVG || containsMathTeX) {
                 if (containsMathSVG) {
                     if (params.useMathJax && !window.frames[0].MathJax) {
                         var doc = $("#articleContent").contents()[0];
                         var script = doc.createElement("script");
                         script.type = "text/javascript";
-                        script.src = "../js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
+                        script.src = "/www/js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
+                        //if (containsMathTeX) script.innerHTML = "MathJax.Hub.Config({\n" +
+                        //    "tex2jax: { inlineMath: [['$','$'], ['\\\\(','\\\\)']] }\n" +
+                        //    "});\n" +
+                        //    "MathJax.Hub.Queue(['Typeset', MathJax.Hub]);";
                         doc.head.appendChild(script);
                     }
                 }
-            // Compute base URL
-            var urlPath = regexpPath.test(dirEntry.url) ? urlPath = dirEntry.url.match(regexpPath)[1] : "";
-            var baseUrl = dirEntry.namespace + "/" + urlPath;
-            // Create (or replace) the "base" tag with our base URL
-            $('#articleContent').contents().find('head').find("base").detach();
-            $('#articleContent').contents().find('head').append("<base href='" + baseUrl + "'>");
             
             var currentProtocol = location.protocol;
             var currentHost = location.host;
@@ -1953,7 +1958,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 });
 
                 loadImages();
-                //loadJavascript(); //Disabled for now, since it does nothing
+                //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
             }  
 
         } //End of injectHTML()
@@ -2360,7 +2365,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         $('#articleContent').contents().find('script').each(function () {
             var script = $(this);
             // We try to find its name (from an absolute or relative URL)
-            if (script) { var srcMatch = script.attr("src").match(regexpMetadataUrl) }
+            if (script && script[0] && script[0].src) { var srcMatch = script.attr("src").match(regexpMetadataUrl) }
             // TODO check that the type of the script is text/javascript or application/javascript
             if (srcMatch) {
                 // It's a Javascript file contained in the ZIM file
@@ -2371,8 +2376,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     else
                         selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                             // TODO : I have to disable javascript for now
-                            // var jsContent = encodeURIComponent(util.uintToString(content));
-                            //script.attr("src", 'data:text/javascript;charset=UTF-8,' + jsContent);
+                            //uiUtil.feedNodeWithBlob(script, 'src', content);
+                            //script[0].type = 'text/javascript';
+                            //var jsContent = encodeURIComponent(util.uintToString(content));
+                            var jsContent = util.uintToString(content);
+                            script.attr("src", 'data:text/javascript;charset=UTF-8,' + jsContent);
                         });
                 }).fail(function (e) {
                     console.error("could not find DirEntry for javascript : " + title, e);
