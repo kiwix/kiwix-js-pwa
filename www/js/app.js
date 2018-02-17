@@ -1691,7 +1691,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         
      //TESTING - find out whether document contains MathSVGs
         //Replace inline Math TeX with dummy images
-        if (params.useMathJax) htmlArticle = htmlArticle.replace(/\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!])/g, '<img alt="$1" class="mwe-math-fallback-image" />$2');
+        if (params.useMathJax) htmlArticle = htmlArticle.replace(/\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'"])/g, '<img alt="$1" class="mwe-math-fallback-image" />$2');
         var containsMathSVG = /alt\s*=\s*['"][^'"]+['"][^>]+mwe-math-fallback-image|mwe-math-fallback-image[^>]+alt\s*=\s*['"][^'"]+['"]/i.test(htmlArticle);
         
      //Preload stylesheets [kiwix-js @149]
@@ -1898,17 +1898,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 $('#articleContent').contents().find('head').append("<base href='" + baseUrl + "'>");
 
                 //Load MathJax if required and if not already loaded
-                //if (containsMathSVG || containsMathTeX) {
                 if (containsMathSVG) {
                     if (params.useMathJax && !window.frames[0].MathJax) {
                         var doc = $("#articleContent").contents()[0];
                         var script = doc.createElement("script");
                         script.type = "text/javascript";
                         script.src = "/www/js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
-                        //if (containsMathTeX) script.innerHTML = "MathJax.Hub.Config({\n" +
-                        //    "tex2jax: { inlineMath: [['$','$'], ['\\\\(','\\\\)']] }\n" +
-                        //    "});\n" +
-                        //    "MathJax.Hub.Queue(['Typeset', MathJax.Hub]);";
                         doc.head.appendChild(script);
                     }
                 }
