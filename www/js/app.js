@@ -1690,10 +1690,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         htmlArticle = htmlArticle.replace(/(<span\b[^>]+?class\s*=\s*"[^"]+?mcs-ipa[^>]+?display:\s*)none/i, "$1inline");
         
      //TESTING - find out whether document contains MathSVGs
+        //Replace inline Math TeX with dummy images
+        if (params.useMathJax) htmlArticle = htmlArticle.replace(/\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!])/g, '<img alt="$1" class="mwe-math-fallback-image" />$2');
         var containsMathSVG = /alt\s*=\s*['"][^'"]+['"][^>]+mwe-math-fallback-image|mwe-math-fallback-image[^>]+alt\s*=\s*['"][^'"]+['"]/i.test(htmlArticle);
-        //Attempt to match MathJax more generally
-        //var containsMathTeX = /\$(?:[^$<>]|<\s|\s>)+\$[\s<]/i.test(htmlArticle);
-
+        
      //Preload stylesheets [kiwix-js @149]
         //Set up blobArray of promises
         var cssArray = htmlArticle.match(regexpSheetHref);
