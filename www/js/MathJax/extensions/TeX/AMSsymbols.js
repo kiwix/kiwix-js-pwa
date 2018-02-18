@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  /MathJax/extensions/TeX/AMSsymbols.js
  *
  *  Copyright (c) 2009-2018 The MathJax Consortium

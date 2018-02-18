@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  /MathJax/extensions/TeX/noUndefined.js
  *
  *  Copyright (c) 2009-2018 The MathJax Consortium
