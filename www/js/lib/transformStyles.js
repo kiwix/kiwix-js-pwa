@@ -64,6 +64,9 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                     zl.match(/-\/s\/css_modules\/ext.math.scripts.css/i) ||
                     zl.match(/-\/s\/css_modules\/content.parsoid.css/i) ||
                     zl.match(/-\/s\/css_modules\/inserted_style_mobile.css/i) ||
+                    zl.match(/-\/static\/bootstrap\/css\/bootstrap.min.css/i) ||
+                    zl.match(/-\/static\/bootstrap\/css\/bootstrap-theme.min.css/i) ||
+                    zl.match(/-\/static\/main.css/i) ||
                     zl.match(/-\/s\/css_modules\/mobile.css/i) ||
                     zl.match(/-\/s\/style-mobile.css/i) ||
                     zl.match(/-\/s\/css_modules\/skins.minerva.base.reset\|skins.minerva.content.styles\|ext.cite.style\|mediawiki.page.gallery.styles\|mobile.app.pagestyles.android\|mediawiki.skinning.content.parsoid.css/i)
@@ -72,6 +75,9 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 if (zl.match(/(-\/s\/style\.css)|(minerva)/i)) { //If it matches one of the required styles...
                     zl = (cs == "mobile") ? "../-/s/style-mobile.css" : "../-/s/style.css";
                 }
+                zl = zl.replace(/.+(bootstrap[^\/]*?\.css)/i, "/www/css/$1");
+                //Make link href relative to root
+                zl = zl.replace(/[\s\S]+?\/-\//i, "/www/-/");
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem");
                 uiUtil.poll("Matched #" + i + " [" + zl.substring(0, 30) + "] from local filesystem");
                 //injectCSS();
