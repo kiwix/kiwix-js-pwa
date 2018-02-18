@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  /MathJax/jax/output/HTML-CSS/autoload/maction.js
  *
  *  Copyright (c) 2009-2018 The MathJax Consortium
