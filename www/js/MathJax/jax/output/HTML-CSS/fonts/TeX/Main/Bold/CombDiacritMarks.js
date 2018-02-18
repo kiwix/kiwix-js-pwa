@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  /MathJax/jax/output/HTML-CSS/fonts/TeX/Main/Bold/CombDiacritMarks.js
  *
  *  Copyright (c) 2009-2018 The MathJax Consortium

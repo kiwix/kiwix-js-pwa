@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  /MathJax/jax/element/mml/optable/CombDiacritMarks.js
  *
  *  Copyright (c) 2009-2018 The MathJax Consortium

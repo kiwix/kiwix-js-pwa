@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  /MathJax/extensions/TeX/autoload-all.js
  *
  *  Copyright (c) 2009-2018 The MathJax Consortium

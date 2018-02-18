@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  /MathJax/extensions/MathEvents.js
  *
  *  Copyright (c) 2009-2018 The MathJax Consortium

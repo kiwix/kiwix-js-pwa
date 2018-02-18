@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  /MathJax/jax/output/HTML-CSS/fonts/TeX/AMS/Regular/BBBold.js
  *
  *  Copyright (c) 2009-2018 The MathJax Consortium
