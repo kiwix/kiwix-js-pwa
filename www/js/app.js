@@ -1661,8 +1661,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, "<a href=\"$1.html\">$2</a>");
         htmlArticle = htmlArticle.replace(/&lt;(\/?)(i|b|em|strong)&gt;/ig, "<$1$2>");
 
-        //Fast-replace img src with data-kiwixsrc and hide image [kiwix-js #272]
-        htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)src(\s*=)/ig, "$1data-kiwixsrc$2");
+        //Fast-replace img and script src with data-kiwixsrc and hide image [kiwix-js #272]
+        htmlArticle = htmlArticle.replace(/(<(?:img|script)\s+[^>]*\b)src(\s*=)/ig, "$1data-kiwixsrc$2");
         if (!params.imageDisplay) {
             //Ensure 36px clickable image height so user can request images by clicking [kiwix-js #173]
             htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)height(\s*=\s*)/ig,
@@ -1890,12 +1890,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             // If the ServiceWorker is not useable, we need to fallback to parse the DOM
             // to inject math images, and replace some links with javascript calls
             if (contentInjectionMode === 'jquery') {
-                // Compute base URL
-                var urlPath = regexpPath.test(dirEntry.url) ? urlPath = dirEntry.url.match(regexpPath)[1] : "";
-                var baseUrl = dirEntry.namespace + "/" + urlPath;
-                // Create (or replace) the "base" tag with our base URL
-                $('#articleContent').contents().find('head').find("base").detach();
-                $('#articleContent').contents().find('head').append("<base href='" + baseUrl + "'>");
+                var currentProtocol = location.protocol;
+                var currentHost = location.host;
 
                 //Load MathJax if required and if not already loaded
                 if (containsMathSVG) {
@@ -1908,8 +1904,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }
                 }
             
-            var currentProtocol = location.protocol;
-            var currentHost = location.host;
+                // Compute base URL
+                var urlPath = regexpPath.test(dirEntry.url) ? urlPath = dirEntry.url.match(regexpPath)[1] : "";
+                var baseUrl = dirEntry.namespace + "/" + urlPath;
+                // Create (or replace) the "base" tag with our base URL
+                $('#articleContent').contents().find('head').find("base").detach();
+                $('#articleContent').contents().find('head').append("<base href='" + baseUrl + "'>");
 
                 // Convert links into javascript calls
                 $('#articleContent').contents().find('body').find('a').each(function () {
