@@ -1,5 +1,7 @@
 ## Pending for Release 0.9.9.1 (beta)
 * FIX: Added more padding for content hidden under the bottom bar
+* ENHANCEMENT: Faster typesetting of TeX equations
+* ENHANCEMENT: Experimental support for equations in mathoverflow and related stackechange ZIMs
 * ENHANCEMENT: Uncluttered the UI for file selection
 
 ## Release 0.9.9 (beta)
