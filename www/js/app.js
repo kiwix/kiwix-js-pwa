@@ -1550,7 +1550,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
             //Destroy the iframe
             console.log("# Clearing the iframe...");
-            document.getElementById("articleContent").src = "dummyArticle.html";
+            document.getElementById("articleContent").src = "about:blank";
 
             //Load cached start page if it exists
             var htmlContent = 0;
