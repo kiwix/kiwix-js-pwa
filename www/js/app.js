@@ -647,7 +647,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             params.themeChanged = true;
         });
         $('input:radio[name=useMathJax]').on('click', function (e) {
-            params.useMathJax = this.value;
+            params.useMathJax = /true/i.test(this.value);
             cookies.setItem('useMathJax', params.useMathJax, Infinity);
             params.themeChanged = true;
         });
@@ -1548,6 +1548,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             console.log("Initiating Document Ready timer...");
             console.time("Time to Document Ready");
 
+            //Destroy the iframe
+            console.log("# Clearing the iframe...");
+            document.getElementById("articleContent").src = "dummyArticle.html";
+
             //Load cached start page if it exists
             var htmlContent = 0;
             if (params.cachedStartPage && dirEntry.url == decodeURIComponent(params.cachedStartPage)) {
@@ -1627,11 +1631,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
     // This matches the title of a mw-offliner (Type2) Wikimedia ZIM file, specifically 
     //var regexpType2ZIMTitle = /id\s*=\s*['"][^'"]*title_0[^"']*["'][^>]*>\s*([^<]+)\s*</i;
 
-        // Stores a url to direntry mapping and is refered to/updated anytime there is a css lookup 
-        // When archive changes these caches should be reset. 
-        // Currently happens only in setLocalArchiveFromFileList and setLocalArchiveFromArchiveList.
-        //var cssDirEntryCache = new Map(); //This one is never hit!
-        var cssBlobCache = new Map();
+    var containsMathTeXRaw = false;
+    var containsMathTeX = false;
+    var containsMathSVG = false;
+
+    // Stores a url to direntry mapping and is refered to/updated anytime there is a css lookup
+    // When archive changes these caches should be reset. 
+    // Currently happens only in setLocalArchiveFromFileList and setLocalArchiveFromArchiveList.
+    //var cssDirEntryCache = new Map(); //This one is never hit!
+    var cssBlobCache = new Map();
 
 
     /**
@@ -1689,10 +1697,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         //Display IPA pronunciation info erroneously hidden in some ZIMs
         htmlArticle = htmlArticle.replace(/(<span\b[^>]+?class\s*=\s*"[^"]+?mcs-ipa[^>]+?display:\s*)none/i, "$1inline");
         
-     //TESTING - find out whether document contains MathSVGs
+    //MathJax detection:
         //Replace inline Math TeX with dummy images
-        if (params.useMathJax) htmlArticle = htmlArticle.replace(/\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/g, "<img alt='$1' class='mwe-math-fallback-image' />$2");
-        var containsMathSVG = /alt\s*=\s*['"][^'"]+['"][^>]+mwe-math-fallback-image|mwe-math-fallback-image[^>]+alt\s*=\s*['"][^'"]+['"]/i.test(htmlArticle);
+        //if (params.useMathJax) htmlArticle = htmlArticle.replace(/\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/g, "<img alt='$1' class='mwe-math-fallback-image' />$2");
+        //Test for raw TeX in the HTML - no need to convert because configuration for inline will be set by a script in the Stackexchange HTML
+        containsMathTeXRaw = params.useMathJax ? /\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/.test(htmlArticle) : false;
+        //Simplify any configuration script
+        //if (containsMathTeXRaw) htmlArticle = htmlArticle.replace(/(<script\s+[^>]*?type\s*=\s*['"]\s*text\/x-mathjax-config[^>]+>[^<]+?Hub\.Config\s*\(\s*{\s*)[^<]*?(tex2jax\s*:[^}]+?})\s*,[^<]+(<\/script>)/i, "$1$2});$3");
+        //Replace all TeX SVGs with MathJax scripts
+        htmlArticle = params.useMathJax ? htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"]([^'"]+)[^>]+>/ig, "<script type='math/tex'>$1</script>") : htmlArticle;
+        containsMathTeX = params.useMathJax ? /<script\s+type\s*=\s*['"]\s*math\/tex\s*['"]/i.test(htmlArticle) : false;
+        containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
         
      //Preload stylesheets [kiwix-js @149]
         //Set up blobArray of promises
@@ -1839,7 +1854,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             });
         }
 
-
         function injectHTML() {
             //Adapt German Wikivoyage POI data format
             var regexpGeoLocationDE = /<span\s+class\s?=\s?"[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<span[^>]+listing-name[^>]+>([^<]+)<\/span>)/ig;
@@ -1892,18 +1906,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (contentInjectionMode === 'jquery') {
                 var currentProtocol = location.protocol;
                 var currentHost = location.host;
-
-                //Load MathJax if required and if not already loaded
-                if (containsMathSVG) {
-                    if (params.useMathJax && !window.frames[0].MathJax) {
-                        var doc = $("#articleContent").contents()[0];
-                        var script = doc.createElement("script");
-                        script.type = "text/javascript";
-                        script.src = "/www/js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
-                        doc.head.appendChild(script);
-                    }
-                }
-            
                 // Compute base URL
                 var urlPath = regexpPath.test(dirEntry.url) ? urlPath = dirEntry.url.match(regexpPath)[1] : "";
                 var baseUrl = dirEntry.namespace + "/" + urlPath;
@@ -1944,7 +1946,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         // Add an onclick event to go to this article
                         // instead of following the link
                         $(this).on('click', function (e) {
-                        var decodedURL = decodeURIComponent(zimUrl);
+                            var decodedURL = decodeURIComponent(zimUrl);
                             pushBrowserHistoryState(decodedURL);
                             goToArticle(decodedURL);
                             return false;
@@ -1960,6 +1962,27 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
     } //End of displayArticleInForm()
 
+    function loadMathJax() {
+        //Load MathJax if required and if not already loaded
+        if (params.useMathJax) {
+            if (!window.frames[0].MathJax && (containsMathTeXRaw || containsMathTeX || containsMathSVG)) {
+                var doc = $("#articleContent").contents()[0];
+                var script = doc.createElement("script");
+                script.type = "text/javascript";
+                script.src = "/www/js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
+                if (containsMathTeX || containsMathTeXRaw) script.innerHTML = 'MathJax.Hub.Queue(["Typeset", MathJax.Hub]); \
+                            console.log("Typesetting maths with MathJax");';
+                containsMathTeXRaw = false; //Prevents doing a second Typeset run on the same document
+                containsMathTeX = false;
+                doc.head.appendChild(script);
+            } else if (window.frames[0].MathJax && (containsMathTeXRaw || containsMathTeX || containsMathSVG)) {
+                window.frames[0].MathJax.Hub.Queue(["Typeset", window.frames[0].MathJax.Hub]);
+                console.log("Typesetting maths with MathJax");
+                containsMathTeXRaw = false; //Prevents doing a second Typeset run on the same document
+                containsMathTeXRaw = false;
+            }
+        }
+    }
 
     /** This is the main image loading function.
      * Contains four sub functions: prepareImages, triageImages, displaySlices, loadImageSlice
@@ -2022,6 +2045,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     });
                 });
             }
+            //Although user didn't request images, typeset equations
+            loadMathJax();
+
             //TESTING
             console.timeEnd("Time to Document Ready");
         }
@@ -2076,6 +2102,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }
                 }
             } else {
+                //Typeset equations
+                loadMathJax();
                 //Unload scroll listener
                 console.log("Unloading scroll listener");
                 $("#articleContent").contents().off('scroll');
@@ -2173,6 +2201,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }
                 }
                 if (sliceID == 3) {
+                    //Only load MathJax after visible and prefetched images have been extracted, but before SVGs are pulled
+                    loadMathJax();
+
                     //TESTING
                     if (countImages <= maxVisibleSliceSize + prefetchSliceSize) { console.timeEnd("Time to Document Ready"); }
 
