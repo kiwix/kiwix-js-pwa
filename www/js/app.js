@@ -385,7 +385,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 document.getElementById('findInArticle').classList.remove("dark");
                 document.getElementById('prefix').classList.remove("dark");
             }
-            document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
+            if (typeof Windows !== 'undefined') {
+                document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
+            }
+            //else {
+            //    document.getElementById('rescanStorage').style.display = "none";
+            //}
             // Show the selected content in the page
             $('#about').hide();
             $('#configuration').hide();
@@ -465,7 +470,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 document.getElementById('archiveFile').style.display = "none";
                 document.getElementById('archiveFiles').style.display = "none";
                 document.getElementById('UWPInstructions').style.display = "none";
-                document.getElementById('instructions').style.display = "inline";
+                document.getElementById('archivesFound').style.display = "none";
+                document.getElementById('chooseArchiveFromLocalStorage').style.display = "block";
+                document.getElementById('instructions').style.display = "block";
                 document.getElementById('archiveFilesLegacy').style.display = "inline";
                 $('#archiveFilesLegacy').on('change', setLocalArchiveFromFileSelect)
             }
@@ -1230,10 +1237,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          */
         function displayFileSelect() {
             $('#openLocalFiles').show();
-            if (typeof Windows === 'undefined') {
-                //If not UWP, display legacy File Select
-                $('#btnConfigure').click();
-            }
+            //if (typeof Windows === 'undefined') {
+            //    //If not UWP, display legacy File Select
+            //    $('#btnConfigure').click();
+            //}
             //TODO - check if this is necessary or if it causes the archiveList change event to fire 
             //Make archive list combo box fit the number of files
             //var comboArchiveList = document.getElementById('archiveList');
@@ -1548,7 +1555,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             console.log("Initiating Document Ready timer...");
             console.time("Time to Document Ready");
 
-            //Destroy the iframe
+            //Void the iframe
             console.log("# Clearing the iframe...");
             document.getElementById("articleContent").src = "about:blank";
 
