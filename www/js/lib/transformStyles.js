@@ -46,33 +46,33 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             //DEV: Although "." matches any character in regex, there is enough specificity in the patterns below
             //DEV: Add any local stylesheets you wish to include here
             if (cc &&
-                (zl.match(/-\/s\/style.css/i) ||
-                    zl.match(/-\/s\/css_modules\/mediawiki.toc.css/i) ||
-                    zl.match(/-\/s\/css_modules\/ext.cite.styles.css/i) ||
-                    zl.match(/-\/s\/css_modules\/ext.timeline.styles.css/i) ||
-                    zl.match(/-\/s\/css_modules\/ext.scribunto.logs.css/i) ||
-                    zl.match(/-\/s\/css_modules\/mediawiki.page.gallery.styles.css/i) ||
-                    zl.match(/-\/s\/css_modules\/ext.cite.a11y.css/i) ||
-                    zl.match(/-\/s\/css_modules\/ext.kartographer.style.css/i) ||
-                    zl.match(/-\/s\/css_modules\/ext.kartographer.link.css/i) ||
-                    zl.match(/-\/s\/css_modules\/ext.kartographer.frame.css/i) ||
-                    zl.match(/-\/s\/css_modules\/mw.TMHGalleryHook.js.css/i) ||
-                    zl.match(/-\/s\/css_modules\/mw.PopUpMediaTransform.css/i) ||
-                    zl.match(/-\/s\/css_modules\/mw.MediaWikiPlayer.loader.css/i) ||
-                    zl.match(/-\/s\/css_modules\/ext.tmh.thumbnail.styles.css/i) ||
-                    zl.match(/-\/s\/css_modules\/ext.math.styles.css/i) ||
-                    zl.match(/-\/s\/css_modules\/ext.math.scripts.css/i) ||
-                    zl.match(/-\/s\/css_modules\/content.parsoid.css/i) ||
-                    zl.match(/-\/s\/css_modules\/inserted_style_mobile.css/i) ||
-                    zl.match(/-\/static\/bootstrap\/css\/bootstrap.min.css/i) ||
-                    zl.match(/-\/static\/bootstrap\/css\/bootstrap-theme.min.css/i) ||
-                    zl.match(/-\/static\/main.css/i) ||
-                    zl.match(/-\/s\/css_modules\/mobile.css/i) ||
-                    zl.match(/-\/s\/style-mobile.css/i) ||
-                    zl.match(/-\/s\/css_modules\/skins.minerva.base.reset\|skins.minerva.content.styles\|ext.cite.style\|mediawiki.page.gallery.styles\|mobile.app.pagestyles.android\|mediawiki.skinning.content.parsoid.css/i)
+                (/-\/s\/style.css/i.test(zl) ||
+                    /-\/s\/css_modules\/mediawiki.toc.css/i.test(zl) ||
+                    /-\/s\/css_modules\/ext.cite.styles.css/i.test(zl) ||
+                    /-\/s\/css_modules\/ext.timeline.styles.css/i.test(zl) ||
+                    /-\/s\/css_modules\/ext.scribunto.logs.css/i.test(zl) ||
+                    /-\/s\/css_modules\/mediawiki.page.gallery.styles.css/i.test(zl) ||
+                    /-\/s\/css_modules\/ext.cite.a11y.css/i.test(zl) ||
+                    /-\/s\/css_modules\/ext.kartographer.style.css/i.test(zl) ||
+                    /-\/s\/css_modules\/ext.kartographer.link.css/i.test(zl) ||
+                    /-\/s\/css_modules\/ext.kartographer.frame.css/i.test(zl) ||
+                    /-\/s\/css_modules\/mw.TMHGalleryHook.js.css/i.test(zl) ||
+                    /-\/s\/css_modules\/mw.PopUpMediaTransform.css/i.test(zl) ||
+                    /-\/s\/css_modules\/mw.MediaWikiPlayer.loader.css/i.test(zl) ||
+                    /-\/s\/css_modules\/ext.tmh.thumbnail.styles.css/i.test(zl) ||
+                    /-\/s\/css_modules\/ext.math.styles.css/i.test(zl) ||
+                    /-\/s\/css_modules\/ext.math.scripts.css/i.test(zl) ||
+                    /-\/s\/css_modules\/content.parsoid.css/i.test(zl) ||
+                    /-\/s\/css_modules\/inserted_style_mobile.css/i.test(zl) ||
+                    /-\/static\/bootstrap\/css\/bootstrap.min.css/i.test(zl) ||
+                    /-\/static\/bootstrap\/css\/bootstrap-theme.min.css/i.test(zl) ||
+                    /-\/static\/main.css/i.test(zl) ||
+                    /-\/s\/css_modules\/mobile.css/i.test(zl) ||
+                    /-\/s\/style-mobile.css/i.test(zl) ||
+                    /-\/s\/css_modules\/skins.minerva.base.reset\|skins.minerva.content.styles\|ext.cite.style\|mediawiki.page.gallery.styles\|mobile.app.pagestyles.android\|mediawiki.skinning.content.parsoid.css/i.test(zl)
                 )) {
                 zl = zl.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename - but next line renders this redundant in current implementation)
-                if (zl.match(/(-\/s\/style\.css)|(minerva)/i)) { //If it matches one of the required styles...
+                if (/(-\/s\/style\.css)|(minerva)/i.test(zl)) { //If it matches one of the required styles...
                     zl = (cs == "mobile") ? "../-/s/style-mobile.css" : "../-/s/style.css";
                 }
                 zl = zl.replace(/.+(bootstrap[^\/]*?\.css)/i, "/www/css/$1");
@@ -103,14 +103,8 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
         if (cc || (zim == "desktop")) { //If user requested cached styles OR the ZIM does not contain mobile styles
             console.log(zim == "desktop" ? "Transforming display style to mobile..." : "Optimizing cached styles for mobile display...");
             uiUtil.poll("desktop" ? "Transforming display style to mobile..." : "Optimizing cached styles for mobile display...");
-            //Allow images to float right or left
-            //html = html.replace(/class\s*=\s*["']\s*thumb\s+tright\s*["']\s*/ig, 'style="float: right; clear: right; margin-left: 1.4em;"');
-            //html = html.replace(/class\s*=\s*["']\s*thumb\s+tleft\s*["']\s*/ig, 'style="float: left; clear: left; margin-right: 1.4em;"');
             //Add styling to image captions that is hard-coded in Wikipedia mobile
             html = html.replace(/class\s*=\s*["']\s*thumbcaption\s*["']\s*/ig, 'style="margin: 0.5em 0 0.5em; font-size: 0.8em; line-height: 1.5; padding: 0 !important; color: #54595d; width: auto !important;"');
-            //If it's in desktop position, move info-box below lead paragraph like on Wikipedia mobile
-            //html = zim == "desktop" ? /<\/p>[\s\S]*?<table\s+[^>]*(?:infobox|vertical-navbox)/i.test(html) ? html : html.replace(/(<table\s+(?=[^>]*(?:infobox|vertical-navbox))[\s\S]+?<\/table>[^<]*)((?:<span\s*>\s*)?<p\b[^>]*>(?:(?=([^<]+))\3|<(?!p\b[^>]*>))*?<\/p>(?:<span\s*>)?)/i, "$2\r\n$1") : html;
-            //var test = html.getElementById("qbRight")
             if (zim == "desktop") {
                 var infobox = [];
                 if (/<table\b[^>]+(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable)/i.test(html)) {
@@ -138,14 +132,13 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                     }
                 }
             }
-            //html = zim == "desktop" ? html.replace(/(<table\s+(?=[^>]*(?:infobox|vertical-navbox|qbRight))[\s\S]+?<\/table>[^<]*)((?:<span\s*>\s*)?<p\b[^>]*>(?:(?=([^<]+))\3|<(?!p\b[^>]*>))*?<\/p>(?:<span\s*>)?)/i, "$2\r\n$1") : html;
             //Set infobox styling hard-coded in Wikipedia mobile
             html = html.replace(/(table\s+(?=[^>]*class\s*=\s*["'][^"']*(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable))[^>]*style\s*=\s*["'][^"']+[^;'"]);?\s*["']/ig, '$1; position: relative; border: 1px solid #eaecf0; text-align: left; background-color: #f8f9fa;"');
             //Wrap <h2> tags in <div> to control bottom border width if there's an infobox
             html = html.match(/table\s+(?=[^>]*class\s*=\s*["'][^"']*(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable))/i) ? html.replace(/(<h2\s+[^<]*<\/h2>)/ig, '<div style="width: 60%;">$1</div>') : html;
         }
         //Add dark theme if requested
-        css += (params.cssTheme == "dark") ? '<link href="../-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="../-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' :"";
+        css += (params.cssTheme == "dark") ? '<link href="/www/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="/www/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' :"";
         html = (params.cssTheme == "dark") ? html.replace(/(<h1\s+[^>]*)background-color\s*:\s*white;\s*/i, "$1") : html;
         html = (params.cssTheme == "dark") ? html.replace(/(<div\s+[^>]*)background-image\s*:\s*linear-gradient[^;]+white[^;]*;\s*/i, "$1") : html;
 
@@ -171,11 +164,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 tableBox = !(tableBox && tableBox.length) ? util.matchOuter(html, '<table\\b[^>]+?(?:infobox|vertical-navbox|qbRight|wikitable)[^>]+>', '</table>', 'i') : tableBox;
                 if (tableBox && tableBox.length) {
                     html = html.replace(tableBox, "");
-                    //Fiendish regex to match only innermost <p...>...</p> followed by Kiwix separator or <span ...><p ...>...</p></span> followed by small skpped <p> containing no more than 40 characters (this happens in Wikivoyage English)
-                    //html = html.replace(/(<(?:(span\b)[^>]*>\s*<)?p\b[^>]*>(?:(?=([^<]+))\3|<(?!p\b))*?<\/p>\s*(?:<\/)?\2(?:>\s*)?(?:<p\b[\s\S]{1,40}<\/p>\s*(?:<span>\s*<\/span>\s*)?)?)@@@KiwixSep@@@/i, tableBox + "\r\n$1");
                     html = html.replace(/(<\/h1>\s*)/i, "$1" + tableBox);
-                    //Do the replacement below just in case above regex failed
-                    //html = html.replace(/@@@KiwixSep@@@/, tableBox);
                 }
             }
             //Ensure white background colour
@@ -184,7 +173,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             html = html.replace(/<h1\s*[^>]+titleHeading[^>]+>\s*<\/h1>\s*/ig, "");
         }
         //Add dark theme if requested
-        css += (params.cssTheme == "dark") ? '<link href="../-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="../-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
+        css += (params.cssTheme == "dark") ? '<link href="/www/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="/www/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
         html = (params.cssTheme == "dark") ? html.replace(/(<h1\s+[^>]*)background-color:\s*white;\s*/i, "$1") : html;
         html = (params.cssTheme == "dark") ? html.replace(/(<div\s+[^>]*)background-image\s*:\s*linear-gradient[^;]+white[^;]*;\s*/i, "$1") : html;
 
