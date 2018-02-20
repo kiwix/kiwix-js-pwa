@@ -2480,7 +2480,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 alert("Error finding random article.");
             }
             else {
-                if (dirEntry.namespace === 'A') {
+                //Test below supports Stackexchange-family ZIMs, so we don't call up user profiles
+                if (dirEntry.namespace === 'A' && !/user\//.test(dirEntry.url)) {
                     $("#articleName").html(dirEntry.title);
                     pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
                     $("#readingArticle").show();
