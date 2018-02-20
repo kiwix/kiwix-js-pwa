@@ -306,7 +306,7 @@
                         <br /> Scanning for archives... Please wait <img src="img/spinner.gif" alt="Please wait..." />
                     </div>
                         <div id="chooseArchiveFromLocalStorage" style="display: none;">
-                            <div class="row">
+                            <div id="archivesFound" class="row">
                                 <p><span id="archiveNumber">Archives found on this device (tap "Select storage" to rescan)</span>:</p>
                                 <div class="col-xs-12">
                                     <select id="archiveList" class="form-control" multiple></select><br />
@@ -315,7 +315,7 @@
                             <div id="noZIMFound" style="display: none;">
                                 <p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
                             </div>
-                            <div id="openLocalFiles" style="display: none;">
+                            <div id="openLocalFiles" style="display: block;">
                                 <div class="row">
                                     <div class="col-xs-6">
                                         <input type="button" class="btn btn-primary" value="Select archive" id="archiveFile" accept=".zim" />
@@ -347,7 +347,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div id="rescanStorage"class="row">
+                            <div id="rescanStorage" style="display:none;" class="row">
                                 <div class="col-xs-12">
                                     <table>
                                         <tr>
