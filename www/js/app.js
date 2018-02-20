@@ -386,7 +386,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 document.getElementById('prefix').classList.remove("dark");
             }
             if (typeof Windows !== 'undefined') {
-                document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
+            document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
             }
             //else {
             //    document.getElementById('rescanStorage').style.display = "none";
@@ -1556,8 +1556,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             console.time("Time to Document Ready");
 
             //Void the iframe
-            console.log("# Clearing the iframe...");
-            document.getElementById("articleContent").src = "about:blank";
+            //console.log("# Clearing the iframe...");
+            //document.getElementById("articleContent").src = "about:blank";
 
             //Load cached start page if it exists
             var htmlContent = 0;
@@ -1891,7 +1891,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //Inject htmlArticle into iframe
             uiUtil.clear(); //Void progress messages
             setHomeTab();
-            $('#articleContent').contents().find('body').html(htmlArticle);
+            var iframe = document.getElementById("articleContent");
+
+            var articleContent = iframe.contentDocument || iframe.contentWindow.document;
+            articleContent.open();
+            articleContent.write(htmlArticle);
+            articleContent.close();
+            //articleContent.documentElement.innerHTML = htmlArticle;
+            //$('#articleContent').contents().find('body').html(htmlArticle);
 
             setupTableOfContents();
             //Hide top-level scrolling -- gets rid of interfering useless scroll bar, but re-enable for Config and About pages
