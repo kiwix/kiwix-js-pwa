@@ -233,6 +233,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('top').style.position = "relative";
             document.getElementById('scrollbox').style.position = "fixed";
             document.getElementById('scrollbox').style.height = window.innerHeight + "px";
+            document.getElementById('articleContent').style.display = "none";
             goToRandomArticle();
         });
 
@@ -1557,7 +1558,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
             //Void the iframe
             //console.log("# Clearing the iframe...");
-            //document.getElementById("articleContent").src = "about:blank";
+            //document.getElementById("articleContent").src = "dummyArticle.html";
 
             //Load cached start page if it exists
             var htmlContent = 0;
@@ -1892,7 +1893,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             uiUtil.clear(); //Void progress messages
             setHomeTab();
             var iframe = document.getElementById("articleContent");
-
             var articleContent = iframe.contentDocument || iframe.contentWindow.document;
             articleContent.open();
             articleContent.write(htmlArticle);
@@ -2481,7 +2481,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
             else {
                 $("#articleName").html(title);
-                $('#articleContent').contents().find('body').html("");
+                //$('#articleContent').contents().find('body').html("");
+                document.getElementById('articleContent').style.display = "none";
                 readArticle(dirEntry);
             }
         }).fail(function() { console.error("Error reading article with title " + title); });
