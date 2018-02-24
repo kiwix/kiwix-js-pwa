@@ -273,7 +273,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         document.getElementById('articleContent').contentDocument.body.style.fontSize = params.relativeFontSize + "%";
         $('#btnZoomin').on('click', function (e) {
             params.relativeFontSize += 5;
-            document.getElementById('articleContent').contentDocument.body.style.fontSize = params.relativeFontSize + "%";
+            var doc = document.getElementById('articleContent').contentDocument;
+            doc.body.style.fontSize = /-\/static\/main\.css/.test(doc.head.innerHTML) ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
             document.getElementById('lblZoom').innerHTML = params.relativeFontSize + "%";
             document.getElementById('lblZoom').style = "position:absolute;right: " + window.innerWidth / 3 + "px;bottom:5px;z-index:50;";
             setTimeout(function () {
@@ -284,7 +285,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         });
         $('#btnZoomout').on('click', function (e) {
             params.relativeFontSize -= 5;
-            document.getElementById('articleContent').contentDocument.body.style.fontSize = params.relativeFontSize + "%";
+            var doc = document.getElementById('articleContent').contentDocument;
+            doc.body.style.fontSize = /-\/static\/main\.css/.test(doc.head.innerHTML) ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
             document.getElementById('lblZoom').innerHTML = params.relativeFontSize + "%";
             document.getElementById('lblZoom').style = "position:absolute;left: " + window.innerWidth / 3 + "px;bottom:5px;z-index:50;";
             setTimeout(function () {
@@ -1557,8 +1559,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             console.time("Time to Document Ready");
 
             //Void the iframe
-            //console.log("# Clearing the iframe...");
-            //document.getElementById("articleContent").src = "dummyArticle.html";
+            window.frames[0].frameElement.src = "";
 
             //Load cached start page if it exists
             var htmlContent = 0;
@@ -1642,6 +1643,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
     var containsMathTeXRaw = false;
     var containsMathTeX = false;
     var containsMathSVG = false;
+    var treePath;
 
     // Stores a url to direntry mapping and is refered to/updated anytime there is a css lookup
     // When archive changes these caches should be reset. 
@@ -1717,7 +1719,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         containsMathTeX = params.useMathJax ? /<script\s+type\s*=\s*['"]\s*math\/tex\s*['"]/i.test(htmlArticle) : false;
         containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
         
-     //Preload stylesheets [kiwix-js @149]
+        // Compute base URL
+        var urlPath = regexpPath.test(dirEntry.url) ? urlPath = dirEntry.url.match(regexpPath)[1] : "";
+        var baseUrl = dirEntry.namespace + "/" + urlPath;
+        treePath = baseUrl.replace(/([^/]+\/)/g, "../");
+
+    //Preload stylesheets [kiwix-js @149]
         //Set up blobArray of promises
         var cssArray = htmlArticle.match(regexpSheetHref);
         var blobArray = [];
@@ -1730,7 +1737,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         function getBLOB(arr) {
             var testCSS = arr.join();
             zimType = /-\/s\/style\.css/i.test(testCSS) ? "desktop" : zimType;
-            zimType = /-\/static\/main\.css/i.test(testCSS) ? "desktop" : zimType; //Support stackexchange
+            zimType = /-\/static\/main\.css/i.test(testCSS) ? "desktop-stx" : zimType; //Support stackexchange
             zimType = /minerva|mobile/i.test(testCSS) ? "mobile" : zimType;
             cssSource = cssSource == "auto" ? zimType : cssSource; //Default to in-built zimType if user has selected automatic detection of styles
             if (/minerva/i.test(testCSS) && (cssCache || zimType != cssSource)) {
@@ -1750,8 +1757,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     var zimLink = decodeURIComponent(uiUtil.removeUrlParameters(linkArray[2]));
                     /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
                     var filteredLink = transformStyles.filterCSS(zimLink, zimType, cssCache, cssSource, i);
-                    //blobArray[i] = filteredLink.zl; //This line is a mistake! It fills blobArray too quickly and doesn't trigger waiting for promises...
-                    //filteredLink.rtnFunction == "injectCSS" ? injectCSS() : resolveCSS(filteredLink.zl, i); 
                     if (filteredLink.rtnFunction == "injectCSS") { blobArray[i] = filteredLink.zl; injectCSS() } else { resolveCSS(filteredLink.zl, i); }
                 } else {
                     blobArray[i] = arr[i]; //If CSS not in ZIM, store URL in blobArray
@@ -1792,10 +1797,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         function injectCSS() {
             if (blobArray.length === cssArray.length) { //If all promised values have been obtained
                 var resultsArray = [];
+                var testBlob;
                 for (var i in cssArray) { //Put them back in the correct order
                     var match = 0;
                     for (var j in blobArray) { //Iterate the blobArray to find the matching entry
-                        var testBlob = blobArray[j][0] == "." ? blobArray[j] : blobArray[j][0]; //What a kludge! TODO: fix this ugly mixing of arrays and strings 
+                        //console.log("blobArray[j]: " + blobArray[j] + "\r\nblobArray[j][0]: " + blobArray[j][0]);
+                        testBlob = blobArray[j][0].length == 1 ? blobArray[j] : blobArray[j][0]; //What a kludge! TODO: fix this ugly mixing of arrays and strings 
                         if (~cssArray[i].indexOf(testBlob)) { match = 1; break; }
                     }
                     testBlob = match && /blob:/i.test(blobArray[j][1]) ? blobArray[j][1] : blobArray[i]; //Whoa!!! Steady on!
@@ -1808,25 +1815,26 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 cssArray = resultsArray;
                 htmlArticle = htmlArticle.replace(regexpSheetHref, ""); //Void existing stylesheets
                 var cssArray$ = "\r\n" + cssArray.join("\r\n") + "\r\n";
-                if (cssSource == "mobile") { //If user has selected mobile display mode...
+                if (~cssSource.indexOf("mobile")) { //If user has selected mobile display mode...
                     var mobileCSS = transformStyles.toMobileCSS(htmlArticle, zimType, cssCache, cssSource, cssArray$);
                     htmlArticle = mobileCSS.html;
                     cssArray$ = mobileCSS.css;
                 }
-                if (cssSource == "desktop") { //If user has selected desktop display mode...
+                if (~cssSource.indexOf("desktop")) { //If user has selected desktop display mode...
                     var desktopCSS = transformStyles.toDesktopCSS(htmlArticle, zimType, cssCache, cssSource, cssArray$);
                     htmlArticle = desktopCSS.html;
                     cssArray$ = desktopCSS.css;
                 }
                 if (cssCache) { //For all cases except where user wants exactly what's in the zimfile...
                     //Reduce the hard-coded top padding to 0
-                    htmlArticle = htmlArticle.replace(/(<div\s+[^>]*mw-body[^>]+style[^>]+padding\s*:\s*)1em/i, "$10 1em");
+                    //htmlArticle = htmlArticle.replace(/(<div\s+[^>]*mw-body[^>]+style[^>]+padding\s*:\s*)1em/i, "$10 1em");
                 }
+                //Add required path in front of injected styles (i.e. those that have no ./ or ../../.. etc)
+                cssArray$ = cssArray$.replace(/(\bhref\s*=\s*["']\s*)(?![./]+|blob:)/ig, "$1" + treePath);
                 //For all cases, neutralize the toggleOpenSection javascript that causes a crash - TODO: make it work for mobile style
                 htmlArticle = htmlArticle.replace(/onclick\s*=\s*["']toggleOpenSection[^"']*['"]\s*/ig, "");
                 htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
                 console.log("All CSS resolved");
-                //$("#progressMessage").html(""); //Void progress messages
                 injectHTML(); //Pass the revised HTML to the image and JS subroutine...
             } else {
                uiUtil.poll("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...");
@@ -1889,16 +1897,18 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>'; 
             });
 
-            //Inject htmlArticle into iframe
+        //Inject htmlArticle into iframe
             uiUtil.clear(); //Void progress messages
             setHomeTab();
-            var iframe = document.getElementById("articleContent");
-            var articleContent = iframe.contentDocument || iframe.contentWindow.document;
-            articleContent.open();
-            articleContent.write(htmlArticle);
-            articleContent.close();
-            //articleContent.documentElement.innerHTML = htmlArticle;
+            //Inject base tag into html
+            htmlArticle = htmlArticle.replace(/(<head[^>]*>\s*)/i, '$1<base href="' + baseUrl + '" />\r\n');
+            
+            var articleContent = window.frames[0].frameElement.contentDocument;
+            //var articleContent = document.getElementById("articleContent").contentDocument;
+            articleContent.documentElement.innerHTML = htmlArticle;
             //$('#articleContent').contents().find('body').html(htmlArticle);
+            //Set relative font size + Stackexchange-family multiplier
+            articleContent.body.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
 
             setupTableOfContents();
             //Hide top-level scrolling -- gets rid of interfering useless scroll bar, but re-enable for Config and About pages
@@ -1920,12 +1930,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (contentInjectionMode === 'jquery') {
                 var currentProtocol = location.protocol;
                 var currentHost = location.host;
-                // Compute base URL
-                var urlPath = regexpPath.test(dirEntry.url) ? urlPath = dirEntry.url.match(regexpPath)[1] : "";
-                var baseUrl = dirEntry.namespace + "/" + urlPath;
                 // Create (or replace) the "base" tag with our base URL
-                $('#articleContent').contents().find('head').find("base").detach();
-                $('#articleContent').contents().find('head').append("<base href='" + baseUrl + "'>");
+                //$('#articleContent').contents().find('head').find("base").detach();
+                //$('#articleContent').contents().find('head').append("<base href='" + baseUrl + "'>");
 
                 // Convert links into javascript calls
                 $('#articleContent').contents().find('body').find('a').each(function () {
@@ -1983,7 +1990,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 var doc = $("#articleContent").contents()[0];
                 var script = doc.createElement("script");
                 script.type = "text/javascript";
-                script.src = "/www/js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
+                script.src = treePath + "js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
                 if (containsMathTeX || containsMathTeXRaw) script.innerHTML = 'MathJax.Hub.Queue(["Typeset", MathJax.Hub]); \
                             console.log("Typesetting maths with MathJax");';
                 containsMathTeXRaw = false; //Prevents doing a second Typeset run on the same document
