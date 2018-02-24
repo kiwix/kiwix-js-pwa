@@ -29,7 +29,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
         var rtnFunction = "injectCSS";
         if ((zim != cs) && zl.match(/(-\/s\/style\.css)|minerva|mobile|parsoid/i)) { //If it's the wrong ZIM type and style matches main styles...
             if (zl.match(/(-\/s\/style\.css)|(minerva)|style-mobile\.css/i)) { //If it matches one of the required styles...
-                zl = (cs == "mobile") ? "../-/s/style-mobile.css" : "../-/s/style.css"; //Take it from cache, because not in the ZIM
+                zl = (cs == "mobile") ? "-/s/style-mobile.css" : "-/s/style.css"; //Take it from cache, because not in the ZIM
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem because style is not in ZIM" +
                     "\nbut your display options require a " + cs + " style");
                 uiUtil.poll("Matched [" + zl.substring(0, 30) + "] from cache" + " because your display options require a " + cs + " style...");
@@ -73,36 +73,35 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 )) {
                 zl = zl.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename - but next line renders this redundant in current implementation)
                 if (/(-\/s\/style\.css)|(minerva)/i.test(zl)) { //If it matches one of the required styles...
-                    zl = (cs == "mobile") ? "../-/s/style-mobile.css" : "../-/s/style.css";
+                    zl = (cs == "mobile") ? "-/s/style-mobile.css" : "-/s/style.css";
                 }
-                zl = zl.replace(/.+(bootstrap[^\/]*?\.css)/i, "/www/css/$1");
+                zl = zl.replace(/.+(bootstrap[^\/]*?\.css)/i, "css/$1");
                 //Make link href relative to root
-                zl = zl.replace(/[\s\S]+?\/-\//i, "/www/-/");
+                //zl = zl.replace(/[\s\S]+?\/-\//i, "-/");
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem");
                 uiUtil.poll("Matched #" + i + " [" + zl.substring(0, 30) + "] from local filesystem");
                 //injectCSS();
-                return { zl: zl, rtnFunction: rtnFunction };
             } else { //Try to get the stylesheet from the ZIM file unless it's the wrong ZIM type
-                zl = zl.match(/^(?:\.\.\/|\/)+(-\/.*)$/)[1]; //Remove the directory path
+                zl = zl.replace(/^[./]+/, ""); //Remove the directory path
                 console.log("Attempting to resolve CSS link #" + i + " [" + zl + "] from ZIM file..." +
                     (cc ? "\n(Consider adding file #" + i + " to the local filesystem)" : ""));
                 rtnFunction = "resolveCSS";
-                return { zl: zl, rtnFunction: rtnFunction };
             }
+            return { zl: zl, rtnFunction: rtnFunction };
         }
     }
 
     function toMobileCSS(html, zim, cc, cs, css) {
         //DEV: Careful not to add styles twice...
         //NB Can't relocate to filterCSS function above because it filters styles serially and code would be called for every style...
-        if (zim != cs) { //If ZIM doesn't match user-requested style, add in stylesheets if they're missing
-            css += /-\/s\/css_modules\/content\.parsoid\.css/i.test(css) ? "" : '<link href="../-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css">\r\n';
-            css += /-\/s\/css_modules\/inserted_style_mobile\.css/i.test(css) ? "" : '<link href="../-/s/css_modules/inserted_style_mobile.css" rel="stylesheet" type="text/css">\r\n';
-            css += /-\/s\/css_modules\/mobile\.css/i.test(css) ? "" : '<link href="../-/s/css_modules/mobile.css" rel="stylesheet" type="text/css">\r\n';
+        if (zim == "desktop" && zim != cs) { //If ZIM doesn't match user-requested style, add in stylesheets if they're missing
+            css += /-\/s\/css_modules\/content\.parsoid\.css/i.test(css) ? "" : '<link href="-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css">\r\n';
+            css += /-\/s\/css_modules\/inserted_style_mobile\.css/i.test(css) ? "" : '<link href="-/s/css_modules/inserted_style_mobile.css" rel="stylesheet" type="text/css">\r\n';
+            css += /-\/s\/css_modules\/mobile\.css/i.test(css) ? "" : '<link href="-/s/css_modules/mobile.css" rel="stylesheet" type="text/css">\r\n';
         }
         if (cc || (zim == "desktop")) { //If user requested cached styles OR the ZIM does not contain mobile styles
             console.log(zim == "desktop" ? "Transforming display style to mobile..." : "Optimizing cached styles for mobile display...");
-            uiUtil.poll("desktop" ? "Transforming display style to mobile..." : "Optimizing cached styles for mobile display...");
+            uiUtil.poll(zim == "desktop" ? "Transforming display style to mobile..." : "Optimizing cached styles for mobile display...");
             //Add styling to image captions that is hard-coded in Wikipedia mobile
             html = html.replace(/class\s*=\s*["']\s*thumbcaption\s*["']\s*/ig, 'style="margin: 0.5em 0 0.5em; font-size: 0.8em; line-height: 1.5; padding: 0 !important; color: #54595d; width: auto !important;"');
             if (zim == "desktop") {
@@ -138,7 +137,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             html = html.match(/table\s+(?=[^>]*class\s*=\s*["'][^"']*(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable))/i) ? html.replace(/(<h2\s+[^<]*<\/h2>)/ig, '<div style="width: 60%;">$1</div>') : html;
         }
         //Add dark theme if requested
-        css += (params.cssTheme == "dark") ? '<link href="/www/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="/www/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' :"";
+        css += (params.cssTheme == "dark") ? '<link href="-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' :"";
         html = (params.cssTheme == "dark") ? html.replace(/(<h1\s+[^>]*)background-color\s*:\s*white;\s*/i, "$1") : html;
         html = (params.cssTheme == "dark") ? html.replace(/(<div\s+[^>]*)background-image\s*:\s*linear-gradient[^;]+white[^;]*;\s*/i, "$1") : html;
 
@@ -150,7 +149,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             if (/class\s*=\s*["']gallery/i.test(html) && !/gallery/i.test(css)) {
                 console.log("Inserting missing css required for gallery display [mediawiki.page.gallery.styles.css]...");
                 uiUtil.poll("Inserting missing css required for gallery display [mediawiki.page.gallery.styles.css]...");
-                css += /-\/s\/css_modules\/mediawiki\.page\.gallery\.styles\.css/i.test(css) ? "" : '<link href="../-/s/css_modules/mediawiki.page.gallery.styles.css" rel="stylesheet" type="text/css">\r\n';
+                css += /-\/s\/css_modules\/mediawiki\.page\.gallery\.styles\.css/i.test(css) ? "" : '<link href="-/s/css_modules/mediawiki.page.gallery.styles.css" rel="stylesheet" type="text/css">\r\n';
             }
         }
         if (cc || (zim == "mobile")) { //If user requested cached styles OR the ZIM does not contain desktop styles
@@ -173,7 +172,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             html = html.replace(/<h1\s*[^>]+titleHeading[^>]+>\s*<\/h1>\s*/ig, "");
         }
         //Add dark theme if requested
-        css += (params.cssTheme == "dark") ? '<link href="/www/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="/www/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
+        css += (params.cssTheme == "dark") ? '<link href="-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
         html = (params.cssTheme == "dark") ? html.replace(/(<h1\s+[^>]*)background-color:\s*white;\s*/i, "$1") : html;
         html = (params.cssTheme == "dark") ? html.replace(/(<div\s+[^>]*)background-image\s*:\s*linear-gradient[^;]+white[^;]*;\s*/i, "$1") : html;
 
