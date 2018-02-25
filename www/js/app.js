@@ -1559,7 +1559,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             console.time("Time to Document Ready");
 
             //Void the iframe
-            window.frames[0].frameElement.src = "";
+            window.frames[0].frameElement.src = "dummyArticle.html";
 
             //Load cached start page if it exists
             var htmlContent = 0;
@@ -1902,11 +1902,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             setHomeTab();
             //Inject base tag into html
             htmlArticle = htmlArticle.replace(/(<head[^>]*>\s*)/i, '$1<base href="' + baseUrl + '" />\r\n');
-            
+            //Display article in iframe
             var articleContent = window.frames[0].frameElement.contentDocument;
-            //var articleContent = document.getElementById("articleContent").contentDocument;
             articleContent.documentElement.innerHTML = htmlArticle;
-            //$('#articleContent').contents().find('body').html(htmlArticle);
             //Set relative font size + Stackexchange-family multiplier
             articleContent.body.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
 
