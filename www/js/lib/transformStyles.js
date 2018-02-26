@@ -137,7 +137,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             html = html.match(/table\s+(?=[^>]*class\s*=\s*["'][^"']*(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable))/i) ? html.replace(/(<h2\s+[^<]*<\/h2>)/ig, '<div style="width: 60%;">$1</div>') : html;
         }
         //Remove hard-coded style on h1
-        html = html.replace(/(<h1\b[^>]+)background-color\s*:\s*white;\s*/i, '$1line-height:1em;padding:0.25em 0;');
+        html = html.replace(/(<h1\b[^>]+)background-color\s*:\s*white;\s*/i, '$1');
         //Add dark theme if requested
         css += (params.cssTheme == "dark") ? '<link href="-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' :"";
         html = (params.cssTheme == "dark") ? html.replace(/(<div\s+[^>]*)background-image\s*:\s*linear-gradient[^;]+white[^;]*;\s*/i, "$1") : html;
@@ -173,7 +173,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             html = html.replace(/<h1\s*[^>]+titleHeading[^>]+>\s*<\/h1>\s*/ig, "");
         }
         //Remove hard-coded style on h1
-        html = html.replace(/(<h1\b[^>]+)background-color\s*:\s*white;\s*/i, '$1line-height:1em;padding:0.25em 0;');
+        html = html.replace(/(<h1\b[^>]+)background-color\s*:\s*white;\s*/i, '$1');
         //Add dark theme if requested
         css += (params.cssTheme == "dark") ? '<link href="-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
         html = (params.cssTheme == "dark") ? html.replace(/(<div\s+[^>]*)background-image\s*:\s*linear-gradient[^;]+white[^;]*;\s*/i, "$1") : html;
