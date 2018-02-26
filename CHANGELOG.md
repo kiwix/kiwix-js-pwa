@@ -1,7 +1,10 @@
-## Pending for Release 0.9.9.1 (beta)
+## Release 0.9.9.2 (beta)
 * FIX: Added more padding for content hidden under the bottom bar
+* FIX: New mode of injecting HTML into iframe fixes baseUrl issues
+* ENHANCEMENT: Some code redundancy removed
 * ENHANCEMENT: Faster typesetting of TeX equations
 * ENHANCEMENT: Experimental support for equations in mathoverflow and related stackechange ZIMs
+* ENHANCEMENT: Dark theme support for stackexchange ZIMs
 * ENHANCEMENT: Uncluttered the UI for file selection
 
 ## Release 0.9.9 (beta)
