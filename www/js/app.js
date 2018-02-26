@@ -145,14 +145,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 return false;
             }
         });
-        //Also have to listen to iframe key presses
-        document.getElementById('articleContent').contentWindow.addEventListener('keyup', function (e) {
-            //Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
-            if ((e.ctrlKey || e.altKey) && e.which == 70) {
-                $('#findText').click();
-                return false;
-            }
-        }), false;
 
         var localSearch = {};
         var firstRun = false;
@@ -1084,7 +1076,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          */
         function setLocalArchiveFromArchiveList(archiveDirectory) {
             archiveDirectory = archiveDirectory || $('#archiveList').val();
-            document.getElementById('kiwixIcon').src = /wikivoyage/i.test(archiveDirectory) ? params.cssUITheme == "light" ? "./img/icons/wikivoyage-black-32.png" : "./img/icons/wikivoyage-white-32.png" : /medicine/i.test(archiveDirectory) ? params.cssUITheme == "light" ? "./img/icons/wikimed-blue-32.png" : "./img/icons/wikimed-lightblue-32.png" : params.cssUITheme == "light" ? "./img/icons/kiwix-blue-32.png" : "./img/icons/kiwix-32.png";
             if (archiveDirectory && archiveDirectory.length > 0) {
                 // Now, try to find which DeviceStorage has been selected by the user
                 // It is the prefix of the archive directory
@@ -1112,9 +1103,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         selectedStorage = storages[0];
                     }
                     else { //IT'S NOT FREAKIN FFOS!!!!!!!!!!
-                        //console.log("Something weird happened with the DeviceStorage API : found a directory without prefix : "
-                        //    + archiveDirectory + ", but there were " + storages.length
-                        //    + " storages found with getDeviceStorages instead of 1");
                         //Patched for UWP support:
                         if (params.pickedFolder && Windows && Windows.Storage) {
                             var query = params.pickedFolder.createFileQuery();
@@ -1145,47 +1133,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                     }
                                 }
                                 if (fileset && fileset.length) {
-                                    //@TODO: check if this is redundant
-                                    //if (archiveDirectory != params.storedFile) {
-                                    //    params.storedFile = String(archiveDirectory);
-                                    //    cookies.setItem("lastSelectedArchive", params.storedFile, Infinity);
-                                    //}
-                                    selectedStorage = fileset;
-                                    archiveDirectory = "";
-                                    // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
-                                    if (cssBlobCache)
-                                        cssBlobCache = new Map();
-                                    //if (cssDirEntryCache)
-                                    //    cssDirEntryCache = new Map();
-                                    selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
-                                        // The archive is set : go back to home page to start searching
-                                        params.storedFile = archive._file._files[0].name;
-                                        cookies.setItem('lastSelectedArchive', params.storedFile, Infinity);
-                                        var reloadLink = document.getElementById('reloadPackagedArchive');
-                                        if (reloadLink) {
-                                            if (params.packagedFile != archive._file._files[0].name) {
-                                                reloadLink.style.display = 'inline';
-                                                reloadLink.removeEventListener('click', loadPackagedArchive);
-                                                reloadLink.addEventListener('click', loadPackagedArchive);
-                                            } else {
-                                                reloadLink.style.display = 'none';
-                                                document.getElementById('currentArchive').style.display = 'none';
-                                            }
-                                        }
-                                        if (params.rescan) {
-                                            $('#btnConfigure').click();
-                                            $('#btnConfigure').click();
-                                            params.rescan = false;
-                                        } else {
-                                            $('#openLocalFiles').hide();
-                                            if (params.rememberLastPage && ~params.lastPageVisit.indexOf(selectedArchive._file._files[0].name)) {
-                                                var lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
-                                                goToArticle(lastPage);
-                                            } else {
-                                                $('#btnHome').click();
-                                            }
-                                        }
-                                    });
+                                    setLocalArchiveFromFileList(fileset);
                                 } else {
                                     console.error("The picked file could not be found in the selected folder!");
                                     var archiveList = [];
@@ -1220,6 +1168,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         }
                     }
                 }
+                // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
+                if (cssBlobCache)
+                    cssBlobCache = new Map();
+                //if (cssDirEntryCache)
+                //    cssDirEntryCache = new Map();
                 selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
                     cookies.setItem("lastSelectedArchive", archiveDirectory, Infinity);
                     // The archive is set : go back to home page to start searching
@@ -1340,7 +1293,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             cookies.setItem("lastSelectedArchive", params.storedFile, Infinity);
             var reloadLink = document.getElementById("reloadPackagedArchive");
             if (reloadLink) {
-                if (params.packagedFile != archive._file._files[0].name) {
+                if (params.packagedFile != params.storedFile) {
                     reloadLink.style.display = "inline";
                     reloadLink.removeEventListener("click", loadPackagedArchive);
                     reloadLink.addEventListener("click", loadPackagedArchive);
@@ -1349,11 +1302,20 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     document.getElementById('currentArchive').style.display = 'none';
                 }
             }
-            if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile)) {
-                var lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
-                goToArticle(lastPage);
+            //This ensures the correct icon is set for the newly loaded archive
+            cssUIThemeSet(params.cssUITheme);
+            if (params.rescan) {
+                $('#btnConfigure').click();
+                $('#btnConfigure').click();
+                params.rescan = false;
             } else {
-                $("#btnHome").click();
+                $('#openLocalFiles').hide();
+                if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile)) {
+                    var lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
+                    goToArticle(lastPage);
+                } else {
+                    $('#btnHome').click();
+                }
             }
         });
     }
@@ -1711,7 +1673,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         //Replace inline Math TeX with dummy images
         //if (params.useMathJax) htmlArticle = htmlArticle.replace(/\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/g, "<img alt='$1' class='mwe-math-fallback-image' />$2");
         //Test for raw TeX in the HTML - no need to convert because configuration for inline will be set by a script in the Stackexchange HTML
-        containsMathTeXRaw = params.useMathJax ? /\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/.test(htmlArticle) : false;
+        containsMathTeXRaw = params.useMathJax && !/wikivoyage/.test(params.storedFile) ? /\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/.test(htmlArticle) : false;
         //Simplify any configuration script
         //if (containsMathTeXRaw) htmlArticle = htmlArticle.replace(/(<script\s+[^>]*?type\s*=\s*['"]\s*text\/x-mathjax-config[^>]+>[^<]+?Hub\.Config\s*\(\s*{\s*)[^<]*?(tex2jax\s*:[^}]+?})\s*,[^<]+(<\/script>)/i, "$1$2});$3");
         //Replace all TeX SVGs with MathJax scripts
@@ -1923,6 +1885,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
             checkToolbar();
 
+            //Listen to iframe key presses for in-page search
+            document.getElementById('articleContent').contentWindow.addEventListener('keyup', function (e) {
+                //Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
+                if ((e.ctrlKey || e.altKey) && e.which == 70) {
+                    $('#findText').click();
+                    return false;
+                }
+            }), false;
+
             // If the ServiceWorker is not useable, we need to fallback to parse the DOM
             // to inject math images, and replace some links with javascript calls
             if (contentInjectionMode === 'jquery') {
@@ -2045,6 +2016,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 prepareImages();
             } else {
                 console.log("There are no images to display in this article.");
+                loadMathJax();
                 //TESTING
                 console.timeEnd("Time to Document Ready");
             }
