@@ -1,11 +1,11 @@
 ﻿/**
  * Custom style meant to match the design of mwoffliner mobile version to the mobile version of wikipedia
  */
-.mw-body-content {
+/*.mw-body-content {
     font-family: 'Helvetica Neue','Helvetica','Nimbus Sans L','Arial','Liberation Sans',sans-serif;
     font-size: 16px;
     line-height: 26px;
-}
+}*/
 .mw-body-content p {
     margin: 0.5em 0 1em 0;
 }
