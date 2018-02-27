@@ -1660,9 +1660,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         //return;
 
         //Since page has been successfully loaded, store it in the browser history
-        if (! window.history.state ||
-            ! window.history.state.title ||
-            ! ~window.history.state.title.indexOf("/" + dirEntry.url)) {
+        if (!window.history.state ||
+            !window.history.state.title ||
+            !~window.history.state.title.indexOf("/" + dirEntry.url)) {
             pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
         }
 
