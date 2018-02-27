@@ -1505,7 +1505,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         $("#prefix").val("");
         findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId);
         var dirEntry = selectedArchive.parseDirEntryId(dirEntryId);
-        pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
         return false;
     }
     
@@ -1659,6 +1658,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         console.log("Loading stylesheets...");
         console.time("Time to First Paint");
         //return;
+
+        //Since page has been successfully loaded, store it in the browser history
+        if (! window.history.state ||
+            ! window.history.state.title ||
+            ! ~window.history.state.title.indexOf("/" + dirEntry.url)) {
+            pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
+        }
 
         //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
         //so add some whitespace at the end of the document
@@ -1967,7 +1973,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         // instead of following the link
                         $(this).on('click', function (e) {
                             var decodedURL = decodeURIComponent(zimUrl);
-                            pushBrowserHistoryState(decodedURL);
                             goToArticle(decodedURL);
                             return false;
                         });
@@ -2505,7 +2510,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 //Test below supports Stackexchange-family ZIMs, so we don't call up user profiles
                 if (dirEntry.namespace === 'A' && !/user\//.test(dirEntry.url)) {
                     $("#articleName").html(dirEntry.title);
-                    pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
                     $("#readingArticle").show();
                     $('#articleContent').contents().find('body').html("");
                     readArticle(dirEntry);
@@ -2528,7 +2532,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             else {
                 if (dirEntry.namespace === 'A') {
                     $("#articleName").html(dirEntry.title);
-                    pushBrowserHistoryState('A/' + dirEntry.url);
                     $("#readingArticle").show();
                     $('#articleContent').contents().find('body').html("");
                     readArticle(dirEntry);
