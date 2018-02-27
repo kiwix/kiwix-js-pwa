@@ -80,7 +80,8 @@ a.button {
 	padding-left: 30px;
     padding-right: 30px;
 	box-shadow: 2px 2px 9px 0px rgba(50, 50, 50, 0.5);
-	margin-bottom:30px;
+	margin-top: 15px;
+    margin-bottom: 30px;
 	border-bottom-right-radius: 8px;
     border-bottom-left-radius: 8px;
 }

@@ -168,7 +168,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 }
             }
             //Ensure white background colour
-            html = html.replace(/class\s*=\s*["']\s*mw-body\s*["']\s*/ig, 'style="background-color: white; padding: 1em; border-width: 0px; max-width: 55.8em; margin: 0 auto 0 auto;"');
+            html = html.replace(/(class\s*=\s*["']\s*mw-body\s*["'][^>]*?style\s*=\s*["'])/i, "$1background-color:white;");
             //Void empty header title
             html = html.replace(/<h1\s*[^>]+titleHeading[^>]+>\s*<\/h1>\s*/ig, "");
         }
