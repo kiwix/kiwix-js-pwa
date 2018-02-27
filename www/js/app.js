@@ -648,6 +648,34 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             cookies.setItem('cssSource', params.cssSource, Infinity);
             params.themeChanged = true;
         });
+        $('#removePageMaxWidthCheck').on('click', function (e) {
+            //This code implements a tri-state checkbox
+            if (this.readOnly) this.checked = this.readOnly = false;
+            else if (!this.checked) this.readOnly = this.indeterminate = true;
+            params.removePageMaxWidth = this.indeterminate ? "auto" : this.checked;
+            document.getElementById('pageMaxWidthState').innerHTML = (params.removePageMaxWidth == "auto" ? "[auto]" : params.removePageMaxWidth ? "[always]" : "[never]") + "&nbsp;";
+            cookies.setItem('removePageMaxWidth', params.removePageMaxWidth, Infinity);
+            removePageMaxWidth();
+        });
+        function removePageMaxWidth() {
+            var doc = window.frames[0].frameElement.contentDocument;
+            var zimType = /\bhref\s*=\s*["'][^"']*?(?:minerva|mobile)/i.test(doc.head.innerHTML) ? "mobile" : "desktop";
+            //var contentElement = /wikivoyage/.test(params.storedFile) ? "bodyContent" : "content";
+            var idArray = ["content", "bodyContent"];
+            for (var i = 0; i < idArray.length; i++) {
+                var contentElement = doc.getElementById(idArray[i]);
+                if (!contentElement) continue;
+                var docStyle = contentElement.style;
+                if (!docStyle) continue;
+                if (params.removePageMaxWidth == "auto") {
+                    docStyle.maxWidth = zimType == "desktop" ? "100%" : "55.8em";
+                    docStyle.cssText = docStyle.cssText.replace(/(max-width[^;]+)/i, "$1 !important");
+                } else {
+                    docStyle.maxWidth = params.removePageMaxWidth ? "100%" : "55.8em";
+                    docStyle.cssText = docStyle.cssText.replace(/(max-width[^;]+)/i, "$1 !important");
+                }
+            }
+        }
         $('input:radio[name=useMathJax]').on('click', function (e) {
             params.useMathJax = /true/i.test(this.value);
             cookies.setItem('useMathJax', params.useMathJax, Infinity);
@@ -722,7 +750,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             cssUIThemeSet(params.cssUITheme);
             //@TODO - this is initialization code, and should be in init.js (withoug jQuery)
             $('input:radio[name=cssInjectionMode]').filter('[value="' + params.cssSource + '"]').prop('checked', true);
-            //DEV this hides file selectors if it is a packaged file -- add your own packaged file test to regex below
+        //DEV this hides file selectors if it is a packaged file -- add your own packaged file test to regex below
             if (/wikivoyage|wikimed/i.test(params.fileVersion)) {
                 document.getElementById('packagedAppFileSelectors').style.display = "block";
                 document.getElementById('hideFileSelectors').style.display = "none";
@@ -1657,7 +1685,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         var hatnote = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?((?:<div\s+[^>]+\bhatnote\b[\s\S]+?<\/div>\s*)+)/i);
         if (hatnote && hatnote.length > 1) {
             htmlArticle = htmlArticle.replace(hatnote[1], "");
-            htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnote[1]);
+            htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnote[1].replace(/(<div\s+)/i,'$1style="padding-top:10px;" '));
         }
         //Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
         var noexcerpt = htmlArticle.match(/<dl>(?:[^<]|<(?!\/dl>))+?excerpt(?:[^<]|<(?!\/dl>))+?For other places with the same name(?:[^<]|<(?!\/dl>))+?<\/dl>\s*/i);
@@ -1869,6 +1897,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             articleContent.documentElement.innerHTML = htmlArticle;
             //Set relative font size + Stackexchange-family multiplier
             articleContent.body.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
+            //Set page width according to user preference
+            removePageMaxWidth();
 
             setupTableOfContents();
             //Hide top-level scrolling -- gets rid of interfering useless scroll bar, but re-enable for Config and About pages

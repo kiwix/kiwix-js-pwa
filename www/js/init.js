@@ -32,6 +32,7 @@ params['results'] = params['results'] || 15; //Number of search results to displ
 params['relativeFontSize'] = ~~(getCookie('relativeFontSize') || 100); //Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
 params['relativeUIFontSize'] = ~~(getCookie('relativeUIFontSize') || 100); //Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
 params['cssSource'] = getCookie('cssSource') || "auto"; //Set default to "auto", "desktop" or "mobile"
+params['removePageMaxWidth'] = getCookie('removePageMaxWidth') != null ? getCookie('removePageMaxWidth') : "auto"; //Set default for removing max-width restriction on Wikimedia pages ("auto" = removed in desktop, not in mobile; true = always remove; false = never remove)
 params['cssCache'] = getCookie('cssCache') != null ? getCookie('cssCache') : true; //Set default to true to use cached CSS, false to use Zim only
 params['cssTheme'] = getCookie('cssTheme') || 'light'; //Set default to 'light', 'dark' or 'invert' to use respective themes for articles
 params['cssUITheme'] = getCookie('cssUITheme') || 'light'; //Set default to 'light' or 'dark' to use respective themes for UI
@@ -57,6 +58,10 @@ params['allowInternetAccess'] = params['allowInternetAccess'] || false; //Do not
 //Initialize checkbox, radio and other values
 document.getElementById('cssCacheModeCheck').checked = params.cssCache;
 document.getElementById('imageDisplayModeCheck').checked = params.imageDisplay;
+document.getElementById('removePageMaxWidthCheck').checked = params.removePageMaxWidth == "auto" ? false : params.removePageMaxWidth;
+document.getElementById('removePageMaxWidthCheck').indeterminate = params.removePageMaxWidth == "auto" ? true : false;
+document.getElementById('removePageMaxWidthCheck').readOnly = params.removePageMaxWidth == "auto" ? true : false;
+document.getElementById('pageMaxWidthState').innerHTML = (params.removePageMaxWidth == "auto" ? "[auto]" : params.removePageMaxWidth ? "[true]" : "[false]");
 document.getElementById('hideToolbarCheck').checked = params.hideToolbar;
 document.getElementById('cssWikiDarkThemeCheck').checked = params.cssTheme == 'dark' ? true : params.cssTheme == 'invert' ? true : false;
 document.getElementById('darkInvert').style.display = params.cssTheme == 'dark' ? "inline" : params.cssTheme == 'invert' ? "inline" : "none";
