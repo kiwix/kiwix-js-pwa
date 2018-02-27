@@ -376,11 +376,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('scrollbox').style.position = "fixed";
             document.getElementById('scrollbox').style.height = window.innerHeight + "px";
             //Use the "light" navbar if the content is "light" (otherwise it looks shite....)
-            if (params.cssTheme == "light" && params.cssUITheme == "dark") {
-                document.getElementById('search-article').classList.remove("dark");
-                document.getElementById('findInArticle').classList.remove("dark");
-                document.getElementById('prefix').classList.remove("dark");
+            if (params.cssTheme != params.cssUITheme) {
+                if ((params.cssTheme == "light" && (!activeBtn || activeBtn == "btnHome" || activeBtn == "findText")) ||
+                    (params.cssTheme == "dark" && activeBtn && activeBtn != "btnHome" && activeBtn != "findText")) {
+                    cssUIThemeSet("light");
+                } else {
+                    cssUIThemeSet("dark");
+                }
             }
+
             if (typeof Windows !== 'undefined') {
             document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
             }
@@ -434,12 +438,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
                 $('#navbarToggle').click();
             }
-            //Return navbar to dark state if we switched it earlier
-            if (params.cssTheme == "light" && params.cssUITheme == "dark") {
-                document.getElementById('search-article').classList.add("dark");
-                document.getElementById('findInArticle').classList.add("dark");
-                document.getElementById('prefix').classList.add("dark");
-            }
             //Hide footer toolbar
             document.getElementById('footer').style.display = "none";
             // Show the selected content in the page
@@ -489,11 +487,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 $('#navbarToggle').click();
             }
             setHomeTab('btnAbout');
-            if (params.cssTheme == "light" && params.cssUITheme == "dark") {
-                document.getElementById('search-article').classList.add("dark");
-                document.getElementById('findInArticle').classList.add("dark");
-                document.getElementById('prefix').classList.add("dark");
-            }
             //Hide footer toolbar
             document.getElementById('footer').style.display = "none";
             // Show the selected content in the page
@@ -589,13 +582,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         function cssUIThemeSet(value) {
             if (value == 'dark') {
                 document.getElementsByTagName('body')[0].classList.add("dark");
-                //document.getElementById('article').classList.add("dark");
-                //document.getElementById('navbar').classList.remove("navbar-default");
-                //document.getElementById('navbar').classList.add("dark");
                 document.getElementById('archiveFilesLegacy').classList.add("dark");
                 document.getElementById('footer').classList.add("darkfooter");
                 document.getElementById('archiveFilesLegacy').classList.remove("btn");
-                //document.getElementById('container').classList.add("dark");
                 document.getElementById('findInArticle').classList.add("dark");
                 document.getElementById('prefix').classList.add("dark");
                 var elements = document.querySelectorAll(".settings");
@@ -605,13 +594,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (value == 'light') {
                 document.getElementsByTagName('body')[0].classList.remove("dark");
                 document.getElementById('search-article').classList.remove("dark");
-                //document.getElementById('article').classList.remove("dark");
-                //document.getElementById('navbar').classList.add("navbar-default");
-                //document.getElementById('navbar').classList.remove("dark");
                 document.getElementById('footer').classList.remove("darkfooter");
                 document.getElementById('archiveFilesLegacy').classList.remove("dark");
                 document.getElementById('archiveFilesLegacy').classList.add("btn");
-                //document.getElementById('container').classList.remove("dark");
                 document.getElementById('findInArticle').classList.remove("dark");
                 document.getElementById('prefix').classList.remove("dark");
                 var elements = document.querySelectorAll(".settings");
@@ -661,7 +646,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         function removePageMaxWidth() {
             var doc = window.frames[0].frameElement.contentDocument;
             var zimType = /\bhref\s*=\s*["'][^"']*?(?:minerva|mobile)/i.test(doc.head.innerHTML) ? "mobile" : "desktop";
-            //var contentElement = /wikivoyage/.test(params.storedFile) ? "bodyContent" : "content";
             var idArray = ["content", "bodyContent"];
             for (var i = 0; i < idArray.length; i++) {
                 var contentElement = doc.getElementById(idArray[i]);
