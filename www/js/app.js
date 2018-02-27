@@ -247,7 +247,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
         });
         // Bottom bar :
-        // @TODO Since bottom bar now hidden this code makes no sense, consider adding it to top home button instead
+        // @TODO Since bottom bar now hidden in Settings and About the returntoArticle code cannot be accessed;
+        // consider adding it to top home button instead
         $('#btnBack').on('click', function (e) {
             if (document.getElementById('articleContent').style.display == "none") {
                 $('#returntoArticle').click();
