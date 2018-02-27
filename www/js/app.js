@@ -668,6 +668,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 if (!contentElement) continue;
                 var docStyle = contentElement.style;
                 if (!docStyle) continue;
+                if (contentElement.className == "mw-body") {
+                    docStyle.padding = "1em";
+                }
                 if (params.removePageMaxWidth == "auto") {
                     docStyle.maxWidth = zimType == "desktop" ? "100%" : "55.8em";
                     docStyle.cssText = docStyle.cssText.replace(/(max-width[^;]+)/i, "$1 !important");
@@ -675,6 +678,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     docStyle.maxWidth = params.removePageMaxWidth ? "100%" : "55.8em";
                     docStyle.cssText = docStyle.cssText.replace(/(max-width[^;]+)/i, "$1 !important");
                 }
+                docStyle.margin = "0 auto";
             }
         }
         $('input:radio[name=useMathJax]').on('click', function (e) {
