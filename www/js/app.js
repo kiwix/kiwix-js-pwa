@@ -1677,7 +1677,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, "");
 
         //Put misplaced hatnote headers inside <h1> block back in correct position @TODO remove this when fixed in mw-offliner
-        var hatnote = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?((?:<div\s+[^>]+\bhatnote\b[\s\S]+?<\/div>\s*)+)/i);
+        var hatnote = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?((?:<div\s+[^>]+\b(?:hatnote|homonymie)\b[\s\S]+?<\/div>\s*)+)/i);
         if (hatnote && hatnote.length > 1) {
             htmlArticle = htmlArticle.replace(hatnote[1], "");
             htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnote[1].replace(/(<div\s+)/i,'$1style="padding-top:10px;" '));
