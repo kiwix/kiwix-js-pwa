@@ -623,9 +623,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         });
         function switchTheme() {
             var doc = window.frames[0].frameElement.contentDocument;
+            var baseUrl = doc.head.innerHTML.match(/<base\s*href\s*=\s*["']([^"']+)/);
+            baseUrl = baseUrl && baseUrl.length > 1 ? baseUrl[1] : false;
+            var treePath = baseUrl ? baseUrl.replace(/([^/]+\/)/g, "../") : false;
+            //If something went wrong, use the page reload method
+            if (!treePath) {
+                params.themeChanged = true;
+                return;
+            }
             var styleSheets = doc.getElementsByTagName("link");
             //Remove any dark theme, as we don't know whether user switched from light to dark or from inverted to dark, etc.
-            for (var i = 0; i < styleSheets.length; i++) {
+            for (var i = styleSheets.length-1; i > -1; i--) {
                 if (~styleSheets[i].href.search(/\/style-dark/)) {
                     styleSheets[i].disabled = true;
                     styleSheets[i].parentNode.removeChild(styleSheets[i]);
@@ -635,7 +643,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 var link = doc.createElement("link");
                 link.setAttribute("rel", "stylesheet");
                 link.setAttribute("type", "text/css");
-                link.setAttribute("href", (params.cssTheme == "dark" ? "../-/s/style-dark.css" : "../-/s/style-dark-invert.css"));
+                link.setAttribute("href", (params.cssTheme == "dark" ? treePath + "-/s/style-dark.css" : treePath + "-/s/style-dark-invert.css"));
                 doc.head.appendChild(link); 
             }
         }
