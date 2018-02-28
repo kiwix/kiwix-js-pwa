@@ -613,14 +613,32 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('darkInvert').style.display = this.checked ? "inline" : "none"; 
             params.cssTheme = document.getElementById('cssWikiDarkThemeInvertCheck').checked && params.cssTheme == 'dark' ? 'invert' : params.cssTheme;
             cookies.setItem('cssTheme', params.cssTheme, Infinity);
-            params.themeChanged = true;
+            switchTheme();
         });
         $('input:checkbox[name=cssWikiDarkThemeInvert]').on('change', function (e) {
             if (params.cssTheme == "light" && this.checked) document.getElementById('cssWikiDarkThemeInvertCheck').checked = true;
             params.cssTheme = this.checked ? 'invert' : 'dark';
             cookies.setItem('cssTheme', params.cssTheme, Infinity);
-            params.themeChanged = true;
+            switchTheme();
         });
+        function switchTheme() {
+            var doc = window.frames[0].frameElement.contentDocument;
+            var styleSheets = doc.getElementsByTagName("link");
+            //Remove any dark theme, as we don't know whether user switched from light to dark or from inverted to dark, etc.
+            for (var i = 0; i < styleSheets.length; i++) {
+                if (~styleSheets[i].href.search(/\/style-dark/)) {
+                    styleSheets[i].disabled = true;
+                    styleSheets[i].parentNode.removeChild(styleSheets[i]);
+                }
+            }
+            if (params.cssTheme != "light") {
+                var link = doc.createElement("link");
+                link.setAttribute("rel", "stylesheet");
+                link.setAttribute("type", "text/css");
+                link.setAttribute("href", (params.cssTheme == "dark" ? "../-/s/style-dark.css" : "../-/s/style-dark-invert.css"));
+                doc.head.appendChild(link); 
+            }
+        }
         $('input:checkbox[name=rememberLastPage]').on('change', function (e) {
             if (params.rememberLastPage && this.checked) document.getElementById('rememberLastPageCheck').checked = true;
             params.rememberLastPage = this.checked ? true : false;
