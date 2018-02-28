@@ -52,6 +52,10 @@ h1[tabindex="0"].collapsible-heading > .indicator {
     .client-js .collapsible-heading .indicator {
         display: none !important; /* this is to hide to "v" icone next to titles in desktop */
     }
+    .float-right {
+        float: right;
+        margin-left: 10px;
+    }
 }
 @media all and (max-width: 720px) {
     .mw-stack, .infobox, .vertical-navbox {

@@ -165,7 +165,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             console.log(zim == "mobile" ? "Transforming display style to desktop..." : "Optimizing cached styles for desktop display...");
             uiUtil.poll("mobile" ? "Transforming display style to desktop..." : "Optimizing cached styles for desktop display...");
             //If it's in mobile position, move info-box above lead paragraph like on Wikipedia desktop
-            if (zim == "mobile") { //Actually, move the infobox anyway because the hatnote often gets in the way
+            if (zim == "mobile") {
                 //Attempt to match div-style infobox first
                 var tableBox = util.matchOuter(html, '<div\\b[^>]+?(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable)[^>]+>', '</div>', 'i');
                 //If above failed we may have traditional table-style infobox
