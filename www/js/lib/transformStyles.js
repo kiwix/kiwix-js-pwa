@@ -104,10 +104,12 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             uiUtil.poll(zim == "desktop" ? "Transforming display style to mobile..." : "Optimizing cached styles for mobile display...");
             //Add styling to image captions that is hard-coded in Wikipedia mobile
             html = html.replace(/class\s*=\s*["']\s*thumbcaption\s*["']\s*/ig, 'style="margin: 0.5em 0 0.5em; font-size: 0.8em; line-height: 1.5; padding: 0 !important; color: #54595d; width: auto !important;"');
+            //Wrap <h2> tags in <div> to control bottom border width if there's an infobox
+            html = /table\s+(?=[^>]*class\s*=\s*["'][^"']*(?:mw-stack|infobox|vertical-navbox|qbRight|wv-quickbar|wikitable))/i.test(html) ? html.replace(/(<h2\s+[^<]*<\/h2>)/ig, '<div style="width: 60%;">$1</div>') : html;
             if (zim == "desktop") {
                 var infobox = [];
-                if (/<table\b[^>]+(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable)/i.test(html)) {
-                    infobox = util.matchOuter(html, '<table\\b[^>]+(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable)[^>]+>', '</table>', 'i');
+                if (/<table\b[^>]+(?:mw-stack|infobox|vertical-navbox|qbRight|wv-quickbar|wikitable)/i.test(html)) {
+                    infobox = util.matchOuter(html, '<table\\b[^>]+(?:mw-stack|infobox|vertical-navbox|qbRight|wv-quickbar|wikitable)[^>]+>', '</table>', 'i');
                 } else {
                     if (/<div\b[^>]+(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable)/i.test(html)) {
                         infobox = util.matchOuter(html, '<div\\b[^>]+(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable)[^>]+>', '</div>', 'i');
@@ -123,6 +125,14 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                             if (paras[g] && /[^.]{50,}[^.]*[.,;:?!-]/.test(paras[g].replace(/<[^>]*>/g, ""))) { matched = true; break; }
                         }
                         if (matched) {
+                            //If there are navboxes below the infobox, hide them in mobile view
+                            temphtml = temphtml.replace(/(<div\b(?=[^>]+navbox))(?:([^>]+?)style\s*=\s*["']([^"']+)["'])?/ig, '$1$2style="display:none;$3"');
+                            //Ensure mobile styling in infobox
+                            infobox[0] = infobox[0].replace(/(<(?:table|div)\b(?=[^>]+?class\s*=\s*["'][^"']*(?:mw-stack|infobox|navbox)))([^>]+?style\s*=\s*["'])(?:([^"']*?)margin\s*:[^;"']*[;"'])?/ig, '$1$2margin:0 auto !important;$3');
+                            //Add left margin to top infobox
+                            infobox[0] = infobox[0].replace(/^(<(?:table|div)\b[^>]+?margin:0\s+auto)/i, '$1 0 10px');
+                            //Hide any navboxes inside the infobox
+                            infobox[0] = infobox[0].replace(/(<(?:table|div)\b(?=[^>]+?class\s*=\s*["'][^"']*navbox))(?:([^>]+?)style\s*=\s*["'])(?:([^"']*?)display\s*:[^;"']*[;"'])?/ig, '$1$2style="display:none;$3');
                             //Swap table and first matched paragraph, but mark lead paragraph first
                             //We already deleted the table above
                             html = temphtml;
@@ -132,9 +142,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 }
             }
             //Set infobox styling hard-coded in Wikipedia mobile
-            html = html.replace(/(table\s+(?=[^>]*class\s*=\s*["'][^"']*(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable))[^>]*style\s*=\s*["'][^"']+[^;'"]);?\s*["']/ig, '$1; position: relative; border: 1px solid #eaecf0; text-align: left; background-color: #f8f9fa;"');
-            //Wrap <h2> tags in <div> to control bottom border width if there's an infobox
-            html = html.match(/table\s+(?=[^>]*class\s*=\s*["'][^"']*(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable))/i) ? html.replace(/(<h2\s+[^<]*<\/h2>)/ig, '<div style="width: 60%;">$1</div>') : html;
+            html = html.replace(/(table\s+(?=[^>]*class\s*=\s*["'][^"']*(?:mw-stack|infobox|vertical-navbox|qbRight|wv-quickbar|wikitable))[^>]*style\s*=\s*["'][^"']+[^;'"]);?\s*["']/ig, '$1; position: relative; border: 1px solid #eaecf0; text-align: left; background-color: #f8f9fa;"');
         }
         //Remove hard-coded style on h1
         html = html.replace(/(<h1\b[^>]+)background-color\s*:\s*white;\s*/i, '$1');
@@ -157,11 +165,11 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             console.log(zim == "mobile" ? "Transforming display style to desktop..." : "Optimizing cached styles for desktop display...");
             uiUtil.poll("mobile" ? "Transforming display style to desktop..." : "Optimizing cached styles for desktop display...");
             //If it's in mobile position, move info-box above lead paragraph like on Wikipedia desktop
-            if (zim == "mobile") {
+            if (zim == "mobile") { //Actually, move the infobox anyway because the hatnote often gets in the way
                 //Attempt to match div-style infobox first
-                var tableBox = util.matchOuter(html, '<div\\b[^>]+?(?:qbRight|wv-quickbar)[^>]+>', '</div>', 'i');
+                var tableBox = util.matchOuter(html, '<div\\b[^>]+?(?:infobox|vertical-navbox|qbRight|wv-quickbar|wikitable)[^>]+>', '</div>', 'i');
                 //If above failed we may have traditional table-style infobox
-                tableBox = !(tableBox && tableBox.length) ? util.matchOuter(html, '<table\\b[^>]+?(?:infobox|vertical-navbox|qbRight|wikitable)[^>]+>', '</table>', 'i') : tableBox;
+                tableBox = !(tableBox && tableBox.length) ? util.matchOuter(html, '<table\\b[^>]+?(?:mw-stack|infobox|vertical-navbox|qbRight|wv-quickbar|wikitable)[^>]+>', '</table>', 'i') : tableBox;
                 if (tableBox && tableBox.length) {
                     html = html.replace(tableBox, "");
                     html = html.replace(/(<\/h1>\s*)/i, "$1" + tableBox);

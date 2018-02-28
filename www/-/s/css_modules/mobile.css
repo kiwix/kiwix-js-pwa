@@ -49,7 +49,12 @@ h1[tabindex="0"].collapsible-heading > .indicator {
   display: none; /* hide the "v" icone for the main title */
 }
 @media all and (min-width: 720px) {
-  .client-js .collapsible-heading .indicator {
-    display: none !important; /* this is to hide to "v" icone next to titles in desktop */
-  }
+    .client-js .collapsible-heading .indicator {
+        display: none !important; /* this is to hide to "v" icone next to titles in desktop */
+    }
+}
+@media all and (max-width: 720px) {
+    .mw-stack, .infobox, .vertical-navbox {
+        float: none !important;
+    }
 }
