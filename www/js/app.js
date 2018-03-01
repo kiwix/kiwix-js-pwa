@@ -376,9 +376,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('scrollbox').style.position = "fixed";
             document.getElementById('scrollbox').style.height = window.innerHeight + "px";
             //Use the "light" navbar if the content is "light" (otherwise it looks shite....)
-            if (params.cssTheme != params.cssUITheme) {
-                if ((params.cssTheme == "light" && (!activeBtn || activeBtn == "btnHome" || activeBtn == "findText")) ||
-                    (params.cssTheme != "light" && activeBtn && activeBtn != "btnHome" && activeBtn != "findText")) {
+            var checkTheme = params.cssTheme == "light" ? "light" : "dark"; 
+            if (checkTheme != params.cssUITheme) {
+                if ((checkTheme == "light" && (!activeBtn || activeBtn == "btnHome" || activeBtn == "findText")) ||
+                    (checkTheme == "dark" && activeBtn && activeBtn != "btnHome" && activeBtn != "findText")) {
                     cssUIThemeSet("light");
                 } else {
                     cssUIThemeSet("dark");
