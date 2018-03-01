@@ -378,7 +378,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //Use the "light" navbar if the content is "light" (otherwise it looks shite....)
             if (params.cssTheme != params.cssUITheme) {
                 if ((params.cssTheme == "light" && (!activeBtn || activeBtn == "btnHome" || activeBtn == "findText")) ||
-                    (params.cssTheme == "dark" && activeBtn && activeBtn != "btnHome" && activeBtn != "findText")) {
+                    (params.cssTheme != "light" && activeBtn && activeBtn != "btnHome" && activeBtn != "findText")) {
                     cssUIThemeSet("light");
                 } else {
                     cssUIThemeSet("dark");
@@ -576,7 +576,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             params.cssUITheme = this.checked ? 'dark' : 'light';
             cookies.setItem('cssUITheme', params.cssUITheme, Infinity);
             cssUIThemeSet(params.cssUITheme);
-            if (params.cssUITheme !== params.cssTheme) $('#cssWikiDarkThemeCheck').click();
+            //Make subsequent check valid if params.cssTheme is "invert" rather than "dark"
+            var checkTheme = params.cssTheme == "light" ? "light" : "dark";
+            if (params.cssUITheme != checkTheme) $('#cssWikiDarkThemeCheck').click();
         });
 
         function cssUIThemeSet(value) {
@@ -623,9 +625,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         });
         function switchTheme() {
             var doc = window.frames[0].frameElement.contentDocument;
-            var baseUrl = doc.head.innerHTML.match(/<base\s*href\s*=\s*["']([^"']+)/);
-            baseUrl = baseUrl && baseUrl.length > 1 ? baseUrl[1] : false;
-            var treePath = baseUrl ? baseUrl.replace(/([^/]+\/)/g, "../") : false;
+            //var baseUrl = doc.head.innerHTML.match(/<base\s*href\s*=\s*["']([^"']+)/);
+            var treePath = window.history.state.title.replace(/[^/]+\/(?:[^/]+$)?/g, "../");
+            //baseUrl = baseUrl && baseUrl.length > 1 ? baseUrl[1] : false;
+            //var treePath = baseUrl ? baseUrl.replace(/([^/]+\/)/g, "../") : false;
             //If something went wrong, use the page reload method
             if (!treePath) {
                 params.themeChanged = true;
@@ -761,7 +764,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
         $(document).ready(function (e) {
             // Set initial behaviour (see also init.js)
-            if (params.cssTheme == "dark") document.getElementById('footer').classList.add("darkfooter");
+            if (params.cssTheme != "light") document.getElementById('footer').classList.add("darkfooter");
             cssUIThemeSet(params.cssUITheme);
             //@TODO - this is initialization code, and should be in init.js (withoug jQuery)
             $('input:radio[name=cssInjectionMode]').filter('[value="' + params.cssSource + '"]').prop('checked', true);
