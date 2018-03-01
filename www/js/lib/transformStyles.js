@@ -148,8 +148,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
         html = html.replace(/(<h1\b[^>]+)background-color\s*:\s*white;\s*/i, '$1');
         //Add dark theme if requested
         css += (params.cssTheme == "dark") ? '<link href="-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' :"";
-        html = (params.cssTheme == "dark") ? html.replace(/(<div\s+[^>]*)background-image\s*:\s*linear-gradient[^;]+white[^;]*;\s*/i, "$1") : html;
-
+        
         return { html : html, css : css };
     }
 
@@ -184,8 +183,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
         html = html.replace(/(<h1\b[^>]+)background-color\s*:\s*white;\s*/i, '$1');
         //Add dark theme if requested
         css += (params.cssTheme == "dark") ? '<link href="-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
-        html = (params.cssTheme == "dark") ? html.replace(/(<div\s+[^>]*)background-image\s*:\s*linear-gradient[^;]+white[^;]*;\s*/i, "$1") : html;
-
+        
         return { html : html, css : css };
     }
 

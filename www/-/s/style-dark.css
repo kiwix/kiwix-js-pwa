@@ -113,12 +113,11 @@ html, body {
     color: #fff !important;
 }
 
-  #mw-page-base, div.vectorTabs, div.vectorTabs *, .wikiEditor-ui-toolbar, #p-cactions-label,
-  .client-js #preftoc, .client-js #preftoc li, .client-js #preftoc li.selected a,
-  .ui-widget-content, .ext-cards-card-list h3:after, #simpleSearch
-  {
+#mw-page-base, div.vectorTabs, div.vectorTabs *, .wikiEditor-ui-toolbar, #p-cactions-label,
+.client-js #preftoc, .client-js #preftoc li, .client-js #preftoc li.selected a,
+.ui-widget-content, .ext-cards-card-list h3:after, #simpleSearch, div[style*="background-image:linear-gradient(180deg, #E8E8E8, white)"] {
     background-image: none !important;
-  }
+}
 
   .ui-widget-overlay
   {
