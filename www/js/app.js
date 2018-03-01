@@ -684,13 +684,16 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 if (!docStyle) continue;
                 if (contentElement.className == "mw-body") {
                     docStyle.padding = "1em";
+                    docStyle.border = "1px solid #a7d7f9";
                 }
                 if (params.removePageMaxWidth == "auto") {
                     docStyle.maxWidth = zimType == "desktop" ? "100%" : "55.8em";
                     docStyle.cssText = docStyle.cssText.replace(/(max-width[^;]+)/i, "$1 !important");
+                    docStyle.border = "0";
                 } else {
                     docStyle.maxWidth = params.removePageMaxWidth ? "100%" : "55.8em";
                     docStyle.cssText = docStyle.cssText.replace(/(max-width[^;]+)/i, "$1 !important");
+                    if (params.removePageMaxWidth || zimType == "mobile") docStyle.border = "0";
                 }
                 docStyle.margin = "0 auto";
             }
