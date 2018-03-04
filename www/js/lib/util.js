@@ -20,7 +20,7 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
-define(['q'], function(q) {
+define(['q'], function (q) {
 
     /**
      * Utility function : return true if the given string ends with the suffix
@@ -31,7 +31,7 @@ define(['q'], function(q) {
     function endsWith(str, suffix) {
         return str.indexOf(suffix, str.length - suffix.length) !== -1;
     }
-    
+
     /**
      * Returns the same String with the first letter in upper-case
      * @param {String} string
@@ -44,7 +44,7 @@ define(['q'], function(q) {
             return string;
         }
     }
-    
+
     /**
      * Returns the same String with the first letter in lower-case
      * @param {String} string
@@ -61,7 +61,7 @@ define(['q'], function(q) {
             return string;
         }
     }
-    
+
     /**
      * Returns the same String with the first letter of every word in upper-case
      * @param {String} string
@@ -69,14 +69,14 @@ define(['q'], function(q) {
      */
     function ucEveryFirstLetter(string) {
         if (string) {
-            return string.replace( /\b\w/g, function (m) {
+            return string.replace(/\b\w/g, function (m) {
                 return m.toLocaleUpperCase();
             });
         } else {
             return string;
         }
     }
-    
+
     /**
      * Generates an array of DirEntry, where all duplicates (same title) have been removed
      * (it also sorts them on their title)
@@ -85,13 +85,13 @@ define(['q'], function(q) {
      * @returns {Array.<DirEntry>} same array of DirEntry, without duplicates
      */
     function removeDuplicateTitlesInDirEntryArray(array) {
-        array.sort(function(dirEntryA, dirEntryB) {
+        array.sort(function (dirEntryA, dirEntryB) {
             if (dirEntryA.title < dirEntryB.title) return -1;
             if (dirEntryA.title > dirEntryB.title) return 1;
             return 0;
         });
-        for(var i = 1; i < array.length; ){
-            if(array[i-1].title === array[i].title){
+        for (var i = 1; i < array.length;) {
+            if (array[i - 1].title === array[i].title) {
                 array.splice(i, 1);
             } else {
                 i++;
@@ -99,7 +99,7 @@ define(['q'], function(q) {
         }
         return array;
     }
-    
+
     /**
      * Generates an array of Strings, where all duplicates have been removed
      * (without changing the order)
@@ -118,7 +118,7 @@ define(['q'], function(q) {
         }
         return unique;
     }
-    
+
     /**
      * Read an integer encoded in 4 bytes, little endian
      * @param {Array} byteArray
@@ -142,7 +142,7 @@ define(['q'], function(q) {
         var integer = dataView.getUint16(0, true);
         return integer;
     }
-    
+
     /**
      * Read a float encoded in 2 bytes
      * @param {Array} byteArray
@@ -183,7 +183,7 @@ define(['q'], function(q) {
         var bits, h1, h2, h3, h4, i = 0;
         var enc = "";
 
-        for (var i = 0; i < byteArray.length; ) {
+        for (var i = 0; i < byteArray.length;) {
             bits = byteArray[i++] << 16;
             bits |= byteArray[i++] << 8;
             bits |= byteArray[i++];
@@ -212,10 +212,10 @@ define(['q'], function(q) {
     function readFileSlice(file, begin, size) {
         var deferred = q.defer();
         var reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             deferred.resolve(new Uint8Array(e.target.result));
         };
-        reader.onerror = reader.onabort = function(e) {
+        reader.onerror = reader.onabort = function (e) {
             deferred.reject(e);
         };
         reader.readAsArrayBuffer(file.slice(begin, begin + size));
@@ -236,8 +236,7 @@ define(['q'], function(q) {
         if (end <= begin)
             return lowerBound ? begin : null;
         var mid = Math.floor((begin + end) / 2);
-        return query(mid).then(function(decision)
-        {
+        return query(mid).then(function (decision) {
             if (decision < 0)
                 return binarySearch(begin, mid, query, lowerBound);
             else if (decision > 0)
@@ -246,7 +245,7 @@ define(['q'], function(q) {
                 return mid;
         });
     };
-    
+
     /**
      * Converts a Base64 Content to a Blob
      * From https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
@@ -276,10 +275,10 @@ define(['q'], function(q) {
             byteArrays.push(byteArray);
         }
 
-        var blob = new Blob(byteArrays, {type: contentType});
+        var blob = new Blob(byteArrays, { type: contentType });
         return blob;
     }
-    
+
     /**
      * Converts a UInt Array to a UTF-8 encoded string
      * source : http://michael-rushanan.blogspot.de/2014/03/javascript-uint8array-hacks-and-cheat.html
@@ -294,7 +293,7 @@ define(['q'], function(q) {
         }
         return s;
     }
-    
+
     /**
      * Does a "left shift" on an integer.
      * It is equivalent to int << bits (which works only on 32-bit integers),
@@ -339,7 +338,7 @@ define(['q'], function(q) {
         do {
             t = 0;
             while (m = x.exec(str)) {
-                if ((t?mid:l).test(m[0])) {
+                if ((t ? mid : l).test(m[0])) {
                     if (!t++) s = m.index;
                 } else if (t) {
                     if (!--t) {
@@ -471,38 +470,14 @@ define(['q'], function(q) {
             var inputMatcher = new RegExp(input, "ig");
             var matches = strippedText.match(inputMatcher);
             if (matches) return matches.length
-                else return 0;
+            else return 0;
         }
 
         this.countPartialMatches = function () {
             if (node === undefined || !node) return;
             var matches = matchInner(node.innerHTML, '<' + hiliteTag + '\\b[^>]*class="hilitor"[^>]*>', '</' + hiliteTag + '>', 'gi');
             if (matches) return matches.length
-                else return 0;
-            //if (matches) {
-            //    var input = document.getElementById('findInArticle').value.replace(/\s*/g, "").toLowerCase();
-            //    var matchedWords = "";
-            //    var buffer = "";
-            //    var countFullMatches = 0;
-            //    for (var i = 0; i < matches.length; i++ ) {
-            //        var instance = matches[i].match(/<[^>]*>([^<]*)</i)[1].toLowerCase();
-            //        buffer += instance;
-            //        var inputMatcher = new RegExp('^' + buffer);
-            //        if (input.match(inputMatcher)) {
-            //            matchedWords += instance;
-            //        } else {
-            //            buffer = "";
-            //            matchedWords = "";
-            //            continue;
-            //        }
-            //        if (~matchedWords.indexOf(input)) {
-            //            countFullMatches++;
-            //            buffer = "";
-            //            matchedWords = "";
-            //        }
-            //    }
-            //    return countFullMatches;
-            //} else return 0;
+            else return 0;
         }
 
         this.scrollFrom = 0;
@@ -525,12 +500,12 @@ define(['q'], function(q) {
             for (start; start < hilitedNodes.length; start++) {
                 for (var f = start; f < end; f++) {
                     if (f == hilitedNodes.length) break;
-                    subNodes.push(hilitedNodes[f].innerHTML); 
+                    subNodes.push(hilitedNodes[f].innerHTML);
                 }
                 var nodeText = subNodes.join(" ");
                 if (testInput.test(nodeText)) {
                     //hilitedNodes[start].scrollIntoView(true);
-                    $("#articleContent").contents().scrollTop($(hilitedNodes[start]).offset().top - window.innerHeight/3);
+                    $("#articleContent").contents().scrollTop($(hilitedNodes[start]).offset().top - window.innerHeight / 3);
                     break;
                 } else {
                     if (f == hilitedNodes.length && scrollFrom > 0) {
@@ -572,7 +547,7 @@ define(['q'], function(q) {
                     var after;
                     // In case of leading whitespace or other symbols
                     var leadR = new RegExp("^[\\s" + leadingSymbols + "]");
-                    if (leadR.test(regs[0])) { 
+                    if (leadR.test(regs[0])) {
                         after = node.splitText(regs.index + 1);
                     } else {
                         after = node.splitText(regs.index);
@@ -585,6 +560,7 @@ define(['q'], function(q) {
 
         // remove highlighting
         this.remove = function () {
+            if (typeof node.innerHTML == "undefined") return;
             var arr = node.getElementsByClassName(className), el;
             while (arr.length && (el = arr[0])) {
                 var parent = el.parentNode;
@@ -706,11 +682,11 @@ define(['q'], function(q) {
         removeDuplicateTitlesInDirEntryArray: removeDuplicateTitlesInDirEntryArray,
         removeDuplicateStringsInSmallArray: removeDuplicateStringsInSmallArray,
         readIntegerFrom4Bytes: readIntegerFrom4Bytes,
-        readIntegerFrom2Bytes : readIntegerFrom2Bytes,
-        readFloatFrom4Bytes : readFloatFrom4Bytes,
-        uint8ArrayToHex : uint8ArrayToHex,
-        uint8ArrayToBase64 : uint8ArrayToBase64,
-        readFileSlice : readFileSlice,
+        readIntegerFrom2Bytes: readIntegerFrom2Bytes,
+        readFloatFrom4Bytes: readFloatFrom4Bytes,
+        uint8ArrayToHex: uint8ArrayToHex,
+        uint8ArrayToBase64: uint8ArrayToBase64,
+        readFileSlice: readFileSlice,
         binarySearch: binarySearch,
         b64toBlob: b64toBlob,
         uintToString: uintToString,
