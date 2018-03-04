@@ -146,12 +146,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
         });
 
-        var localSearch = {};
+        //Establish some variables with global scope
         var firstRun = false;
+        var localSearch = {};
+
 
         function clearFindInArticle() {
             document.getElementById('findInArticle').value = "";
-            if (localSearch.remove) localSearch.remove();
+            if (typeof localSearch != "undefined" && localSearch.remove) {
+                localSearch.remove();
+                //if (localSearch.node) delete localSearch.node;
+            }
             document.getElementById('matches').innerHTML = "Full: 0";
             document.getElementById('partial').innerHTML = "Partial: 0";
             document.getElementById('row2').style.display = "none";
@@ -159,64 +164,61 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         }
 
         $('#findText').on('click', function (e) {
-            var innerDocument = window.frames[0].frameElement.contentDocument || window.frames[0].frameElement.contentWindow.document;
+            var findInArticle = null;
+            var innerDocument = window.frames[0].frameElement.contentDocument;
             innerDocument = innerDocument ? innerDocument.body : null;
             if (!innerDocument || innerDocument.innerHTML.length < 10) return;
             var searchDiv = document.getElementById('row2');
-            var findInArticle = document.getElementById('findInArticle');
-            if (searchDiv.style.display == 'none') {
-                setHomeTab('findText');
-                searchDiv.style.display = "inline";
-                findInArticle.focus();
-            } else {
+            findInArticle = document.getElementById('findInArticle');
+            if (searchDiv.style.display != "none") {
                 clearFindInArticle();
+                return;
             }
-            if (localSearch.remove) {
-                localSearch.remove();
-            } else if (searchDiv.style.display == "inline") {
-                localSearch = new util.Hilitor(innerDocument);
-                //TODO: Check right-to-left language support...
-                localSearch.setMatchType('left');
-                var timer = null;
-                findInArticle.addEventListener('keyup', function (e) {
-                    //Ensure timeout doesn't occur if another key has been pressed within time window
-                    clearTimeout(timer);
-                    //If user pressed Alt-F or Ctrl-F, exit
-                    if ((e.altKey || e.ctrlKey) && e.which == 70) return;
-                    var val = this.value;
-                    //If user pressed enter / return key
-                    if (val && e.which == 13) {
-                        localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
-                        return;
-                    }
-                    //If value hasn't changed, exit
-                    if (val == localSearch.lastScrollValue) return;
-                    //Ensure nothing happens if only one value has been entered (not specific enough), but ensure timeout is set 
-                    //if no value has been entered (clears highlighting if user deletes all values in search field)
-                    if (~(val.length - 2)) {
-                        localSearch.scrollFrom = 0;
-                        localSearch.lastScrollValue = val;
-                        timer = setTimeout(function () {
-                            localSearch.apply(val);
-                            if (val.length) {
-                                var fullTotal = localSearch.countFullMatches(val);
-                                var partialTotal = localSearch.countPartialMatches();
-                                fullTotal = fullTotal > partialTotal ? partialTotal : fullTotal;
-                                document.getElementById('matches').innerHTML = '<a id="scrollLink" href="#">Full: ' + fullTotal + '</a>';
-                                document.getElementById('partial').innerHTML = "Partial: " + partialTotal;
-                                document.getElementById('scrollLink').addEventListener('click', function () {
-                                    localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
-                                });
-                                //Auto-scroll: TODO - consider making this an option
+            setHomeTab('findText');
+            searchDiv.style.display = "block";
+            findInArticle.focus();
+            localSearch = new util.Hilitor(innerDocument);
+            //TODO: Check right-to-left language support...
+            localSearch.setMatchType('left');
+            var timer = null;
+            findInArticle.addEventListener('keyup', function (e) {
+                //Ensure timeout doesn't occur if another key has been pressed within time window
+                clearTimeout(timer);
+                //If user pressed Alt-F or Ctrl-F, exit
+                if ((e.altKey || e.ctrlKey) && e.which == 70) return;
+                var val = this.value;
+                //If user pressed enter / return key
+                if (val && e.which == 13) {
+                    localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
+                    return;
+                }
+                //If value hasn't changed, exit
+                if (val == localSearch.lastScrollValue) return;
+                //Ensure nothing happens if only one value has been entered (not specific enough), but ensure timeout is set 
+                //if no value has been entered (clears highlighting if user deletes all values in search field)
+                if (~(val.length - 2)) {
+                    localSearch.scrollFrom = 0;
+                    localSearch.lastScrollValue = val;
+                    timer = setTimeout(function () {
+                        localSearch.apply(val);
+                        if (val.length) {
+                            var fullTotal = localSearch.countFullMatches(val);
+                            var partialTotal = localSearch.countPartialMatches();
+                            fullTotal = fullTotal > partialTotal ? partialTotal : fullTotal;
+                            document.getElementById('matches').innerHTML = '<a id="scrollLink" href="#">Full: ' + fullTotal + '</a>';
+                            document.getElementById('partial').innerHTML = "Partial: " + partialTotal;
+                            document.getElementById('scrollLink').addEventListener('click', function () {
                                 localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
-                            } else {
-                                document.getElementById('matches').innerHTML = "Full: 0";
-                                document.getElementById('partial').innerHTML = "Partial: 0";
-                            }
-                        }, 500);
-                    }
-                }, false);
-            }
+                            });
+                            //Auto-scroll: TODO - consider making this an option
+                            localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
+                        } else {
+                            document.getElementById('matches').innerHTML = "Full: 0";
+                            document.getElementById('partial').innerHTML = "Partial: 0";
+                        }
+                    }, 500);
+                }
+            }, false);
         });
 
         $("#btnRandomArticle").on("click", function (e) {
@@ -1569,9 +1571,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             console.log("Initiating Document Ready timer...");
             console.time("Time to Document Ready");
 
+            //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
+            localSearch = {};
+
             //Void the iframe
             window.frames[0].frameElement.src = "dummyArticle.html";
-
+            
+            
             //Load cached start page if it exists
             var htmlContent = 0;
             if (params.cachedStartPage && dirEntry.url == decodeURIComponent(params.cachedStartPage)) {
@@ -1661,7 +1667,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
     // Currently happens only in setLocalArchiveFromFileList and setLocalArchiveFromArchiveList.
     //var cssDirEntryCache = new Map(); //This one is never hit!
     var cssBlobCache = new Map();
-
 
     /**
      * Display the the given HTML article in the web page,
@@ -2500,6 +2505,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
      * @param {String} title
      */
     function goToArticle(title) {
+        //This removes any search highlighting
         clearFindInArticle();
         //Re-enable top-level scrolling
         document.getElementById('top').style.position = "relative";
@@ -2515,7 +2521,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
             else {
                 $("#articleName").html(title);
-                //$('#articleContent').contents().find('body').html("");
                 document.getElementById('articleContent').style.display = "none";
                 readArticle(dirEntry);
             }
