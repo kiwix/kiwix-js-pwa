@@ -249,7 +249,8 @@ pre {
 
 .dropdown {
     width: 100%;
-    max-width: 300px;
+    max-width: 8em;
+    margin-bottom: 10px;
 }
 
 .dark .dropdown {
