@@ -152,11 +152,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
 
         function clearFindInArticle() {
-            document.getElementById('findInArticle').value = "";
+            if (document.getElementById('row2').style.display == "none") return;
             if (typeof localSearch != "undefined" && localSearch.remove) {
                 localSearch.remove();
-                //if (localSearch.node) delete localSearch.node;
             }
+            document.getElementById('findInArticle').value = "";
             document.getElementById('matches').innerHTML = "Full: 0";
             document.getElementById('partial').innerHTML = "Partial: 0";
             document.getElementById('row2').style.display = "none";
@@ -164,17 +164,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         }
 
         $('#findText').on('click', function (e) {
-            var findInArticle = null;
-            var innerDocument = window.frames[0].frameElement.contentDocument;
-            innerDocument = innerDocument ? innerDocument.body : null;
-            if (!innerDocument || innerDocument.innerHTML.length < 10) return;
             var searchDiv = document.getElementById('row2');
-            findInArticle = document.getElementById('findInArticle');
             if (searchDiv.style.display != "none") {
                 clearFindInArticle();
                 return;
             }
-            setHomeTab('findText');
+            var findInArticle = null;
+            var innerDocument = window.frames[0].frameElement.contentDocument;
+            innerDocument = innerDocument ? innerDocument.body : null;
+            if (!innerDocument || innerDocument.innerHTML.length < 10) return;
+            setTab('findText');
+            findInArticle = document.getElementById('findInArticle');
             searchDiv.style.display = "block";
             findInArticle.focus();
             localSearch = new util.Hilitor(innerDocument);
@@ -185,15 +185,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 //Ensure timeout doesn't occur if another key has been pressed within time window
                 clearTimeout(timer);
                 //If user pressed Alt-F or Ctrl-F, exit
-                if ((e.altKey || e.ctrlKey) && e.which == 70) return;
+                if ((e.altKey || e.ctrlKey) && e.which == 70) return false;
                 var val = this.value;
                 //If user pressed enter / return key
                 if (val && e.which == 13) {
                     localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
-                    return;
+                    return false;
                 }
                 //If value hasn't changed, exit
-                if (val == localSearch.lastScrollValue) return;
+                if (val == localSearch.lastScrollValue) return false;
                 //Ensure nothing happens if only one value has been entered (not specific enough), but ensure timeout is set 
                 //if no value has been entered (clears highlighting if user deletes all values in search field)
                 if (~(val.length - 2)) {
@@ -222,7 +222,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         });
 
         $("#btnRandomArticle").on("click", function (e) {
-            setHomeTab('btnRandomArticle');
+            setTab('btnRandomArticle');
             //Re-enable top-level scrolling
             document.getElementById('top').style.position = "relative";
             document.getElementById('scrollbox').style.position = "fixed";
@@ -343,7 +343,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         });
         // Top menu :
         $('#btnHome').on('click', function (e) {
-            setHomeTab('btnHome');
+            setTab('btnHome');
             // Give the focus to the search field, and clean up the page contents
             if (!firstRun) {
                 $('#prefix').focus();
@@ -361,7 +361,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             return false;
         });
 
-        function setHomeTab(activeBtn) {
+        function setTab(activeBtn) {
             // Highlight the selected section in the navbar
             $('#liHomeNav').attr("class", "active");
             $('#liConfigureNav').attr("class", "");
@@ -423,7 +423,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         $('#btnConfigure').on('click', function (e) {
             var searchDiv = document.getElementById('configuration');
             if (searchDiv.style.display != 'none') {
-                setHomeTab();
+                setTab();
                 if (params.themeChanged) {
                     params.themeChanged = false;
                     if (history.state !== null) {
@@ -433,7 +433,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 }
                 return;
             }
-            setHomeTab('btnConfigure');
+            setTab('btnConfigure');
             // Highlight the selected section in the navbar
             $('#liHomeNav').attr("class", "");
             $('#liConfigureNav').attr("class", "active");
@@ -479,7 +479,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //Check if we're 'unclicking' the button
             var searchDiv = document.getElementById('about');
             if (searchDiv.style.display != 'none') {
-                setHomeTab();
+                setTab();
                 return;
             }
             // Highlight the selected section in the navbar
@@ -489,7 +489,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
                 $('#navbarToggle').click();
             }
-            setHomeTab('btnAbout');
+            setTab('btnAbout');
             //Hide footer toolbar
             document.getElementById('footer').style.display = "none";
             // Show the selected content in the page
@@ -1922,7 +1922,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
         //Inject htmlArticle into iframe
             uiUtil.clear(); //Void progress messages
-            setHomeTab();
+            setTab();
             //Inject base tag into html
             htmlArticle = htmlArticle.replace(/(<head[^>]*>\s*)/i, '$1<base href="' + baseUrl + '" />\r\n');
             //Display article in iframe
