@@ -1702,6 +1702,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, "<a href=\"$1.html\">$2</a>");
         htmlArticle = htmlArticle.replace(/&lt;(\/?)(i|b|em|strong)&gt;/ig, "<$1$2>");
 
+        //@TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
+        htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, "$1");
+
         //Fast-replace img and script src with data-kiwixsrc and hide image [kiwix-js #272]
         htmlArticle = htmlArticle.replace(/(<(?:img|script)\s+[^>]*\b)src(\s*=)/ig, "$1data-kiwixsrc$2");
         if (!params.imageDisplay) {
