@@ -72,7 +72,7 @@ document.getElementById('rememberLastPageCheck').checked = params.rememberLastPa
 document.getElementById('displayFileSelectorsCheck').checked = params.showFileSelectors;
 var versionSpans = document.getElementsByClassName('version');
 for (var i = 0; i < versionSpans.length; i++) {
-    versionSpans[i].innerHTML = params.version;
+    versionSpans[i].innerHTML = i ? params.version : params.version.replace(/\s+.*$/, "");
 }
 var fileVersionDivs = document.getElementsByClassName('fileVersion');
 for (i = 0; i < fileVersionDivs.length; i++) {
