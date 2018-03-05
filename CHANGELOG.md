@@ -1,38 +1,40 @@
 ## Release 0.9.9.3 Wikivoyage (beta)
-* FIX: Unhandled exception after using in-article word search
 * FIX: Article now reloads correctly when switching styles
+* FIX: Unhandled exception after using in-article word search
 * FIX: Browser history now remembered for first page load
 * FIX: Added more padding for content hidden under the bottom bar
 * FIX: New mode of injecting HTML into iframe fixes baseUrl issues
-* FIX: Reduced memory usage for decompressing multiple SVG images/equations to prevent crash on devices with 1GB RAM
-* FIX: Display bug causing Settings tab to remain selected after article load
-* FIX: Loads landing page when an article is not found (instead of throwing a silent error)
 * ENHANCEMENT: Filter ZIM archives by date in download links
 * ENHANCEMENT: Option to remove maximum page width restriction for Wikipedia articles
 * ENHANCEMENT: Setting or clearing dark themes no longer require page reload
 * ENHANCEMENT: Wider range of infoboxes, and "homonymie" hatnotes supported
 * ENHANCEMENT: Better algorithm for moving first paragraph when there are stacked infoboxes
+* FIX: Reduced memory usage for decompressing multiple SVG images/equations to prevent crash on devices with 1GB RAM
+* FIX: Display bug causing Settings tab to remain selected after article load
+* FIX: Loads landing page when an article is not found (instead of throwing a silent error)
+* WORKAROUND for misplaced hatnotes in mobile-style ZIMs
 * ENHANCEMENT: Applying or removing dark themes no longer requires a page reload
 * ENHANCEMENT: Option to remove max page width restriction
 * ENHANCEMENT: Some code redundancy removed
+* ENHANCEMENT: Uncluttered the UI for file selection
 * ENHANCEMENT: 'Unclicking' a tab (Settings or About) now returns the user to the article
 * ENHANCEMENT: Cache start page in the filesystem for quick start or return to home
 * ENHANCEMENT: Activating dark theme for UI now activates article dark theme by default
 * ENHANCEMENT: Improved handling and display of file selectors
 * ENHANCEMENT: Clearer navigation signposting from About tab
-* WORKAROUND for misplaced hatnotes in mobile-style ZIMs
 
 ## Release 0.9.7 Wikivoyage (beta)
 * UPDATE: January 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-01.zim
+* ENHANCEMENT: The Wikivoyage app now hides the file selectors by default in the Config menu to avoid confusion and to encourage use of Kiwix JS for anything not related to Wikivoyage
 * FIX: Added icon indicating that a link is to an external web site
+* ENHANCEMENT: Inject footnote backlinks if the ZIM doesn't have any
+* ENHANCEMENT: Support ZIMs that have subdirectories (Stackexchange family ZIMs)
 * FIX: Bugs in mobile to desktop style transformation
 * FIX: Issue with infoboxes and images not stacking correctly on mobile displays
 * FIX: Support new-style infoboxes in German Wikivoyage
 * FIX: Last-visited page was not being remembered when user picked the file as a single archive
 * FIX: Bug which prevented the dark mode by simple inversion from functioning
 * FIX: Issue with toolbar icons being misaligned on small screens
-* ENHANCEMENT: The Wikivoyage app now hides the file selectors by default in the Config menu to avoid confusion and to encourage use of Kiwix JS for anything not related to Wikivoyage
-* ENHANCEMENT: Inject footnote backlinks if the ZIM doesn't have any
 
 ## Release 0.9.6 Wikivoyage (beta)
 * FIX: Prevent bottom toolbar from wrapping across two lines on small screens
