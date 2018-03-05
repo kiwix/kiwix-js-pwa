@@ -116,7 +116,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                     }
                 }
                 if (infobox.length) {
-                    var temphtml = html.replace(infobox[0], "");
+                    var temphtml = html.replace(infobox[0], "<!-- @@@kiwixmarker@@@ -->");
                     var paras = util.matchInner(temphtml, '<p\\b[^>]*>', '</p>', 'gi');
                     var matched = false;
                     if (paras.length) {
@@ -128,15 +128,23 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                             //If there are navboxes below the infobox, hide them in mobile view
                             temphtml = temphtml.replace(/(<div\b(?=[^>]+navbox))(?:([^>]+?)style\s*=\s*["']([^"']+)["'])?/ig, '$1$2style="display:none;$3"');
                             //Ensure mobile styling in infobox
-                            infobox[0] = infobox[0].replace(/(<(?:table|div)\b(?=[^>]+?class\s*=\s*["'][^"']*(?:mw-stack|infobox|navbox)))([^>]+?style\s*=\s*["'])(?:([^"']*?)margin\s*:[^;"']*[;"'])?/ig, '$1$2margin:0 auto !important;$3');
-                            //Add left margin to top infobox
-                            infobox[0] = infobox[0].replace(/^(<(?:table|div)\b[^>]+?margin:0\s+auto)/i, '$1 0 10px');
+                            infobox[0] = infobox[0].replace(/(<(?:table|div)\b(?=[^>]+?class\s*=\s*["'][^"']*(?:mw-stack|infobox|navbox)))([^>]+?style\s*=\s*["'])(?:([^"']*?)margin\s*:[^;"']*[;"'])?/ig, '$1$2margin:0 auto;$3');
+                            //Clear any fixed width but set it to max-width
+                            infobox[0] = infobox[0].replace(/^(<(?:table|div)\b[^>]+?;\s*width\s*:\s*)([^;"']+)/i, '$1auto;max-width:$2');
                             //Hide any navboxes inside the infobox
                             infobox[0] = infobox[0].replace(/(<(?:table|div)\b(?=[^>]+?class\s*=\s*["'][^"']*navbox))(?:([^>]+?)style\s*=\s*["'])(?:([^"']*?)display\s*:[^;"']*[;"'])?/ig, '$1$2style="display:none;$3');
-                            //Swap table and first matched paragraph, but mark lead paragraph first
                             //We already deleted the table above
-                            html = temphtml;
-                            html = html.replace(paras[g], paras[g].replace(/(<p\s+)/i, '$1data-kiwix-id="lead" ') + "\r\n" + infobox[0]);
+                            html = "";
+                            //First try to move the lead paragraph 
+                            html = temphtml.replace(/(<div\s+[^>]*?\bid\s*=\s*["']mw-content-text\s*[^>]*>\s*)/i, "$1\r\n" + paras[g].replace(/(<p\s+)/i, '$1data-kiwix-id="lead" ') + "\r\n");
+                            if (html) { //Looks like we succeeded so clean up
+                                html = html.replace(paras[g], "");
+                                html = html.replace("<!-- @@@kiwixmarker@@@ -->", infobox[0]);
+                            } else {
+                                //So there was no match, let's try just swapping para and infobox
+                                html = temphtml.replace(paras[g], paras[g].replace(/(<p\s+)/i, '$1data-kiwix-id="lead" ') + "\r\n" + infobox[0]);
+                                html = html.replace("<!-- @@@kiwixmarker@@@ -->", "");
+                            }
                         }
                     }
                 }
