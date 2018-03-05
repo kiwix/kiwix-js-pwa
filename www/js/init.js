@@ -70,10 +70,13 @@ document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme == 'd
 document.getElementById('useMathJaxRadio' + (params.useMathJax ? 'True' : 'False')).checked = true;
 document.getElementById('rememberLastPageCheck').checked = params.rememberLastPage;
 document.getElementById('displayFileSelectorsCheck').checked = params.showFileSelectors;
-document.getElementById('version').innerHTML = params.version;
-var versionDivs = document.getElementsByClassName('fileVersion');
-for (var i = 0; i < versionDivs.length; i++) {
-    versionDivs[i].innerHTML = i ? params.fileVersion.replace(/\s+.+$/, "") : params['fileVersion'];
+var versionSpans = document.getElementsByClassName('version');
+for (var i = 0; i < versionSpans.length; i++) {
+    versionSpans[i].innerHTML = params.version;
+}
+var fileVersionDivs = document.getElementsByClassName('fileVersion');
+for (i = 0; i < fileVersionDivs.length; i++) {
+    fileVersionDivs[i].innerHTML = i ? params.fileVersion.replace(/\s+.+$/, "") : params.fileVersion;
 }
 if (!params.showFileSelectors && params.packagedFile && params.storedFile && params.storedFile != params.packagedFile) {
     var currentArchive = document.getElementById('currentArchive');
