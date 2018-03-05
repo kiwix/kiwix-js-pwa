@@ -1,4 +1,5 @@
 ## Release 0.9.9.3 (beta)
+* FIX: Article now reloads correctly when switching styles
 * FIX: Unhandled exception after using in-article word search
 * FIX: Browser history now remembered for first page load
 * ENHANCEMENT: Filter ZIM archives by date in download links
