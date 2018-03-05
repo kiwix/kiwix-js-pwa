@@ -1,3 +1,11 @@
+## Release 0.9.9.3 (beta)
+* FIX: Unhandled exception after using in-article word search
+* FIX: Browser history now remembered for first page load
+* ENHANCEMENT: Filter ZIM archives by date in download links
+* ENHANCEMENT: Option to remove maximum page width restriction for Wikipedia articles
+* ENHANCEMENT: Setting or clearing dark themes no longer require page reload
+* ENHANCEMENT: Wider range of infoboxes, and "homonymie" hatnotes supported
+
 ## Release 0.9.9.2 (beta)
 * FIX: Added more padding for content hidden under the bottom bar
 * FIX: New mode of injecting HTML into iframe fixes baseUrl issues
