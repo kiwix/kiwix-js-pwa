@@ -5,6 +5,7 @@
 * ENHANCEMENT: Option to remove maximum page width restriction for Wikipedia articles
 * ENHANCEMENT: Setting or clearing dark themes no longer require page reload
 * ENHANCEMENT: Wider range of infoboxes, and "homonymie" hatnotes supported
+* ENHANCEMENT: Better algorithm for moving first paragraph when there are stacked infoboxes
 
 ## Release 0.9.9.2 (beta)
 * FIX: Added more padding for content hidden under the bottom bar
