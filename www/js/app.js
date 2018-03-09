@@ -1586,6 +1586,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 function (responseTxt, status) {
                     htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
                     if (htmlContent) {
+                        console.log("Article retrieved from storage cache...");
                         displayArticleInForm(dirEntry, htmlContent);
                     } else {
                         selectedArchive.readArticle(dirEntry, displayArticleInForm);
