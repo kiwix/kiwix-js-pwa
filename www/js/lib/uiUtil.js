@@ -149,6 +149,33 @@ define([], function() {
         }
     }
 
+    function printCustomElements() {
+        var innerDocument = window.frames[0].frameElement.contentDocument;
+        //Add any missing classes
+        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<h2\b[^<]+external_links(?:[^<]|<\/)+<ul\s+(?!class="externalLinks"))/i, '$1class="externalLinks" ');
+        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<h2\b[^<]+see_also(?:[^<]|<\/)+<ul\s+(?!class="seeAlso"))/i, '$1class="seeAlso" ');
+        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<div\s+)([^>]+>\s+This article is issued from)/i, '$1class="copyLeft" $2');
+        var printOptions = innerDocument.getElementById("printOptions");
+        //If there is no printOptions style block in the iframe, create it
+        if (!printOptions) {
+            var printStyle = innerDocument.createElement("style");
+            printStyle.id = "printOptions";
+            innerDocument.head.appendChild(printStyle);
+            printOptions = innerDocument.getElementById("printOptions");
+        }
+        var printStyleInnerHTML = "@media print { ";
+        printStyleInnerHTML += document.getElementById("printNavBoxCheck").checked ? "" : ".navbox { display: none; } ";
+        printStyleInnerHTML += document.getElementById("printEndNoteCheck").checked ? "" : ".reflist { display: none; } ";
+        printStyleInnerHTML += document.getElementById("externalLinkCheck").checked ? "" : ".externalLinks { display: none; } ";
+        printStyleInnerHTML += document.getElementById("seeAlsoLinkCheck").checked ? "" : ".seeAlso { display: none; } ";
+        printStyleInnerHTML += document.getElementById("printInfoboxCheck").checked ? "" : ".mw-stack, .infobox, .infobox_v2, .vertical-navbox, .qbRight, .wv-quickbar, .wikitable { display: none; } ";
+        printStyleInnerHTML += document.getElementById("printImageCheck").checked ? "" : "img { display: none; } ";
+        printStyleInnerHTML += ".copyLeft { display: none } ";
+        printStyleInnerHTML += "}";
+        printOptions.innerHTML = printStyleInnerHTML;
+        //innerDocument.execCommand("print", false, null);
+        window.frames[0].frameElement.contentWindow.print();
+    }
 
     /**
      * Functions and classes exposed by this module
@@ -161,6 +188,7 @@ define([], function() {
         makeReturnLink: makeReturnLink,
         poll: poll,
         clear: clear,
-        XHR: XHR
+        XHR: XHR,
+        printCustomElements: printCustomElements
     };
 });
