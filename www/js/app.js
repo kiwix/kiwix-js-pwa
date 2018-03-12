@@ -146,6 +146,28 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
         });
 
+        window.addEventListener('keydown', function (e) {
+            //Ctrl-P to patch printing support, so iframe gets printed
+            if (e.ctrlKey && e.which == 80) {
+                e.stopPropagation();
+                e.preventDefault();
+                printIntercept();
+                return false;
+            }
+        }, true);
+        
+        function printIntercept() {
+            var modalContent = document.getElementById("modal-content");
+            modalContent.classList.remove('dark');
+            if (params.cssUITheme != "light") modalContent.classList.add('dark');
+            $("#printModal").modal({ backdrop: "static" });
+            $("#printModal").off('hidden.bs.modal');
+            $("#printModal").on('hidden.bs.modal', function () {
+                uiUtil.printCustomElements();
+                setTab();
+            });
+        }
+
         //Establish some variables with global scope
         var firstRun = false;
         var localSearch = {};
@@ -166,7 +188,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         $('#findText').on('click', function (e) {
             var searchDiv = document.getElementById('row2');
             if (searchDiv.style.display != "none") {
-                clearFindInArticle();
+                setTab();
                 return;
             }
             var findInArticle = null;
@@ -370,6 +392,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 $('#navbarToggle').click();
             }
             setActiveBtn(activeBtn);
+            document.getElementById('btnAbout').innerHTML = (!activeBtn || activeBtn == "btnHome" || activeBtn == "findText") ? '<span class="glyphicon glyphicon-print"></span>' : '<span class="glyphicon glyphicon-info-sign"></span>';
             clearFindInArticle();
             //Re-enable bottom toolbar display
             document.getElementById('footer').style.display = "block";
@@ -476,6 +499,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             return false;
         });
         $('#btnAbout').on('click', function (e) {
+            var btnAboutElement = document.getElementById('btnAbout');
+            if (/glyphicon-print/.test(btnAboutElement.innerHTML)) {
+                btnAboutElement.classList.add('active');
+                printIntercept();
+                return;
+            }
             //Check if we're 'unclicking' the button
             var searchDiv = document.getElementById('about');
             if (searchDiv.style.display != 'none') {
@@ -1961,7 +1990,18 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     $('#findText').click();
                     return false;
                 }
-            }), false;
+            });
+
+            document.getElementById('articleContent').contentWindow.addEventListener('keydown', function (e) {
+                //Ctrl-P to patch printing support, so iframe gets printed
+                if (e.ctrlKey && e.which == 80) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    printIntercept();
+                    return false;
+                }
+            }, true);
+
 
             // If the ServiceWorker is not useable, we need to fallback to parse the DOM
             // to inject math images, and replace some links with javascript calls
