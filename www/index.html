@@ -105,6 +105,45 @@
             </div>
         </div>
     </div>
+    <div id="printModal" class="modal">
+        <div class="modal-dialog">
+            <div id="modal-content" class="modal-content">
+                <div class="modal-body">
+                    <h2 style="font-size:32px;margin-top:10px;">
+                        Please choose print options
+                    </h2>
+                    <label id="printNavBoxes" class="checkbox">
+                        <input type="checkbox" name="printNavBox" id="printNavBoxCheck">
+                        <b>Print navigation boxes</b> (<i>default: no</i>)
+                    </label>
+                    <label id="printEndNotes" class="checkbox">
+                        <input type="checkbox" name="printEndNote" id="printEndNoteCheck">
+                        <b>Print endnotes</b> (<i>default: no</i>)
+                    </label>
+                    <label id="externalLinks" class="checkbox">
+                        <input type="checkbox" name="externalLink" id="externalLinkCheck">
+                        <b>Print External Links</b> (<i>default: no</i>)
+                    </label>
+                    <label id="seeAlsoLinks" class="checkbox">
+                        <input type="checkbox" name="seeAlsoLink" id="seeAlsoLinkCheck">
+                        <b>Print See Also</b> (<i>default: no</i>)
+                    </label>
+                    <label id="printInfoboxes" class="checkbox">
+                        <input type="checkbox" name="printInfobox" id="printInfoboxCheck" checked>
+                        <b>Print infoboxes</b> (<i>default: yes</i>)
+                    </label>
+                    <label id="printImages" class="checkbox">
+                        <input type="checkbox" name="printImage" id="printImageCheck" checked>
+                        <b>Print images</b> (<i>default: yes</i>)
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" style="float:right; margin-left: 1em;" type="button" data-dismiss="modal">Continue</button>
+                    <p style="text-align:left"><b>Important:</b> This app has limited control over the printer. If there is no option to limit pages, we recommend you choose a PDF or XPS printer, and then print the file with another app.</p>
+                </div>
+            </div>
+        </div>
+    </div>
     <section id="search-article" role="region">
         <header id="top" style="width:100%;">
             <nav id="navbar" class="navbar navbar-inverse" role="navigation">

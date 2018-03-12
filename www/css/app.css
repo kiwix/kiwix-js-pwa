@@ -220,6 +220,14 @@ pre {
     color: lightblue;
 }
 
+.modal-content.dark {
+    background: #222 !important;
+}
+
+.modal-content:not(.dark) {
+    background: #eee !important;
+}
+
 .dark {
     color: lightgray !important;
     background: black !important;
@@ -305,11 +313,6 @@ pre {
     width: 94% !important;
     margin: 3% !important;
 }
-
-.modal-content, .modal-content .dark {
-    background: #222 !important;
-}
-
 
 @media (max-width: 768px) {
     /*Increase touchability of bottom buttons*/
