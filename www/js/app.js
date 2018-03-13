@@ -608,7 +608,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 var elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid black"; }
                 document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? "./img/icons/wikivoyage-black-32.png" : /medicine/i.test(params.storedFile) ? "./img/icons/wikimed-blue-32.png" : "./img/icons/kiwix-blue-32.png";
-                if (/wikivoyage/i.test(params.storedFile)) document.getElementById('kiwixIconAbout').src = "./img/icons/wikivoyage-90.png";
+                if (/wikivoyage/i.test(params.packagedFile)) document.getElementById('kiwixIconAbout').src = "./img/icons/wikivoyage-90.png";
             }
         }
 
