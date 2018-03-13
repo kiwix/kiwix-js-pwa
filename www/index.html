@@ -136,6 +136,11 @@
                         <input type="checkbox" name="printImage" id="printImageCheck" checked>
                         <b>Print images</b> (<i>default: yes</i>)
                     </label>
+                    <label>
+                        <b>Resize document for printing:</b>
+                        <input type="range" name="documentZoom" id="documentZoomSlider" min="10" max="200" step="5" value="75" size="10">
+                        Current value: <b><span id="zoomSliderVal">75%</span></b>
+                    </label>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary" style="float:right; margin-left: 1em;" type="button" data-dismiss="modal">Continue</button>
