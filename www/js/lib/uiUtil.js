@@ -164,13 +164,17 @@ define([], function() {
             printOptions = innerDocument.getElementById("printOptions");
         }
         var printStyleInnerHTML = "@media print { ";
-        printStyleInnerHTML += document.getElementById("printNavBoxCheck").checked ? "" : ".navbox { display: none; } ";
+        printStyleInnerHTML += document.getElementById("printNavBoxCheck").checked ? "" : ".navbox, .vertical-navbox { display: none; } ";
         printStyleInnerHTML += document.getElementById("printEndNoteCheck").checked ? "" : ".reflist { display: none; } ";
         printStyleInnerHTML += document.getElementById("externalLinkCheck").checked ? "" : ".externalLinks { display: none; } ";
         printStyleInnerHTML += document.getElementById("seeAlsoLinkCheck").checked ? "" : ".seeAlso { display: none; } ";
-        printStyleInnerHTML += document.getElementById("printInfoboxCheck").checked ? "" : ".mw-stack, .infobox, .infobox_v2, .vertical-navbox, .qbRight, .wv-quickbar, .wikitable { display: none; } ";
+        printStyleInnerHTML += document.getElementById("printInfoboxCheck").checked ? "" : ".mw-stack, .infobox, .infobox_v2, .infobox_v3, .qbRight, .qbRightDiv, .wv-quickbar, .wikitable { display: none; } ";
         printStyleInnerHTML += document.getElementById("printImageCheck").checked ? "" : "img { display: none; } ";
         printStyleInnerHTML += ".copyLeft { display: none } ";
+        var sliderVal = document.getElementById("documentZoomSlider").value;
+        sliderVal = ~~sliderVal;
+        sliderVal = Math.floor(sliderVal * window.screen.width / 1440); 
+        printStyleInnerHTML += "body { font-size: " + sliderVal + "% !important; } ";
         printStyleInnerHTML += "}";
         printOptions.innerHTML = printStyleInnerHTML;
         //innerDocument.execCommand("print", false, null);
