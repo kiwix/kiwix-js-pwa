@@ -155,7 +155,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 return false;
             }
         }, true);
-        
+
+        document.getElementById("documentZoomSlider").addEventListener("change", function () {
+            document.getElementById("zoomSliderVal").innerHTML = this.value + "%";
+        });
+
+
         function printIntercept() {
             var modalContent = document.getElementById("modal-content");
             modalContent.classList.remove('dark');
@@ -392,7 +397,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 $('#navbarToggle').click();
             }
             setActiveBtn(activeBtn);
-            document.getElementById('btnAbout').innerHTML = (!activeBtn || activeBtn == "btnHome" || activeBtn == "findText") ? '<span class="glyphicon glyphicon-print"></span>' : '<span class="glyphicon glyphicon-info-sign"></span>';
+            var btnAbout = document.getElementById('btnAbout');
+            if (!activeBtn || activeBtn == "btnHome" || activeBtn == "findText") {
+                btnAbout.innerHTML = '<span class="glyphicon glyphicon-print"></span>';
+                btnAbout.title = 'Ctrl-P: Print';
+            } else {
+                btnAbout.innerHTML = '<span class="glyphicon glyphicon-info-sign"></span>';
+                btnAbout.title = 'About';
+            }
             clearFindInArticle();
             //Re-enable bottom toolbar display
             document.getElementById('footer').style.display = "block";
