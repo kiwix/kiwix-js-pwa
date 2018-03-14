@@ -156,9 +156,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
         }, true);
 
-        document.getElementById("documentZoomSlider").addEventListener("change", function () {
-            document.getElementById("zoomSliderVal").innerHTML = this.value + "%";
-        });
+        //document.getElementById("documentZoomSlider").addEventListener("input", function () {
+        //    document.getElementById("zoomSliderVal").innerHTML = this.value + "%";
+        //});
 
 
         function printIntercept() {
@@ -318,7 +318,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             return false;
         });
         setRelativeUIFontSize(params.relativeUIFontSize);
-        $('#relativeUIFontSizeSlider').on('change', function () {
+        document.getElementById('relativeUIFontSizeSlider').addEventListener('change', function() {
             setRelativeUIFontSize(this.value);
         });
         function setRelativeUIFontSize(value) {
