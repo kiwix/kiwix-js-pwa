@@ -173,7 +173,7 @@ define([], function() {
         printStyleInnerHTML += ".copyLeft { display: none } ";
         var sliderVal = document.getElementById("documentZoomSlider").value;
         sliderVal = ~~sliderVal;
-        sliderVal = Math.floor(sliderVal * window.screen.width / 1440); 
+        sliderVal = Math.floor(sliderVal * (Math.max(window.screen.width, window.screen.height) / 1440)); 
         printStyleInnerHTML += "body { font-size: " + sliderVal + "% !important; } ";
         printStyleInnerHTML += "}";
         printOptions.innerHTML = printStyleInnerHTML;
