@@ -138,9 +138,9 @@
                         <input type="checkbox" name="printImage" id="printImageCheck" checked>
                         <b>Print images</b> (<i>default: yes</i>)
                     </label>
-                    <label>
+                    <label oninput="document.getElementById('zoomSliderVal').innerHTML = documentZoomSlider.value + '%';" style="width: 90%;">
                         <b>Resize document for printing:</b>
-                        <input type="range" name="documentZoom" id="documentZoomSlider" min="10" max="200" step="5" value="75" size="10">
+                        <input type="range" name="documentZoom" id="documentZoomSlider" min="10" max="200" step="1" value="75">
                         Current value: <b><span id="zoomSliderVal">75%</span></b>
                     </label>
                 </div>
@@ -509,9 +509,9 @@
                                             <input type="checkbox" name="hideToolbar" id="hideToolbarCheck">
                                             <b>Hide top toolbar while scrolling</b> (tap <span class="glyphicon glyphicon-arrow-up"></span> once to reveal)
                                         </label>
-                                        <label>
+                                        <label oninput="document.getElementById('spinnerVal').innerHTML = relativeUIFontSizeSlider.value + '%';" style="width: 80%;">
                                             <b>Change font size for the User Interface:</b>
-                                            <input type="range" name="relativeUIFontSize" id="relativeUIFontSizeSlider" min="60" max="200" step="5" value="100" size="10">
+                                            <input type="range" name="relativeUIFontSize" id="relativeUIFontSizeSlider" min="60" max="200" step="1" value="100">
                                             Current value: <b><span id="spinnerVal">100%</span></b><br />
                                             (to change <b>article</b> font size, tap <span class="glyphicon glyphicon-zoom-in"></span> and <span class="glyphicon glyphicon-zoom-out"></span>)
                                         </label>
