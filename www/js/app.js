@@ -179,7 +179,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             });
             $("#printModal").off('hide.bs.modal');
             $("#printModal").on('hide.bs.modal', function() {
-                if(document.activeElement.id != "confirm-print-continue") return;
+                if (document.activeElement.id != "confirm-print-continue") { setTab(); return; }
                 uiUtil.printCustomElements();
                 //innerDocument.execCommand("print", false, null);
                 window.frames[0].frameElement.contentWindow.print();
