@@ -22,9 +22,9 @@
  */
 'use strict';
 var params = {};
-params['version'] = "0.9.9.3 Wikivoyage Beta-dev"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "0.9.9.4 Wikivoyage Beta-dev"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 params['packagedFile'] = "wikivoyage_en.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
-params['fileVersion'] = "wikivoyage_en_all_novid_2018-01 (6-Jan-2018)"; //Use generic name for actual file, and give version here
+params['fileVersion'] = "wikivoyage_en_all_novid_2018-03 (13-Mar-2018)"; //Use generic name for actual file, and give version here
 params['cachedStartPage'] = "Wikivoyage%3AOffline_reader_Expedition_Home_page.html" || false; //If you have cached the start page for quick start, give its URI here
 params['kiwixDownloadLink'] = "http://download.kiwix.org/zim/"; //Include final slash
 
