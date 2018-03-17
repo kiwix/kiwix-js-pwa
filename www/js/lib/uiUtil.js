@@ -180,8 +180,6 @@ define([], function() {
         printStyleInnerHTML += "body { font-size: " + sliderVal + "% !important; } ";
         printStyleInnerHTML += "}";
         printOptions.innerHTML = printStyleInnerHTML;
-        //innerDocument.execCommand("print", false, null);
-        window.frames[0].frameElement.contentWindow.print();
     }
 
     /**
