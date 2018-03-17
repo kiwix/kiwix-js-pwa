@@ -152,6 +152,7 @@ define([], function() {
     function printCustomElements() {
         var innerDocument = window.frames[0].frameElement.contentDocument;
         //Add any missing classes
+        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(class\s*=\s*["'][^"']*vcard\b[^>]+>\s*<span)>/ig, '$1 class="map-pin">');
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<h2\b[^<]+external_links(?:[^<]|<\/)+<ul\s+(?!class="externalLinks"))/i, '$1class="externalLinks" ');
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<h2\b[^<]+see_also(?:[^<]|<\/)+<ul\s+(?!class="seeAlso"))/i, '$1class="seeAlso" ');
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<div\s+)([^>]+>\s+This article is issued from)/i, '$1class="copyLeft" $2');
@@ -171,6 +172,8 @@ define([], function() {
         printStyleInnerHTML += document.getElementById("printInfoboxCheck").checked ? "" : ".mw-stack, .infobox, .infobox_v2, .infobox_v3, .qbRight, .qbRightDiv, .wv-quickbar, .wikitable { display: none; } ";
         printStyleInnerHTML += document.getElementById("printImageCheck").checked ? "" : "img { display: none; } ";
         printStyleInnerHTML += ".copyLeft { display: none } ";
+        printStyleInnerHTML += ".map-pin { display: none } ";
+        printStyleInnerHTML += ".external { padding-right: 0 !important } ";
         var sliderVal = document.getElementById("documentZoomSlider").value;
         sliderVal = ~~sliderVal;
         sliderVal = Math.floor(sliderVal * (Math.max(window.screen.width, window.screen.height) / 1440)); 
