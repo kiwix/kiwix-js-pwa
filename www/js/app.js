@@ -162,6 +162,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
 
         function printIntercept() {
+            //Pre-load all images in case user wants to print them
+            if (params.imageDisplay) {
+                loadImages(10000);
+                document.getElementById("printImageCheck").disabled = false;
+            } else {
+                document.getElementById("printImageCheck").checked = false;
+                document.getElementById("printImageCheck").disabled = true;
+            }
             var modalContent = document.getElementById("modal-content");
             modalContent.classList.remove('dark');
             if (params.cssUITheme != "light") modalContent.classList.add('dark');
@@ -169,7 +177,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             $("#printModal").off('hidden.bs.modal');
             $("#printModal").on('hidden.bs.modal', function () {
                 uiUtil.printCustomElements();
-                setTab();
+                //innerDocument.execCommand("print", false, null);
+                window.frames[0].frameElement.contentWindow.print();
+                setTimeout(function () {
+                    //Reload article after print dialogue has rendered because DOM is destroyed
+                    goToArticle(decodeURIComponent(history.state.title));
+                }, 3000);
             });
         }
 
@@ -2098,7 +2111,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
      * Contains four sub functions: prepareImages, triageImages, displaySlices, loadImageSlice
      * and a utility function checkVisibleImages
      */
-    function loadImages() {
+    function loadImages(forPrinting) {
 
         //TESTING
         console.log("** First Paint complete **");
@@ -2110,7 +2123,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         //NB remaining visible images are shunted into prefetchSlice, which works in the background
         var maxVisibleSliceSize = 10;
     //DEV: Set this to the number of images you want to prefetch after the on-screen images have been fetched
-        var prefetchSliceSize = 20;
+        var prefetchSliceSize = forPrinting ? 10000 : 20;
     //DEV: SVG images are currently very taxing: keep this number at 5 or below and test on your system with Sine.html
         var svgSliceSize = 1;
         var visibleSlice = [];
