@@ -107,7 +107,7 @@
             </div>
         </div>
     </div>
-    <div id="printModal" class="modal">
+    <div id="printModal" class="modal" tabindex="-1">
         <div class="modal-dialog">
             <div id="modal-content" class="modal-content">
                 <div class="modal-body">
@@ -145,7 +145,8 @@
                     </label>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" style="float:right; margin-left: 1em;" type="button" data-dismiss="modal">Continue</button>
+                    <button name="confirm-print" id="confirm-print-cancel" class="btn btn-warning" style="float:right; margin-left: 1em;" type="button" data-dismiss="modal">Cancel</button>
+                    <button name="confirm-print" id="confirm-print-continue" class="btn btn-primary" style="float:right; margin-left: 1em;" type="button" data-dismiss="modal">Continue</button>
                     <p style="text-align:left"><b>Important:</b> This app has limited control over the printer. If there is no option to limit pages, we recommend you choose a PDF or XPS printer, and then print the file with another app.</p>
                 </div>
             </div>

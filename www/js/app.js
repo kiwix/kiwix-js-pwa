@@ -173,9 +173,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             var modalContent = document.getElementById("modal-content");
             modalContent.classList.remove('dark');
             if (params.cssUITheme != "light") modalContent.classList.add('dark');
-            $("#printModal").modal({ backdrop: "static" });
-            $("#printModal").off('hidden.bs.modal');
-            $("#printModal").on('hidden.bs.modal', function () {
+            $("#printModal").modal({
+                backdrop: "static",
+                keyboard: true
+            });
+            $("#printModal").off('hide.bs.modal');
+            $("#printModal").on('hide.bs.modal', function() {
+                if(document.activeElement.id != "confirm-print-continue") return;
                 uiUtil.printCustomElements();
                 //innerDocument.execCommand("print", false, null);
                 window.frames[0].frameElement.contentWindow.print();
