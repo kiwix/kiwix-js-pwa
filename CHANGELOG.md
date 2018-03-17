@@ -1,3 +1,7 @@
+## Release 0.9.9.4 Wikivoyage (beta)
+* UPDATE: March 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-03.zim
+* ENHANCEMENT: Experimental support for printing articles
+
 ## Release 0.9.9.3 Wikivoyage (beta)
 * FIX: Unhandled exception after using in-article word search
 * FIX: Article now reloads correctly when switching styles
