@@ -1,3 +1,7 @@
+## Release 0.9.9.4 WikiMed (beta)
+* UPDATE: March 2018 update of WikiMed ZIM archive to wikipedia_en_medicine_novid_2018-03.zim
+* ENHANCEMENT: Experimental support for printing articles
+
 ## Release 0.9.9.3 WikiMed (beta)
 * FIX: Article now reloads correctly when switching styles
 * FIX: Unhandled exception after using in-article word search
