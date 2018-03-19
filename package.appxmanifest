@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" IgnorableNamespaces="uap mp uap3">
-  <Identity Name="Kiwix.WikiMed" Version="0.9.93.0" Publisher="CN=0A5438F5-EEA6-4300-9B77-E45BBD148885" />
+  <Identity Name="Kiwix.WikiMed" Version="0.9.94.0" Publisher="CN=0A5438F5-EEA6-4300-9B77-E45BBD148885" />
   <mp:PhoneIdentity PhoneProductId="cb0f426b-1361-4832-9351-223fb6d2dce6" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>WikiMed</DisplayName>
