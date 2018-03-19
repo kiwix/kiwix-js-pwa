@@ -771,6 +771,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('openLocalFiles').style.display = "none";
             document.getElementById('hideFileSelectors').style.display = params.showFileSelectors ? "block" : "none";
             document.getElementById('downloadLinksText').style.display = params.showFileSelectors ? "inline" : "none";
+            document.getElementById('moreInfo').style.display = params.showFileSelectors ? "none" : "inline";
             if (params.packagedFile && params.storedFile && (params.storedFile != params.packagedFile)) {
                 var currentArchive = document.getElementById('currentArchive');
                 currentArchive.innerHTML = "Currently loaded archive: <b>" + params.storedFile.replace(/\.zim$/i, "") + "</b>";
@@ -1409,9 +1410,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     reloadLink.style.display = "inline";
                     reloadLink.removeEventListener("click", loadPackagedArchive);
                     reloadLink.addEventListener("click", loadPackagedArchive);
+                    document.getElementById("moreInfo").style.display = "none";
                 } else {
                     reloadLink.style.display = "none";
-                    document.getElementById('currentArchive').style.display = 'none';
+                    document.getElementById('currentArchive').style.display = "none";
+                    document.getElementById("moreInfo").style.display = "inline";
                 }
             }
             //This ensures the correct icon is set for the newly loaded archive
