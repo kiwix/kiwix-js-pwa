@@ -85,7 +85,8 @@ if (!params.showFileSelectors && params.packagedFile && params.storedFile && par
         currentArchive.style.display = "block";
     }
 }
-
+document.getElementById('logUpdate').innerHTML = document.getElementById('update').innerHTML.match(/<ul[^>]*>[\s\S]+/i);
+document.getElementById('logFeatures').innerHTML = document.getElementById('features').innerHTML;
 
 //Set up storage types
 if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') { //UWP
