@@ -51,13 +51,14 @@
                         Welcome&nbsp;to Wikivoyage by&nbsp;Kiwix
                     </h2>
                     <h4>Version <span class="version">0.9 Beta</span></h4><br />
-                    <div class="update">
+                    <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in <span class="version">0.9 (beta)</span></h3>
                         <ul style="padding-left: 15px;">
                             <li>March 2018 update to Wikivoyage ZIM archive</li>
                             <li>Experimental support for printing articles! (Use the <b>Print button <span class="glyphicon glyphicon-print"></span></b> or press <b>Ctrl-P</b> on keyboard)</li>
                             <li>Please note: you can still access the <b>About page <span class="glyphicon glyphicon-info-sign"></span></b> by tapping <b>Config <span class="glyphicon glyphicon-wrench"></span></b></li>
                         </ul>
+                        <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-Wikivoyage-dev/CHANGELOG.md" target="_blank">Full changelog...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>
                     <h3>Please read this important information!</h3>
                     <p>
@@ -88,17 +89,18 @@
                         Wikivoyage by Kiwix is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
                         improving the app are very welcome: see About section.
                     </p>
-                    <h3>Features in Version 0.9</h3>
-                    <ul style="padding-left:15px;">
-                        <li>Compatible with Continuum!</li>
-                        <li>Front page (of ZIM) cached for faster return to home page</li>
-                        <li>Wikivoyage pages (English and German) display map location markers: tap to open Maps app</li>
-                        <li>Last-visited page remembered between sessions (optional)</li>
-                        <li>In-page search/highlighting (search button/Ctrl-F/Alt-F)</li>
-                        <li>Dark-theme for UI and content</li>
-                        <li>Transform layout: Wikipedia mobile or desktop styles</li>
-                        <li>Optionally disable images if device is slow</li>
-                    </ul>
+                    <div id="features">
+                        <h3>Features in Version 0.9 Beta</h3>
+                        <ul style="padding-left:15px;">
+                            <li>Compatible with Continuum!</li>
+                            <li>Front page (of ZIM) cached for faster return to home page</li>
+                            <li>Last-visited page remembered between sessions (optional)</li>
+                            <li>In-page search/highlighting (search button/Ctrl-F/Alt-F)</li>
+                            <li>Dark-theme for UI and content</li>
+                            <li>Transform layout: Wikipedia mobile or desktop styles</li>
+                            <li>Optionally disable images if device is slow</li>
+                        </ul>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary" type="button" data-dismiss="modal">Close</button>
@@ -198,8 +200,14 @@
                     <h3 style="margin-top:0;">
                         Offline Travel Guide <small>(Kiwix JS version <span class="version"></span>)</small>
                     </h3>
-                    <p><small>Packaged ZIM archive: <b><span class="fileVersion"></span></b></small></p>
-                    <p>Official site : <a href="http://www.kiwix.org/" target="_blank">http://www.kiwix.org/</a></p>
+                    <p>Packaged ZIM archive: <b><span class="fileVersion"></span></b></p>
+                    <ul style="padding-left:1em;">
+                        <li><a href="#changelog">Changelog and Features</a></li>
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                        <li><a href="#feedback">Feedback and Support</a></li>
+                        <li><a href="#credits">Credits and Licence</a></li>
+                        <li>Official site : <a href="http://www.kiwix.org/" target="_blank">http://www.kiwix.org/</a><img src="I/s/Icon_External_Link.png" /></li>
+                    </ul>
                     <p>
                         Wikivoyage Offline Travel Guide by Kiwix is a complete resource for travellers and tourists, or anyone interested in the
                         locality they are visiting. This app functions completely offline, so you are not limited in your ability to consult
@@ -243,7 +251,10 @@
                         <a href="#" onclick="$('#btnConfigure').click();">Configuration</a> page (note that these buttons only appear after you tap "Select Storage").
                     </p>
                     <h4>Step 4: enjoy your content offline!</h4>
-                    <h3>Privacy policy</h3>
+                    <h3 id="changelog">Changes in <span class="version">0.9</span></h3>
+                    <div id="logUpdate" class="update"></div>
+                    <div id="logFeatures"></div>
+                    <h3 id="privacy">Privacy policy</h3>
                     <h4>Short answer:</h4>
                     <p>
                         Wikivoyage by Kiwix works entirely offline unless you specifically request otherwise on the Configuration page. We do not collect any of your personal data
@@ -262,7 +273,7 @@
                         you open this app, we recommend that you <a href="#privacy" onclick="$('#btnConfigure').click();">turn this option off</a>
                         in the Configuration options.
                     </p>
-                    <h3>Feedback / helping / contributing</h3>
+                    <h3 id="feedback">Feedback / helping / contributing</h3>
                     <p>This application is still a work in progress. There are many bugs that need fixing and improvements that need to be implemented. In particular:</p>
                     <ul>
                         <li><a href="https://github.com/kiwix/kiwix-js/issues/13" target="_blank">Issue #13</a>: All the user interface is in English : we plan to translate it at least into French and Spanish. If you feel able to translate it in your language, please contact us</li>
@@ -291,7 +302,7 @@
                         <li>Adding articles or improving the existing ones, by <a href="https://en.wikipedia.org/wiki/Wikipedia:Introduction" target="_blank">editing online Wikipedia articles</a></li>
                         <li><a href="http://www.kiwix.org/wiki/Special:MyLanguage/Participate" target="_blank">Participating</a> in the Kiwix project</li>
                     </ul>
-                    <h3>Credits</h3>
+                    <h3 id="credits">Credits</h3>
                     <p>Thanks are due to:</p>
                     <ul>
                         <li>Kelson and all the Kiwix community for welcoming peter-x, mossroy, jaifroid and sharun-s onto this project</li>
@@ -348,6 +359,7 @@
                             <button style="display:none;" id="reloadPackagedArchive" type="button" class="btn btn-primary btn-xs">Reload</button>
                         </p>
                         <p id="currentArchive" style="display: none;"></p>
+                        <p id="moreInfo">For more information see <a href="#" onclick="document.getElementById('btnAbout').click();">About tab <span class="glyphicon glyphicon-info-sign"></span></a> (top right)</p>
                         <p id="downloadLinksText">Get more archives from <a href="#downloads">Download links</a>.</p><p></p>
                     </div>
                     <div id="hideFileSelectors">

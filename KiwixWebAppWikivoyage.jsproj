@@ -173,6 +173,7 @@
     <Content Include="www\I\s\Checker-16x16.png" />
     <Content Include="www\I\s\cog-sprite.png" />
     <Content Include="www\I\s\Icons-mini-file_acrobat.gif" />
+    <Content Include="www\I\s\Icon_External_Link.png" />
     <Content Include="www\I\s\magnify-clip-ltr.png" />
     <Content Include="www\I\s\spinner.gif" />
     <Content Include="www\js\app.js" />
