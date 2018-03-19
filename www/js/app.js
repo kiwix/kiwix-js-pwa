@@ -595,6 +595,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 var elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid darkgray"; }
                 document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? "./img/icons/wikivoyage-white-32.png" : /medicine/i.test(params.storedFile) ? "./img/icons/wikimed-lightblue-32.png" : "./img/icons/kiwix-32.png";
+                if (/wikivoyage/i.test(params.storedFile)) document.getElementById('kiwixIconAbout').src = "./img/icons/wikivoyage-90-white.png"; 
             }
             if (value == 'light') {
                 document.getElementsByTagName('body')[0].classList.remove("dark");
@@ -607,6 +608,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 var elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid black"; }
                 document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? "./img/icons/wikivoyage-black-32.png" : /medicine/i.test(params.storedFile) ? "./img/icons/wikimed-blue-32.png" : "./img/icons/kiwix-blue-32.png";
+                if (/wikivoyage/i.test(params.storedFile)) document.getElementById('kiwixIconAbout').src = "./img/icons/wikivoyage-90.png";
             }
         }
 
@@ -1586,6 +1588,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 function (responseTxt, status) {
                     htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
                     if (htmlContent) {
+                        console.log("Article retrieved from storage cache...");
                         displayArticleInForm(dirEntry, htmlContent);
                     } else {
                         selectedArchive.readArticle(dirEntry, displayArticleInForm);
@@ -1701,6 +1704,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         //@TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
         htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, "<a href=\"$1.html\">$2</a>");
         htmlArticle = htmlArticle.replace(/&lt;(\/?)(i|b|em|strong)&gt;/ig, "<$1$2>");
+
+        //@TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
+        htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, "$1");
 
         //Fast-replace img and script src with data-kiwixsrc and hide image [kiwix-js #272]
         htmlArticle = htmlArticle.replace(/(<(?:img|script)\s+[^>]*\b)src(\s*=)/ig, "$1data-kiwixsrc$2");
