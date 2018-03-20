@@ -774,8 +774,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             cssUIThemeSet(params.cssUITheme);
             //@TODO - this is initialization code, and should be in init.js (withoug jQuery)
             $('input:radio[name=cssInjectionMode]').filter('[value="' + params.cssSource + '"]').prop('checked', true);
-        //DEV this hides file selectors if it is a packaged file -- add your own packaged file test to regex below
-            if (/wikivoyage|wikimed/i.test(params.fileVersion)) {
+            //DEV this hides file selectors if it is a packaged file -- add your own packaged file test to regex below
+            if (/wikivoyage|medicine/i.test(params.fileVersion)) {
                 document.getElementById('packagedAppFileSelectors').style.display = "block";
                 document.getElementById('hideFileSelectors').style.display = "none";
                 document.getElementById('downloadLinksText').style.display = "none";
@@ -1701,6 +1701,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         //@TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
         htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, "<a href=\"$1.html\">$2</a>");
         htmlArticle = htmlArticle.replace(/&lt;(\/?)(i|b|em|strong)&gt;/ig, "<$1$2>");
+
+        //@TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
+        htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, "$1");
 
         //Fast-replace img and script src with data-kiwixsrc and hide image [kiwix-js #272]
         htmlArticle = htmlArticle.replace(/(<(?:img|script)\s+[^>]*\b)src(\s*=)/ig, "$1data-kiwixsrc$2");
