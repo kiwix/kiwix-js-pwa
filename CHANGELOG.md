@@ -1,3 +1,10 @@
+## Release 0.9.9.4 (beta)
+* ENHANCEMENT: Experimental support for printing articles
+* ENHANCEMENT: Print zoom capability
+* ENHANCEMENT: Prevent prevent printing of location pins
+* ENHANCEMENT: Better presentation of About and Changelog information
+* WORKAROUND: MW-Offliner bug which places extraneous tags in some HTML id attributes
+
 ## Release 0.9.9.3 (beta)
 * FIX: Article now reloads correctly when switching styles
 * FIX: Unhandled exception after using in-article word search
