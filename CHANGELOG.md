@@ -1,7 +1,8 @@
 ## Release 0.9.9.4 (beta)
 * ENHANCEMENT: Experimental support for printing articles
 * ENHANCEMENT: Print zoom capability
-* ENHANCEMENT: Prevent prevent printing of location pins
+* ENHANCEMENT: Prevent printing of location pins
+* ENHANCEMENT: Set maximum page width to 100% before printing
 * ENHANCEMENT: Better presentation of About and Changelog information
 * WORKAROUND: MW-Offliner bug which places extraneous tags in some HTML id attributes
 
