@@ -1,4 +1,4 @@
-## Release 0.9.9.5 Wikivoyage (beta)
+## Pending release 0.9.9.5 Wikivoyage (beta)
 * ENHANCEMENT: Print zoom capability
 * ENHANCEMENT: Prevent printing of location pins
 * ENHANCEMENT: Set maximum page width to 100% before printing
