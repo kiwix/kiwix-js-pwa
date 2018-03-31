@@ -1,4 +1,6 @@
 ## Pending release 0.9.9.5 WikiMed (beta)
+
+* FIX: Bug prevented display of language codes that are substrings of other language codes
 * ENHANCEMENT: Print zoom capability
 * ENHANCEMENT: Prevent printing of location pins
 * ENHANCEMENT: Set maximum page width to 100% before printing
