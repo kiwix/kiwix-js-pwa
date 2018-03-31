@@ -1,10 +1,9 @@
-## Release 0.9.9.5 WikiMed (beta)
+## Pending release 0.9.9.5 WikiMed (beta)
 * ENHANCEMENT: Print zoom capability
 * ENHANCEMENT: Prevent printing of location pins
 * ENHANCEMENT: Set maximum page width to 100% before printing
 * WORKAROUND: MW-Offliner bug which places extraneous tags in some HTML id attributes
 
-## Release 0.9.9.4 (beta)
 ## Release 0.9.9.4 WikiMed (beta)
 * UPDATE: March 2018 update of WikiMed ZIM archive to wikipedia_en_medicine_novid_2018-03.zim
 * ENHANCEMENT: Experimental support for printing articles
