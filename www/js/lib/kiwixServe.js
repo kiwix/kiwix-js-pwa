@@ -501,7 +501,7 @@ define([], function () {
                 //Get list of all languages
                 langList = langList.replace(/^[^_]+_([^_]+)_.+$/mg, "$1");
                 //Delete recurrences
-                langList = langList.replace(/\b(\w+)\n(?=[\s\S]*\b\1\n?)/g, "");
+                langList = langList.replace(/\b(\w+\n)(?=[\s\S]*\b\1\n?)/g, "");
                 langList = "All\n" + langList;
                 var langArray = langList.match(/^\w+$/mg);
                 //Sort list alphabetically
