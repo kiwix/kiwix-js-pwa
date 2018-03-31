@@ -1,3 +1,6 @@
+## Pending release 0.9.9.5 (beta)
+* FIX: Bug prevented display of language codes that are substrings of other language codes
+
 ## Release 0.9.9.4 (beta)
 * ENHANCEMENT: Experimental support for printing articles
 * ENHANCEMENT: Print zoom capability
