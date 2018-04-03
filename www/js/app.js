@@ -162,6 +162,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
 
         function printIntercept() {
+            document.getElementById('btnAbout').classList.add('active');
             //Pre-load all images in case user wants to print them
             if (params.imageDisplay) {
                 loadImages(10000);
@@ -193,12 +194,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     return;
                 }
                 uiUtil.printCustomElements();
+                document.getElementById("alertContent").innerHTML = "Document will reload to restore the DOM after printing...";
+                $("#alertModal").modal({
+                    backdrop: "static",
+                    keyboard: true
+                });
                 //innerDocument.execCommand("print", false, null);
                 window.frames[0].frameElement.contentWindow.print();
-                setTimeout(function () {
-                    //Reload article after print dialogue has rendered because DOM is destroyed
-                    goToArticle(decodeURIComponent(history.state.title));
-                }, 3000);
+            });
+            $("#alertModal").off('hide.bs.modal');
+            $("#alertModal").on('hide.bs.modal', function () {
+                goToArticle(decodeURIComponent(history.state.title));
             });
         }
 
@@ -542,7 +548,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         $('#btnAbout').on('click', function (e) {
             var btnAboutElement = document.getElementById('btnAbout');
             if (/glyphicon-print/.test(btnAboutElement.innerHTML)) {
-                btnAboutElement.classList.add('active');
                 printIntercept();
                 return;
             }
