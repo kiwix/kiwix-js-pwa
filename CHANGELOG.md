@@ -1,5 +1,8 @@
 ## Pending release 0.9.9.5 (beta)
-* FIX: Bug prevented display of language codes that are substrings of other language codes
+* ENHANCEMENT: Current page is cached in localStorage for very fast restart and reloading
+* ENHANCEMENT: Automatically switch to desktop style for better printing result
+* FIX: Bug which prevented switching the printing device (caused app crash)
+* FIX: Bug in download links preventing display of language codes that are substrings of other language codes
 
 ## Release 0.9.9.4 (beta)
 * ENHANCEMENT: Experimental support for printing articles

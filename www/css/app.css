@@ -309,9 +309,14 @@ pre {
     color: lightblue !important;
 }
 
-.modal-dialog {
+.modal-full {
     width: 94% !important;
     margin: 3% !important;
+}
+
+#alert-modal {
+    margin-top: 25% !important;
+    margin-bottom: 25% !important;
 }
 
 @media (max-width: 768px) {

@@ -41,7 +41,7 @@
 <body role="application" class="dark">
     <!-- Modal info -->
     <div id="myModal" class="modal">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-full">
             <div class="modal-content dark">
                 <div class="modal-body">
                     <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
@@ -54,10 +54,8 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in <span class="version">0.9 (beta)</span></h3>
                         <ul style="padding-left: 15px;">
-                            <li>Experimental support for printing articles! (Use the <b>Print button <span class="glyphicon glyphicon-print"></span></b> or press <b>Ctrl-P</b> on keyboard)</li>
-                            <li>Please note: you can still access the <b>About page <span class="glyphicon glyphicon-info-sign"></span></b> by tapping <b>Config <span class="glyphicon glyphicon-wrench"></span></b></li>
-                            <li>Added print zoom capability</li>
-                            <li>Better organization of About and Changelog info</li>
+                            <li>Fixed bug in download links preventing display of some language codes</li>
+                            <li>Fixed bug which prevented switching devices in print dialogue</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/master-dev/CHANGELOG.md" target="_blank">Full changelog...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>
@@ -101,11 +99,18 @@
     </div>
     <div id="printModal" class="modal" tabindex="-1">
         <div class="modal-dialog">
-            <div id="modal-content" class="modal-content">
-                <div class="modal-body">
+            <div id="print-modal-content" class="modal-content">
+                <div class="modal-header">
+                    <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
                     <h2 style="font-size:32px;margin-top:10px;">
                         Please choose print options
-                    </h2>
+                    </h2>                
+                </div>
+                <div class="modal-body">
+                    <label id="printDesktopStyle" class="checkbox">
+                        <input type="checkbox" name="printDesktop" id="printDesktopCheck" checked>
+                        <b>Print the desktop (not mobile) style</b> (<i>default: yes</i>)
+                    </label>
                     <label id="printNavBoxes" class="checkbox">
                         <input type="checkbox" name="printNavBox" id="printNavBoxCheck">
                         <b>Print navigation boxes</b> (<i>default: no</i>)
@@ -144,17 +149,18 @@
             </div>
         </div>
     </div>
-    <div id="alertModal" class="modal">
-        <div class="modal-dialog">
-            <div class="modal-content">
+    <div id="alertModal" class="modal" role="dialog">
+        <div id="alert-modal" class="modal-dialog modal-sm">
+            <div id="alert-modal-content" class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Alert!</h4>
+                    <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Information</h4>
                 </div>
                 <div class="modal-body">
-                    <p id="alertContent"></p>
+                    <p id="alert-content"></p>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" type="button" data-dismiss="modal">Dismiss</button>
+                    <button id="alert-modal-button" class="btn btn-primary" type="button" data-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
