@@ -205,7 +205,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 if (!params.rememberLastPage) {
                     cookies.setItem('lastPageVisit', "", Infinity);
                     if (typeof (Storage) !== "undefined") {
-                        try { htmlContent = localStorage.setItem('lastPageHTML', ""); }
+                        try { localStorage.setItem('lastPageHTML', ""); }
                         catch (err) { console.log("localStorage not supported: " + err); }
                     }
                 }
@@ -799,7 +799,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 cookies.setItem('lastPageVisit', "", Infinity);
                 //Clear localStorage
                 if (typeof (Storage) !== "undefined") {
-                    try { htmlContent = localStorage.setItem('lastPageHTML', ""); }
+                    try { localStorage.setItem('lastPageHTML', ""); }
                     catch (err) { console.log("localStorage not supported: " + err); }
             }
             }
@@ -1721,7 +1721,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             localSearch = {};
 
             //Void the iframe
-            window.frames[0].frameElement.src = "dummyArticle.html";
+            //window.frames[0].frameElement.src = "dummyArticle.html";
 
             //Load cached start page if it exists
             var htmlContent = 0;
@@ -1859,7 +1859,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
             //Store current document's raw HTML in localStorage for fast restart
             if (typeof (Storage) !== "undefined") {
-                    try { htmlContent = localStorage.setItem('lastPageHTML', htmlArticle); }
+                    try { localStorage.setItem('lastPageHTML', htmlArticle); }
                     catch (err) { console.log("localStorage not supported: " + err); }
             }
         }
@@ -1885,6 +1885,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 '$1height="36" src="../img/lightBlue.png" style="color: lightblue; background-color: lightblue;" ' +
                 'data-kiwixheight$2');
         }
+
         //Remove erroneous content frequently on front page
         htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, "");
         htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, "");
@@ -2031,6 +2032,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 cssArray$ = cssArray$.replace(/(\bhref\s*=\s*["']\s*)(?![./]+|blob:)/ig, "$1" + treePath);
                 //For all cases, neutralize the toggleOpenSection javascript that causes a crash - TODO: make it work for mobile style
                 htmlArticle = htmlArticle.replace(/onclick\s*=\s*["']toggleOpenSection[^"']*['"]\s*/ig, "");
+                htmlArticle = htmlArticle.replace(/<script>([^<]+?toggleOpenSection(?:[^<]|<(?!\/script))+)<\/script>/i, "<!-- script>$1</script --!>");
+                htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
                 htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
                 console.log("All CSS resolved");
                 injectHTML(); //Pass the revised HTML to the image and JS subroutine...
@@ -2102,7 +2105,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             htmlArticle = htmlArticle.replace(/(<head[^>]*>\s*)/i, '$1<base href="' + baseUrl + '" />\r\n');
             //Display article in iframe
             var articleContent = window.frames[0].frameElement.contentDocument;
-            articleContent.documentElement.innerHTML = htmlArticle;
+            //articleContent.documentElement.innerHTML = htmlArticle;
+            articleContent.open();
+            articleContent.write(htmlArticle);
+            articleContent.close();
             //Set relative font size + Stackexchange-family multiplier
             articleContent.body.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
             //Set page width according to user preference
