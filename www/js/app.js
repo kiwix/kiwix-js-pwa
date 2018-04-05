@@ -160,25 +160,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         //$("#printModal").off('hide.bs.modal');
         $("#printModal").on('hide.bs.modal', function () {
             //Restore temporarily changed values
-            params.cssSource = cookies.getItem('cssSource');
+            params.cssSource = cookies.getItem('cssSource') || "auto";
             if (document.activeElement.id != "confirm-print-continue") { //User cancelled
                 if (params.printInterception) {
-                    params.printIntercept = false;
-                    params.printInterception = false;
-                    goToArticle(decodeURIComponent(history.state.title));
-                    setTimeout(function () { //Restore temporarily changed value after page has reloaded
-                        params.rememberLastPage = cookies.getItem('rememberLastPage') == "true" ? true : false;
-                        if (!params.rememberLastPage) {
-                            params.lastPageVisit = "";
-                            cookies.setItem('lastPageVisit', "", Infinity);
-                            if (typeof (Storage) !== "undefined") {
-                                localStorage.setItem('lastPageHTML', "");
-                            }
-                        }
-                    }, 5000);
+                    printCleanup();
                     return;
                 }
-                //Restore PageMaxWidth
+                //We don't need a radical cleanup because there was no printIntercept
                 removePageMaxWidth();
                 setTab();
                 return;
@@ -187,8 +175,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById("alert-content").innerHTML = "<b>Document will now reload to restore the DOM after printing...</b>";
             $("#alertModal").off('hide.bs.modal');
             $("#alertModal").on('hide.bs.modal', function () {
-                params.printInterception = false;
-                goToArticle(decodeURIComponent(history.state.title));
+                printCleanup();
             });
             $("#alertModal").modal({
                 backdrop: "static",
@@ -205,6 +192,21 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('confirm-print-continue').disabled = true;
             goToArticle(decodeURIComponent(history.state.title));
         });
+        function printCleanup() {
+            params.printIntercept = false;
+            params.printInterception = false;
+            goToArticle(decodeURIComponent(history.state.title));
+            setTimeout(function () { //Restore temporarily changed value after page has reloaded
+                params.rememberLastPage = cookies.getItem('rememberLastPage') == "false" ? false : true;
+                if (!params.rememberLastPage) {
+                    params.lastPageVisit = "";
+                    cookies.setItem('lastPageVisit', "", Infinity);
+                    if (typeof (Storage) !== "undefined") {
+                        localStorage.setItem('lastPageHTML', "");
+                    }
+                }
+            }, 5000);
+        }
     //End of listeners for print dialogues
 
         function printIntercept() {
@@ -212,6 +214,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             params.printIntercept = false;
             document.getElementById('btnAbout').classList.add('active');
             document.getElementById('confirm-print-continue').disabled = false;
+            var printModalContent = document.getElementById('print-modal-content');
+            printModalContent.classList.remove('dark');
+            if (params.cssUITheme != "light") {
+                printModalContent.classList.add('dark');
+            }
             //If document is in wrong style, reload it
             var innerDoc = window.frames[0].frameElement.contentDocument;
             var styleIsDesktop = !/\bhref\s*=\s*["'][^"']*?(?:minerva|mobile)/i.test(innerDoc.head.innerHTML);
@@ -243,14 +250,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 params.removePageMaxWidth = true;
                 removePageMaxWidth();
                 params.removePageMaxWidth = tempPageMaxWidth;
-            }
-            var printModalContent = document.getElementById("print-modal-content"),
-                alertModalContent = document.getElementById("alert-modal-content");
-            printModalContent.classList.remove('dark');
-            alertModalContent.classList.remove('dark');
-            if (params.cssUITheme != "light") {
-                printModalContent.classList.add('dark');
-                alertModalContent.classList.add('dark');
             }
             $("#printModal").modal({
                 backdrop: "static",
@@ -2203,7 +2202,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 window.frames[0].MathJax.Hub.Queue(["Typeset", window.frames[0].MathJax.Hub]);
                 console.log("Typesetting maths with MathJax");
                 containsMathTeXRaw = false; //Prevents doing a second Typeset run on the same document
-                containsMathTeXRaw = false;
             }
         }
     }
@@ -2480,8 +2478,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         console.log("All requested image slices have been processed\n" +
                             "** Waiting for user scroll... **");
                         windowScroll = true;
-                        if (params.printIntercept) printIntercept();
                     }
+                    if (params.printIntercept) printIntercept();
                 }
             }
 
