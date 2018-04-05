@@ -189,20 +189,24 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             params.cssSource = e.target.checked ? "desktop" : "mobile";
             params.printIntercept = true;
             params.printInterception = false;
-            document.getElementById('confirm-print-continue').disabled = true;
-            goToArticle(decodeURIComponent(history.state.title));
+            var btnContinue = document.getElementById('confirm-print-continue');
+            var btnCancel = document.getElementById('confirm-print-cancel');
+            btnCancel.disabled = true;
+            btnContinue.disabled = true;
+            btnContinue.innerHTML = "Please wait";
+            goToArticle(decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, "")));
         });
         function printCleanup() {
             params.printIntercept = false;
             params.printInterception = false;
-            goToArticle(decodeURIComponent(history.state.title));
+            goToArticle(decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, "")));
             setTimeout(function () { //Restore temporarily changed value after page has reloaded
                 params.rememberLastPage = cookies.getItem('rememberLastPage') == "false" ? false : true;
                 if (!params.rememberLastPage) {
-                    params.lastPageVisit = "";
                     cookies.setItem('lastPageVisit', "", Infinity);
                     if (typeof (Storage) !== "undefined") {
-                        localStorage.setItem('lastPageHTML', "");
+                        try { htmlContent = localStorage.setItem('lastPageHTML', ""); }
+                        catch (err) { console.log("localStorage not supported: " + err); }
                     }
                 }
             }, 5000);
@@ -213,7 +217,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             params.printInterception = params.printIntercept;
             params.printIntercept = false;
             document.getElementById('btnAbout').classList.add('active');
-            document.getElementById('confirm-print-continue').disabled = false;
+            var btnContinue = document.getElementById('confirm-print-continue');
+            var btnCancel = document.getElementById('confirm-print-cancel');
+            btnCancel.disabled = false;
+            btnContinue.disabled = false;
+            btnContinue.innerHTML = "Continue";
             var printModalContent = document.getElementById('print-modal-content');
             printModalContent.classList.remove('dark');
             if (params.cssUITheme != "light") {
@@ -228,12 +236,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 params.rememberLastPage = true; //Re-enable caching to speed up reloading of page
                 params.printIntercept = true;
                 params.printInterception = false;
-                document.getElementById('confirm-print-continue').disabled = true;
+                btnCancel.disabled = true;
+                btnContinue.disabled = true;
+                btnContinue.innerHTML = "Please wait";
                 $("#printModal").modal({
                     backdrop: "static",
                     keyboard: true,
                 });
-                goToArticle(decodeURIComponent(history.state.title));
+                goToArticle(decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, "")));
                 return;
             }
             //Pre-load all images in case user wants to print them
@@ -789,7 +799,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 cookies.setItem('lastPageVisit', "", Infinity);
                 //Clear localStorage
                 if (typeof (Storage) !== "undefined") {
-                    localStorage.setItem('lastPageHTML', "");
+                    try { htmlContent = localStorage.setItem('lastPageHTML', ""); }
+                    catch (err) { console.log("localStorage not supported: " + err); }
             }
             }
         });
@@ -1732,11 +1743,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (!htmlContent) {
                 if (params.rememberLastPage && typeof (Storage) !== "undefined" &&
                     dirEntry.namespace + '/' + dirEntry.url == decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""))) {
-                    htmlContent = localStorage.getItem('lastPageHTML');
+                    try { htmlContent = localStorage.getItem('lastPageHTML'); }
+                    catch(err) { console.log("localStorage not supported: " + err); }
         }
                 if (/<html[^>]*>/.test(htmlContent)) {
                     console.log("Fast article retrieval from localStorage...");
-                    setTimeout(function () { displayArticleInForm(dirEntry, htmlContent); }, 1);
+                    setTimeout(function () { displayArticleInForm(dirEntry, htmlContent); }, 100);
                 } else {
                     selectedArchive.readArticle(dirEntry, displayArticleInForm);
     }
@@ -1840,14 +1852,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             !~window.history.state.title.indexOf("/" + dirEntry.url)) {
             pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
         }
-        if (params.rememberLastPage && !~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
+        if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
             params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
                 "@kiwixKey@" + selectedArchive._file._files[0].name;
+            if (params.rememberLastPage) {
             cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
             //Store current document's raw HTML in localStorage for fast restart
             if (typeof (Storage) !== "undefined") {
-                localStorage.setItem('lastPageHTML', htmlArticle);
+                    try { htmlContent = localStorage.setItem('lastPageHTML', htmlArticle); }
+                    catch (err) { console.log("localStorage not supported: " + err); }
             }
+        }
         }
         
         //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
