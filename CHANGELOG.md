@@ -1,6 +1,9 @@
 ## Pending release 0.9.9.5 WikiMed (beta)
 
-* FIX: Bug prevented display of language codes that are substrings of other language codes
+* ENHANCEMENT: Current page is cached in localStorage for very fast restart and reloading
+* ENHANCEMENT: Automatically switch to desktop style for better printing result
+* FIX: Bug which prevented switching the printing device (caused app crash)
+* FIX: Bug in download links preventing display of language codes that are substrings of other language codes
 * ENHANCEMENT: Print zoom capability
 * ENHANCEMENT: Prevent printing of location pins
 * ENHANCEMENT: Set maximum page width to 100% before printing

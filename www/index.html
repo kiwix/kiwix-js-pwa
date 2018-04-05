@@ -42,7 +42,7 @@
 <body role="application" class="dark">
     <!-- Modal info -->
     <div id="myModal" class="modal">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-full">
             <div class="modal-content dark">
                 <div class="modal-body">
                     <img style="float:left; padding-right:1em;" alt="WikiMed icon" src="img/icons/wikimed-90.png">
@@ -110,11 +110,18 @@
     </div>
     <div id="printModal" class="modal" tabindex="-1">
         <div class="modal-dialog">
-            <div id="modal-content" class="modal-content">
-                <div class="modal-body">
+            <div id="print-modal-content" class="modal-content">
+                <div class="modal-header">
+                    <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
                     <h2 style="font-size:32px;margin-top:10px;">
                         Please choose print options
-                    </h2>
+                    </h2>                
+                </div>
+                <div class="modal-body">
+                    <label id="printDesktopStyle" class="checkbox">
+                        <input type="checkbox" name="printDesktop" id="printDesktopCheck" checked>
+                        <b>Print the desktop (not mobile) style</b> (<i>default: yes</i>)
+                    </label>
                     <label id="printNavBoxes" class="checkbox">
                         <input type="checkbox" name="printNavBox" id="printNavBoxCheck">
                         <b>Print navigation boxes</b> (<i>default: no</i>)
@@ -149,6 +156,22 @@
                     <button name="confirm-print" id="confirm-print-cancel" class="btn btn-warning" style="float:right; margin-left: 1em;" type="button" data-dismiss="modal">Cancel</button>
                     <button name="confirm-print" id="confirm-print-continue" class="btn btn-primary" style="float:right; margin-left: 1em;" type="button" data-dismiss="modal">Continue</button>
                     <p style="text-align:left"><b>Important:</b> This app has limited control over the printer. If there is no option to limit pages, we recommend you choose a PDF or XPS printer, and then print the file with another app.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="alertModal" class="modal" role="dialog">
+        <div id="alert-modal" class="modal-dialog modal-sm">
+            <div id="alert-modal-content" class="modal-content">
+                <div class="modal-header">
+                    <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Information</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="alert-content"></p>
+                </div>
+                <div class="modal-footer">
+                    <button id="alert-modal-button" class="btn btn-primary" type="button" data-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>

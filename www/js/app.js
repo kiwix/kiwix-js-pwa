@@ -156,12 +156,79 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
         }, true);
 
-        //document.getElementById("documentZoomSlider").addEventListener("input", function () {
-        //    document.getElementById("zoomSliderVal").innerHTML = this.value + "%";
-        //});
-
+    //Set up listeners for print dialogues
+        //$("#printModal").off('hide.bs.modal');
+        $("#printModal").on('hide.bs.modal', function () {
+            //Restore temporarily changed values
+            params.cssSource = cookies.getItem('cssSource');
+            if (document.activeElement.id != "confirm-print-continue") { //User cancelled
+                if (params.printInterception) {
+                    params.printIntercept = false;
+                    params.printInterception = false;
+                    goToArticle(decodeURIComponent(history.state.title));
+                    setTimeout(function () { //Restore temporarily changed value after page has reloaded
+                        params.rememberLastPage = cookies.getItem('rememberLastPage') == "true" ? true : false;
+                        if (!params.rememberLastPage) {
+                            params.lastPageVisit = "";
+                            cookies.setItem('lastPageVisit', "", Infinity);
+                            if (typeof (Storage) !== "undefined") {
+                                localStorage.setItem('lastPageHTML', "");
+                            }
+                        }
+                    }, 5000);
+                    return;
+                }
+                //Restore PageMaxWidth
+                removePageMaxWidth();
+                setTab();
+                return;
+            }
+            uiUtil.printCustomElements();
+            document.getElementById("alert-content").innerHTML = "<b>Document will now reload to restore the DOM after printing...</b>";
+            $("#alertModal").off('hide.bs.modal');
+            $("#alertModal").on('hide.bs.modal', function () {
+                params.printInterception = false;
+                goToArticle(decodeURIComponent(history.state.title));
+            });
+            $("#alertModal").modal({
+                backdrop: "static",
+                keyboard: true
+            });
+            //innerDocument.execCommand("print", false, null);
+            window.frames[0].frameElement.contentWindow.print();
+        });
+        document.getElementById('printDesktopCheck').addEventListener('click', function (e) {
+            //Reload article if user wants to print a different style
+            params.cssSource = e.target.checked ? "desktop" : "mobile";
+            params.printIntercept = true;
+            params.printInterception = false;
+            document.getElementById('confirm-print-continue').disabled = true;
+            goToArticle(decodeURIComponent(history.state.title));
+        });
+    //End of listeners for print dialogues
 
         function printIntercept() {
+            params.printInterception = params.printIntercept;
+            params.printIntercept = false;
+            document.getElementById('btnAbout').classList.add('active');
+            document.getElementById('confirm-print-continue').disabled = false;
+            //If document is in wrong style, reload it
+            var innerDoc = window.frames[0].frameElement.contentDocument;
+            var styleIsDesktop = !/\bhref\s*=\s*["'][^"']*?(?:minerva|mobile)/i.test(innerDoc.head.innerHTML);
+            if (styleIsDesktop != document.getElementById("printDesktopCheck").checked) {
+                //We need to reload the document because it doesn't match the requested style
+                params.cssSource = styleIsDesktop ? "mobile" : "desktop";
+                params.rememberLastPage = true; //Re-enable caching to speed up reloading of page
+                params.printIntercept = true;
+                params.printInterception = false;
+                document.getElementById('confirm-print-continue').disabled = true;
+                $("#printModal").modal({
+                    backdrop: "static",
+                    keyboard: true,
+                });
+                goToArticle(decodeURIComponent(history.state.title));
+                return;
+            }
             //Pre-load all images in case user wants to print them
             if (params.imageDisplay) {
                 loadImages(10000);
@@ -177,30 +244,19 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 removePageMaxWidth();
                 params.removePageMaxWidth = tempPageMaxWidth;
             }
-            var modalContent = document.getElementById("modal-content");
-            modalContent.classList.remove('dark');
-            if (params.cssUITheme != "light") modalContent.classList.add('dark');
+            var printModalContent = document.getElementById("print-modal-content"),
+                alertModalContent = document.getElementById("alert-modal-content");
+            printModalContent.classList.remove('dark');
+            alertModalContent.classList.remove('dark');
+            if (params.cssUITheme != "light") {
+                printModalContent.classList.add('dark');
+                alertModalContent.classList.add('dark');
+            }
             $("#printModal").modal({
                 backdrop: "static",
-                keyboard: true
+                keyboard: true,
             });
-            $("#printModal").off('hide.bs.modal');
-            $("#printModal").on('hide.bs.modal', function() {
-                if (document.activeElement.id != "confirm-print-continue") { //User cancelled
-                    //Restore PageMaxWidth
-                    removePageMaxWidth();
-                    setTab();
-                    return;
                 }
-                uiUtil.printCustomElements();
-                //innerDocument.execCommand("print", false, null);
-                window.frames[0].frameElement.contentWindow.print();
-                setTimeout(function () {
-                    //Reload article after print dialogue has rendered because DOM is destroyed
-                    goToArticle(decodeURIComponent(history.state.title));
-                }, 3000);
-            });
-        }
 
         //Establish some variables with global scope
         var firstRun = false;
@@ -638,6 +694,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         });
         $('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
             params.imageDisplay = this.checked ? true : false;
+            params.themeChanged = params.imageDisplay; //Only reload page if user asked for all images to be displayed
             cookies.setItem('imageDisplay', params.imageDisplay, Infinity);
         });
         $('input:checkbox[name=hideToolbar]').on('change', function (e) {
@@ -731,6 +788,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             cookies.setItem('rememberLastPage', params.rememberLastPage, Infinity);
             if (!params.rememberLastPage) {
                 cookies.setItem('lastPageVisit', "", Infinity);
+                //Clear localStorage
+                if (typeof (Storage) !== "undefined") {
+                    localStorage.setItem('lastPageHTML', "");
+            }
             }
         });
         $('input:radio[name=cssInjectionMode]').on('click', function (e) {
@@ -1651,8 +1712,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
             //Void the iframe
             window.frames[0].frameElement.src = "dummyArticle.html";
-            
-            
+
             //Load cached start page if it exists
             var htmlContent = 0;
             if (params.cachedStartPage && dirEntry.url == decodeURIComponent(params.cachedStartPage)) {
@@ -1668,7 +1728,20 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }
                 });
             }
-            if (!htmlContent) selectedArchive.readArticle(dirEntry, displayArticleInForm);
+
+            //Load lastPageVisit if it is the currently requested page
+            if (!htmlContent) {
+                if (params.rememberLastPage && typeof (Storage) !== "undefined" &&
+                    dirEntry.namespace + '/' + dirEntry.url == decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""))) {
+                    htmlContent = localStorage.getItem('lastPageHTML');
+        }
+                if (/<html[^>]*>/.test(htmlContent)) {
+                    console.log("Fast article retrieval from localStorage...");
+                    setTimeout(function () { displayArticleInForm(dirEntry, htmlContent); }, 1);
+                } else {
+                    selectedArchive.readArticle(dirEntry, displayArticleInForm);
+    }
+            }
         }
     }
     
@@ -1768,7 +1841,16 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             !~window.history.state.title.indexOf("/" + dirEntry.url)) {
             pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
         }
-
+        if (params.rememberLastPage && !~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
+            params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
+                "@kiwixKey@" + selectedArchive._file._files[0].name;
+            cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
+            //Store current document's raw HTML in localStorage for fast restart
+            if (typeof (Storage) !== "undefined") {
+                localStorage.setItem('lastPageHTML', htmlArticle);
+            }
+        }
+        
         //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
         //so add some whitespace at the end of the document
         htmlArticle = htmlArticle.replace(/(<\/body>)/i, "\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n$1");
@@ -2171,6 +2253,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 loadMathJax();
                 //TESTING
                 console.timeEnd("Time to Document Ready");
+                if (params.printIntercept) printIntercept();
             }
         } else {
             console.log("Image retrieval disabled by user");
@@ -2193,6 +2276,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
             //TESTING
             console.timeEnd("Time to Document Ready");
+            if (params.printIntercept) printIntercept();
         }
 
         /** Prepares the main array of images remaining for triage
@@ -2238,6 +2322,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             console.log("No images need prefetching\n\n" +
                                 "** Waiting for user to scroll **");
                             windowScroll = true;
+                            if (params.printIntercept) printIntercept();
                         }        
                     } else {
                         //We don't know where we are because no images are in view, so we'd better fetch some more
@@ -2395,6 +2480,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         console.log("All requested image slices have been processed\n" +
                             "** Waiting for user scroll... **");
                         windowScroll = true;
+                        if (params.printIntercept) printIntercept();
                     }
                 }
             }
@@ -2573,11 +2659,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             stateObj.title = title;
             urlParameters = "?title=" + title;
             stateLabel = "Wikipedia Article : " + title;
-            if (params.rememberLastPage) {
-                params.lastPageVisit = encodeURIComponent(title) + "@kiwixKey@" + selectedArchive._file._files[0].name;
-                cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
             }
-        }
         else if (titleSearch && !(""===titleSearch)) {
             stateObj.titleSearch = titleSearch;
             urlParameters = "?titleSearch=" + titleSearch;
