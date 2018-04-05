@@ -22,7 +22,7 @@
  */
 'use strict';
 var params = {};
-params['version'] = "0.9.9.4 Beta-dev"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "0.9.9.5 Beta-dev"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 params['packagedFile'] = "wikipedia_en_ray_charles_2015-06.zimaa"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['fileVersion'] = "wikipedia_en_ray_charles_2015-06"; //Use generic name for actual file, and give version here
 params['cachedStartPage'] = false; //If you have cached the start page for quick start, give its URI here
@@ -54,6 +54,8 @@ params['lastPageVisit'] = getCookie('lastPageVisit') || "";
 params['lastPageVisit'] = params['lastPageVisit'] ? decodeURIComponent(params['lastPageVisit']) : "";
 params['themeChanged'] = params['themeChanged'] || false;
 params['allowInternetAccess'] = params['allowInternetAccess'] || false; //Do not get value from cookie, should be explicitly set by user on a per-session basis
+params['printIntercept'] = false;
+params['printInterception'] = false;
 
 //Initialize checkbox, radio and other values
 document.getElementById('cssCacheModeCheck').checked = params.cssCache;
