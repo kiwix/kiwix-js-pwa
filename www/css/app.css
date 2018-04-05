@@ -315,8 +315,8 @@ pre {
 }
 
 #alert-modal {
-    margin-top: 25% !important;
-    margin-bottom: 25% !important;
+    margin-top: 15% !important;
+    margin-bottom: 15% !important;
 }
 
 @media (max-width: 768px) {
