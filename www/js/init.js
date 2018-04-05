@@ -54,6 +54,8 @@ params['lastPageVisit'] = getCookie('lastPageVisit') || "";
 params['lastPageVisit'] = params['lastPageVisit'] ? decodeURIComponent(params['lastPageVisit']) : "";
 params['themeChanged'] = params['themeChanged'] || false;
 params['allowInternetAccess'] = params['allowInternetAccess'] || false; //Do not get value from cookie, should be explicitly set by user on a per-session basis
+params['printIntercept'] = false;
+params['printInterception'] = false;
 
 //Initialize checkbox, radio and other values
 document.getElementById('cssCacheModeCheck').checked = params.cssCache;
