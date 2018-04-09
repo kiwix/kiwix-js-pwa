@@ -2033,6 +2033,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 //For all cases, neutralize the toggleOpenSection javascript that causes a crash - TODO: make it work for mobile style
                 htmlArticle = htmlArticle.replace(/onclick\s*=\s*["']toggleOpenSection[^"']*['"]\s*/ig, "");
                 htmlArticle = htmlArticle.replace(/<script>([^<]+?toggleOpenSection(?:[^<]|<(?!\/script))+)<\/script>/i, "<!-- script>$1</script --!>");
+                //Ensure all headings are open
                 htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
                 htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
                 console.log("All CSS resolved");
@@ -2131,30 +2132,20 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         if (!nextElement) return;
                         // Decide toggle direction based on first sibling element
                         var toggleDirection = nextElement.style.display == "none" ? "block" : "none";
-                        var k = 0;
+                        if (nextElement.style.display == "none") {
+                            this.innerHTML += "<br />";
+                        } else {
+                            this.innerHTML = this.innerHTML.replace(/<br\s*\/?>$/i, "");
+                        }
                         do {
-                            if (nextElement) {
-                                nextElement.style.display = toggleDirection;
-                                if (!k) { //Only add or remove br for first element
-                                    if (nextElement.style.display == "none") {
-                                        this.innerHTML += "<br />";
-                                    } else {
-                                        this.innerHTML = this.innerHTML.replace(/<br\s*\/?>$/i, "");
-                                    }
-                                }
-                                nextElement = nextElement.nextElementSibling;
-                            }
-                            k++;
+                            nextElement.style.display = toggleDirection;
+                            nextElement = nextElement.nextElementSibling;
                         }
                         while (nextElement && !~nextElement.tagName.indexOf(topTag) && !~nextElement.tagName.indexOf("H1"));
                     });
                 }
             }
             // Process endnote references (so they open the reference block if closed)
-            function getClosest(el, fn) {
-                return el && (fn(el) ? el : getClosest(el.previousElementSibling, fn)) ||
-                    el && (fn(el) ? el : getClosest(el.parentNode, fn));
-            }
             var refs = articleContent.getElementsByClassName("mw-reflink-text");
             if (refs) {
                 for (var l = 0; l < refs.length; l++) {
@@ -2165,20 +2156,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             if (!refID) return;
                             refID = refID.replace(/#/, "");
                             var refLocation = articleContent.getElementById(refID);
-                            var refHead = getClosest(refLocation, function (el) {
+                            var refNext = util.getClosestBack(refLocation, function (el) {
                                 return el.tagName == "H2";
                             });
-                            if (refHead) {
-                                refHead.classList.add("open-block");
-                                refHead.innerHTML = refHead.innerHTML.replace(/<br\s*\/?>$/i, "");
-                                var refNext = refHead.nextElementSibling;
-                                do {
-                                    if (refNext) {
-                                        refNext.style.display = "block";
-                                        refNext = refNext.nextElementSibling;
-                                    }
+                            if (refNext) {
+                                refNext.classList.add("open-block");
+                                refNext.innerHTML = refNext.innerHTML.replace(/<br\s*\/?>$/i, "");
+                                refNext = refNext.nextElementSibling;
+                                while (refNext && refNext.style.display == "none") {
+                                    refNext.style.display = "block";
+                                    refNext = refNext.nextElementSibling;
                                 }
-                                while (refNext && refNext.style.display == "none");
                             }
                         });
                     }
