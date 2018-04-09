@@ -1,5 +1,5 @@
 ## Pending release 0.9.9.5 WikiMed (beta)
-
+* ENHANCEMENT: Headings in article can be toggled open or closed with tap or click
 * ENHANCEMENT: Current page is cached in localStorage for very fast restart and reloading
 * ENHANCEMENT: Automatically switch to desktop style for better printing result
 * FIX: Bug which prevented switching the printing device (caused app crash)
