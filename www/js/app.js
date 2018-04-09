@@ -607,7 +607,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         $('#btnAbout').on('click', function (e) {
             var btnAboutElement = document.getElementById('btnAbout');
             if (/glyphicon-print/.test(btnAboutElement.innerHTML)) {
-                btnAboutElement.classList.add('active');
                 printIntercept();
                 return;
             }
@@ -1897,7 +1896,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnote[1].replace(/(<div\s+)/i,'$1style="padding-top:10px;" '));
         }
         //Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
-        var noexcerpt = htmlArticle.match(/<dl>(?:[^<]|<(?!\/dl>))+?excerpt(?:[^<]|<(?!\/dl>))+?For other places with the same name(?:[^<]|<(?!\/dl>))+?<\/dl>\s*/i);
+        var noexcerpt = htmlArticle.match(/<dl\b(?:[^<]|<(?!\/dl>))+?(?:For other places with the same name|Not to be confused with)(?:[^<]|<(?!\/dl>))+?<\/dl>\s*/i);
         if (noexcerpt && noexcerpt.length) {
             htmlArticle = htmlArticle.replace(noexcerpt, "");
             htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + noexcerpt);
