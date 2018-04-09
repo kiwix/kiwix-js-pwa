@@ -670,6 +670,20 @@ define(['q'], function (q) {
 
     }
 
+    // Does a forward search for el forward through next siblings, or up the DOM tree then forward
+    // Returns if fn(el) is true, or else keeps searching to end of DOM
+    function getClosestForward(el, fn) {
+        return el && (fn(el) ? el : getClosestForward(el.nextElementSibling, fn)) ||
+            el && (fn(el) ? el : getClosestForward(el.parentNode, fn));
+    }
+
+    // Does a reverse search for el back through previous siblings, or up the DOM tree then back
+    // Returns if fn(el) is true, or else keeps searching to top of DOM
+    function getClosestBack(el, fn) {
+        return el && (fn(el) ? el : getClosestBack(el.previousElementSibling, fn)) ||
+            el && (fn(el) ? el : getClosestBack(el.parentNode, fn));
+    }
+
 
     /**
      * Functions and classes exposed by this module
@@ -693,6 +707,8 @@ define(['q'], function (q) {
         leftShift: leftShift,
         matchOuter: matchOuter,
         matchInner: matchInner,
-        Hilitor: Hilitor
+        Hilitor: Hilitor,
+        getClosestForward: getClosestForward,
+        getClosestBack: getClosestBack
     };
 });
