@@ -1,12 +1,11 @@
-## Pending release 0.9.9.5 WikiMed (beta)
+## Release 0.9.9.5 WikiMed (beta)
 * ENHANCEMENT: Headings in article can be toggled open or closed with tap or click
 * ENHANCEMENT: Current page is cached in localStorage for very fast restart and reloading
 * ENHANCEMENT: Automatically switch to desktop style for better printing result
+* ENHANCEMENT: Print zoom capability
+* ENHANCEMENT: Set maximum page width to 100% before printing
 * FIX: Bug which prevented switching the printing device (caused app crash)
 * FIX: Bug in download links preventing display of language codes that are substrings of other language codes
-* ENHANCEMENT: Print zoom capability
-* ENHANCEMENT: Prevent printing of location pins
-* ENHANCEMENT: Set maximum page width to 100% before printing
 * WORKAROUND: MW-Offliner bug which places extraneous tags in some HTML id attributes
 
 ## Release 0.9.9.4 WikiMed (beta)
