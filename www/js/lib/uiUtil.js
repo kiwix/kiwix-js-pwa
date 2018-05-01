@@ -33,13 +33,13 @@ define([], function() {
      * @param {Uint8Array} content
      * @param {String} mimeType
      */
-    function feedNodeWithBlob(jQueryNode, nodeAttribute, content, mimeType) {
+    function feedNodeWithBlob(node, nodeAttribute, content, mimeType) {
         var blob = new Blob([content], { type: mimeType }, {oneTimeOnly: true});
         var url = URL.createObjectURL(blob);
         /*jQueryNode.on('load', function () {
             URL.revokeObjectURL(url);
         });*/
-        jQueryNode.attr(nodeAttribute, url);
+        node.setAttribute(nodeAttribute, url);
     }
         
     var regexpRemoveUrlParameters = new RegExp(/([^\?]+)\?.*$/);
