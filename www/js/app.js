@@ -1720,7 +1720,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             localSearch = {};
 
             //Void the iframe
-            //window.frames[0].frameElement.src = "dummyArticle.html";
+            //window.frames[0].frameElement.src = "about:blank";
 
             //Load cached start page if it exists
             var htmlContent = 0;
@@ -2023,17 +2023,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     htmlArticle = desktopCSS.html;
                     cssArray$ = desktopCSS.css;
                 }
-                if (cssCache) { //For all cases except where user wants exactly what's in the zimfile...
-                    //Reduce the hard-coded top padding to 0
-                    //htmlArticle = htmlArticle.replace(/(<div\s+[^>]*mw-body[^>]+style[^>]+padding\s*:\s*)1em/i, "$10 1em");
-                }
                 //Add required path in front of injected styles (i.e. those that have no ./ or ../../.. etc)
                 cssArray$ = cssArray$.replace(/(\bhref\s*=\s*["']\s*)(?![./]+|blob:)/ig, "$1" + treePath);
                 //For all cases, neutralize the toggleOpenSection javascript that causes a crash - TODO: make it work for mobile style
-                htmlArticle = htmlArticle.replace(/onclick\s*=\s*["']toggleOpenSection[^"']*['"]\s*/ig, "");
+                htmlArticle = htmlArticle.replace(/(onclick\s*=\s*["'])toggleOpenSection[^"']*(['"]\s*)/ig, "$1$2");
                 htmlArticle = htmlArticle.replace(/<script>([^<]+?toggleOpenSection(?:[^<]|<(?!\/script))+)<\/script>/i, "<!-- script>$1</script --!>");
                 //Ensure all headings are open
-                htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
+                //htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
                 htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
                 console.log("All CSS resolved");
                 injectHTML(); //Pass the revised HTML to the image and JS subroutine...
@@ -2064,8 +2060,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
             ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
             ToCList.innerHTML = dropup;
-            $('#ToCList').find('a').each(function () {
-                $(this).on("click", function () {
+            Array.prototype.slice.call(ToCList.getElementsByTagName('a')).forEach(function (listElement) {
+                listElement.addEventListener('click', function () {
                     window.frames[0].frameElement.contentWindow.location.hash = this.dataset.headingId;
                 });
             });
@@ -2216,38 +2212,41 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 //$('#articleContent').contents().find('head').append("<base href='" + baseUrl + "'>");
 
                 // Convert links into javascript calls
-                $('#articleContent').contents().find('body').find('a').each(function () {
-                var href = $(this).attr("href");
-                // Compute current link's url (with its namespace), if applicable
-                var zimUrl = regexpZIMUrlWithNamespace.test(this.href) ? this.href.match(regexpZIMUrlWithNamespace)[1] : "";
-                if (href === null || href === undefined) {
-                    // No href attribute
-                }
-                else if (href.length === 0) {
-                    // It's a link with an empty href, pointing to the current page.
-                    // Because of the base tag, we need to modify it
-                        $(this).on('click', function (e) {
-                            return false;
+                var iframe = document.getElementById('articleContent').contentDocument;
+                var anchors = Array.prototype.slice.call(iframe.getElementsByTagName('a'));
+                anchors.forEach(function (anchor) {
+                    var href = anchor.getAttribute("href");
+                    // Compute current link's url (with its namespace), if applicable
+                    var zimUrl = regexpZIMUrlWithNamespace.test(anchor.href) ? anchor.href.match(regexpZIMUrlWithNamespace)[1] : "";
+                    if (href === null || href === undefined) {
+                        // No href attribute
+                    }
+                    else if (href.length === 0) {
+                        // It's a link with an empty href, pointing to the current page.
+                        // Because of the base tag, we need to modify it
+                        anchor.addEventListener('click', function (e) {
+                            e.preventDefault();
                         });
                     }
-                else if (regexpLocalAnchorHref.test(href)) {
-                    // It's an anchor link : we need to make it work with javascript
-                    // because of the base tag
-                    $(this).on('click', function(e) {
-                        $('#articleContent').first()[0].contentWindow.location.hash = href;
-                        return false;
-                    });
+                    else if (regexpLocalAnchorHref.test(href)) {
+                        // It's an anchor link : we need to make it work with javascript
+                        // because of the base tag
+                        anchor.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            document.getElementById('articleContent').contentWindow.location.hash = href;
+                        });
                     }
-                else if (this.protocol !== currentProtocol
-                    || this.host !== currentHost) {
-                    // It's an external URL : we should open it in a new tab
-                        $(this).attr("target", "_blank");
+                    else if (anchor.protocol !== currentProtocol
+                        || anchor.host !== currentHost) {
+                        // It's an external URL : we should open it in a new tab
+                        anchor.setAttribute("target", "_blank");
                     }
                     else {
                         // It's a link to another article
                         // Add an onclick event to go to this article
                         // instead of following the link
-                        $(this).on('click', function (e) {
+                        anchor.addEventListener('click', function (e) {
+                            e.preventDefault();
                             var decodedURL = decodeURIComponent(zimUrl);
                             goToArticle(decodedURL);
                             return false;
@@ -2270,6 +2269,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 var doc = $("#articleContent").contents()[0];
                 var script = doc.createElement("script");
                 script.type = "text/javascript";
+                //script.src = treePath + "js/MathJax/MathJax.js?config=TeX-AMS_HTML-full,config";
+                //script.src = treePath + "js/MathJax/MathJax.js?config=TeX-AMS_SVG-full";
                 script.src = treePath + "js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
                 if (containsMathTeX || containsMathTeXRaw) script.innerHTML = 'MathJax.Hub.Queue(["Typeset", MathJax.Hub]); \
                             console.log("Typesetting maths with MathJax");';
@@ -2620,11 +2621,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          */
         function loadImageSlice(images, sliceID, sliceEnd, callback, dataRequested) {
             var sliceCount = 0;
-            $(images).each(function () {
-                var image = $(this);
+            Array.prototype.slice.call(images).forEach(function (image) {
                 // It's a standard image contained in the ZIM file
                 // We try to find its name (from an absolute or relative URL)
-                var imageMatch = image.attr('data-kiwixsrc').match(regexpImageUrl); //kiwix-js #272
+                var imageMatch = image.dataset.kiwixsrc.match(regexpImageUrl); //kiwix-js #272
                 if (imageMatch) {
                     var title = decodeURIComponent(imageMatch[1]);
                     selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
