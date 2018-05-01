@@ -46,7 +46,7 @@ table.infobox th, table.infobox td { /*Added GK*/
     font-size: 16px;
 }
 h1[tabindex="0"].collapsible-heading > .indicator {
-  display: none; /* hide the "v" icone for the main title */
+  display: none; /* hide the "v" icon for the main title */
 }
 @media all and (min-width: 720px) {
     .client-js .collapsible-heading .indicator {
