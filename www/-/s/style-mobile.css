@@ -2173,9 +2173,9 @@ input.search::-webkit-search-decoration, input.search::-webkit-search-cancel-but
     font-size: 0.58823529em
 }
 
-.content h2 {
+/*.content h2 {
     clear: both
-}
+}*/
 
     .content h2 .edit-page {
         font-size: 0.66666667em
@@ -2195,7 +2195,7 @@ input.search::-webkit-search-decoration, input.search::-webkit-search-cancel-but
 }
 
 .content .section-heading {
-    width: 100%;
+    /* width: 100%; */
     border-bottom: solid 1px #eaecf0;
     margin-bottom: 0.5em
 }
@@ -4751,7 +4751,7 @@ div.infobox_v3 {
     }
 
 .client-js .collapsible-heading, .client-js .collapsible-block {
-    clear: both
+    /*clear: both*/
 }
 
 .client-js .collapsible-heading {
