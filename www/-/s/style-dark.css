@@ -24,11 +24,14 @@ th[style*="background-color: #fff"], .mw-echo-notifications-badge,
 }
 
   /*** Overall ***/
-td:not([style*="background"]), p, li, th:not([style*="background"]), caption, div,
-/*span:not([class*="color"]):not([class*="wikEd"]),*/
-p code, label code, dl code {
+td:not([style*="background"]), p, li, th:not([style*="background"]), caption, div {
     color: lightgray !important;
 }
+
+    p code, label code, dl code {
+        background-color: #111;
+        color: lightgray !important;
+    }
 
 
 blockquote {
@@ -124,7 +127,7 @@ html, body {
     background: rgba(0, 0, 0, 0.8) !important;
   }
 
-  #bodyContent pre, #bodyContent code, span.plainlinks *
+  #bodyContent pre, .mw-body-content pre, #bodyContent code, .mw-body-content code, span.plainlinks *
   {
     background-color: #111 !important;
     border-color: #555 !important;
