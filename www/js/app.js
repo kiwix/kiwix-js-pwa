@@ -2278,7 +2278,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         } else if (anchor.protocol !== currentProtocol ||
                             anchor.host !== currentHost) {
                             // It's an external URL : we should open it in a new tab
-                            anchor.setAttribute("target", "_blank");
+                           anchor.target = "_blank";
                         } else {
                             // It's a link to another article
                             // Add an onclick event to go to this article
