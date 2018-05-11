@@ -44,8 +44,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         //END TESTING
 
         /**
-        * @type ZIMArchive
-        */
+         * @type ZIMArchive
+         */
         var selectedArchive = null;
 
         /**
@@ -54,10 +54,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         function resizeIFrame() {
             var height = $(window).outerHeight()
                 //- $("#top").outerHeight(true)
-                - $("#articleListWithHeader").outerHeight(true)
+                -
+                $("#articleListWithHeader").outerHeight(true)
                 // TODO : this 5 should be dynamically computed, and not hard-coded
                 //- 5;
-                + 10; //Try adding extra space to get pesky x-scrollbar out of way
+                +
+                10; //Try adding extra space to get pesky x-scrollbar out of way
             $(".articleIFrame").css("height", height + "px");
             if (params.hideToolbar && document.getElementById('articleContent').style.display == "none") document.getElementById('scrollbox').style.height = height + "px";
             var ToCList = document.getElementById('ToCList');
@@ -79,7 +81,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     //document.getElementById('btnHomeBottom').classList.add('col-xs-1');
                     document.getElementById('btnTop').classList.remove('col-xs-2');
                     document.getElementById('btnTop').classList.add('col-xs-1');
-                //} else if (window.outerWidth > 360 && !colXS2.length) {
+                    //} else if (window.outerWidth > 360 && !colXS2.length) {
                 } else {
                     //document.getElementById('btnHomeBottom').classList.remove('col-xs-1');
                     //document.getElementById('btnHomeBottom').classList.add('col-xs-2');
@@ -96,7 +98,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
         //Polyfill scrollStopped event
         $.fn.scrollStopped = function (callback) {
-            var that = this, $this = $(that);
+            var that = this,
+                $this = $(that);
             $this.scroll(function (ev) {
                 clearTimeout($this.data('scrollTimeout'));
                 $this.data('scrollTimeout', setTimeout(callback.bind(that), 250, ev));
@@ -131,7 +134,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     if (articleResults && articleResults.length) {
                         articleResults[0].focus();
                     }
-                }    
+                }
                 onKeyUpPrefix(e);
             }
         });
@@ -156,7 +159,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
         }, true);
 
-    //Set up listeners for print dialogues
+        //Set up listeners for print dialogues
         //$("#printModal").off('hide.bs.modal');
         $("#printModal").on('hide.bs.modal', function () {
             //Restore temporarily changed values
@@ -196,6 +199,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             btnContinue.innerHTML = "Please wait";
             goToArticle(decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, "")));
         });
+
         function printCleanup() {
             params.printIntercept = false;
             params.printInterception = false;
@@ -205,13 +209,16 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 if (!params.rememberLastPage) {
                     cookies.setItem('lastPageVisit', "", Infinity);
                     if (typeof Storage !== "undefined") {
-                        try { localStorage.setItem('lastPageHTML', ""); }
-                        catch (err) { console.log("localStorage not supported: " + err); }
+                        try {
+                            localStorage.setItem('lastPageHTML', "");
+                        } catch (err) {
+                            console.log("localStorage not supported: " + err);
+                        }
                     }
                 }
             }, 5000);
         }
-    //End of listeners for print dialogues
+        //End of listeners for print dialogues
 
         function printIntercept() {
             params.printInterception = params.printIntercept;
@@ -265,7 +272,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 backdrop: "static",
                 keyboard: true
             });
-                }
+        }
 
         //Establish some variables with global scope
         var firstRun = false;
@@ -412,9 +419,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             return false;
         });
         setRelativeUIFontSize(params.relativeUIFontSize);
-        document.getElementById('relativeUIFontSizeSlider').addEventListener('change', function() {
+        document.getElementById('relativeUIFontSizeSlider').addEventListener('change', function () {
             setRelativeUIFontSize(this.value);
         });
+
         function setRelativeUIFontSize(value) {
             value = ~~value;
             document.getElementById('spinnerVal').innerHTML = value + "%";
@@ -432,7 +440,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             for (var i = 0; i < heads.length; i++) {
                 var multiplier = 1;
                 var head = heads[i].tagName;
-                multiplier = head == "H4" ? 1.4 : head == "H3" ? 1.9 : head == "H2" ? 2.3 : head == "H1" ? 2.8 : multiplier; 
+                multiplier = head == "H4" ? 1.4 : head == "H3" ? 1.9 : head == "H2" ? 2.3 : head == "H1" ? 2.8 : multiplier;
                 heads[i].style.fontSize = ~~(value * 0.14 * multiplier) + "px";
             }
             document.getElementById('displaySettingsDiv').scrollIntoView();
@@ -507,7 +515,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('scrollbox').style.position = "fixed";
             document.getElementById('scrollbox').style.height = window.innerHeight + "px";
             //Use the "light" navbar if the content is "light" (otherwise it looks shite....)
-            var checkTheme = params.cssTheme == "light" ? "light" : "dark"; 
+            var checkTheme = params.cssTheme == "light" ? "light" : "dark";
             if (checkTheme != params.cssUITheme) {
                 if (checkTheme == "light" && (!activeBtn || activeBtn == "btnHome" || activeBtn == "findText") ||
                     checkTheme == "dark" && activeBtn && activeBtn != "btnHome" && activeBtn != "findText") {
@@ -518,7 +526,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
 
             if (typeof Windows !== 'undefined') {
-            document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
+                document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
             }
             //else {
             //    document.getElementById('rescanStorage').style.display = "none";
@@ -586,7 +594,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (document.getElementById('openLocalFiles').style.display == "none") {
                 document.getElementById('rescanStorage').style.display = "block";
             }
-            
+
             //If user hadn't previously picked a folder or a file, resort to the local storage folder (UWP functionality)
             if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
                 params.pickedFolder = params.localStorage;
@@ -682,8 +690,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 }
                 // Do the necessary to enable or disable the Service Worker
                 setContentInjectionMode(this.value);
-            }
-            else {
+            } else {
                 setContentInjectionMode('jquery');
             }
         });
@@ -728,9 +735,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 document.getElementById('findInArticle').classList.add("dark");
                 document.getElementById('prefix').classList.add("dark");
                 var elements = document.querySelectorAll(".settings");
-                for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid darkgray"; }
+                for (var i = 0; i < elements.length; i++) {
+                    elements[i].style.border = "1px solid darkgray";
+                }
                 document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? "./img/icons/wikivoyage-white-32.png" : /medicine/i.test(params.storedFile) ? "./img/icons/wikimed-lightblue-32.png" : "./img/icons/kiwix-32.png";
-                if (/wikivoyage/i.test(params.storedFile)) document.getElementById('kiwixIconAbout').src = "./img/icons/wikivoyage-90-white.png"; 
+                if (/wikivoyage/i.test(params.storedFile)) document.getElementById('kiwixIconAbout').src = "./img/icons/wikivoyage-90-white.png";
             }
             if (value == 'light') {
                 document.getElementsByTagName('body')[0].classList.remove("dark");
@@ -741,7 +750,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 document.getElementById('findInArticle').classList.remove("dark");
                 document.getElementById('prefix').classList.remove("dark");
                 var elements = document.querySelectorAll(".settings");
-                for (var i = 0; i < elements.length; i++) { elements[i].style.border = "1px solid black"; }
+                for (var i = 0; i < elements.length; i++) {
+                    elements[i].style.border = "1px solid black";
+                }
                 document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? "./img/icons/wikivoyage-black-32.png" : /medicine/i.test(params.storedFile) ? "./img/icons/wikimed-blue-32.png" : "./img/icons/kiwix-blue-32.png";
                 if (/wikivoyage/i.test(params.packagedFile)) document.getElementById('kiwixIconAbout').src = "./img/icons/wikivoyage-90.png";
             }
@@ -749,10 +760,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
         $('input:checkbox[name=cssWikiDarkTheme]').on('change', function (e) {
             params.cssTheme = this.checked ? 'dark' : 'light';
-            if (!this.checked) document.getElementById('cssWikiDarkThemeInvertCheck').checked = false; 
+            if (!this.checked) document.getElementById('cssWikiDarkThemeInvertCheck').checked = false;
             if (this.checked) document.getElementById('footer').classList.add("darkfooter");
             if (!this.checked) document.getElementById('footer').classList.remove("darkfooter");
-            document.getElementById('darkInvert').style.display = this.checked ? "inline" : "none"; 
+            document.getElementById('darkInvert').style.display = this.checked ? "inline" : "none";
             params.cssTheme = document.getElementById('cssWikiDarkThemeInvertCheck').checked && params.cssTheme == 'dark' ? 'invert' : params.cssTheme;
             cookies.setItem('cssTheme', params.cssTheme, Infinity);
             switchTheme();
@@ -763,6 +774,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             cookies.setItem('cssTheme', params.cssTheme, Infinity);
             switchTheme();
         });
+
         function switchTheme() {
             var doc = window.frames[0].frameElement.contentDocument;
             //var baseUrl = doc.head.innerHTML.match(/<base\s*href\s*=\s*["']([^"']+)/);
@@ -776,7 +788,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
             var styleSheets = doc.getElementsByTagName("link");
             //Remove any dark theme, as we don't know whether user switched from light to dark or from inverted to dark, etc.
-            for (var i = styleSheets.length-1; i > -1; i--) {
+            for (var i = styleSheets.length - 1; i > -1; i--) {
                 if (~styleSheets[i].href.search(/\/style-dark/)) {
                     styleSheets[i].disabled = true;
                     styleSheets[i].parentNode.removeChild(styleSheets[i]);
@@ -787,7 +799,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 link.setAttribute("rel", "stylesheet");
                 link.setAttribute("type", "text/css");
                 link.setAttribute("href", params.cssTheme == "dark" ? treePath + "-/s/style-dark.css" : treePath + "-/s/style-dark-invert.css");
-                doc.head.appendChild(link); 
+                doc.head.appendChild(link);
             }
         }
         $('input:checkbox[name=rememberLastPage]').on('change', function (e) {
@@ -798,9 +810,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 cookies.setItem('lastPageVisit', "", Infinity);
                 //Clear localStorage
                 if (typeof Storage !== "undefined") {
-                    try { localStorage.setItem('lastPageHTML', ""); }
-                    catch (err) { console.log("localStorage not supported: " + err); }
-            }
+                    try {
+                        localStorage.setItem('lastPageHTML', "");
+                    } catch (err) {
+                        console.log("localStorage not supported: " + err);
+                    }
+                }
             }
         });
         $('input:radio[name=cssInjectionMode]').on('click', function (e) {
@@ -817,6 +832,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             cookies.setItem('removePageMaxWidth', params.removePageMaxWidth, Infinity);
             removePageMaxWidth();
         });
+
         function removePageMaxWidth() {
             var doc = window.frames[0].frameElement.contentDocument;
             var zimType = /\bhref\s*=\s*["'][^"']*?(?:minerva|mobile)/i.test(doc.head.innerHTML) ? "mobile" : "desktop";
@@ -867,7 +883,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             var thisdoc = document.getElementById('top');
             var scrollbox = document.getElementById('scrollbox');
             if (!params.hideToolbar) {
-                thisdoc.style.display="block";
+                thisdoc.style.display = "block";
                 thisdoc.style.position = "fixed";
                 thisdoc.style.zIndex = "1";
                 scrollbox.style.position = "relative";
@@ -880,8 +896,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             scrollbox.style.position = "fixed";
             resizeIFrame();
             if (typeof tryHideToolber !== "undefined") window.frames[0].removeEventListener('scroll', tryHideToolbar);
-            var tryHideToolbar = function () { hideToolbar(); };
+            var tryHideToolbar = function () {
+                hideToolbar();
+            };
             window.frames[0].addEventListener('scroll', tryHideToolbar, true);
+
             function hideToolbar(lastypos) {
                 if (!params.hideToolbar) return;
                 //Don't hide toolbar if search is open
@@ -917,7 +936,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             cssUIThemeSet(params.cssUITheme);
             //@TODO - this is initialization code, and should be in init.js (withoug jQuery)
             $('input:radio[name=cssInjectionMode]').filter('[value="' + params.cssSource + '"]').prop('checked', true);
-        //DEV this hides file selectors if it is a packaged file -- add your own packaged file test to regex below
+            //DEV this hides file selectors if it is a packaged file -- add your own packaged file test to regex below
             if (/wikivoyage|medicine/i.test(params.fileVersion)) {
                 document.getElementById('packagedAppFileSelectors').style.display = "block";
                 document.getElementById('hideFileSelectors').style.display = "none";
@@ -930,7 +949,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
             if (cookies.getItem('version') != params.version) {
                 firstRun = true;
-                $('#myModal').modal({ backdrop: "static" });
+                $('#myModal').modal({
+                    backdrop: "static"
+                });
                 cookies.setItem('version', params.version, Infinity);
             }
         });
@@ -981,7 +1002,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     // Unregistering it does not seem to work as expected : the ServiceWorker
                     // is indeed unregistered but still active...
                     // So we have to disable it manually (even if it's still registered and active)
-                    navigator.serviceWorker.controller.postMessage({ 'action': 'disable' });
+                    navigator.serviceWorker.controller.postMessage({
+                        'action': 'disable'
+                    });
                     messageChannel = null;
                 }
                 refreshAPIStatus();
@@ -1017,7 +1040,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         serviceWorker.addEventListener('statechange', function (statechangeevent) {
                             if (statechangeevent.target.state === 'activated') {
                                 console.log("try to post an init message to ServiceWorker");
-                                navigator.serviceWorker.controller.postMessage({ 'action': 'init' }, [messageChannel.port2]);
+                                navigator.serviceWorker.controller.postMessage({
+                                    'action': 'init'
+                                }, [messageChannel.port2]);
                                 console.log("init message sent to ServiceWorker");
                             }
                         });
@@ -1027,7 +1052,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     });
                 } else {
                     console.log("try to re-post an init message to ServiceWorker, to re-enable it in case it was disabled");
-                    navigator.serviceWorker.controller.postMessage({ 'action': 'init' }, [messageChannel.port2]);
+                    navigator.serviceWorker.controller.postMessage({
+                        'action': 'init'
+                    }, [messageChannel.port2]);
                     console.log("init message sent to ServiceWorker");
                 }
             }
@@ -1052,14 +1079,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 if ($("#prefix").is(":focus")) {
                     $("searchArticles").focus();
                 }
-                if (confirm("The 'Service Worker' mode is still UNSTABLE for now."
-                    + " It happens that the application needs to be reinstalled (or the ServiceWorker manually removed)."
-                    + " Please confirm with OK that you're ready to face this kind of bugs, or click Cancel to stay in 'jQuery' mode.")) {
+                if (confirm("The 'Service Worker' mode is still UNSTABLE for now." +
+                        " It happens that the application needs to be reinstalled (or the ServiceWorker manually removed)." +
+                        " Please confirm with OK that you're ready to face this kind of bugs, or click Cancel to stay in 'jQuery' mode.")) {
                     // We will not display this warning again for one day
                     cookies.setItem("warnedServiceWorkerMode", true, 86400);
                     return true;
-                }
-                else {
+                } else {
                     return false;
                 }
             }
@@ -1070,8 +1096,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         var lastContentInjectionMode = cookies.getItem('lastContentInjectionMode');
         if (lastContentInjectionMode) {
             setContentInjectionMode(lastContentInjectionMode);
-        }
-        else {
+        } else {
             setContentInjectionMode('jquery');
         }
 
@@ -1095,8 +1120,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             try {
                 var dummyMessageChannel = new MessageChannel();
                 if (dummyMessageChannel) return true;
-            }
-            catch (e) {
+            } catch (e) {
                 return false;
             }
             return false;
@@ -1124,8 +1148,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (listOfArchivesFromCookie !== null && listOfArchivesFromCookie !== undefined && listOfArchivesFromCookie !== "") {
                 var directories = listOfArchivesFromCookie.split('|');
                 populateDropDownListOfArchives(directories);
-            }
-            else {
+            } else {
                 if (storages.length || params.localStorage) {
                     searchForArchivesInStorage();
                 } else {
@@ -1133,8 +1156,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     if (document.getElementById('archiveFiles').files && document.getElementById('archiveFiles').files.length > 0) {
                         // Archive files are already selected, 
                         setLocalArchiveFromFileSelect();
-                    }
-                    else {
+                    } else {
                         $("#btnConfigure").click();
                     }
                 }
@@ -1152,7 +1174,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
         }
 
-// @STORAGE AUTOLOAD STARTS HERE
+        // @STORAGE AUTOLOAD STARTS HERE
         if ($.isFunction(navigator.getDeviceStorages)) {
             // The method getDeviceStorages is available (FxOS>=1.1)
             storages = $.map(navigator.getDeviceStorages("sdcard"), function (s) {
@@ -1160,7 +1182,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             });
         }
 
-        if (storages !== null && storages.length > 0 || 
+        if (storages !== null && storages.length > 0 ||
             typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
             // Make a fake first access to device storage, in order to ask the user for confirmation if necessary.
             // This way, it is only done once at this moment, instead of being done several times in callbacks
@@ -1168,15 +1190,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //storages[0].get("fake-file-to-read").then(searchForArchivesInPreferencesOrStorage,
             //searchForArchivesInPreferencesOrStorage);
             searchForArchivesInPreferencesOrStorage();
-        }
-        else {
+        } else {
             // If DeviceStorage is not available, we display the file select components
             displayFileSelect();
             if (document.getElementById('archiveFiles').files && document.getElementById('archiveFiles').files.length > 0) {
                 // Archive files are already selected, 
                 setLocalArchiveFromFileSelect();
-            }
-            else {
+            } else {
                 $("#btnConfigure").click();
             }
         }
@@ -1202,8 +1222,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
                 if (title && !("" === title)) {
                     goToArticle(title);
-                }
-                else if (titleSearch && !("" === titleSearch)) {
+                } else if (titleSearch && !("" === titleSearch)) {
                     $('#prefix').val(titleSearch);
                     searchDirEntriesFromPrefix($('#prefix').val());
                 }
@@ -1225,8 +1244,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 var archiveDirectory = archiveDirectories[i];
                 if (archiveDirectory === "/") {
                     alert("It looks like you have put some archive files at the root of your sdcard (or internal storage). Please move them in a subdirectory");
-                }
-                else {
+                } else {
                     comboArchiveList.options[i] = new Option(archiveDirectory, archiveDirectory);
                 }
             }
@@ -1241,8 +1259,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 document.getElementById('archiveNumber').innerHTML = '<b>' + comboArchiveList.length + '</b> Archive' + plural + ' found in selected location (tap "Select storage" to change)';
                 var lastSelectedArchive = cookies.getItem("lastSelectedArchive") || params.storedFile;
                 params.storedFile = lastSelectedArchive;
-                if (lastSelectedArchive !== null && lastSelectedArchive !== undefined && lastSelectedArchive !== ""
-                    || comboArchiveList.options.length == 1) { //Either we have previously chosen a file, or there is only one file
+                if (lastSelectedArchive !== null && lastSelectedArchive !== undefined && lastSelectedArchive !== "" ||
+                    comboArchiveList.options.length == 1) { //Either we have previously chosen a file, or there is only one file
                     // Attempt to select the corresponding item in the list, if it exists
                     var success = false;
                     if ($("#archiveList option[value='" + lastSelectedArchive + "']").length > 0) {
@@ -1255,8 +1273,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         setLocalArchiveFromArchiveList();
                     }
                 }
-            }
-            else {
+            } else {
                 alert("Welcome to Kiwix! This application needs at least a ZIM file in your SD-card (or internal storage). Please download one and put it on the device (see About section). Also check that your device is not connected to a computer through USB device storage (which often locks the SD-card content)");
                 $("#btnAbout").click();
                 var isAndroid = navigator.userAgent.indexOf("Android") !== -1;
@@ -1289,15 +1306,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     if (selectedStorage === null) {
                         alert("Unable to find which device storage corresponds to directory " + archiveDirectory);
                     }
-                }
-                else {
+                } else {
                     // This happens when the archiveDirectory is not prefixed by the name of the storage
                     // (in the Simulator, or with FxOs 1.0, or probably on devices that only have one device storage)
                     // In this case, we use the first storage of the list (there should be only one)
                     if (storages.length === 1) {
                         selectedStorage = storages[0];
-                    }
-                    else { //IT'S NOT FREAKIN FFOS!!!!!!!!!!
+                    } else { //IT'S NOT FREAKIN FFOS!!!!!!!!!!
                         //Patched for UWP support:
                         if (params.pickedFolder && Windows && Windows.Storage) {
                             var query = params.pickedFolder.createFileQuery();
@@ -1467,1355 +1482,1387 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     document.getElementById('archiveNumber').innerHTML = '<b>0</b> Archives found in local storage (tap "Select storage" to select an archive location)';
                     params.pickedFolder = "";
                     Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.remove(params.falFolderToken);
-                return;
-            });
-        } else {
-            // The picker was dismissed with no selected file
-            console.log("User closed folder picker without picking a file");
+                    return;
+                });
+            } else {
+                // The picker was dismissed with no selected file
+                console.log("User closed folder picker without picking a file");
+            }
         }
-    }
 
 
-    function setLocalArchiveFromFileList(files) {
+        function setLocalArchiveFromFileList(files) {
             // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
             if (cssBlobCache)
                 cssBlobCache = new Map();
             //if (cssDirEntryCache)
             //    cssDirEntryCache = new Map();
-        selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
-            // The archive is set : go back to home page to start searching
-            params.storedFile = archive._file._files[0].name;
-            cookies.setItem("lastSelectedArchive", params.storedFile, Infinity);
-            var reloadLink = document.getElementById("reloadPackagedArchive");
-            if (reloadLink) {
-                if (params.packagedFile != params.storedFile) {
-                    reloadLink.style.display = "inline";
-                    reloadLink.removeEventListener("click", loadPackagedArchive);
-                    reloadLink.addEventListener("click", loadPackagedArchive);
-                    document.getElementById("moreInfo").style.display = "none";
-                } else {
-                    reloadLink.style.display = "none";
-                    document.getElementById('currentArchive').style.display = "none";
-                    document.getElementById("moreInfo").style.display = "inline";
+            selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
+                // The archive is set : go back to home page to start searching
+                params.storedFile = archive._file._files[0].name;
+                cookies.setItem("lastSelectedArchive", params.storedFile, Infinity);
+                var reloadLink = document.getElementById("reloadPackagedArchive");
+                if (reloadLink) {
+                    if (params.packagedFile != params.storedFile) {
+                        reloadLink.style.display = "inline";
+                        reloadLink.removeEventListener("click", loadPackagedArchive);
+                        reloadLink.addEventListener("click", loadPackagedArchive);
+                        document.getElementById("moreInfo").style.display = "none";
+                    } else {
+                        reloadLink.style.display = "none";
+                        document.getElementById('currentArchive').style.display = "none";
+                        document.getElementById("moreInfo").style.display = "inline";
+                    }
                 }
+                //This ensures the correct icon is set for the newly loaded archive
+                cssUIThemeSet(params.cssUITheme);
+                if (params.rescan) {
+                    $('#btnConfigure').click();
+                    $('#btnConfigure').click();
+                    params.rescan = false;
+                } else {
+                    $('#openLocalFiles').hide();
+                    if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile)) {
+                        var lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
+                        goToArticle(lastPage);
+                    } else {
+                        $('#btnHome').click();
+                    }
+                }
+            });
+        }
+
+        function loadPackagedArchive() {
+            params.rescan = false;
+            //Reload any ZIM files in local storage (whcih the user can't otherwise select with the filepicker)
+            if (params.packagedFile && params.localStorage) {
+                params.pickedFolder = params.localStorage;
+                scanUWPFolderforArchives(params.localStorage);
+                setLocalArchiveFromArchiveList(params.packagedFile);
             }
-            //This ensures the correct icon is set for the newly loaded archive
-            cssUIThemeSet(params.cssUITheme);
-            if (params.rescan) {
-                $('#btnConfigure').click();
-                $('#btnConfigure').click();
-                params.rescan = false;
+        }
+
+        /**
+         * Sets the localArchive from the File selects populated by user
+         */
+        function setLocalArchiveFromFileSelect() {
+            setLocalArchiveFromFileList(document.getElementById('archiveFilesLegacy').files);
+        }
+
+        /**
+         * Reads a remote archive with given URL, and returns the response in a Promise.
+         * This function is used by setRemoteArchives below, for UI tests
+         * 
+         * @param url The URL of the archive to read
+         * @returns {Promise}
+         */
+        function readRemoteArchive(url) {
+            var deferred = q.defer();
+            var request = new XMLHttpRequest();
+            request.open("GET", url, true);
+            request.responseType = "blob";
+            request.onreadystatechange = function () {
+                if (request.readyState === XMLHttpRequest.DONE) {
+                    if (request.status >= 200 && request.status < 300 || request.status === 0) {
+                        // Hack to make this look similar to a file
+                        request.response.name = url;
+                        deferred.resolve(request.response);
+                    } else {
+                        deferred.reject("HTTP status " + request.status + " when reading " + url);
+                    }
+                }
+            };
+            request.onabort = function (e) {
+                deferred.reject(e);
+            };
+            request.send(null);
+            return deferred.promise;
+        }
+
+        /**
+         * This is used in the testing interface to inject remote archives
+         */
+        window.setRemoteArchives = function () {
+            var readRequests = [];
+            var i;
+            for (i = 0; i < arguments.length; i++) {
+                readRequests[i] = readRemoteArchive(arguments[i]);
+            }
+            return q.all(readRequests).then(function (arrayOfArchives) {
+                setLocalArchiveFromFileList(arrayOfArchives);
+            });
+        };
+
+        /**
+         * Handle key input in the prefix input zone
+         * @param {Event} evt
+         */
+        function onKeyUpPrefix(evt) {
+            // Use a timeout, so that very quick typing does not cause a lot of overhead
+            // It is also necessary for the words suggestions to work inside Firefox OS
+            if (window.timeoutKeyUpPrefix) {
+                window.clearTimeout(window.timeoutKeyUpPrefix);
+            }
+            window.timeoutKeyUpPrefix = window.setTimeout(function () {
+                var prefix = $("#prefix").val();
+                if (prefix && prefix.length > 0) {
+                    $('#searchArticles').click();
+                }
+            }, 500);
+        }
+
+
+        /**
+         * Search the index for DirEntries with title that start with the given prefix (implemented
+         * with a binary search inside the index file)
+         * @param {String} prefix
+         */
+        function searchDirEntriesFromPrefix(prefix) {
+            $('#searchingForArticles').show();
+            $('#configuration').hide();
+            $('#articleContent').contents().empty();
+            if (selectedArchive !== null && selectedArchive.isReady()) {
+                selectedArchive.findDirEntriesWithPrefix(prefix.trim(), MAX_SEARCH_RESULT_SIZE, populateListOfArticles);
             } else {
-                $('#openLocalFiles').hide();
-                if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile)) {
-                    var lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
-                    goToArticle(lastPage);
-                } else {
-                    $('#btnHome').click();
-                }
-            }
-        });
-    }
-
-    function loadPackagedArchive() {
-        params.rescan = false;
-        //Reload any ZIM files in local storage (whcih the user can't otherwise select with the filepicker)
-        if (params.packagedFile && params.localStorage) {
-            params.pickedFolder = params.localStorage;
-            scanUWPFolderforArchives(params.localStorage);
-            setLocalArchiveFromArchiveList(params.packagedFile);
-        }
-    }
-
-    /**
-     * Sets the localArchive from the File selects populated by user
-     */
-    function setLocalArchiveFromFileSelect() {
-        setLocalArchiveFromFileList(document.getElementById('archiveFilesLegacy').files);
-    }
-
-    /**
-     * Reads a remote archive with given URL, and returns the response in a Promise.
-     * This function is used by setRemoteArchives below, for UI tests
-     * 
-     * @param url The URL of the archive to read
-     * @returns {Promise}
-     */
-    function readRemoteArchive(url) {
-        var deferred = q.defer();
-        var request = new XMLHttpRequest();
-        request.open("GET", url, true);
-        request.responseType = "blob";
-        request.onreadystatechange = function () {
-            if (request.readyState === XMLHttpRequest.DONE) {
-                if (request.status >= 200 && request.status < 300 || request.status === 0) {
-                // Hack to make this look similar to a file
-                request.response.name = url;
-                    deferred.resolve(request.response);
-            	}
-                else {
-                    deferred.reject("HTTP status " + request.status + " when reading " + url);
-                }
-            }
-        };
-        request.onabort = function (e) {
-            deferred.reject(e);
-        };
-        request.send(null);
-        return deferred.promise;
-    }
-
-    /**
-     * This is used in the testing interface to inject remote archives
-     */
-    window.setRemoteArchives = function() {
-        var readRequests = [];
-        var i;
-        for (i = 0; i < arguments.length; i++) {
-            readRequests[i] = readRemoteArchive(arguments[i]);
-        }
-        return q.all(readRequests).then(function(arrayOfArchives) {
-            setLocalArchiveFromFileList(arrayOfArchives);
-        });
-    };
-
-    /**
-     * Handle key input in the prefix input zone
-     * @param {Event} evt
-     */
-    function onKeyUpPrefix(evt) {
-        // Use a timeout, so that very quick typing does not cause a lot of overhead
-        // It is also necessary for the words suggestions to work inside Firefox OS
-        if (window.timeoutKeyUpPrefix) {
-            window.clearTimeout(window.timeoutKeyUpPrefix);
-        }
-        window.timeoutKeyUpPrefix = window.setTimeout(function() {
-            var prefix = $("#prefix").val();
-            if (prefix && prefix.length > 0) {
-                $('#searchArticles').click();
+                $('#searchingForArticles').hide();
+                // We have to remove the focus from the search field,
+                // so that the keyboard does not stay above the message
+                $('#searchArticles').focus();
+                alert("Archive not set : please select an archive");
+                $('#btnConfigure').click();
             }
         }
-        ,500);
-    }
 
 
-    /**
-     * Search the index for DirEntries with title that start with the given prefix (implemented
-     * with a binary search inside the index file)
-     * @param {String} prefix
-     */
-    function searchDirEntriesFromPrefix(prefix) {
-        $('#searchingForArticles').show();
-        $('#configuration').hide();
-        $('#articleContent').contents().empty();
-        if (selectedArchive !== null && selectedArchive.isReady()) {
-            selectedArchive.findDirEntriesWithPrefix(prefix.trim(), MAX_SEARCH_RESULT_SIZE, populateListOfArticles);
-        } else {
+        /**
+         * Display the list of articles with the given array of DirEntry
+         * @param {Array.<DirEntry>} dirEntryArray
+         * @param {Integer} maxArticles
+         */
+        function populateListOfArticles(dirEntryArray, maxArticles) {
+            var articleListHeaderMessageDiv = $('#articleListHeaderMessage');
+            var nbDirEntry = 0;
+            if (dirEntryArray) {
+                nbDirEntry = dirEntryArray.length;
+            }
+
+            var message;
+            if (maxArticles >= 0 && nbDirEntry >= maxArticles) {
+                message = maxArticles + " first articles below (refine your search).";
+            } else {
+                message = nbDirEntry + " articles found.";
+            }
+            if (nbDirEntry === 0) {
+                message = "No articles found.";
+            }
+
+            articleListHeaderMessageDiv.html(message);
+
+
+            var articleListDiv = $('#articleList');
+            var articleListDivHtml = "";
+            for (var i = 0; i < dirEntryArray.length; i++) {
+                var dirEntry = dirEntryArray[i];
+
+                articleListDivHtml += "<a href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g, "&apos;") +
+                    "' class='list-group-item'>" + dirEntry.title + "</a>";
+            }
+            articleListDiv.html(articleListDivHtml);
+            $("#articleList a").on("click", handleTitleClick);
             $('#searchingForArticles').hide();
-            // We have to remove the focus from the search field,
-            // so that the keyboard does not stay above the message
-            $('#searchArticles').focus();
-            alert("Archive not set : please select an archive");
-            $('#btnConfigure').click();
-        }
-    }
-
-  
-    /**
-     * Display the list of articles with the given array of DirEntry
-     * @param {Array.<DirEntry>} dirEntryArray
-     * @param {Integer} maxArticles
-     */
-    function populateListOfArticles(dirEntryArray, maxArticles) {       
-        var articleListHeaderMessageDiv = $('#articleListHeaderMessage');
-        var nbDirEntry = 0;
-        if (dirEntryArray) {
-            nbDirEntry = dirEntryArray.length;
+            $('#articleList').show();
+            $('#articleListHeaderMessage').show();
         }
 
-        var message;
-        if (maxArticles >= 0 && nbDirEntry >= maxArticles) {
-            message = maxArticles + " first articles below (refine your search).";
-        }
-        else {
-            message = nbDirEntry + " articles found.";
-        }
-        if (nbDirEntry === 0) {
-            message = "No articles found.";
-        }
-              
-        articleListHeaderMessageDiv.html(message);
-        
-
-        var articleListDiv = $('#articleList');
-        var articleListDivHtml = "";
-        for (var i = 0; i < dirEntryArray.length; i++) {
-            var dirEntry = dirEntryArray[i];
-            
-            articleListDivHtml += "<a href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g, "&apos;")
-                    + "' class='list-group-item'>" + dirEntry.title + "</a>";
-        }
-        articleListDiv.html(articleListDivHtml);
-        $("#articleList a").on("click", handleTitleClick);
-        $('#searchingForArticles').hide();
-        $('#articleList').show();
-        $('#articleListHeaderMessage').show();
-    }
-    
-    /**
-     * Handles the click on the title of an article in search results
-     * @param {Event} event
-     * @returns {Boolean}
-     */
-    function handleTitleClick(event) {
-        var dirEntryId = event.target.getAttribute("dirEntryId");
-        $("#articleList").empty();
-        $('#articleListHeaderMessage').empty();
-        $("#prefix").val("");
-        findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId);
-        var dirEntry = selectedArchive.parseDirEntryId(dirEntryId);
-        return false;
-    }
-    
-
-    /**
-     * Creates an instance of DirEntry from given dirEntryId (including resolving redirects),
-     * and call the function to read the corresponding article
-     * @param {String} dirEntryId
-     */
-    function findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId) {
-        if (selectedArchive.isReady()) {
+        /**
+         * Handles the click on the title of an article in search results
+         * @param {Event} event
+         * @returns {Boolean}
+         */
+        function handleTitleClick(event) {
+            var dirEntryId = event.target.getAttribute("dirEntryId");
+            $("#articleList").empty();
+            $('#articleListHeaderMessage').empty();
+            $("#prefix").val("");
+            findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId);
             var dirEntry = selectedArchive.parseDirEntryId(dirEntryId);
-            $("#articleName").html(dirEntry.title);
-            $("#readingArticle").show();
-            $("#articleContent").contents().html("");
+            return false;
+        }
+
+
+        /**
+         * Creates an instance of DirEntry from given dirEntryId (including resolving redirects),
+         * and call the function to read the corresponding article
+         * @param {String} dirEntryId
+         */
+        function findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId) {
+            if (selectedArchive.isReady()) {
+                var dirEntry = selectedArchive.parseDirEntryId(dirEntryId);
+                $("#articleName").html(dirEntry.title);
+                $("#readingArticle").show();
+                $("#articleContent").contents().html("");
+                if (dirEntry.isRedirect()) {
+                    selectedArchive.resolveRedirect(dirEntry, readArticle);
+                } else {
+                    readArticle(dirEntry);
+                }
+            } else {
+                alert("Data files not set");
+            }
+        }
+
+        /**
+         * Read the article corresponding to the given dirEntry
+         * @param {DirEntry} dirEntry
+         */
+        function readArticle(dirEntry) {
             if (dirEntry.isRedirect()) {
                 selectedArchive.resolveRedirect(dirEntry, readArticle);
-            }
-            else {
-                readArticle(dirEntry);
-            }
-        }
-        else {
-            alert("Data files not set");
-        }
-    }
+            } else {
+                //TESTING//
+                console.log("Initiating HTML load...");
+                console.time("Time to HTML load");
+                console.log("Initiating Document Ready timer...");
+                console.time("Time to Document Ready");
 
-    /**
-     * Read the article corresponding to the given dirEntry
-     * @param {DirEntry} dirEntry
-     */
-    function readArticle(dirEntry) {
-        if (dirEntry.isRedirect()) {
-            selectedArchive.resolveRedirect(dirEntry, readArticle);
-        }
-        else {
-            //TESTING//
-            console.log("Initiating HTML load...");
-            console.time("Time to HTML load");
-            console.log("Initiating Document Ready timer...");
-            console.time("Time to Document Ready");
+                //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
+                localSearch = {};
 
-            //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
-            localSearch = {};
+                //Void the iframe
+                //window.frames[0].frameElement.src = "about:blank";
 
-            //Void the iframe
-            //window.frames[0].frameElement.src = "about:blank";
+                //Load cached start page if it exists
+                var htmlContent = 0;
+                if (params.cachedStartPage && dirEntry.url == decodeURIComponent(params.cachedStartPage)) {
+                    htmlContent = -1;
+                    uiUtil.XHR(dirEntry.namespace + '/' + encodeURIComponent(params.cachedStartPage),
+                        function (responseTxt, status) {
+                            htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
+                            if (htmlContent) {
+                                console.log("Article retrieved from storage cache...");
+                                displayArticleInForm(dirEntry, htmlContent);
+                            } else {
+                                selectedArchive.readArticle(dirEntry, displayArticleInForm);
+                            }
+                        });
+                }
 
-            //Load cached start page if it exists
-            var htmlContent = 0;
-            if (params.cachedStartPage && dirEntry.url == decodeURIComponent(params.cachedStartPage)) {
-                htmlContent = -1;
-                uiUtil.XHR(dirEntry.namespace + '/' + encodeURIComponent(params.cachedStartPage),
-                function (responseTxt, status) {
-                    htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
-                    if (htmlContent) {
-                        console.log("Article retrieved from storage cache...");
-                        displayArticleInForm(dirEntry, htmlContent);
+                //Load lastPageVisit if it is the currently requested page
+                if (!htmlContent) {
+                    if (params.rememberLastPage && typeof Storage !== "undefined" &&
+                        dirEntry.namespace + '/' + dirEntry.url == decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""))) {
+                        try {
+                            htmlContent = localStorage.getItem('lastPageHTML');
+                        } catch (err) {
+                            console.log("localStorage not supported: " + err);
+                        }
+                    }
+                    if (/<html[^>]*>/.test(htmlContent)) {
+                        console.log("Fast article retrieval from localStorage...");
+                        setTimeout(function () {
+                            displayArticleInForm(dirEntry, htmlContent);
+                        }, 100);
                     } else {
                         selectedArchive.readArticle(dirEntry, displayArticleInForm);
                     }
-                });
-            }
-
-            //Load lastPageVisit if it is the currently requested page
-            if (!htmlContent) {
-                if (params.rememberLastPage && typeof Storage !== "undefined" &&
-                    dirEntry.namespace + '/' + dirEntry.url == decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""))) {
-                    try { htmlContent = localStorage.getItem('lastPageHTML'); }
-                    catch(err) { console.log("localStorage not supported: " + err); }
-        }
-                if (/<html[^>]*>/.test(htmlContent)) {
-                    console.log("Fast article retrieval from localStorage...");
-                    setTimeout(function () { displayArticleInForm(dirEntry, htmlContent); }, 100);
-                } else {
-                    selectedArchive.readArticle(dirEntry, displayArticleInForm);
-    }
-            }
-        }
-    }
-    
-    var messageChannel;
-    
-    /**
-     * Function that handles a message of the messageChannel.
-     * It tries to read the content in the backend, and sends it back to the ServiceWorker
-     * @param {Event} event
-     */
-    function handleMessageChannelMessage(event) {
-        if (event.data.error) {
-            console.error("Error in MessageChannel", event.data.error);
-            reject(event.data.error);
-        } else {
-            console.log("the ServiceWorker sent a message on port1", event.data);
-            if (event.data.action === "askForContent") {
-                console.log("we are asked for a content : let's try to answer to this message");
-                var title = event.data.title;
-                var messagePort = event.ports[0];
-                var readFile = function(dirEntry) {
-                    if (dirEntry === null) {
-                        console.error("Title " + title + " not found in archive.");
-                        messagePort.postMessage({'action': 'giveContent', 'title' : title, 'content': ''});
-                    } else if (dirEntry.isRedirect()) {
-                        selectedArchive.resolveRedirect(dirEntry, readFile);
-                    } else {
-                        console.log("Reading binary file...");
-                        selectedArchive.readBinaryFile(dirEntry, function(fileDirEntry, content) {
-                            messagePort.postMessage({'action': 'giveContent', 'title' : title, 'content': content});
-                            console.log("content sent to ServiceWorker");
-                        });
-                    }
-                };
-                selectedArchive.getDirEntryByTitle(title).then(readFile).fail(function() {
-                    messagePort.postMessage({'action': 'giveContent', 'title' : title, 'content': new UInt8Array()});
-                });
-            }
-            else {
-                console.error("Invalid message received", event.data);
-            }
-        }
-    }
-    
-    // Compile some regular expressions needed to modify links
-    // Pattern to find the path in a url
-    var regexpPath = /^(.*\/)[^\/]+$/;
-    // Pattern to find a ZIM URL (with its namespace) - see http://www.openzim.org/wiki/ZIM_file_format#Namespaces
-    var regexpZIMUrlWithNamespace = /(?:^|\/)([-ABIJMUVWX]\/.+)/;
-    // Pattern to match a local anchor in a href
-    var regexpLocalAnchorHref = /^#/;
-    // These regular expressions match both relative and absolute URLs
-    // Since late 2014, all ZIM files should use relative URLs
-    var regexpImageUrl = /^(?:\.\.\/|\/)+(I\/.*)$/;
-    var regexpMetadataUrl = /^(?:\.\.\/|\/)+(-\/.*)$/;
-    // This matches the href of all <link> tags containing rel="stylesheet" in raw HTML unless commented out
-    var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*href\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
-     // This matches the title between <title  attrs> ... </title>
-    //var regexpArticleTitle = /<title\s*[^>]*>\s*([^<]+)\s*</i;
-     // This matches the title of a Type1 Wikimedia ZIM file or any ZIM file using simple <h1 attrs....> Title </h1>
-    //var regexpType1ZIMTitle = /<h1\s+[^>]*>\s*([^<]+)\s*</i;
-    // This matches the title of a mw-offliner (Type2) Wikimedia ZIM file, specifically 
-    //var regexpType2ZIMTitle = /id\s*=\s*['"][^'"]*title_0[^"']*["'][^>]*>\s*([^<]+)\s*</i;
-
-    var containsMathTeXRaw = false;
-    var containsMathTeX = false;
-    var containsMathSVG = false;
-    var treePath;
-
-    // Stores a url to direntry mapping and is refered to/updated anytime there is a css lookup
-    // When archive changes these caches should be reset. 
-    // Currently happens only in setLocalArchiveFromFileList and setLocalArchiveFromArchiveList.
-    //var cssDirEntryCache = new Map(); //This one is never hit!
-    var cssBlobCache = new Map();
-
-    /**
-     * Display the the given HTML article in the web page,
-     * and convert links to javascript calls
-     * NB : in some error cases, the given title can be null, and the htmlArticle contains the error message
-     *
-     * @param {DirEntry} dirEntry
-     * @param {String} htmlArticle
-     */
-    function displayArticleInForm(dirEntry, htmlArticle) {
-        // Display the article inside the web page.
-
-        //TESTING
-        console.log("** HTML received **");
-        console.timeEnd("Time to HTML load");
-        console.log("Loading stylesheets...");
-        console.time("Time to First Paint");
-        //return;
-
-        //Since page has been successfully loaded, store it in the browser history
-        if (!window.history.state ||
-            !window.history.state.title ||
-            !~window.history.state.title.indexOf("/" + dirEntry.url)) {
-            pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
-        }
-        if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
-            params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
-                "@kiwixKey@" + selectedArchive._file._files[0].name;
-            if (params.rememberLastPage) {
-            cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
-            //Store current document's raw HTML in localStorage for fast restart
-            if (typeof Storage !== "undefined") {
-                    try { localStorage.setItem('lastPageHTML', htmlArticle); }
-                    catch (err) { console.log("localStorage not supported: " + err); }
-            }
-        }
-        }
-        
-        //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
-        //so add some whitespace at the end of the document
-        htmlArticle = htmlArticle.replace(/(<\/body>)/i, "\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n$1");
-        htmlArticle = htmlArticle.replace(/(dditional terms may apply for the media files[^<]+<\/div>\s*)/i, "$1\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n");
-
-        //@TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
-        htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, "<a href=\"$1.html\">$2</a>");
-        htmlArticle = htmlArticle.replace(/&lt;(\/?)(i|b|em|strong)&gt;/ig, "<$1$2>");
-
-        //@TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
-        htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, "$1");
-
-        //Fast-replace img and script src with data-kiwixsrc and hide image [kiwix-js #272]
-        htmlArticle = htmlArticle.replace(/(<(?:img|script)\s+[^>]*\b)src(\s*=)/ig, "$1data-kiwixsrc$2");
-        if (!params.imageDisplay) {
-            //Ensure 36px clickable image height so user can request images by clicking [kiwix-js #173]
-            htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)height(\s*=\s*)/ig,
-                '$1height="36" src="../img/lightBlue.png" style="color: lightblue; background-color: lightblue;" ' +
-                'data-kiwixheight$2');
-        }
-
-        //Remove erroneous content frequently on front page
-        htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, "");
-        htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, "");
-
-        //Put misplaced hatnote headers inside <h1> block back in correct position @TODO remove this when fixed in mw-offliner
-        var hatnote = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?((?:<div\s+[^>]+\b(?:hatnote|homonymie)\b[\s\S]+?<\/div>\s*)+)/i);
-        if (hatnote && hatnote.length > 1) {
-            htmlArticle = htmlArticle.replace(hatnote[1], "");
-            htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnote[1].replace(/(<div\s+)/i,'$1style="padding-top:10px;" '));
-        }
-        //Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
-        var noexcerpt = htmlArticle.match(/<dl\b(?:[^<]|<(?!\/dl>))+?(?:For other places with the same name|Not to be confused with)(?:[^<]|<(?!\/dl>))+?<\/dl>\s*/i);
-        if (noexcerpt && noexcerpt.length) {
-            htmlArticle = htmlArticle.replace(noexcerpt, "");
-            htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + noexcerpt);
-        }
-
-        //Display IPA pronunciation info erroneously hidden in some ZIMs
-        htmlArticle = htmlArticle.replace(/(<span\b[^>]+?class\s*=\s*"[^"]+?mcs-ipa[^>]+?display:\s*)none/i, "$1inline");
-        
-    //MathJax detection:
-        //Replace inline Math TeX with dummy images
-        //if (params.useMathJax) htmlArticle = htmlArticle.replace(/\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/g, "<img alt='$1' class='mwe-math-fallback-image' />$2");
-        //Test for raw TeX in the HTML - no need to convert because configuration for inline will be set by a script in the Stackexchange HTML
-        containsMathTeXRaw = params.useMathJax && !/wikivoyage/.test(params.storedFile) ? /\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/.test(htmlArticle) : false;
-        //Simplify any configuration script
-        //if (containsMathTeXRaw) htmlArticle = htmlArticle.replace(/(<script\s+[^>]*?type\s*=\s*['"]\s*text\/x-mathjax-config[^>]+>[^<]+?Hub\.Config\s*\(\s*{\s*)[^<]*?(tex2jax\s*:[^}]+?})\s*,[^<]+(<\/script>)/i, "$1$2});$3");
-        //Replace all TeX SVGs with MathJax scripts
-        htmlArticle = params.useMathJax ? htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"]([^'"]+)[^>]+>/ig, "<script type='math/tex'>$1</script>") : htmlArticle;
-        containsMathTeX = params.useMathJax ? /<script\s+type\s*=\s*['"]\s*math\/tex\s*['"]/i.test(htmlArticle) : false;
-        containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
-        
-        // Compute base URL
-        var urlPath = regexpPath.test(dirEntry.url) ? urlPath = dirEntry.url.match(regexpPath)[1] : "";
-        var baseUrl = dirEntry.namespace + "/" + urlPath;
-        treePath = baseUrl.replace(/([^/]+\/)/g, "../");
-
-    //Preload stylesheets [kiwix-js @149]
-        //Set up blobArray of promises
-        var cssArray = htmlArticle.match(regexpSheetHref);
-        var blobArray = [];
-        var cssSource = params.cssSource;
-        var cssCache = params.cssCache;
-        var zimType = "";
-        if (cssArray) { getBLOB(cssArray); } else { injectHTML(); }
-
-        //Extract CSS URLs from given array of links
-        function getBLOB(arr) {
-            var testCSS = arr.join();
-            zimType = /-\/s\/style\.css/i.test(testCSS) ? "desktop" : zimType;
-            zimType = /-\/static\/main\.css/i.test(testCSS) ? "desktop-stx" : zimType; //Support stackexchange
-            zimType = /minerva|mobile/i.test(testCSS) ? "mobile" : zimType;
-            cssSource = cssSource == "auto" ? zimType : cssSource; //Default to in-built zimType if user has selected automatic detection of styles
-            if (/minerva/i.test(testCSS) && (cssCache || zimType != cssSource)) {
-                //Substitute ridiculously long style name TODO: move this code to transformStyles
-                for (var i = 0; i < arr.length; i++) { //NB minerva.css is a dummy name for now TODO: sort out in transfromStyles
-                    arr[i] = /minerva/i.test(arr[i]) ? '<link href="../-/s/style-mobile.css" rel="stylesheet" type="text/css">' : arr[i];
-                }
-            }
-            for (var i = 0; i < arr.length; i++) {
-                var linkArray = regexpSheetHref.exec(arr[i]);
-                regexpSheetHref.lastIndex = 0; //Reset start position for next loop
-
-                //@BUG WORKAROUND for Kiwix-JS-Windows #18
-                linkArray[2] = linkArray[2].replace(/^(s\/[\s\S]+(?!\.css))$/i, "../-/$1.css"); 
-
-                if (linkArray && regexpMetadataUrl.test(linkArray[2])) { //It's a CSS file contained in ZIM
-                    var zimLink = decodeURIComponent(uiUtil.removeUrlParameters(linkArray[2]));
-                    /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
-                    var filteredLink = transformStyles.filterCSS(zimLink, zimType, cssCache, cssSource, i);
-                    if (filteredLink.rtnFunction == "injectCSS") { blobArray[i] = filteredLink.zl; injectCSS(); } else { resolveCSS(filteredLink.zl, i); }
-                } else {
-                    blobArray[i] = arr[i]; //If CSS not in ZIM, store URL in blobArray
-                    injectCSS(); //Ensure this is called even if none of CSS links are in ZIM
                 }
             }
         }
 
-        function resolveCSS(title, index) {
-            if (cssBlobCache && cssBlobCache.has(title)) {
-                console.log("*** cssBlobCache hit ***");
-                blobArray.push([title, cssBlobCache.get(title)]);
-                injectCSS();
+        var messageChannel;
+
+        /**
+         * Function that handles a message of the messageChannel.
+         * It tries to read the content in the backend, and sends it back to the ServiceWorker
+         * @param {Event} event
+         */
+        function handleMessageChannelMessage(event) {
+            if (event.data.error) {
+                console.error("Error in MessageChannel", event.data.error);
+                reject(event.data.error);
             } else {
-                selectedArchive.getDirEntryByTitle(title)
-                    .then(function (dirEntry) {
-                        uiUtil.poll("Attempting to resolve CSS link #" + index + " [" + title.substring(0, 30) + "] from ZIM file...");
-                        return selectedArchive.readBinaryFile(dirEntry,
-                            function (fileDirEntry, content) {
-                        //DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
-                                //var cssContent = util.uintToString(content);
-                                var cssBlob = new Blob([content], { type: 'text/css' });
-                                var newURL = [fileDirEntry.namespace + "/" + fileDirEntry.url, URL.createObjectURL(cssBlob)];
-                                blobArray.push(newURL);
-                                if (cssBlobCache)
-                                    cssBlobCache.set(newURL[0], newURL[1]); 
-                                injectCSS(); //DO NOT move this: it must run within .then function to pass correct values
+                console.log("the ServiceWorker sent a message on port1", event.data);
+                if (event.data.action === "askForContent") {
+                    console.log("we are asked for a content : let's try to answer to this message");
+                    var title = event.data.title;
+                    var messagePort = event.ports[0];
+                    var readFile = function (dirEntry) {
+                        if (dirEntry === null) {
+                            console.error("Title " + title + " not found in archive.");
+                            messagePort.postMessage({
+                                'action': 'giveContent',
+                                'title': title,
+                                'content': ''
                             });
-                    }).fail(function (e) {
-                        console.error("could not find DirEntry for CSS : " + title, e);
-                        //@TODO Change this to push an array of [title, title] afters simplified code in injectCSS()
-                        blobArray.push(title);
-                        injectCSS();
-                    });
-            }
-        }
-
-        function injectCSS() {
-            if (blobArray.length === cssArray.length) { //If all promised values have been obtained
-                var resultsArray = [];
-                var testBlob;
-                for (var i in cssArray) { //Put them back in the correct order
-                    var match = 0;
-                    for (var j in blobArray) { //Iterate the blobArray to find the matching entry
-                        //console.log("blobArray[j]: " + blobArray[j] + "\r\nblobArray[j][0]: " + blobArray[j][0]);
-                        testBlob = blobArray[j][0].length == 1 ? blobArray[j] : blobArray[j][0]; //What a kludge! TODO: fix this ugly mixing of arrays and strings 
-                        if (~cssArray[i].indexOf(testBlob)) { match = 1; break; }
-                    }
-                    testBlob = match && /blob:/i.test(blobArray[j][1]) ? blobArray[j][1] : blobArray[i]; //Whoa!!! Steady on!
-                    resultsArray[i] = cssArray[i].replace(/(href\s*=\s*["'])([^"']+)/i, "$1" +
-                        testBlob + '" data-kiwixhref="$2');//Store the original URL for later use
-                        //DEV note: do not attempt to add onload="URL.revokeObjectURL...)": see [kiwix.js #284]
-                    //DEBUG:
-                        //console.log("BLOB CSS #" + i + ": " + resultsArray[i] + "\nshould correspond to: " + testBlob);
-                }
-                cssArray = resultsArray;
-                htmlArticle = htmlArticle.replace(regexpSheetHref, ""); //Void existing stylesheets
-                var cssArray$ = "\r\n" + cssArray.join("\r\n") + "\r\n";
-                if (~cssSource.indexOf("mobile")) { //If user has selected mobile display mode...
-                    var mobileCSS = transformStyles.toMobileCSS(htmlArticle, zimType, cssCache, cssSource, cssArray$);
-                    htmlArticle = mobileCSS.html;
-                    cssArray$ = mobileCSS.css;
-                }
-                if (~cssSource.indexOf("desktop")) { //If user has selected desktop display mode...
-                    var desktopCSS = transformStyles.toDesktopCSS(htmlArticle, zimType, cssCache, cssSource, cssArray$);
-                    htmlArticle = desktopCSS.html;
-                    cssArray$ = desktopCSS.css;
-                }
-                //Add required path in front of injected styles (i.e. those that have no ./ or ../../.. etc)
-                cssArray$ = cssArray$.replace(/(\bhref\s*=\s*["']\s*)(?![./]+|blob:)/ig, "$1" + treePath);
-                //For all cases, neutralize the toggleOpenSection javascript that causes a crash - TODO: make it work for mobile style
-                htmlArticle = htmlArticle.replace(/(onclick\s*=\s*["'])toggleOpenSection[^"']*(['"]\s*)/ig, "$1$2");
-                htmlArticle = htmlArticle.replace(/<script>([^<]+?toggleOpenSection(?:[^<]|<(?!\/script))+)<\/script>/i, "<!-- script>$1</script --!>");
-                //Ensure all headings are open
-                //htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
-                htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
-                console.log("All CSS resolved");
-                injectHTML(); //Pass the revised HTML to the image and JS subroutine...
-            } else {
-               uiUtil.poll("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...");
-                //console.log("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...")
-            }
-        }
-    //End of preload stylesheets code
-
-        function setupTableOfContents() {
-            var iframe = window.frames[0].frameElement;
-            var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-            var tableOfContents = new uiUtil.toc(innerDoc);
-            var headings = tableOfContents.getHeadingObjects();
-            document.getElementById('dropup').style.fontSize = ~~(params.relativeUIFontSize * 0.14) + "px";
-            var dropup = "";
-            headings.forEach(function (heading) {
-                if (/^h1$/i.test(heading.tagName))
-                    dropup += '<li style="font-size:' + params.relativeFontSize + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
-                else if (/^h2$/i.test(heading.tagName))
-                    dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.9) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
-                else if (/^h3$/i.test(heading.tagName))
-                    dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.75) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
-                //Skip smaller headings (if there are any) to avoid making list too long
-            });
-            var ToCList = document.getElementById('ToCList');
-            ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
-            ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
-            ToCList.innerHTML = dropup;
-            Array.prototype.slice.call(ToCList.getElementsByTagName('a')).forEach(function (listElement) {
-                listElement.addEventListener('click', function () {
-                    window.frames[0].frameElement.contentWindow.location.hash = this.dataset.headingId;
-                });
-            });
-        }
-
-        function injectHTML() {
-            //Adapt German Wikivoyage POI data format
-            var regexpGeoLocationDE = /<span\s+class\s?=\s?"[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<span[^>]+listing-name[^>]+>([^<]+)<\/span>)/ig;
-            htmlArticle = htmlArticle.replace(regexpGeoLocationDE, function (match, latitude, longitude, href, id) {
-                return '<a href="bingmaps:?collection=point.' + latitude + '_' + longitude + '_' + encodeURIComponent(id.replace(/_/g, " ")) +
-                    '">\r\n<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;margin-top:5px !important" />\r\n</a>' + href;
-            });
-            
-            //Adapt English Wikivoyage POI data format
-            var regexpGeoLocationEN = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
-            htmlArticle = htmlArticle.replace(regexpGeoLocationEN, function (match, p1, latitude, longitude, p4, p5, p6, id) {
-                return p1 + "bingmaps:?collection=point." + latitude + "_" + longitude + "_" +
-                    encodeURIComponent(id.replace(/_/g, " ")).replace(/\.(\w\w)/g, "%$1") +
-                    (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Map marker" title="Show this place on a map" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" />' + p6 + id;
-            });
-
-            //Clean up remaining geo: links
-            htmlArticle = htmlArticle.replace(/href\s*=\s*"\s*geo:([\d.-]+),([\d.-]+)/ig, 'href="bingmaps:?collection=point.$1_$2_' + encodeURIComponent(dirEntry.title));
-
-            //Setup footnote backlinks if the ZIM doesn't have any
-            htmlArticle = htmlArticle.replace(/<li\s+id\s*=\s*"cite_note-([^"]+)"\s*>(?![^/]+↑)/ig, function (match, p1) {
-                var fnSearchRegxp = new RegExp('id\\s*=\\s*"(cite[-_]ref[-_]' + p1.replace(/[-_]/g,"[-_]") + '[^"]*)', "i");
-                var fnReturnMatch = htmlArticle.match(fnSearchRegxp);
-                var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : "";
-                return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>'; 
-            });
-
-        //Inject htmlArticle into iframe
-            uiUtil.clear(); //Void progress messages
-            setTab();
-            //Inject base tag into html
-            htmlArticle = htmlArticle.replace(/(<head[^>]*>\s*)/i, '$1<base href="' + baseUrl + '" />\r\n');
-            //Display article in iframe
-            var articleContent = window.frames[0].frameElement.contentDocument;
-            //articleContent.documentElement.innerHTML = htmlArticle;
-            articleContent.open();
-            articleContent.write(htmlArticle);
-            articleContent.close();
-            //Set relative font size + Stackexchange-family multiplier
-            articleContent.body.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
-            //Set page width according to user preference
-            removePageMaxWidth();
-
-            setupTableOfContents();
-
-            // Attach listeners to headers to open-close following sections
-            var eles = ["H2", "H3"];
-            for (var i = 0; i < eles.length; i++) {
-                // Process headers
-                var collection = articleContent.getElementsByTagName(eles[i]);
-                for (var j = 0; j < collection.length; j++) {
-                    collection[j].classList.add("open-block");
-                    collection[j].addEventListener("click", function () {
-                        var topTag = this.tagName;
-                        this.classList.toggle("open-block");
-                        var nextElement = this.nextElementSibling;
-                        if (!nextElement) nextElement = this.parentNode.nextElementSibling;
-                        if (!nextElement) return;
-                        // Decide toggle direction based on first sibling element
-                        var toggleDirection = nextElement.style.display == "none" ? "block" : "none";
-                        if (nextElement.style.display == "none") {
-                            this.innerHTML += "<br />";
+                        } else if (dirEntry.isRedirect()) {
+                            selectedArchive.resolveRedirect(dirEntry, readFile);
                         } else {
-                            this.innerHTML = this.innerHTML.replace(/<br\s*\/?>$/i, "");
-                        }
-                        do {
-                            nextElement.style.display = toggleDirection;
-                            nextElement = nextElement.nextElementSibling;
-                        }
-                        while (nextElement && !~nextElement.tagName.indexOf(topTag) && !~nextElement.tagName.indexOf("H1"));
-                    });
-                }
-            }
-            // Process endnote references (so they open the reference block if closed)
-            var refs = articleContent.getElementsByClassName("mw-reflink-text");
-            if (refs) {
-                for (var l = 0; l < refs.length; l++) {
-                    var reference = refs[l].parentElement;
-                    if (reference) {
-                        reference.addEventListener("click", function (obj) {
-                            var refID = obj.target.hash || obj.target.parentNode.hash;
-                            if (!refID) return;
-                            refID = refID.replace(/#/, "");
-                            var refLocation = articleContent.getElementById(refID);
-                            var refNext = util.getClosestBack(refLocation, function (el) {
-                                return el.tagName == "H2";
+                            console.log("Reading binary file...");
+                            selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                                messagePort.postMessage({
+                                    'action': 'giveContent',
+                                    'title': title,
+                                    'content': content
+                                });
+                                console.log("content sent to ServiceWorker");
                             });
-                            if (refNext) {
-                                refNext.classList.add("open-block");
-                                refNext.innerHTML = refNext.innerHTML.replace(/<br\s*\/?>$/i, "");
-                                refNext = refNext.nextElementSibling;
-                                while (refNext && refNext.style.display == "none") {
-                                    refNext.style.display = "block";
-                                    refNext = refNext.nextElementSibling;
-                                }
+                        }
+                    };
+                    selectedArchive.getDirEntryByTitle(title).then(readFile).fail(function () {
+                        messagePort.postMessage({
+                            'action': 'giveContent',
+                            'title': title,
+                            'content': new UInt8Array()
+                        });
+                    });
+                } else {
+                    console.error("Invalid message received", event.data);
+                }
+            }
+        }
+
+        // Compile some regular expressions needed to modify links
+        // Pattern to find the path in a url
+        var regexpPath = /^(.*\/)[^\/]+$/;
+        // Pattern to find a ZIM URL (with its namespace) - see http://www.openzim.org/wiki/ZIM_file_format#Namespaces
+        var regexpZIMUrlWithNamespace = /(?:^|\/)([-ABIJMUVWX]\/.+)/;
+        // Pattern to match a local anchor in a href
+        var regexpLocalAnchorHref = /^#/;
+        // These regular expressions match both relative and absolute URLs
+        // Since late 2014, all ZIM files should use relative URLs
+        var regexpImageUrl = /^(?:\.\.\/|\/)+(I\/.*)$/;
+        var regexpMetadataUrl = /^(?:\.\.\/|\/)+(-\/.*)$/;
+        // This matches the href of all <link> tags containing rel="stylesheet" in raw HTML unless commented out
+        var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*href\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
+        // This matches the title between <title  attrs> ... </title>
+        //var regexpArticleTitle = /<title\s*[^>]*>\s*([^<]+)\s*</i;
+        // This matches the title of a Type1 Wikimedia ZIM file or any ZIM file using simple <h1 attrs....> Title </h1>
+        //var regexpType1ZIMTitle = /<h1\s+[^>]*>\s*([^<]+)\s*</i;
+        // This matches the title of a mw-offliner (Type2) Wikimedia ZIM file, specifically 
+        //var regexpType2ZIMTitle = /id\s*=\s*['"][^'"]*title_0[^"']*["'][^>]*>\s*([^<]+)\s*</i;
+
+        var containsMathTeXRaw = false;
+        var containsMathTeX = false;
+        var containsMathSVG = false;
+        var treePath;
+
+        // Stores a url to direntry mapping and is refered to/updated anytime there is a css lookup
+        // When archive changes these caches should be reset. 
+        // Currently happens only in setLocalArchiveFromFileList and setLocalArchiveFromArchiveList.
+        //var cssDirEntryCache = new Map(); //This one is never hit!
+        var cssBlobCache = new Map();
+
+        /**
+         * Display the the given HTML article in the web page,
+         * and convert links to javascript calls
+         * NB : in some error cases, the given title can be null, and the htmlArticle contains the error message
+         *
+         * @param {DirEntry} dirEntry
+         * @param {String} htmlArticle
+         */
+        function displayArticleInForm(dirEntry, htmlArticle) {
+            // Display the article inside the web page.
+
+            //TESTING
+            console.log("** HTML received **");
+            console.timeEnd("Time to HTML load");
+            console.log("Loading stylesheets...");
+            console.time("Time to First Paint");
+            //return;
+
+            //Since page has been successfully loaded, store it in the browser history
+            if (!window.history.state ||
+                !window.history.state.title ||
+                !~window.history.state.title.indexOf("/" + dirEntry.url)) {
+                pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
+            }
+            if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
+                params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
+                    "@kiwixKey@" + selectedArchive._file._files[0].name;
+                if (params.rememberLastPage) {
+                    cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
+                    //Store current document's raw HTML in localStorage for fast restart
+                    if (typeof Storage !== "undefined") {
+                        try {
+                            localStorage.setItem('lastPageHTML', htmlArticle);
+                        } catch (err) {
+                            console.log("localStorage not supported: " + err);
+                        }
+                    }
+                }
+            }
+
+            //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
+            //so add some whitespace at the end of the document
+            htmlArticle = htmlArticle.replace(/(<\/body>)/i, "\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n$1");
+            htmlArticle = htmlArticle.replace(/(dditional terms may apply for the media files[^<]+<\/div>\s*)/i, "$1\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n");
+
+            //@TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
+            htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, "<a href=\"$1.html\">$2</a>");
+            htmlArticle = htmlArticle.replace(/&lt;(\/?)(i|b|em|strong)&gt;/ig, "<$1$2>");
+
+            //@TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
+            htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, "$1");
+
+            //Fast-replace img and script src with data-kiwixsrc and hide image [kiwix-js #272]
+            htmlArticle = htmlArticle.replace(/(<(?:img|script)\s+[^>]*\b)src(\s*=)/ig, "$1data-kiwixsrc$2");
+            if (!params.imageDisplay) {
+                //Ensure 36px clickable image height so user can request images by clicking [kiwix-js #173]
+                htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)height(\s*=\s*)/ig,
+                    '$1height="36" src="../img/lightBlue.png" style="color: lightblue; background-color: lightblue;" ' +
+                    'data-kiwixheight$2');
+            }
+
+            //Remove erroneous content frequently on front page
+            htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, "");
+            htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, "");
+
+            //Put misplaced hatnote headers inside <h1> block back in correct position @TODO remove this when fixed in mw-offliner
+            var hatnote = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?((?:<div\s+[^>]+\b(?:hatnote|homonymie)\b[\s\S]+?<\/div>\s*)+)/i);
+            if (hatnote && hatnote.length > 1) {
+                htmlArticle = htmlArticle.replace(hatnote[1], "");
+                htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnote[1].replace(/(<div\s+)/i, '$1style="padding-top:10px;" '));
+            }
+            //Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
+            var noexcerpt = htmlArticle.match(/<dl\b(?:[^<]|<(?!\/dl>))+?(?:For other places with the same name|Not to be confused with)(?:[^<]|<(?!\/dl>))+?<\/dl>\s*/i);
+            if (noexcerpt && noexcerpt.length) {
+                htmlArticle = htmlArticle.replace(noexcerpt, "");
+                htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + noexcerpt);
+            }
+
+            //Display IPA pronunciation info erroneously hidden in some ZIMs
+            htmlArticle = htmlArticle.replace(/(<span\b[^>]+?class\s*=\s*"[^"]+?mcs-ipa[^>]+?display:\s*)none/i, "$1inline");
+
+            //MathJax detection:
+            //Replace inline Math TeX with dummy images
+            //if (params.useMathJax) htmlArticle = htmlArticle.replace(/\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/g, "<img alt='$1' class='mwe-math-fallback-image' />$2");
+            //Test for raw TeX in the HTML - no need to convert because configuration for inline will be set by a script in the Stackexchange HTML
+            containsMathTeXRaw = params.useMathJax && !/wikivoyage/.test(params.storedFile) ? /\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/.test(htmlArticle) : false;
+            //Simplify any configuration script
+            //if (containsMathTeXRaw) htmlArticle = htmlArticle.replace(/(<script\s+[^>]*?type\s*=\s*['"]\s*text\/x-mathjax-config[^>]+>[^<]+?Hub\.Config\s*\(\s*{\s*)[^<]*?(tex2jax\s*:[^}]+?})\s*,[^<]+(<\/script>)/i, "$1$2});$3");
+            //Replace all TeX SVGs with MathJax scripts
+            htmlArticle = params.useMathJax ? htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"]([^'"]+)[^>]+>/ig, "<script type='math/tex'>$1</script>") : htmlArticle;
+            containsMathTeX = params.useMathJax ? /<script\s+type\s*=\s*['"]\s*math\/tex\s*['"]/i.test(htmlArticle) : false;
+            containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
+
+            // Compute base URL
+            var urlPath = regexpPath.test(dirEntry.url) ? urlPath = dirEntry.url.match(regexpPath)[1] : "";
+            var baseUrl = dirEntry.namespace + "/" + urlPath;
+            treePath = baseUrl.replace(/([^/]+\/)/g, "../");
+
+            //Preload stylesheets [kiwix-js @149]
+            //Set up blobArray of promises
+            var cssArray = htmlArticle.match(regexpSheetHref);
+            var blobArray = [];
+            var cssSource = params.cssSource;
+            var cssCache = params.cssCache;
+            var zimType = "";
+            if (cssArray) {
+                getBLOB(cssArray);
+            } else {
+                injectHTML();
+            }
+
+            //Extract CSS URLs from given array of links
+            function getBLOB(arr) {
+                var testCSS = arr.join();
+                zimType = /-\/s\/style\.css/i.test(testCSS) ? "desktop" : zimType;
+                zimType = /-\/static\/main\.css/i.test(testCSS) ? "desktop-stx" : zimType; //Support stackexchange
+                zimType = /minerva|mobile/i.test(testCSS) ? "mobile" : zimType;
+                cssSource = cssSource == "auto" ? zimType : cssSource; //Default to in-built zimType if user has selected automatic detection of styles
+                if (/minerva/i.test(testCSS) && (cssCache || zimType != cssSource)) {
+                    //Substitute ridiculously long style name TODO: move this code to transformStyles
+                    for (var i = 0; i < arr.length; i++) { //NB minerva.css is a dummy name for now TODO: sort out in transfromStyles
+                        arr[i] = /minerva/i.test(arr[i]) ? '<link href="../-/s/style-mobile.css" rel="stylesheet" type="text/css">' : arr[i];
+                    }
+                }
+                for (var i = 0; i < arr.length; i++) {
+                    var linkArray = regexpSheetHref.exec(arr[i]);
+                    regexpSheetHref.lastIndex = 0; //Reset start position for next loop
+
+                    //@BUG WORKAROUND for Kiwix-JS-Windows #18
+                    linkArray[2] = linkArray[2].replace(/^(s\/[\s\S]+(?!\.css))$/i, "../-/$1.css");
+
+                    if (linkArray && regexpMetadataUrl.test(linkArray[2])) { //It's a CSS file contained in ZIM
+                        var zimLink = decodeURIComponent(uiUtil.removeUrlParameters(linkArray[2]));
+                        /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
+                        var filteredLink = transformStyles.filterCSS(zimLink, zimType, cssCache, cssSource, i);
+                        if (filteredLink.rtnFunction == "injectCSS") {
+                            blobArray[i] = filteredLink.zl;
+                            injectCSS();
+                        } else {
+                            resolveCSS(filteredLink.zl, i);
+                        }
+                    } else {
+                        blobArray[i] = arr[i]; //If CSS not in ZIM, store URL in blobArray
+                        injectCSS(); //Ensure this is called even if none of CSS links are in ZIM
+                    }
+                }
+            }
+
+            function resolveCSS(title, index) {
+                if (cssBlobCache && cssBlobCache.has(title)) {
+                    console.log("*** cssBlobCache hit ***");
+                    blobArray.push([title, cssBlobCache.get(title)]);
+                    injectCSS();
+                } else {
+                    selectedArchive.getDirEntryByTitle(title)
+                        .then(function (dirEntry) {
+                            uiUtil.poll("Attempting to resolve CSS link #" + index + " [" + title.substring(0, 30) + "] from ZIM file...");
+                            return selectedArchive.readBinaryFile(dirEntry,
+                                function (fileDirEntry, content) {
+                                    //DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
+                                    //var cssContent = util.uintToString(content);
+                                    var cssBlob = new Blob([content], {
+                                        type: 'text/css'
+                                    });
+                                    var newURL = [fileDirEntry.namespace + "/" + fileDirEntry.url, URL.createObjectURL(cssBlob)];
+                                    blobArray.push(newURL);
+                                    if (cssBlobCache)
+                                        cssBlobCache.set(newURL[0], newURL[1]);
+                                    injectCSS(); //DO NOT move this: it must run within .then function to pass correct values
+                                });
+                        }).fail(function (e) {
+                            console.error("could not find DirEntry for CSS : " + title, e);
+                            //@TODO Change this to push an array of [title, title] afters simplified code in injectCSS()
+                            blobArray.push(title);
+                            injectCSS();
+                        });
+                }
+            }
+
+            function injectCSS() {
+                if (blobArray.length === cssArray.length) { //If all promised values have been obtained
+                    var resultsArray = [];
+                    var testBlob;
+                    for (var i in cssArray) { //Put them back in the correct order
+                        var match = 0;
+                        for (var j in blobArray) { //Iterate the blobArray to find the matching entry
+                            //console.log("blobArray[j]: " + blobArray[j] + "\r\nblobArray[j][0]: " + blobArray[j][0]);
+                            testBlob = blobArray[j][0].length == 1 ? blobArray[j] : blobArray[j][0]; //What a kludge! TODO: fix this ugly mixing of arrays and strings 
+                            if (~cssArray[i].indexOf(testBlob)) {
+                                match = 1;
+                                break;
                             }
-                        });
+                        }
+                        testBlob = match && /blob:/i.test(blobArray[j][1]) ? blobArray[j][1] : blobArray[i]; //Whoa!!! Steady on!
+                        resultsArray[i] = cssArray[i].replace(/(href\s*=\s*["'])([^"']+)/i, "$1" +
+                            testBlob + '" data-kiwixhref="$2'); //Store the original URL for later use
+                        //DEV note: do not attempt to add onload="URL.revokeObjectURL...)": see [kiwix.js #284]
+                        //DEBUG:
+                        //console.log("BLOB CSS #" + i + ": " + resultsArray[i] + "\nshould correspond to: " + testBlob);
                     }
+                    cssArray = resultsArray;
+                    htmlArticle = htmlArticle.replace(regexpSheetHref, ""); //Void existing stylesheets
+                    var cssArray$ = "\r\n" + cssArray.join("\r\n") + "\r\n";
+                    if (~cssSource.indexOf("mobile")) { //If user has selected mobile display mode...
+                        var mobileCSS = transformStyles.toMobileCSS(htmlArticle, zimType, cssCache, cssSource, cssArray$);
+                        htmlArticle = mobileCSS.html;
+                        cssArray$ = mobileCSS.css;
+                    }
+                    if (~cssSource.indexOf("desktop")) { //If user has selected desktop display mode...
+                        var desktopCSS = transformStyles.toDesktopCSS(htmlArticle, zimType, cssCache, cssSource, cssArray$);
+                        htmlArticle = desktopCSS.html;
+                        cssArray$ = desktopCSS.css;
+                    }
+                    //Add required path in front of injected styles (i.e. those that have no ./ or ../../.. etc)
+                    cssArray$ = cssArray$.replace(/(\bhref\s*=\s*["']\s*)(?![./]+|blob:)/ig, "$1" + treePath);
+                    //For all cases, neutralize the toggleOpenSection javascript that causes a crash - TODO: make it work for mobile style
+                    htmlArticle = htmlArticle.replace(/(onclick\s*=\s*["'])toggleOpenSection[^"']*(['"]\s*)/ig, "$1$2");
+                    htmlArticle = htmlArticle.replace(/<script>([^<]+?toggleOpenSection(?:[^<]|<(?!\/script))+)<\/script>/i, "<!-- script>$1</script --!>");
+                    //Ensure all headings are open
+                    //htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
+                    htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
+                    console.log("All CSS resolved");
+                    injectHTML(); //Pass the revised HTML to the image and JS subroutine...
+                } else {
+                    uiUtil.poll("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...");
+                    //console.log("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...")
                 }
             }
+            //End of preload stylesheets code
 
-            //Hide top-level scrolling -- gets rid of interfering useless scroll bar, but re-enable for Config and About pages
-            document.getElementById('search-article').scrollTop = 0;
-            document.getElementById('search-article').style.overflow = "hidden";
-            
-            var makeLink = uiUtil.makeReturnLink(dirEntry.title); //[kiwix-js #127]
-            var linkListener = eval(makeLink);
-            //Prevent multiple listeners being attached on each browse
-            var returnDivs = document.getElementsByClassName("returntoArticle");
-            for (var i = 0; i < returnDivs.length; i++) {
-                returnDivs[i].removeEventListener('click', linkListener);
-                returnDivs[i].addEventListener('click', linkListener);
+            function setupTableOfContents() {
+                var iframe = window.frames[0].frameElement;
+                var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+                var tableOfContents = new uiUtil.toc(innerDoc);
+                var headings = tableOfContents.getHeadingObjects();
+                document.getElementById('dropup').style.fontSize = ~~(params.relativeUIFontSize * 0.14) + "px";
+                var dropup = "";
+                headings.forEach(function (heading) {
+                    if (/^h1$/i.test(heading.tagName))
+                        dropup += '<li style="font-size:' + params.relativeFontSize + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                    else if (/^h2$/i.test(heading.tagName))
+                        dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.9) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                    else if (/^h3$/i.test(heading.tagName))
+                        dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.75) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                    //Skip smaller headings (if there are any) to avoid making list too long
+                });
+                var ToCList = document.getElementById('ToCList');
+                ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
+                ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
+                ToCList.innerHTML = dropup;
+                Array.prototype.slice.call(ToCList.getElementsByTagName('a')).forEach(function (listElement) {
+                    listElement.addEventListener('click', function () {
+                        window.frames[0].frameElement.contentWindow.location.hash = this.dataset.headingId;
+                    });
+                });
             }
-            checkToolbar();
 
-            //Listen to iframe key presses for in-page search
-            document.getElementById('articleContent').contentWindow.addEventListener('keyup', function (e) {
-                //Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
-                if ((e.ctrlKey || e.altKey) && e.which == 70) {
-                    $('#findText').click();
-                    return false;
+            function injectHTML() {
+                //Adapt German Wikivoyage POI data format
+                var regexpGeoLocationDE = /<span\s+class\s?=\s?"[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<span[^>]+listing-name[^>]+>([^<]+)<\/span>)/ig;
+                htmlArticle = htmlArticle.replace(regexpGeoLocationDE, function (match, latitude, longitude, href, id) {
+                    return '<a href="bingmaps:?collection=point.' + latitude + '_' + longitude + '_' + encodeURIComponent(id.replace(/_/g, " ")) +
+                        '">\r\n<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;margin-top:5px !important" />\r\n</a>' + href;
+                });
+
+                //Adapt English Wikivoyage POI data format
+                var regexpGeoLocationEN = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
+                htmlArticle = htmlArticle.replace(regexpGeoLocationEN, function (match, p1, latitude, longitude, p4, p5, p6, id) {
+                    return p1 + "bingmaps:?collection=point." + latitude + "_" + longitude + "_" +
+                        encodeURIComponent(id.replace(/_/g, " ")).replace(/\.(\w\w)/g, "%$1") +
+                        (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Map marker" title="Show this place on a map" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" />' + p6 + id;
+                });
+
+                //Clean up remaining geo: links
+                htmlArticle = htmlArticle.replace(/href\s*=\s*"\s*geo:([\d.-]+),([\d.-]+)/ig, 'href="bingmaps:?collection=point.$1_$2_' + encodeURIComponent(dirEntry.title));
+
+                //Setup footnote backlinks if the ZIM doesn't have any
+                htmlArticle = htmlArticle.replace(/<li\s+id\s*=\s*"cite_note-([^"]+)"\s*>(?![^/]+↑)/ig, function (match, p1) {
+                    var fnSearchRegxp = new RegExp('id\\s*=\\s*"(cite[-_]ref[-_]' + p1.replace(/[-_]/g, "[-_]") + '[^"]*)', "i");
+                    var fnReturnMatch = htmlArticle.match(fnSearchRegxp);
+                    var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : "";
+                    return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>';
+                });
+
+                //Inject htmlArticle into iframe
+                uiUtil.clear(); //Void progress messages
+                setTab();
+                //Inject base tag into html
+                htmlArticle = htmlArticle.replace(/(<head[^>]*>\s*)/i, '$1<base href="' + baseUrl + '" />\r\n');
+                //Display article in iframe
+                var articleContent = window.frames[0].frameElement.contentDocument;
+                //articleContent.documentElement.innerHTML = htmlArticle;
+                articleContent.open();
+                articleContent.write(htmlArticle);
+                articleContent.close();
+                //Set relative font size + Stackexchange-family multiplier
+                articleContent.body.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
+                //Set page width according to user preference
+                removePageMaxWidth();
+
+                setupTableOfContents();
+
+                // Attach listeners to headers to open-close following sections
+                var eles = ["H2", "H3"];
+                for (var i = 0; i < eles.length; i++) {
+                    // Process headers
+                    var collection = articleContent.getElementsByTagName(eles[i]);
+                    for (var j = 0; j < collection.length; j++) {
+                        collection[j].classList.add("open-block");
+                        collection[j].addEventListener("click", function () {
+                            var topTag = this.tagName;
+                            this.classList.toggle("open-block");
+                            var nextElement = this.nextElementSibling;
+                            if (!nextElement) nextElement = this.parentNode.nextElementSibling;
+                            if (!nextElement) return;
+                            // Decide toggle direction based on first sibling element
+                            var toggleDirection = nextElement.style.display == "none" ? "block" : "none";
+                            if (nextElement.style.display == "none") {
+                                this.innerHTML += "<br />";
+                            } else {
+                                this.innerHTML = this.innerHTML.replace(/<br\s*\/?>$/i, "");
+                            }
+                            do {
+                                nextElement.style.display = toggleDirection;
+                                nextElement = nextElement.nextElementSibling;
+                            }
+                            while (nextElement && !~nextElement.tagName.indexOf(topTag) && !~nextElement.tagName.indexOf("H1"));
+                        });
+                    }
                 }
-            });
-
-            document.getElementById('articleContent').contentWindow.addEventListener('keydown', function (e) {
-                //Ctrl-P to patch printing support, so iframe gets printed
-                if (e.ctrlKey && e.which == 80) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    printIntercept();
-                    return false;
+                // Process endnote references (so they open the reference block if closed)
+                var refs = articleContent.getElementsByClassName("mw-reflink-text");
+                if (refs) {
+                    for (var l = 0; l < refs.length; l++) {
+                        var reference = refs[l].parentElement;
+                        if (reference) {
+                            reference.addEventListener("click", function (obj) {
+                                var refID = obj.target.hash || obj.target.parentNode.hash;
+                                if (!refID) return;
+                                refID = refID.replace(/#/, "");
+                                var refLocation = articleContent.getElementById(refID);
+                                var refNext = util.getClosestBack(refLocation, function (el) {
+                                    return el.tagName == "H2";
+                                });
+                                if (refNext) {
+                                    refNext.classList.add("open-block");
+                                    refNext.innerHTML = refNext.innerHTML.replace(/<br\s*\/?>$/i, "");
+                                    refNext = refNext.nextElementSibling;
+                                    while (refNext && refNext.style.display == "none") {
+                                        refNext.style.display = "block";
+                                        refNext = refNext.nextElementSibling;
+                                    }
+                                }
+                            });
+                        }
+                    }
                 }
-            }, true);
 
+                //Hide top-level scrolling -- gets rid of interfering useless scroll bar, but re-enable for Config and About pages
+                document.getElementById('search-article').scrollTop = 0;
+                document.getElementById('search-article').style.overflow = "hidden";
 
-            // If the ServiceWorker is not useable, we need to fallback to parse the DOM
-            // to inject math images, and replace some links with javascript calls
-            if (contentInjectionMode === 'jquery') {
-                var currentProtocol = location.protocol;
-                var currentHost = location.host;
-                // Create (or replace) the "base" tag with our base URL
-                //$('#articleContent').contents().find('head').find("base").detach();
-                //$('#articleContent').contents().find('head').append("<base href='" + baseUrl + "'>");
+                var makeLink = uiUtil.makeReturnLink(dirEntry.title); //[kiwix-js #127]
+                var linkListener = eval(makeLink);
+                //Prevent multiple listeners being attached on each browse
+                var returnDivs = document.getElementsByClassName("returntoArticle");
+                for (var i = 0; i < returnDivs.length; i++) {
+                    returnDivs[i].removeEventListener('click', linkListener);
+                    returnDivs[i].addEventListener('click', linkListener);
+                }
+                checkToolbar();
 
-                // Convert links into javascript calls
-                var iframe = document.getElementById('articleContent').contentDocument;
-                var anchors = Array.prototype.slice.call(iframe.getElementsByTagName('a'));
-                anchors.forEach(function (anchor) {
-                    var href = anchor.getAttribute("href");
-                    // Compute current link's url (with its namespace), if applicable
-                    var zimUrl = regexpZIMUrlWithNamespace.test(anchor.href) ? anchor.href.match(regexpZIMUrlWithNamespace)[1] : "";
-                    if (href === null || href === undefined) {
-                        // No href attribute
-                    }
-                    else if (href.length === 0) {
-                        // It's a link with an empty href, pointing to the current page.
-                        // Because of the base tag, we need to modify it
-                        anchor.addEventListener('click', function (e) {
-                            e.preventDefault();
-                        });
-                    }
-                    else if (regexpLocalAnchorHref.test(href)) {
-                        // It's an anchor link : we need to make it work with javascript
-                        // because of the base tag
-                        anchor.addEventListener('click', function (e) {
-                            e.preventDefault();
-                            document.getElementById('articleContent').contentWindow.location.hash = href;
-                        });
-                    }
-                    else if (anchor.protocol !== currentProtocol
-                        || anchor.host !== currentHost) {
-                        // It's an external URL : we should open it in a new tab
-                        anchor.setAttribute("target", "_blank");
-                    }
-                    else {
-                        // It's a link to another article
-                        // Add an onclick event to go to this article
-                        // instead of following the link
-                        anchor.addEventListener('click', function (e) {
-                            e.preventDefault();
-                            var decodedURL = decodeURIComponent(zimUrl);
-                            goToArticle(decodedURL);
-                            return false;
-                        });
+                //Listen to iframe key presses for in-page search
+                document.getElementById('articleContent').contentWindow.addEventListener('keyup', function (e) {
+                    //Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
+                    if ((e.ctrlKey || e.altKey) && e.which == 70) {
+                        $('#findText').click();
+                        return false;
                     }
                 });
 
-                loadImages();
-                //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
-            }  
+                document.getElementById('articleContent').contentWindow.addEventListener('keydown', function (e) {
+                    //Ctrl-P to patch printing support, so iframe gets printed
+                    if (e.ctrlKey && e.which == 80) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        printIntercept();
+                        return false;
+                    }
+                }, true);
 
-        } //End of injectHTML()
 
-    } //End of displayArticleInForm()
+                // If the ServiceWorker is not useable, we need to fallback to parse the DOM
+                // to inject math images, and replace some links with javascript calls
+                if (contentInjectionMode === 'jquery') {
+                    var currentProtocol = location.protocol;
+                    var currentHost = location.host;
+                    // Create (or replace) the "base" tag with our base URL
+                    //$('#articleContent').contents().find('head').find("base").detach();
+                    //$('#articleContent').contents().find('head').append("<base href='" + baseUrl + "'>");
 
-    function loadMathJax() {
-        //Load MathJax if required and if not already loaded
-        if (params.useMathJax) {
-            if (!window.frames[0].MathJax && (containsMathTeXRaw || containsMathTeX || containsMathSVG)) {
-                var doc = $("#articleContent").contents()[0];
-                var script = doc.createElement("script");
-                script.type = "text/javascript";
-                //script.src = treePath + "js/MathJax/MathJax.js?config=TeX-AMS_HTML-full,config";
-                //script.src = treePath + "js/MathJax/MathJax.js?config=TeX-AMS_SVG-full";
-                script.src = treePath + "js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
-                if (containsMathTeX || containsMathTeXRaw) script.innerHTML = 'MathJax.Hub.Queue(["Typeset", MathJax.Hub]); \
+                    // Convert links into javascript calls
+                    var iframe = document.getElementById('articleContent').contentDocument;
+                    var anchors = Array.prototype.slice.call(iframe.getElementsByTagName('a'));
+                    anchors.forEach(function (anchor) {
+                        var href = anchor.getAttribute("href");
+                        // Compute current link's url (with its namespace), if applicable
+                        var zimUrl = regexpZIMUrlWithNamespace.test(anchor.href) ? anchor.href.match(regexpZIMUrlWithNamespace)[1] : "";
+                        if (href === null || href === undefined) {
+                            // No href attribute
+                        } else if (href.length === 0) {
+                            // It's a link with an empty href, pointing to the current page.
+                            // Because of the base tag, we need to modify it
+                            anchor.addEventListener('click', function (e) {
+                                e.preventDefault();
+                            });
+                        } else if (regexpLocalAnchorHref.test(href)) {
+                            // It's an anchor link : we need to make it work with javascript
+                            // because of the base tag
+                            anchor.addEventListener('click', function (e) {
+                                e.preventDefault();
+                                document.getElementById('articleContent').contentWindow.location.hash = href;
+                            });
+                        } else if (anchor.protocol !== currentProtocol ||
+                            anchor.host !== currentHost) {
+                            // It's an external URL : we should open it in a new tab
+                            anchor.setAttribute("target", "_blank");
+                        } else {
+                            // It's a link to another article
+                            // Add an onclick event to go to this article
+                            // instead of following the link
+                            anchor.addEventListener('click', function (e) {
+                                e.preventDefault();
+                                var decodedURL = decodeURIComponent(zimUrl);
+                                goToArticle(decodedURL);
+                                return false;
+                            });
+                        }
+                    });
+
+                    loadImages();
+                    //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
+                }
+
+            } //End of injectHTML()
+
+        } //End of displayArticleInForm()
+
+        function loadMathJax() {
+            //Load MathJax if required and if not already loaded
+            if (params.useMathJax) {
+                if (!window.frames[0].MathJax && (containsMathTeXRaw || containsMathTeX || containsMathSVG)) {
+                    var doc = $("#articleContent").contents()[0];
+                    var script = doc.createElement("script");
+                    script.type = "text/javascript";
+                    //script.src = treePath + "js/MathJax/MathJax.js?config=TeX-AMS_HTML-full,config";
+                    //script.src = treePath + "js/MathJax/MathJax.js?config=TeX-AMS_SVG-full";
+                    script.src = treePath + "js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
+                    if (containsMathTeX || containsMathTeXRaw) script.innerHTML = 'MathJax.Hub.Queue(["Typeset", MathJax.Hub]); \
                             console.log("Typesetting maths with MathJax");';
-                containsMathTeXRaw = false; //Prevents doing a second Typeset run on the same document
-                containsMathTeX = false;
-                doc.head.appendChild(script);
-            } else if (window.frames[0].MathJax && (containsMathTeXRaw || containsMathTeX || containsMathSVG)) {
-                window.frames[0].MathJax.Hub.Queue(["Typeset", window.frames[0].MathJax.Hub]);
-                console.log("Typesetting maths with MathJax");
-                containsMathTeXRaw = false; //Prevents doing a second Typeset run on the same document
+                    containsMathTeXRaw = false; //Prevents doing a second Typeset run on the same document
+                    containsMathTeX = false;
+                    doc.head.appendChild(script);
+                } else if (window.frames[0].MathJax && (containsMathTeXRaw || containsMathTeX || containsMathSVG)) {
+                    window.frames[0].MathJax.Hub.Queue(["Typeset", window.frames[0].MathJax.Hub]);
+                    console.log("Typesetting maths with MathJax");
+                    containsMathTeXRaw = false; //Prevents doing a second Typeset run on the same document
+                }
             }
         }
-    }
 
-    /** This is the main image loading function.
-     * Contains four sub functions: prepareImages, triageImages, displaySlices, loadImageSlice
-     * and a utility function checkVisibleImages
-     */
-    function loadImages(forPrinting) {
+        /** This is the main image loading function.
+         * Contains four sub functions: prepareImages, triageImages, displaySlices, loadImageSlice
+         * and a utility function checkVisibleImages
+         */
+        function loadImages(forPrinting) {
 
-        //TESTING
-        console.log("** First Paint complete **");
-        console.timeEnd("Time to First Paint");
+            //TESTING
+            console.log("** First Paint complete **");
+            console.timeEnd("Time to First Paint");
 
-        //Set up tracking variables
-        var countImages = 0;
-    //DEV: This sets the maximum number of visible images to request in a single batch (too many will slow image display)
-        //NB remaining visible images are shunted into prefetchSlice, which works in the background
-        var maxVisibleSliceSize = 10;
-    //DEV: Set this to the number of images you want to prefetch after the on-screen images have been fetched
-        var prefetchSliceSize = forPrinting ? 10000 : 20;
-    //DEV: SVG images are currently very taxing: keep this number at 5 or below and test on your system with Sine.html
-        var svgSliceSize = 1;
-        var visibleSlice = [];
-        var svgSlice = [];
-        var svgGroup1 = [];
-        var initialSVGRun = true;
-        var prefetchSlice = [];
-        var windowScroll = true;
-        var imageDisplay = params.imageDisplay;
+            //Set up tracking variables
+            var countImages = 0;
+            //DEV: This sets the maximum number of visible images to request in a single batch (too many will slow image display)
+            //NB remaining visible images are shunted into prefetchSlice, which works in the background
+            var maxVisibleSliceSize = 10;
+            //DEV: Set this to the number of images you want to prefetch after the on-screen images have been fetched
+            var prefetchSliceSize = forPrinting ? 10000 : 20;
+            //DEV: SVG images are currently very taxing: keep this number at 5 or below and test on your system with Sine.html
+            var svgSliceSize = 1;
+            var visibleSlice = [];
+            var svgSlice = [];
+            var svgGroup1 = [];
+            var initialSVGRun = true;
+            var prefetchSlice = [];
+            var windowScroll = true;
+            var imageDisplay = params.imageDisplay;
 
-        //Establish master image array
-        var images = $('#articleContent').contents().find('body').find('img');
-        var allImages = images.length;
+            //Establish master image array
+            var images = $('#articleContent').contents().find('body').find('img');
+            var allImages = images.length;
 
-        //If user wants to display images...
-        if (imageDisplay) {
+            //If user wants to display images...
+            if (imageDisplay) {
 
-            //Set up a listener function for onscroll event
-            if (allImages > prefetchSliceSize) {
-                $("#articleContent").contents().scrollStopped(prepareImages);
-            }
-            if (allImages) {
-                prepareImages();
+                //Set up a listener function for onscroll event
+                if (allImages > prefetchSliceSize) {
+                    $("#articleContent").contents().scrollStopped(prepareImages);
+                }
+                if (allImages) {
+                    prepareImages();
+                } else {
+                    console.log("There are no images to display in this article.");
+                    loadMathJax();
+                    //TESTING
+                    console.timeEnd("Time to Document Ready");
+                    if (params.printIntercept) printIntercept();
+                }
             } else {
-                console.log("There are no images to display in this article.");
+                console.log("Image retrieval disabled by user");
+                //User did not request images, so give option of loading one by one {kiwix-js #173]
+                if (images.length) {
+                    images.each(function () {
+                        // Attach an onclick function to load the image
+                        var img = $(this);
+                        img.on('click', function () {
+                            this.height = this.getAttribute('data-kiwixheight');
+                            this.style.background = "";
+                            loadImageSlice(this, 0, 0, function (sliceID, sliceCount, sliceEnd, mimetype, data) {
+                                img[0].src = "data:" + mimetype + ";base64," + btoa(data);
+                            }, true);
+                        });
+                    });
+                }
+                //Although user didn't request images, typeset equations
                 loadMathJax();
+
                 //TESTING
                 console.timeEnd("Time to Document Ready");
                 if (params.printIntercept) printIntercept();
             }
-        } else {
-            console.log("Image retrieval disabled by user");
-            //User did not request images, so give option of loading one by one {kiwix-js #173]
-            if (images.length) {
-                images.each(function () {
-                    // Attach an onclick function to load the image
-                    var img = $(this);
-                    img.on('click', function () {
-                        this.height = this.getAttribute('data-kiwixheight');
-                        this.style.background = "";
-                        loadImageSlice(this, 0, 0, function (sliceID, sliceCount, sliceEnd, mimetype, data) {
-                            img[0].src = "data:" + mimetype + ";base64," + btoa(data);
-                            }, true);
-                    });
-                });
-            }
-            //Although user didn't request images, typeset equations
-            loadMathJax();
 
-            //TESTING
-            console.timeEnd("Time to Document Ready");
-            if (params.printIntercept) printIntercept();
-        }
-
-        /** Prepares the main array of images remaining for triage
-         * and determines which images are visible
-         */
-        function prepareImages() {
-            //Ensure the function isn't launched multiple times
-            if (!windowScroll) { return; }
-            windowScroll = false;
-
-            //Reload images array because we may have spliced it on a previous loop
-            images = $('#articleContent').contents().find('body').find('img');
-            
-            //Remove images that have already been loaded
-            var visibleImage = null;
-            var lastRemovedPosition = 0;
-            for (var i = 0; i < images.length; i++) {
-                if (images[i].src) {
-                    visibleImage = uiUtil.isElementInView(images[i], true) ? lastRemovedPosition : visibleImage;
-                    images.splice(i, 1);
-                    i--; //If we removed an image, reset the index
-                    lastRemovedPosition++;
+            /** Prepares the main array of images remaining for triage
+             * and determines which images are visible
+             */
+            function prepareImages() {
+                //Ensure the function isn't launched multiple times
+                if (!windowScroll) {
+                    return;
                 }
-            }
+                windowScroll = false;
 
-            if (images.length) {
-                console.log("Processing " + images.length + " images...");
-                //Determine first and last visible images in the current window
-                var view = checkVisibleImages();
-                //windowScroll = true;
-                //return;
+                //Reload images array because we may have spliced it on a previous loop
+                images = $('#articleContent').contents().find('body').find('img');
 
-                //If there are undisplayed images in the current window...
-                if (view.lastVisible >= 0) {
-                    triageImages(view.firstVisible, view.lastVisible);
-                } else {
-                    //If the currently visible image(s) have already been loaded...
-                    if (visibleImage != null) {
-                        //If we are viewing an image within 5 images of the next unloaded image
-                        if (lastRemovedPosition - visibleImage <= 5) {
-                            triageImages();
-                        } else {
-                            console.log("No images need prefetching\n\n" +
-                                "** Waiting for user to scroll **");
-                            windowScroll = true;
-                            if (params.printIntercept) printIntercept();
-                        }        
+                //Remove images that have already been loaded
+                var visibleImage = null;
+                var lastRemovedPosition = 0;
+                for (var i = 0; i < images.length; i++) {
+                    if (images[i].src) {
+                        visibleImage = uiUtil.isElementInView(images[i], true) ? lastRemovedPosition : visibleImage;
+                        images.splice(i, 1);
+                        i--; //If we removed an image, reset the index
+                        lastRemovedPosition++;
+                    }
+                }
+
+                if (images.length) {
+                    console.log("Processing " + images.length + " images...");
+                    //Determine first and last visible images in the current window
+                    var view = checkVisibleImages();
+                    //windowScroll = true;
+                    //return;
+
+                    //If there are undisplayed images in the current window...
+                    if (view.lastVisible >= 0) {
+                        triageImages(view.firstVisible, view.lastVisible);
                     } else {
-                        //We don't know where we are because no images are in view, so we'd better fetch some more
-                        triageImages();
-                    }
-                }
-            } else {
-                //Typeset equations
-                loadMathJax();
-                //Unload scroll listener
-                console.log("Unloading scroll listener");
-                $("#articleContent").contents().off('scroll');
-                windowScroll = true; //Check if it's really unloaded...
-            }
-
-        } //End of prepareImages()
-
-        /**
-         * Sort the images into three arrays:
-         * visibleSlice (visible images which will be loaded first)
-         * svgSlice (groups together SVG images)
-         * prefetchSlice (preload set number of non-visible images)
-         * Pass the index of the first and last images of visible area if known 
-         *
-         * @param {number} firstVisible
-         * @param {number} lastVisible
-         */
-        function triageImages(firstVisible, lastVisible) {
-            //Set the window of images to be requested
-            if (typeof firstVisible === 'undefined' || firstVisible == null) { firstVisible = -1; } //No first images was set
-            if (typeof lastVisible === 'undefined' || lastVisible == null) { lastVisible = -1; } //No first images was set
-            var lengthSlice = lastVisible + prefetchSliceSize + 1;
-            var startSlice = firstVisible;
-            //If the requested images window extends beyond the end of the image array...
-            if (lengthSlice > images.length) {
-                //Move the window backwards
-                startSlice -= lengthSlice - images.length;
-                lengthSlice = images.length;
-            }
-            //Check that the start of the window isn't before the beginning of the array
-            startSlice = startSlice < 0 ? 0 : startSlice;
-
-
-            //Sort through images to put them in the appropriate slice arrays
-            svgGroup1 = [];
-            var svgGroup2 = [];
-            for (var i = startSlice; i < lengthSlice; i++) {
-                if (/\.svg$/i.test(images[i].getAttribute('data-kiwixsrc')) ||
-                    //Include any kind of maths image fallback that has an alt string in SVG bucket
-                    /mwe-math-fallback/i.test(images[i].className) && images[i].alt) {
-                    if (i < firstVisible || i > lastVisible) {
-                        svgGroup2.push(images[i]);
-                    } else {
-                        svgGroup1.push(images[i]);
-                    }
-                } else {
-                    if (i <= lastVisible && visibleSlice.length <= maxVisibleSliceSize) {
-                        visibleSlice.push(images[i]);
-                    } else {
-                        prefetchSlice.push(images[i]);
-                    }
-                }
-            }
-            svgSlice = svgGroup1.concat(svgGroup2);
-
-            //Call displaySlices with all counters zeroed
-            //This lets the function know that it should initialize display process
-            displaySlices(0, 0, 0);
-
-        } //End of triageImages()
-
-        /**
-         * This controls the order in which slices will be displayed and acts as a callback function for loadImageSlice
-         * sliceID (callback value) identifies the slices: 1=visibleSlice; 2=prefetchSlice; 3=svgSlice 
-         * sliceCount (callback value) keeps count of the images loaded in the current slice
-         * sliceEnd (callback value) is the index of the last image in the current slice 
-         * Start the function with all values zeroed
-         *
-         * @callback requestCallback
-         * @param {number} sliceID
-         * @param {number} sliceCount
-         * @param {number} sliceEnd
-         */
-        function displaySlices(sliceID, sliceCount, sliceEnd) {
-            //Only respond to callback if all slice images have been extracted (or on startup)
-            if (sliceCount === sliceEnd) {
-                sliceID++; //Get ready to process next slice
-                if (sliceID == 1) {
-                    if (visibleSlice.length) {
-                        console.log("** Accessing " + visibleSlice.length + " visible image(s)...");
-                        loadImageSlice(visibleSlice, 1, visibleSlice.length, displaySlices);
-                        visibleSlice = [];
-                    } else { //No images in this slice so move on to next
-                        sliceID++;
-                    }
-                }
-                if (sliceID == 2) {
-                    if (prefetchSlice.length) {
-                        console.log("** Prefetching " + prefetchSlice.length + " offscreen images...");
-                        loadImageSlice(prefetchSlice, 2, prefetchSlice.length, displaySlices);
-                        prefetchSlice = [];
-                    } else { //No images in this slice so move on to next
-                        sliceID++;
-                    }
-                }
-                if (sliceID == 3) {
-                    //Only load MathJax after visible and prefetched images have been extracted, but before SVGs are pulled
-                    loadMathJax();
-
-                    //TESTING
-                    if (countImages <= maxVisibleSliceSize + prefetchSliceSize) { console.timeEnd("Time to Document Ready"); }
-
-                    if (svgSlice.length) {
-                        //Use the MathJax method of typesetting formulae if user has requested this
-                        if (params.useMathJax && window.frames[0].MathJax) {
-                            /*/If MathJax has not yet completed a typesetting run, discard non-visible SVGs to speed up the initial typesetting operation
-                            if (initialSVGRun && svgGroup1.length > 0) {
-                                svgSlice = svgGroup1;
+                        //If the currently visible image(s) have already been loaded...
+                        if (visibleImage != null) {
+                            //If we are viewing an image within 5 images of the next unloaded image
+                            if (lastRemovedPosition - visibleImage <= 5) {
+                                triageImages();
+                            } else {
+                                console.log("No images need prefetching\n\n" +
+                                    "** Waiting for user to scroll **");
+                                windowScroll = true;
+                                if (params.printIntercept) printIntercept();
                             }
-                            initialSVGRun = false;*/
-                            var counter = 0; 
-                            $(svgSlice).each(function () {
-                                var node = this;
-                                if (/mwe-math-fallback-image/i.test(node.className) && node.alt) {
-                                    var script = document.createElement("script");
-                                    script.type = "math/tex";
-                                    script.text = node.alt;
-                                    $(this).replaceWith(script);
-                                    console.log("Typesetting image #" + countImages + "...");
-                                    countImages++;
-                                    svgSlice.splice(counter, 1);
-                                } else {
-                                    counter++;
-                                }
-                            });
-                            window.frames[0].MathJax.Hub.Queue(["Typeset", window.frames[0].MathJax.Hub]);
+                        } else {
+                            //We don't know where we are because no images are in view, so we'd better fetch some more
+                            triageImages();
                         }
                     }
-                    //If there are any SVGs left which were not dealt with by MathJax, process fallback images
-                    if (svgSlice.length) {
-                        console.log("** Slicing " + svgSlice.length + " SVG images...");
-                        //Set up variables to hold visible image range (to check whether user scrolls during lengthy procedure)
-                        var startSVG;
-                        var endSVG;
-                        iterateSVGSlice(3, 0, 0);
-                    } else { //No images in this slice so move on to next
-                        sliceID++;
-                    }
+                } else {
+                    //Typeset equations
+                    loadMathJax();
+                    //Unload scroll listener
+                    console.log("Unloading scroll listener");
+                    $("#articleContent").contents().off('scroll');
+                    windowScroll = true; //Check if it's really unloaded...
                 }
-                if (sliceID > 3) {
-                    if (countImages === allImages) {
-                        console.log("** All images extracted from current document **");
-                        windowScroll = true; //Go back to prove this!
-                    } else {
-                        console.log("All requested image slices have been processed\n" +
-                            "** Waiting for user scroll... **");
-                        windowScroll = true;
-                    }
-                    if (params.printIntercept) printIntercept();
-                }
-            }
+
+            } //End of prepareImages()
 
             /**
-             * This is a specialized callback to iterate the SVGSlice
-             * This slice needs special handling because svg images can hang the program
+             * Sort the images into three arrays:
+             * visibleSlice (visible images which will be loaded first)
+             * svgSlice (groups together SVG images)
+             * prefetchSlice (preload set number of non-visible images)
+             * Pass the index of the first and last images of visible area if known 
+             *
+             * @param {number} firstVisible
+             * @param {number} lastVisible
+             */
+            function triageImages(firstVisible, lastVisible) {
+                //Set the window of images to be requested
+                if (typeof firstVisible === 'undefined' || firstVisible == null) {
+                    firstVisible = -1;
+                } //No first images was set
+                if (typeof lastVisible === 'undefined' || lastVisible == null) {
+                    lastVisible = -1;
+                } //No first images was set
+                var lengthSlice = lastVisible + prefetchSliceSize + 1;
+                var startSlice = firstVisible;
+                //If the requested images window extends beyond the end of the image array...
+                if (lengthSlice > images.length) {
+                    //Move the window backwards
+                    startSlice -= lengthSlice - images.length;
+                    lengthSlice = images.length;
+                }
+                //Check that the start of the window isn't before the beginning of the array
+                startSlice = startSlice < 0 ? 0 : startSlice;
+
+
+                //Sort through images to put them in the appropriate slice arrays
+                svgGroup1 = [];
+                var svgGroup2 = [];
+                for (var i = startSlice; i < lengthSlice; i++) {
+                    if (/\.svg$/i.test(images[i].getAttribute('data-kiwixsrc')) ||
+                        //Include any kind of maths image fallback that has an alt string in SVG bucket
+                        /mwe-math-fallback/i.test(images[i].className) && images[i].alt) {
+                        if (i < firstVisible || i > lastVisible) {
+                            svgGroup2.push(images[i]);
+                        } else {
+                            svgGroup1.push(images[i]);
+                        }
+                    } else {
+                        if (i <= lastVisible && visibleSlice.length <= maxVisibleSliceSize) {
+                            visibleSlice.push(images[i]);
+                        } else {
+                            prefetchSlice.push(images[i]);
+                        }
+                    }
+                }
+                svgSlice = svgGroup1.concat(svgGroup2);
+
+                //Call displaySlices with all counters zeroed
+                //This lets the function know that it should initialize display process
+                displaySlices(0, 0, 0);
+
+            } //End of triageImages()
+
+            /**
+             * This controls the order in which slices will be displayed and acts as a callback function for loadImageSlice
+             * sliceID (callback value) identifies the slices: 1=visibleSlice; 2=prefetchSlice; 3=svgSlice 
+             * sliceCount (callback value) keeps count of the images loaded in the current slice
+             * sliceEnd (callback value) is the index of the last image in the current slice 
+             * Start the function with all values zeroed
              *
              * @callback requestCallback
              * @param {number} sliceID
              * @param {number} sliceCount
              * @param {number} sliceEnd
              */
-            function iterateSVGSlice(sliceID, sliceCount, sliceEnd) {
+            function displaySlices(sliceID, sliceCount, sliceEnd) {
+                //Only respond to callback if all slice images have been extracted (or on startup)
                 if (sliceCount === sliceEnd) {
-                    //Check to see if visible images have changed (i.e. if user has scrolled)
-                    if (!sliceCount) {
-                        //console.log("startSVG");
-                        startSVG = checkVisibleImages();
-                    } else {
-                        //console.log("endSVG");
-                        endSVG = checkVisibleImages();
-                    }
-                    if (endSVG) {
-                        if (startSVG.firstVisible != endSVG.firstVisible || startSVG.lastVisible != endSVG.lastVisible) {
-                            //Visible images have changed, so abandon this svgSlice
-                            console.log("** Abandoning svgSlice due to user scroll **");
-                            svgSlice = [];
-                            windowScroll = true;
-                            prepareImages();
-                            return;
+                    sliceID++; //Get ready to process next slice
+                    if (sliceID == 1) {
+                        if (visibleSlice.length) {
+                            console.log("** Accessing " + visibleSlice.length + " visible image(s)...");
+                            loadImageSlice(visibleSlice, 1, visibleSlice.length, displaySlices);
+                            visibleSlice = [];
+                        } else { //No images in this slice so move on to next
+                            sliceID++;
                         }
-                    }                    
-                    var batchSize = svgSliceSize > svgSlice.length ? svgSlice.length : svgSliceSize;
-                    if (batchSize) {
-                        //Split svgSlice into chunks to avoid hanging the program
-                        var svgSubSlice = svgSlice.slice(0, batchSize);
-                        svgSlice = svgSlice.slice(batchSize, svgSlice.length);
-                        console.log("Requesting batch of " + batchSize + " SVG image(s)...");
-                        loadImageSlice(svgSubSlice, 3, batchSize, iterateSVGSlice);
-                    } else {
-                        console.log("** Finished iterating svgSlice");
-                        displaySlices(3, 0, 0);
                     }
-                }    
-            } //End of iterateSVGSlice()
+                    if (sliceID == 2) {
+                        if (prefetchSlice.length) {
+                            console.log("** Prefetching " + prefetchSlice.length + " offscreen images...");
+                            loadImageSlice(prefetchSlice, 2, prefetchSlice.length, displaySlices);
+                            prefetchSlice = [];
+                        } else { //No images in this slice so move on to next
+                            sliceID++;
+                        }
+                    }
+                    if (sliceID == 3) {
+                        //Only load MathJax after visible and prefetched images have been extracted, but before SVGs are pulled
+                        loadMathJax();
 
-        } //End of displaySlices()
+                        //TESTING
+                        if (countImages <= maxVisibleSliceSize + prefetchSliceSize) {
+                            console.timeEnd("Time to Document Ready");
+                        }
 
-        /**
-         * Loads images in the array passed as images
-         * sliceID will be passed to the callback 
-         * sliceEnd is the index of the last image in the current slice 
-         * dataRequested == true returns the content and disables creation of blob
-         *
-         * @param {Array} imnages
-         * @param {number} sliceID
-         * @param {number} sliceEnd
-         * @param {requestCallback} callback
-         * @param {Boolean} dataRequested
-         */
-        function loadImageSlice(images, sliceID, sliceEnd, callback, dataRequested) {
-            var sliceCount = 0;
-            Array.prototype.slice.call(images).forEach(function (image) {
-                // It's a standard image contained in the ZIM file
-                // We try to find its name (from an absolute or relative URL)
-                var imageMatch = image.dataset.kiwixsrc.match(regexpImageUrl); //kiwix-js #272
-                if (imageMatch) {
-                    var title = decodeURIComponent(imageMatch[1]);
-                    selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                        selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                            var url = fileDirEntry.url;
-                            var mimetype = url.match(/\.(\w{2,4})$/);
-                            mimetype = mimetype ? "image/" + mimetype[1].toLowerCase() : "image";
-                            mimetype = /\.jpg$/i.test(url) ? "image/jpeg" : mimetype;
-                            mimetype = /\.tif$/i.test(url) ? "image/tiff" : mimetype;
-                            mimetype = /\.ico$/i.test(url) ? "image/x-icon" : mimetype;
-                            mimetype = /\.svg$/i.test(url) ? "image/svg+xml" : mimetype;
-                            if (!dataRequested) {
-                                uiUtil.feedNodeWithBlob(image, 'src', content, mimetype);
+                        if (svgSlice.length) {
+                            //Use the MathJax method of typesetting formulae if user has requested this
+                            if (params.useMathJax && window.frames[0].MathJax) {
+                                /*/If MathJax has not yet completed a typesetting run, discard non-visible SVGs to speed up the initial typesetting operation
+                                if (initialSVGRun && svgGroup1.length > 0) {
+                                    svgSlice = svgGroup1;
+                                }
+                                initialSVGRun = false;*/
+                                var counter = 0;
+                                $(svgSlice).each(function () {
+                                    var node = this;
+                                    if (/mwe-math-fallback-image/i.test(node.className) && node.alt) {
+                                        var script = document.createElement("script");
+                                        script.type = "math/tex";
+                                        script.text = node.alt;
+                                        $(this).replaceWith(script);
+                                        console.log("Typesetting image #" + countImages + "...");
+                                        countImages++;
+                                        svgSlice.splice(counter, 1);
+                                    } else {
+                                        counter++;
+                                    }
+                                });
+                                window.frames[0].MathJax.Hub.Queue(["Typeset", window.frames[0].MathJax.Hub]);
                             }
+                        }
+                        //If there are any SVGs left which were not dealt with by MathJax, process fallback images
+                        if (svgSlice.length) {
+                            console.log("** Slicing " + svgSlice.length + " SVG images...");
+                            //Set up variables to hold visible image range (to check whether user scrolls during lengthy procedure)
+                            var startSVG;
+                            var endSVG;
+                            iterateSVGSlice(3, 0, 0);
+                        } else { //No images in this slice so move on to next
+                            sliceID++;
+                        }
+                    }
+                    if (sliceID > 3) {
+                        if (countImages === allImages) {
+                            console.log("** All images extracted from current document **");
+                            windowScroll = true; //Go back to prove this!
+                        } else {
+                            console.log("All requested image slices have been processed\n" +
+                                "** Waiting for user scroll... **");
+                            windowScroll = true;
+                        }
+                        if (params.printIntercept) printIntercept();
+                    }
+                }
+
+                /**
+                 * This is a specialized callback to iterate the SVGSlice
+                 * This slice needs special handling because svg images can hang the program
+                 *
+                 * @callback requestCallback
+                 * @param {number} sliceID
+                 * @param {number} sliceCount
+                 * @param {number} sliceEnd
+                 */
+                function iterateSVGSlice(sliceID, sliceCount, sliceEnd) {
+                    if (sliceCount === sliceEnd) {
+                        //Check to see if visible images have changed (i.e. if user has scrolled)
+                        if (!sliceCount) {
+                            //console.log("startSVG");
+                            startSVG = checkVisibleImages();
+                        } else {
+                            //console.log("endSVG");
+                            endSVG = checkVisibleImages();
+                        }
+                        if (endSVG) {
+                            if (startSVG.firstVisible != endSVG.firstVisible || startSVG.lastVisible != endSVG.lastVisible) {
+                                //Visible images have changed, so abandon this svgSlice
+                                console.log("** Abandoning svgSlice due to user scroll **");
+                                svgSlice = [];
+                                windowScroll = true;
+                                prepareImages();
+                                return;
+                            }
+                        }
+                        var batchSize = svgSliceSize > svgSlice.length ? svgSlice.length : svgSliceSize;
+                        if (batchSize) {
+                            //Split svgSlice into chunks to avoid hanging the program
+                            var svgSubSlice = svgSlice.slice(0, batchSize);
+                            svgSlice = svgSlice.slice(batchSize, svgSlice.length);
+                            console.log("Requesting batch of " + batchSize + " SVG image(s)...");
+                            loadImageSlice(svgSubSlice, 3, batchSize, iterateSVGSlice);
+                        } else {
+                            console.log("** Finished iterating svgSlice");
+                            displaySlices(3, 0, 0);
+                        }
+                    }
+                } //End of iterateSVGSlice()
+
+            } //End of displaySlices()
+
+            /**
+             * Loads images in the array passed as images
+             * sliceID will be passed to the callback 
+             * sliceEnd is the index of the last image in the current slice 
+             * dataRequested == true returns the content and disables creation of blob
+             *
+             * @param {Array} imnages
+             * @param {number} sliceID
+             * @param {number} sliceEnd
+             * @param {requestCallback} callback
+             * @param {Boolean} dataRequested
+             */
+            function loadImageSlice(images, sliceID, sliceEnd, callback, dataRequested) {
+                var sliceCount = 0;
+                Array.prototype.slice.call(images).forEach(function (image) {
+                    // It's a standard image contained in the ZIM file
+                    // We try to find its name (from an absolute or relative URL)
+                    var imageMatch = image.dataset.kiwixsrc.match(regexpImageUrl); //kiwix-js #272
+                    if (imageMatch) {
+                        var title = decodeURIComponent(imageMatch[1]);
+                        selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+                            selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                                var url = fileDirEntry.url;
+                                var mimetype = url.match(/\.(\w{2,4})$/);
+                                mimetype = mimetype ? "image/" + mimetype[1].toLowerCase() : "image";
+                                mimetype = /\.jpg$/i.test(url) ? "image/jpeg" : mimetype;
+                                mimetype = /\.tif$/i.test(url) ? "image/tiff" : mimetype;
+                                mimetype = /\.ico$/i.test(url) ? "image/x-icon" : mimetype;
+                                mimetype = /\.svg$/i.test(url) ? "image/svg+xml" : mimetype;
+                                if (!dataRequested) {
+                                    uiUtil.feedNodeWithBlob(image, 'src', content, mimetype);
+                                }
+                                sliceCount++;
+                                console.log("Extracted image #" + countImages + "...");
+                                countImages++;
+                                if (!dataRequested) {
+                                    callback(sliceID, sliceCount, sliceEnd, url);
+                                } else {
+                                    callback(sliceID, sliceCount, sliceEnd, mimetype, util.uintToString(content));
+                                }
+                            });
+                        }).fail(function (e) {
                             sliceCount++;
-                            console.log("Extracted image #" + countImages + "...");
+                            console.error("Could not find DirEntry for image:" + title, e);
                             countImages++;
-                            if (!dataRequested) {
-                                callback(sliceID, sliceCount, sliceEnd, url);
-                            } else {
-                                callback(sliceID, sliceCount, sliceEnd, mimetype, util.uintToString(content));
-                            }
+                            callback(sliceID, sliceCount, sliceEnd, "Error!");
                         });
+                    }
+                });
+            } //End of loadImageRange()
+
+            /**
+             * This is a utility function to check the window of images visible to the user.
+             * It needs to be run within the scope of the main images array.
+             * Returns an object with attributes .firstVisible and .lastVisible
+             * They return null if no images are currently visible.
+             */
+            function checkVisibleImages() {
+                var firstVisible = null;
+                var lastVisible = null;
+                //Determine first and last visible images in the current window
+                for (var i = 0; i < images.length; i++) {
+                    //console.log("Checking #" + i + ": " + images[i].getAttribute("data-kiwixsrc"));
+                    if (uiUtil.isElementInView(images[i], true)) {
+                        //console.log("#" + i + " *is* visible");
+                        if (firstVisible == null) {
+                            firstVisible = i;
+                        }
+                        lastVisible = i;
+                    } else {
+                        //console.log("#" + i + " is not visible");
+                        if (firstVisible != null && lastVisible != null) {
+                            console.log("First visible image is #" + firstVisible + "\n" +
+                                "Last visible image is #" + lastVisible);
+                            break; //We've found the last visible image, so stop the loop
+                        }
+                    }
+                }
+                return {
+                    firstVisible: firstVisible,
+                    lastVisible: lastVisible
+                };
+            }
+
+        } //End of loadImages()
+
+        // Load Javascript content
+        function loadJavascript() {
+            $('#articleContent').contents().find('script').each(function () {
+                var script = $(this);
+                // We try to find its name (from an absolute or relative URL)
+                if (script && script[0] && script[0].src) {
+                    var srcMatch = script.attr("src").match(regexpMetadataUrl);
+                }
+                // TODO check that the type of the script is text/javascript or application/javascript
+                if (srcMatch) {
+                    // It's a Javascript file contained in the ZIM file
+                    var title = uiUtil.removeUrlParameters(decodeURIComponent(srcMatch[1]));
+                    selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+                        if (dirEntry === null)
+                            console.log("Error: js file not found: " + title);
+                        else
+                            selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                                // TODO : I have to disable javascript for now
+                                //uiUtil.feedNodeWithBlob(script, 'src', content);
+                                //script[0].type = 'text/javascript';
+                                //var jsContent = encodeURIComponent(util.uintToString(content));
+                                var jsContent = util.uintToString(content);
+                                script.attr("src", 'data:text/javascript;charset=UTF-8,' + jsContent);
+                            });
                     }).fail(function (e) {
-                        sliceCount++;
-                        console.error("Could not find DirEntry for image:" + title, e);
-                        countImages++;
-                        callback(sliceID, sliceCount, sliceEnd, "Error!");
+                        console.error("could not find DirEntry for javascript : " + title, e);
                     });
                 }
             });
-        } //End of loadImageRange()
+        }
+
 
         /**
-         * This is a utility function to check the window of images visible to the user.
-         * It needs to be run within the scope of the main images array.
-         * Returns an object with attributes .firstVisible and .lastVisible
-         * They return null if no images are currently visible.
+         * Changes the URL of the browser page, so that the user might go back to it
+         * 
+         * @param {String} title
+         * @param {String} titleSearch
          */
-        function checkVisibleImages() {
-            var firstVisible = null;
-            var lastVisible = null;
-            //Determine first and last visible images in the current window
-            for (var i = 0; i < images.length; i++) {
-                //console.log("Checking #" + i + ": " + images[i].getAttribute("data-kiwixsrc"));
-                if (uiUtil.isElementInView(images[i], true)) {
-                    //console.log("#" + i + " *is* visible");
-                    if (firstVisible == null) { firstVisible = i; }
-                    lastVisible = i;
+        function pushBrowserHistoryState(title, titleSearch) {
+            var stateObj = {};
+            var urlParameters;
+            var stateLabel;
+            if (title && !("" === title)) {
+                stateObj.title = title;
+                urlParameters = "?title=" + title;
+                stateLabel = "Wikipedia Article : " + title;
+            } else if (titleSearch && !("" === titleSearch)) {
+                stateObj.titleSearch = titleSearch;
+                urlParameters = "?titleSearch=" + titleSearch;
+                stateLabel = "Wikipedia search : " + titleSearch;
+            } else {
+                return;
+            }
+            window.history.pushState(stateObj, stateLabel, urlParameters);
+        }
+
+
+        /**
+         * Replace article content with the one of the given title
+         * @param {String} title
+         */
+        function goToArticle(title) {
+            //This removes any search highlighting
+            clearFindInArticle();
+            //Re-enable top-level scrolling
+            document.getElementById('top').style.position = "relative";
+            document.getElementById('scrollbox').style.position = "fixed";
+            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
+            $("#readingArticle").show();
+            selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+                if (dirEntry === null || dirEntry === undefined) {
+                    $("#readingArticle").hide();
+                    $("#articleContent").show();
+                    console.error("Article with title " + title + " not found in the archive");
+                    goToMainArticle();
                 } else {
-                    //console.log("#" + i + " is not visible");
-                    if (firstVisible != null && lastVisible != null) {
-                        console.log("First visible image is #" + firstVisible + "\n" +
-                            "Last visible image is #" + lastVisible);
-                        break; //We've found the last visible image, so stop the loop
+                    $("#articleName").html(title);
+                    document.getElementById('articleContent').style.display = "none";
+                    readArticle(dirEntry);
+                }
+            }).fail(function () {
+                console.error("Error reading article with title " + title);
+            });
+        }
+
+        function goToRandomArticle() {
+            if (selectedArchive === null) {
+                return;
+            } //Prevents exception if user hasn't selected an archive
+            selectedArchive.getRandomDirEntry(function (dirEntry) {
+                if (dirEntry === null || dirEntry === undefined) {
+                    alert("Error finding random article.");
+                } else {
+                    //Test below supports Stackexchange-family ZIMs, so we don't call up user profiles
+                    if (dirEntry.namespace === 'A' && !/user\//.test(dirEntry.url)) {
+                        $("#articleName").html(dirEntry.title);
+                        $("#readingArticle").show();
+                        $('#articleContent').contents().find('body').html("");
+                        readArticle(dirEntry);
+                    } else {
+                        // If the random title search did not end up on an article,
+                        // we try again, until we find one
+                        goToRandomArticle();
                     }
                 }
-            }
-            return {
-                firstVisible: firstVisible,
-                lastVisible: lastVisible
-            };
+            });
         }
 
-    } //End of loadImages()
-
-    // Load Javascript content
-    function loadJavascript() {
-        $('#articleContent').contents().find('script').each(function () {
-            var script = $(this);
-            // We try to find its name (from an absolute or relative URL)
-            if (script && script[0] && script[0].src) { var srcMatch = script.attr("src").match(regexpMetadataUrl); }
-            // TODO check that the type of the script is text/javascript or application/javascript
-            if (srcMatch) {
-                // It's a Javascript file contained in the ZIM file
-                var title = uiUtil.removeUrlParameters(decodeURIComponent(srcMatch[1]));
-                selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                    if (dirEntry === null)
-                        console.log("Error: js file not found: " + title);
-                    else
-                        selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                            // TODO : I have to disable javascript for now
-                            //uiUtil.feedNodeWithBlob(script, 'src', content);
-                            //script[0].type = 'text/javascript';
-                            //var jsContent = encodeURIComponent(util.uintToString(content));
-                            var jsContent = util.uintToString(content);
-                            script.attr("src", 'data:text/javascript;charset=UTF-8,' + jsContent);
-                        });
-                }).fail(function (e) {
-                    console.error("could not find DirEntry for javascript : " + title, e);
-                });
-            }
-        });
-    }
-
-
-     /**
-     * Changes the URL of the browser page, so that the user might go back to it
-     * 
-     * @param {String} title
-     * @param {String} titleSearch
-     */
-    function pushBrowserHistoryState(title, titleSearch) {
-        var stateObj = {};
-        var urlParameters;
-        var stateLabel;
-        if (title && !(""===title)) {
-            stateObj.title = title;
-            urlParameters = "?title=" + title;
-            stateLabel = "Wikipedia Article : " + title;
-            }
-        else if (titleSearch && !(""===titleSearch)) {
-            stateObj.titleSearch = titleSearch;
-            urlParameters = "?titleSearch=" + titleSearch;
-            stateLabel = "Wikipedia search : " + titleSearch;
-        }
-        else {
-            return;
-        }
-        window.history.pushState(stateObj, stateLabel, urlParameters);
-    }
-
-
-    /**
-     * Replace article content with the one of the given title
-     * @param {String} title
-     */
-    function goToArticle(title) {
-        //This removes any search highlighting
-        clearFindInArticle();
-        //Re-enable top-level scrolling
-        document.getElementById('top').style.position = "relative";
-        document.getElementById('scrollbox').style.position = "fixed";
-        document.getElementById('scrollbox').style.height = window.innerHeight + "px";
-        $("#readingArticle").show();
-        selectedArchive.getDirEntryByTitle(title).then(function(dirEntry) {
-            if (dirEntry === null || dirEntry === undefined) {
-                $("#readingArticle").hide();
-                $("#articleContent").show();
-                console.error("Article with title " + title + " not found in the archive");
-                goToMainArticle();
-            }
-            else {
-                $("#articleName").html(title);
-                document.getElementById('articleContent').style.display = "none";
-                readArticle(dirEntry);
-            }
-        }).fail(function() { console.error("Error reading article with title " + title); });
-    }
-    
-    function goToRandomArticle() {
-        if (selectedArchive === null) { return; } //Prevents exception if user hasn't selected an archive
-        selectedArchive.getRandomDirEntry(function (dirEntry) {
-            if (dirEntry === null || dirEntry === undefined) {
-                alert("Error finding random article.");
-            }
-            else {
-                //Test below supports Stackexchange-family ZIMs, so we don't call up user profiles
-                if (dirEntry.namespace === 'A' && !/user\//.test(dirEntry.url)) {
-                    $("#articleName").html(dirEntry.title);
-                    $("#readingArticle").show();
-                    $('#articleContent').contents().find('body').html("");
-                    readArticle(dirEntry);
-                }
-                else {
-                    // If the random title search did not end up on an article,
-                    // we try again, until we find one
-                    goToRandomArticle();
-                }
-            }
-        });
-    }
-    
-    function goToMainArticle() {
-        selectedArchive.getMainPageDirEntry(function (dirEntry) {
-            if (dirEntry === null || dirEntry === undefined) {
-                console.error("Error finding main article.");
-                $("#welcomeText").show();
-            }
-            else {
-                if (dirEntry.namespace === 'A') {
-                    $("#articleName").html(dirEntry.title);
-                    $("#readingArticle").show();
-                    $('#articleContent').contents().find('body').html("");
-                    readArticle(dirEntry);
-                }
-                else {
-                    console.error("The main page of this archive does not seem to be an article");
+        function goToMainArticle() {
+            selectedArchive.getMainPageDirEntry(function (dirEntry) {
+                if (dirEntry === null || dirEntry === undefined) {
+                    console.error("Error finding main article.");
                     $("#welcomeText").show();
+                } else {
+                    if (dirEntry.namespace === 'A') {
+                        $("#articleName").html(dirEntry.title);
+                        $("#readingArticle").show();
+                        $('#articleContent').contents().find('body').html("");
+                        readArticle(dirEntry);
+                    } else {
+                        console.error("The main page of this archive does not seem to be an article");
+                        $("#welcomeText").show();
+                    }
                 }
-            }
-        });
-    }
-});
+            });
+        }
+    });
