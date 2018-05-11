@@ -55,7 +55,7 @@ body {
     word-wrap: break-word
 }
 
-@media all and (max-width:320px - 1) {
+@media all and (max-width:320px) {
     body {
         font-size: 0.8em
     }
@@ -2737,7 +2737,7 @@ body {
 }
 
 @media all and (min-width:720px) {
-    .client-js [onclick] + .collapsible-block {
+    .client-js .collapsible-block, .client-js + .collapsible-block {
         display: block
     }
 }

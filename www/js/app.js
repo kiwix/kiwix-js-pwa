@@ -1655,7 +1655,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     "' class='list-group-item'>" + dirEntry.title + "</a>";
             }
             articleListDiv.html(articleListDivHtml);
-            document.getElementById('articleList a').addEventListener("click", handleTitleClick);
+            // @TODO - why doesn't this work?
+            //Array.prototype.slice.call(document.querySelectorAll('articleList a')).forEach(function (el) {
+            //    el.addEventListener('click', function () { handleTitleClick(); });
+            //});
+            $("#articleList a").on("click", handleTitleClick);
             $('#searchingForArticles').hide();
             $('#articleList').show();
             $('#articleListHeaderMessage').show();
@@ -2146,7 +2150,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     // Process headers
                     var collection = articleContent.getElementsByTagName(eles[i]);
                     for (var j = 0; j < collection.length; j++) {
-                        collection[j].classList.add("open-block");
+                        //collection[j].classList.add("open-block");
                         collection[j].addEventListener("click", function () {
                             var topTag = this.tagName;
                             this.classList.toggle("open-block");
@@ -2154,14 +2158,18 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             if (!nextElement) nextElement = this.parentNode.nextElementSibling;
                             if (!nextElement) return;
                             // Decide toggle direction based on first sibling element
-                            var toggleDirection = nextElement.style.display == "none" ? "block" : "none";
-                            if (nextElement.style.display == "none") {
-                                this.innerHTML += "<br />";
-                            } else {
-                                this.innerHTML = this.innerHTML.replace(/<br\s*\/?>$/i, "");
-                            }
+                            var toggleDirection = nextElement.classList.contains("collapsible-block") && !nextElement.classList.contains("open-block") || nextElement.style.display == "none"  ? "block" : "none";
+                            //if (nextElement.style.display == "none") {
+                            //    this.innerHTML += "<br />";
+                            //} else {
+                            //    this.innerHTML = this.innerHTML.replace(/<br\s*\/?>$/i, "");
+                            //}
                             do {
-                                nextElement.style.display = toggleDirection;
+                                if (nextElement.classList.contains("collapsible-block")) {
+                                    nextElement.classList.toggle("open-block");
+                                } else {
+                                    nextElement.style.display = toggleDirection;
+                                }
                                 nextElement = nextElement.nextElementSibling;
                             }
                             while (nextElement && !~nextElement.tagName.indexOf(topTag) && !~nextElement.tagName.indexOf("H1"));
@@ -2233,12 +2241,16 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 if (contentInjectionMode === 'jquery') {
                     var currentProtocol = location.protocol;
                     var currentHost = location.host;
-                    // Create (or replace) the "base" tag with our base URL
-                    //$('#articleContent').contents().find('head').find("base").detach();
-                    //$('#articleContent').contents().find('head').append("<base href='" + baseUrl + "'>");
 
                     // Convert links into javascript calls
                     var iframe = document.getElementById('articleContent').contentDocument;
+                    // Set state of collapsible sections
+                    if (params.openAllSections === true) {
+                        var collapsedBlocks = iframe.querySelectorAll('.collapsible-block:not(.open-block), .collapsible-heading:not(.open-block)');
+                        for (var i = collapsedBlocks.length; i--;) {
+                            collapsedBlocks[i].classList.add('open-block');
+                        }
+                    }
                     var anchors = Array.prototype.slice.call(iframe.getElementsByTagName('a'));
                     anchors.forEach(function (anchor) {
                         var href = anchor.getAttribute("href");
