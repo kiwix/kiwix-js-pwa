@@ -101,7 +101,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 clearTimeout($this.data('scrollTimeout'));
                 $this.data('scrollTimeout', setTimeout(callback.bind(that), 250, ev));
             });
-        }
+        };
 
         // Define behavior of HTML elements
         $('#searchArticles').on('click', function (e) {
@@ -204,7 +204,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 params.rememberLastPage = cookies.getItem('rememberLastPage') == "false" ? false : true;
                 if (!params.rememberLastPage) {
                     cookies.setItem('lastPageVisit', "", Infinity);
-                    if (typeof (Storage) !== "undefined") {
+                    if (typeof Storage !== "undefined") {
                         try { localStorage.setItem('lastPageHTML', ""); }
                         catch (err) { console.log("localStorage not supported: " + err); }
                     }
@@ -241,7 +241,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 btnContinue.innerHTML = "Please wait";
                 $("#printModal").modal({
                     backdrop: "static",
-                    keyboard: true,
+                    keyboard: true
                 });
                 goToArticle(decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, "")));
                 return;
@@ -263,7 +263,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
             $("#printModal").modal({
                 backdrop: "static",
-                keyboard: true,
+                keyboard: true
             });
                 }
 
@@ -274,7 +274,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
         function clearFindInArticle() {
             if (document.getElementById('row2').style.display == "none") return;
-            if (typeof localSearch != "undefined" && localSearch.remove) {
+            if (typeof localSearch !== "undefined" && localSearch.remove) {
                 localSearch.remove();
             }
             document.getElementById('findInArticle').value = "";
@@ -454,8 +454,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 params.hideToolbar = false;
                 checkToolbar();
                 params.hideToolbar = true;
-                return
-            };
+                return;
+            }
             //document.getElementById('article').style.marginTop = "46px";
             $("#articleContent").contents().scrollTop(0);
             $("#search-article").scrollTop(0);
@@ -509,8 +509,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //Use the "light" navbar if the content is "light" (otherwise it looks shite....)
             var checkTheme = params.cssTheme == "light" ? "light" : "dark"; 
             if (checkTheme != params.cssUITheme) {
-                if ((checkTheme == "light" && (!activeBtn || activeBtn == "btnHome" || activeBtn == "findText")) ||
-                    (checkTheme == "dark" && activeBtn && activeBtn != "btnHome" && activeBtn != "findText")) {
+                if (checkTheme == "light" && (!activeBtn || activeBtn == "btnHome" || activeBtn == "findText") ||
+                    checkTheme == "dark" && activeBtn && activeBtn != "btnHome" && activeBtn != "findText") {
                     cssUIThemeSet("light");
                 } else {
                     cssUIThemeSet("dark");
@@ -600,7 +600,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 document.getElementById('chooseArchiveFromLocalStorage').style.display = "block";
                 document.getElementById('instructions').style.display = "block";
                 document.getElementById('archiveFilesLegacy').style.display = "inline";
-                $('#archiveFilesLegacy').on('change', setLocalArchiveFromFileSelect)
+                $('#archiveFilesLegacy').on('change', setLocalArchiveFromFileSelect);
             }
             return false;
         });
@@ -639,12 +639,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         // TODO: I've set up two event listeners below because the archive list doesn't "change" if there is only one element in it
         // See if this can be simplified.... (but note that keyboard users might not click)
         $('#archiveList').on('change', function () {
-            console.log("***Archive List change event fired")
+            console.log("***Archive List change event fired");
             $('#openLocalFiles').hide();
             setLocalArchiveFromArchiveList();
         });
         $('#archiveList').on('click', function () {
-            console.log("***Archive List click event fired:  ***WHY***??? checking length of options list...")
+            console.log("***Archive List click event fired:  ***WHY***??? checking length of options list...");
             //Doh, why are you testing for this? Surely you want to jump to the file if it's been clicked on? There was a reason @REMIND_ME....
             //var comboArchiveList = document.getElementById('archiveList');
             //if (comboArchiveList.options.length == 1) {
@@ -786,7 +786,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 var link = doc.createElement("link");
                 link.setAttribute("rel", "stylesheet");
                 link.setAttribute("type", "text/css");
-                link.setAttribute("href", (params.cssTheme == "dark" ? treePath + "-/s/style-dark.css" : treePath + "-/s/style-dark-invert.css"));
+                link.setAttribute("href", params.cssTheme == "dark" ? treePath + "-/s/style-dark.css" : treePath + "-/s/style-dark-invert.css");
                 doc.head.appendChild(link); 
             }
         }
@@ -797,7 +797,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (!params.rememberLastPage) {
                 cookies.setItem('lastPageVisit', "", Infinity);
                 //Clear localStorage
-                if (typeof (Storage) !== "undefined") {
+                if (typeof Storage !== "undefined") {
                     try { localStorage.setItem('lastPageHTML', ""); }
                     catch (err) { console.log("localStorage not supported: " + err); }
             }
@@ -854,7 +854,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('hideFileSelectors').style.display = params.showFileSelectors ? "block" : "none";
             document.getElementById('downloadLinksText').style.display = params.showFileSelectors ? "inline" : "none";
             document.getElementById('moreInfo').style.display = params.showFileSelectors ? "none" : "inline";
-            if (params.packagedFile && params.storedFile && (params.storedFile != params.packagedFile)) {
+            if (params.packagedFile && params.storedFile && params.storedFile != params.packagedFile) {
                 var currentArchive = document.getElementById('currentArchive');
                 currentArchive.innerHTML = "Currently loaded archive: <b>" + params.storedFile.replace(/\.zim$/i, "") + "</b>";
                 currentArchive.style.display = params.showFileSelectors ? "none" : "block";
@@ -880,7 +880,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             scrollbox.style.position = "fixed";
             resizeIFrame();
             if (typeof tryHideToolber !== "undefined") window.frames[0].removeEventListener('scroll', tryHideToolbar);
-            var tryHideToolbar = function () { hideToolbar(); }
+            var tryHideToolbar = function () { hideToolbar(); };
             window.frames[0].addEventListener('scroll', tryHideToolbar, true);
             function hideToolbar(lastypos) {
                 if (!params.hideToolbar) return;
@@ -1083,7 +1083,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          * @returns {Boolean}
          */
         function isServiceWorkerAvailable() {
-            return ('serviceWorker' in navigator);
+            return 'serviceWorker' in navigator;
         }
 
         /**
@@ -1109,7 +1109,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          */
         function isServiceWorkerReady() {
             // Return true if the serviceWorkerRegistration is not null and not undefined
-            return (serviceWorkerRegistration);
+            return serviceWorkerRegistration;
         }
 
         /**
@@ -1160,8 +1160,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             });
         }
 
-        if ((storages !== null && storages.length > 0) || 
-            (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined')) {
+        if (storages !== null && storages.length > 0 || 
+            typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
             // Make a fake first access to device storage, in order to ask the user for confirmation if necessary.
             // This way, it is only done once at this moment, instead of being done several times in callbacks
             // After that, we can start looking for archives
@@ -1241,7 +1241,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 document.getElementById('archiveNumber').innerHTML = '<b>' + comboArchiveList.length + '</b> Archive' + plural + ' found in selected location (tap "Select storage" to change)';
                 var lastSelectedArchive = cookies.getItem("lastSelectedArchive") || params.storedFile;
                 params.storedFile = lastSelectedArchive;
-                if ((lastSelectedArchive !== null && lastSelectedArchive !== undefined && lastSelectedArchive !== "")
+                if (lastSelectedArchive !== null && lastSelectedArchive !== undefined && lastSelectedArchive !== ""
                     || comboArchiveList.options.length == 1) { //Either we have previously chosen a file, or there is only one file
                     // Attempt to select the corresponding item in the list, if it exists
                     var success = false;
@@ -1259,7 +1259,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             else {
                 alert("Welcome to Kiwix! This application needs at least a ZIM file in your SD-card (or internal storage). Please download one and put it on the device (see About section). Also check that your device is not connected to a computer through USB device storage (which often locks the SD-card content)");
                 $("#btnAbout").click();
-                var isAndroid = (navigator.userAgent.indexOf("Android") !== -1);
+                var isAndroid = navigator.userAgent.indexOf("Android") !== -1;
                 if (isAndroid) {
                     alert("You seem to be using an Android device. Be aware that there is a bug on Firefox, that prevents finding Wikipedia archives in a SD-card (at least on some devices. See about section). Please put the archive in the internal storage if the application can't find it.");
                 }
@@ -1372,7 +1372,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     cookies.setItem("lastSelectedArchive", archiveDirectory, Infinity);
                     // The archive is set : go back to home page to start searching
                     if (params.rescan) {
-                        $('#btnConfigure').click()
+                        $('#btnConfigure').click();
                         params.rescan = false;
                     } else {
                         $('#openLocalFiles').hide();
@@ -1548,7 +1548,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         request.responseType = "blob";
         request.onreadystatechange = function () {
             if (request.readyState === XMLHttpRequest.DONE) {
-                if ((request.status >= 200 && request.status < 300) || request.status === 0) {
+                if (request.status >= 200 && request.status < 300 || request.status === 0) {
                 // Hack to make this look similar to a file
                 request.response.name = url;
                     deferred.resolve(request.response);
@@ -1740,7 +1740,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
             //Load lastPageVisit if it is the currently requested page
             if (!htmlContent) {
-                if (params.rememberLastPage && typeof (Storage) !== "undefined" &&
+                if (params.rememberLastPage && typeof Storage !== "undefined" &&
                     dirEntry.namespace + '/' + dirEntry.url == decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""))) {
                     try { htmlContent = localStorage.getItem('lastPageHTML'); }
                     catch(err) { console.log("localStorage not supported: " + err); }
@@ -1794,7 +1794,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 console.error("Invalid message received", event.data);
             }
         }
-    };
+    }
     
     // Compile some regular expressions needed to modify links
     // Pattern to find the path in a url
@@ -1857,7 +1857,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (params.rememberLastPage) {
             cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
             //Store current document's raw HTML in localStorage for fast restart
-            if (typeof (Storage) !== "undefined") {
+            if (typeof Storage !== "undefined") {
                     try { localStorage.setItem('lastPageHTML', htmlArticle); }
                     catch (err) { console.log("localStorage not supported: " + err); }
             }
@@ -1955,7 +1955,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     var zimLink = decodeURIComponent(uiUtil.removeUrlParameters(linkArray[2]));
                     /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
                     var filteredLink = transformStyles.filterCSS(zimLink, zimType, cssCache, cssSource, i);
-                    if (filteredLink.rtnFunction == "injectCSS") { blobArray[i] = filteredLink.zl; injectCSS() } else { resolveCSS(filteredLink.zl, i); }
+                    if (filteredLink.rtnFunction == "injectCSS") { blobArray[i] = filteredLink.zl; injectCSS(); } else { resolveCSS(filteredLink.zl, i); }
                 } else {
                     blobArray[i] = arr[i]; //If CSS not in ZIM, store URL in blobArray
                     injectCSS(); //Ensure this is called even if none of CSS links are in ZIM
@@ -2449,7 +2449,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             for (var i = startSlice; i < lengthSlice; i++) {
                 if (/\.svg$/i.test(images[i].getAttribute('data-kiwixsrc')) ||
                     //Include any kind of maths image fallback that has an alt string in SVG bucket
-                    (/mwe-math-fallback/i.test(images[i].className) && images[i].alt)) {
+                    /mwe-math-fallback/i.test(images[i].className) && images[i].alt) {
                     if (i < firstVisible || i > lastVisible) {
                         svgGroup2.push(images[i]);
                     } else {
@@ -2551,7 +2551,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 }
                 if (sliceID > 3) {
                     if (countImages === allImages) {
-                        console.log("** All images extracted from current document **")
+                        console.log("** All images extracted from current document **");
                         windowScroll = true; //Go back to prove this!
                     } else {
                         console.log("All requested image slices have been processed\n" +
@@ -2696,7 +2696,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         $('#articleContent').contents().find('script').each(function () {
             var script = $(this);
             // We try to find its name (from an absolute or relative URL)
-            if (script && script[0] && script[0].src) { var srcMatch = script.attr("src").match(regexpMetadataUrl) }
+            if (script && script[0] && script[0].src) { var srcMatch = script.attr("src").match(regexpMetadataUrl); }
             // TODO check that the type of the script is text/javascript or application/javascript
             if (srcMatch) {
                 // It's a Javascript file contained in the ZIM file
