@@ -2134,7 +2134,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 //Display article in iframe
                 var articleContent = window.frames[0].frameElement.contentDocument;
                 //articleContent.documentElement.innerHTML = htmlArticle;
-                articleContent.open();
+                articleContent.open('text/html', 'replace');
+                articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
                 articleContent.write(htmlArticle);
                 articleContent.close();
                 //Set relative font size + Stackexchange-family multiplier
@@ -2151,11 +2152,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     var collection = articleContent.getElementsByTagName(eles[i]);
                     for (var j = 0; j < collection.length; j++) {
                         //collection[j].classList.add("open-block");
-                        collection[j].addEventListener("click", function () {
-                            var topTag = this.tagName;
-                            this.classList.toggle("open-block");
-                            var nextElement = this.nextElementSibling;
-                            if (!nextElement) nextElement = this.parentNode.nextElementSibling;
+                        collection[j].addEventListener("click", function (e) {
+                            var that = e.currentTarget;
+                            var topTag = that.tagName;
+                            that.classList.toggle("open-block");
+                            var nextElement = that.nextElementSibling;
+                            if (!nextElement) nextElement = that.parentNode.nextElementSibling;
                             if (!nextElement) return;
                             // Decide toggle direction based on first sibling element
                             var toggleDirection = nextElement.classList.contains("collapsible-block") && !nextElement.classList.contains("open-block") || nextElement.style.display == "none"  ? "block" : "none";
