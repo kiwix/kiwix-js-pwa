@@ -1,3 +1,12 @@
+## Release 0.9.9.6 WikiMed (beta)
+* UPDATE: May 2018 update of WikiMed ZIM archive to wikipedia_en_medicine_novid_2018-05.zim
+* UPDATE: Mobile styles and cached home page
+* ENHANCEMENT: Performance improvements by reducing dependency on jQuery
+* ENHANCEMENT: Tweaks to dark style
+* ENHANCEMENT: Improvements to show-hide sections toggle function with footnote/endnote references
+* FIX: Whitespace at the end of the page is now preserved when hiding reference section
+* FIX: Tapping headers now only opens and closes sections on narrow screens as intended by WikiMedia
+
 ## Release 0.9.9.5 WikiMed (beta)
 * ENHANCEMENT: Headings in article can be toggled open or closed with tap or click
 * ENHANCEMENT: Current page is cached in localStorage for very fast restart and reloading
