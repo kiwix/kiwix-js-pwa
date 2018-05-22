@@ -1885,7 +1885,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
             //so add some whitespace at the end of the document
             htmlArticle = htmlArticle.replace(/(<\/body>)/i, "\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n$1");
-            htmlArticle = htmlArticle.replace(/(dditional\s+terms\s+may\s+apply\s+for\s+the\s+media\s+files[^<]+<\/div>\s*)/i, "$1\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n");
+            htmlArticle = htmlArticle.replace(/(dditional\s+terms\s+may\s+apply\s+for\s+the\s+media\s+files[^<]+<\/div>\s*)/i, "$1\r\n<h1></h1><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n");
 
             //@TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
             htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, "<a href=\"$1.html\">$2</a>");
@@ -2157,7 +2157,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             var topTag = that.tagName;
                             that.classList.toggle("open-block");
                             var nextElement = that.nextElementSibling;
-                            if (!nextElement) nextElement = that.parentNode.nextElementSibling;
+                            that = that.parentNode;
+                            if (!nextElement) nextElement = that.nextElementSibling;
                             if (!nextElement) return;
                             // Decide toggle direction based on first sibling element
                             var toggleDirection = nextElement.classList.contains("collapsible-block") && !nextElement.classList.contains("open-block") || nextElement.style.display == "none"  ? "block" : "none";
@@ -2166,15 +2167,18 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             //} else {
                             //    this.innerHTML = this.innerHTML.replace(/<br\s*\/?>$/i, "");
                             //}
-                            do {
+                            while (nextElement && !~nextElement.tagName.indexOf(topTag) && !~nextElement.tagName.indexOf("H1")) {
                                 if (nextElement.classList.contains("collapsible-block")) {
                                     nextElement.classList.toggle("open-block");
+                                } else if (that.classList.contains("collapsible-block")) {
+                                    // We're in a document that has been marked up, but we've encountered one that doesn't have markup, so stop
+                                    break;
                                 } else {
                                     nextElement.style.display = toggleDirection;
                                 }
-                                nextElement = nextElement.nextElementSibling;
+                                that = nextElement;
+                                nextElement = that.nextElementSibling;
                             }
-                            while (nextElement && !~nextElement.tagName.indexOf(topTag) && !~nextElement.tagName.indexOf("H1"));
                         });
                     }
                 }
@@ -2194,10 +2198,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                 });
                                 if (refNext) {
                                     refNext.classList.add("open-block");
-                                    refNext.innerHTML = refNext.innerHTML.replace(/<br\s*\/?>$/i, "");
+                                    //refNext.innerHTML = refNext.innerHTML.replace(/<br\s*\/?>$/i, "");
                                     refNext = refNext.nextElementSibling;
-                                    while (refNext && refNext.style.display == "none") {
-                                        refNext.style.display = "block";
+                                    while (refNext && refNext.classList.contains("collapsible-block")) {
+                                        refNext.classList.add("open-block");
                                         refNext = refNext.nextElementSibling;
                                     }
                                 }
