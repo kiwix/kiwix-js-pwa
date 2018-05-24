@@ -764,10 +764,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
         function switchTheme() {
             var doc = window.frames[0].frameElement.contentDocument;
-            //var baseUrl = doc.head.innerHTML.match(/<base\s*href\s*=\s*["']([^"']+)/);
-            var treePath = window.history.state.title.replace(/[^/]+\/(?:[^/]+$)?/g, "../");
-            //baseUrl = baseUrl && baseUrl.length > 1 ? baseUrl[1] : false;
-            //var treePath = baseUrl ? baseUrl.replace(/([^/]+\/)/g, "../") : false;
+            var treePath = decodeURIComponent(params.lastPageVisit).replace(/[^/]+\/(?:[^/]+$)?/g, "../");
             //If something went wrong, use the page reload method
             if (!treePath) {
                 params.themeChanged = true;
