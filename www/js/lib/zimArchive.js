@@ -28,7 +28,7 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
      * 
      * 
      * @typedef ZIMArchive
-     * @property {ZIMFile} _file The ZIM file (instance of ZIMFile, that might physically be splitted into several actual files)
+     * @property {ZIMFile} _file The ZIM file (instance of ZIMFile, that might physically be split into several actual files)
      * @property {String} _language Language of the content
      */
     
@@ -64,11 +64,11 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
             createZimfile(fileArray);
         } else {
             if (/.*zim..$/.test(path)) {
-                // splitted archive
+                // split archive
                 that._searchArchiveParts(storage, path.slice(0, -2)).then(function(fileArray) {
                     createZimfile(fileArray);
                 }, function(error) {
-                    alert("Error reading files in splitted archive " + path + ": " + error);
+                    alert("Error reading files in split archive " + path + ": " + error);
                 });
             } else {
                 storage.get(path).then(function(file) {
@@ -223,7 +223,7 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
      * @param {DirEntry} dirEntry
      * @param {callbackStringContent} callback
      */
-    ZIMArchive.prototype.readArticle = function(dirEntry, callback) {
+    ZIMArchive.prototype.readUtf8File = function(dirEntry, callback) {
         dirEntry.readData().then(function(data) {
             callback(dirEntry, utf8.parse(data));
         });
