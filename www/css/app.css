@@ -73,6 +73,10 @@ body {
     background-color: whitesmoke !important;
 }
 
+div {
+    user-select: none;
+}
+
 .nopadding {
     padding-right: 1px !important;
     padding-left: 1px !important;
