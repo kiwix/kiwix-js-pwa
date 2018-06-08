@@ -2148,6 +2148,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     // Process headers
                     var collection = articleContent.getElementsByTagName(eles[i]);
                     for (var j = 0; j < collection.length; j++) {
+                        // Prevent heading from getting selected when clicking on it
+                        collection[j].style.userSelect = 'none';
+                        collection[j].style.msUserSelect = 'none';
                         //collection[j].classList.add("open-block");
                         collection[j].addEventListener("click", function (e) {
                             var that = e.currentTarget;
