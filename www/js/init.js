@@ -21,6 +21,8 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
+
+// Parameters that define overall operation of app
 var params = {};
 params['version'] = "0.9.9.6 WikiMed Beta"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 params['packagedFile'] = "wikipedia_en_medicine.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
@@ -43,6 +45,9 @@ params['rememberLastPage'] = getCookie('rememberLastPage') != null ? getCookie('
 params['useMathJax'] = getCookie('useMathJax') != null ? getCookie('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
 //params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
 params['showFileSelectors'] = false; //This will cause file selectors to be hidden on each load of the app (by ignoring cookie)
+params['xzMaxJobs'] = 1; // Controls the maximum number of jobs that can be sent simultaneously to the decompressor
+                         // WARNING: setting this value too high can crash the app: see note at head of zimArchive.js 
+
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['storedFile'] = getCookie('lastSelectedArchive') || params['packagedFile'];

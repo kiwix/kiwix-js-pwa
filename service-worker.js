@@ -36,7 +36,7 @@ self.addEventListener('activate', function(event) {
     console.log("ServiceWorker activated");
 });
 
-var regexpRemoveUrlParameters = new RegExp(/([^\?]+)\?.*$/);
+var regexpRemoveUrlParameters = new RegExp(/([^?#]+)[?#].*$/);
 
 // This function is duplicated from uiUtil.js
 // because using requirejs would force to add the 'fetch' event listener
@@ -44,12 +44,14 @@ var regexpRemoveUrlParameters = new RegExp(/([^\?]+)\?.*$/);
 // in recent versions of the browsers.
 // Cf https://bugzilla.mozilla.org/show_bug.cgi?id=1181127
 // TODO : find a way to avoid this duplication
+
+/**
+ * Removes parameters and anchors from a URL
+ * @param {type} url
+ * @returns {String} same URL without its parameters and anchors
+ */
 function removeUrlParameters(url) {
-    if (regexpRemoveUrlParameters.test(url)) {
-        return regexpRemoveUrlParameters.exec(url)[1];
-    } else {
-        return url;
-    }
+    return url.replace(regexpRemoveUrlParameters, "$1");
 }
     
 console.log("ServiceWorker startup");
@@ -82,19 +84,16 @@ var regexpJPEG = new RegExp(/\.jpe?g$/i);
 var regexpPNG = new RegExp(/\.png$/i);
 var regexpJS = new RegExp(/\.js/i);
 var regexpCSS = new RegExp(/\.css$/i);
+var regexpSVG = new RegExp(/\.svg$/i);
 
-var regexpContentUrlWithNamespace = new RegExp(/\/(.)\/(.*[^\/]+)$/);
-var regexpContentUrlWithoutNamespace = new RegExp(/^([^\/]+)$/);
-var regexpDummyArticle = new RegExp(/dummyArticle\.html$/);
+// Pattern for ZIM file namespace - see http://www.openzim.org/wiki/ZIM_file_format#Namespaces
+var regexpZIMUrlWithNamespace = new RegExp(/(?:^|\/)([-ABIJMUVWX])\/(.+)/);
 
 function fetchEventListener(event) {
     if (fetchCaptureEnabled) {
         console.log('ServiceWorker handling fetch event for : ' + event.request.url);
 
-        // TODO handle the dummy article more properly
-        if ((regexpContentUrlWithNamespace.test(event.request.url)
-                || regexpContentUrlWithoutNamespace.test(event.request.url))
-            && !regexpDummyArticle.test(event.request.url)) {
+        if (regexpZIMUrlWithNamespace.test(event.request.url)) {
 
             console.log('Asking app.js for a content', event.request.url);
             event.respondWith(new Promise(function(resolve, reject) {
@@ -102,17 +101,9 @@ function fetchEventListener(event) {
                 var title;
                 var titleWithNameSpace;
                 var contentType;
-                if (regexpContentUrlWithoutNamespace.test(event.request.url)) {
-                    // When the request URL is in the same folder,
-                    // it means it's a link to an article (namespace A)
-                    var regexpResult = regexpContentUrlWithoutNamespace.exec(event.request.url);
-                    nameSpace = 'A';
-                    title = regexpResult[1];
-                } else {
-                    var regexpResult = regexpContentUrlWithNamespace.exec(event.request.url);
+                var regexpResult = regexpZIMUrlWithNamespace.exec(event.request.url);
                     nameSpace = regexpResult[1];
                     title = regexpResult[2];
-                }
 
                 // The namespace defines the type of content. See http://www.openzim.org/wiki/ZIM_file_format#Namespaces
                 // TODO : read the contentType from the ZIM file instead of hard-coding it here
@@ -127,6 +118,9 @@ function fetchEventListener(event) {
                     }
                     else if (regexpPNG.test(title)) {
                         contentType = 'image/png';
+                    }
+                    else if (regexpSVG.test(title)) {
+                        contentType = 'image/svg+xml';
                     }
                 }
                 else if (nameSpace === '-') {
@@ -174,6 +168,9 @@ function fetchEventListener(event) {
 
                         console.log('ServiceWorker responding to the HTTP request for ' + titleWithNameSpace + ' (size=' + event.data.content.length + ' octets)' , httpResponse);
                         resolve(httpResponse);
+                    }
+                    else if (event.data.action === 'sendRedirect') {
+                        resolve(Response.redirect(event.data.redirectUrl));
                     }
                     else {
                         console.log('Invalid message received from app.js for ' + titleWithNameSpace, event.data);
