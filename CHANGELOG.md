@@ -1,9 +1,10 @@
 ## Release 0.9.9.6 WikiMed (beta)
-* UPDATE: May 2018 update of WikiMed ZIM archive to wikipedia_en_medicine_novid_2018-05.zim
+* UPDATE: June 2018 update of WikiMed ZIM archive to wikipedia_en_medicine_novid_2018-06.zim
 * UPDATE: Mobile styles and cached home page
 * ENHANCEMENT: Performance improvements by reducing dependency on jQuery
-* ENHANCEMENT: Tweaks to dark style
+* ENHANCEMENT: Tweaks to dark theme
 * ENHANCEMENT: Improvements to show-hide sections toggle function with footnote/endnote references
+* ENHANCEMENT: Descriptive text in the UI is now non-selectable when toggling controls
 * FIX: Whitespace at the end of the page is now preserved when hiding reference section
 * FIX: Tapping headers now only opens and closes sections on narrow screens as intended by WikiMedia
 
