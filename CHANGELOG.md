@@ -1,3 +1,16 @@
+## Release 0.9.9.6 Wikivoyage (beta)
+* UPDATE: June 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-06.zim
+* UPDATE: Mobile styles and cached home page
+* ENHANCEMENT: New compile of decoding engine provides significant performance improvement
+* ENHANCEMENT: Better memory management to prevent app crashes
+* ENHANCEMENT: Reduced dependency on jQuery for further performance gains
+* ENHANCEMENT: Tweaks to dark theme
+* ENHANCEMENT: Improvements to show-hide sections toggle function with footnote/endnote references
+* FIX: Headers that open or close sections are no longer accidentally selected on tap or click
+* FIX: Descriptive text for UI controls is now non-selectable for cleaner app experience
+* FIX: Whitespace at the end of the page is now preserved when hiding reference section
+* FIX: Tapping headers now only opens and closes sections on narrow screens as intended by WikiMedia
+
 ## Release 0.9.9.5 (beta)
 * ENHANCEMENT: Headings in article can be toggled open or closed with tap or click
 * ENHANCEMENT: Current page is cached in localStorage for very fast restart and reloading
