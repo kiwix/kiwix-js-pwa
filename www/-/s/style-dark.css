@@ -134,9 +134,9 @@ html, body {
     color: #b9b9b9 !important;
   }
 
-  td[style*="background"], .jfk-bubble, .navpopup, div span[style*="background-color:#FFFF"] {
+td[style*="background"], .jfk-bubble, .navpopup, div span[style*="background-color:#FFFF"], div span[style*="background: #fb"] {
     background-color: #181818 !important;
-  }
+}
 
 table, input, button, select, textarea:not([class*="mw-editfont"]),
 tr[style*="background: antiquewhite"], tr[style*="background-color:#ee"], tr[style*="background-color:#ff"], tr[style*="background-color:#FF"], #toc, td[style*="background-color"], td[style*="background:#F5FAFF"], td[style*="background:#F8"], tr[style*="background:#f8"], tr[style*="background:#f4"], td[style*="background:WhiteSmoke"], td[style*="background:GhostWhite"], span[style*="background:moccasin"], td[style*="background:#f5"], #mw-content-text div[style*="background: #"], .vevent td, .referencetooltip li, .suggestions,
