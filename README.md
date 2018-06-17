@@ -1,6 +1,6 @@
 # Kiwix JS for Windows
 This repository is for development of the Kiwix JS app for Windows 10 Universal Windows Platform.
-Latest development code is on the [master-dev](https://github.com/kiwix/kiwix-js-windows/tree/master/) branch.
+Latest development code is on the [master-dev](https://github.com/kiwix/kiwix-js-windows/tree/master-dev/) branch.
 
 This is a port of the Kiwix Offline Wikipedia (and other Wiki) reader for UWP on Windows 10.
 It enables offline reading of a ZIM file downloaded from the Kiwix repository, including full
