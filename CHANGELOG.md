@@ -2,25 +2,23 @@
 * UPDATE: June 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-06.zim
 * UPDATE: Mobile styles and cached home page
 * ENHANCEMENT: New compile of decoding engine provides significant performance improvement
+* ENHANCEMENT: Headings in article can be toggled open or closed on narrow screens
+* ENHANCEMENT: Current page is cached in localStorage for very fast restart and reloading
+* ENHANCEMENT: Automatically switch to desktop style for better printing result
 * ENHANCEMENT: Better memory management to prevent app crashes
 * ENHANCEMENT: Reduced dependency on jQuery for further performance gains
 * ENHANCEMENT: Tweaks to dark theme
-* ENHANCEMENT: Improvements to show-hide sections toggle function with footnote/endnote references
-* FIX: Headers that open or close sections are no longer accidentally selected on tap or click
-* FIX: Descriptive text for UI controls is now non-selectable for cleaner app experience
-* FIX: Whitespace at the end of the page is now preserved when hiding reference section
-* FIX: Tapping headers now only opens and closes sections on narrow screens as intended by WikiMedia
-
-## Release 0.9.9.5 (beta)
-* ENHANCEMENT: Headings in article can be toggled open or closed with tap or click
-* ENHANCEMENT: Current page is cached in localStorage for very fast restart and reloading
-* ENHANCEMENT: Automatically switch to desktop style for better printing result
-* FIX: Bug which prevented switching the printing device (caused app crash)
-* FIX: Bug in download links preventing display of language codes that are substrings of other language codes
 * ENHANCEMENT: Print zoom capability
 * ENHANCEMENT: Prevent printing of location pins
 * ENHANCEMENT: Set maximum page width to 100% before printing
+* FIX: Descriptive text for UI controls is now non-selectable for cleaner app experience
+* FIX: Whitespace at the end of the page is now preserved when hiding reference section
+* FIX: Bug which prevented switching the printing device (caused app crash)
+* FIX: Bug in download links preventing display of language codes that are substrings of other language codes
 * WORKAROUND: MW-Offliner bug which places extraneous tags in some HTML id attributes
+
+## Release 0.9.9.5 Wikivoyage (beta)
+There was no 0.9.9.5 release due to unusable Wikivoyage ZIM files in May
 
 ## Release 0.9.9.4 Wikivoyage (beta)
 * UPDATE: March 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-03.zim
