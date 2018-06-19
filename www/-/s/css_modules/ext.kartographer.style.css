@@ -172,11 +172,11 @@ a.mw-kartographer-link.no-icon {
 .client-js .mw-kartographer-map {
   cursor: pointer;
 }
-.client-js .mw-kartographer-maplink:not( .mw-kartographer-link ):not( .ve-ce-focusableNode ),
+/*.client-js .mw-kartographer-maplink:not( .mw-kartographer-link ):not( .ve-ce-focusableNode ),
 .client-js .mw-kartographer-map:not( .mw-kartographer-link ):not( .mw-kartographer-interactive ) {
   pointer-events: none;
   cursor: default;
-}
+}*/
 /**
  * If `$wgKartographerUseMarkerStyle = true`.
  */
