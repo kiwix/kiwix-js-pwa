@@ -73,6 +73,12 @@ body {
     background-color: whitesmoke !important;
 }
 
+div:not(.panel-success) {
+    -ms-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
 .nopadding {
     padding-right: 1px !important;
     padding-left: 1px !important;
