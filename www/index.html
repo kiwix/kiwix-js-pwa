@@ -54,11 +54,12 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in <span class="version">0.9 (beta)</span></h3>
                         <ul style="padding-left: 15px;">
-                            <li>Tap article headings to open or close</li>
-                            <li>Current page is stored for fast reloading</li>
-                            <li>Printing uses desktop style by default</li>
-                            <li>Fixed app crash in print dialogue</li>
-                            <li>Fixed non-display of some language codes in download links</li>
+                            <li>New compile of decoding engine provides significant performance improvement</li>
+                            <li>Better memory management to prevent app crashes</li>
+                            <li>For WikiMedia archives, tapping headers now only opens and closes sections on narrow screens</li>
+                            <li>Headers that open or close sections are no longer accidentally selected on tap or click</li>
+                            <li>Descriptive text for UI controls is now non-selectable for cleaner app experience</li>
+                            <li>Whitespace preserved at end of page when closing references</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/master-dev/CHANGELOG.md" target="_blank">Full changelog...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>
@@ -339,7 +340,7 @@
                     <h3>Licence information</h3>
                     <p>
                         Copyright 2013-2018 Mossroy, Peter-x, Jaifroid, sharun-s and other contributors
-                        <br />Jaifroid for the adaptation to the Universal Windows Platform
+                        <br />Jaifroid for adaptation and development of the app on the Universal Windows Platform
                         <br />
                         <br />This application is licensed under the GPL v3 licence:
                         <br />
@@ -613,7 +614,7 @@
                     <div id="progressMessage"><p></p></div>
                 </div>
             </div>
-                <iframe id="articleContent" class="articleIFrame"></iframe>
+            <iframe id="articleContent" class="articleIFrame"></iframe>
         </article>
         <footer id="footer">
             <div id="navigationButtons" class="btn-group btn-group-justified">
