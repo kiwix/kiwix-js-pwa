@@ -86,11 +86,9 @@ define(['q'], function(q) {
      */
     Decompressor.prototype.readSliceSingleThread = function(offset, length) {
         if (!busy) {
-            //console.log("decompressor not busy : let's read the slice " + offset + " " + length);
             return this.readSlice(offset, length);
         }
         else {
-            //console.log("decompressor busy : let's wait before reading the slice " + offset + " " + length);
             // The decompressor is already in progress.
             // To avoid using too much memory, we wait until it has finished
             // before using it for another decompression.
