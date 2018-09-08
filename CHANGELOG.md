@@ -1,3 +1,6 @@
+## Release 0.9.9.7 Wikivoyage (beta)
+* UPDATE: July 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-07.zim
+
 ## Release 0.9.9.6 Wikivoyage (beta)
 * UPDATE: June 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-06.zim
 * UPDATE: Mobile styles and cached home page
