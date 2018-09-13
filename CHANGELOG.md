@@ -1,3 +1,7 @@
+## Release 0.9.9.7 WikiMed (beta)
+* UPDATE: July 2018 update of WikiMed ZIM archive to wikipedia_en_medicine_novid_2018-08.zim
+* ENHANCEMENT: Optimization of decompression process
+
 ## Release 0.9.9.6 WikiMed (beta)
 * UPDATE: June 2018 update of WikiMed ZIM archive to wikipedia_en_medicine_novid_2018-06.zim
 * UPDATE: Mobile styles and cached home page
