@@ -1,3 +1,8 @@
+## Release 0.9.9.7 (beta)
+* ENHANCEMENT: Optimization of decompression process
+* WORKAROUND: Prevent periodic hang in Service Worker mode
+* FIX: Crash in RegExp engine caused by malformed backreferences in some articles
+
 ## Release 0.9.9.6 (beta)
 * UPDATE: Mobile styles
 * ENHANCEMENT: New compile of decoding engine provides significant performance improvement
