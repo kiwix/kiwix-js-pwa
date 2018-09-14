@@ -971,6 +971,29 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         }
 
         var contentInjectionMode;
+    var keepAliveServiceWorkerHandle;
+    
+    /**
+     * Send an 'init' message to the ServiceWorker with a new MessageChannel
+     * to initialize it, or to keep it alive.
+     * This MessageChannel allows a 2-way communication between the ServiceWorker
+     * and the application
+     */
+    function initOrKeepAliveServiceWorker() {
+        if (contentInjectionMode === 'serviceworker') {
+            // Create a new messageChannel
+            var tmpMessageChannel = new MessageChannel();
+            tmpMessageChannel.port1.onmessage = handleMessageChannelMessage;
+            // Send the init message to the ServiceWorker, with this MessageChannel as a parameter
+            navigator.serviceWorker.controller.postMessage({'action': 'init'}, [tmpMessageChannel.port2]);
+            messageChannel = tmpMessageChannel;
+            console.log("init message sent to ServiceWorker");
+            // Schedule to do it again regularly to keep the 2-way communication alive.
+            // See https://github.com/kiwix/kiwix-js/issues/145 to understand why
+            clearTimeout(keepAliveServiceWorkerHandle);
+            keepAliveServiceWorkerHandle = setTimeout(initOrKeepAliveServiceWorker, DELAY_BETWEEN_KEEPALIVE_SERVICEWORKER, false);
+        }
+    }
 
         /**
          * Sets the given injection mode.
@@ -986,9 +1009,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     // Unregistering it does not seem to work as expected : the ServiceWorker
                     // is indeed unregistered but still active...
                     // So we have to disable it manually (even if it's still registered and active)
-                    navigator.serviceWorker.controller.postMessage({
-                        'action': 'disable'
-                    });
+                navigator.serviceWorker.controller.postMessage({'action': 'disable'});
                     messageChannel = null;
                 }
                 refreshAPIStatus();
@@ -1004,13 +1025,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     return;
                 }
 
-                if (!messageChannel) {
-                    // Let's create the messageChannel for the 2-way communication
-                    // with the Service Worker
-                    messageChannel = new MessageChannel();
-                    messageChannel.port1.onmessage = handleMessageChannelMessage;
-                }
-
                 if (!isServiceWorkerReady()) {
                     $('#serviceWorkerStatus').html("ServiceWorker API available : trying to register it...");
                     navigator.serviceWorker.register('../service-worker.js').then(function (reg) {
@@ -1023,23 +1037,24 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         var serviceWorker = reg.installing || reg.waiting || reg.active;
                         serviceWorker.addEventListener('statechange', function (statechangeevent) {
                             if (statechangeevent.target.state === 'activated') {
-                                console.log("try to post an init message to ServiceWorker");
-                                navigator.serviceWorker.controller.postMessage({
-                                    'action': 'init'
-                                }, [messageChannel.port2]);
-                                console.log("init message sent to ServiceWorker");
+                            // Create the MessageChannel
+                            // and send the 'init' message to the ServiceWorker
+                            initOrKeepAliveServiceWorker();
                             }
                         });
+                    if (serviceWorker.state === 'activated') {
+                        // Even if the ServiceWorker is already activated,
+                        // We need to re-create the MessageChannel
+                        // and send the 'init' message to the ServiceWorker
+                        // in case it has been stopped and lost its context
+                        initOrKeepAliveServiceWorker();
+                    }
                     }, function (err) {
                         console.error('error while registering serviceWorker', err);
                         refreshAPIStatus();
                     });
                 } else {
-                    console.log("try to re-post an init message to ServiceWorker, to re-enable it in case it was disabled");
-                    navigator.serviceWorker.controller.postMessage({
-                        'action': 'init'
-                    }, [messageChannel.port2]);
-                    console.log("init message sent to ServiceWorker");
+                initOrKeepAliveServiceWorker();
                 }
             }
             $('input:radio[name=contentInjectionMode]').prop('checked', false);
