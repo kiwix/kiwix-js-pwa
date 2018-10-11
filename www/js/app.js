@@ -1358,9 +1358,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             return;
                         } else { //Check if user previously picked a specific file rather than a folder
                             if (params.pickedFile && typeof MSApp !== 'undefined') {
-                                selectedStorage = MSApp.createFileFromStorageFile(params.pickedFile);
-                                setLocalArchiveFromFileList([selectedStorage]);
-                                return;
+                                try {
+                                    selectedStorage = MSApp.createFileFromStorageFile(params.pickedFile);
+                                    setLocalArchiveFromFileList([selectedStorage]);
+                                    return;
+                                } catch (err){
+                                    // Probably user has moved or deleted the previously selected file
+                                    console.error("The previously picked archive can no longer be found!");
+                                }
                             }
                         }
                         //There was no picked file or folder, so we'll try setting the default localStorage
