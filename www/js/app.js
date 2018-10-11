@@ -112,7 +112,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             searchDirEntriesFromPrefix($('#prefix').val());
             $("#welcomeText").hide();
             $("#readingArticle").hide();
-            $("#articleContent").hide();
             clearFindInArticle();
             //Re-enable top-level scrolling
             document.getElementById('top').style.position = "relative";
@@ -133,6 +132,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     if (articleResults && articleResults.length) {
                         articleResults[0].focus();
                     }
+                }
+                if (e.which == 27) {
+                    //Esc, so hide the list behind article TODO: implement click equivalent
+                    document.getElementById('articleContent').style.position = "fixed";
+                    return;
                 }
                 onKeyUpPrefix(e);
             }
@@ -352,7 +356,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('top').style.position = "relative";
             document.getElementById('scrollbox').style.position = "fixed";
             document.getElementById('scrollbox').style.height = window.innerHeight + "px";
-            document.getElementById('articleContent').style.display = "none";
             goToRandomArticle();
         });
 
@@ -471,8 +474,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             $('#articleContent').contents().empty();
             $('#searchingForArticles').hide();
             $('#welcomeText').show();
-            $('#articleList').show();
-            $('#articleListHeaderMessage').show();
+            //$('#articleList').show();
+            //$('#articleListWithHeader').show();
             if (selectedArchive !== null && selectedArchive.isReady()) {
                 $('#welcomeText').hide();
                 goToMainArticle();
@@ -527,12 +530,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             $('#articleContent').show();
             $("#prefix").val("");
             $("#articleList").empty();
-            $('#articleList').hide();
             $('#articleListHeaderMessage').empty();
             $("#readingArticle").hide();
             $("#welcomeText").hide();
-            // Scroll the iframe to its top
-            $("#articleContent").contents().scrollTop(0);
         }
 
         function setActiveBtn(activeBtn) {
@@ -1216,7 +1216,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 $('#searchingForArticles').hide();
                 $('#configuration').hide();
                 $('#articleList').hide();
-                $('#articleListHeaderMessage').hide();
+                $('#articleListWithHeader').hide();
                 $('#articleContent').contents().empty();
 
                 if (title && !("" === title)) {
@@ -1676,10 +1676,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //Array.prototype.slice.call(document.querySelectorAll('articleList a')).forEach(function (el) {
             //    el.addEventListener('click', function () { handleTitleClick(); });
             //});
+            // Needed so that results show on top of article
+            document.getElementById('articleContent').style.position = 'static';
             $("#articleList a").on("click", handleTitleClick);
             $('#searchingForArticles').hide();
             $('#articleList').show();
-            $('#articleListHeaderMessage').show();
+            $('#articleListWithHeader').show();
         }
 
         /**
@@ -1691,6 +1693,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             var dirEntryId = event.target.getAttribute("dirEntryId");
             $("#articleList").empty();
             $('#articleListHeaderMessage').empty();
+            $('#articleListWithHeader').hide();
             $("#prefix").val("");
             findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId);
             var dirEntry = selectedArchive.parseDirEntryId(dirEntryId);
@@ -1707,7 +1710,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 var dirEntry = selectedArchive.parseDirEntryId(dirEntryId);
                 $("#articleName").html(dirEntry.title);
                 $("#readingArticle").show();
-                $("#articleContent").contents().html("");
                 if (dirEntry.isRedirect()) {
                     selectedArchive.resolveRedirect(dirEntry, readArticle);
                 } else {
@@ -2832,12 +2834,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
                     $("#readingArticle").hide();
-                    $("#articleContent").show();
                     console.error("Article with title " + title + " not found in the archive");
                     goToMainArticle();
                 } else {
                     $("#articleName").html(title);
-                    document.getElementById('articleContent').style.display = "none";
+                    $("#readingArticle").show();
                     readArticle(dirEntry);
                 }
             }).fail(function () {
@@ -2857,7 +2858,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     if (dirEntry.namespace === 'A' && !/user\//.test(dirEntry.url)) {
                         $("#articleName").html(dirEntry.title);
                         $("#readingArticle").show();
-                        $('#articleContent').contents().find('body').html("");
                         readArticle(dirEntry);
                     } else {
                         // If the random title search did not end up on an article,
@@ -2877,7 +2877,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     if (dirEntry.namespace === 'A') {
                         $("#articleName").html(dirEntry.title);
                         $("#readingArticle").show();
-                        $('#articleContent').contents().find('body').html("");
                         readArticle(dirEntry);
                     } else {
                         console.error("The main page of this archive does not seem to be an article");
