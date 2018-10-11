@@ -1624,7 +1624,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         function searchDirEntriesFromPrefix(prefix) {
             $('#searchingForArticles').show();
             $('#configuration').hide();
-            $('#articleContent').contents().empty();
             if (selectedArchive !== null && selectedArchive.isReady()) {
                 selectedArchive.findDirEntriesWithPrefix(prefix.trim(), MAX_SEARCH_RESULT_SIZE, populateListOfArticles);
             } else {
@@ -1691,10 +1690,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          */
         function handleTitleClick() {
             var dirEntryId = event.target.getAttribute("dirEntryId");
-            $("#articleList").empty();
-            $('#articleListHeaderMessage').empty();
-            $('#articleListWithHeader').hide();
-            $("#prefix").val("");
             findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId);
             var dirEntry = selectedArchive.parseDirEntryId(dirEntryId);
         }
@@ -2148,6 +2143,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 //Inject htmlArticle into iframe
                 uiUtil.clear(); //Void progress messages
                 setTab();
+                $("#articleList").empty();
+                $('#articleListHeaderMessage').empty();
+                $('#articleListWithHeader').hide();
+                $("#prefix").val("");
                 //Inject base tag into html
                 htmlArticle = htmlArticle.replace(/(<head[^>]*>\s*)/i, '$1<base href="' + baseUrl + '" />\r\n');
                 //Display article in iframe
