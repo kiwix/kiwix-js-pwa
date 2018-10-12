@@ -72,7 +72,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                     /-\/s\/css_modules\/skins.minerva.base.reset\|skins.minerva.content.styles\|ext.cite.style\|mediawiki.page.gallery.styles\|mobile.app.pagestyles.android\|mediawiki.skinning.content.parsoid.css/i.test(zl)
                 )) {
                 zl = zl.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename - but next line renders this redundant in current implementation)
-                if (/(-\/s\/style\.css)|(minerva)/i.test(zl)) { //If it matches one of the required styles...
+                if (/(-\/s\/style\.css)|minerva|inserted_style_mobile/i.test(zl)) { //If it matches one of the required styles...
                     zl = (cs == "mobile") ? "-/s/style-mobile.css" : "-/s/style.css";
                 }
                 zl = zl.replace(/.+(bootstrap[^\/]*?\.css)/i, "css/$1");

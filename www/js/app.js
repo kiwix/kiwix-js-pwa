@@ -1979,7 +1979,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 cssSource = cssSource == "auto" ? zimType : cssSource; //Default to in-built zimType if user has selected automatic detection of styles
                 if (/minerva/i.test(testCSS) && (cssCache || zimType != cssSource)) {
                     //Substitute ridiculously long style name TODO: move this code to transformStyles
-                    for (var i = 0; i < arr.length; i++) { //NB minerva.css is a dummy name for now TODO: sort out in transfromStyles
+                    for (var i = 0; i < arr.length; i++) { //TODO: sort out in transfromStyles
                         arr[i] = /minerva/i.test(arr[i]) ? '<link href="../-/s/style-mobile.css" rel="stylesheet" type="text/css">' : arr[i];
                     }
                 }
