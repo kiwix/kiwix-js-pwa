@@ -138,9 +138,9 @@ div:not(.panel-success) {
 
 .loader {
     position: absolute;
-    left: 50%;
-    top: 50%;
-    z-index: 1;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
     border: 5px solid lightgrey;
     -webkit-animation: spin 1s linear infinite;
     animation: spin 1s linear infinite;
@@ -152,15 +152,31 @@ div:not(.panel-success) {
 
 .status {
     position: absolute;
-    right: 10px;
-    top: 5px;
+    top: 50%;
+    width: 100%;
+    height: 50%;
+    z-index: 1;
+}
+
+.message {
+    position: absolute;
+    bottom: 0;
+    margin: auto 10px 50px auto;
+    left: 0;
+    right: 0;
     font-size: smaller;
-    color: darkslategrey;
-    z-index: 50;
     background: whitesmoke;
-    padding: 2px;
-    width: auto;
-    height: 18pt;
+    color: dimgrey;
+    border: 1px solid gainsboro;
+    padding: 1px 4px;
+    max-width: 300px;
+    width: 60%;
+}
+
+.dark .message {
+    background: darkslategrey;
+    color: darkgrey;
+    border: 1px solid dimgrey;
 }
 
 @keyframes spin {
