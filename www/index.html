@@ -167,9 +167,9 @@
         </div>
     </div>
         <!-- Status indicators -->
-        <div id="readingArticle" style="display: none;" class="loader"></div>
-        <div id="cachingCSS" style="display: none;" class="status">
-            <p>Caching styles...</p>
+        <div id="searchingArticles" style="display: none;" class="status">
+            <div class="loader"></div>
+            <div id="progressMessage" style="display: none;" class="message"></div>
         </div>
     <section id="search-article" role="region">
         <header id="top" style="width:100%;">
@@ -202,7 +202,6 @@
                                     <span class="input-group-addon" id="partial">Partial: 0</span>
                                 </span>
                             </div>
-                    <div id="searchingForArticles" class="loader" style="display: none;"></div>
                         </form>
                     </div>
                 </div>
