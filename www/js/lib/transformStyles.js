@@ -32,11 +32,11 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 zl = (cs == "mobile") ? "-/s/style-mobile.css" : "-/s/style.css"; //Take it from cache, because not in the ZIM
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem because style is not in ZIM" +
                     "\nbut your display options require a " + cs + " style");
-                uiUtil.poll("Matched [" + zl.substring(0, 30) + "] from cache" + " because your display options require a " + cs + " style...");
+                uiUtil.poll("Matched [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] from cache" + " because your display options require a " + cs + " style...");
             }
             if (cs == "desktop" && zl.match(/minerva|mobile|parsoid/)) { //If user selected desktop style and style is one of the mobile styles
                 console.log("Voiding #" + i + " [" + zl + "] from document header \nbecause your display options require a desktop style");
-                uiUtil.poll("Voiding [" + zl.substring(0, 30) + "] because your display options require a " + cs + " style...");
+                uiUtil.poll("Voiding [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] because your display options require a " + cs + " style...");
                 zl = "#"; //Void these mobile styles
             }
             //injectCSS();
@@ -79,7 +79,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 //Make link href relative to root
                 //zl = zl.replace(/[\s\S]+?\/-\//i, "-/");
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem");
-                uiUtil.poll("Matched #" + i + " [" + zl.substring(0, 30) + "] from local filesystem");
+                uiUtil.poll("Matched #" + i + " [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] from filesystem");
                 //injectCSS();
             } else { //Try to get the stylesheet from the ZIM file unless it's the wrong ZIM type
                 zl = zl.replace(/^[./]+/, ""); //Remove the directory path
@@ -164,7 +164,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
         if (cc || (zim != cs)) {
             if (/class\s*=\s*["']gallery/i.test(html) && !/gallery/i.test(css)) {
                 console.log("Inserting missing css required for gallery display [mediawiki.page.gallery.styles.css]...");
-                uiUtil.poll("Inserting missing css required for gallery display [mediawiki.page.gallery.styles.css]...");
+                uiUtil.poll("Inserting missing css [mediawiki.page.gallery.styles.css]...");
                 css += /-\/s\/css_modules\/mediawiki\.page\.gallery\.styles\.css/i.test(css) ? "" : '<link href="-/s/css_modules/mediawiki.page.gallery.styles.css" rel="stylesheet" type="text/css">\r\n';
             }
         }

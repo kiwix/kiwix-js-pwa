@@ -108,11 +108,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
         // Define behavior of HTML elements
         document.getElementById('searchArticles').addEventListener('click', function () {
+            $("#welcomeText").hide();
+            $("#searchingArticles").show();
             pushBrowserHistoryState(null, $('#prefix').val());
             searchDirEntriesFromPrefix($('#prefix').val());
-            $("#welcomeText").hide();
-            $("#readingArticle").hide();
-            $("#articleContent").hide();
             clearFindInArticle();
             //Re-enable top-level scrolling
             document.getElementById('top').style.position = "relative";
@@ -133,6 +132,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     if (articleResults && articleResults.length) {
                         articleResults[0].focus();
                     }
+                }
+                if (e.which == 27) {
+                    //Esc, so hide the list behind article TODO: implement click equivalent
+                    document.getElementById('articleContent').style.position = "fixed";
+                    return;
                 }
                 onKeyUpPrefix(e);
             }
@@ -352,7 +356,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('top').style.position = "relative";
             document.getElementById('scrollbox').style.position = "fixed";
             document.getElementById('scrollbox').style.height = window.innerHeight + "px";
-            document.getElementById('articleContent').style.display = "none";
             goToRandomArticle();
         });
 
@@ -464,15 +467,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         document.getElementById('btnHome').addEventListener('click', function () {
             setTab('btnHome');
             // Give the focus to the search field, and clean up the page contents
-            if (!firstRun) {
-                $('#prefix').focus();
-            }
+            //if (!firstRun) {
+            //    $('#prefix').focus();
+            //}
             $('#articleContent').hide();
             $('#articleContent').contents().empty();
-            $('#searchingForArticles').hide();
+            $('#searchingArticles').hide();
             $('#welcomeText').show();
-            $('#articleList').show();
-            $('#articleListHeaderMessage').show();
+            //$('#articleList').show();
+            //$('#articleListWithHeader').show();
             if (selectedArchive !== null && selectedArchive.isReady()) {
                 $('#welcomeText').hide();
                 goToMainArticle();
@@ -503,6 +506,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('top').style.position = "relative";
             document.getElementById('scrollbox').style.position = "fixed";
             document.getElementById('scrollbox').style.height = window.innerHeight + "px";
+            document.getElementById('articleContent').style.position = "fixed";
             //Use the "light" navbar if the content is "light" (otherwise it looks shite....)
             var checkTheme = params.cssTheme == "light" ? "light" : "dark";
             if (checkTheme != params.cssUITheme) {
@@ -525,14 +529,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             $('#configuration').hide();
             $('#formArticleSearch').show();
             $('#articleContent').show();
-            $("#prefix").val("");
             $("#articleList").empty();
-            $('#articleList').hide();
             $('#articleListHeaderMessage').empty();
-            $("#readingArticle").hide();
+            $('#articleListWithHeader').hide();
+            $("#prefix").val("");
+            $("#searchingArticles").hide();
             $("#welcomeText").hide();
-            // Scroll the iframe to its top
-            $("#articleContent").contents().scrollTop(0);
         }
 
         function setActiveBtn(activeBtn) {
@@ -1209,14 +1211,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
                 $('#prefix').val("");
                 $("#welcomeText").hide();
-                $("#readingArticle").hide();
                 if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
                     $('#navbarToggle').click();
                 }
-                $('#searchingForArticles').hide();
+                $('#searchingArticles').hide();
                 $('#configuration').hide();
                 $('#articleList').hide();
-                $('#articleListHeaderMessage').hide();
+                $('#articleListWithHeader').hide();
                 $('#articleContent').contents().empty();
 
                 if (title && !("" === title)) {
@@ -1622,13 +1623,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          * @param {String} prefix
          */
         function searchDirEntriesFromPrefix(prefix) {
-            $('#searchingForArticles').show();
-            $('#configuration').hide();
-            $('#articleContent').contents().empty();
             if (selectedArchive !== null && selectedArchive.isReady()) {
                 selectedArchive.findDirEntriesWithPrefix(prefix.trim(), MAX_SEARCH_RESULT_SIZE, populateListOfArticles);
             } else {
-                $('#searchingForArticles').hide();
+                $('#searchingArticles').hide();
                 // We have to remove the focus from the search field,
                 // so that the keyboard does not stay above the message
                 $('#searchArticles').focus();
@@ -1676,10 +1674,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //Array.prototype.slice.call(document.querySelectorAll('articleList a')).forEach(function (el) {
             //    el.addEventListener('click', function () { handleTitleClick(); });
             //});
+            // Needed so that results show on top of article
+            document.getElementById('articleContent').style.position = 'static';
             $("#articleList a").on("click", handleTitleClick);
-            $('#searchingForArticles').hide();
+            $('#searchingArticles').hide();
             $('#articleList').show();
-            $('#articleListHeaderMessage').show();
+            $('#articleListWithHeader').show();
         }
 
         /**
@@ -1689,9 +1689,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          */
         function handleTitleClick() {
             var dirEntryId = event.target.getAttribute("dirEntryId");
-            $("#articleList").empty();
-            $('#articleListHeaderMessage').empty();
-            $("#prefix").val("");
             findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId);
             var dirEntry = selectedArchive.parseDirEntryId(dirEntryId);
         }
@@ -1706,8 +1703,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (selectedArchive.isReady()) {
                 var dirEntry = selectedArchive.parseDirEntryId(dirEntryId);
                 $("#articleName").html(dirEntry.title);
-                $("#readingArticle").show();
-                $("#articleContent").contents().html("");
+                $("#searchingArticles").show();
                 if (dirEntry.isRedirect()) {
                     selectedArchive.resolveRedirect(dirEntry, readArticle);
                 } else {
@@ -1833,8 +1829,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         var regexpPath = /^(.*\/)[^\/]+$/;
         // Pattern to find a ZIM URL (with its namespace) - see http://www.openzim.org/wiki/ZIM_file_format#Namespaces
         var regexpZIMUrlWithNamespace = /(?:^|\/)([-ABIJMUVWX]\/.+)/;
-        // Pattern to match a local anchor in a href
-        var regexpLocalAnchorHref = /^#/;
         // These regular expressions match both relative and absolute URLs
         // Since late 2014, all ZIM files should use relative URLs
         var regexpImageUrl = /^(?:\.\.\/|\/)+(I\/.*)$/;
@@ -2019,7 +2013,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 } else {
                     selectedArchive.getDirEntryByTitle(title)
                         .then(function (dirEntry) {
-                            uiUtil.poll("Attempting to resolve CSS link #" + index + " [" + title.substring(0, 30) + "] from ZIM file...");
+                            uiUtil.poll("Resolving CSS [" + title.replace(/[^/]+\//g, '').substring(0, 18) + "]...");
                             return selectedArchive.readBinaryFile(dirEntry,
                                 function (fileDirEntry, content) {
                                     //DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
@@ -2043,7 +2037,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
 
             function injectCSS() {
-                if (blobArray.length === cssArray.length) { //If all promised values have been obtained
+                if (blobArray.length >= cssArray.length) { //If all promised values have been obtained
                     var resultsArray = [];
                     var testBlob;
                     for (var i in cssArray) { //Put them back in the correct order
@@ -2087,8 +2081,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     console.log("All CSS resolved");
                     injectHTML(); //Pass the revised HTML to the image and JS subroutine...
                 } else {
-                    uiUtil.poll("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...");
-                    //console.log("Waiting for " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + " to resolve...")
+                    uiUtil.poll("Waiting for CSS # " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + "...");
                 }
             }
             //End of preload stylesheets code
@@ -2272,6 +2265,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     var currentProtocol = location.protocol;
                     var currentHost = location.host;
 
+                    // Pattern to match a local anchor in a href even if prefixed by url
+                    var regexpLocalAnchorHref = new RegExp('^(?:#|' + dirEntry.url + '#)([^#]+$)');
+
                     // Convert links into javascript calls
                     var iframe = document.getElementById('articleContent').contentDocument;
                     // Set state of collapsible sections
@@ -2297,9 +2293,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         } else if (regexpLocalAnchorHref.test(href)) {
                             // It's an anchor link : we need to make it work with javascript
                             // because of the base tag
+                            var anchorRef = href.replace(regexpLocalAnchorHref, '$1');
                             anchor.addEventListener('click', function (e) {
                                 e.preventDefault();
-                                document.getElementById('articleContent').contentWindow.location.hash = href;
+                                document.getElementById('articleContent').contentWindow.location.hash = anchorRef;
                             });
                         } else if (anchor.protocol !== currentProtocol ||
                             anchor.host !== currentHost) {
@@ -2832,16 +2829,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('top').style.position = "relative";
             document.getElementById('scrollbox').style.position = "fixed";
             document.getElementById('scrollbox').style.height = window.innerHeight + "px";
-            $("#readingArticle").show();
+            $("#searchingArticles").show();
             selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
-                    $("#readingArticle").hide();
-                    $("#articleContent").show();
+                    $("#searchingArticles").hide();
                     console.error("Article with title " + title + " not found in the archive");
                     goToMainArticle();
                 } else {
                     $("#articleName").html(title);
-                    document.getElementById('articleContent').style.display = "none";
+                    $("#searchingArticles").show();
                     readArticle(dirEntry);
                 }
             }).fail(function () {
@@ -2860,8 +2856,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     //Test below supports Stackexchange-family ZIMs, so we don't call up user profiles
                     if (dirEntry.namespace === 'A' && !/user\//.test(dirEntry.url)) {
                         $("#articleName").html(dirEntry.title);
-                        $("#readingArticle").show();
-                        $('#articleContent').contents().find('body').html("");
+                        $("#searchingArticles").show();
                         readArticle(dirEntry);
                     } else {
                         // If the random title search did not end up on an article,
@@ -2880,8 +2875,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 } else {
                     if (dirEntry.namespace === 'A') {
                         $("#articleName").html(dirEntry.title);
-                        $("#readingArticle").show();
-                        $('#articleContent').contents().find('body').html("");
+                        $("#searchingArticles").show();
                         readArticle(dirEntry);
                     } else {
                         console.error("The main page of this archive does not seem to be an article");
