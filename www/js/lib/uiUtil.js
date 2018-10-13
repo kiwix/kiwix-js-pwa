@@ -112,11 +112,14 @@ define([], function() {
     }
 
     function poll(msg) {
-        document.getElementById("progressMessage").innerHTML += '<p>' + msg + '</p>';
+        document.getElementById('searchingArticles').style.display = 'block';
+        document.getElementById('progressMessage').innerHTML = msg;
+        document.getElementById('progressMessage').style.display = 'block';
     }
 
     function clear() {
-        document.getElementById("progressMessage").innerHTML = "<p></p>";
+        document.getElementById('progressMessage').innerHTML = '';
+        document.getElementById('progressMessage').style.display = 'none';
     }
 
     /**
