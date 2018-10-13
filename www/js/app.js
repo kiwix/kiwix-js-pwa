@@ -1624,7 +1624,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          */
         function searchDirEntriesFromPrefix(prefix) {
             if (selectedArchive !== null && selectedArchive.isReady()) {
-                selectedArchive.findDirEntriesWithPrefix(prefix.trim(), MAX_SEARCH_RESULT_SIZE, populateListOfArticles);
+                selectedArchive.findDirEntriesWithPrefix(prefix.trim(), MAX_SEARCH_RESULT_SIZE + 1, populateListOfArticles);
             } else {
                 $('#searchingArticles').hide();
                 // We have to remove the focus from the search field,
@@ -1641,18 +1641,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          * @param {Array.<DirEntry>} dirEntryArray
          * @param {Integer} maxArticles
          */
-        function populateListOfArticles(dirEntryArray, maxArticles) {
+        function populateListOfArticles(dirEntryArray) {
             var articleListHeaderMessageDiv = $('#articleListHeaderMessage');
-            var nbDirEntry = 0;
-            if (dirEntryArray) {
-                nbDirEntry = dirEntryArray.length;
-            }
-
+            var nbDirEntry = dirEntryArray ? dirEntryArray.length : 0;
             var message;
-            if (maxArticles >= 0 && nbDirEntry >= maxArticles) {
-                message = maxArticles + " first articles below (refine your search).";
+            if (nbDirEntry >= MAX_SEARCH_RESULT_SIZE) {
+                message = "First " + MAX_SEARCH_RESULT_SIZE + " articles below (refine your search):";
             } else {
-                message = nbDirEntry + " articles found.";
+                message = nbDirEntry + " articles found:";
             }
             if (nbDirEntry === 0) {
                 message = "No articles found.";
@@ -1660,12 +1656,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
             articleListHeaderMessageDiv.html(message);
 
-
             var articleListDiv = $('#articleList');
             var articleListDivHtml = "";
-            for (var i = 0; i < dirEntryArray.length; i++) {
+            var listLength = dirEntryArray.length < MAX_SEARCH_RESULT_SIZE ? dirEntryArray.length : MAX_SEARCH_RESULT_SIZE;
+            for (var i = 0; i < listLength; i++) {
                 var dirEntry = dirEntryArray[i];
-
                 articleListDivHtml += "<a href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g, "&apos;") +
                     "' class='list-group-item'>" + dirEntry.title + "</a>";
             }
