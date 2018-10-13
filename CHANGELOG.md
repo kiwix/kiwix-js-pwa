@@ -1,3 +1,11 @@
+## Release 0.9.9.8 (beta)
+* UPDATE: Ray Charles ZIM to October 2018 version
+* ENHANCEMENT: Add a modern CSS spinner and rework status messages
+* ENHANCEMENT: Neater presentation of article search results
+* FIX: Crash when previously picked archive has been moved or deleted
+* FIX: Correctly apply mobile styles when one of the defaults is missing
+* FIX: Incorrect utf8 characters in mobile styles 
+
 ## Release 0.9.9.7 (beta)
 * ENHANCEMENT: Optimization of decompression process
 * WORKAROUND: Prevent periodic hang in Service Worker mode
