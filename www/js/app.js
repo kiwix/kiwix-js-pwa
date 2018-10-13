@@ -1977,10 +1977,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 zimType = /-\/static\/main\.css/i.test(testCSS) ? "desktop-stx" : zimType; //Support stackexchange
                 zimType = /minerva|mobile/i.test(testCSS) ? "mobile" : zimType;
                 cssSource = cssSource == "auto" ? zimType : cssSource; //Default to in-built zimType if user has selected automatic detection of styles
-                if (/minerva/i.test(testCSS) && (cssCache || zimType != cssSource)) {
+                if (/minerva|inserted.style.mobile/i.test(testCSS) && (cssCache || zimType != cssSource)) {
                     //Substitute ridiculously long style name TODO: move this code to transformStyles
-                    for (var i = 0; i < arr.length; i++) { //TODO: sort out in transfromStyles
+                    for (var i = arr.length; i--;) { //TODO: move to transfromStyles
                         arr[i] = /minerva/i.test(arr[i]) ? '<link href="../-/s/style-mobile.css" rel="stylesheet" type="text/css">' : arr[i];
+                        // Delete stylesheet if will be inserted via minerva anyway (avoid linking it twice)
+                        if (/inserted.style.mobile/i.test(arr[i]) && /minerva/i.test(testCSS)) {
+                            arr.splice(i, 1);
+                        }
                     }
                 }
                 for (var i = 0; i < arr.length; i++) {
