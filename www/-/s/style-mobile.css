@@ -681,7 +681,7 @@ a.disambig_button {
 }
 
 #content .hlist dd:after, #content .hlist li:after {
-    content: ' ￂﾷ ';
+    content: ' · ';
     font-weight: bold
 }
 
