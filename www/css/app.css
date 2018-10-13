@@ -84,11 +84,21 @@ div:not(.panel-success) {
     padding-left: 1px !important;
 }
 
+#articleList {
+    margin-bottom: 15px;
+}
+
 #articleListWithHeader {
     position: absolute; 
     top: 0; 
     left: 5%;
+    padding-left: 15px;
+    padding-right: 15px;
     background: lightblue;
+}
+
+.dark #articleListWithHeader {
+    background: darkslategrey;
 }
 
 #btnHome {
