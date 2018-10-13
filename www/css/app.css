@@ -85,15 +85,15 @@ div:not(.panel-success) {
 }
 
 #articleList {
-    margin-bottom: 15px !important;
+    margin-bottom: 12px !important;
 }
 
 #articleListWithHeader {
     position: absolute; 
     top: 0; 
     left: 5%;
-    padding-left: 15px;
-    padding-right: 15px;
+    padding-left: 12px;
+    padding-right: 12px;
     background: lightblue;
 }
 
