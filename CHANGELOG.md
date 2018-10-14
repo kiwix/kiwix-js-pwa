@@ -3,6 +3,7 @@
 * ENHANCEMENT: Add a modern CSS spinner and rework status messages
 * ENHANCEMENT: Neater presentation of article search results
 * FIX: Crash when previously picked archive has been moved or deleted
+* FIX: Support changed format of anchor references in latest English Wikipedia
 * FIX: Correctly apply mobile styles when one of the defaults is missing
 * FIX: Incorrect utf8 characters in mobile styles 
 

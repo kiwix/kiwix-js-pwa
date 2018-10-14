@@ -2259,10 +2259,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 if (contentInjectionMode === 'jquery') {
                     var currentProtocol = location.protocol;
                     var currentHost = location.host;
-
-                    // Pattern to match a local anchor in a href even if prefixed by url
-                    var regexpLocalAnchorHref = new RegExp('^(?:#|' + dirEntry.url + '#)([^#]+$)');
-
+                    // Percent-encode and add regex escape character '\' to the url's special characters
+                    var escapedUrl = encodeURIComponent(dirEntry.url).replace(/([\\$^.|?*+()\[{])/g, '\\$1');
+                    // Pattern to match a local anchor in an href even if prefixed by escaped url
+                    var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#]+$)');
                     // Convert links into javascript calls
                     var iframe = document.getElementById('articleContent').contentDocument;
                     // Set state of collapsible sections
@@ -2274,9 +2274,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }
                     var anchors = Array.prototype.slice.call(iframe.getElementsByTagName('a'));
                     anchors.forEach(function (anchor) {
-                        var href = anchor.getAttribute("href");
+                        var href = anchor.getAttribute('href');
                         // Compute current link's url (with its namespace), if applicable
-                        var zimUrl = regexpZIMUrlWithNamespace.test(anchor.href) ? anchor.href.match(regexpZIMUrlWithNamespace)[1] : "";
+                        var zimUrl = regexpZIMUrlWithNamespace.test(anchor.href) ? anchor.href.match(regexpZIMUrlWithNamespace)[1] : '';
                         if (href === null || href === undefined) {
                             // No href attribute
                         } else if (href.length === 0) {
@@ -2296,7 +2296,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         } else if (anchor.protocol !== currentProtocol ||
                             anchor.host !== currentHost) {
                             // It's an external URL : we should open it in a new tab
-                           anchor.target = "_blank";
+                           anchor.target = '_blank';
                         } else {
                             // It's a link to another article
                             // Add an onclick event to go to this article
