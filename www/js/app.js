@@ -2260,7 +2260,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     var currentProtocol = location.protocol;
                     var currentHost = location.host;
                     // Percent-encode and add regex escape character '\' to the url's special characters
-                    var escapedUrl = encodeURIComponent(dirEntry.url).replace(/([\\$^.|?*+()\[{])/g, '\\$1');
+            var escapedUrl = encodeURIComponent(dirEntry.url).replace(/([\\$^.|?*+()[{])/g, '\\$1');
                     // Pattern to match a local anchor in an href even if prefixed by escaped url
                     var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#]+$)');
                     // Convert links into javascript calls
