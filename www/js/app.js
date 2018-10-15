@@ -109,7 +109,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         // Define behavior of HTML elements
         document.getElementById('searchArticles').addEventListener('click', function () {
             $("#welcomeText").hide();
-            $("#searchingArticles").show();
+            document.getElementById('searchingArticles').style.display = 'block';
             pushBrowserHistoryState(null, $('#prefix').val());
             searchDirEntriesFromPrefix($('#prefix').val());
             clearFindInArticle();
@@ -1697,15 +1697,16 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         function findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId) {
             if (selectedArchive.isReady()) {
                 var dirEntry = selectedArchive.parseDirEntryId(dirEntryId);
-                $("#articleName").html(dirEntry.title);
-                $("#searchingArticles").show();
+                // Remove focus from search field to hide keyboard
+                document.getElementById('searchArticles').focus();
+                document.getElementById('searchingArticles').style.display = 'block';
                 if (dirEntry.isRedirect()) {
                     selectedArchive.resolveRedirect(dirEntry, readArticle);
                 } else {
                     readArticle(dirEntry);
                 }
             } else {
-                alert("Data files not set");
+                alert('Data files not set');
             }
         }
 
@@ -1737,9 +1738,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         function (responseTxt, status) {
                             htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
                             if (htmlContent) {
-                                console.log("Article retrieved from storage cache...");
+                                console.log('Article retrieved from storage cache...');
                                 displayArticleInForm(dirEntry, htmlContent);
                             } else {
+                                document.getElementById('searchingArticles').style.display = 'block';
                                 selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
                             }
                         });
@@ -2824,15 +2826,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('top').style.position = "relative";
             document.getElementById('scrollbox').style.position = "fixed";
             document.getElementById('scrollbox').style.height = window.innerHeight + "px";
-            $("#searchingArticles").show();
+            document.getElementById('searchingArticles').style.display = 'block';
             selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
-                    $("#searchingArticles").hide();
+                    document.getElementById('searchingArticles').style.display = 'none';
                     console.error("Article with title " + title + " not found in the archive");
                     goToMainArticle();
                 } else {
-                    $("#articleName").html(title);
-                    $("#searchingArticles").show();
                     readArticle(dirEntry);
                 }
             }).fail(function () {
@@ -2841,17 +2841,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         }
 
         function goToRandomArticle() {
+            document.getElementById('searchingArticles').style.display = 'block';
             if (selectedArchive === null) {
                 return;
             } //Prevents exception if user hasn't selected an archive
             selectedArchive.getRandomDirEntry(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
+                    document.getElementById('searchingArticles').style.display = 'none';
                     alert("Error finding random article.");
                 } else {
                     //Test below supports Stackexchange-family ZIMs, so we don't call up user profiles
                     if (dirEntry.namespace === 'A' && !/user\//.test(dirEntry.url)) {
-                        $("#articleName").html(dirEntry.title);
-                        $("#searchingArticles").show();
                         readArticle(dirEntry);
                     } else {
                         // If the random title search did not end up on an article,
@@ -2863,14 +2863,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         }
 
         function goToMainArticle() {
+            document.getElementById('searchingArticles').style.display = 'block';
             selectedArchive.getMainPageDirEntry(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
                     console.error("Error finding main article.");
+                    document.getElementById('searchingArticles').style.display = 'none';
                     $("#welcomeText").show();
                 } else {
                     if (dirEntry.namespace === 'A') {
-                        $("#articleName").html(dirEntry.title);
-                        $("#searchingArticles").show();
                         readArticle(dirEntry);
                     } else {
                         console.error("The main page of this archive does not seem to be an article");
