@@ -352,7 +352,9 @@ define([], function () {
         var xhttpTimeout = setTimeout(ajaxTimeout, 20000);
         function ajaxTimeout() {
             xhttp.abort();
-            document.getElementById('serverResponse').innerHTML = "Connection attempt timed out (failed)";
+            var responseMessageBox = document.getElementById('serverResponse');
+            responseMessageBox.innerHTML = "Connection attempt timed out (failed)";
+            if (/https?:|file:/.test(window.location.protocol)) responseMessageBox.innerHTML = "Browser's CORS Policy disallowed access!";
             document.getElementById('serverResponse').style.display = "inline";
             serverError();
             return;
