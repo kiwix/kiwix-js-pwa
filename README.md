@@ -16,23 +16,23 @@ Surface Hub, Holographic and PC. It has been tested on Lumia 950XL (Mobile), Tab
 
 The UWP app is currently installable from the Microsoft Store at:
 
-https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j
+[https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j](https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j)
 
 However, if you would like to test a newer or different build, please see the instructions provided
-under the AppPackages directory here: https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages.
+under the [AppPackages directory](https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages).
 
 You will need a ZIM file to work with this app. For testing, it comes packaged with the Ray Charles ZIM.
 You can download other ZIM archives from the setup page in the app (the download completes in the browser).
 Place the file in an accessible location on your device, and use the Rescan Storage button in the app to
 display buttons that let you pick the file or the file's folder.
 
-Alternatively, you can download files from http://wiki.kiwix.org/wiki/Content_in_all_languages on a regular
+Alternatively, you can download files from [http://wiki.kiwix.org/wiki/Content_in_all_languages](http://wiki.kiwix.org/wiki/Content_in_all_languages) on a regular
 PC. The single non-indexed ZIM files work best. However, if you plan to store your ZIM file on an SD card 
 formatted as FAT32, you will only be able to use the split files (.zimaa, .zimab, etc.) in the pre-indexed
 archives. If your SD card is formatted as exFAT or NTFS, you can use either, but single file is easiest.
 
 You can also run the app in your browser if you prefer, either from the file:// protocol or from your own
-local server. There is a test deployment at: https://kiwix.github.io/kiwix-js-windows/www/, but note that
+local server. There is a test deployment at: [https://kiwix.github.io/kiwix-js-windows/www/](https://kiwix.github.io/kiwix-js-windows/www/), but note that
 you will need a ZIM file, and some functionality is limited (e.g. accessing the Kiwix servers in the app
 is blocked by CORS, and you have to pick a file each time you access the app in browser context).
 
@@ -50,14 +50,14 @@ Longer answer:
 
 	Kiwix JS Windows will only access the Kiwix download server if you specifically request it to find and display
 	download links for ZIM archives on the Configuration page.
-    
+	
 	You can disable even this Internet access with an option on the same page. If you nevertheless believe your
 	Internet access can be watched and/or if you are extremely cautious, you should shut down your 3G and WiFi
 	access before using the application.
-    
+	
 	This application only reads the archive files of your device: it is not capable of reading any other files.
-
+	
 	By default, this application will remember your last-visited page between sessions using a local cookie that
 	is accessible only by this app on this device. If you are accessing sensitive information that you do not wish
 	to be displayed next time you open this app, we recommend that you turn this option off in the Configuration page.
-                    
+
