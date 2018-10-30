@@ -1724,6 +1724,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 console.log("Initiating Document Ready timer...");
                 console.time("Time to Document Ready");
 
+                //Set startup cookie to guard against boot loop
+                //Cookie will signal failure until article is fully loaded
+                document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
+
                 //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
                 localSearch = {};
 
@@ -2313,6 +2317,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
                     loadImages();
                     //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
+
+                    //Document has loaded except for images, so we can now change the startup cookie (and delete) [see init.js]
+                    document.cookie = 'lastPageLoad=success;expires=Thu, 21 Sep 1979 00:00:01 UTC';
                 }
 
             } //End of injectHTML()
