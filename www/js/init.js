@@ -60,6 +60,14 @@ params['allowInternetAccess'] = params['allowInternetAccess'] || false; //Do not
 params['printIntercept'] = false;
 params['printInterception'] = false;
 
+//Prevent app boot loop with problematic pages that cause an app crash
+if (getCookie('lastPageLoad') == 'failed') {
+    params.lastPageVisit = "";
+} else {
+    //Cookie will signal failure until article is fully loaded
+    document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
+}
+
 //Initialize checkbox, radio and other values
 document.getElementById('cssCacheModeCheck').checked = params.cssCache;
 document.getElementById('imageDisplayModeCheck').checked = params.imageDisplay;
