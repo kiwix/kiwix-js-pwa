@@ -1,19 +1,11 @@
-## Release 0.9.9.8 (beta)
-* UPDATE: Ray Charles ZIM to October 2018 version
-* ENHANCEMENT: Add a modern CSS spinner and rework status messages
-* ENHANCEMENT: Neater presentation of article search results
-* FIX: Crash when previously picked archive has been moved or deleted
-* FIX: Support changed format of anchor references in latest English Wikipedia
-* FIX: Correctly apply mobile styles when one of the defaults is missing
-* FIX: Incorrect utf8 characters in mobile styles 
-
-## Release 0.9.9.7 (beta)
+## Release 0.9.9.7 WikiMed (beta)
+* UPDATE: August 2018 update of WikiMed ZIM archive to wikipedia_en_medicine_novid_2018-08.zim
 * ENHANCEMENT: Optimization of decompression process
-* WORKAROUND: Prevent periodic hang in Service Worker mode
 * FIX: Crash in RegExp engine caused by malformed backreferences in some articles
 
-## Release 0.9.9.6 (beta)
-* UPDATE: Mobile styles
+## Release 0.9.9.6 WikiMed (beta)
+* UPDATE: June 2018 update of WikiMed ZIM archive to wikipedia_en_medicine_novid_2018-06.zim
+* UPDATE: Mobile styles and cached home page
 * ENHANCEMENT: New compile of decoding engine provides significant performance improvement
 * ENHANCEMENT: Better memory management to prevent app crashes
 * ENHANCEMENT: Reduced dependency on jQuery for further performance gains
@@ -24,51 +16,52 @@
 * FIX: Whitespace at the end of the page is now preserved when hiding reference section
 * FIX: Tapping headers now only opens and closes sections on narrow screens as intended by WikiMedia
 
-## Release 0.9.9.5 (beta)
+## Release 0.9.9.5 WikiMed (beta)
 * ENHANCEMENT: Headings in article can be toggled open or closed with tap or click
 * ENHANCEMENT: Current page is cached in localStorage for very fast restart and reloading
 * ENHANCEMENT: Automatically switch to desktop style for better printing result
+* ENHANCEMENT: Print zoom capability
+* ENHANCEMENT: Set maximum page width to 100% before printing
 * FIX: Bug which prevented switching the printing device (caused app crash)
 * FIX: Bug in download links preventing display of language codes that are substrings of other language codes
-
-## Release 0.9.9.4 (beta)
-* ENHANCEMENT: Experimental support for printing articles
-* ENHANCEMENT: Print zoom capability
-* ENHANCEMENT: Prevent printing of location pins
-* ENHANCEMENT: Set maximum page width to 100% before printing
-* ENHANCEMENT: Better presentation of About and Changelog information
 * WORKAROUND: MW-Offliner bug which places extraneous tags in some HTML id attributes
 
-## Release 0.9.9.3 (beta)
+## Release 0.9.9.4 WikiMed (beta)
+* UPDATE: March 2018 update of WikiMed ZIM archive to wikipedia_en_medicine_novid_2018-03.zim
+* ENHANCEMENT: Experimental support for printing articles
+* ENHANCEMENT: Better presentation of About and Changelog information
+
+## Release 0.9.9.3 WikiMed (beta)
 * FIX: Article now reloads correctly when switching styles
 * FIX: Unhandled exception after using in-article word search
 * FIX: Browser history now remembered for first page load
+* FIX: Added more padding for content hidden under the bottom bar
+* FIX: New mode of injecting HTML into iframe fixes baseUrl issues
 * ENHANCEMENT: Filter ZIM archives by date in download links
 * ENHANCEMENT: Option to remove maximum page width restriction for Wikipedia articles
 * ENHANCEMENT: Setting or clearing dark themes no longer require page reload
 * ENHANCEMENT: Wider range of infoboxes, and "homonymie" hatnotes supported
 * ENHANCEMENT: Better algorithm for moving first paragraph when there are stacked infoboxes
-
-## Release 0.9.9.2 (beta)
-* FIX: Added more padding for content hidden under the bottom bar
-* FIX: New mode of injecting HTML into iframe fixes baseUrl issues
+* ENHANCEMENT: Applying or removing dark themes no longer requires a page reload
+* ENHANCEMENT: Option to remove max page width restriction
 * ENHANCEMENT: Some code redundancy removed
 * ENHANCEMENT: Faster typesetting of TeX equations
-* ENHANCEMENT: Experimental support for equations in mathoverflow and related stackechange ZIMs
-* ENHANCEMENT: Dark theme support for stackexchange ZIMs
 * ENHANCEMENT: Uncluttered the UI for file selection
 
-## Release 0.9.9 (beta)
+## Release 0.9.9 WikiMed (beta)
 * FIX: Reduced memory usage for decompressing multiple SVG images/equations to prevent crash on devices with 1GB RAM
 * FIX: Display bug causing Settings tab to remain selected after article load
-* FIX: Corrected dark-style backgrounds in some infoboxes on WikiMed
 * FIX: Loads landing page when an article is not found (instead of throwing a silent error)
-* WORKAROUND for misplaced hatnotes in mobile-style ZIMs
-* WORKAROUND for hidden IPA pronunciation information on some articles
 * ENHANCEMENT: 'Unclicking' a tab (Settings or About) now returns the user to the article
-* ENHANCEMENT: Activating dark theme for UI now activates article dark theme by default
 * ENHANCEMENT: Improved handling and display of file selectors
 * ENHANCEMENT: Clearer navigation signposting from About tab
+
+## Release 0.9.8 WikiMed (beta)
+* FIX: Corrected dark-style backgrounds in some infoboxes on WikiMed 
+* WORKAROUND for hidden IPA pronunciation information on some WikiMed articles
+* WORKAROUND for misplaced hatnotes in mobile-style ZIMs
+* ENHANCEMENT: Cache start page in the filesystem for quick start or return to home
+* ENHANCEMENT: Activating dark theme for UI now activates article dark theme by default
 * ENHANCEMENT: Dedicated icon for WikiMed archives
 
 ## Release 0.9.7 (beta)

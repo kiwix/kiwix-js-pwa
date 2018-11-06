@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Kiwix JS for Windows</title>
+    <title>Kiwix JS WikiMed for Windows</title>
     <meta name="description" content="Offline Wikipedia reader">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!--
@@ -15,6 +15,7 @@
     Jaifroid - Adapted for UWP for Windows 10 and Windows Mobile 10 : Geoffrey Kantaris egk10@cam.ac.uk
 
     Copyright 2013-2018 Mossroy, Peter-x, Jaifroid, sharun-s and other contributors
+
     License GPL v3:
 
     This file is part of Kiwix.
@@ -44,60 +45,65 @@
         <div class="modal-dialog modal-full">
             <div class="modal-content dark">
                 <div class="modal-body">
-                    <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
-                    <img style="float:left; padding-right:1em;" alt="Kiwix icon" src="img/icons/kiwix-midnightblue-90.png">
-
-                    <h2 style="font-size:32px;margin-top:10px;">
-                        Welcome to Kiwix&nbsp;JS for Windows
+                    <img style="float:left; padding-right:1em;" alt="WikiMed icon" src="img/icons/wikimed-90.png">
+                    <h2 style="font-size: 32px; margin-top:10px;">
+                        Welcome to&nbsp;WikiMed!
                     </h2>
-                    <h4>Version <span class="version">0.9 Beta</span></h4><br />
+                    <h4>Version <span class="version">0.9 Beta</span> (<a href="#update">changes</a>)</h4>
+                    <h3>Please read this important information</h3>
+                    <div class="disclaimer">
+                        <p>
+                            <b>DISCLAIMER:</b> The medical information in this application comes from Wikipedia.
+                            <strong>Wikipedia does not give medical advice and Wikipedia is not a doctor.</strong>
+                            The information provided in WikiMed is for the purposes of education and research.
+                            <em>This app must not be used as a substitute for professional medical advice.</em>
+                        </p>
+                        <p>
+                            By using WikiMed, you explicitly agree that you will not hold Kiwix, Wikipedia or anyone
+                            else responsible for your use or misuse of the information it contains.
+                        </p>
+                    </div>
+                    <p style="padding-top:10px;">
+                        This app is packaged with the WikiMed offline ZIM archive in <b>English</b>. To download
+                        other languages, see the <b>About page <span class="glyphicon glyphicon-info-sign">
+                        </span></b> (to access About, <b>tap Config <span class="glyphicon glyphicon-wrench"></span></b>).
+                    </p>
+                    <p>
+                        We aim to keep this WikiMed as up to date as possible, and you should receive automatic archive updates
+                        via the Microsoft Store. Check the <b>About page <span class="glyphicon glyphicon-info-sign">
+                        </span></b> to see which ZIM is currently installed.
+                    </p>
+                    <p>
+                        WikiMed Offline Medical Wikipedia is <b>free</b> and <b>open source</b>. If you like it,
+                        please leave a positive review. Constructive feedback and help with
+                        improving the app are very welcome: see About section.
+                    </p>
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in <span class="version">0.9 (beta)</span></h3>
                         <ul style="padding-left: 15px;">
-                            <li>Fixed critical app crash when previously picked archive has been moved or deleted</li>
-                            <li>Add a modern CSS spinner and rework presentation of status messages</li>
-                            <li>Support changed format of anchor references in English Wikipedia</li>
-                            <li>Neater presentation of article search results</li>
-                            <li>Apply mobile styles even when one of the defaults is missing</li>
-                            <li>Correct the display of utf8 characters in mobile styles</li>
-                            <li>Updated Ray Charles ZIM to October 2018 version</li>
+                            <li>August 2018 update of WikiMed ZIM archive to wikipedia_en_medicine_novid_2018-08.zim</li>
+                            <li>Optimization of decompression process</li>
+                            <li>Fix crash in regex engine caused by malformed backreferences in some articles</li>
                         </ul>
-                        <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/master-dev/CHANGELOG.md" target="_blank">Full changelog...<img src="I/s/Icon_External_Link.png"></a></p>
+                        <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-WikiMed-dev/CHANGELOG.md" target="_blank">Full changelog...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>
-                    <h3>Please read this important information!</h3>
-                    <p>
-                        This application is packaged with only a basic ZIM archive (about a Jazz musician) so that you can get a feel
-                        for how offline Wikipedia browsing works.
-                    </p>
-                    <p>
-                        You will need to downloaded an offline ZIM archive and store it on your device. You can do this from the
-                        <b>Configuration page <span class="glyphicon glyphicon-wrench"></span></b>, or else see the
-                        <b>About page <span class="glyphicon glyphicon-info-sign"></span></b> for more information.
-                    </p>
-                    <p>
-                        For the full experience you <strong>must</strong> download a ZIM archive and store it on your device! Alternatively, if you only want Wikivoyage or WikiMed in English, look for "Wikivoyage by Kiwix" or "WikiMed" in the Store and install those apps instead.
-                    </p>
-                    <p>
-                        Kiwix JS is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
-                        improving the app are very welcome: see About section.
-                    </p>
                     <div id="features">
                         <h3>Features in Version 0.9 Beta</h3>
                         <ul style="padding-left:15px;">
                             <li>Compatible with Continuum!</li>
                             <li>Printing the article contents is supported on mobile and desktop</li>
-                            <li>Wikivoyage pages (English and German) display map location markers: tap to open Maps app</li>
+                            <li>Front page (of ZIM) cached for faster return to home page</li>
                             <li>Last-visited page remembered between sessions (optional)</li>
                             <li>In-page search / highlighting (search button/Ctrl-F/Alt-F)</li>
                             <li>Dark-theme for UI and content</li>
-                            <li>Equations typeset with MathJax if original TeX string is available</li>
                             <li>Transform layout: Wikipedia mobile or desktop styles</li>
                             <li>Optionally disable images if device is slow</li>
                         </ul>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" type="button" data-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" type="button" data-dismiss="modal">I Agree*</button>
+                    <p>* Please read the Disclaimer above. If you do not agree, please uninstall this app.</p>
                 </div>
             </div>
         </div>
@@ -185,7 +191,7 @@
                                 <span class="input-group">
                                     <span class="input-group-btn">
                                         <!-- button id="btnHome" type="button" class="btn btn-default" -->
-                                        <a id="btnHome" title="Home" class="btn btn-primary"><img id="kiwixIcon" style="margin-left:5px;" src="./img/icons/kiwix-blue-32.png" /></a>
+                                        <a id="btnHome" title="Home" class="btn btn-primary"><img id="kiwixIcon" style="margin-left:5px;" src="./img/icons/wikimed-blue-32.png" /></a>
                                         <!--button -->
                                     </span>
                                     <input type="search" id="prefix" placeholder="Search..."
@@ -216,11 +222,11 @@
                 <div id="about" style="display: none;" class="category-padding">
                     <div class="returntoArticle" style="text-align:center;padding-top:20px;"></div>
                     <h2>
-                        <img src="img/icons/kiwix-60.png" alt="Kiwix icon" id="kiwixIconAbout" />
-                        Kiwix JS Windows
+                        <img id="kiwixIconAbout" src="img/icons/wikimed-90.png" alt="WikiMed icon" />
+                        WikiMed by Kiwix
                     </h2>
                     <h3 style="margin-top:0;">
-                        Offline Wikipedia Viewer <small>(Version <span class="version"></span>)</small>
+                        Offline Medical Wikipedia <small>(Kiwix JS version <span class="version"></span>)</small>
                     </h3>
                     <p>Packaged ZIM archive: <b><span class="fileVersion"></span></b></p>
                     <ul style="padding-left:1em;">
@@ -230,59 +236,57 @@
                         <li><a href="#credits">Credits and Licence</a></li>
                         <li>Official site : <a href="http://www.kiwix.org/" target="_blank">http://www.kiwix.org/</a><img src="I/s/Icon_External_Link.png" /></li>
                     </ul>
-                    <p>
-                        If your Internet access is expensive / slow / unreliable / watched / censored, you can still gain offline access to a huge
-                        repository of knowledge and culture.
+                    <div class="disclaimer">
+                        <p><b>DISCLAIMER:</b></p>
+                        <p>The medical information in this app comes from Wikipedia.</p>
+                        <p><strong>Wikipedia does not give medical advice and Wikipedia is not a doctor.</strong></p>
+                        <p>Use the information in this app as a guide for <em>research and education only</em>. By using this
+                        application, you agree that you will not hold Kiwix, Wikipedia or anyone else responsible for your use or
+                        misuse of the information it contains.</p>
+                    </div>
+                    <p style="padding-top:10px;">
+                        As well as WikiMed in English, you can download one or more WikiMed archives (called ZIM archives) in
+                        other languages from the Kiwix website: see the instructions below. There are also two sister apps in
+                        the Store: <a href="https://www.microsoft.com/store/p/wikivoyage-by-kiwix/9n5sb90q4jbj" target="_blank">
+                        Wikivoyage by Kiwix</a>, and <a href="https://www.microsoft.com/store/p/kiwix-js/9p8slz4j979j"
+                        target="_blank">Kiwix JS</a>. Wikivoyage is an offline travel guide, and with Kiwix JS,
+                        you can have full offline Wikipedia, Wiktionary and many other sources.
                     </p>
                     <p>
-                        To use this app, you will need to download one or more archives (called ZIM archives) from the Kiwix website. You will then have
-                        offline access to Wikipedia, Wiktionary, Wikivoyage and many other sources even if you are undertaking a long plane journey, hiking, 
-                        and travelling or living in areas with weak Internet access.
+                        Offline archives use the <a href="http://www.openzim.org//wiki/OpenZIM" target="_blank">OpenZIM format</a>,
+                        but note that Kiwix family apps have only been tested extensively on Wikimedia archives (e.g., Wikipedia,
+                        Wikivoyage, Wikimed, Wiktionary).
                     </p>
-                    <p>
-                        You can search through article titles and read any of these articles completely offline.
-                    </p>
-                    <p>
-                        You can have the entire content of Wiktionary or Wikipedia in your language (including the images) in your pocket.
-                    </p>
-                    <p>
-                        Offline archives use the <a href="http://www.openzim.org//wiki/OpenZIM">OpenZIM format</a>, but note that this app has been only tested extensively on
-                        Wikipedia-related archives (e.g., Wikipedia, Wikivoyage, Wikimed, Wiktionary).
-                    </p>
-                    <p>
-                        On some Wikivoyage (English and German) pages
-                        you will see a map location marker: <img src="../www/img/icons/map_marker-18px.png" />. Tap this icon to open
-                        the <b>Maps app</b> at the selected location. This will work offline if you have downloaded the map for the relevant country
-                        in the Windows Settings for <b>Offline Maps</b>.
-                    </p>
-
-                    <h3>Usage</h3>
+                    <h3>Adding WikiMed archives in other languages</h3>
                     <h4>Step 1: download some content</h4>
                     <p>
-                        You can browse the Kiwix repository on the <a href="#" onclick="$('#btnConfigure').click();">Configuration</a> page, and it will provide instructions according to the type of file you download.
-                        Alternatively, visit <a href="http://download.kiwix.org/zim" target="_blank">http://download.kiwix.org/zim/</a> using a regular computer.
-                        <strong>Currently only Wikimedia contents (ZIM files in wiki* subdirectories) have been tested fully</strong>.
-                        There are known bugs when reading other content, and audio/video/dynamic content is not currently supported.
+                        In the Configuration <span class="glyphicon glyphicon-wrench"></span> menu, go to 
+                        <a href="#packagedAppFileSelectors" onclick="$('#btnConfigure').click();"><b>Expert settings</b></a>
+                        and check the option to <b>Display selectors</b>. Then check <b>Allow Internet access</b> and tap the
+                        <b>Open library</b> button. Locate your WikiMed ZIM file, and instructions will be provided to download
+                        the file on your device.
+                        Alternatively, visit <a href="http://download.kiwix.org/zim" target="_blank">http://download.kiwix.org/zim/
+                        </a> using a regular computer. <strong>This app is optimized for WikiMed archives only</strong>.
+                        If you wish to use regularly other archive types with this app, you should instead obtain our sister app,
+                        <a href="https://www.microsoft.com/store/p/kiwix-js/9p8slz4j979j" target="_blank">Kiwix JS</a> from the
+                        Store and keep this as a dedicated WikiMed app.
                     </p>
+                    <h4>Step 2: download or copy the content onto your device</h4>
                     <p>
-                        Note that some of these ZIM archives are very large indeed (several gigabytes), especially if you want the archives with pictures. Archives without
-                        pictures (look out for "nopic" in the filename) are generally much smaller. <b>Important</b>: if the file is larger than 4 GB, it might not be supported by
-                        your device if your storage (e.g. microSD card) is formatted using a FAT filesystem. If so, it's possible to split the material into several 2GB files, or
-                        to download pre-split files: see <a href="http://www.kiwix.org/wiki/FAQ">the Kiwix FAQ</a>.
-                    </p>
-                    <h4>Step 2: copy the content onto your device</h4>
-                    <p>
-                        If you have enough space, you can put several archives on your device storage. If you download the content directly in the app, note the location
-                        of the saved file when you get the notification that it has completed. If you downloaded via a PC, you will generally need to use a USB
-                        cable to copy the ZIM archive(s) to an accessible location on your device, such as the SD card or the main storage area if there is enough
-                        space there. 
+                        If you have enough space, you can put several archives on your device storage. If you download the content
+                        directly in the app, note the location of the saved file when you get the notification that it has
+                        completed. If you downloaded via a PC, you will generally need to use a USB cable to copy the ZIM 
+                        archive(s) to an accessible location on your device, such as the SD card or the main storage area if
+                        there is enough space there. 
                     </p>
                     <h4>Step 3: open this app, go to the "Configure" menu and select your ZIM file</h4>
                     <p>
-                        On the Configuration page, tap the "Select storage" button. If you have downloaded more than one archive, or you have a split ZIM archive
-                        consisting of several 2GB files, then you will need to pick the <b>folder</b> that contains these files. If you have just one unsplit ZIM
-                        archive, you can instead pick the <b>file</b> direclty, using the respective buttons on the
-                        <a href="#" onclick="$('#btnConfigure').click();">Configuration</a> page (note that these buttons only appear after you tap "Select Storage").
+                        On the Configuration page, tap the "Select storage" button (you may need to <b>Display selectors</b> under
+                        <b>Expert settings</b> if you didn't do this previously). If you have downloaded more than one archive, or
+                        you have a split ZIM archive consisting of several 2GB files, then you will need to pick the <b>folder</b>
+                        that contains these files. If you have just one unsplit ZIM archive, you can instead pick the <b>file</b>
+                        direclty, using the respective buttons on the <a href="#" onclick="$('#btnConfigure').click();">
+                        Configuration</a> page (note that these buttons only appear after you tap "Select Storage").
                     </p>
                     <h4>Step 4: enjoy your content offline!</h4>
                     <h3 id="changelog">Changes in <span class="version">0.9</span></h3>
@@ -291,62 +295,82 @@
                     <h3 id="privacy">Privacy policy</h3>
                     <h4>Short answer:</h4>
                     <p>
-                        Kiwix JS Windows works entirely offline unless you specifically request otherwise on the Configuration page. We do not collect any of your personal data
-                        and don't even know what you are doing with this application.
+                        WikiMed Offline Medical Wikipedia works entirely offline unless you specifically request otherwise on the
+                        Configuration page. We do not collect any of your personal data and don't even know what you are doing with
+                        this application.
                     </p>
                     <h4>Longer answer:</h4>
                     <p>
-                        Kiwix JS Windows will only access the Kiwix download server if you specifically request it to find and display download links for ZIM archives on the Configuration page.
-                        You can disable even this Internet access with an option on the same page. If you nevertheless believe your Internet access can be watched and/or if you are
-                        extremely cautious, you should shut down your 3G and WiFi access before using the application.
+                        WikiMed by Kiwix will only access the Kiwix download server if you specifically request it to find and
+                        display download links for ZIM archives on the Configuration page. You can disable even this Internet
+                        access with an option on the same page. If you nevertheless believe your Internet access can be watched
+                        and/or if you are extremely cautious, you should shut down your 3G and WiFi access before using the
+                        application.
                     </p>
-                    <p>This application only reads the archive files of your device: it is not capable of reading any other files.</p>
+                    <p>This application only reads the archive files of your device: it is not capable of reading any other
+                    files.</p>
                     <p>
-                        By default, this application will remember your last-visited page between sessions using a local cookie that is accessible
-                        only by this app on this device. If you are accessing sensitive information that you do not wish to be displayed next time
-                        you open this app, we recommend that you <a href="#privacy" onclick="$('#btnConfigure').click();">turn this option off</a>
-                        in the Configuration options.
+                        By default, this application will remember your last-visited page between sessions using a local cookie
+                        that is accessible only by this app on this device. If you are accessing sensitive information that you do
+                        not wish to be displayed next time you open this app, we recommend that you <a href="#privacy"
+                        onclick="$('#btnConfigure').click();">turn this option off</a> in the Configuration options.
                     </p>
                     <h3 id="feedback">Feedback / helping / contributing</h3>
-                    <p>This application is still a work in progress. There are many bugs that need fixing and improvements that need to be implemented. In particular:</p>
+                    <p>This application is still a work in progress. There are many bugs that need fixing and improvements that
+                    need to be implemented. In particular:</p>
                     <ul>
-                        <li><a href="https://github.com/kiwix/kiwix-js/issues/13" target="_blank">Issue #13</a>: All the user interface is in English : we plan to translate it at least into French and Spanish. If you feel able to translate it in your language, please contact us</li>
-                        <li><a href="https://github.com/kiwix/kiwix-js/issues/172" target="_blank">Issue #172</a> and <a href="https://github.com/kiwix/kiwix-js/issues/152" target="_blank">#152</a>: Handle video and javascript content</li>
-                        <li><a href="https://github.com/kiwix/kiwix-js/issues/117" target="_blank">Issue #117</a> : Better handle upper/lowercase and accents/diacritics in title search</li>
+                        <li><a href="https://github.com/kiwix/kiwix-js/issues/13" target="_blank">Issue #13</a>: All the user
+                        interface is in English : we plan to translate it at least into French and Spanish. If you feel able to
+                        translate it in your language, please contact us</li>
+                        <li><a href="https://github.com/kiwix/kiwix-js/issues/172" target="_blank">Issue #172</a> and 
+                        <a href="https://github.com/kiwix/kiwix-js/issues/152" target="_blank">#152</a>: Handle video and
+                        javascript content</li>
+                        <li><a href="https://github.com/kiwix/kiwix-js/issues/117" target="_blank">Issue #117</a> : Better handle
+                        upper/lowercase and accents/diacritics in title search</li>
                         <li>Performance improvements etc.</li>
                     </ul>
                     <p>
-                        Suggestions and patches/pull requests are welcome: the source code is on <a href="https://github.com/kiwix/kiwix-js-windows" target="_blank">github</a>.
-                        The <a href="https://github.com/kiwix/kiwix-js-windows/issues" target="_blank">Kiwix JS Windows issue tracker</a> is on GitHub too, though also check the <a href="https://github.com/kiwix/kiwix-js/issues" target="_blank">tracker for Kiwix JS</a> as a lot
-                        of the development is done for both apps.
+                        Suggestions and patches/pull requests are welcome: the source code is on 
+                        <a href="https://github.com/kiwix/kiwix-js-windows" target="_blank">github</a>.
+                        The <a href="https://github.com/kiwix/kiwix-js-windows/issues" target="_blank">Kiwix JS Windows issue
+                        tracker</a> is on GitHub too, though also check the <a href="https://github.com/kiwix/kiwix-js/issues"
+                        target="_blank">tracker for Kiwix JS</a> as a lot of the development is done for both apps.
                     </p>
                     <p>
-                        Alternatively, you can send your feedback <a href="mailto:egk10@cam.ac.uk?subject=%5BKiwix%5D%20Feedback%20about%20Kiwix%20JS">by email</a>.
+                        Alternatively, you can send your feedback <a href="mailto:egk10@cam.ac.uk?subject=%5BKiwix%5D%20Feedback%20about%20WikiMed">
+                        by email</a>.
                     </p>
                     <p>
-                        In all cases, please give as much detail as you can: which device you are using, which version of Kiwix, which archive, which articles etc.
+                        In all cases, please give as much detail as you can: which device you are using, which version of Kiwix,
+                        which archive, which articles etc.
                     </p>
                     <p>If you like the Kiwix project and use it, please consider giving donations:</p>
                     <ul>
-                        <li>to the Wikimedia foundation, to help maintaining their servers and article contents. See the <a href="https://donate.wikimedia.org/" target="_blank">donation page</a></li>
-                        <li>to Kiwix, to help maintaining the ZIM files and applications. There is a donation button in  the <a href="http://www.kiwix.org">home page of kiwix.org</a></li>
+                        <li>to the Wikimedia foundation, to help maintaining their servers and article contents. See the 
+                        <a href="https://donate.wikimedia.org/" target="_blank">donation page</a></li>
+                        <li>to Kiwix, to help maintaining the ZIM files and applications. There is a donation button in  the 
+                        <a href="http://www.kiwix.org">home page of kiwix.org</a></li>
                     </ul>
                     <p>You can also help by:</p>
                     <ul>
-                        <li>Adding articles or improving the existing ones, by <a href="https://en.wikipedia.org/wiki/Wikipedia:Introduction" target="_blank">editing online Wikipedia articles</a></li>
-                        <li><a href="http://www.kiwix.org/wiki/Special:MyLanguage/Participate" target="_blank">Participating</a> in the Kiwix project</li>
+                        <li>Adding articles or improving the existing ones, by <a href="https://en.wikipedia.org/wiki/Wikipedia:Introduction" 
+                         target="_blank">editing online Wikipedia articles</a></li>
+                        <li><a href="http://www.kiwix.org/wiki/Special:MyLanguage/Participate" target="_blank">Participating</a> 
+                        in the Kiwix project</li>
                     </ul>
                     <h3 id="credits">Credits</h3>
                     <p>Thanks are due to:</p>
                     <ul>
-                        <li>Kelson and all the Kiwix community for welcoming peter-x, mossroy, jaifroid and sharun-s onto this project</li>
+                        <li>Kelson and all the Kiwix community for welcoming peter-x, mossroy, jaifroid and sharun-s onto this
+                        project</li>
                         <li>Wikipedia teams and contributors for helping to spread knowledge to everybody</li>
-                        <li>All the developers of libraries and tools we use for releasing them as Free software (see Licence paragraph)</li>
+                        <li>All the developers of libraries and tools we use for releasing them as Free software (see Licence
+                        paragraph)</li>
                     </ul>
                     <h3>Licence information</h3>
                     <p>
                         Copyright 2013-2018 Mossroy, Peter-x, Jaifroid, sharun-s and other contributors
-                        <br />Jaifroid for adaptation and development of the app on the Universal Windows Platform
+                        <br />Jaifroid for the adaptation to the Universal Windows Platform
                         <br />
                         <br />This application is licensed under the GPL v3 licence:
                         <br />
@@ -389,7 +413,12 @@
                     <div id="returntoArticle" class="returntoArticle" style="text-align:center;padding-top:20px;"></div>
                     <div class="row">
                         <h2 style="margin-top:0;">Configuration</h2>
-                        <p>This application needs a ZIM archive to work.<span id="downloadLinksText"> You can get one from the <a href="#downloads">download links panel</a>.</span></p>
+                        <p>Packaged ZIM archive: <b><span class="fileVersion"></span></b>
+                            <button style="display:none;" id="reloadPackagedArchive" type="button" class="btn btn-primary btn-xs">Reload</button>
+                        </p>
+                        <p id="currentArchive" style="display: none;"></p>
+                        <p id="moreInfo">For more information see <a href="#" onclick="document.getElementById('btnAbout').click();">About tab <span class="glyphicon glyphicon-info-sign"></span></a> (top right)</p>
+                        <p id="downloadLinksText">Get more archives from <a href="#downloads">Download links</a>.</p><p></p>
                     </div>
                     <div id="hideFileSelectors">
                         <div id="scanningForArchives" style="display: none;">
@@ -417,7 +446,7 @@
                                 <div id="UWPInstructions" class="row">
                                     <div class="col-xs-6">
                                         <p>For a single unsplit archive</p>
-                                </div>
+                                    </div>
                                     <div class="col-xs-6">
                                         <p>For multiple or split archives</p>
                                     </div>
@@ -449,12 +478,12 @@
                             </div>
                         </div>
                         <div id="downloads">
-                        <div class="row">
-                            <h3>Download links</h3>
-                            <p>
-                                Files can be very large, <b>do not attempt to download using mobile data!</b>
-                            </p>
-                            <div class="col-xs-12">
+                            <div class="row">
+                                <h3>Download links</h3>
+                                <p>
+                                    Files can be very large, <b>do not attempt to download using mobile data!</b>
+                                </p>
+                                <div class="col-xs-12">
                                     <table>
                                         <tr>
                                             <td><input id="downloadTrigger" type="button" class="btn btn-primary" value="Open library" style="float:left; margin-right:1em;" /></td>
@@ -463,12 +492,12 @@
                                     </table>
                                     <p style="padding-top:10px;">
                                         <input type="checkbox" name="allowInternetAccess" id="allowInternetAccessCheck"><b>&nbsp;Allow Internet access?</b>
-                                </p>
+                                    </p>
+                                </div>
+                                <div id="downloadLinks" style="display: none;"></div>
+                                <pre id="serverResponse" class="panel-footer" style="display:none;"></pre>
                             </div>
-                            <div id="downloadLinks" style="display: none;"></div>
-                            <pre id="serverResponse" class="panel-footer" style="display:none;"></pre>
                         </div>
-                    </div>
                     </div>
 
                     <div>
@@ -536,9 +565,9 @@
                                         </label>
                                     </div>
                                 </div>
-                                    </div>
-                                </div>
                             </div>
+                        </div>
+                    </div>
                     <div class="returntoArticle" style="text-align:center;"></div>
                     <div>
                         <div class="row">
@@ -565,7 +594,7 @@
                                     <div class="panel-body">
                                         <label class="checkbox">
                                             <input type="checkbox" name="displayFileSelectors" id="displayFileSelectorsCheck">
-                                            <b>Display selectors</b> for files and folders : <i>only use this for downloading <b>Wikivoyage</b> in other languages</i>. If you wish to open different ZIM files, you should instead download Kiwix JS from the Store, as this app is optimized for its packaged contents
+                                            <b>Display selectors</b> for files and folders : <i>only use this for downloading <b>WikiMed</b> in other languages</i>. If you wish to open different ZIM files, you should instead download Kiwix JS from the Store, as this app is optimized for its packaged contents
                                         </label>
                                     </div>
                                 </div>
@@ -620,21 +649,21 @@
         </article>
         <footer id="footer">
             <div id="navigationButtons" class="btn-group btn-group-justified">
-                <div class="row">
-                    <a class="btn btn-default col-xs-2" id="btnHomeBottom" title="Home"><span class="glyphicon glyphicon-home"></span></a>
-                    <a class="btn btn-default col-xs-1" id="btnBack" title="Back"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>
-                    <a class="btn btn-default col-xs-1" id="btnForward" title="Forward"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
-                    <div class="dropup">
-                        <a href="#" class="btn btn-default dropdown-toggle col-xs-4" role="button" id="dropup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <b>&nbsp;ToC&nbsp;</b>
-                            <span class="caret"></span>
-                        </a>
-                        <ul id="ToCList" class="dropdown-menu" style="overflow-y:auto;"></ul>
-                    </div>
-                    <a class="btn btn-default col-xs-1" id="btnZoomout" title="Zoom out"><span class="glyphicon glyphicon-zoom-out"></span></a>
-                    <a class="btn btn-default col-xs-1" id="btnZoomin" title="Zoom in"><span class="glyphicon glyphicon-zoom-in"></span></a>
-                    <span class="label label-default" id="lblZoom"></span>
-                    <a class="btn btn-default col-xs-2" id="btnTop" title="Top" href="#top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                    <div class="row">
+                        <a class="btn btn-default col-xs-2" id="btnHomeBottom" title="Home"><span class="glyphicon glyphicon-home"></span></a>
+                        <a class="btn btn-default col-xs-1" id="btnBack" title="Back"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>
+                        <a class="btn btn-default col-xs-1" id="btnForward" title="Forward"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
+                        <div class="dropup">
+                            <a href="#" class="btn btn-default dropdown-toggle col-xs-4" role="button" id="dropup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <b>&nbsp;ToC&nbsp;</b>
+                                <span class="caret"></span>
+                            </a>
+                            <ul id="ToCList" class="dropdown-menu" style="overflow-y:auto;"></ul>
+                        </div>
+                        <a class="btn btn-default col-xs-1" id="btnZoomout" title="Zoom out"><span class="glyphicon glyphicon-zoom-out"></span></a>
+                        <a class="btn btn-default col-xs-1" id="btnZoomin" title="Zoom in"><span class="glyphicon glyphicon-zoom-in"></span></a>
+                        <span class="label label-default" id="lblZoom"></span>
+                        <a class="btn btn-default col-xs-2" id="btnTop" title="Top" href="#top"><span class="glyphicon glyphicon-arrow-up"></span></a>
                 </div>
             </div>
         </footer>
