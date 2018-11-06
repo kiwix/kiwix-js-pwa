@@ -2265,11 +2265,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 if (contentInjectionMode === 'jquery') {
                     var currentProtocol = location.protocol;
                     var currentHost = location.host;
-                    // Percent-encode and add regex escape character '\' to the url's special characters
-            var escapedUrl = encodeURIComponent(dirEntry.url).replace(/([\\$^.|?*+()[{])/g, '\\$1');
+            // Percent-encode dirEntry.url and add regex escape character \ to the RegExp special characters - see https://www.regular-expressions.info/characters.html;
+            // NB dirEntry.url can also contain path separator / in some ZIMs (Stackexchange). } and ] do not need to be escaped as they have no meaning on their own. 
+            var escapedUrl = encodeURIComponent(dirEntry.url).replace(/([\\$^.|?*+\/()[{])/g, '\\$1');
                     // Pattern to match a local anchor in an href even if prefixed by escaped url
                     var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#]+$)');
-                    // Convert links into javascript calls
+
                     var iframe = document.getElementById('articleContent').contentDocument;
                     // Set state of collapsible sections
                     if (params.openAllSections === true) {
@@ -2280,12 +2281,19 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }
                     var anchors = Array.prototype.slice.call(iframe.getElementsByTagName('a'));
                     anchors.forEach(function (anchor) {
+                        // Attempts to access any properties of 'this' with malformed URLs causes app crash in Edge/UWP [kiwix-js #430]
+                        try {
+                            var testHref = anchor.href;
+                        } catch (err) {
+                            console.error("Malformed href caused error:" + err.message);
+                            return;
+                        }
                         var href = anchor.getAttribute('href');
+                        if (href === null || href === undefined) return;
                         // Compute current link's url (with its namespace), if applicable
+                        // NB We need to access 'anchor.href' here because, unlike 'anchor.getAttribute("href")', it contains the fully qualified URL [kiwix-js #432]
                         var zimUrl = regexpZIMUrlWithNamespace.test(anchor.href) ? anchor.href.match(regexpZIMUrlWithNamespace)[1] : '';
-                        if (href === null || href === undefined) {
-                            // No href attribute
-                        } else if (href.length === 0) {
+                        if (href.length === 0) {
                             // It's a link with an empty href, pointing to the current page.
                             // Because of the base tag, we need to modify it
                             anchor.addEventListener('click', function (e) {
@@ -2302,7 +2310,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         } else if (anchor.protocol !== currentProtocol ||
                             anchor.host !== currentHost) {
                             // It's an external URL : we should open it in a new tab
-                           anchor.target = '_blank';
+                            anchor.target = '_blank';
                         } else {
                             // It's a link to another article
                             // Add an onclick event to go to this article
