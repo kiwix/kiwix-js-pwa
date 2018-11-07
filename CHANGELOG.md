@@ -1,3 +1,16 @@
++## Release 0.9.9.81 Wikivoyage (beta)
+* UPDATE: October 2018 update of Wikvoyage ZIM archive to wikivoyage_en_all_2018-10.zim
+* ENHANCEMENT: Add a modern CSS spinner and rework status messages
+* ENHANCEMENT: Neater presentation of article search results
+* ENHANCEMENT: Test for CORS violation if server cannot be accessed
+* ENHANCEMENT: Add API for reading ZIM metadata
+* FIX: Crash when previously picked archive has been moved or deleted
+* FIX: Added startup boot loop crash protection
+* FIX: Prevent app crash with malformed anchor hrefs
+* FIX: Support changed format of anchor references in latest English Wikipedia
+* FIX: Correctly apply mobile styles when one of the defaults is missing
+* FIX: Incorrect utf8 characters in mobile styles 
+
 ## Release 0.9.9.7 Wikivoyage (beta)
 * UPDATE: July 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-07.zim
 * ENHANCEMENT: Optimization of decompression process
