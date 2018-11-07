@@ -1,90 +1,71 @@
-## Release 0.9.9.8 (beta)
-* UPDATE: Ray Charles ZIM to October 2018 version
-* ENHANCEMENT: Add a modern CSS spinner and rework status messages
-* ENHANCEMENT: Neater presentation of article search results
-* FIX: Crash when previously picked archive has been moved or deleted
-* FIX: Support changed format of anchor references in latest English Wikipedia
-* FIX: Correctly apply mobile styles when one of the defaults is missing
-* FIX: Incorrect utf8 characters in mobile styles 
-
-## Release 0.9.9.7 (beta)
+## Release 0.9.9.7 Wikivoyage (beta)
+* UPDATE: July 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-07.zim
 * ENHANCEMENT: Optimization of decompression process
-* WORKAROUND: Prevent periodic hang in Service Worker mode
-* FIX: Crash in RegExp engine caused by malformed backreferences in some articles
 
-## Release 0.9.9.6 (beta)
-* UPDATE: Mobile styles
+## Release 0.9.9.6 Wikivoyage (beta)
+* UPDATE: June 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-06.zim
+* UPDATE: Mobile styles and cached home page
 * ENHANCEMENT: New compile of decoding engine provides significant performance improvement
+* ENHANCEMENT: Headings in article can be toggled open or closed on narrow screens
+* ENHANCEMENT: Current page is cached in localStorage for very fast restart and reloading
+* ENHANCEMENT: Automatically switch to desktop style for better printing result
 * ENHANCEMENT: Better memory management to prevent app crashes
 * ENHANCEMENT: Reduced dependency on jQuery for further performance gains
 * ENHANCEMENT: Tweaks to dark theme
-* ENHANCEMENT: Improvements to show-hide sections toggle function with footnote/endnote references
-* FIX: Headers that open or close sections are no longer accidentally selected on tap or click
-* FIX: Descriptive text for UI controls is now non-selectable for cleaner app experience
-* FIX: Whitespace at the end of the page is now preserved when hiding reference section
-* FIX: Tapping headers now only opens and closes sections on narrow screens as intended by WikiMedia
-
-## Release 0.9.9.5 (beta)
-* ENHANCEMENT: Headings in article can be toggled open or closed with tap or click
-* ENHANCEMENT: Current page is cached in localStorage for very fast restart and reloading
-* ENHANCEMENT: Automatically switch to desktop style for better printing result
-* FIX: Bug which prevented switching the printing device (caused app crash)
-* FIX: Bug in download links preventing display of language codes that are substrings of other language codes
-
-## Release 0.9.9.4 (beta)
-* ENHANCEMENT: Experimental support for printing articles
 * ENHANCEMENT: Print zoom capability
 * ENHANCEMENT: Prevent printing of location pins
 * ENHANCEMENT: Set maximum page width to 100% before printing
-* ENHANCEMENT: Better presentation of About and Changelog information
+* FIX: Descriptive text for UI controls is now non-selectable for cleaner app experience
+* FIX: Whitespace at the end of the page is now preserved when hiding reference section
+* FIX: Bug which prevented switching the printing device (caused app crash)
+* FIX: Bug in download links preventing display of language codes that are substrings of other language codes
 * WORKAROUND: MW-Offliner bug which places extraneous tags in some HTML id attributes
 
-## Release 0.9.9.3 (beta)
-* FIX: Article now reloads correctly when switching styles
+## Release 0.9.9.5 Wikivoyage (beta)
+There was no 0.9.9.5 release due to unusable Wikivoyage ZIM files in May
+
+## Release 0.9.9.4 Wikivoyage (beta)
+* UPDATE: March 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-03.zim
+* ENHANCEMENT: Experimental support for printing articles
+* ENHANCEMENT: Better presentation of About and Changelog information
+
+## Release 0.9.9.3 Wikivoyage (beta)
 * FIX: Unhandled exception after using in-article word search
+* FIX: Article now reloads correctly when switching styles
 * FIX: Browser history now remembered for first page load
+* FIX: Added more padding for content hidden under the bottom bar
+* FIX: New mode of injecting HTML into iframe fixes baseUrl issues
+* FIX: Reduced memory usage for decompressing multiple SVG images/equations to prevent crash on devices with 1GB RAM
+* FIX: Display bug causing Settings tab to remain selected after article load
+* FIX: Loads landing page when an article is not found (instead of throwing a silent error)
 * ENHANCEMENT: Filter ZIM archives by date in download links
 * ENHANCEMENT: Option to remove maximum page width restriction for Wikipedia articles
 * ENHANCEMENT: Setting or clearing dark themes no longer require page reload
 * ENHANCEMENT: Wider range of infoboxes, and "homonymie" hatnotes supported
 * ENHANCEMENT: Better algorithm for moving first paragraph when there are stacked infoboxes
-
-## Release 0.9.9.2 (beta)
-* FIX: Added more padding for content hidden under the bottom bar
-* FIX: New mode of injecting HTML into iframe fixes baseUrl issues
+* ENHANCEMENT: Applying or removing dark themes no longer requires a page reload
+* ENHANCEMENT: Option to remove max page width restriction
 * ENHANCEMENT: Some code redundancy removed
-* ENHANCEMENT: Faster typesetting of TeX equations
-* ENHANCEMENT: Experimental support for equations in mathoverflow and related stackechange ZIMs
-* ENHANCEMENT: Dark theme support for stackexchange ZIMs
-* ENHANCEMENT: Uncluttered the UI for file selection
-
-## Release 0.9.9 (beta)
-* FIX: Reduced memory usage for decompressing multiple SVG images/equations to prevent crash on devices with 1GB RAM
-* FIX: Display bug causing Settings tab to remain selected after article load
-* FIX: Corrected dark-style backgrounds in some infoboxes on WikiMed
-* FIX: Loads landing page when an article is not found (instead of throwing a silent error)
-* WORKAROUND for misplaced hatnotes in mobile-style ZIMs
-* WORKAROUND for hidden IPA pronunciation information on some articles
 * ENHANCEMENT: 'Unclicking' a tab (Settings or About) now returns the user to the article
+* ENHANCEMENT: Cache start page in the filesystem for quick start or return to home
 * ENHANCEMENT: Activating dark theme for UI now activates article dark theme by default
 * ENHANCEMENT: Improved handling and display of file selectors
 * ENHANCEMENT: Clearer navigation signposting from About tab
-* ENHANCEMENT: Dedicated icon for WikiMed archives
+* WORKAROUND for misplaced hatnotes in mobile-style ZIMs
 
-## Release 0.9.7 (beta)
+## Release 0.9.7 Wikivoyage (beta)
 * UPDATE: January 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-01.zim
-* ENHANCEMENT: The Wikivoyage app now hides the file selectors by default in the Config menu to avoid confusion and to encourage use of Kiwix JS for anything not related to Wikivoyage
 * FIX: Added icon indicating that a link is to an external web site
-* ENHANCEMENT: Inject footnote backlinks if the ZIM doesn't have any
-* ENHANCEMENT: Support ZIMs that have subdirectories (Stackexchange family ZIMs)
 * FIX: Bugs in mobile to desktop style transformation
 * FIX: Issue with infoboxes and images not stacking correctly on mobile displays
 * FIX: Support new-style infoboxes in German Wikivoyage
 * FIX: Last-visited page was not being remembered when user picked the file as a single archive
 * FIX: Bug which prevented the dark mode by simple inversion from functioning
 * FIX: Issue with toolbar icons being misaligned on small screens
+* ENHANCEMENT: The Wikivoyage app now hides the file selectors by default in the Config menu to avoid confusion and to encourage use of Kiwix JS for anything not related to Wikivoyage
+* ENHANCEMENT: Inject footnote backlinks if the ZIM doesn't have any
 
-## Release 0.9.6 (beta)
+## Release 0.9.6 Wikivoyage (beta)
 * FIX: Prevent bottom toolbar from wrapping across two lines on small screens
 * ENHANCEMENT: Enabled autoloading of last-read page on app start (and privacy option to turn this off)
 * ENHANCEMENT: Geo-location co-ordinates in English and German Wikivoyage are represented with a location marker that links to the Maps app (opens map to show the precise location)
