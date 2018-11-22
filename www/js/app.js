@@ -256,7 +256,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
             //Pre-load all images in case user wants to print them
             if (params.imageDisplay) {
-                loadImages(10000);
+                loadImagesJQuery(10000);
                 document.getElementById("printImageCheck").disabled = false;
             } else {
                 document.getElementById("printImageCheck").checked = false;
@@ -973,29 +973,29 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         }
 
         var contentInjectionMode;
-    var keepAliveServiceWorkerHandle;
+        var keepAliveServiceWorkerHandle;
     
-    /**
-     * Send an 'init' message to the ServiceWorker with a new MessageChannel
-     * to initialize it, or to keep it alive.
-     * This MessageChannel allows a 2-way communication between the ServiceWorker
-     * and the application
-     */
-    function initOrKeepAliveServiceWorker() {
-        if (contentInjectionMode === 'serviceworker') {
-            // Create a new messageChannel
-            var tmpMessageChannel = new MessageChannel();
-            tmpMessageChannel.port1.onmessage = handleMessageChannelMessage;
-            // Send the init message to the ServiceWorker, with this MessageChannel as a parameter
-            navigator.serviceWorker.controller.postMessage({'action': 'init'}, [tmpMessageChannel.port2]);
-            messageChannel = tmpMessageChannel;
-            console.log("init message sent to ServiceWorker");
-            // Schedule to do it again regularly to keep the 2-way communication alive.
-            // See https://github.com/kiwix/kiwix-js/issues/145 to understand why
-            clearTimeout(keepAliveServiceWorkerHandle);
-            keepAliveServiceWorkerHandle = setTimeout(initOrKeepAliveServiceWorker, DELAY_BETWEEN_KEEPALIVE_SERVICEWORKER, false);
+        /**
+         * Send an 'init' message to the ServiceWorker with a new MessageChannel
+         * to initialize it, or to keep it alive.
+         * This MessageChannel allows a 2-way communication between the ServiceWorker
+         * and the application
+         */
+        function initOrKeepAliveServiceWorker() {
+            if (contentInjectionMode === 'serviceworker') {
+                // Create a new messageChannel
+                var tmpMessageChannel = new MessageChannel();
+                tmpMessageChannel.port1.onmessage = handleMessageChannelMessage;
+                // Send the init message to the ServiceWorker, with this MessageChannel as a parameter
+                navigator.serviceWorker.controller.postMessage({'action': 'init'}, [tmpMessageChannel.port2]);
+                messageChannel = tmpMessageChannel;
+                console.log("init message sent to ServiceWorker");
+                // Schedule to do it again regularly to keep the 2-way communication alive.
+                // See https://github.com/kiwix/kiwix-js/issues/145 to understand why
+                clearTimeout(keepAliveServiceWorkerHandle);
+                keepAliveServiceWorkerHandle = setTimeout(initOrKeepAliveServiceWorker, DELAY_BETWEEN_KEEPALIVE_SERVICEWORKER, false);
+            }
         }
-    }
 
         /**
          * Sets the given injection mode.
@@ -1828,12 +1828,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         var regexpPath = /^(.*\/)[^\/]+$/;
         // Pattern to find a ZIM URL (with its namespace) - see http://www.openzim.org/wiki/ZIM_file_format#Namespaces
         var regexpZIMUrlWithNamespace = /(?:^|\/)([-ABIJMUVWX]\/.+)/;
-        // These regular expressions match both relative and absolute URLs
-        // Since late 2014, all ZIM files should use relative URLs
-        var regexpImageUrl = /^(?:\.\.\/|\/)+(I\/.*)$/;
-        var regexpMetadataUrl = /^(?:\.\.\/|\/)+(-\/.*)$/;
-        // This matches the href of all <link> tags containing rel="stylesheet" in raw HTML unless commented out
-        var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*href\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
+        // Regex below finds images, scripts, stylesheets and media sources with ZIM-type metadata and image namespaces [kiwix-js #378]
+        // It first searches for <img, <script, or <link, then scans forward to find, on a word boundary, either src=["'] 
+        // OR href=["'] (ignoring any extra whitespace), and it then tests everything up to the next ["'] against a pattern that
+        // matches ZIM URLs with namespaces [-I] ("-" = metadata or "I" = image). Finally it removes the relative or absolute path. 
+        // DEV: If you want to support more namespaces, add them to the END of the character set [-I] (not to the beginning) 
+        var regexpTagsWithZimUrl = /(<(?:img|script|link|video|audio|source)\s+[^>]*?\b)(?:src|href)(\s*=\s*["']\s*)(?:\.\.\/|\/)+([-I]\/[^"']*)/ig;
+    
+        // This matches the data-kiwixurl of all <link> tags containing rel="stylesheet" in raw HTML unless commented out
+        var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*data-kiwixurl\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
         // This matches the title between <title  attrs> ... </title>
         //var regexpArticleTitle = /<title\s*[^>]*>\s*([^<]+)\s*</i;
         // This matches the title of a Type1 Wikimedia ZIM file or any ZIM file using simple <h1 attrs....> Title </h1>
@@ -1861,7 +1864,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          * @param {String} htmlArticle
          */
         function displayArticleInForm(dirEntry, htmlArticle) {
-            // Display the article inside the web page.
+            //@BUG WORKAROUND for Kiwix-JS-Windows #18
+            htmlArticle = htmlArticle.replace(/(<link\s+[^>]*?\bhref\s*=\s*["'])(s\/[\s\S]+(?!\.css))(["'])/gi, "$1../-/$2.css$3");
+            // Replaces ZIM-style URLs of img, script, link and media tags with a data-url to prevent 404 errors [kiwix-js #272 #376]
+            // This replacement also processes the URL to remove the path so that the URL is ready for subsequent jQuery functions
+            htmlArticle = htmlArticle.replace(regexpTagsWithZimUrl, "$1data-kiwixurl$2$3");            
 
             //TESTING
             console.log("** HTML received **");
@@ -1904,8 +1911,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //@TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
             htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, "$1");
 
-            //Fast-replace img and script src with data-kiwixsrc and hide image [kiwix-js #272]
-            htmlArticle = htmlArticle.replace(/(<(?:img|script)\s+[^>]*\b)src(\s*=)/ig, "$1data-kiwixsrc$2");
             if (!params.imageDisplay) {
                 //Ensure 36px clickable image height so user can request images by clicking [kiwix-js #173]
                 htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)height(\s*=\s*)/ig,
@@ -1934,9 +1939,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             htmlArticle = htmlArticle.replace(/(<span\b[^>]+?class\s*=\s*"[^"]+?mcs-ipa[^>]+?display:\s*)none/i, "$1inline");
 
             //MathJax detection:
-            //Replace inline Math TeX with dummy images
-            //if (params.useMathJax) htmlArticle = htmlArticle.replace(/\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/g, "<img alt='$1' class='mwe-math-fallback-image' />$2");
-            //Test for raw TeX in the HTML - no need to convert because configuration for inline will be set by a script in the Stackexchange HTML
             containsMathTeXRaw = params.useMathJax && !/wikivoyage/.test(params.storedFile) ? /\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/.test(htmlArticle) : false;
             //Simplify any configuration script
             //if (containsMathTeXRaw) htmlArticle = htmlArticle.replace(/(<script\s+[^>]*?type\s*=\s*['"]\s*text\/x-mathjax-config[^>]+>[^<]+?Hub\.Config\s*\(\s*{\s*)[^<]*?(tex2jax\s*:[^}]+?})\s*,[^<]+(<\/script>)/i, "$1$2});$3");
@@ -1946,11 +1948,37 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
 
             // Compute base URL
-            var urlPath = regexpPath.test(dirEntry.url) ? urlPath = dirEntry.url.match(regexpPath)[1] : "";
-            var baseUrl = dirEntry.namespace + "/" + urlPath;
-            treePath = baseUrl.replace(/([^/]+\/)/g, "../");
+            var urlPath = regexpPath.test(dirEntry.url) ? urlPath = dirEntry.url.match(regexpPath)[1] : '';
+            var baseUrl = dirEntry.namespace + '/' + urlPath;
+            treePath = baseUrl.replace(/([^/]+\/)/g, '../');
 
-            //Preload stylesheets [kiwix-js @149]
+            //Adapt German Wikivoyage POI data format
+            var regexpGeoLocationDE = /<span\s+class\s?=\s?"[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<span[^>]+listing-name[^>]+>([^<]+)<\/span>)/ig;
+            htmlArticle = htmlArticle.replace(regexpGeoLocationDE, function (match, latitude, longitude, href, id) {
+                return '<a href="bingmaps:?collection=point.' + latitude + '_' + longitude + '_' + encodeURIComponent(id.replace(/_/g, " ")) +
+                    '">\r\n<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;margin-top:5px !important" />\r\n</a>' + href;
+            });
+
+            //Adapt English Wikivoyage POI data format
+            var regexpGeoLocationEN = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
+            htmlArticle = htmlArticle.replace(regexpGeoLocationEN, function (match, p1, latitude, longitude, p4, p5, p6, id) {
+                return p1 + "bingmaps:?collection=point." + latitude + "_" + longitude + "_" +
+                    encodeURIComponent(id.replace(/_/g, " ")).replace(/\.(\w\w)/g, "%$1") +
+                    (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Map marker" title="Show this place on a map" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" />' + p6 + id;
+            });
+
+            //Clean up remaining geo: links
+            htmlArticle = htmlArticle.replace(/href\s*=\s*"\s*geo:([\d.-]+),([\d.-]+)/ig, 'href="bingmaps:?collection=point.$1_$2_' + encodeURIComponent(dirEntry.title));
+
+            //Setup footnote backlinks if the ZIM doesn't have any
+            htmlArticle = htmlArticle.replace(/<li\s+id\s*=\s*"cite_note-([^"]+)"\s*>(?![^/]+↑)/ig, function (match, p1) {
+                var fnSearchRegxp = new RegExp('id\\s*=\\s*"(cite[-_]ref[-_]' + p1.replace(/[-_()]/g, "[-_()]") + '[^"]*)', "i");
+                var fnReturnMatch = htmlArticle.match(fnSearchRegxp);
+                var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : "";
+                return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>';
+            });
+
+            //Preload stylesheets [kiwix-js #149]
             //Set up blobArray of promises
             var cssArray = htmlArticle.match(regexpSheetHref);
             var blobArray = [];
@@ -1973,7 +2001,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 if (/minerva|inserted.style.mobile/i.test(testCSS) && (cssCache || zimType != cssSource)) {
                     //Substitute ridiculously long style name TODO: move this code to transformStyles
                     for (var i = arr.length; i--;) { //TODO: move to transfromStyles
-                        arr[i] = /minerva/i.test(arr[i]) ? '<link href="../-/s/style-mobile.css" rel="stylesheet" type="text/css">' : arr[i];
+                        arr[i] = /minerva/i.test(arr[i]) ? '<link data-kiwixurl="-/s/style-mobile.css" rel="stylesheet" type="text/css">' : arr[i];
                         // Delete stylesheet if will be inserted via minerva anyway (avoid linking it twice)
                         if (/inserted.style.mobile/i.test(arr[i]) && /minerva/i.test(testCSS)) {
                             arr.splice(i, 1);
@@ -1981,25 +2009,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }
                 }
                 for (var i = 0; i < arr.length; i++) {
-                    var linkArray = regexpSheetHref.exec(arr[i]);
-                    regexpSheetHref.lastIndex = 0; //Reset start position for next loop
-
-                    //@BUG WORKAROUND for Kiwix-JS-Windows #18
-                    linkArray[2] = linkArray[2].replace(/^(s\/[\s\S]+(?!\.css))$/i, "../-/$1.css");
-
-                    if (linkArray && regexpMetadataUrl.test(linkArray[2])) { //It's a CSS file contained in ZIM
-                        var zimLink = decodeURIComponent(uiUtil.removeUrlParameters(linkArray[2]));
-                        /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
-                        var filteredLink = transformStyles.filterCSS(zimLink, zimType, cssCache, cssSource, i);
-                        if (filteredLink.rtnFunction == "injectCSS") {
-                            blobArray[i] = filteredLink.zl;
-                            injectCSS();
-                        } else {
-                            resolveCSS(filteredLink.zl, i);
-                        }
+                    var zimLink = arr[i].match(/data-kiwixurl\s*=\s*['"]([^'"]+)/i);
+                    zimLink = zimLink ? decodeURIComponent(zimLink[1]) : '';
+                    /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
+                    var filteredLink = transformStyles.filterCSS(zimLink, zimType, cssCache, cssSource, i);
+                    if (filteredLink.rtnFunction == "injectCSS") {
+                        blobArray[i] = filteredLink.zl;
+                        injectCSS();
                     } else {
-                        blobArray[i] = arr[i]; //If CSS not in ZIM, store URL in blobArray
-                        injectCSS(); //Ensure this is called even if none of CSS links are in ZIM
+                        resolveCSS(filteredLink.zl, i);
                     }
                 }
             }
@@ -2050,8 +2068,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             }
                         }
                         testBlob = match && /blob:/i.test(blobArray[j][1]) ? blobArray[j][1] : blobArray[i]; //Whoa!!! Steady on!
-                        resultsArray[i] = cssArray[i].replace(/(href\s*=\s*["'])([^"']+)/i, "$1" +
-                            testBlob + '" data-kiwixhref="$2'); //Store the original URL for later use
+                        resultsArray[i] = cssArray[i].replace(/data-kiwixurl\s*=\s*["']([^"']+)/i, 'href="' +
+                            testBlob + '" data-kiwixhref="$1'); //Store the original URL for later use
                         //DEV note: do not attempt to add onload="URL.revokeObjectURL...)": see [kiwix.js #284]
                         //DEBUG:
                         //console.log("BLOB CSS #" + i + ": " + resultsArray[i] + "\nshould correspond to: " + testBlob);
@@ -2074,6 +2092,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     //For all cases, neutralize the toggleOpenSection javascript that causes a crash - TODO: make it work for mobile style
                     htmlArticle = htmlArticle.replace(/(onclick\s*=\s*["'])toggleOpenSection[^"']*(['"]\s*)/ig, "$1$2");
                     htmlArticle = htmlArticle.replace(/<script>([^<]+?toggleOpenSection(?:[^<]|<(?!\/script))+)<\/script>/i, "<!-- script>$1</script --!>");
+                    //Neutralize onload events, as they cause a crash in ZIMs with proprietary UIs
+                    htmlArticle = htmlArticle.replace(/(<[^>]+?)onload\s*=\s*["'][^"']+["']\s*/ig, '$1');
                     //Ensure all headings are open
                     //htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
                     htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
@@ -2113,32 +2133,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
 
             function injectHTML() {
-                //Adapt German Wikivoyage POI data format
-                var regexpGeoLocationDE = /<span\s+class\s?=\s?"[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<span[^>]+listing-name[^>]+>([^<]+)<\/span>)/ig;
-                htmlArticle = htmlArticle.replace(regexpGeoLocationDE, function (match, latitude, longitude, href, id) {
-                    return '<a href="bingmaps:?collection=point.' + latitude + '_' + longitude + '_' + encodeURIComponent(id.replace(/_/g, " ")) +
-                        '">\r\n<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;margin-top:5px !important" />\r\n</a>' + href;
-                });
-
-                //Adapt English Wikivoyage POI data format
-                var regexpGeoLocationEN = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
-                htmlArticle = htmlArticle.replace(regexpGeoLocationEN, function (match, p1, latitude, longitude, p4, p5, p6, id) {
-                    return p1 + "bingmaps:?collection=point." + latitude + "_" + longitude + "_" +
-                        encodeURIComponent(id.replace(/_/g, " ")).replace(/\.(\w\w)/g, "%$1") +
-                        (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Map marker" title="Show this place on a map" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" />' + p6 + id;
-                });
-
-                //Clean up remaining geo: links
-                htmlArticle = htmlArticle.replace(/href\s*=\s*"\s*geo:([\d.-]+),([\d.-]+)/ig, 'href="bingmaps:?collection=point.$1_$2_' + encodeURIComponent(dirEntry.title));
-
-                //Setup footnote backlinks if the ZIM doesn't have any
-                htmlArticle = htmlArticle.replace(/<li\s+id\s*=\s*"cite_note-([^"]+)"\s*>(?![^/]+↑)/ig, function (match, p1) {
-                    var fnSearchRegxp = new RegExp('id\\s*=\\s*"(cite[-_]ref[-_]' + p1.replace(/[-_()]/g, "[-_()]") + '[^"]*)', "i");
-                    var fnReturnMatch = htmlArticle.match(fnSearchRegxp);
-                    var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : "";
-                    return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>';
-                });
-
                 //Inject htmlArticle into iframe
                 uiUtil.clear(); //Void progress messages
                 setTab();
@@ -2263,9 +2257,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 if (contentInjectionMode === 'jquery') {
                     var currentProtocol = location.protocol;
                     var currentHost = location.host;
-            // Percent-encode dirEntry.url and add regex escape character \ to the RegExp special characters - see https://www.regular-expressions.info/characters.html;
-            // NB dirEntry.url can also contain path separator / in some ZIMs (Stackexchange). } and ] do not need to be escaped as they have no meaning on their own. 
-            var escapedUrl = encodeURIComponent(dirEntry.url).replace(/([\\$^.|?*+\/()[{])/g, '\\$1');
+                    // Percent-encode dirEntry.url and add regex escape character \ to the RegExp special characters - see https://www.regular-expressions.info/characters.html;
+                    // NB dirEntry.url can also contain path separator / in some ZIMs (Stackexchange). } and ] do not need to be escaped as they have no meaning on their own. 
+                    var escapedUrl = encodeURIComponent(dirEntry.url).replace(/([\\$^.|?*+\/()[{])/g, '\\$1');
                     // Pattern to match a local anchor in an href even if prefixed by escaped url
                     var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#]+$)');
 
@@ -2321,8 +2315,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         }
                     });
 
-                    loadImages();
+                    loadImagesJQuery();
                     //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
+                    insertMediaBlobsJQuery();
 
                     //Document has loaded except for images, so we can now change the startup cookie (and delete) [see init.js]
                     document.cookie = 'lastPageLoad=success;expires=Thu, 21 Sep 1979 00:00:01 UTC';
@@ -2355,11 +2350,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
         }
 
-        /** This is the main image loading function.
+        /**
+         * This is the main image loading function.
          * Contains four sub functions: prepareImages, triageImages, displaySlices, loadImageSlice
          * and a utility function checkVisibleImages
+         * 
+         * @param {Boolean} forPrinting A flag to indicate that all images should be injected 
          */
-        function loadImages(forPrinting) {
+        function loadImagesJQuery(forPrinting) {
 
             //TESTING
             console.log("** First Paint complete **");
@@ -2383,12 +2381,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             var imageDisplay = params.imageDisplay;
 
             //Establish master image array
-            var images = $('#articleContent').contents().find('body').find('img');
+            var images = $('#articleContent').contents().find('body').find('img[data-kiwixurl]');
             var allImages = images.length;
 
             //If user wants to display images...
             if (imageDisplay) {
-
                 //Set up a listener function for onscroll event
                 if (allImages > prefetchSliceSize) {
                     $("#articleContent").contents().scrollStopped(prepareImages);
@@ -2412,7 +2409,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         img.on('click', function () {
                             this.height = this.getAttribute('data-kiwixheight');
                             this.style.background = "";
-                            loadImageSlice(this, 0, 0, function (sliceID, sliceCount, sliceEnd, mimetype, data) {
+                            loadImageSlice([this], 0, 0, function (sliceID, sliceCount, sliceEnd, mimetype, data) {
                                 img[0].src = "data:" + mimetype + ";base64," + btoa(data);
                             }, true);
                         });
@@ -2437,7 +2434,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 windowScroll = false;
 
                 //Reload images array because we may have spliced it on a previous loop
-                images = $('#articleContent').contents().find('body').find('img');
+                images = $('#articleContent').contents().find('body').find('img[data-kiwixurl]');
 
                 //Remove images that have already been loaded
                 var visibleImage = null;
@@ -2523,7 +2520,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 svgGroup1 = [];
                 var svgGroup2 = [];
                 for (var i = startSlice; i < lengthSlice; i++) {
-                    if (/\.svg$/i.test(images[i].getAttribute('data-kiwixsrc')) ||
+                    if (/\.svg$/i.test(images[i].getAttribute('data-kiwixurl')) ||
                         //Include any kind of maths image fallback that has an alt string in SVG bucket
                         /mwe-math-fallback/i.test(images[i].className) && images[i].alt) {
                         if (i < firstVisible || i > lastVisible) {
@@ -2691,7 +2688,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
              * sliceEnd is the index of the last image in the current slice 
              * dataRequested == true returns the content and disables creation of blob
              *
-             * @param {Array} imnages
+             * @param {Array} images
              * @param {number} sliceID
              * @param {number} sliceEnd
              * @param {requestCallback} callback
@@ -2700,39 +2697,34 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             function loadImageSlice(images, sliceID, sliceEnd, callback, dataRequested) {
                 var sliceCount = 0;
                 Array.prototype.slice.call(images).forEach(function (image) {
-                    // It's a standard image contained in the ZIM file
-                    // We try to find its name (from an absolute or relative URL)
-                    var imageMatch = image.dataset.kiwixsrc.match(regexpImageUrl); //kiwix-js #272
-                    if (imageMatch) {
-                        var title = decodeURIComponent(imageMatch[1]);
-                        selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                            selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                                var url = fileDirEntry.url;
-                                var mimetype = url.match(/\.(\w{2,4})$/);
-                                mimetype = mimetype ? "image/" + mimetype[1].toLowerCase() : "image";
-                                mimetype = /\.jpg$/i.test(url) ? "image/jpeg" : mimetype;
-                                mimetype = /\.tif$/i.test(url) ? "image/tiff" : mimetype;
-                                mimetype = /\.ico$/i.test(url) ? "image/x-icon" : mimetype;
-                                mimetype = /\.svg$/i.test(url) ? "image/svg+xml" : mimetype;
-                                if (!dataRequested) {
-                                    uiUtil.feedNodeWithBlob(image, 'src', content, mimetype);
-                                }
-                                sliceCount++;
-                                console.log("Extracted image #" + countImages + "...");
-                                countImages++;
-                                if (!dataRequested) {
-                                    callback(sliceID, sliceCount, sliceEnd, url);
-                                } else {
-                                    callback(sliceID, sliceCount, sliceEnd, mimetype, util.uintToString(content));
-                                }
-                            });
-                        }).fail(function (e) {
+                    var title = decodeURIComponent(image.dataset.kiwixurl);
+                    selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+                        selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                            var url = fileDirEntry.url;
+                            var mimetype = url.match(/\.(\w{2,4})$/);
+                            mimetype = mimetype ? "image/" + mimetype[1].toLowerCase() : "image";
+                            mimetype = /\.jpg$/i.test(url) ? "image/jpeg" : mimetype;
+                            mimetype = /\.tif$/i.test(url) ? "image/tiff" : mimetype;
+                            mimetype = /\.ico$/i.test(url) ? "image/x-icon" : mimetype;
+                            mimetype = /\.svg$/i.test(url) ? "image/svg+xml" : mimetype;
+                            if (!dataRequested) {
+                                uiUtil.feedNodeWithBlob(image, 'src', content, mimetype);
+                            }
                             sliceCount++;
-                            console.error("Could not find DirEntry for image:" + title, e);
+                            console.log("Extracted image #" + countImages + "...");
                             countImages++;
-                            callback(sliceID, sliceCount, sliceEnd, "Error!");
+                            if (!dataRequested) {
+                                callback(sliceID, sliceCount, sliceEnd, url);
+                            } else {
+                                callback(sliceID, sliceCount, sliceEnd, mimetype, util.uintToString(content));
+                            }
                         });
-                    }
+                    }).fail(function (e) {
+                        sliceCount++;
+                        console.error("Could not find DirEntry for image:" + title, e);
+                        countImages++;
+                        callback(sliceID, sliceCount, sliceEnd, "Error!");
+                    });
                 });
             } //End of loadImageRange()
 
@@ -2747,7 +2739,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 var lastVisible = null;
                 //Determine first and last visible images in the current window
                 for (var i = 0; i < images.length; i++) {
-                    //console.log("Checking #" + i + ": " + images[i].getAttribute("data-kiwixsrc"));
+                    //console.log("Checking #" + i + ": " + images[i].getAttribute("data-kiwixurl"));
                     if (uiUtil.isElementInView(images[i], true)) {
                         //console.log("#" + i + " *is* visible");
                         if (firstVisible == null) {
@@ -2769,39 +2761,62 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 };
             }
 
-        } //End of loadImages()
+        } //End of loadImagesJQuery()
 
         // Load Javascript content
-        function loadJavascript() {
-            $('#articleContent').contents().find('script').each(function () {
+        function loadJavaScriptJQuery() {
+            $('#articleContent').contents().find('script[data-kiwixurl]').each(function() {
                 var script = $(this);
-                // We try to find its name (from an absolute or relative URL)
-                if (script && script[0] && script[0].src) {
-                    var srcMatch = script.attr("src").match(regexpMetadataUrl);
-                }
+                var scriptUrl = script.attr("data-kiwixurl");
                 // TODO check that the type of the script is text/javascript or application/javascript
-                if (srcMatch) {
-                    // It's a Javascript file contained in the ZIM file
-                    var title = uiUtil.removeUrlParameters(decodeURIComponent(srcMatch[1]));
+                var title = uiUtil.removeUrlParameters(decodeURIComponent(scriptUrl));
                     selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                        if (dirEntry === null)
+                    if (dirEntry === null) {
                             console.log("Error: js file not found: " + title);
-                        else
+                    } else {
                             selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                                // TODO : I have to disable javascript for now
-                                //uiUtil.feedNodeWithBlob(script, 'src', content);
-                                //script[0].type = 'text/javascript';
-                                //var jsContent = encodeURIComponent(util.uintToString(content));
-                                var jsContent = util.uintToString(content);
-                                script.attr("src", 'data:text/javascript;charset=UTF-8,' + jsContent);
+                            // TODO : JavaScript support not yet functional [kiwix-js #152]
+                            uiUtil.feedNodeWithBlob(script, 'src', content, 'text/javascript');
                             });
+                    }
                     }).fail(function (e) {
                         console.error("could not find DirEntry for javascript : " + title, e);
                     });
-                }
             });
         }
 
+        function insertMediaBlobsJQuery() {
+            var iframe = document.getElementById('articleContent').contentDocument;
+            Array.prototype.slice.call(iframe.querySelectorAll('video[data-kiwixurl], audio[data-kiwixurl], source[data-kiwixurl]'))
+            .forEach(function(mediaSource) {
+                var source = mediaSource.dataset.kiwixurl;
+                var mimeType = mediaSource.type;
+                if (!source || !regexpZIMUrlWithNamespace.test(source)) {
+                    console.error('No usable media source was found!');
+                    return;
+                }
+                if (!mimeType) {
+                    // Try to guess type from file extension
+                    var mediaType = mediaSource.tagName.toLowerCase();
+                    if (!/audio|video/i.test(mediaType)) mediaType = mediaSource.parentElement.tagName.toLowerCase();
+                    if (!/audio|video/i.test(mediaType)) mediaType = 'video';
+                    mimeType = source.replace(/^.*\.([^.]+)$/, mediaType + '/$1');
+                }
+                selectedArchive.getDirEntryByTitle(decodeURIComponent(source)).then(function(dirEntry) {
+                    return selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, mediaArray) {
+                        var dataView = new DataView(mediaArray.buffer);
+                        var blob = new Blob([dataView], { type: mimeType });
+                        mediaSource.src = URL.createObjectURL(blob);
+                        // In Firefox and Chromium it is necessary to re-register the inserted media source
+                        if (/video|audio/i.test(mediaSource.tagname)) {
+                            mediaSource.load();
+                        } else if (/video|audio/i.test(mediaSource.parentElement.tagName)) {
+                            mediaSource.parentElement.load();
+                        }
+                    });
+                });
+            });
+        }
 
         /**
          * Changes the URL of the browser page, so that the user might go back to it
@@ -2814,6 +2829,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             var urlParameters;
             var stateLabel;
             if (title && !("" === title)) {
+            // Prevents creating a double history for the same page
+            if (history.state && history.state.title === title) return;
                 stateObj.title = title;
                 urlParameters = "?title=" + title;
                 stateLabel = "Wikipedia Article : " + title;
