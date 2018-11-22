@@ -2089,9 +2089,18 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }
                     //Add required path in front of injected styles (i.e. those that have no ./ or ../../.. etc)
                     cssArray$ = cssArray$.replace(/(\bhref\s*=\s*["']\s*)(?![./]+|blob:)/ig, "$1" + treePath);
-                    //For all cases, neutralize the toggleOpenSection javascript that causes a crash - TODO: make it work for mobile style
+                    //For all cases, neutralize the toggleOpenSection javascript that causes a crash
                     htmlArticle = htmlArticle.replace(/(onclick\s*=\s*["'])toggleOpenSection[^"']*(['"]\s*)/ig, "$1$2");
-                    htmlArticle = htmlArticle.replace(/<script>([^<]+?toggleOpenSection(?:[^<]|<(?!\/script))+)<\/script>/i, "<!-- script>$1</script --!>");
+                    //htmlArticle = htmlArticle.replace(/<script>([^<]+?toggleOpenSection(?:[^<]|<(?!\/script))+)<\/script>/i, "<!-- script>$1</script --!>");
+                    // Remove and save inline javascript contents only (does not remove scripts with src)
+                    // This is required because most app CSPs forbid inline scripts or require hashes
+                    // DEV: {5,} in regex means script must have at least 5 characters between the script tags to be matched
+                    var regexpScripts = /<script\b(?![^>]+type\s*=\s*["']text\/html)(?![^>]+src\s*=)[^>]*>([^<]{5,})<\/script>/ig;
+                    var inlineJavaScripts = [];
+                    htmlArticle = htmlArticle.replace(regexpScripts, function(match, inlineScript) {
+                        inlineJavaScripts.push(inlineScript);
+                        return "";
+                    });
                     //Neutralize onload events, as they cause a crash in ZIMs with proprietary UIs
                     htmlArticle = htmlArticle.replace(/(<[^>]+?)onload\s*=\s*["'][^"']+["']\s*/ig, '$1');
                     //Ensure all headings are open
