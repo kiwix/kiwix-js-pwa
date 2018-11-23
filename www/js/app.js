@@ -2096,7 +2096,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     //Add required path in front of injected styles (i.e. those that have no ./ or ../../.. etc)
                     cssArray$ = cssArray$.replace(/(\bhref\s*=\s*["']\s*)(?![./]+|blob:)/ig, "$1" + treePath);
                     //For all cases, neutralize the toggleOpenSection javascript that causes a crash
-                    htmlArticle = htmlArticle.replace(/(onclick\s*=\s*["'])toggleOpenSection[^"']*(['"]\s*)/ig, "$1$2");
+                    //htmlArticle = htmlArticle.replace(/(onclick\s*=\s*["'])toggleOpenSection[^"']*(['"]\s*)/ig, "$1$2");
                     // Remove and save inline javascript contents only (does not remove scripts with src)
                     // This is required because most app CSPs forbid inline scripts or require hashes
                     // DEV: {5,} in regex means script must have at least 5 characters between the script tags to be matched
@@ -2110,6 +2110,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["']math\/)(?:[^<]|<(?!\/script>))+<\/script)>/ig, "<!-- $1 --!>");
                     //Neutralize onload events, as they cause a crash in ZIMs with proprietary UIs
                     htmlArticle = htmlArticle.replace(/(<[^>]+?)onload\s*=\s*["'][^"']+["']\s*/ig, '$1');
+                    //Neutralize onclick events
+                    htmlArticle = htmlArticle.replace(/(<[^>]+?)onclick\s*=\s*["'][^"']+["']\s*/ig, '$1');
+                    //Neutralize href="javascript:" links
+                    htmlArticle = htmlArticle.replace(/href\s*=\s*["']javascript:[^"']+["']/gi, 'href=""');
                     //Ensure all headings are open
                     //htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
                     htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
@@ -2169,15 +2173,16 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     $('#articleListWithHeader').hide();
                     $("#prefix").val("");
                     // Inject the new article's HTML into the iframe
-                    var articleContent = iframeArticleContent.contentDocument.documentElement;
-                    articleContent.innerHTML = htmlArticle;
+                    var articleDoc = iframeArticleContent.contentDocument.documentElement;
+                    articleDoc.innerHTML = htmlArticle;
+                    var articleContent = document.getElementById('articleContent').contentDocument;
                     // Add any missing classes stripped from the <html> tag
                     if (htmlCSS) articleContent.getElementsByTagName('body')[0].classList.add(htmlCSS);
                     // Allow back/forward in browser history
                     pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
 
                     //Set relative font size + Stackexchange-family multiplier
-                    articleContent.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
+                    articleContent.body.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
                     //Set page width according to user preference
                     removePageMaxWidth();
 
