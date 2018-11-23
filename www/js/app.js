@@ -1938,6 +1938,26 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //Display IPA pronunciation info erroneously hidden in some ZIMs
             htmlArticle = htmlArticle.replace(/(<span\b[^>]+?class\s*=\s*"[^"]+?mcs-ipa[^>]+?display:\s*)none/i, "$1inline");
 
+            //For all cases, neutralize the toggleOpenSection javascript that causes a crash
+            //htmlArticle = htmlArticle.replace(/(onclick\s*=\s*["'])toggleOpenSection[^"']*(['"]\s*)/ig, "$1$2");
+            // Remove and save inline javascript contents only (does not remove scripts with src)
+            // This is required because most app CSPs forbid inline scripts or require hashes
+            // DEV: {5,} in regex means script must have at least 5 characters between the script tags to be matched
+            //var regexpScripts = /<script\b(?![^>]+type\s*=\s*["']text\/html)(?![^>]+src\s*=)[^>]*>([^<]{5,})<\/script>/ig;
+            //var inlineJavaScripts = [];
+            //htmlArticle = htmlArticle.replace(regexpScripts, function(match, inlineScript) {
+            //    inlineJavaScripts.push(inlineScript);
+            //    return "";
+            //});
+            // Neutralize all inline scripts for now (later use above), excluding math blocks or react templates
+            htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html))(?:[^<]|<(?!\/script>))+<\/script)>/ig, "<!-- $1 --!>");
+            //Neutralize onload events, as they cause a crash in ZIMs with proprietary UIs
+            htmlArticle = htmlArticle.replace(/(<[^>]+?)onload\s*=\s*["'][^"']+["']\s*/ig, '$1');
+            //Neutralize onclick events
+            htmlArticle = htmlArticle.replace(/(<[^>]+?)onclick\s*=\s*["'][^"']+["']\s*/ig, '$1');
+            //Neutralize href="javascript:" links
+            htmlArticle = htmlArticle.replace(/href\s*=\s*["']javascript:[^"']+["']/gi, 'href=""');
+
             //MathJax detection:
             containsMathTeXRaw = params.useMathJax && !/wikivoyage/.test(params.storedFile) ? /\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/.test(htmlArticle) : false;
             //Simplify any configuration script
@@ -2095,25 +2115,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }
                     //Add required path in front of injected styles (i.e. those that have no ./ or ../../.. etc)
                     cssArray$ = cssArray$.replace(/(\bhref\s*=\s*["']\s*)(?![./]+|blob:)/ig, "$1" + treePath);
-                    //For all cases, neutralize the toggleOpenSection javascript that causes a crash
-                    //htmlArticle = htmlArticle.replace(/(onclick\s*=\s*["'])toggleOpenSection[^"']*(['"]\s*)/ig, "$1$2");
-                    // Remove and save inline javascript contents only (does not remove scripts with src)
-                    // This is required because most app CSPs forbid inline scripts or require hashes
-                    // DEV: {5,} in regex means script must have at least 5 characters between the script tags to be matched
-                    //var regexpScripts = /<script\b(?![^>]+type\s*=\s*["']text\/html)(?![^>]+src\s*=)[^>]*>([^<]{5,})<\/script>/ig;
-                    //var inlineJavaScripts = [];
-                    //htmlArticle = htmlArticle.replace(regexpScripts, function(match, inlineScript) {
-                    //    inlineJavaScripts.push(inlineScript);
-                    //    return "";
-                    //});
-                    // Neutralize all inline scripts for now (later use above)
-                    htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["']math\/)(?:[^<]|<(?!\/script>))+<\/script)>/ig, "<!-- $1 --!>");
-                    //Neutralize onload events, as they cause a crash in ZIMs with proprietary UIs
-                    htmlArticle = htmlArticle.replace(/(<[^>]+?)onload\s*=\s*["'][^"']+["']\s*/ig, '$1');
-                    //Neutralize onclick events
-                    htmlArticle = htmlArticle.replace(/(<[^>]+?)onclick\s*=\s*["'][^"']+["']\s*/ig, '$1');
-                    //Neutralize href="javascript:" links
-                    htmlArticle = htmlArticle.replace(/href\s*=\s*["']javascript:[^"']+["']/gi, 'href=""');
                     //Ensure all headings are open
                     //htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
                     htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
@@ -2167,14 +2168,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 var iframeArticleContent = document.getElementById('articleContent');
 
                 iframeArticleContent.onload = function () {
-                    iframeArticleContent.onload = function () { };
+                    //iframeArticleContent.onload = function () { };
                     $("#articleList").empty();
                     $('#articleListHeaderMessage').empty();
                     $('#articleListWithHeader').hide();
                     $("#prefix").val("");
                     // Inject the new article's HTML into the iframe
-                    var articleDoc = iframeArticleContent.contentDocument.documentElement;
-                    articleDoc.innerHTML = htmlArticle;
+                    //var articleDoc = iframeArticleContent.contentDocument.documentElement;
+                    //articleDoc.innerHTML = htmlArticle;
                     var articleContent = document.getElementById('articleContent').contentDocument;
                     // Add any missing classes stripped from the <html> tag
                     if (htmlCSS) articleContent.getElementsByTagName('body')[0].classList.add(htmlCSS);
@@ -2299,15 +2300,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         // Pattern to match a local anchor in an href even if prefixed by escaped url
                         var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#]+$)');
 
-                        var iframe = document.getElementById('articleContent').contentDocument;
+                        var iframeArticleContent = document.getElementById('articleContent').contentDocument;
                         // Set state of collapsible sections
                         if (params.openAllSections === true) {
-                            var collapsedBlocks = iframe.querySelectorAll('.collapsible-block:not(.open-block), .collapsible-heading:not(.open-block)');
+                            var collapsedBlocks = iframeArticleContent.querySelectorAll('.collapsible-block:not(.open-block), .collapsible-heading:not(.open-block)');
                             for (var i = collapsedBlocks.length; i--;) {
                                 collapsedBlocks[i].classList.add('open-block');
                             }
                         }
-                        var anchors = Array.prototype.slice.call(iframe.getElementsByTagName('a'));
+                        var anchors = Array.prototype.slice.call(iframeArticleContent.getElementsByTagName('a'));
                         anchors.forEach(function (anchor) {
                             // Attempts to access any properties of 'this' with malformed URLs causes app crash in Edge/UWP [kiwix-js #430]
                             try {
@@ -2363,11 +2364,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 };
 
                 // Load the blank article to clear the iframe (NB iframe onload event runs *after* this)
-                iframeArticleContent.src = "article.html";
-                //articleContent.open('text/html', 'replace');
-                //articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
-                //articleContent.write(htmlArticle);
-                //articleContent.close();
+                //iframeArticleContent.src = "article.html";
+                var articleContent = iframeArticleContent.contentDocument;
+                articleContent.open('text/html', 'replace');
+                articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
+                articleContent.write(htmlArticle);
+                articleContent.close();
 
             } // End of injectHtml
 
