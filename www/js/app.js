@@ -2173,10 +2173,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     $('#articleListHeaderMessage').empty();
                     $('#articleListWithHeader').hide();
                     $("#prefix").val("");
-                    // Inject the new article's HTML into the iframe
-                    //var articleDoc = iframeArticleContent.contentDocument.documentElement;
-                    //articleDoc.innerHTML = htmlArticle;
                     var articleContent = document.getElementById('articleContent').contentDocument;
+                    // Inject the new article's HTML into the iframe
+                    articleContent.documentElement.innerHTML = htmlArticle;
                     // Add any missing classes stripped from the <html> tag
                     if (htmlCSS) articleContent.getElementsByTagName('body')[0].classList.add(htmlCSS);
                     // Allow back/forward in browser history
@@ -2364,12 +2363,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 };
 
                 // Load the blank article to clear the iframe (NB iframe onload event runs *after* this)
-                //iframeArticleContent.src = "article.html";
-                var articleContent = iframeArticleContent.contentDocument;
-                articleContent.open('text/html', 'replace');
-                articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
-                articleContent.write(htmlArticle);
-                articleContent.close();
+                iframeArticleContent.src = "article.html";
+                //var articleContent = iframeArticleContent.contentDocument;
+                //articleContent.open('text/html', 'replace');
+                //articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
+                //articleContent.write(htmlArticle);
+                //articleContent.close();
 
             } // End of injectHtml
 
