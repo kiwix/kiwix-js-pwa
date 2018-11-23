@@ -1950,7 +1950,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //    return "";
             //});
             // Neutralize all inline scripts for now (later use above), excluding math blocks or react templates
-            htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html))(?:[^<]|<(?!\/script>))+<\/script)>/ig, "<!-- $1 --!>");
+            htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig, "<!-- $1 --!>");
             //Neutralize onload events, as they cause a crash in ZIMs with proprietary UIs
             htmlArticle = htmlArticle.replace(/(<[^>]+?)onload\s*=\s*["'][^"']+["']\s*/ig, '$1');
             //Neutralize onclick events
