@@ -1943,7 +1943,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //Simplify any configuration script
             //if (containsMathTeXRaw) htmlArticle = htmlArticle.replace(/(<script\s+[^>]*?type\s*=\s*['"]\s*text\/x-mathjax-config[^>]+>[^<]+?Hub\.Config\s*\(\s*{\s*)[^<]*?(tex2jax\s*:[^}]+?})\s*,[^<]+(<\/script>)/i, "$1$2});$3");
             //Replace all TeX SVGs with MathJax scripts
-            htmlArticle = params.useMathJax ? htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"]([^'"]+)[^>]+>/ig, "<script type='math/tex'>$1</script>") : htmlArticle;
+            if (params.useMathJax) {
+                htmlArticle = htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"]([^'"]+)[^>]+>/ig, function (p0, math) {
+                    // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
+                    math = math.replace(/&amp;/g, '&');
+                    return '<script type="math/tex">' + math + '</script>';
+                });
+            }
             containsMathTeX = params.useMathJax ? /<script\s+type\s*=\s*['"]\s*math\/tex\s*['"]/i.test(htmlArticle) : false;
             containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
 
@@ -2091,16 +2097,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     cssArray$ = cssArray$.replace(/(\bhref\s*=\s*["']\s*)(?![./]+|blob:)/ig, "$1" + treePath);
                     //For all cases, neutralize the toggleOpenSection javascript that causes a crash
                     htmlArticle = htmlArticle.replace(/(onclick\s*=\s*["'])toggleOpenSection[^"']*(['"]\s*)/ig, "$1$2");
-                    //htmlArticle = htmlArticle.replace(/<script>([^<]+?toggleOpenSection(?:[^<]|<(?!\/script))+)<\/script>/i, "<!-- script>$1</script --!>");
                     // Remove and save inline javascript contents only (does not remove scripts with src)
                     // This is required because most app CSPs forbid inline scripts or require hashes
                     // DEV: {5,} in regex means script must have at least 5 characters between the script tags to be matched
-                    var regexpScripts = /<script\b(?![^>]+type\s*=\s*["']text\/html)(?![^>]+src\s*=)[^>]*>([^<]{5,})<\/script>/ig;
-                    var inlineJavaScripts = [];
-                    htmlArticle = htmlArticle.replace(regexpScripts, function(match, inlineScript) {
-                        inlineJavaScripts.push(inlineScript);
-                        return "";
-                    });
+                    //var regexpScripts = /<script\b(?![^>]+type\s*=\s*["']text\/html)(?![^>]+src\s*=)[^>]*>([^<]{5,})<\/script>/ig;
+                    //var inlineJavaScripts = [];
+                    //htmlArticle = htmlArticle.replace(regexpScripts, function(match, inlineScript) {
+                    //    inlineJavaScripts.push(inlineScript);
+                    //    return "";
+                    //});
+                    // Neutralize all inline scripts for now (later use above)
+                    htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["']math\/)(?:[^<]|<(?!\/script>))+<\/script)>/ig, "<!-- $1 --!>");
                     //Neutralize onload events, as they cause a crash in ZIMs with proprietary UIs
                     htmlArticle = htmlArticle.replace(/(<[^>]+?)onload\s*=\s*["'][^"']+["']\s*/ig, '$1');
                     //Ensure all headings are open
@@ -2147,192 +2154,218 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 setTab();
                 //Inject base tag into html
                 htmlArticle = htmlArticle.replace(/(<head[^>]*>\s*)/i, '$1<base href="' + baseUrl + '" />\r\n');
-                //Display article in iframe
-                var articleContent = window.frames[0].frameElement.contentDocument;
-                //articleContent.documentElement.innerHTML = htmlArticle;
-                articleContent.open('text/html', 'replace');
-                articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
-                articleContent.write(htmlArticle);
-                articleContent.close();
-                //Set relative font size + Stackexchange-family multiplier
-                articleContent.body.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
-                //Set page width according to user preference
-                removePageMaxWidth();
+                // Extract any css classes from the html tag (they will be stripped when injected in iframe with .innerHTML)
+                var htmlCSS = htmlArticle.match(/<html[^>]*class\s*=\s*["']\s*([^"']+)/i);
+                htmlCSS = htmlCSS ? htmlCSS[1] : '';
+                // Tell jQuery we're removing the iframe document: clears jQuery cache and prevents memory leaks [kiwix-js #361]
+                $('#articleContent').contents().remove();
 
-                setupTableOfContents();
+                var iframeArticleContent = document.getElementById('articleContent');
 
-                // Attach listeners to headers to open-close following sections
-                var eles = ["H2", "H3"];
-                for (var i = 0; i < eles.length; i++) {
-                    // Process headers
-                    var collection = articleContent.getElementsByTagName(eles[i]);
-                    for (var j = 0; j < collection.length; j++) {
-                        // Prevent heading from getting selected when clicking on it
-                        collection[j].style.userSelect = 'none';
-                        collection[j].style.msUserSelect = 'none';
-                        //collection[j].classList.add("open-block");
-                        collection[j].addEventListener("click", function (e) {
-                            var that = e.currentTarget;
-                            var topTag = that.tagName;
-                            that.classList.toggle("open-block");
-                            var nextElement = that.nextElementSibling;
-                            that = that.parentNode;
-                            if (!nextElement) nextElement = that.nextElementSibling;
-                            if (!nextElement) return;
-                            // Decide toggle direction based on first sibling element
-                            var toggleDirection = nextElement.classList.contains("collapsible-block") && !nextElement.classList.contains("open-block") || nextElement.style.display == "none"  ? "block" : "none";
-                            //if (nextElement.style.display == "none") {
-                            //    this.innerHTML += "<br />";
-                            //} else {
-                            //    this.innerHTML = this.innerHTML.replace(/<br\s*\/?>$/i, "");
-                            //}
-                            while (nextElement && !~nextElement.tagName.indexOf(topTag) && !~nextElement.tagName.indexOf("H1")) {
-                                if (nextElement.classList.contains("collapsible-block")) {
-                                    nextElement.classList.toggle("open-block");
-                                } else if (that.classList.contains("collapsible-block")) {
-                                    // We're in a document that has been marked up, but we've encountered one that doesn't have markup, so stop
-                                    break;
-                                } else {
-                                    nextElement.style.display = toggleDirection;
-                                }
-                                that = nextElement;
-                                nextElement = that.nextElementSibling;
-                            }
-                        });
-                    }
-                }
-                // Process endnote references (so they open the reference block if closed)
-                var refs = articleContent.getElementsByClassName("mw-reflink-text");
-                if (refs) {
-                    for (var l = 0; l < refs.length; l++) {
-                        var reference = refs[l].parentElement;
-                        if (reference) {
-                            reference.addEventListener("click", function (obj) {
-                                var refID = obj.target.hash || obj.target.parentNode.hash;
-                                if (!refID) return;
-                                refID = refID.replace(/#/, "");
-                                var refLocation = articleContent.getElementById(refID);
-                                var refNext = util.getClosestBack(refLocation, function (el) {
-                                    return el.tagName == "H2";
-                                });
-                                if (refNext) {
-                                    refNext.classList.add("open-block");
-                                    //refNext.innerHTML = refNext.innerHTML.replace(/<br\s*\/?>$/i, "");
-                                    refNext = refNext.nextElementSibling;
-                                    while (refNext && refNext.classList.contains("collapsible-block")) {
-                                        refNext.classList.add("open-block");
-                                        refNext = refNext.nextElementSibling;
+                iframeArticleContent.onload = function () {
+                    iframeArticleContent.onload = function () { };
+                    $("#articleList").empty();
+                    $('#articleListHeaderMessage').empty();
+                    $('#articleListWithHeader').hide();
+                    $("#prefix").val("");
+                    // Inject the new article's HTML into the iframe
+                    var articleContent = iframeArticleContent.contentDocument.documentElement;
+                    articleContent.innerHTML = htmlArticle;
+                    // Add any missing classes stripped from the <html> tag
+                    if (htmlCSS) articleContent.getElementsByTagName('body')[0].classList.add(htmlCSS);
+                    // Allow back/forward in browser history
+                    pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
+
+                    //Set relative font size + Stackexchange-family multiplier
+                    articleContent.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
+                    //Set page width according to user preference
+                    removePageMaxWidth();
+
+                    setupTableOfContents();
+
+                    // Attach listeners to headers to open-close following sections
+                    var eles = ["H2", "H3"];
+                    for (var i = 0; i < eles.length; i++) {
+                        // Process headers
+                        var collection = articleContent.getElementsByTagName(eles[i]);
+                        for (var j = 0; j < collection.length; j++) {
+                            // Prevent heading from getting selected when clicking on it
+                            collection[j].style.userSelect = 'none';
+                            collection[j].style.msUserSelect = 'none';
+                            //collection[j].classList.add("open-block");
+                            collection[j].addEventListener("click", function (e) {
+                                var that = e.currentTarget;
+                                var topTag = that.tagName;
+                                that.classList.toggle("open-block");
+                                var nextElement = that.nextElementSibling;
+                                that = that.parentNode;
+                                if (!nextElement) nextElement = that.nextElementSibling;
+                                if (!nextElement) return;
+                                // Decide toggle direction based on first sibling element
+                                var toggleDirection = nextElement.classList.contains("collapsible-block") && !nextElement.classList.contains("open-block") || nextElement.style.display == "none" ? "block" : "none";
+                                //if (nextElement.style.display == "none") {
+                                //    this.innerHTML += "<br />";
+                                //} else {
+                                //    this.innerHTML = this.innerHTML.replace(/<br\s*\/?>$/i, "");
+                                //}
+                                while (nextElement && !~nextElement.tagName.indexOf(topTag) && !~nextElement.tagName.indexOf("H1")) {
+                                    if (nextElement.classList.contains("collapsible-block")) {
+                                        nextElement.classList.toggle("open-block");
+                                    } else if (that.classList.contains("collapsible-block")) {
+                                        // We're in a document that has been marked up, but we've encountered one that doesn't have markup, so stop
+                                        break;
+                                    } else {
+                                        nextElement.style.display = toggleDirection;
                                     }
+                                    that = nextElement;
+                                    nextElement = that.nextElementSibling;
                                 }
                             });
                         }
                     }
-                }
-
-                //Hide top-level scrolling -- gets rid of interfering useless scroll bar, but re-enable for Config and About pages
-                document.getElementById('search-article').scrollTop = 0;
-                document.getElementById('search-article').style.overflow = "hidden";
-
-                var makeLink = uiUtil.makeReturnLink(dirEntry.title); //[kiwix-js #127]
-                var linkListener = eval(makeLink);
-                //Prevent multiple listeners being attached on each browse
-                var returnDivs = document.getElementsByClassName("returntoArticle");
-                for (var i = 0; i < returnDivs.length; i++) {
-                    returnDivs[i].removeEventListener('click', linkListener);
-                    returnDivs[i].addEventListener('click', linkListener);
-                }
-                checkToolbar();
-
-                //Listen to iframe key presses for in-page search
-                document.getElementById('articleContent').contentWindow.addEventListener('keyup', function (e) {
-                    //Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
-                    if ((e.ctrlKey || e.altKey) && e.which == 70) {
-                        document.getElementById('findText').click();
-                    }
-                });
-
-                document.getElementById('articleContent').contentWindow.addEventListener('keydown', function (e) {
-                    //Ctrl-P to patch printing support, so iframe gets printed
-                    if (e.ctrlKey && e.which == 80) {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        printIntercept();
-                    }
-                }, true);
-
-
-                // If the ServiceWorker is not useable, we need to fallback to parse the DOM
-                // to inject math images, and replace some links with javascript calls
-                if (contentInjectionMode === 'jquery') {
-                    var currentProtocol = location.protocol;
-                    var currentHost = location.host;
-                    // Percent-encode dirEntry.url and add regex escape character \ to the RegExp special characters - see https://www.regular-expressions.info/characters.html;
-                    // NB dirEntry.url can also contain path separator / in some ZIMs (Stackexchange). } and ] do not need to be escaped as they have no meaning on their own. 
-                    var escapedUrl = encodeURIComponent(dirEntry.url).replace(/([\\$^.|?*+\/()[{])/g, '\\$1');
-                    // Pattern to match a local anchor in an href even if prefixed by escaped url
-                    var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#]+$)');
-
-                    var iframe = document.getElementById('articleContent').contentDocument;
-                    // Set state of collapsible sections
-                    if (params.openAllSections === true) {
-                        var collapsedBlocks = iframe.querySelectorAll('.collapsible-block:not(.open-block), .collapsible-heading:not(.open-block)');
-                        for (var i = collapsedBlocks.length; i--;) {
-                            collapsedBlocks[i].classList.add('open-block');
+                    // Process endnote references (so they open the reference block if closed)
+                    var refs = articleContent.getElementsByClassName("mw-reflink-text");
+                    if (refs) {
+                        for (var l = 0; l < refs.length; l++) {
+                            var reference = refs[l].parentElement;
+                            if (reference) {
+                                reference.addEventListener("click", function (obj) {
+                                    var refID = obj.target.hash || obj.target.parentNode.hash;
+                                    if (!refID) return;
+                                    refID = refID.replace(/#/, "");
+                                    var refLocation = articleContent.getElementById(refID);
+                                    var refNext = util.getClosestBack(refLocation, function (el) {
+                                        return el.tagName == "H2";
+                                    });
+                                    if (refNext) {
+                                        refNext.classList.add("open-block");
+                                        //refNext.innerHTML = refNext.innerHTML.replace(/<br\s*\/?>$/i, "");
+                                        refNext = refNext.nextElementSibling;
+                                        while (refNext && refNext.classList.contains("collapsible-block")) {
+                                            refNext.classList.add("open-block");
+                                            refNext = refNext.nextElementSibling;
+                                        }
+                                    }
+                                });
+                            }
                         }
                     }
-                    var anchors = Array.prototype.slice.call(iframe.getElementsByTagName('a'));
-                    anchors.forEach(function (anchor) {
-                        // Attempts to access any properties of 'this' with malformed URLs causes app crash in Edge/UWP [kiwix-js #430]
-                        try {
-                            var testHref = anchor.href;
-                        } catch (err) {
-                            console.error("Malformed href caused error:" + err.message);
-                            return;
-                        }
-                        var href = anchor.getAttribute('href');
-                        if (href === null || href === undefined) return;
-                        // Compute current link's url (with its namespace), if applicable
-                        // NB We need to access 'anchor.href' here because, unlike 'anchor.getAttribute("href")', it contains the fully qualified URL [kiwix-js #432]
-                        var zimUrl = regexpZIMUrlWithNamespace.test(anchor.href) ? anchor.href.match(regexpZIMUrlWithNamespace)[1] : '';
-                        if (href.length === 0) {
-                            // It's a link with an empty href, pointing to the current page.
-                            // Because of the base tag, we need to modify it
-                            anchor.addEventListener('click', function (e) {
-                                e.preventDefault();
-                            });
-                        } else if (regexpLocalAnchorHref.test(href)) {
-                            // It's an anchor link : we need to make it work with javascript
-                            // because of the base tag
-                            var anchorRef = href.replace(regexpLocalAnchorHref, '$1');
-                            anchor.addEventListener('click', function (e) {
-                                e.preventDefault();
-                                document.getElementById('articleContent').contentWindow.location.hash = anchorRef;
-                            });
-                        } else if (anchor.protocol !== currentProtocol ||
-                            anchor.host !== currentHost) {
-                            // It's an external URL : we should open it in a new tab
-                            anchor.target = '_blank';
-                        } else {
-                            // It's a link to another article
-                            // Add an onclick event to go to this article
-                            // instead of following the link
-                            anchor.addEventListener('click', function (e) {
-                                e.preventDefault();
-                                var decodedURL = decodeURIComponent(zimUrl);
-                                goToArticle(decodedURL);
-                            });
+
+                    //Hide top-level scrolling -- gets rid of interfering useless scroll bar, but re-enable for Config and About pages
+                    document.getElementById('search-article').scrollTop = 0;
+                    document.getElementById('search-article').style.overflow = "hidden";
+
+                    var makeLink = uiUtil.makeReturnLink(dirEntry.title); //[kiwix-js #127]
+                    var linkListener = eval(makeLink);
+                    //Prevent multiple listeners being attached on each browse
+                    var returnDivs = document.getElementsByClassName("returntoArticle");
+                    for (var i = 0; i < returnDivs.length; i++) {
+                        returnDivs[i].removeEventListener('click', linkListener);
+                        returnDivs[i].addEventListener('click', linkListener);
+                    }
+                    checkToolbar();
+
+                    //Listen to iframe key presses for in-page search
+                    document.getElementById('articleContent').contentWindow.addEventListener('keyup', function (e) {
+                        //Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
+                        if ((e.ctrlKey || e.altKey) && e.which == 70) {
+                            document.getElementById('findText').click();
                         }
                     });
 
-                    loadImagesJQuery();
-                    //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
-                    insertMediaBlobsJQuery();
+                    document.getElementById('articleContent').contentWindow.addEventListener('keydown', function (e) {
+                        //Ctrl-P to patch printing support, so iframe gets printed
+                        if (e.ctrlKey && e.which == 80) {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            printIntercept();
+                        }
+                    }, true);
 
-                    //Document has loaded except for images, so we can now change the startup cookie (and delete) [see init.js]
-                    document.cookie = 'lastPageLoad=success;expires=Thu, 21 Sep 1979 00:00:01 UTC';
-                }
 
-            } //End of injectHTML()
+                    // If the ServiceWorker is not useable, we need to fallback to parse the DOM
+                    // to inject math images, and replace some links with javascript calls
+                    if (contentInjectionMode === 'jquery') {
+                        var currentProtocol = location.protocol;
+                        var currentHost = location.host;
+                        // Percent-encode dirEntry.url and add regex escape character \ to the RegExp special characters - see https://www.regular-expressions.info/characters.html;
+                        // NB dirEntry.url can also contain path separator / in some ZIMs (Stackexchange). } and ] do not need to be escaped as they have no meaning on their own. 
+                        var escapedUrl = encodeURIComponent(dirEntry.url).replace(/([\\$^.|?*+\/()[{])/g, '\\$1');
+                        // Pattern to match a local anchor in an href even if prefixed by escaped url
+                        var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#]+$)');
+
+                        var iframe = document.getElementById('articleContent').contentDocument;
+                        // Set state of collapsible sections
+                        if (params.openAllSections === true) {
+                            var collapsedBlocks = iframe.querySelectorAll('.collapsible-block:not(.open-block), .collapsible-heading:not(.open-block)');
+                            for (var i = collapsedBlocks.length; i--;) {
+                                collapsedBlocks[i].classList.add('open-block');
+                            }
+                        }
+                        var anchors = Array.prototype.slice.call(iframe.getElementsByTagName('a'));
+                        anchors.forEach(function (anchor) {
+                            // Attempts to access any properties of 'this' with malformed URLs causes app crash in Edge/UWP [kiwix-js #430]
+                            try {
+                                var testHref = anchor.href;
+                            } catch (err) {
+                                console.error("Malformed href caused error:" + err.message);
+                                return;
+                            }
+                            var href = anchor.getAttribute('href');
+                            if (href === null || href === undefined) return;
+                            // Compute current link's url (with its namespace), if applicable
+                            // NB We need to access 'anchor.href' here because, unlike 'anchor.getAttribute("href")', it contains the fully qualified URL [kiwix-js #432]
+                            var zimUrl = regexpZIMUrlWithNamespace.test(anchor.href) ? anchor.href.match(regexpZIMUrlWithNamespace)[1] : '';
+                            if (href.length === 0) {
+                                // It's a link with an empty href, pointing to the current page.
+                                // Because of the base tag, we need to modify it
+                                anchor.addEventListener('click', function (e) {
+                                    e.preventDefault();
+                                });
+                            } else if (regexpLocalAnchorHref.test(href)) {
+                                // It's an anchor link : we need to make it work with javascript
+                                // because of the base tag
+                                var anchorRef = href.replace(regexpLocalAnchorHref, '$1');
+                                anchor.addEventListener('click', function (e) {
+                                    e.preventDefault();
+                                    document.getElementById('articleContent').contentWindow.location.hash = anchorRef;
+                                });
+                            } else if (anchor.protocol !== currentProtocol ||
+                                anchor.host !== currentHost) {
+                                // It's an external URL : we should open it in a new tab
+                                anchor.target = '_blank';
+                            } else {
+                                // It's a link to another article
+                                // Add an onclick event to go to this article
+                                // instead of following the link
+                                anchor.addEventListener('click', function (e) {
+                                    e.preventDefault();
+                                    var decodedURL = decodeURIComponent(zimUrl);
+                                    goToArticle(decodedURL);
+                                });
+                            }
+                        });
+
+                        loadImagesJQuery();
+                        //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
+                        insertMediaBlobsJQuery();
+
+                        //Document has loaded except for images, so we can now change the startup cookie (and delete) [see init.js]
+                        document.cookie = 'lastPageLoad=success;expires=Thu, 21 Sep 1979 00:00:01 UTC';
+                    }
+
+                     //End of injectHTML()
+                };
+
+                // Load the blank article to clear the iframe (NB iframe onload event runs *after* this)
+                iframeArticleContent.src = "article.html";
+                //articleContent.open('text/html', 'replace');
+                //articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
+                //articleContent.write(htmlArticle);
+                //articleContent.close();
+
+            } // End of injectHtml
+
 
         } //End of displayArticleInForm()
 
