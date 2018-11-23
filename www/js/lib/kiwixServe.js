@@ -417,7 +417,7 @@ define([], function () {
                 }
                 var headerDoc = 'We found the following links to your file:';
                 var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^\/]*\.meta4$/i, "\/") + '">&lt;&lt; Back to list of files</a></p>\r\n';
-                bodyDoc += /\/ted\//i.test(URL) ? '<h4 style="color:red">IMPORTANT: <b>TED TALKS</b> are not yet supported by this app due to lack of video playback capability</h4>\r\n<p>We apologize for the inconvenience. You may download the file here, and other playback solutions may be available from <a href="http://kiwix.org">Kiwix</a>.' : ""; 
+                bodyDoc += /\/ted\//i.test(URL) ? '<h4 style="color:red">IMPORTANT: <b>TED TALKS</b> videos can be played in the UWP app on Windows 10, but not currently on Windows 10 Mobile due to lack of webm support on mobile.</h4>\r\n<p>We apologize for the inconvenience. Please note you will need to search for the talks using standard ZIM search, because the ZIM\'s proprietary UI does not yet work in this app.' : ""; 
                 bodyDoc += "<h5";
                 bodyDoc += megabytes > 200 ? ' style="color:red;"> WARNING: ' : '>';
                 bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unknown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
@@ -425,13 +425,13 @@ define([], function () {
                     '<p><b>BitTorrent link</b>: <a href="' + URL.replace(/\.meta4$/, ".torrent") + '" target="_blank">' +
                     URL.replace(/\.meta4$/, ".torrent") + '</a></p>';
                 if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
-                    bodyDoc += '<p style="color:red;">This archive is larger than the maximum file size permitted on an SD card formatted as FAT32 (max size is approx. 4GB). If your card or other storage area is formatted in this way, you will need to download a split version of this file: see <a href="http://wiki.kiwix.org/wiki/FAQ/en">Frequently Asked Questions</a>.</p>\r\n';
+                    bodyDoc += '<p style="color:red;">This archive is larger than the maximum file size permitted on an SD card formatted as FAT32 (max size is approx. 4GB). On Windows, this is not normally a problem. However, if your card or other storage area is formatted in this way, you will need to download a split version of this file: see <a href="http://wiki.kiwix.org/wiki/FAQ/en">Frequently Asked Questions</a>.</p>\r\n';
                     bodyDoc += '<p><b>To browse for a split version of this archive click here: <a id="portable" href="#" data-kiwix-dl="' +
                         URL.replace(/\/zim\/([^/]+\/).*$/m, "/portable/$1") + '">' + URL.replace(/\/zim\/([^/]+\/).*$/m, "/portable/$1") +
                         '</a>.</b></p>\r\n';
                 }
                 if (/\.zip\.meta4$/i.test(URL)) {
-                    if (megabytes > 4000) bodyDoc += '<p style="color:red;">This ZIP file contains a split version of the archive, but the ZIP itself is larger than the maximum file size permitted on an SD card formatted as FAT32. You will need to save it in a non-FAT32 location (e.g. a PC hard drive).</p>\r\n';
+                    if (megabytes > 4000) bodyDoc += '<p style="color:red;">This ZIP file contains a split version of the archive, but the ZIP itself is larger than the maximum file size permitted on an SD card formatted as FAT32. Be sure to save it in a non-FAT32 location (e.g. a PC hard drive).</p>\r\n';
                     bodyDoc += '<p>INSTRUCTIONS: You may need to open this ZIP file on a regular computer. After you have downloaded it, open the ZIP in\r\n' +
                         'File Explorer. You will need to extract the contents of the folder <span style="font-family: monospace;"><b>&gt; data &gt; content</b></span>,\r\n' +
                         'and transfer ALL of the files there to an accessible folder on your device. After that, you can search for the folder in this app (see above).</p>\r\n';
