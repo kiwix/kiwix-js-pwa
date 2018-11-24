@@ -182,9 +182,7 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
         var that = this;
         util.binarySearch(0, this._file.articleCount, function(i) {
             return that._file.dirEntryByTitleIndex(i).then(function(dirEntry) {
-                if (dirEntry.title === "")
-                    return -1; // ZIM sorts empty titles (assets) to the end
-                else if (dirEntry.namespace < "A")
+                if (dirEntry.namespace < "A")
                     return 1;
                 else if (dirEntry.namespace > "A")
                     return -1;
