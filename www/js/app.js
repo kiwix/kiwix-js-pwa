@@ -2169,17 +2169,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
                 iframeArticleContent.onload = function () {
                     //iframeArticleContent.onload = function () { };
-                    $("#articleList").empty();
-                    $('#articleListHeaderMessage').empty();
-                    $('#articleListWithHeader').hide();
-                    $("#prefix").val("");
                     var articleContent = document.getElementById('articleContent').contentDocument;
                     // Inject the new article's HTML into the iframe
                     articleContent.documentElement.innerHTML = htmlArticle;
                     // Add any missing classes stripped from the <html> tag
                     if (htmlCSS) articleContent.getElementsByTagName('body')[0].classList.add(htmlCSS);
-                    // Allow back/forward in browser history
-                    pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
 
                     //Set relative font size + Stackexchange-family multiplier
                     articleContent.body.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
