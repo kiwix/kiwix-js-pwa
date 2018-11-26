@@ -180,13 +180,22 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
      */
     ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function(prefix, resultSize, callback) {
         var that = this;
+        // Vector is used to remember the search direction if we encounter a dirEntry with an empty title
+        var vector = -1;
         util.binarySearch(0, this._file.articleCount, function(i) {
             return that._file.dirEntryByTitleIndex(i).then(function(dirEntry) {
-                if (dirEntry.namespace < "A")
-                    return 1;
-                else if (dirEntry.namespace > "A")
-                    return -1;
-                return prefix <= dirEntry.title ? -1 : 1;
+                if (dirEntry.namespace < "A") vector = 1;
+                if (dirEntry.namespace > "A") vector = -1;
+                if (dirEntry.namespace !== "A") return vector;
+                // We should now be in namespace A
+                if (dirEntry.title) { 
+                    vector = prefix <= dirEntry.title ? -1 : 1;
+                    return vector;
+                } else {
+                    // Since there is no title, we must nudge the search algorith up or down
+                    // We signal this to util.binarySearch by returning -2 or +2 instead of -1 or +1
+                    return vector + vector;
+                }
             });
         }, true).then(function(firstIndex) {
             var dirEntries = [];
