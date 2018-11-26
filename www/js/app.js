@@ -1624,7 +1624,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          */
         function searchDirEntriesFromPrefix(prefix) {
             if (selectedArchive !== null && selectedArchive.isReady()) {
-                selectedArchive.findDirEntriesWithPrefix(prefix.trim(), MAX_SEARCH_RESULT_SIZE + 1, populateListOfArticles);
+            if (!prefix || /%index/i.test(prefix) || /%.%/i.test(prefix) || /\s/.test(prefix)) {
+                var sel = prefix ? prefix.replace(/^%(.)%/, '$1') : '';
+                sel = sel.length === 1 ? sel.toUpperCase() : ''; 
+                showZIMIndex(null, sel);
+            } else {
+                selectedArchive.findDirEntriesWithPrefix(prefix.trim(), MAX_SEARCH_RESULT_SIZE, populateListOfArticles);
+            }
             } else {
                 $('#searchingArticles').hide();
                 // We have to remove the focus from the search field,
@@ -1632,6 +1638,71 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 $('#searchArticles').focus();
                 alert("Archive not set : please select an archive");
                 document.getElementById('btnConfigure').click();
+        }
+    }
+
+    /**
+     * Extracts and displays in htmlArticle the first MAX_SEARCH_RESULT_SIZE articles beginning with start
+     * @param {String} start Optional index number to begin the list with
+     * @param {String} prefix Optional search prefix from which to start an alphabetical search
+     */
+    function showZIMIndex(start, prefix) {
+        // If we're searching by title index number (other than 0 or null), we should ignore any prefix
+        if (isNaN(start)) { 
+            prefix = prefix || '';
+        } else {
+            prefix = start > 0 ? '' : prefix;
+        }
+        if (selectedArchive !== null && selectedArchive.isReady()) {
+            selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, MAX_SEARCH_RESULT_SIZE, function(dirEntryArray, nextStart) {
+                var docBody = document.getElementById('articleContent').contentDocument.body;
+                var newHtml = "";
+                for (var i = 0; i < dirEntryArray.length; i++) {
+                    var dirEntry = dirEntryArray[i];
+                    newHtml += "\n<li><a  class='list-group-item' href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g,"&apos;")
+                            + "'>" + (dirEntry.title ? dirEntry.title : '[' + dirEntry.url + ']') + "</a></li>";
+                }
+                start = start ? start : 0;
+                var back = start ? '<a href="#" data-start="' + (start - MAX_SEARCH_RESULT_SIZE) +
+                    '" class="continueAnchor">&lt;&lt; Previous ' + MAX_SEARCH_RESULT_SIZE + '</a>' : '';
+                var next = dirEntryArray.length === MAX_SEARCH_RESULT_SIZE ? '<a href="#" data-start="' + nextStart +
+                    '" class="continueAnchor">Next ' + MAX_SEARCH_RESULT_SIZE + ' &gt;&gt;</a>' : '';
+                var backNext = back ? next ? back + ' | ' + next : back : next;
+                var alphaSelector = [];
+                // Set up the alphabetic selector
+                for (i = 65; i <= 90; i++) {
+                    var char = String.fromCharCode(i);
+                    alphaSelector.push('<a href="#" class="alphaSelector" data-sel="' + char +'">' + char + '</a>');
+                }
+                // Add selectors for diacritics, etc.
+                alphaSelector.push('<a href="#" class="alphaSelector" data-sel="¡">¡¿À</a>');
+                alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="!">!#123</a>');
+                var alphaString = '<div style="text-align:center">[ ' + alphaSelector.join(' | \n') + ' ]</div>\n';
+                docBody.innerHTML = '<div style="margin:0 5em;line-height:150%;">\n' + alphaString +
+                    '<div style="float:right;">' + backNext + '</div>\n' + 
+                    '<h2 style="padding:0 0 1em;">ZIM Archive Index</h2>\n' + 
+                    '<ul id="zimIndex" class="list-group">' + newHtml + '\n</ul><br />\n' + 
+                    '<div><p style="text-align:right;">' + backNext + '\n</p></div>\n' +
+                    alphaString + '<br /><br /><br /></div>\n';
+                var indexEntries = docBody.querySelectorAll('.list-group-item');
+                $(indexEntries).on("click", handleTitleClick);
+                var continueAnchors = docBody.querySelectorAll('.continueAnchor');
+                $(continueAnchors).on('click', function(e) {
+                    document.getElementById('prefix').value = '';
+                    var start = ~~this.dataset.start;
+                    showZIMIndex(start);
+                    return false;
+                });
+                alphaSelector = docBody.querySelectorAll('.alphaSelector');
+                $(alphaSelector).on('click', function(e) {
+                    var char = this.dataset.sel;
+                    document.getElementById('prefix').value = '%' + char.toLowerCase() + '%';
+                    showZIMIndex(null, char);
+                    return false;
+                });
+                $('#searchingArticles').hide();
+                $('#articleListWithHeader').hide();
+            }, start);
             }
         }
 
@@ -1682,10 +1753,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          * @param {Event} event
          * @returns {Boolean}
          */
-        function handleTitleClick() {
+        function handleTitleClick(event) {       
             var dirEntryId = event.target.getAttribute("dirEntryId");
             findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId);
             var dirEntry = selectedArchive.parseDirEntryId(dirEntryId);
+            return false;
         }
 
 
@@ -1833,7 +1905,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         // OR href=["'] (ignoring any extra whitespace), and it then tests everything up to the next ["'] against a pattern that
         // matches ZIM URLs with namespaces [-I] ("-" = metadata or "I" = image). Finally it removes the relative or absolute path. 
         // DEV: If you want to support more namespaces, add them to the END of the character set [-I] (not to the beginning) 
-        var regexpTagsWithZimUrl = /(<(?:img|script|link|video|audio|source)\s+[^>]*?\b)(?:src|href)(\s*=\s*["']\s*)(?:\.\.\/|\/)+([-I]\/[^"']*)/ig;
+    var regexpTagsWithZimUrl = /(<(?:img|script|link|video|audio|source|track)\s+[^>]*?\b)(?:src|href)(\s*=\s*["']\s*)(?:\.\.\/|\/)+([-I]\/[^"']*)/ig;
     
         // This matches the data-kiwixurl of all <link> tags containing rel="stylesheet" in raw HTML unless commented out
         var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*data-kiwixurl\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
@@ -2829,7 +2901,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
         function insertMediaBlobsJQuery() {
             var iframe = document.getElementById('articleContent').contentDocument;
-            Array.prototype.slice.call(iframe.querySelectorAll('video[data-kiwixurl], audio[data-kiwixurl], source[data-kiwixurl]'))
+            Array.prototype.slice.call(iframe.querySelectorAll('video[data-kiwixurl], audio[data-kiwixurl], source[data-kiwixurl], track[data-kiwixurl]'))
             .forEach(function(mediaSource) {
                 var source = mediaSource.dataset.kiwixurl;
                 var mimeType = mediaSource.type;
@@ -2837,7 +2909,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     console.error('No usable media source was found!');
                     return;
                 }
-                if (!mimeType) {
+                if (!mimeType && !/track/i.test(mediaSource.tagName)) {
                     // Try to guess type from file extension
                     var mediaType = mediaSource.tagName.toLowerCase();
                     if (!/audio|video/i.test(mediaType)) mediaType = mediaSource.parentElement.tagName.toLowerCase();
@@ -2850,6 +2922,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         var blob = new Blob([dataView], { type: mimeType });
                         mediaSource.src = URL.createObjectURL(blob);
                         // In Firefox and Chromium it is necessary to re-register the inserted media source
+                        // but do not reload for text tracks (closed captions / subtitles)
+                        if (/track/i.test(mediaSource.tagName)) return;
                         if (/video|audio/i.test(mediaSource.tagname)) {
                             mediaSource.load();
                         } else if (/video|audio/i.test(mediaSource.parentElement.tagName)) {
