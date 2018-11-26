@@ -236,11 +236,16 @@ define(['q'], function (q) {
         if (end <= begin)
             return lowerBound ? begin : null;
         var mid = Math.floor((begin + end) / 2);
-        return query(mid).then(function (decision) {
-            if (decision < 0)
+        return query(mid).then(function(decision)
+        {
+            if (decision == -1)
                 return binarySearch(begin, mid, query, lowerBound);
-            else if (decision > 0)
+            else if (decision == 1)
                 return binarySearch(mid + 1, end, query, lowerBound);
+            else if (decision == -2)
+                return binarySearch(begin, end - 1, query, lowerBound)
+            else if (decision == 2)
+                return binarySearch(begin + 1, end, query, lowerBound)
             else
                 return mid;
         });
