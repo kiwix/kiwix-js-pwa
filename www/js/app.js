@@ -1655,12 +1655,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         }
         if (selectedArchive !== null && selectedArchive.isReady()) {
             selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, MAX_SEARCH_RESULT_SIZE, function(dirEntryArray, nextStart) {
-                var docBody = document.getElementById('articleContent').contentDocument.body;
+                //var docBody = document.getElementById('articleContent').contentDocument.body;
+                var docBody = document.getElementById('largeModal');
                 var newHtml = "";
                 for (var i = 0; i < dirEntryArray.length; i++) {
                     var dirEntry = dirEntryArray[i];
-                    newHtml += "\n<li><a  class='list-group-item' href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g,"&apos;")
-                            + "'>" + (dirEntry.title ? dirEntry.title : '[' + dirEntry.url + ']') + "</a></li>";
+                    //newHtml += "\n<li><a  class='list-group-item' href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g,"&apos;")
+                    //        + "'>" + (dirEntry.title ? dirEntry.title : '[' + dirEntry.url + ']') + "</a></li>";
+                    newHtml += "\n<a  class='list-group-item' href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g, "&apos;")
+                        + "'>" + (dirEntry.title ? dirEntry.title : '[' + dirEntry.url + ']') + "</a>";
                 }
                 start = start ? start : 0;
                 var back = start ? '<a href="#" data-start="' + (start - MAX_SEARCH_RESULT_SIZE) +
@@ -1678,14 +1681,21 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 alphaSelector.push('<a href="#" class="alphaSelector" data-sel="¡">¡¿À</a>');
                 alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="!">!#123</a>');
                 var alphaString = '<div style="text-align:center">[ ' + alphaSelector.join(' | \n') + ' ]</div>\n';
-                docBody.innerHTML = '<div style="margin:0 5em;line-height:150%;">\n' + alphaString +
+                var closeButton = '<button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>';
+                //docBody.innerHTML = closeButton + '<div style="margin:0 5em;line-height:150%;">\n' + alphaString +
+                docBody.innerHTML = closeButton + '<div>\n' + alphaString +
                     '<div style="float:right;">' + backNext + '</div>\n' + 
-                    '<h2 style="padding:0 0 1em;">ZIM Archive Index</h2>\n' + 
-                    '<ul id="zimIndex" class="list-group">' + newHtml + '\n</ul><br />\n' + 
+                    //'<h2 style="padding:0 0 1em;">ZIM Archive Index</h2>\n' +
+                    '<h2>ZIM Archive Index</h2>\n' +
+                    //'<ul id="zimIndex" class="list-group">' + newHtml + '\n</ul><br />\n' +
+                    '<div id="zimIndex" class="list-group">' + newHtml + '\n</div><br />\n' +
                     '<div><p style="text-align:right;">' + backNext + '\n</p></div>\n' +
                     alphaString + '<br /><br /><br /></div>\n';
                 var indexEntries = docBody.querySelectorAll('.list-group-item');
-                $(indexEntries).on("click", handleTitleClick);
+                $(indexEntries).on("click", function (event) {
+                    $("#myModal").modal('hide');
+                    handleTitleClick(event);
+                });
                 var continueAnchors = docBody.querySelectorAll('.continueAnchor');
                 $(continueAnchors).on('click', function(e) {
                     document.getElementById('prefix').value = '';
@@ -1702,6 +1712,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 });
                 $('#searchingArticles').hide();
                 $('#articleListWithHeader').hide();
+                var modalTheme = document.getElementById('modalTheme');
+                modalTheme.classList.remove('dark');
+                if (params.cssUITheme === 'dark') modalTheme.classList.add('dark');
+                $('#myModal').modal({
+                    backdrop: "static"
+                });
             }, start);
             }
         }
