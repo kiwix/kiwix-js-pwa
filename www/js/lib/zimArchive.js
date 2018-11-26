@@ -178,11 +178,15 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
      * @param {Integer} resultSize
      * @param {callbackDirEntryList} callback
      */
-    ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function(prefix, resultSize, callback) {
+    ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function(prefix, resultSize, callback, startIndex) {
+        // Save the value of startIndex because value of null has a special meaning in combination with prefix: 
+        // produces a list of matches starting with first match and then next x dirEntries thereafter
+        var saveStartIndex = startIndex;
+        startIndex = startIndex || 0;
         var that = this;
         // Vector is used to remember the search direction if we encounter a dirEntry with an empty title
         var vector = -1;
-        util.binarySearch(0, this._file.articleCount, function(i) {
+        util.binarySearch(startIndex, this._file.articleCount, function(i) {
             return that._file.dirEntryByTitleIndex(i).then(function(dirEntry) {
                 if (dirEntry.namespace < "A") vector = 1;
                 if (dirEntry.namespace > "A") vector = -1;
@@ -201,15 +205,20 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
             var dirEntries = [];
             var addDirEntries = function(index) {
                 if (index >= firstIndex + resultSize || index >= that._file.articleCount)
-                    return dirEntries;
+                    return {
+                        'dirEntries': dirEntries,
+                        'nextStart': index
+                    };
                 return that._file.dirEntryByTitleIndex(index).then(function(dirEntry) {
-                    if (dirEntry.title.slice(0, prefix.length) === prefix && dirEntry.namespace === "A")
+                    if ((saveStartIndex === null || dirEntry.title.slice(0, prefix.length) === prefix) && dirEntry.namespace === "A")
                         dirEntries.push(dirEntry);
                     return addDirEntries(index + 1);
                 });
             };
             return addDirEntries(firstIndex);
-        }).then(callback);
+        }).then(function(objWithIndex) {
+            callback(objWithIndex.dirEntries, objWithIndex.nextStart);
+        });
     };
     
     /**
