@@ -1678,7 +1678,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     alphaSelector.push('<a href="#" class="alphaSelector" data-sel="' + char +'">' + char + '</a>');
                 }
                 // Add selectors for diacritics, etc.
-                alphaSelector.push('<a href="#" class="alphaSelector" data-sel="¡">¡¿À</a>');
+                alphaSelector.push('<a href="#" class="alphaSelector" data-sel="¡">¡¿ÀÉÑ</a>');
                 alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="!">!#123</a>');
                 var alphaString = '<div style="text-align:center">[ ' + alphaSelector.join(' | \n') + ' ]</div>\n';
                 var closeButton = '<button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>';
