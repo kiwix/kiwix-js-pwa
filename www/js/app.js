@@ -1078,7 +1078,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 // If the focus is on the search field, we have to move it,
                 // else the keyboard hides the message
                 if ($("#prefix").is(":focus")) {
-                    $("searchArticles").focus();
+                    $("#searchArticles").focus();
                 }
                 if (confirm("The 'Service Worker' mode is still UNSTABLE for now." +
                         " It happens that the application needs to be reinstalled (or the ServiceWorker manually removed)." +
@@ -1718,6 +1718,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 $('#myModal').modal({
                     backdrop: "static"
                 });
+                if ($('#prefix').is(":focus")) {
+                    // This removes the focus from prefix
+                    document.getElementById('findText').click();
+                    document.getElementById('findText').click();
+                }
             }, start);
             }
         }
