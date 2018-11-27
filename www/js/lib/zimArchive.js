@@ -183,6 +183,7 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
         // produces a list of matches starting with first match and then next x dirEntries thereafter
         var saveStartIndex = startIndex;
         startIndex = startIndex || 0;
+        prefix = prefix || '';
         var that = this;
         // Vector is used to remember the search direction if we encounter a dirEntry with an empty title
         var vector = -1;
