@@ -145,7 +145,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         // This is touch equivalent of Esc above
         document.getElementById('prefix').addEventListener('blur', function (e) {
             document.getElementById('articleContent').style.position = "fixed";
-        });
+        }, true);
 
         //Add keyboard shortcuts
         window.addEventListener('keyup', function (e) {
@@ -1700,6 +1700,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 $(indexEntries).on("click", function (event) {
                     $("#myModal").modal('hide');
                     handleTitleClick(event);
+                    return false;
                 });
                 var continueAnchors = docBody.querySelectorAll('.continueAnchor');
                 $(continueAnchors).on('click', function(e) {
