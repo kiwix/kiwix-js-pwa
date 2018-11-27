@@ -1671,6 +1671,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 var next = dirEntryArray.length === MAX_SEARCH_RESULT_SIZE ? '<a href="#" data-start="' + nextStart +
                     '" class="continueAnchor">Next ' + MAX_SEARCH_RESULT_SIZE + ' &gt;&gt;</a>' : '';
                 var backNext = back ? next ? back + ' | ' + next : back : next;
+                backNext = '<div style="float:right;">' + backNext + '</div>\n';
                 var alphaSelector = [];
                 // Set up the alphabetic selector
                 for (i = 65; i <= 90; i++) {
@@ -1681,16 +1682,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 alphaSelector.push('<a href="#" class="alphaSelector" data-sel="¡">¡¿ÀÉÑ</a>');
                 alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="!">!#123</a>');
                 var alphaString = '<div style="text-align:center">[ ' + alphaSelector.join(' | \n') + ' ]</div>\n';
-                var closeButton = '<button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>';
-                //docBody.innerHTML = closeButton + '<div style="margin:0 5em;line-height:150%;">\n' + alphaString +
-                docBody.innerHTML = closeButton + '<div>\n' + alphaString +
-                    '<div style="float:right;">' + backNext + '</div>\n' + 
-                    //'<h2 style="padding:0 0 1em;">ZIM Archive Index</h2>\n' +
+                var closeButton = '<button class="close" aria-hidden="true" type="button" data-dismiss="modal">&nbsp;&times;&nbsp;</button>';
+                docBody.innerHTML = closeButton + '<div style="font-size:120%;"><br />\n' + alphaString + '<br />' + backNext + '</div>\n' + 
                     '<h2>ZIM Archive Index</h2>\n' +
-                    //'<ul id="zimIndex" class="list-group">' + newHtml + '\n</ul><br />\n' +
-                    '<div id="zimIndex" class="list-group">' + newHtml + '\n</div><br />\n' +
-                    '<div><p style="text-align:right;">' + backNext + '\n</p></div>\n' +
-                    alphaString + '<br /><br /><br /></div>\n';
+                    '<div id="zimIndex" class="list-group">' + newHtml + '\n</div>\n' +
+                    '<div style="font-size:120%">\n' + backNext + '<br /><br />' + alphaString + '</div>\n';
                 var indexEntries = docBody.querySelectorAll('.list-group-item');
                 $(indexEntries).on("click", function (event) {
                     $("#myModal").modal('hide');
