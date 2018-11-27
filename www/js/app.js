@@ -134,12 +134,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }
                 }
                 if (e.which == 27) {
-                    //Esc, so hide the list behind article TODO: implement click equivalent
+                    //Esc, so hide the list behind article
                     document.getElementById('articleContent').style.position = "fixed";
+                    $("#myModal").modal('hide'); // This is in case the modal box is showing with an index search
                     return;
                 }
                 onKeyUpPrefix(e);
             }
+        });
+        // This is touch equivalent of Esc above
+        document.getElementById('prefix').addEventListener('blur', function (e) {
+            document.getElementById('articleContent').style.position = "fixed";
         });
 
         //Add keyboard shortcuts
@@ -1624,13 +1629,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          */
         function searchDirEntriesFromPrefix(prefix) {
             if (selectedArchive !== null && selectedArchive.isReady()) {
-            if (!prefix || /%index/i.test(prefix) || /%.%/i.test(prefix) || /\s/.test(prefix)) {
-                var sel = prefix ? prefix.replace(/^%(.)%/, '$1') : '';
-                sel = sel.length === 1 ? sel.toUpperCase() : ''; 
-                showZIMIndex(null, sel);
-            } else {
-                selectedArchive.findDirEntriesWithPrefix(prefix.trim(), MAX_SEARCH_RESULT_SIZE, populateListOfArticles);
-            }
+                if (!prefix || /^\s/.test(prefix)) {
+                    var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
+                    if (sel.length) {
+                        sel = sel.replace(/^(.)(.*)/, function(p0, p1, p2) {
+                            return p1.toUpperCase() + p2;
+                        });
+                    }
+                    showZIMIndex(null, sel);
+                } else {
+                    selectedArchive.findDirEntriesWithPrefix(prefix.trim(), MAX_SEARCH_RESULT_SIZE, populateListOfArticles);
+                }
             } else {
                 $('#searchingArticles').hide();
                 // We have to remove the focus from the search field,
@@ -1683,7 +1692,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="!">!#123</a>');
                 var alphaString = '<div style="text-align:center">[ ' + alphaSelector.join(' | \n') + ' ]</div>\n';
                 var closeButton = '<button class="close" aria-hidden="true" type="button" data-dismiss="modal">&nbsp;&times;&nbsp;</button>';
-                docBody.innerHTML = closeButton + '<div style="font-size:120%;"><br />\n' + alphaString + '<br />' + backNext + '</div>\n' + 
+                docBody.innerHTML = closeButton + '<br />\n<div style="font-size:120%;"><br />\n' + alphaString + '<br />' + backNext + '</div>\n' + 
                     '<h2>ZIM Archive Index</h2>\n' +
                     '<div id="zimIndex" class="list-group">' + newHtml + '\n</div>\n' +
                     '<div style="font-size:120%">\n' + backNext + '<br /><br />' + alphaString + '</div>\n';
@@ -1702,7 +1711,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 alphaSelector = docBody.querySelectorAll('.alphaSelector');
                 $(alphaSelector).on('click', function(e) {
                     var char = this.dataset.sel;
-                    document.getElementById('prefix').value = '%' + char.toLowerCase() + '%';
+                    document.getElementById('prefix').value = ' ' + char.toLowerCase();
                     showZIMIndex(null, char);
                     return false;
                 });
@@ -1714,11 +1723,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 $('#myModal').modal({
                     backdrop: "static"
                 });
-                if ($('#prefix').is(":focus")) {
-                    // This removes the focus from prefix
-                    document.getElementById('findText').click();
-                    document.getElementById('findText').click();
-                }
+                //if ($('#prefix').is(":focus")) {
+                //    // This removes the focus from prefix
+                //    document.getElementById('findText').click();
+                //    document.getElementById('findText').click();
+                //}
             }, start);
             }
         }
