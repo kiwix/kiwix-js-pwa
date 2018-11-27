@@ -145,7 +145,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         // This is touch equivalent of Esc above
         document.getElementById('prefix').addEventListener('blur', function (e) {
             document.getElementById('articleContent').style.position = "fixed";
-        }, true);
+        });
 
         //Add keyboard shortcuts
         window.addEventListener('keyup', function (e) {
@@ -1697,7 +1697,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     '<div id="zimIndex" class="list-group">' + newHtml + '\n</div>\n' +
                     '<div style="font-size:120%">\n' + backNext + '<br /><br />' + alphaString + '</div>\n';
                 var indexEntries = docBody.querySelectorAll('.list-group-item');
-                $(indexEntries).on("click", function (event) {
+                $(indexEntries).on('click', function (event) {
                     $("#myModal").modal('hide');
                     handleTitleClick(event);
                     return false;
@@ -1769,7 +1769,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //});
             // Needed so that results show on top of article
             document.getElementById('articleContent').style.position = 'static';
-            $("#articleList a").on("click", handleTitleClick);
+            // We have to use mousedown instead of click as otherwise the blur event fires first and prevents this event from firing
+            $('#articleList a').on('mousedown', function (e) {
+                handleTitleClick(e);
+                return false;
+            });
             $('#searchingArticles').hide();
             $('#articleList').show();
             $('#articleListWithHeader').show();
@@ -1802,6 +1806,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 if (dirEntry.isRedirect()) {
                     selectedArchive.resolveRedirect(dirEntry, readArticle);
                 } else {
+                    params.isLandingPage = false;
                     readArticle(dirEntry);
                 }
             } else {
@@ -2049,13 +2054,29 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //    return "";
             //});
             // Neutralize all inline scripts for now (later use above), excluding math blocks or react templates
-            htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig, "<!-- $1 --!>");
+            var containsActiveContent = false;
+            htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig, function (p0, p1) {
+                containsActiveContent = true;
+                return '<!-- ' + p1 + ' --!>';
+            });
             //Neutralize onload events, as they cause a crash in ZIMs with proprietary UIs
             htmlArticle = htmlArticle.replace(/(<[^>]+?)onload\s*=\s*["'][^"']+["']\s*/ig, '$1');
             //Neutralize onclick events
             htmlArticle = htmlArticle.replace(/(<[^>]+?)onclick\s*=\s*["'][^"']+["']\s*/ig, '$1');
             //Neutralize href="javascript:" links
             htmlArticle = htmlArticle.replace(/href\s*=\s*["']javascript:[^"']+["']/gi, 'href=""');
+
+            // Display an information box if the landing page contains active content
+            if (params.isLandingPage && containsActiveContent) {
+                var alertHTML = '<div id="alertBox" class="alert alert-info alert-dismissible" style="margin-bottom:0;">' +
+                    '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
+                    '<span id="alertMessage"><strong>Unable to display active content:</strong> To show Content Index, type a space in the box above or <a id="titleIndexLink" href="#" class="alert-link">click here</a>.</span>' +
+                    '</div>';
+                document.getElementById('alertBoxDiv').innerHTML = alertHTML;
+                document.getElementById('titleIndexLink').addEventListener('click', function () {
+                    showZIMIndex(0);
+                });
+            }
 
             //MathJax detection:
             containsMathTeXRaw = params.useMathJax && !/wikivoyage/.test(params.storedFile) ? /\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/.test(htmlArticle) : false;
@@ -2448,7 +2469,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
                         insertMediaBlobsJQuery();
 
-                        //Document has loaded except for images, so we can now change the startup cookie (and delete) [see init.js]
+                        // Document has loaded except for images, so we can now change the startup cookie (and delete) [see init.js]
                         document.cookie = 'lastPageLoad=success;expires=Thu, 21 Sep 1979 00:00:01 UTC';
                     }
 
@@ -3006,6 +3027,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     console.error("Article with title " + title + " not found in the archive");
                     goToMainArticle();
                 } else {
+                    params.isLandingPage = false;
                     readArticle(dirEntry);
                 }
             }).fail(function () {
@@ -3025,6 +3047,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 } else {
                     //Test below supports Stackexchange-family ZIMs, so we don't call up user profiles
                     if (dirEntry.namespace === 'A' && !/user\//.test(dirEntry.url)) {
+                        params.isLandingPage = false;
                         readArticle(dirEntry);
                     } else {
                         // If the random title search did not end up on an article,
@@ -3044,6 +3067,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     $("#welcomeText").show();
                 } else {
                     if (dirEntry.namespace === 'A') {
+                        params.isLandingPage = true;
                         readArticle(dirEntry);
                     } else {
                         console.error("The main page of this archive does not seem to be an article");
