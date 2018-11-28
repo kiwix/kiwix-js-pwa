@@ -172,11 +172,11 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
     };
     
     /**
-     * Look for DirEntries with title starting with the given prefix (case-sensitive)
+     * Look for dirEntries with title starting with the given prefix (case-sensitive)
      * 
-     * @param {String} prefix
-     * @param {Integer} resultSize
-     * @param {callbackDirEntryList} callback
+     * @param {String} prefix The case-sensitive value against which dirEntry titles (or url) will be compared
+     * @param {Integer} resultSize The maximum number of results to return
+     * @param {Function} callback The function to call with the array of dirEntries with titles that begin with prefix
      */
     ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function(prefix, resultSize, callback, startIndex) {
         // Save the value of startIndex because value of null has a special meaning in combination with prefix: 
@@ -185,21 +185,17 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
         startIndex = startIndex || 0;
         prefix = prefix || '';
         var that = this;
-        // Vector is used to remember the search direction if we encounter a dirEntry with an empty title
-        var vector = -1;
         util.binarySearch(startIndex, this._file.articleCount, function(i) {
             return that._file.dirEntryByTitleIndex(i).then(function(dirEntry) {
-                if (dirEntry.namespace < "A") vector = 1;
-                if (dirEntry.namespace > "A") vector = -1;
-                if (dirEntry.namespace !== "A") return vector;
+                if (dirEntry.namespace < "A") return 1;
+                if (dirEntry.namespace > "A") return -1;
                 // We should now be in namespace A
                 if (dirEntry.title) { 
-                    vector = prefix <= dirEntry.title ? -1 : 1;
-                    return vector;
+                    return prefix <= dirEntry.title ? -1 : 1;
                 } else {
-                    // Since there is no title, we must nudge the search algorith up or down
-                    // We signal this to util.binarySearch by returning -2 or +2 instead of -1 or +1
-                    return vector + vector;
+                    // Some dirEntries (e.g. subtitles) have no title, but are still sorted in the A namespace,
+                    // so we have to use the url as a comparator [kiwix-js #440 #443]
+                    return prefix <= dirEntry.url ? -1 : 1;
                 }
             });
         }, true).then(function(firstIndex) {
