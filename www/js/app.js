@@ -1650,7 +1650,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             return p1.toUpperCase() + p2;
                         });
                     }
-                    $("#alertBox").hide();
+                    $("#activeContent").hide();
                     showZIMIndex(null, sel);
                 } else {
                     selectedArchive.findDirEntriesWithPrefix(prefix.trim(), MAX_SEARCH_RESULT_SIZE, populateListOfArticles);
@@ -1967,6 +1967,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         // DEV: If you want to support more namespaces, add them to the END of the character set [-I] (not to the beginning) 
     var regexpTagsWithZimUrl = /(<(?:img|script|link|video|audio|source|track)\s+[^>]*?\b)(?:src|href)(\s*=\s*["']\s*)(?:\.\.\/|\/)+([-I]\/[^"']*)/ig;
     
+    // DEV: The regex below matches ZIM links (anchor hrefs) that should have the html5 "donwnload" attribute added to 
+    // the link. This is currently the case for epub files in Project Gutenberg ZIMs -- add any further types you need
+    // to support to this regex. The "zip" has been added here as an example of how to support further filetypes
+    var regexpDownloadLinks = /^.*?\.epub($|\?)|^.*?\.zip($|\?)/i
+    
         // This matches the data-kiwixurl of all <link> tags containing rel="stylesheet" in raw HTML unless commented out
         var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*data-kiwixurl\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
         // This matches the title between <title  attrs> ... </title>
@@ -2098,7 +2103,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (!params.hideActiveContentWarning && params.isLandingPage && containsActiveContent) {
                 // DEV: Add any other ZIM types that you wish to exclude from showing the active content alert
                 if (!/wikipedia|wiktionary|wikivoyage/i.test(dirEntry._zimfile._files[0].name)) {
-                    var alertHTML = '<div id="alertBox" class="alert alert-info alert-dismissible fade in" style="margin-bottom:0;">' +
+                    var alertHTML = '<div id="activeContent" class="alert alert-info alert-dismissible fade in" style="margin-bottom:0;">' +
                         '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
                         '<strong>Unable to display active content:</strong> To use Archive Index instead, <a id="titleIndexLink" href="#" class="alert-link">click here</a>, or <b><i>type a space</b></i> in the box above. [<a id="stop" href="#displaySettingsDiv" class="alert-link">Permanently hide</a>]' +
                         '</div>';
@@ -2107,7 +2112,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         showZIMIndex(0);
                     });
                     document.getElementById('stop').addEventListener('click', function() {
-                        $('#alertBox').hide();
+                        $('#activeContent').hide();
                         var acwLabel = document.getElementById('hideActiveContentWarningCheck').parentNode;
                         acwLabel.style.borderColor = 'red';
                         acwLabel.style.borderStyle = 'solid';
@@ -2496,13 +2501,28 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                 // It's an external URL : we should open it in a new tab
                                 anchor.target = '_blank';
                             } else {
-                                // It's a link to another article
-                                // Add an onclick event to go to this article
+                                // It's a link to an article or file in the ZIM
+                                var decodedURL = decodeURIComponent(zimUrl);
+                                if (regexpDownloadLinks.test(href)) {
+                                    // It's a link to a file in the ZIM that needs to be downloaded, not displayed (e.g. *.epub)
+                                    var filename = decodedURL.replace(/^.*\/([^\/]+)$/, '$1');
+                                    var downloadAttribute = anchor.getAttribute('download');
+                                    if (!downloadAttribute) anchor.setAttribute('download', filename);
+                                    var contentType = anchor.getAttribute('type');
+                                    if (!contentType) {
+                                        // DEV: Add more contentTypes here for downloadable files
+                                        if (/\.epub/.test(decodedURL)) contentType = 'application/epub+zip';
+                                        if (contentType) anchor.setAttribute('type', contentType);
+                                    }
+                                }    
+
+                                // Add an onclick event to extract this article or file from the ZIM
                                 // instead of following the link
                                 anchor.addEventListener('click', function (e) {
+                                    var downloadAttribute = this.getAttribute('download');
+                                    var contentType = this.getAttribute('type');
+                                    goToArticle(decodedURL, downloadAttribute, contentType);
                                     e.preventDefault();
-                                    var decodedURL = decodeURIComponent(zimUrl);
-                                    goToArticle(decodedURL);
                                 });
                             }
                         });
@@ -3052,10 +3072,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
 
         /**
-         * Replace article content with the one of the given title
-         * @param {String} title
+         * Replaces article content with the one of the given title, or extracts a downloadable file from the ZIM
+         * 
+         * @param {String} title The path and filename to the article or file to be extracted
+         * @param {Boolean} download If true, the file will be prepared for download instead of treated as an article
+         * @param {String} contentType The mimetype of the downloadable file, if known 
          */
-        function goToArticle(title) {
+        function goToArticle(title, download, contentType) {
             //This removes any search highlighting
             clearFindInArticle();
             //Re-enable top-level scrolling
@@ -3068,6 +3091,36 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     document.getElementById('searchingArticles').style.display = 'none';
                     console.error("Article with title " + title + " not found in the archive");
                     goToMainArticle();
+                } else if (download) {
+                    selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                        // Download code taken from https://stackoverflow.com/a/19230668/9727685 
+                        if (!contentType) contentType = 'application/octet-stream';
+                        var a = document.createElement('a');
+                        var blob = new Blob([content], { 'type': contentType });
+                        var filename = download || title.replace(/^.*\/([^\/]+)$/, '$1');
+                        // Make filename safe
+                        filename = filename.replace(/[\/\\:*?"<>|]/g, '_');
+                        a.href = window.URL.createObjectURL(blob);
+                        a.target = '_blank';
+                        a.type = contentType;
+                        a.download = filename;
+                        a.innerHTML = filename;
+                        var alertMessage = document.getElementById('alertMessage');
+                        alertMessage.innerHTML = '<strong>Download</strong> If the download does not start, please click the following link: ';
+                        alertMessage.appendChild(a); // NB we have to add the anchor to the document for Firefox to be able to click it
+                        try { a.click(); }
+                        catch (err) {
+                            // If the click fails, use an alternative download method
+                            if (window.navigator && window.navigator.msSaveBlob) {
+                                // This works for IE11
+                                window.navigator.msSaveBlob(blob, filename);
+                            } else {
+                                // Fall back to showing the link in a message box
+                                document.getElementById('alertBox').style.display = "block";
+                            }
+                        }
+                        $("#searchingArticles").hide();
+                    });
                 } else {
                     params.isLandingPage = false;
                     readArticle(dirEntry);
