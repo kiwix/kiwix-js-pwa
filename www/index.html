@@ -236,7 +236,7 @@
                     </p>
                     <p>
                         To use this app, you will need to download one or more archives (called ZIM archives) from the Kiwix website. You will then have
-                        offline access to Wikipedia, Wiktionary, Wikivoyage and many other sources even if you are undertaking a long plane journey, hiking, 
+                        offline access to Wikipedia, Wiktionary, Wikivoyage and many other sources even if you are undertaking a long plane journey, hiking,
                         and travelling or living in areas with weak Internet access.
                     </p>
                     <p>
@@ -275,7 +275,7 @@
                         If you have enough space, you can put several archives on your device storage. If you download the content directly in the app, note the location
                         of the saved file when you get the notification that it has completed. If you downloaded via a PC, you will generally need to use a USB
                         cable to copy the ZIM archive(s) to an accessible location on your device, such as the SD card or the main storage area if there is enough
-                        space there. 
+                        space there.
                     </p>
                     <h4>Step 3: open this app, go to the "Configure" menu and select your ZIM file</h4>
                     <p>
@@ -393,8 +393,8 @@
                     </div>
                     <div id="hideFileSelectors">
                         <div id="scanningForArchives" style="display: none;">
-                        <br /> Scanning for archives... Please wait <img src="img/spinner.gif" alt="Please wait..." />
-                    </div>
+                            <br /> Scanning for archives... Please wait <img src="img/spinner.gif" alt="Please wait..." />
+                        </div>
                         <div id="chooseArchiveFromLocalStorage" style="display: none;">
                             <div id="archivesFound" class="row">
                                 <p><span id="archiveNumber">Archives found on this device (tap "Select storage" to rescan)</span>:</p>
@@ -417,7 +417,7 @@
                                 <div id="UWPInstructions" class="row">
                                     <div class="col-xs-6">
                                         <p>For a single unsplit archive</p>
-                                </div>
+                                    </div>
                                     <div class="col-xs-6">
                                         <p>For multiple or split archives</p>
                                     </div>
@@ -449,12 +449,12 @@
                             </div>
                         </div>
                         <div id="downloads">
-                        <div class="row">
-                            <h3>Download links</h3>
-                            <p>
-                                Files can be very large, <b>do not attempt to download using mobile data!</b>
-                            </p>
-                            <div class="col-xs-12">
+                            <div class="row">
+                                <h3>Download links</h3>
+                                <p>
+                                    Files can be very large, <b>do not attempt to download using mobile data!</b>
+                                </p>
+                                <div class="col-xs-12">
                                     <table>
                                         <tr>
                                             <td><input id="downloadTrigger" type="button" class="btn btn-primary" value="Open library" style="float:left; margin-right:1em;" /></td>
@@ -463,12 +463,12 @@
                                     </table>
                                     <p style="padding-top:10px;">
                                         <input type="checkbox" name="allowInternetAccess" id="allowInternetAccessCheck"><b>&nbsp;Allow Internet access?</b>
-                                </p>
+                                    </p>
+                                </div>
+                                <div id="downloadLinks" style="display: none;"></div>
+                                <pre id="serverResponse" class="panel-footer" style="display:none;"></pre>
                             </div>
-                            <div id="downloadLinks" style="display: none;"></div>
-                            <pre id="serverResponse" class="panel-footer" style="display:none;"></pre>
                         </div>
-                    </div>
                     </div>
 
                     <div>
@@ -534,11 +534,15 @@
                                             <input type="checkbox" name="imageDisplayMode" id="imageDisplayModeCheck">
                                             <b>Display images if any</b> (if hidden, tap the <span style="background-color:lightblue; color:black;">&nbsp;blue area&nbsp;</span> to display one-by-one)
                                         </label>
-                                    </div>
-                                </div>
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="hideActiveContentWarning" id="hideActiveContentWarningCheck">
+                                            <b>Permanently hide warning about active content</b> (<i>only hide if you know how to access the Archive Index</i>)
+                                        </label>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
                     <div class="returntoArticle" style="text-align:center;"></div>
                     <div>
                         <div class="row">
@@ -616,6 +620,8 @@
                     </div>
                 </div>
             </div>
+            <!-- Bootstrap alert box will be created here -->
+            <div id="alertBoxDiv" style="text-align: center;"></div>
             <iframe id="articleContent" class="articleIFrame"></iframe>
         </article>
         <footer id="footer">

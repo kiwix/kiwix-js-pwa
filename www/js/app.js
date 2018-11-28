@@ -706,6 +706,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             params.themeChanged = params.imageDisplay; //Only reload page if user asked for all images to be displayed
             cookies.setItem('imageDisplay', params.imageDisplay, Infinity);
         });
+        $('input:checkbox[name=hideActiveContentWarning]').on('change', function (e) {
+            params.hideActiveContentWarning = this.checked ? true : false;
+            cookies.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
+        });
         $('input:checkbox[name=hideToolbar]').on('change', function (e) {
             params.hideToolbar = this.checked ? true : false;
             cookies.setItem('hideToolbar', params.hideToolbar, Infinity);
@@ -1636,6 +1640,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             return p1.toUpperCase() + p2;
                         });
                     }
+                    $("#alertBox").hide();
                     showZIMIndex(null, sel);
                 } else {
                     selectedArchive.findDirEntriesWithPrefix(prefix.trim(), MAX_SEARCH_RESULT_SIZE, populateListOfArticles);
@@ -2067,15 +2072,22 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             htmlArticle = htmlArticle.replace(/href\s*=\s*["']javascript:[^"']+["']/gi, 'href=""');
 
             // Display an information box if the landing page contains active content
-            if (params.isLandingPage && containsActiveContent) {
-                var alertHTML = '<div id="alertBox" class="alert alert-info alert-dismissible" style="margin-bottom:0;">' +
-                    '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
-                    '<span id="alertMessage"><strong>Unable to display active content:</strong> To show Content Index, type a space in the box above or <a id="titleIndexLink" href="#" class="alert-link">click here</a>.</span>' +
-                    '</div>';
-                document.getElementById('alertBoxDiv').innerHTML = alertHTML;
-                document.getElementById('titleIndexLink').addEventListener('click', function () {
-                    showZIMIndex(0);
-                });
+            if (!params.hideActiveContentWarning && params.isLandingPage && containsActiveContent) {
+                // DEV: Add any other ZIM types that you wish to exclude from showing the active content alert
+                if (!/wikipedia|wiktionary|wikivoyage/i.test(dirEntry._zimfile._files[0].name)) {
+                    var alertHTML = '<div id="alertBox" class="alert alert-info alert-dismissible fade in" style="margin-bottom:0;">' +
+                        '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
+                        '<strong>Unable to display active content:</strong> To use Archive Index instead, <a id="titleIndexLink" href="#" class="alert-link">click here</a>, or <b><i>type a space</b></i> in the box above. [<a id="stop" href="#displaySettingsDiv" class="alert-link">Permanently hide</a>]' +
+                        '</div>';
+                    document.getElementById('alertBoxDiv').innerHTML = alertHTML;
+                    document.getElementById('titleIndexLink').addEventListener('click', function() {
+                        showZIMIndex(0);
+                    });
+                    document.getElementById('stop').addEventListener('click', function () {
+                        $('#alertBox').hide();
+                        document.getElementById('btnConfigure').click();
+                    });
+                }
             }
 
             //MathJax detection:
