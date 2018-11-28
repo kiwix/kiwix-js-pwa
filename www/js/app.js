@@ -710,6 +710,16 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             params.hideActiveContentWarning = this.checked ? true : false;
             cookies.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
         });
+        $('input:text[name=alphaChar]').on('change', function (e) {
+            params.alphaChar = this.value.length == 1 ? this.value : params.alphaChar;
+            this.value = params.alphaChar;
+            cookies.setItem('alphaChar', params.alphaChar, Infinity);
+        });
+        $('input:text[name=omegaChar]').on('change', function (e) {
+            params.omegaChar = this.value.length == 1 ? this.value : params.omegaChar;
+            this.value = params.omegaChar;
+            cookies.setItem('omegaChar', params.omegaChar, Infinity);
+        });
         $('input:checkbox[name=hideToolbar]').on('change', function (e) {
             params.hideToolbar = this.checked ? true : false;
             cookies.setItem('hideToolbar', params.hideToolbar, Infinity);
@@ -1688,13 +1698,26 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 backNext = '<div style="float:right;">' + backNext + '</div>\n';
                 var alphaSelector = [];
                 // Set up the alphabetic selector
-                for (i = 65; i <= 90; i++) {
-                    var char = String.fromCharCode(i);
-                    alphaSelector.push('<a href="#" class="alphaSelector" data-sel="' + char +'">' + char + '</a>');
+                var lower = params.alphaChar.charCodeAt();
+                var upper = params.omegaChar.charCodeAt();
+                if (upper <= lower) {
+                    alphaSelector.push('<a href="#" class="alphaSelector" data-sel="A">PLEASE SELECT VALID START AND END ALPHABET CHARACTERS IN CONFIGURATION</a>');
+                } else {
+                    for (i = lower; i <= upper; i++) {
+                        var char = String.fromCharCode(i);
+                        alphaSelector.push('<a href="#" class="alphaSelector" data-sel="' + char + '">' + char + '</a>');
+                    }
                 }
-                // Add selectors for diacritics, etc.
-                alphaSelector.push('<a href="#" class="alphaSelector" data-sel="¡">¡¿ÀÉÑ</a>');
-                alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="!">!#123</a>');
+                // Add selectors for diacritics, etc. for Roman alphabet
+                if (params.alphaChar === 'A' && params.omegaChar == 'Z') {
+                    alphaSelector.push('<a href="#" class="alphaSelector" data-sel="¡">¡¿ÀÑ</a>');
+                    alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="!">!#123</a>');
+                }
+                if (params.alphaChar === 'Α' && params.omegaChar == 'Ω') {
+                    alphaSelector.push('<a href="#" class="alphaSelector" data-sel="Ϊ">ΪΫά</a>');
+                    alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="΄">ΆΈΉ</a>');
+                }
+                
                 var alphaString = '<div style="text-align:center">[ ' + alphaSelector.join(' | \n') + ' ]</div>\n';
                 var closeButton = '<button class="close" aria-hidden="true" type="button" data-dismiss="modal">&nbsp;&times;&nbsp;</button>';
                 docBody.innerHTML = closeButton + '<br />\n<div style="font-size:120%;"><br />\n' + alphaString + '<br />' + backNext + '</div>\n' + 
@@ -1717,7 +1740,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 alphaSelector = docBody.querySelectorAll('.alphaSelector');
                 $(alphaSelector).on('click', function(e) {
                     var char = this.dataset.sel;
-                    document.getElementById('prefix').value = ' ' + char.toLowerCase();
+                    document.getElementById('prefix').value = ' ' + char;
                     showZIMIndex(null, char);
                     return false;
                 });
@@ -2083,8 +2106,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     document.getElementById('titleIndexLink').addEventListener('click', function() {
                         showZIMIndex(0);
                     });
-                    document.getElementById('stop').addEventListener('click', function () {
+                    document.getElementById('stop').addEventListener('click', function() {
                         $('#alertBox').hide();
+                        var acwLabel = document.getElementById('hideActiveContentWarningCheck').parentNode;
+                        acwLabel.style.borderColor = 'red';
+                        acwLabel.style.borderStyle = 'solid';
+                        acwLabel.addEventListener('mousedown', function() {
+                            this.style.borderColor = '';
+                            this.style.borderStyle = '';
+                        }); 
                         document.getElementById('btnConfigure').click();
                     });
                 }
