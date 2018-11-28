@@ -10,7 +10,7 @@
     Home page : http://www.kiwix.org
 
     Main authors of this application :
-    Mossroy - mossroy@mossroy.fr
+        Mossroy - https://github.com/mossroy - mossroy@mossroy.fr
     Peter-x - https://github.com/peter-x
     Jaifroid - Adapted for UWP for Windows 10 and Windows Mobile 10 : Geoffrey Kantaris egk10@cam.ac.uk
 
@@ -633,6 +633,11 @@
             <iframe id="articleContent" class="articleIFrame"></iframe>
         </article>
         <footer id="footer">
+                <!-- Bootstrap alert box -->
+                <div id="alertBox" class="alert alert-info alert-dismissible" style="display:none;">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <span id="alertMessage"><strong>Info!</strong> Alert box message.</span>
+                </div>
             <div id="navigationButtons" class="btn-group btn-group-justified">
                 <div class="row">
                     <a class="btn btn-default col-xs-2" id="btnHomeBottom" title="Home"><span class="glyphicon glyphicon-home"></span></a>
