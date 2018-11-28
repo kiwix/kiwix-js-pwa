@@ -231,24 +231,18 @@ define(['q'], function (q) {
      * @param {Integer} end The end of the search window
      * @param {Function} query The query to run to test the current point in the window
      * @param {Boolean} lowerBound Determines the type of search
-     * @param {Integer} linear Used to initiate a linear search up or down from the current point 
-     *      (useful if dirEntries without titles are interspersed in the list)
-     * @returns {Promise} For the dirEntry that fulfils the query
+     * @returns {Promise} Promise for the lowest dirEntry that fulfils (or fails to fulfil) the query
      */
-    function binarySearch(begin, end, query, lowerBound, linear) {
+    function binarySearch(begin, end, query, lowerBound) {
         if (end <= begin)
             return lowerBound ? begin : null;
-        var mid = linear ? linear : Math.floor((begin + end) / 2);
+        var mid = Math.floor((begin + end) / 2);
         return query(mid).then(function(decision)
         {
-            if (decision == -1)
+            if (decision < 0)
                 return binarySearch(begin, mid, query, lowerBound);
-            else if (decision == 1)
+            else if (decision > 0)
                 return binarySearch(mid + 1, end, query, lowerBound);
-            else if (decision == -2)
-                return binarySearch(begin, end - 1, query, lowerBound, mid - 1);
-            else if (decision == 2)
-                return binarySearch(begin + 1, end, query, lowerBound, mid + 1);
             else
                 return mid;
         });
