@@ -46,6 +46,8 @@ params['useMathJax'] = getCookie('useMathJax') != null ? getCookie('useMathJax')
 //params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
 params['showFileSelectors'] = false; //This will cause file selectors to be hidden on each load of the app (by ignoring cookie)
 params['hideActiveContentWarning'] = getCookie('hideActiveContentWarning') != null ? getCookie('hideActiveContentWarning') : false;
+params['alphaChar'] = getCookie('alphaChar') || 'A'; //Set default start of alphabet string (used by the Archive Index)
+params['omegaChar'] = getCookie('omegaChar') || 'Z'; //Set default end of alphabet string
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['storedFile'] = getCookie('lastSelectedArchive') || params['packagedFile'];
@@ -85,6 +87,9 @@ document.getElementById('useMathJaxRadio' + (params.useMathJax ? 'True' : 'False
 document.getElementById('rememberLastPageCheck').checked = params.rememberLastPage;
 document.getElementById('displayFileSelectorsCheck').checked = params.showFileSelectors;
 document.getElementById('hideActiveContentWarningCheck').checked = params.hideActiveContentWarning;
+document.getElementById('alphaCharTxt').value = params.alphaChar;
+document.getElementById('omegaCharTxt').value = params.omegaChar;
+
 var versionSpans = document.getElementsByClassName('version');
 for (var i = 0; i < versionSpans.length; i++) {
     versionSpans[i].innerHTML = i ? params.version : params.version.replace(/\s+.*$/, "");
