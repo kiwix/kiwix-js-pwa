@@ -45,6 +45,7 @@ params['rememberLastPage'] = getCookie('rememberLastPage') != null ? getCookie('
 params['useMathJax'] = getCookie('useMathJax') != null ? getCookie('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
 //params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
 params['showFileSelectors'] = false; //This will cause file selectors to be hidden on each load of the app (by ignoring cookie)
+params['hideActiveContentWarning'] = getCookie('hideActiveContentWarning') != null ? getCookie('hideActiveContentWarning') : false;
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['storedFile'] = getCookie('lastSelectedArchive') || params['packagedFile'];
@@ -83,6 +84,7 @@ document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme == 'd
 document.getElementById('useMathJaxRadio' + (params.useMathJax ? 'True' : 'False')).checked = true;
 document.getElementById('rememberLastPageCheck').checked = params.rememberLastPage;
 document.getElementById('displayFileSelectorsCheck').checked = params.showFileSelectors;
+document.getElementById('hideActiveContentWarningCheck').checked = params.hideActiveContentWarning;
 var versionSpans = document.getElementsByClassName('version');
 for (var i = 0; i < versionSpans.length; i++) {
     versionSpans[i].innerHTML = i ? params.version : params.version.replace(/\s+.*$/, "");
