@@ -3011,38 +3011,148 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
         function insertMediaBlobsJQuery() {
             var iframe = document.getElementById('articleContent').contentDocument;
-            Array.prototype.slice.call(iframe.querySelectorAll('video[data-kiwixurl], audio[data-kiwixurl], source[data-kiwixurl], track[data-kiwixurl]'))
+            var trackBlob;
+            Array.prototype.slice.call(iframe.querySelectorAll('video[data-kiwixurl], audio[data-kiwixurl], source[data-kiwixurl]'))
             .forEach(function(mediaSource) {
                 var source = mediaSource.dataset.kiwixurl;
-                var mimeType = mediaSource.type;
                 if (!source || !regexpZIMUrlWithNamespace.test(source)) {
                     console.error('No usable media source was found!');
                     return;
                 }
-                if (!mimeType && !/track/i.test(mediaSource.tagName)) {
+                var mediaElement = /audio|video/i.test(mediaSource.tagName) ? mediaSource : mediaSource.parentElement;
+                var mimeType = mediaSource.type;
+                // Check mimeType
+                if (!mimeType) {
                     // Try to guess type from file extension
-                    var mediaType = mediaSource.tagName.toLowerCase();
-                    if (!/audio|video/i.test(mediaType)) mediaType = mediaSource.parentElement.tagName.toLowerCase();
+                    var mediaType = mediaElement.tagName.toLowerCase();
                     if (!/audio|video/i.test(mediaType)) mediaType = 'video';
+                    // if (/track/i.test(mediaSource.tagName)) mediaType = 'text';
                     mimeType = source.replace(/^.*\.([^.]+)$/, mediaType + '/$1');
                 }
+                // Create custom subtitle / cc load menu if it doesn't already exist
+                if (!iframe.getElementById('kiwixCCMenu')) buildCustomCCMenu(iframe, mediaElement, function (ccBlob) {
+                    trackBlob = ccBlob;
+                });
+                // Load media file
                 selectedArchive.getDirEntryByTitle(decodeURIComponent(source)).then(function(dirEntry) {
                     return selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, mediaArray) {
-                        var dataView = new DataView(mediaArray.buffer);
-                        var blob = new Blob([dataView], { type: mimeType });
+                        var blob = new Blob([mediaArray], { type: mimeType });
                         mediaSource.src = URL.createObjectURL(blob);
                         // In Firefox and Chromium it is necessary to re-register the inserted media source
                         // but do not reload for text tracks (closed captions / subtitles)
-                        if (/track/i.test(mediaSource.tagName)) return;
-                        if (/video|audio/i.test(mediaSource.tagname)) {
-                            mediaSource.load();
-                        } else if (/video|audio/i.test(mediaSource.parentElement.tagName)) {
-                            mediaSource.parentElement.load();
-                        }
+                        // if (/track/i.test(mediaSource.tagName)) return;
+                        mediaElement.load();
+                        // Add a download link in case media source not supported
+                        document.getElementById('alertBoxDivFooter').innerHTML = 
+                            '<div id="downloadAlert" class="alert alert-info alert-dismissible">\n' +
+                            '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
+                            '    <span id="alertMessage"></span>\n' +
+                            '</div>\n';
+                        var alertMessage = document.getElementById('alertMessage');
+                        var filename = iframe.title + '_' + dirEntry.url.replace(/^.*\/([^\/]+)$/, '$1');
+                        // Make filename safe
+                        filename = filename.replace(/[\/\\:*?"<>|]/g, '_');
+                        alertMessage.innerHTML = '<a href="#" class="alert-link" id="downloadMedia">Download this file</a> (and any selected subtitles) to play with another app';
+                        document.getElementById('downloadMedia').addEventListener('click', function () {
+                            var downloadFiles = [];
+                            downloadFiles.push({
+                                'blob': blob,
+                                'filename': filename,
+                                'src': mediaSource.src
+                            });
+                            // Add any selected subtitle file to the download package
+                            var selTextTrack = iframe.getElementById('kiwixSelCC');
+                            if (selTextTrack) {
+                                var selTextExt = selTextTrack.dataset.kiwixurl.replace(/^.*\.([^.]+)$/, '$1');
+                                // Subtitle files should have same name as video + .es.vtt (for example)
+                                downloadFiles.push({
+                                    'blob': trackBlob,
+                                    'filename': filename.replace(/^(.*)\.[^.]+$/, '$1.' + selTextTrack.srclang + '.' + selTextExt),
+                                    'src': selTextTrack.src
+                                });
+                            }
+                            for (var j = downloadFiles.length; j--;) {
+                                if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
+                                    uiUtil.downloadBlobUWP(downloadFiles[j].blob, downloadFiles[j].filename, alertMessage);
+                                } else {
+                                    var mimeType = downloadFiles[j].blob.type ? downloadFiles[j].blob.type : 'application/octet-stream';
+                                    var a = document.createElement('a');
+                                    a.href = downloadFiles[j].src;
+                                    a.target = '_blank';
+                                    a.type = mimeType;
+                                    a.download = downloadFiles[j].filename;
+                                    alertMessage.appendChild(a); // NB we have to add the anchor to the document for Firefox to be able to click it
+                                    try { a.click(); }
+                                    catch (err) {
+                                        // If the click fails, use an alternative download method
+                                        if (window.navigator && window.navigator.msSaveBlob) {
+                                            // This works for IE11
+                                            window.navigator.msSaveBlob(downloadFiles[j].blob, downloadFiles[j].filename);
+                                        }
+                                    }
+                                }
+                            }
+                            iframe.addEventListener('unload', function (e) {
+                                alertMessage.remove();
+                            });
+                        });
                     });
                 });
             });
         }
+
+        /**
+         * Create a custom dropdown menu item beneath the given mediaElement (audio or video block) to allow the user to
+         * select the language of text tracks (subtitles/CC) to extract from the ZIM (this is necessary because there is
+         * no universal onchange event that fires for subtitle changes in the html5 video widget when the URL is invalid)
+         * 
+         * @param {Document} doc The document in which the new menu will be placed (usually window.document or iframe)
+         * @param {Element} mediaElement The media element (usually audio or video block) which contains the text tracks
+         * @param {Function} callback The function to call wtih the blob
+         */
+        function buildCustomCCMenu(doc, mediaElement, callback) {
+            var optionList = [];
+            var langs = '';
+            var currentTracks = mediaElement.getElementsByTagName('track');
+            // Extract track data from current media element
+            for (var i = currentTracks.length; i--;) {
+                langs = currentTracks[i].label + ' [' + currentTracks[i].srclang + ']';
+                optionList.unshift('<option value="' + currentTracks[i].srclang + '" data-kiwixsrc="' +
+                    currentTracks[i].dataset.kiwixurl + '" data-kiwixkind="' + currentTracks[i].kind + '">' +
+                    langs + '</option>');
+                currentTracks[i].parentNode.removeChild(currentTracks[i]);
+            }
+            optionList.unshift('<option value="" data-kiwixsrc="">None</option>');
+            var newKiwixCCMenu = '<select id="kiwixCCMenuLangList">\n' + optionList.join('\n') + '\n</select>';
+            // Create the new container and menu
+            var d = doc.createElement('DIV');
+            d.id = 'kiwixCCMenu';
+            d.setAttribute('style', 'margin-top: 1em; text-align: left;');
+            d.innerHTML = 'Please select subtitle language: ' + newKiwixCCMenu;
+            mediaElement.parentElement.insertBefore(d, mediaElement.nextSibling);
+            // Add event listener to extract the text track from the ZIM and insert it into the media element when the user selects it
+            newKiwixCCMenu = doc.getElementById('kiwixCCMenu').addEventListener('change', function (v) {
+                var existingCC = doc.getElementById('kiwixSelCC');
+                if (existingCC) existingCC.parentNode.removeChild(existingCC);
+                var sel = v.target.options[v.target.selectedIndex];
+                if (!sel.value) return; // User selected "none"
+                selectedArchive.getDirEntryByTitle(sel.dataset.kiwixsrc).then(function (dirEntry) {
+                    return selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, trackContents) {
+                        var blob = new Blob([trackContents], { type: 'text/vtt' });
+                        var t = doc.createElement('track');
+                        t.id = 'kiwixSelCC';
+                        t.kind = sel.dataset.kiwixkind;
+                        t.label = sel.innerHTML;
+                        t.srclang = sel.value;
+                        t.default = true;
+                        t.src = URL.createObjectURL(blob);
+                        t.dataset.kiwixurl = sel.dataset.kiwixsrc;
+                        mediaElement.appendChild(t);
+                        callback(blob);
+                    });
+                });
+            });
+        } 
 
         /**
          * Changes the URL of the browser page, so that the user might go back to it
@@ -3093,6 +3203,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     goToMainArticle();
                 } else if (download) {
                     selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                        // We have to create the alert box from scratch each time, because Bootstrap removes it from the DOM when the user closes it
+                        document.getElementById('alertBoxDivFooter').innerHTML =
+                            '<div id="downloadAlert" class="alert alert-info alert-dismissible" style="display:none;">' +
+                            '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
+                            '    <span id="alertMessage"></span>' +
+                            '</div>';
                         // Download code adapted from https://stackoverflow.com/a/19230668/9727685 
                         if (!contentType) contentType = 'application/octet-stream';
                         var a = document.createElement('a');
@@ -3111,56 +3227,19 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         var alertMessage = document.getElementById('alertMessage');
                         alertMessage.innerHTML = '<strong>Download</strong> If the download does not start, please click the following link: ';
                         alertMessage.appendChild(a); // NB we have to add the anchor to the document for Firefox to be able to click it
-                        //try { a.click(); }
-                        //catch (err) {
-                        //    // If the click fails, use an alternative download method
-                        //    if (window.navigator && window.navigator.msSaveBlob) {
-                        //        // This works for IE11
-                        //        window.navigator.msSaveBlob(blob, filename);
-                        //    } else {
+                        try { a.click(); }
+                        catch (err) {
+                            // If the click fails, use an alternative download method
+                            if (window.navigator && window.navigator.msSaveBlob) {
+                                // This works for IE11
+                                window.navigator.msSaveBlob(blob, filename);
+                            } else {
                                 // Fall back to showing the link in a message box
-                                // document.getElementById('alertBox').style.display = "block";
-
-                        // Use UWP share data method
-                                //var dataTransferManager = Windows.ApplicationModel.DataTransfer.DataTransferManager.getForCurrentView();
-                                //dataTransferManager.addEventListener("datarequested", function (e) {
-                                //    var streamReference = Windows.Storage.Streams.RandomAccessStreamReference.createFromStream(blob.msDetachStream());
-                                //    e.request.data.properties.title = "Share EPUB file";
-                                //    e.request.data.setData(streamReference);
-                                //});
-                                //Windows.ApplicationModel.DataTransfer.DataTransferManager.showShareUI();
-
-                        // Nope! Copy BLOB to downloads folder and launch from there in Edge
-                        Windows.Storage.DownloadsFolder.createFileAsync(filename, Windows.Storage.CreationCollisionOption.generateUniqueName).then(function (file) {
-                            // Open the returned file in order to copy the data 
-                            file.openAsync(Windows.Storage.FileAccessMode.readWrite).then(function (output) {
-
-                                // Get the IInputStream stream from the blob object 
-                                var input = blob.msDetachStream();
-
-                                // Copy the stream from the blob to the File stream 
-                                Windows.Storage.Streams.RandomAccessStream.copyAsync(input, output).then(function () {
-                                    output.flushAsync().done(function () {
-                                        input.close();
-                                        output.close();
-                                        Windows.System.Launcher.launchFileAsync(file);
-                                    });
-                                });
-                            });
-                        }); 
-
-                        //Windows.ApplicationModel.Package.current.installedLocation.getFileAsync(a.href).then(
-                        //        function (file) {
-                        //            file.copyAsync(Windows.Storage.DownloadsFolder, performance.now() + filename).then(
-                        //                function (newFile) {
-                        //                    Windows.System.Launcher.launchFileAsync(newFile);
-                        //                });
-                        //        });
-
-
-
-                        //    }
-                        //}
+                                document.getElementById('downloadAlert').style.display = "block";
+                                // And try to launch through UWP download
+                                if (Windows && Windows.Storage) uiUtil.downloadBlobUWP(blob, filename, alertMessage);
+                            }
+                        }
                         $("#searchingArticles").hide();
                     });
                 } else {
