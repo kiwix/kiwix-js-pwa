@@ -1965,12 +1965,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         // OR href=["'] (ignoring any extra whitespace), and it then tests everything up to the next ["'] against a pattern that
         // matches ZIM URLs with namespaces [-I] ("-" = metadata or "I" = image). Finally it removes the relative or absolute path. 
         // DEV: If you want to support more namespaces, add them to the END of the character set [-I] (not to the beginning) 
-    var regexpTagsWithZimUrl = /(<(?:img|script|link|video|audio|source|track)\s+[^>]*?\b)(?:src|href)(\s*=\s*["']\s*)(?:\.\.\/|\/)+([-I]\/[^"']*)/ig;
+        var regexpTagsWithZimUrl = /(<(?:img|script|link|video|audio|source|track)\s+[^>]*?\b)(?:src|href)(\s*=\s*["']\s*)(?:\.\.\/|\/)+([-I]\/[^"']*)/ig;
     
-    // DEV: The regex below matches ZIM links (anchor hrefs) that should have the html5 "donwnload" attribute added to 
-    // the link. This is currently the case for epub files in Project Gutenberg ZIMs -- add any further types you need
-    // to support to this regex. The "zip" has been added here as an example of how to support further filetypes
-    var regexpDownloadLinks = /^.*?\.epub($|\?)|^.*?\.zip($|\?)/i
+        // DEV: The regex below matches ZIM links (anchor hrefs) that should have the html5 "donwnload" attribute added to 
+        // the link. This is currently the case for epub files in Project Gutenberg ZIMs -- add any further types you need
+        // to support to this regex. The "zip" has been added here as an example of how to support further filetypes
+        var regexpDownloadLinks = /^.*?\.epub($|\?)|^.*?\.zip($|\?)/i
     
         // This matches the data-kiwixurl of all <link> tags containing rel="stylesheet" in raw HTML unless commented out
         var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*data-kiwixurl\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
@@ -2001,6 +2001,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          * @param {String} htmlArticle
          */
         function displayArticleInForm(dirEntry, htmlArticle) {
+            // Remove any download alerts hanging on from previous article
+            var downloadAlert = document.getElementById('downloadAlert');
+            if (downloadAlert) downloadAlert.parentElement.removeChild(downloadAlert);
+
             //@BUG WORKAROUND for Kiwix-JS-Windows #18
             htmlArticle = htmlArticle.replace(/(<link\s+[^>]*?\bhref\s*=\s*["'])(s\/[\s\S]+(?!\.css))(["'])/gi, "$1../-/$2.css$3");
             // Replaces ZIM-style URLs of img, script, link and media tags with a data-url to prevent 404 errors [kiwix-js #272 #376]
