@@ -73,7 +73,7 @@ body {
     background-color: whitesmoke !important;
 }
 
-div:not(.panel-success) {
+div:not(.panel-success, .alert-message) {
     -ms-user-select: none;
     -moz-user-select: none;
     user-select: none;
