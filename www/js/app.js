@@ -3119,13 +3119,20 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         function buildCustomCCMenu(doc, mediaElement, callback) {
             var optionList = [];
             var langs = '';
+            var src = '';
             var currentTracks = mediaElement.getElementsByTagName('track');
             // Extract track data from current media element
             for (var i = currentTracks.length; i--;) {
                 langs = currentTracks[i].label + ' [' + currentTracks[i].srclang + ']';
-                optionList.unshift('<option value="' + currentTracks[i].srclang + '" data-kiwixsrc="' +
-                    currentTracks[i].dataset.kiwixurl + '" data-kiwixkind="' + currentTracks[i].kind + '">' +
-                    langs + '</option>');
+                src = currentTracks[i].dataset.kiwixurl;
+                if (!src && currentTracks[i].src) {
+                    // Some ZIMs list the text track as a relative link within the directory containing the media source
+                    src = regexpZIMUrlWithNamespace.test(currentTracks[i].src) ? currentTracks[i].src.match(regexpZIMUrlWithNamespace)[1] : src;
+                }
+                if (src) {
+                    optionList.unshift('<option value="' + currentTracks[i].srclang + '" data-kiwixsrc="' +
+                        src + '" data-kiwixkind="' + currentTracks[i].kind + '">' + langs + '</option>');
+                }
                 currentTracks[i].parentNode.removeChild(currentTracks[i]);
             }
             optionList.unshift('<option value="" data-kiwixsrc="">None</option>');
