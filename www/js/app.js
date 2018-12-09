@@ -1983,7 +1983,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         // matches ZIM URLs with namespaces [-IJ] ('-' = metadata or 'I'/'J' = image). When the regex is used below, it will also
         // remove any relative or absolute path from ZIM-style URLs. 
         // DEV: If you want to support more namespaces, add them to the END of the character set [-IJ] (not to the beginning) 
-        var regexpTagsWithZimUrl = /(<(?:img|script|link|video|audio|source|track)\b[^>]*?\s)(?:src|href)\s*=\s*["'](?:\.\.\/|\/)+([-IJ]\/[^"']*)["']/ig;
+        var regexpTagsWithZimUrl = /(<(?:img|script|link|video|audio|source|track)\b[^>]*?\s)(?:src|href)(\s*=\s*["'])(?:\.\.\/|\/)+(?=[-IJ]\/)/ig;
     
         // DEV: The regex below matches ZIM links (anchor hrefs) that should have the html5 "donwnload" attribute added to 
         // the link. This is currently the case for epub files in Project Gutenberg ZIMs -- add any further types you need
@@ -2021,7 +2021,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         function displayArticleInForm(dirEntry, htmlArticle) {
             // Replaces ZIM-style URLs of img, script, link and media tags with a data-kiwixurl to prevent 404 errors [kiwix-js #272 #376]
             // This replacement also processes the URL to remove the path so that the URL is ready for subsequent jQuery functions
-            htmlArticle = htmlArticle.replace(regexpTagsWithZimUrl, '$1data-kiwixurl="$2"');
+            htmlArticle = htmlArticle.replace(regexpTagsWithZimUrl, '$1data-kiwixurl$2');
             // Remove any empty media containers on page
             htmlArticle = htmlArticle.replace(/(<(audio|video)\b(?:[^<]|<(?!\/\2))+<\/\2>)/ig, function (p0) {
                 return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
