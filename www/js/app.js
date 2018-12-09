@@ -1712,7 +1712,23 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 if (params.alphaChar === 'A' && params.omegaChar == 'Z') {
                     alphaSelector.push('<a href="#" class="alphaSelector" data-sel="¡">¡¿ÀÑ</a>');
                     alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="!">!#123</a>');
+                    // Add way of selecting a non-Roman alphabet
+                    var switchAlphaButton = document.getElementById('extraModalFooterContent');
+                    switchAlphaButton.innerHTML = '<button class="btn btn-primary" style="float:left;" type="button">Switch to non-Roman alphabet</button>';
+                    switchAlphaButton.addEventListener('click', function () {
+                        var alphaLabel = document.getElementById('alphaCharTxt').parentNode;
+                        alphaLabel.style.borderColor = 'red';
+                        alphaLabel.style.borderStyle = 'solid';
+                        alphaLabel.addEventListener('mousedown', function () {
+                            this.style.borderColor = '';
+                            this.style.borderStyle = '';
+                        });
+                        $("#myModal").modal('hide');
+                        document.getElementById('btnConfigure').click();
+                        window.location.href = "#displaySettingsDiv";
+                    });
                 }
+                // Add diacritics for Greek alphabet
                 if (params.alphaChar === 'Α' && params.omegaChar == 'Ω') {
                     alphaSelector.push('<a href="#" class="alphaSelector" data-sel="Ϊ">ΪΫά</a>');
                     alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="΄">ΆΈΉ</a>');
