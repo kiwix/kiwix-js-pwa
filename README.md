@@ -1,4 +1,8 @@
 # Kiwix JS for Windows
+
+[There is a browser-based deployment of this app [here](https://kiwix.github.io/kiwix-js-windows/www/), 
+but you will need a ZIM file for testing.]
+
 This repository is for development of the Kiwix JS app for Windows 10 Universal Windows Platform.
 Latest development code is on the [master-dev](https://github.com/kiwix/kiwix-js-windows/tree/master-dev/) branch.
 
