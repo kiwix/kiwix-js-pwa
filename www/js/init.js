@@ -22,6 +22,12 @@
  */
 'use strict';
 
+// Set a global error handler to prevent app crashes
+window.onerror = function (msg, url) {
+    console.error('Error caught in app [' + url + ']:\n' + msg);
+    return true;
+};
+
 // Parameters that define overall operation of app
 var params = {};
 params['version'] = "0.9.9.82 Beta-dev"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
@@ -30,7 +36,7 @@ params['fileVersion'] = "wikipedia_en_ray_charles_novid_2018-10.zim (12-Oct-2018
 params['cachedStartPage'] = false; //If you have cached the start page for quick start, give its URI here
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
 
-params['results'] = params['results'] || 15; //Number of search results to display
+params['results'] = params['results'] || 50; //Number of search results to display
 params['relativeFontSize'] = ~~(getCookie('relativeFontSize') || 100); //Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
 params['relativeUIFontSize'] = ~~(getCookie('relativeUIFontSize') || 100); //Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
 params['cssSource'] = getCookie('cssSource') || "auto"; //Set default to "auto", "desktop" or "mobile"
@@ -45,6 +51,9 @@ params['rememberLastPage'] = getCookie('rememberLastPage') != null ? getCookie('
 params['useMathJax'] = getCookie('useMathJax') != null ? getCookie('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
 //params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
 params['showFileSelectors'] = false; //This will cause file selectors to be hidden on each load of the app (by ignoring cookie)
+params['hideActiveContentWarning'] = getCookie('hideActiveContentWarning') != null ? getCookie('hideActiveContentWarning') : false;
+params['alphaChar'] = getCookie('alphaChar') || 'A'; //Set default start of alphabet string (used by the Archive Index)
+params['omegaChar'] = getCookie('omegaChar') || 'Z'; //Set default end of alphabet string
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['storedFile'] = getCookie('lastSelectedArchive') || params['packagedFile'];
@@ -59,6 +68,14 @@ params['themeChanged'] = params['themeChanged'] || false;
 params['allowInternetAccess'] = params['allowInternetAccess'] || false; //Do not get value from cookie, should be explicitly set by user on a per-session basis
 params['printIntercept'] = false;
 params['printInterception'] = false;
+
+//Prevent app boot loop with problematic pages that cause an app crash
+if (getCookie('lastPageLoad') == 'failed') {
+    params.lastPageVisit = "";
+} else {
+    //Cookie will signal failure until article is fully loaded
+    document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
+}
 
 //Initialize checkbox, radio and other values
 document.getElementById('cssCacheModeCheck').checked = params.cssCache;
@@ -75,6 +92,10 @@ document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme == 'd
 document.getElementById('useMathJaxRadio' + (params.useMathJax ? 'True' : 'False')).checked = true;
 document.getElementById('rememberLastPageCheck').checked = params.rememberLastPage;
 document.getElementById('displayFileSelectorsCheck').checked = params.showFileSelectors;
+document.getElementById('hideActiveContentWarningCheck').checked = params.hideActiveContentWarning;
+document.getElementById('alphaCharTxt').value = params.alphaChar;
+document.getElementById('omegaCharTxt').value = params.omegaChar;
+
 var versionSpans = document.getElementsByClassName('version');
 for (var i = 0; i < versionSpans.length; i++) {
     versionSpans[i].innerHTML = i ? params.version : params.version.replace(/\s+.*$/, "");
