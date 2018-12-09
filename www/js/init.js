@@ -22,6 +22,12 @@
  */
 'use strict';
 
+// Set a global error handler to prevent app crashes
+window.onerror = function (msg, url) {
+    console.error('Error caught in app [' + url + ']:\n' + msg);
+    return true;
+};
+
 // Parameters that define overall operation of app
 var params = {};
 params['version'] = "0.9.9.82 Beta-dev"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
