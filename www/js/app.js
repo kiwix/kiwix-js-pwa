@@ -2364,6 +2364,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
                 iframeArticleContent.onload = function () {
                     //iframeArticleContent.onload = function () { };
+
+                    // Set a global error handler for iframe
+                    window.frames[0].onerror = function (msg, url) {
+                        console.log('Error caught in ZIM contents [' + url + ']:\n' + msg);
+                        return true;
+                    };
+
                     var articleContent = document.getElementById('articleContent').contentDocument;
                     // Inject the new article's HTML into the iframe
                     articleContent.documentElement.innerHTML = htmlArticle;
@@ -2575,7 +2582,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 //articleContent.close();
 
             } // End of injectHtml
-
 
         } //End of displayArticleInForm()
 
