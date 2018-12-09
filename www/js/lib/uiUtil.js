@@ -185,6 +185,36 @@ define([], function() {
         printOptions.innerHTML = printStyleInnerHTML;
     }
 
+    function downloadBlobUWP(blob, filename, message) {
+        // Copy BLOB to downloads folder and launch from there in Edge
+        // First create an empty file in the folder
+        Windows.Storage.DownloadsFolder.createFileAsync(filename, Windows.Storage.CreationCollisionOption.generateUniqueName)
+        .then(function (file) {
+            // Open the returned dummy file in order to copy the data into it
+            file.openAsync(Windows.Storage.FileAccessMode.readWrite).then(function (output) {
+                // Get the InputStream stream from the blob object 
+                var input = blob.msDetachStream();
+                // Copy the stream from the blob to the File stream 
+                Windows.Storage.Streams.RandomAccessStream.copyAsync(input, output).then(function () {
+                    output.flushAsync().done(function () {
+                        input.close();
+                        output.close();
+                        // Finally, tell the system to open the file if it's not a subtitle file
+                        if (!/\.(?:ttml|ssa|ass|srt|idx|sub|vtt)$/i.test(filename)) Windows.System.Launcher.launchFileAsync(file);
+                        if (file.isAvailable) {
+                            var fileLink = file.path.replace(/\\/g, '/');
+                            fileLink = fileLink.replace(/^([^:]+:\/)(.*)/, function (p0, p1, p2) {
+                                return 'file:///' + p1 + encodeURIComponent(p2);
+                            });
+                            message.innerHTML = '<strong>Download:</strong> Your file was saved as <a href="' +
+                                fileLink + '" target="_blank" class="alert-link">' + file.path + '</a>';
+                        }
+                    });
+                });
+            });
+        }); 
+    }
+
     /**
      * Functions and classes exposed by this module
      */
@@ -197,6 +227,7 @@ define([], function() {
         poll: poll,
         clear: clear,
         XHR: XHR,
-        printCustomElements: printCustomElements
+        printCustomElements: printCustomElements,
+        downloadBlobUWP: downloadBlobUWP
     };
 });

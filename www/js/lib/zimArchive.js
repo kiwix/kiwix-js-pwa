@@ -37,6 +37,10 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
      * @param {ZIMArchive} zimArchive Ready-to-use ZIMArchive
      */
     
+    /**
+     * @callback callbackMetadata
+     * @param {String} data metadata string
+     */
     
     /**
      * Creates a ZIM archive object to access the ZIM file at the given path in the given storage.
@@ -168,37 +172,50 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
     };
     
     /**
-     * Look for DirEntries with title starting with the given prefix (case-sensitive)
+     * Look for dirEntries with title starting with the given prefix (case-sensitive)
      * 
-     * @param {String} prefix
-     * @param {Integer} resultSize
-     * @param {callbackDirEntryList} callback
+     * @param {String} prefix The case-sensitive value against which dirEntry titles (or url) will be compared
+     * @param {Integer} resultSize The maximum number of results to return
+     * @param {Function} callback The function to call with the array of dirEntries with titles that begin with prefix
      */
-    ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function(prefix, resultSize, callback) {
+    ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function(prefix, resultSize, callback, startIndex) {
+        // Save the value of startIndex because value of null has a special meaning in combination with prefix: 
+        // produces a list of matches starting with first match and then next x dirEntries thereafter
+        var saveStartIndex = startIndex;
+        startIndex = startIndex || 0;
+        prefix = prefix || '';
         var that = this;
-        util.binarySearch(0, this._file.articleCount, function(i) {
+        util.binarySearch(startIndex, this._file.articleCount, function(i) {
             return that._file.dirEntryByTitleIndex(i).then(function(dirEntry) {
-                if (dirEntry.title === "")
-                    return -1; // ZIM sorts empty titles (assets) to the end
-                else if (dirEntry.namespace < "A")
-                    return 1;
-                else if (dirEntry.namespace > "A")
-                    return -1;
-                return prefix <= dirEntry.title ? -1 : 1;
+                if (dirEntry.namespace < "A") return 1;
+                if (dirEntry.namespace > "A") return -1;
+                // We should now be in namespace A
+                if (dirEntry.title) { 
+                    return prefix <= dirEntry.title ? -1 : 1;
+                } else {
+                    // Some dirEntries (e.g. subtitles) have no title, but are still sorted in the A namespace,
+                    // so we have to use the url as a comparator [kiwix-js #440 #443]
+                    return prefix <= dirEntry.url ? -1 : 1;
+                }
             });
         }, true).then(function(firstIndex) {
             var dirEntries = [];
             var addDirEntries = function(index) {
                 if (index >= firstIndex + resultSize || index >= that._file.articleCount)
-                    return dirEntries;
+                    return {
+                        'dirEntries': dirEntries,
+                        'nextStart': index
+                    };
                 return that._file.dirEntryByTitleIndex(index).then(function(dirEntry) {
-                    if (dirEntry.title.slice(0, prefix.length) === prefix && dirEntry.namespace === "A")
+                    if ((saveStartIndex === null || dirEntry.title.slice(0, prefix.length) === prefix) && dirEntry.namespace === "A")
                         dirEntries.push(dirEntry);
                     return addDirEntries(index + 1);
                 });
             };
             return addDirEntries(firstIndex);
-        }).then(callback);
+        }).then(function(objWithIndex) {
+            callback(objWithIndex.dirEntries, objWithIndex.nextStart);
+        });
     };
     
     /**
@@ -279,6 +296,28 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
     ZIMArchive.prototype.getRandomDirEntry = function(callback) {
         var index = Math.floor(Math.random() * this._file.articleCount);
         this._file.dirEntryByUrlIndex(index).then(callback);
+    };
+
+    /**
+     * Read a Metadata string inside the ZIM file.
+     * @param {String} key
+     * @param {callbackMetadata} callback
+     */
+    ZIMArchive.prototype.getMetadata = function (key, callback) {
+        var that = this;
+        this.getDirEntryByTitle("M/" + key).then(function (dirEntry) {
+            if (dirEntry === null || dirEntry === undefined) {
+                console.warn("Title M/" + key + " not found in the archive");
+                callback();
+            } else {
+                that.readUtf8File(dirEntry, function (dirEntryRead, data) {
+                    callback(data);
+                });
+            }
+        }).fail(function (e) {
+            console.warn("Metadata with key " + key + " not found in the archive", e);
+            callback();
+        });
     };
 
     /**

@@ -30,7 +30,7 @@ input {
     line-height: normal
 }
 
-ol, ul {
+ul {
     list-style: none
 }
 
@@ -578,10 +578,6 @@ span[rel='mw:referencedBy'] a:before {
 
 span[rel='mw:referencedBy'] a:after {
     content: ' '
-}
-
-x-thereisnoelementwiththisname[rel='mw:referencedBy']:before, span.mw-linkback-text {
-    display: none
 }
 
 #issues_container div.hatnote {
@@ -1982,10 +1978,6 @@ body {
 
 input {
     line-height: normal
-}
-
-ol, ul {
-    list-style: none
 }
 
 table {

@@ -134,12 +134,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }
                 }
                 if (e.which == 27) {
-                    //Esc, so hide the list behind article TODO: implement click equivalent
+                    //Esc, so hide the list behind article
                     document.getElementById('articleContent').style.position = "fixed";
+                    $("#myModal").modal('hide'); // This is in case the modal box is showing with an index search
                     return;
                 }
                 onKeyUpPrefix(e);
             }
+        });
+        // This is touch equivalent of Esc above
+        document.getElementById('prefix').addEventListener('blur', function (e) {
+            document.getElementById('articleContent').style.position = "fixed";
         });
 
         //Add keyboard shortcuts
@@ -256,7 +261,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
             //Pre-load all images in case user wants to print them
             if (params.imageDisplay) {
-                loadImages(10000);
+                loadImagesJQuery(10000);
                 document.getElementById("printImageCheck").disabled = false;
             } else {
                 document.getElementById("printImageCheck").checked = false;
@@ -576,6 +581,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             $('#articleContent').hide();
             $('#downloadLinks').hide();
             $('#serverResponse').hide();
+            $('#activeContent').hide();
             refreshAPIStatus();
             //Re-enable top-level scrolling
             document.getElementById('top').style.position = "relative";
@@ -700,6 +706,20 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             params.imageDisplay = this.checked ? true : false;
             params.themeChanged = params.imageDisplay; //Only reload page if user asked for all images to be displayed
             cookies.setItem('imageDisplay', params.imageDisplay, Infinity);
+        });
+        $('input:checkbox[name=hideActiveContentWarning]').on('change', function (e) {
+            params.hideActiveContentWarning = this.checked ? true : false;
+            cookies.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
+        });
+        $('input:text[name=alphaChar]').on('change', function (e) {
+            params.alphaChar = this.value.length == 1 ? this.value : params.alphaChar;
+            this.value = params.alphaChar;
+            cookies.setItem('alphaChar', params.alphaChar, Infinity);
+        });
+        $('input:text[name=omegaChar]').on('change', function (e) {
+            params.omegaChar = this.value.length == 1 ? this.value : params.omegaChar;
+            this.value = params.omegaChar;
+            cookies.setItem('omegaChar', params.omegaChar, Infinity);
         });
         $('input:checkbox[name=hideToolbar]').on('change', function (e) {
             params.hideToolbar = this.checked ? true : false;
@@ -973,29 +993,29 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         }
 
         var contentInjectionMode;
-    var keepAliveServiceWorkerHandle;
+        var keepAliveServiceWorkerHandle;
     
-    /**
-     * Send an 'init' message to the ServiceWorker with a new MessageChannel
-     * to initialize it, or to keep it alive.
-     * This MessageChannel allows a 2-way communication between the ServiceWorker
-     * and the application
-     */
-    function initOrKeepAliveServiceWorker() {
-        if (contentInjectionMode === 'serviceworker') {
-            // Create a new messageChannel
-            var tmpMessageChannel = new MessageChannel();
-            tmpMessageChannel.port1.onmessage = handleMessageChannelMessage;
-            // Send the init message to the ServiceWorker, with this MessageChannel as a parameter
-            navigator.serviceWorker.controller.postMessage({'action': 'init'}, [tmpMessageChannel.port2]);
-            messageChannel = tmpMessageChannel;
-            console.log("init message sent to ServiceWorker");
-            // Schedule to do it again regularly to keep the 2-way communication alive.
-            // See https://github.com/kiwix/kiwix-js/issues/145 to understand why
-            clearTimeout(keepAliveServiceWorkerHandle);
-            keepAliveServiceWorkerHandle = setTimeout(initOrKeepAliveServiceWorker, DELAY_BETWEEN_KEEPALIVE_SERVICEWORKER, false);
+        /**
+         * Send an 'init' message to the ServiceWorker with a new MessageChannel
+         * to initialize it, or to keep it alive.
+         * This MessageChannel allows a 2-way communication between the ServiceWorker
+         * and the application
+         */
+        function initOrKeepAliveServiceWorker() {
+            if (contentInjectionMode === 'serviceworker') {
+                // Create a new messageChannel
+                var tmpMessageChannel = new MessageChannel();
+                tmpMessageChannel.port1.onmessage = handleMessageChannelMessage;
+                // Send the init message to the ServiceWorker, with this MessageChannel as a parameter
+                navigator.serviceWorker.controller.postMessage({'action': 'init'}, [tmpMessageChannel.port2]);
+                messageChannel = tmpMessageChannel;
+                console.log("init message sent to ServiceWorker");
+                // Schedule to do it again regularly to keep the 2-way communication alive.
+                // See https://github.com/kiwix/kiwix-js/issues/145 to understand why
+                clearTimeout(keepAliveServiceWorkerHandle);
+                keepAliveServiceWorkerHandle = setTimeout(initOrKeepAliveServiceWorker, DELAY_BETWEEN_KEEPALIVE_SERVICEWORKER, false);
+            }
         }
-    }
 
         /**
          * Sets the given injection mode.
@@ -1078,7 +1098,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 // If the focus is on the search field, we have to move it,
                 // else the keyboard hides the message
                 if ($("#prefix").is(":focus")) {
-                    $("searchArticles").focus();
+                    $("#searchArticles").focus();
                 }
                 if (confirm("The 'Service Worker' mode is still UNSTABLE for now." +
                         " It happens that the application needs to be reinstalled (or the ServiceWorker manually removed)." +
@@ -1624,7 +1644,18 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          */
         function searchDirEntriesFromPrefix(prefix) {
             if (selectedArchive !== null && selectedArchive.isReady()) {
-                selectedArchive.findDirEntriesWithPrefix(prefix.trim(), MAX_SEARCH_RESULT_SIZE + 1, populateListOfArticles);
+                if (!prefix || /^\s/.test(prefix)) {
+                    var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
+                    if (sel.length) {
+                        sel = sel.replace(/^(.)(.*)/, function(p0, p1, p2) {
+                            return p1.toUpperCase() + p2;
+                        });
+                    }
+                    $("#activeContent").hide();
+                    showZIMIndex(null, sel);
+                } else {
+                    selectedArchive.findDirEntriesWithPrefix(prefix.trim(), MAX_SEARCH_RESULT_SIZE, populateListOfArticles);
+                }
             } else {
                 $('#searchingArticles').hide();
                 // We have to remove the focus from the search field,
@@ -1632,6 +1663,118 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 $('#searchArticles').focus();
                 alert("Archive not set : please select an archive");
                 document.getElementById('btnConfigure').click();
+        }
+    }
+
+    /**
+     * Extracts and displays in htmlArticle the first MAX_SEARCH_RESULT_SIZE articles beginning with start
+     * @param {String} start Optional index number to begin the list with
+     * @param {String} prefix Optional search prefix from which to start an alphabetical search
+     */
+    function showZIMIndex(start, prefix) {
+        // If we're searching by title index number (other than 0 or null), we should ignore any prefix
+        if (isNaN(start)) { 
+            prefix = prefix || '';
+        } else {
+            prefix = start > 0 ? '' : prefix;
+        }
+        if (selectedArchive !== null && selectedArchive.isReady()) {
+            selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, MAX_SEARCH_RESULT_SIZE, function(dirEntryArray, nextStart) {
+                //var docBody = document.getElementById('articleContent').contentDocument.body;
+                var docBody = document.getElementById('largeModal');
+                var newHtml = "";
+                for (var i = 0; i < dirEntryArray.length; i++) {
+                    var dirEntry = dirEntryArray[i];
+                    //newHtml += "\n<li><a  class='list-group-item' href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g,"&apos;")
+                    //        + "'>" + (dirEntry.title ? dirEntry.title : '[' + dirEntry.url + ']') + "</a></li>";
+                    newHtml += "\n<a  class='list-group-item' href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g, "&apos;")
+                        + "'>" + (dirEntry.title ? dirEntry.title : '[' + dirEntry.url + ']') + "</a>";
+                }
+                start = start ? start : 0;
+                var back = start ? '<a href="#" data-start="' + (start - MAX_SEARCH_RESULT_SIZE) +
+                    '" class="continueAnchor">&lt;&lt; Previous ' + MAX_SEARCH_RESULT_SIZE + '</a>' : '';
+                var next = dirEntryArray.length === MAX_SEARCH_RESULT_SIZE ? '<a href="#" data-start="' + nextStart +
+                    '" class="continueAnchor">Next ' + MAX_SEARCH_RESULT_SIZE + ' &gt;&gt;</a>' : '';
+                var backNext = back ? next ? back + ' | ' + next : back : next;
+                backNext = '<div style="float:right;">' + backNext + '</div>\n';
+                var alphaSelector = [];
+                // Set up the alphabetic selector
+                var lower = params.alphaChar.charCodeAt();
+                var upper = params.omegaChar.charCodeAt();
+                if (upper <= lower) {
+                    alphaSelector.push('<a href="#" class="alphaSelector" data-sel="A">PLEASE SELECT VALID START AND END ALPHABET CHARACTERS IN CONFIGURATION</a>');
+                } else {
+                    for (i = lower; i <= upper; i++) {
+                        var char = String.fromCharCode(i);
+                        alphaSelector.push('<a href="#" class="alphaSelector" data-sel="' + char + '">' + char + '</a>');
+                    }
+                }
+                // Add selectors for diacritics, etc. for Roman alphabet
+                if (params.alphaChar === 'A' && params.omegaChar == 'Z') {
+                    alphaSelector.push('<a href="#" class="alphaSelector" data-sel="¡">¡¿ÀÑ</a>');
+                    alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="!">!#123</a>');
+                    // Add way of selecting a non-Roman alphabet
+                    var switchAlphaButton = document.getElementById('extraModalFooterContent');
+                    switchAlphaButton.innerHTML = '<button class="btn btn-primary" style="float:left;" type="button">Switch to non-Roman alphabet</button>';
+                    switchAlphaButton.addEventListener('click', function () {
+                        var alphaLabel = document.getElementById('alphaCharTxt').parentNode;
+                        alphaLabel.style.borderColor = 'red';
+                        alphaLabel.style.borderStyle = 'solid';
+                        alphaLabel.addEventListener('mousedown', function () {
+                            this.style.borderColor = '';
+                            this.style.borderStyle = '';
+                        });
+                        $("#myModal").modal('hide');
+                        document.getElementById('btnConfigure').click();
+                        window.location.href = "#displaySettingsDiv";
+                    });
+                }
+                // Add diacritics for Greek alphabet
+                if (params.alphaChar === 'Α' && params.omegaChar == 'Ω') {
+                    alphaSelector.push('<a href="#" class="alphaSelector" data-sel="Ϊ">ΪΫά</a>');
+                    alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="΄">ΆΈΉ</a>');
+                }
+                
+                var alphaString = '<div style="text-align:center">[ ' + alphaSelector.join(' | \n') + ' ]</div>\n';
+                var closeButton = '<button class="close" aria-hidden="true" type="button" data-dismiss="modal">&nbsp;&times;&nbsp;</button>';
+                docBody.innerHTML = closeButton + '<br />\n<div style="font-size:120%;"><br />\n' + alphaString + '<br />' + backNext + '</div>\n' + 
+                    '<h2>ZIM Archive Index</h2>\n' +
+                    '<div id="zimIndex" class="list-group">' + newHtml + '\n</div>\n' +
+                    '<div style="font-size:120%">\n' + backNext + '<br /><br />' + alphaString + '</div>\n';
+                var indexEntries = docBody.querySelectorAll('.list-group-item');
+                $(indexEntries).on('click', function (event) {
+                    $("#myModal").modal('hide');
+                    handleTitleClick(event);
+                    return false;
+                });
+                var continueAnchors = docBody.querySelectorAll('.continueAnchor');
+                $(continueAnchors).on('click', function(e) {
+                    document.getElementById('prefix').value = '';
+                    var start = ~~this.dataset.start;
+                    showZIMIndex(start);
+                    return false;
+                });
+                alphaSelector = docBody.querySelectorAll('.alphaSelector');
+                $(alphaSelector).on('click', function(e) {
+                    var char = this.dataset.sel;
+                    document.getElementById('prefix').value = ' ' + char;
+                    showZIMIndex(null, char);
+                    return false;
+                });
+                $('#searchingArticles').hide();
+                $('#articleListWithHeader').hide();
+                var modalTheme = document.getElementById('modalTheme');
+                modalTheme.classList.remove('dark');
+                if (params.cssUITheme === 'dark') modalTheme.classList.add('dark');
+                $('#myModal').modal({
+                    backdrop: "static"
+                });
+                //if ($('#prefix').is(":focus")) {
+                //    // This removes the focus from prefix
+                //    document.getElementById('findText').click();
+                //    document.getElementById('findText').click();
+                //}
+            }, start);
             }
         }
 
@@ -1671,7 +1814,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //});
             // Needed so that results show on top of article
             document.getElementById('articleContent').style.position = 'static';
-            $("#articleList a").on("click", handleTitleClick);
+            // We have to use mousedown instead of click as otherwise the blur event fires first and prevents this event from firing
+            $('#articleList a').on('mousedown', function (e) {
+                handleTitleClick(e);
+                return false;
+            });
             $('#searchingArticles').hide();
             $('#articleList').show();
             $('#articleListWithHeader').show();
@@ -1682,10 +1829,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          * @param {Event} event
          * @returns {Boolean}
          */
-        function handleTitleClick() {
+        function handleTitleClick(event) {       
             var dirEntryId = event.target.getAttribute("dirEntryId");
             findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId);
             var dirEntry = selectedArchive.parseDirEntryId(dirEntryId);
+            return false;
         }
 
 
@@ -1703,6 +1851,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 if (dirEntry.isRedirect()) {
                     selectedArchive.resolveRedirect(dirEntry, readArticle);
                 } else {
+                    params.isLandingPage = false;
                     readArticle(dirEntry);
                 }
             } else {
@@ -1723,6 +1872,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 console.time("Time to HTML load");
                 console.log("Initiating Document Ready timer...");
                 console.time("Time to Document Ready");
+
+                //Set startup cookie to guard against boot loop
+                //Cookie will signal failure until article is fully loaded
+                document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
 
                 //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
                 localSearch = {};
@@ -1789,33 +1942,31 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     var readFile = function (dirEntry) {
                         if (dirEntry === null) {
                             console.error("Title " + title + " not found in archive.");
-                            messagePort.postMessage({
-                                'action': 'giveContent',
-                                'title': title,
-                                'content': ''
+                        messagePort.postMessage({'action': 'giveContent', 'title' : title, 'content': ''});
+                    } else if (dirEntry.isRedirect()) {
+                        selectedArchive.resolveRedirect(dirEntry, function(resolvedDirEntry) {
+                            var redirectURL = resolvedDirEntry.namespace + "/" +resolvedDirEntry.url;
+                            // Ask the ServiceWork to send anÂ HTTP redirect to the browser.
+                            // We could send the final content directly, but it is necessary to let the browser know in which directory it ends up.
+                            // Else, if the redirect URL is in a different directory than the original URL,
+                            // the relative links in the HTML content would fail. See #312
+                            messagePort.postMessage({'action':'sendRedirect', 'title':title, 'redirectUrl': redirectURL});
+                            console.log("redirect to " + redirectURL + " sent to ServiceWorker");                            
                             });
-                        } else if (dirEntry.isRedirect()) {
-                            selectedArchive.resolveRedirect(dirEntry, readFile);
                         } else {
                             console.log("Reading binary file...");
                             selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                                messagePort.postMessage({
-                                    'action': 'giveContent',
-                                    'title': title,
-                                    'content': content
-                                });
+                            var message = {'action': 'giveContent', 'title' : title, 'content': content.buffer};
+                            messagePort.postMessage(message, [content.buffer]);
                                 console.log("content sent to ServiceWorker");
                             });
                         }
                     };
                     selectedArchive.getDirEntryByTitle(title).then(readFile).fail(function () {
-                        messagePort.postMessage({
-                            'action': 'giveContent',
-                            'title': title,
-                            'content': new UInt8Array()
+                    messagePort.postMessage({'action': 'giveContent', 'title' : title, 'content': new UInt8Array()});
                         });
-                    });
-                } else {
+            }
+            else {
                     console.error("Invalid message received", event.data);
                 }
             }
@@ -1826,12 +1977,21 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         var regexpPath = /^(.*\/)[^\/]+$/;
         // Pattern to find a ZIM URL (with its namespace) - see http://www.openzim.org/wiki/ZIM_file_format#Namespaces
         var regexpZIMUrlWithNamespace = /(?:^|\/)([-ABIJMUVWX]\/.+)/;
-        // These regular expressions match both relative and absolute URLs
-        // Since late 2014, all ZIM files should use relative URLs
-        var regexpImageUrl = /^(?:\.\.\/|\/)+(I\/.*)$/;
-        var regexpMetadataUrl = /^(?:\.\.\/|\/)+(-\/.*)$/;
-        // This matches the href of all <link> tags containing rel="stylesheet" in raw HTML unless commented out
-        var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*href\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
+        // Regex below finds images, scripts, stylesheets and media sources with ZIM-type metadata and image namespaces [kiwix-js #378]
+        // It first searches for <img, <script, <link, etc., then scans forward to find, on a word boundary, either src=["'] 
+        // or href=["'] (ignoring any extra whitespace), and it then tests everything up to the next ["'] against a pattern that
+        // matches ZIM URLs with namespaces [-IJ] ('-' = metadata or 'I'/'J' = image). When the regex is used below, it will also
+        // remove any relative or absolute path from ZIM-style URLs. 
+        // DEV: If you want to support more namespaces, add them to the END of the character set [-IJ] (not to the beginning) 
+        var regexpTagsWithZimUrl = /(<(?:img|script|link|video|audio|source|track)\b[^>]*?\s)(?:src|href)(\s*=\s*["'])(?:\.\.\/|\/)+(?=[-IJ]\/)/ig;
+    
+        // DEV: The regex below matches ZIM links (anchor hrefs) that should have the html5 "donwnload" attribute added to 
+        // the link. This is currently the case for epub files in Project Gutenberg ZIMs -- add any further types you need
+        // to support to this regex. The "zip" has been added here as an example of how to support further filetypes
+        var regexpDownloadLinks = /^.*?\.epub($|\?)|^.*?\.zip($|\?)/i
+    
+        // This matches the data-kiwixurl of all <link> tags containing rel="stylesheet" in raw HTML unless commented out
+        var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*data-kiwixurl\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
         // This matches the title between <title  attrs> ... </title>
         //var regexpArticleTitle = /<title\s*[^>]*>\s*([^<]+)\s*</i;
         // This matches the title of a Type1 Wikimedia ZIM file or any ZIM file using simple <h1 attrs....> Title </h1>
@@ -1859,7 +2019,22 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          * @param {String} htmlArticle
          */
         function displayArticleInForm(dirEntry, htmlArticle) {
-            // Display the article inside the web page.
+            // Replaces ZIM-style URLs of img, script, link and media tags with a data-kiwixurl to prevent 404 errors [kiwix-js #272 #376]
+            // This replacement also processes the URL to remove the path so that the URL is ready for subsequent jQuery functions
+            htmlArticle = htmlArticle.replace(regexpTagsWithZimUrl, '$1data-kiwixurl$2');
+            // Remove any empty media containers on page
+            htmlArticle = htmlArticle.replace(/(<(audio|video)\b(?:[^<]|<(?!\/\2))+<\/\2>)/ig, function (p0) {
+                return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
+            });
+
+            // Remove any download alerts and active content hanging on from previous article
+            ['activeContent', 'downloadAlert'].forEach(function (id) {
+                var rmv = document.getElementById(id);
+                if (rmv) rmv.parentElement.removeChild(rmv);
+            });
+
+            //@BUG WORKAROUND for Kiwix-JS-Windows #18
+            htmlArticle = htmlArticle.replace(/(<link\s+[^>]*?\bhref\s*=\s*["'])(s\/[\s\S]+(?!\.css))(["'])/gi, "$1../-/$2.css$3");
 
             //TESTING
             console.log("** HTML received **");
@@ -1902,8 +2077,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //@TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
             htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, "$1");
 
-            //Fast-replace img and script src with data-kiwixsrc and hide image [kiwix-js #272]
-            htmlArticle = htmlArticle.replace(/(<(?:img|script)\s+[^>]*\b)src(\s*=)/ig, "$1data-kiwixsrc$2");
             if (!params.imageDisplay) {
                 //Ensure 36px clickable image height so user can request images by clicking [kiwix-js #173]
                 htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)height(\s*=\s*)/ig,
@@ -1931,24 +2104,102 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //Display IPA pronunciation info erroneously hidden in some ZIMs
             htmlArticle = htmlArticle.replace(/(<span\b[^>]+?class\s*=\s*"[^"]+?mcs-ipa[^>]+?display:\s*)none/i, "$1inline");
 
+            //For all cases, neutralize the toggleOpenSection javascript that causes a crash
+            //htmlArticle = htmlArticle.replace(/(onclick\s*=\s*["'])toggleOpenSection[^"']*(['"]\s*)/ig, "$1$2");
+            // Remove and save inline javascript contents only (does not remove scripts with src)
+            // This is required because most app CSPs forbid inline scripts or require hashes
+            // DEV: {5,} in regex means script must have at least 5 characters between the script tags to be matched
+            //var regexpScripts = /<script\b(?![^>]+type\s*=\s*["']text\/html)(?![^>]+src\s*=)[^>]*>([^<]{5,})<\/script>/ig;
+            //var inlineJavaScripts = [];
+            //htmlArticle = htmlArticle.replace(regexpScripts, function(match, inlineScript) {
+            //    inlineJavaScripts.push(inlineScript);
+            //    return "";
+            //});
+            // Neutralize all inline scripts for now (later use above), excluding math blocks or react templates
+            var containsActiveContent = false;
+            htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig, function (p0, p1) {
+                containsActiveContent = true;
+                return '<!-- ' + p1 + ' --!>';
+            });
+            //Neutralize onload events, as they cause a crash in ZIMs with proprietary UIs
+            htmlArticle = htmlArticle.replace(/(<[^>]+?)onload\s*=\s*["'][^"']+["']\s*/ig, '$1');
+            //Neutralize onclick events
+            htmlArticle = htmlArticle.replace(/(<[^>]+?)onclick\s*=\s*["'][^"']+["']\s*/ig, '$1');
+            //Neutralize href="javascript:" links
+            htmlArticle = htmlArticle.replace(/href\s*=\s*["']javascript:[^"']+["']/gi, 'href=""');
+
+            // Display an information box if the landing page contains active content
+            if (!params.hideActiveContentWarning && params.isLandingPage && containsActiveContent) {
+                // DEV: Add any other ZIM types that you wish to exclude from showing the active content alert
+                if (!/wikipedia|wiktionary|wikivoyage/i.test(dirEntry._zimfile._files[0].name)) {
+                    var alertHTML = '<div id="activeContent" class="alert alert-info alert-dismissible fade in" style="margin-bottom:0;">' +
+                        '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
+                        '<strong>Unable to display active content:</strong> To use Archive Index <b><i>type a space</b></i> in the box above, or <a id="titleIndexLink" href="#" class="alert-link">tap here</a>. [<a id="stop" href="#displaySettingsDiv" class="alert-link">Permanently hide</a>]' +
+                        '</div>';
+                    document.getElementById('alertBoxDiv').innerHTML = alertHTML;
+                    document.getElementById('titleIndexLink').addEventListener('click', function() {
+                        showZIMIndex(0);
+                    });
+                    document.getElementById('stop').addEventListener('click', function() {
+                        var acwLabel = document.getElementById('hideActiveContentWarningCheck').parentNode;
+                        acwLabel.style.borderColor = 'red';
+                        acwLabel.style.borderStyle = 'solid';
+                        acwLabel.addEventListener('mousedown', function() {
+                            this.style.borderColor = '';
+                            this.style.borderStyle = '';
+                        }); 
+                        document.getElementById('btnConfigure').click();
+                    });
+                }
+            }
+
             //MathJax detection:
-            //Replace inline Math TeX with dummy images
-            //if (params.useMathJax) htmlArticle = htmlArticle.replace(/\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/g, "<img alt='$1' class='mwe-math-fallback-image' />$2");
-            //Test for raw TeX in the HTML - no need to convert because configuration for inline will be set by a script in the Stackexchange HTML
             containsMathTeXRaw = params.useMathJax && !/wikivoyage/.test(params.storedFile) ? /\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/.test(htmlArticle) : false;
             //Simplify any configuration script
             //if (containsMathTeXRaw) htmlArticle = htmlArticle.replace(/(<script\s+[^>]*?type\s*=\s*['"]\s*text\/x-mathjax-config[^>]+>[^<]+?Hub\.Config\s*\(\s*{\s*)[^<]*?(tex2jax\s*:[^}]+?})\s*,[^<]+(<\/script>)/i, "$1$2});$3");
             //Replace all TeX SVGs with MathJax scripts
-            htmlArticle = params.useMathJax ? htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"]([^'"]+)[^>]+>/ig, "<script type='math/tex'>$1</script>") : htmlArticle;
+            if (params.useMathJax) {
+                htmlArticle = htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"]([^'"]+)[^>]+>/ig, function (p0, math) {
+                    // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
+                    math = math.replace(/&amp;/g, '&');
+                    return '<script type="math/tex">' + math + '</script>';
+                });
+            }
             containsMathTeX = params.useMathJax ? /<script\s+type\s*=\s*['"]\s*math\/tex\s*['"]/i.test(htmlArticle) : false;
             containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
 
             // Compute base URL
-            var urlPath = regexpPath.test(dirEntry.url) ? urlPath = dirEntry.url.match(regexpPath)[1] : "";
-            var baseUrl = dirEntry.namespace + "/" + urlPath;
-            treePath = baseUrl.replace(/([^/]+\/)/g, "../");
+            var urlPath = regexpPath.test(dirEntry.url) ? urlPath = dirEntry.url.match(regexpPath)[1] : '';
+            var baseUrl = dirEntry.namespace + '/' + urlPath;
+            treePath = baseUrl.replace(/([^/]+\/)/g, '../');
 
-            //Preload stylesheets [kiwix-js @149]
+            //Adapt German Wikivoyage POI data format
+            var regexpGeoLocationDE = /<span\s+class\s?=\s?"[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<span[^>]+listing-name[^>]+>([^<]+)<\/span>)/ig;
+            htmlArticle = htmlArticle.replace(regexpGeoLocationDE, function (match, latitude, longitude, href, id) {
+                return '<a href="bingmaps:?collection=point.' + latitude + '_' + longitude + '_' + encodeURIComponent(id.replace(/_/g, " ")) +
+                    '">\r\n<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;margin-top:5px !important" />\r\n</a>' + href;
+            });
+
+            //Adapt English Wikivoyage POI data format
+            var regexpGeoLocationEN = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
+            htmlArticle = htmlArticle.replace(regexpGeoLocationEN, function (match, p1, latitude, longitude, p4, p5, p6, id) {
+                return p1 + "bingmaps:?collection=point." + latitude + "_" + longitude + "_" +
+                    encodeURIComponent(id.replace(/_/g, " ")).replace(/\.(\w\w)/g, "%$1") +
+                    (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Map marker" title="Show this place on a map" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" />' + p6 + id;
+            });
+
+            //Clean up remaining geo: links
+            htmlArticle = htmlArticle.replace(/href\s*=\s*"\s*geo:([\d.-]+),([\d.-]+)/ig, 'href="bingmaps:?collection=point.$1_$2_' + encodeURIComponent(dirEntry.title));
+
+            //Setup footnote backlinks if the ZIM doesn't have any
+            htmlArticle = htmlArticle.replace(/<li\s+id\s*=\s*"cite_note-([^"]+)"\s*>(?![^/]+↑)/ig, function (match, p1) {
+                var fnSearchRegxp = new RegExp('id\\s*=\\s*"(cite[-_]ref[-_]' + p1.replace(/[-_()]/g, "[-_()]") + '[^"]*)', "i");
+                var fnReturnMatch = htmlArticle.match(fnSearchRegxp);
+                var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : "";
+                return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>';
+            });
+
+            //Preload stylesheets [kiwix-js #149]
             //Set up blobArray of promises
             var cssArray = htmlArticle.match(regexpSheetHref);
             var blobArray = [];
@@ -1971,7 +2222,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 if (/minerva|inserted.style.mobile/i.test(testCSS) && (cssCache || zimType != cssSource)) {
                     //Substitute ridiculously long style name TODO: move this code to transformStyles
                     for (var i = arr.length; i--;) { //TODO: move to transfromStyles
-                        arr[i] = /minerva/i.test(arr[i]) ? '<link href="../-/s/style-mobile.css" rel="stylesheet" type="text/css">' : arr[i];
+                        arr[i] = /minerva/i.test(arr[i]) ? '<link data-kiwixurl="-/s/style-mobile.css" rel="stylesheet" type="text/css">' : arr[i];
                         // Delete stylesheet if will be inserted via minerva anyway (avoid linking it twice)
                         if (/inserted.style.mobile/i.test(arr[i]) && /minerva/i.test(testCSS)) {
                             arr.splice(i, 1);
@@ -1979,25 +2230,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }
                 }
                 for (var i = 0; i < arr.length; i++) {
-                    var linkArray = regexpSheetHref.exec(arr[i]);
-                    regexpSheetHref.lastIndex = 0; //Reset start position for next loop
-
-                    //@BUG WORKAROUND for Kiwix-JS-Windows #18
-                    linkArray[2] = linkArray[2].replace(/^(s\/[\s\S]+(?!\.css))$/i, "../-/$1.css");
-
-                    if (linkArray && regexpMetadataUrl.test(linkArray[2])) { //It's a CSS file contained in ZIM
-                        var zimLink = decodeURIComponent(uiUtil.removeUrlParameters(linkArray[2]));
-                        /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
-                        var filteredLink = transformStyles.filterCSS(zimLink, zimType, cssCache, cssSource, i);
-                        if (filteredLink.rtnFunction == "injectCSS") {
-                            blobArray[i] = filteredLink.zl;
-                            injectCSS();
-                        } else {
-                            resolveCSS(filteredLink.zl, i);
-                        }
+                    var zimLink = arr[i].match(/data-kiwixurl\s*=\s*['"]([^'"]+)/i);
+                    zimLink = zimLink ? decodeURIComponent(zimLink[1]) : '';
+                    /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
+                    var filteredLink = transformStyles.filterCSS(zimLink, zimType, cssCache, cssSource, i);
+                    if (filteredLink.rtnFunction == "injectCSS") {
+                        blobArray[i] = filteredLink.zl;
+                        injectCSS();
                     } else {
-                        blobArray[i] = arr[i]; //If CSS not in ZIM, store URL in blobArray
-                        injectCSS(); //Ensure this is called even if none of CSS links are in ZIM
+                        resolveCSS(filteredLink.zl, i);
                     }
                 }
             }
@@ -2048,8 +2289,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             }
                         }
                         testBlob = match && /blob:/i.test(blobArray[j][1]) ? blobArray[j][1] : blobArray[i]; //Whoa!!! Steady on!
-                        resultsArray[i] = cssArray[i].replace(/(href\s*=\s*["'])([^"']+)/i, "$1" +
-                            testBlob + '" data-kiwixhref="$2'); //Store the original URL for later use
+                        resultsArray[i] = cssArray[i].replace(/data-kiwixurl\s*=\s*["']([^"']+)/i, 'href="' +
+                            testBlob + '" data-kiwixhref="$1'); //Store the original URL for later use
                         //DEV note: do not attempt to add onload="URL.revokeObjectURL...)": see [kiwix.js #284]
                         //DEBUG:
                         //console.log("BLOB CSS #" + i + ": " + resultsArray[i] + "\nshould correspond to: " + testBlob);
@@ -2069,9 +2310,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }
                     //Add required path in front of injected styles (i.e. those that have no ./ or ../../.. etc)
                     cssArray$ = cssArray$.replace(/(\bhref\s*=\s*["']\s*)(?![./]+|blob:)/ig, "$1" + treePath);
-                    //For all cases, neutralize the toggleOpenSection javascript that causes a crash - TODO: make it work for mobile style
-                    htmlArticle = htmlArticle.replace(/(onclick\s*=\s*["'])toggleOpenSection[^"']*(['"]\s*)/ig, "$1$2");
-                    htmlArticle = htmlArticle.replace(/<script>([^<]+?toggleOpenSection(?:[^<]|<(?!\/script))+)<\/script>/i, "<!-- script>$1</script --!>");
                     //Ensure all headings are open
                     //htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
                     htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
@@ -2111,211 +2349,239 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
 
             function injectHTML() {
-                //Adapt German Wikivoyage POI data format
-                var regexpGeoLocationDE = /<span\s+class\s?=\s?"[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<span[^>]+listing-name[^>]+>([^<]+)<\/span>)/ig;
-                htmlArticle = htmlArticle.replace(regexpGeoLocationDE, function (match, latitude, longitude, href, id) {
-                    return '<a href="bingmaps:?collection=point.' + latitude + '_' + longitude + '_' + encodeURIComponent(id.replace(/_/g, " ")) +
-                        '">\r\n<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;margin-top:5px !important" />\r\n</a>' + href;
-                });
-
-                //Adapt English Wikivoyage POI data format
-                var regexpGeoLocationEN = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
-                htmlArticle = htmlArticle.replace(regexpGeoLocationEN, function (match, p1, latitude, longitude, p4, p5, p6, id) {
-                    return p1 + "bingmaps:?collection=point." + latitude + "_" + longitude + "_" +
-                        encodeURIComponent(id.replace(/_/g, " ")).replace(/\.(\w\w)/g, "%$1") +
-                        (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Map marker" title="Show this place on a map" src="../img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" />' + p6 + id;
-                });
-
-                //Clean up remaining geo: links
-                htmlArticle = htmlArticle.replace(/href\s*=\s*"\s*geo:([\d.-]+),([\d.-]+)/ig, 'href="bingmaps:?collection=point.$1_$2_' + encodeURIComponent(dirEntry.title));
-
-                //Setup footnote backlinks if the ZIM doesn't have any
-                htmlArticle = htmlArticle.replace(/<li\s+id\s*=\s*"cite_note-([^"]+)"\s*>(?![^/]+↑)/ig, function (match, p1) {
-                    var fnSearchRegxp = new RegExp('id\\s*=\\s*"(cite[-_]ref[-_]' + p1.replace(/[-_()]/g, "[-_()]") + '[^"]*)', "i");
-                    var fnReturnMatch = htmlArticle.match(fnSearchRegxp);
-                    var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : "";
-                    return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>';
-                });
-
                 //Inject htmlArticle into iframe
                 uiUtil.clear(); //Void progress messages
                 setTab();
                 //Inject base tag into html
                 htmlArticle = htmlArticle.replace(/(<head[^>]*>\s*)/i, '$1<base href="' + baseUrl + '" />\r\n');
-                //Display article in iframe
-                var articleContent = window.frames[0].frameElement.contentDocument;
-                //articleContent.documentElement.innerHTML = htmlArticle;
-                articleContent.open('text/html', 'replace');
-                articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
-                articleContent.write(htmlArticle);
-                articleContent.close();
-                //Set relative font size + Stackexchange-family multiplier
-                articleContent.body.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
-                //Set page width according to user preference
-                removePageMaxWidth();
+                // Extract any css classes from the html tag (they will be stripped when injected in iframe with .innerHTML)
+                var htmlCSS = htmlArticle.match(/<html[^>]*class\s*=\s*["']\s*([^"']+)/i);
+                htmlCSS = htmlCSS ? htmlCSS[1] : '';
+                // Tell jQuery we're removing the iframe document: clears jQuery cache and prevents memory leaks [kiwix-js #361]
+                $('#articleContent').contents().remove();
 
-                setupTableOfContents();
+                var iframeArticleContent = document.getElementById('articleContent');
 
-                // Attach listeners to headers to open-close following sections
-                var eles = ["H2", "H3"];
-                for (var i = 0; i < eles.length; i++) {
-                    // Process headers
-                    var collection = articleContent.getElementsByTagName(eles[i]);
-                    for (var j = 0; j < collection.length; j++) {
-                        // Prevent heading from getting selected when clicking on it
-                        collection[j].style.userSelect = 'none';
-                        collection[j].style.msUserSelect = 'none';
-                        //collection[j].classList.add("open-block");
-                        collection[j].addEventListener("click", function (e) {
-                            var that = e.currentTarget;
-                            var topTag = that.tagName;
-                            that.classList.toggle("open-block");
-                            var nextElement = that.nextElementSibling;
-                            that = that.parentNode;
-                            if (!nextElement) nextElement = that.nextElementSibling;
-                            if (!nextElement) return;
-                            // Decide toggle direction based on first sibling element
-                            var toggleDirection = nextElement.classList.contains("collapsible-block") && !nextElement.classList.contains("open-block") || nextElement.style.display == "none"  ? "block" : "none";
-                            //if (nextElement.style.display == "none") {
-                            //    this.innerHTML += "<br />";
-                            //} else {
-                            //    this.innerHTML = this.innerHTML.replace(/<br\s*\/?>$/i, "");
-                            //}
-                            while (nextElement && !~nextElement.tagName.indexOf(topTag) && !~nextElement.tagName.indexOf("H1")) {
-                                if (nextElement.classList.contains("collapsible-block")) {
-                                    nextElement.classList.toggle("open-block");
-                                } else if (that.classList.contains("collapsible-block")) {
-                                    // We're in a document that has been marked up, but we've encountered one that doesn't have markup, so stop
-                                    break;
-                                } else {
-                                    nextElement.style.display = toggleDirection;
-                                }
-                                that = nextElement;
-                                nextElement = that.nextElementSibling;
-                            }
-                        });
-                    }
-                }
-                // Process endnote references (so they open the reference block if closed)
-                var refs = articleContent.getElementsByClassName("mw-reflink-text");
-                if (refs) {
-                    for (var l = 0; l < refs.length; l++) {
-                        var reference = refs[l].parentElement;
-                        if (reference) {
-                            reference.addEventListener("click", function (obj) {
-                                var refID = obj.target.hash || obj.target.parentNode.hash;
-                                if (!refID) return;
-                                refID = refID.replace(/#/, "");
-                                var refLocation = articleContent.getElementById(refID);
-                                var refNext = util.getClosestBack(refLocation, function (el) {
-                                    return el.tagName == "H2";
-                                });
-                                if (refNext) {
-                                    refNext.classList.add("open-block");
-                                    //refNext.innerHTML = refNext.innerHTML.replace(/<br\s*\/?>$/i, "");
-                                    refNext = refNext.nextElementSibling;
-                                    while (refNext && refNext.classList.contains("collapsible-block")) {
-                                        refNext.classList.add("open-block");
-                                        refNext = refNext.nextElementSibling;
+                iframeArticleContent.onload = function () {
+                    //iframeArticleContent.onload = function () { };
+
+                    // Set a global error handler for iframe
+                    window.frames[0].onerror = function (msg, url) {
+                        console.log('Error caught in ZIM contents [' + url + ']:\n' + msg);
+                        return true;
+                    };
+
+                    var articleContent = document.getElementById('articleContent').contentDocument;
+                    // Inject the new article's HTML into the iframe
+                    articleContent.documentElement.innerHTML = htmlArticle;
+                    // Add any missing classes stripped from the <html> tag
+                    if (htmlCSS) articleContent.getElementsByTagName('body')[0].classList.add(htmlCSS);
+
+                    //Set relative font size + Stackexchange-family multiplier
+                    articleContent.body.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
+                    //Set page width according to user preference
+                    removePageMaxWidth();
+
+                    setupTableOfContents();
+
+                    // Attach listeners to headers to open-close following sections
+                    var eles = ["H2", "H3"];
+                    for (var i = 0; i < eles.length; i++) {
+                        // Process headers
+                        var collection = articleContent.getElementsByTagName(eles[i]);
+                        for (var j = 0; j < collection.length; j++) {
+                            // Prevent heading from getting selected when clicking on it
+                            collection[j].style.userSelect = 'none';
+                            collection[j].style.msUserSelect = 'none';
+                            //collection[j].classList.add("open-block");
+                            collection[j].addEventListener("click", function (e) {
+                                var that = e.currentTarget;
+                                var topTag = that.tagName;
+                                that.classList.toggle("open-block");
+                                var nextElement = that.nextElementSibling;
+                                that = that.parentNode;
+                                if (!nextElement) nextElement = that.nextElementSibling;
+                                if (!nextElement) return;
+                                // Decide toggle direction based on first sibling element
+                                var toggleDirection = nextElement.classList.contains("collapsible-block") && !nextElement.classList.contains("open-block") || nextElement.style.display == "none" ? "block" : "none";
+                                //if (nextElement.style.display == "none") {
+                                //    this.innerHTML += "<br />";
+                                //} else {
+                                //    this.innerHTML = this.innerHTML.replace(/<br\s*\/?>$/i, "");
+                                //}
+                                while (nextElement && !~nextElement.tagName.indexOf(topTag) && !~nextElement.tagName.indexOf("H1")) {
+                                    if (nextElement.classList.contains("collapsible-block")) {
+                                        nextElement.classList.toggle("open-block");
+                                    } else if (that.classList.contains("collapsible-block")) {
+                                        // We're in a document that has been marked up, but we've encountered one that doesn't have markup, so stop
+                                        break;
+                                    } else {
+                                        nextElement.style.display = toggleDirection;
                                     }
+                                    that = nextElement;
+                                    nextElement = that.nextElementSibling;
                                 }
                             });
                         }
                     }
-                }
-
-                //Hide top-level scrolling -- gets rid of interfering useless scroll bar, but re-enable for Config and About pages
-                document.getElementById('search-article').scrollTop = 0;
-                document.getElementById('search-article').style.overflow = "hidden";
-
-                var makeLink = uiUtil.makeReturnLink(dirEntry.title); //[kiwix-js #127]
-                var linkListener = eval(makeLink);
-                //Prevent multiple listeners being attached on each browse
-                var returnDivs = document.getElementsByClassName("returntoArticle");
-                for (var i = 0; i < returnDivs.length; i++) {
-                    returnDivs[i].removeEventListener('click', linkListener);
-                    returnDivs[i].addEventListener('click', linkListener);
-                }
-                checkToolbar();
-
-                //Listen to iframe key presses for in-page search
-                document.getElementById('articleContent').contentWindow.addEventListener('keyup', function (e) {
-                    //Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
-                    if ((e.ctrlKey || e.altKey) && e.which == 70) {
-                        document.getElementById('findText').click();
-                    }
-                });
-
-                document.getElementById('articleContent').contentWindow.addEventListener('keydown', function (e) {
-                    //Ctrl-P to patch printing support, so iframe gets printed
-                    if (e.ctrlKey && e.which == 80) {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        printIntercept();
-                    }
-                }, true);
-
-
-                // If the ServiceWorker is not useable, we need to fallback to parse the DOM
-                // to inject math images, and replace some links with javascript calls
-                if (contentInjectionMode === 'jquery') {
-                    var currentProtocol = location.protocol;
-                    var currentHost = location.host;
-                    // Percent-encode and add regex escape character '\' to the url's special characters
-            var escapedUrl = encodeURIComponent(dirEntry.url).replace(/([\\$^.|?*+()[{])/g, '\\$1');
-                    // Pattern to match a local anchor in an href even if prefixed by escaped url
-                    var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#]+$)');
-                    // Convert links into javascript calls
-                    var iframe = document.getElementById('articleContent').contentDocument;
-                    // Set state of collapsible sections
-                    if (params.openAllSections === true) {
-                        var collapsedBlocks = iframe.querySelectorAll('.collapsible-block:not(.open-block), .collapsible-heading:not(.open-block)');
-                        for (var i = collapsedBlocks.length; i--;) {
-                            collapsedBlocks[i].classList.add('open-block');
+                    // Process endnote references (so they open the reference block if closed)
+                    var refs = articleContent.getElementsByClassName("mw-reflink-text");
+                    if (refs) {
+                        for (var l = 0; l < refs.length; l++) {
+                            var reference = refs[l].parentElement;
+                            if (reference) {
+                                reference.addEventListener("click", function (obj) {
+                                    var refID = obj.target.hash || obj.target.parentNode.hash;
+                                    if (!refID) return;
+                                    refID = refID.replace(/#/, "");
+                                    var refLocation = articleContent.getElementById(refID);
+                                    var refNext = util.getClosestBack(refLocation, function (el) {
+                                        return el.tagName == "H2";
+                                    });
+                                    if (refNext) {
+                                        refNext.classList.add("open-block");
+                                        //refNext.innerHTML = refNext.innerHTML.replace(/<br\s*\/?>$/i, "");
+                                        refNext = refNext.nextElementSibling;
+                                        while (refNext && refNext.classList.contains("collapsible-block")) {
+                                            refNext.classList.add("open-block");
+                                            refNext = refNext.nextElementSibling;
+                                        }
+                                    }
+                                });
+                            }
                         }
                     }
-                    var anchors = Array.prototype.slice.call(iframe.getElementsByTagName('a'));
-                    anchors.forEach(function (anchor) {
-                        var href = anchor.getAttribute('href');
-                        // Compute current link's url (with its namespace), if applicable
-                        var zimUrl = regexpZIMUrlWithNamespace.test(anchor.href) ? anchor.href.match(regexpZIMUrlWithNamespace)[1] : '';
-                        if (href === null || href === undefined) {
-                            // No href attribute
-                        } else if (href.length === 0) {
-                            // It's a link with an empty href, pointing to the current page.
-                            // Because of the base tag, we need to modify it
-                            anchor.addEventListener('click', function (e) {
-                                e.preventDefault();
-                            });
-                        } else if (regexpLocalAnchorHref.test(href)) {
-                            // It's an anchor link : we need to make it work with javascript
-                            // because of the base tag
-                            var anchorRef = href.replace(regexpLocalAnchorHref, '$1');
-                            anchor.addEventListener('click', function (e) {
-                                e.preventDefault();
-                                document.getElementById('articleContent').contentWindow.location.hash = anchorRef;
-                            });
-                        } else if (anchor.protocol !== currentProtocol ||
-                            anchor.host !== currentHost) {
-                            // It's an external URL : we should open it in a new tab
-                           anchor.target = '_blank';
-                        } else {
-                            // It's a link to another article
-                            // Add an onclick event to go to this article
-                            // instead of following the link
-                            anchor.addEventListener('click', function (e) {
-                                e.preventDefault();
-                                var decodedURL = decodeURIComponent(zimUrl);
-                                goToArticle(decodedURL);
-                            });
+
+                    //Hide top-level scrolling -- gets rid of interfering useless scroll bar, but re-enable for Config and About pages
+                    document.getElementById('search-article').scrollTop = 0;
+                    document.getElementById('search-article').style.overflow = "hidden";
+
+                    var makeLink = uiUtil.makeReturnLink(dirEntry.title); //[kiwix-js #127]
+                    var linkListener = eval(makeLink);
+                    //Prevent multiple listeners being attached on each browse
+                    var returnDivs = document.getElementsByClassName("returntoArticle");
+                    for (var i = 0; i < returnDivs.length; i++) {
+                        returnDivs[i].removeEventListener('click', linkListener);
+                        returnDivs[i].addEventListener('click', linkListener);
+                    }
+                    checkToolbar();
+
+                    //Listen to iframe key presses for in-page search
+                    document.getElementById('articleContent').contentWindow.addEventListener('keyup', function (e) {
+                        //Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
+                        if ((e.ctrlKey || e.altKey) && e.which == 70) {
+                            document.getElementById('findText').click();
                         }
                     });
 
-                    loadImages();
-                    //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
-                }
+                    document.getElementById('articleContent').contentWindow.addEventListener('keydown', function (e) {
+                        //Ctrl-P to patch printing support, so iframe gets printed
+                        if (e.ctrlKey && e.which == 80) {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            printIntercept();
+                        }
+                    }, true);
 
-            } //End of injectHTML()
+
+                    // If the ServiceWorker is not useable, we need to fallback to parse the DOM
+                    // to inject math images, and replace some links with javascript calls
+                    if (contentInjectionMode === 'jquery') {
+                        var currentProtocol = location.protocol;
+                        var currentHost = location.host;
+                        // Percent-encode dirEntry.url and add regex escape character \ to the RegExp special characters - see https://www.regular-expressions.info/characters.html;
+                        // NB dirEntry.url can also contain path separator / in some ZIMs (Stackexchange). } and ] do not need to be escaped as they have no meaning on their own. 
+                        var escapedUrl = encodeURIComponent(dirEntry.url).replace(/([\\$^.|?*+\/()[{])/g, '\\$1');
+                        // Pattern to match a local anchor in an href even if prefixed by escaped url
+                        var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#]+$)');
+
+                        var iframeArticleContent = document.getElementById('articleContent').contentDocument;
+                        // Set state of collapsible sections
+                        if (params.openAllSections === true) {
+                            var collapsedBlocks = iframeArticleContent.querySelectorAll('.collapsible-block:not(.open-block), .collapsible-heading:not(.open-block)');
+                            for (var i = collapsedBlocks.length; i--;) {
+                                collapsedBlocks[i].classList.add('open-block');
+                            }
+                        }
+                        var anchors = Array.prototype.slice.call(iframeArticleContent.getElementsByTagName('a'));
+                        anchors.forEach(function (anchor) {
+                            // Attempts to access any properties of 'this' with malformed URLs causes app crash in Edge/UWP [kiwix-js #430]
+                            try {
+                                var testHref = anchor.href;
+                            } catch (err) {
+                                console.error("Malformed href caused error:" + err.message);
+                                return;
+                            }
+                            var href = anchor.getAttribute('href');
+                            if (href === null || href === undefined) return;
+                            // Compute current link's url (with its namespace), if applicable
+                            // NB We need to access 'anchor.href' here because, unlike 'anchor.getAttribute("href")', it contains the fully qualified URL [kiwix-js #432]
+                            var zimUrl = regexpZIMUrlWithNamespace.test(anchor.href) ? anchor.href.match(regexpZIMUrlWithNamespace)[1] : '';
+                            if (href.length === 0) {
+                                // It's a link with an empty href, pointing to the current page.
+                                // Because of the base tag, we need to modify it
+                                anchor.addEventListener('click', function (e) {
+                                    e.preventDefault();
+                                });
+                            } else if (regexpLocalAnchorHref.test(href)) {
+                                // It's an anchor link : we need to make it work with javascript
+                                // because of the base tag
+                                var anchorRef = href.replace(regexpLocalAnchorHref, '$1');
+                                anchor.addEventListener('click', function (e) {
+                                    e.preventDefault();
+                                    document.getElementById('articleContent').contentWindow.location.hash = anchorRef;
+                                });
+                            } else if (anchor.protocol !== currentProtocol ||
+                                anchor.host !== currentHost) {
+                                // It's an external URL : we should open it in a new tab
+                                anchor.target = '_blank';
+                            } else {
+                                // It's a link to an article or file in the ZIM
+                                var decodedURL = decodeURIComponent(zimUrl);
+                                if (regexpDownloadLinks.test(href)) {
+                                    // It's a link to a file in the ZIM that needs to be downloaded, not displayed (e.g. *.epub)
+                                    var filename = decodedURL.replace(/^.*\/([^\/]+)$/, '$1');
+                                    var downloadAttribute = anchor.getAttribute('download');
+                                    if (!downloadAttribute) anchor.setAttribute('download', filename);
+                                    var contentType = anchor.getAttribute('type');
+                                    if (!contentType) {
+                                        // DEV: Add more contentTypes here for downloadable files
+                                        if (/\.epub/.test(decodedURL)) contentType = 'application/epub+zip';
+                                        if (contentType) anchor.setAttribute('type', contentType);
+                                    }
+                                }    
+
+                                // Add an onclick event to extract this article or file from the ZIM
+                                // instead of following the link
+                                anchor.addEventListener('click', function (e) {
+                                    var downloadAttribute = this.getAttribute('download');
+                                    var contentType = this.getAttribute('type');
+                                    goToArticle(decodedURL, downloadAttribute, contentType);
+                                    e.preventDefault();
+                                });
+                            }
+                        });
+
+                        loadImagesJQuery();
+                        //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
+                        insertMediaBlobsJQuery();
+
+                        // Document has loaded except for images, so we can now change the startup cookie (and delete) [see init.js]
+                        document.cookie = 'lastPageLoad=success;expires=Thu, 21 Sep 1979 00:00:01 UTC';
+                    }
+
+                     //End of injectHTML()
+                };
+
+                // Load the blank article to clear the iframe (NB iframe onload event runs *after* this)
+                iframeArticleContent.src = "article.html";
+                //var articleContent = iframeArticleContent.contentDocument;
+                //articleContent.open('text/html', 'replace');
+                //articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
+                //articleContent.write(htmlArticle);
+                //articleContent.close();
+
+            } // End of injectHtml
 
         } //End of displayArticleInForm()
 
@@ -2342,11 +2608,14 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
         }
 
-        /** This is the main image loading function.
+        /**
+         * This is the main image loading function.
          * Contains four sub functions: prepareImages, triageImages, displaySlices, loadImageSlice
          * and a utility function checkVisibleImages
+         * 
+         * @param {Boolean} forPrinting A flag to indicate that all images should be injected 
          */
-        function loadImages(forPrinting) {
+        function loadImagesJQuery(forPrinting) {
 
             //TESTING
             console.log("** First Paint complete **");
@@ -2370,12 +2639,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             var imageDisplay = params.imageDisplay;
 
             //Establish master image array
-            var images = $('#articleContent').contents().find('body').find('img');
+            var images = $('#articleContent').contents().find('body').find('img[data-kiwixurl]');
             var allImages = images.length;
 
             //If user wants to display images...
             if (imageDisplay) {
-
                 //Set up a listener function for onscroll event
                 if (allImages > prefetchSliceSize) {
                     $("#articleContent").contents().scrollStopped(prepareImages);
@@ -2399,7 +2667,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         img.on('click', function () {
                             this.height = this.getAttribute('data-kiwixheight');
                             this.style.background = "";
-                            loadImageSlice(this, 0, 0, function (sliceID, sliceCount, sliceEnd, mimetype, data) {
+                            loadImageSlice([this], 0, 0, function (sliceID, sliceCount, sliceEnd, mimetype, data) {
                                 img[0].src = "data:" + mimetype + ";base64," + btoa(data);
                             }, true);
                         });
@@ -2424,7 +2692,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 windowScroll = false;
 
                 //Reload images array because we may have spliced it on a previous loop
-                images = $('#articleContent').contents().find('body').find('img');
+                images = $('#articleContent').contents().find('body').find('img[data-kiwixurl]');
 
                 //Remove images that have already been loaded
                 var visibleImage = null;
@@ -2510,7 +2778,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 svgGroup1 = [];
                 var svgGroup2 = [];
                 for (var i = startSlice; i < lengthSlice; i++) {
-                    if (/\.svg$/i.test(images[i].getAttribute('data-kiwixsrc')) ||
+                    if (/\.svg$/i.test(images[i].getAttribute('data-kiwixurl')) ||
                         //Include any kind of maths image fallback that has an alt string in SVG bucket
                         /mwe-math-fallback/i.test(images[i].className) && images[i].alt) {
                         if (i < firstVisible || i > lastVisible) {
@@ -2678,7 +2946,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
              * sliceEnd is the index of the last image in the current slice 
              * dataRequested == true returns the content and disables creation of blob
              *
-             * @param {Array} imnages
+             * @param {Array} images
              * @param {number} sliceID
              * @param {number} sliceEnd
              * @param {requestCallback} callback
@@ -2687,39 +2955,34 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             function loadImageSlice(images, sliceID, sliceEnd, callback, dataRequested) {
                 var sliceCount = 0;
                 Array.prototype.slice.call(images).forEach(function (image) {
-                    // It's a standard image contained in the ZIM file
-                    // We try to find its name (from an absolute or relative URL)
-                    var imageMatch = image.dataset.kiwixsrc.match(regexpImageUrl); //kiwix-js #272
-                    if (imageMatch) {
-                        var title = decodeURIComponent(imageMatch[1]);
-                        selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                            selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                                var url = fileDirEntry.url;
-                                var mimetype = url.match(/\.(\w{2,4})$/);
-                                mimetype = mimetype ? "image/" + mimetype[1].toLowerCase() : "image";
-                                mimetype = /\.jpg$/i.test(url) ? "image/jpeg" : mimetype;
-                                mimetype = /\.tif$/i.test(url) ? "image/tiff" : mimetype;
-                                mimetype = /\.ico$/i.test(url) ? "image/x-icon" : mimetype;
-                                mimetype = /\.svg$/i.test(url) ? "image/svg+xml" : mimetype;
-                                if (!dataRequested) {
-                                    uiUtil.feedNodeWithBlob(image, 'src', content, mimetype);
-                                }
-                                sliceCount++;
-                                console.log("Extracted image #" + countImages + "...");
-                                countImages++;
-                                if (!dataRequested) {
-                                    callback(sliceID, sliceCount, sliceEnd, url);
-                                } else {
-                                    callback(sliceID, sliceCount, sliceEnd, mimetype, util.uintToString(content));
-                                }
-                            });
-                        }).fail(function (e) {
+                    var title = decodeURIComponent(image.dataset.kiwixurl);
+                    selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+                        selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                            var url = fileDirEntry.url;
+                            var mimetype = url.match(/\.(\w{2,4})$/);
+                            mimetype = mimetype ? "image/" + mimetype[1].toLowerCase() : "image";
+                            mimetype = /\.jpg$/i.test(url) ? "image/jpeg" : mimetype;
+                            mimetype = /\.tif$/i.test(url) ? "image/tiff" : mimetype;
+                            mimetype = /\.ico$/i.test(url) ? "image/x-icon" : mimetype;
+                            mimetype = /\.svg$/i.test(url) ? "image/svg+xml" : mimetype;
+                            if (!dataRequested) {
+                                uiUtil.feedNodeWithBlob(image, 'src', content, mimetype);
+                            }
                             sliceCount++;
-                            console.error("Could not find DirEntry for image:" + title, e);
+                            console.log("Extracted image #" + countImages + "...");
                             countImages++;
-                            callback(sliceID, sliceCount, sliceEnd, "Error!");
+                            if (!dataRequested) {
+                                callback(sliceID, sliceCount, sliceEnd, url);
+                            } else {
+                                callback(sliceID, sliceCount, sliceEnd, mimetype, util.uintToString(content));
+                            }
                         });
-                    }
+                    }).fail(function (e) {
+                        sliceCount++;
+                        console.error("Could not find DirEntry for image:" + title, e);
+                        countImages++;
+                        callback(sliceID, sliceCount, sliceEnd, "Error!");
+                    });
                 });
             } //End of loadImageRange()
 
@@ -2734,7 +2997,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 var lastVisible = null;
                 //Determine first and last visible images in the current window
                 for (var i = 0; i < images.length; i++) {
-                    //console.log("Checking #" + i + ": " + images[i].getAttribute("data-kiwixsrc"));
+                    //console.log("Checking #" + i + ": " + images[i].getAttribute("data-kiwixurl"));
                     if (uiUtil.isElementInView(images[i], true)) {
                         //console.log("#" + i + " *is* visible");
                         if (firstVisible == null) {
@@ -2756,39 +3019,181 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 };
             }
 
-        } //End of loadImages()
+        } //End of loadImagesJQuery()
 
         // Load Javascript content
-        function loadJavascript() {
-            $('#articleContent').contents().find('script').each(function () {
+        function loadJavaScriptJQuery() {
+            $('#articleContent').contents().find('script[data-kiwixurl]').each(function() {
                 var script = $(this);
-                // We try to find its name (from an absolute or relative URL)
-                if (script && script[0] && script[0].src) {
-                    var srcMatch = script.attr("src").match(regexpMetadataUrl);
-                }
+                var scriptUrl = script.attr("data-kiwixurl");
                 // TODO check that the type of the script is text/javascript or application/javascript
-                if (srcMatch) {
-                    // It's a Javascript file contained in the ZIM file
-                    var title = uiUtil.removeUrlParameters(decodeURIComponent(srcMatch[1]));
+                var title = uiUtil.removeUrlParameters(decodeURIComponent(scriptUrl));
                     selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                        if (dirEntry === null)
+                    if (dirEntry === null) {
                             console.log("Error: js file not found: " + title);
-                        else
+                    } else {
                             selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                                // TODO : I have to disable javascript for now
-                                //uiUtil.feedNodeWithBlob(script, 'src', content);
-                                //script[0].type = 'text/javascript';
-                                //var jsContent = encodeURIComponent(util.uintToString(content));
-                                var jsContent = util.uintToString(content);
-                                script.attr("src", 'data:text/javascript;charset=UTF-8,' + jsContent);
+                            // TODO : JavaScript support not yet functional [kiwix-js #152]
+                            uiUtil.feedNodeWithBlob(script, 'src', content, 'text/javascript');
                             });
+                    }
                     }).fail(function (e) {
                         console.error("could not find DirEntry for javascript : " + title, e);
                     });
-                }
             });
         }
 
+        function insertMediaBlobsJQuery() {
+            var iframe = document.getElementById('articleContent').contentDocument;
+            var trackBlob;
+            Array.prototype.slice.call(iframe.querySelectorAll('video[data-kiwixurl], audio[data-kiwixurl], source[data-kiwixurl]'))
+            .forEach(function(mediaSource) {
+                var source = mediaSource.dataset.kiwixurl;
+                if (!source || !regexpZIMUrlWithNamespace.test(source)) {
+                    console.error('No usable media source was found!');
+                    return;
+                }
+                var mediaElement = /audio|video/i.test(mediaSource.tagName) ? mediaSource : mediaSource.parentElement;
+                var mimeType = mediaSource.type;
+                // Check mimeType
+                if (!mimeType) {
+                    // Try to guess type from file extension
+                    var mediaType = mediaElement.tagName.toLowerCase();
+                    if (!/audio|video/i.test(mediaType)) mediaType = 'video';
+                    // if (/track/i.test(mediaSource.tagName)) mediaType = 'text';
+                    mimeType = source.replace(/^.*\.([^.]+)$/, mediaType + '/$1');
+                }
+                // Create custom subtitle / cc load menu if it doesn't already exist
+                if (!iframe.getElementById('kiwixCCMenu')) buildCustomCCMenu(iframe, mediaElement, function (ccBlob) {
+                    trackBlob = ccBlob;
+                });
+                // Load media file
+                selectedArchive.getDirEntryByTitle(decodeURIComponent(source)).then(function(dirEntry) {
+                    return selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, mediaArray) {
+                        var blob = new Blob([mediaArray], { type: mimeType });
+                        mediaSource.src = URL.createObjectURL(blob);
+                        // In Firefox and Chromium it is necessary to re-register the inserted media source
+                        // but do not reload for text tracks (closed captions / subtitles)
+                        // if (/track/i.test(mediaSource.tagName)) return;
+                        mediaElement.load();
+                        // Add a download link in case media source not supported
+                        document.getElementById('alertBoxDivFooter').innerHTML = 
+                            '<div id="downloadAlert" class="alert alert-info alert-dismissible">\n' +
+                            '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
+                            '    <span id="alertMessage"></span>\n' +
+                            '</div>\n';
+                        var alertMessage = document.getElementById('alertMessage');
+                        var filename = iframe.title + '_' + dirEntry.url.replace(/^.*\/([^\/]+)$/, '$1');
+                        // Make filename safe
+                        filename = filename.replace(/[\/\\:*?"<>|]/g, '_');
+                        alertMessage.innerHTML = '<a href="#" class="alert-link" id="downloadMedia">Download this file</a> (and any selected subtitles) to play with another app';
+                        document.getElementById('downloadMedia').addEventListener('click', function () {
+                            var downloadFiles = [];
+                            downloadFiles.push({
+                                'blob': blob,
+                                'filename': filename,
+                                'src': mediaSource.src
+                            });
+                            // Add any selected subtitle file to the download package
+                            var selTextTrack = iframe.getElementById('kiwixSelCC');
+                            if (selTextTrack) {
+                                var selTextExt = selTextTrack.dataset.kiwixurl.replace(/^.*\.([^.]+)$/, '$1');
+                                // Subtitle files should have same name as video + .es.vtt (for example)
+                                downloadFiles.push({
+                                    'blob': trackBlob,
+                                    'filename': filename.replace(/^(.*)\.[^.]+$/, '$1.' + selTextTrack.srclang + '.' + selTextExt),
+                                    'src': selTextTrack.src
+                                });
+                            }
+                            for (var j = downloadFiles.length; j--;) {
+                                if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
+                                    uiUtil.downloadBlobUWP(downloadFiles[j].blob, downloadFiles[j].filename, alertMessage);
+                                } else {
+                                    var mimeType = downloadFiles[j].blob.type ? downloadFiles[j].blob.type : 'application/octet-stream';
+                                    var a = document.createElement('a');
+                                    a.href = downloadFiles[j].src;
+                                    a.target = '_blank';
+                                    a.type = mimeType;
+                                    a.download = downloadFiles[j].filename;
+                                    alertMessage.appendChild(a); // NB we have to add the anchor to the document for Firefox to be able to click it
+                                    try { a.click(); }
+                                    catch (err) {
+                                        // If the click fails, use an alternative download method
+                                        if (window.navigator && window.navigator.msSaveBlob) {
+                                            // This works for IE11
+                                            window.navigator.msSaveBlob(downloadFiles[j].blob, downloadFiles[j].filename);
+                                        }
+                                    }
+                                }
+                            }
+                            iframe.addEventListener('unload', function (e) {
+                                alertMessage.remove();
+                            });
+                        });
+                    });
+                });
+            });
+        }
+
+        /**
+         * Create a custom dropdown menu item beneath the given mediaElement (audio or video block) to allow the user to
+         * select the language of text tracks (subtitles/CC) to extract from the ZIM (this is necessary because there is
+         * no universal onchange event that fires for subtitle changes in the html5 video widget when the URL is invalid)
+         * 
+         * @param {Document} doc The document in which the new menu will be placed (usually window.document or iframe)
+         * @param {Element} mediaElement The media element (usually audio or video block) which contains the text tracks
+         * @param {Function} callback The function to call wtih the blob
+         */
+        function buildCustomCCMenu(doc, mediaElement, callback) {
+            var optionList = [];
+            var langs = '';
+            var src = '';
+            var currentTracks = mediaElement.getElementsByTagName('track');
+            // Extract track data from current media element
+            for (var i = currentTracks.length; i--;) {
+                langs = currentTracks[i].label + ' [' + currentTracks[i].srclang + ']';
+                src = currentTracks[i].dataset.kiwixurl;
+                if (!src && currentTracks[i].src) {
+                    // Some ZIMs list the text track as a relative link within the directory containing the media source
+                    src = regexpZIMUrlWithNamespace.test(currentTracks[i].src) ? currentTracks[i].src.match(regexpZIMUrlWithNamespace)[1] : src;
+                }
+                if (src) {
+                    optionList.unshift('<option value="' + currentTracks[i].srclang + '" data-kiwixsrc="' +
+                        src + '" data-kiwixkind="' + currentTracks[i].kind + '">' + langs + '</option>');
+                }
+                currentTracks[i].parentNode.removeChild(currentTracks[i]);
+            }
+            optionList.unshift('<option value="" data-kiwixsrc="">None</option>');
+            var newKiwixCCMenu = '<select id="kiwixCCMenuLangList">\n' + optionList.join('\n') + '\n</select>';
+            // Create the new container and menu
+            var d = doc.createElement('DIV');
+            d.id = 'kiwixCCMenu';
+            d.setAttribute('style', 'margin-top: 1em; text-align: left;');
+            d.innerHTML = 'Please select subtitle language: ' + newKiwixCCMenu;
+            mediaElement.parentElement.insertBefore(d, mediaElement.nextSibling);
+            // Add event listener to extract the text track from the ZIM and insert it into the media element when the user selects it
+            newKiwixCCMenu = doc.getElementById('kiwixCCMenu').addEventListener('change', function (v) {
+                var existingCC = doc.getElementById('kiwixSelCC');
+                if (existingCC) existingCC.parentNode.removeChild(existingCC);
+                var sel = v.target.options[v.target.selectedIndex];
+                if (!sel.value) return; // User selected "none"
+                selectedArchive.getDirEntryByTitle(sel.dataset.kiwixsrc).then(function (dirEntry) {
+                    return selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, trackContents) {
+                        var blob = new Blob([trackContents], { type: 'text/vtt' });
+                        var t = doc.createElement('track');
+                        t.id = 'kiwixSelCC';
+                        t.kind = sel.dataset.kiwixkind;
+                        t.label = sel.innerHTML;
+                        t.srclang = sel.value;
+                        t.default = true;
+                        t.src = URL.createObjectURL(blob);
+                        t.dataset.kiwixurl = sel.dataset.kiwixsrc;
+                        mediaElement.appendChild(t);
+                        callback(blob);
+                    });
+                });
+            });
+        } 
 
         /**
          * Changes the URL of the browser page, so that the user might go back to it
@@ -2801,6 +3206,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             var urlParameters;
             var stateLabel;
             if (title && !("" === title)) {
+            // Prevents creating a double history for the same page
+            if (history.state && history.state.title === title) return;
                 stateObj.title = title;
                 urlParameters = "?title=" + title;
                 stateLabel = "Wikipedia Article : " + title;
@@ -2816,10 +3223,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
 
         /**
-         * Replace article content with the one of the given title
-         * @param {String} title
+         * Replaces article content with the one of the given title, or extracts a downloadable file from the ZIM
+         * 
+         * @param {String} title The path and filename to the article or file to be extracted
+         * @param {Boolean} download If true, the file will be prepared for download instead of treated as an article
+         * @param {String} contentType The mimetype of the downloadable file, if known 
          */
-        function goToArticle(title) {
+        function goToArticle(title, download, contentType) {
             //This removes any search highlighting
             clearFindInArticle();
             //Re-enable top-level scrolling
@@ -2832,7 +3242,49 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     document.getElementById('searchingArticles').style.display = 'none';
                     console.error("Article with title " + title + " not found in the archive");
                     goToMainArticle();
+                } else if (download) {
+                    selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                        // We have to create the alert box from scratch each time, because Bootstrap removes it from the DOM when the user closes it
+                        document.getElementById('alertBoxDivFooter').innerHTML =
+                            '<div id="downloadAlert" class="alert alert-info alert-dismissible" style="display:none;">' +
+                            '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
+                            '    <span id="alertMessage"></span>' +
+                            '</div>';
+                        // Download code adapted from https://stackoverflow.com/a/19230668/9727685 
+                        if (!contentType) contentType = 'application/octet-stream';
+                        var a = document.createElement('a');
+                        var blob = new Blob([content], { 'type': contentType });
+                        //var blobDataUri = 'data:' + contentType + ';base64,' + btoa(content);
+                        var filename = download || title.replace(/^.*\/([^\/]+)$/, '$1');
+                        // Make filename safe
+                        filename = filename.replace(/[\/\\:*?"<>|]/g, '_');
+                        a.href = window.URL.createObjectURL(blob);
+                        //a.href = 'microsoft-edge:' + blobDataUri;
+                        a.target = '_blank';
+                        a.type = contentType;
+                        a.download = filename;
+                        a.classList.add('alert-link');
+                        a.innerHTML = filename;
+                        var alertMessage = document.getElementById('alertMessage');
+                        alertMessage.innerHTML = '<strong>Download</strong> If the download does not start, please click the following link: ';
+                        alertMessage.appendChild(a); // NB we have to add the anchor to the document for Firefox to be able to click it
+                        try { a.click(); }
+                        catch (err) {
+                            // If the click fails, use an alternative download method
+                            if (window.navigator && window.navigator.msSaveBlob) {
+                                // This works for IE11
+                                window.navigator.msSaveBlob(blob, filename);
+                            } else {
+                                // Fall back to showing the link in a message box
+                                document.getElementById('downloadAlert').style.display = "block";
+                                // And try to launch through UWP download
+                                if (Windows && Windows.Storage) uiUtil.downloadBlobUWP(blob, filename, alertMessage);
+                            }
+                        }
+                        $("#searchingArticles").hide();
+                    });
                 } else {
+                    params.isLandingPage = false;
                     readArticle(dirEntry);
                 }
             }).fail(function () {
@@ -2852,6 +3304,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 } else {
                     //Test below supports Stackexchange-family ZIMs, so we don't call up user profiles
                     if (dirEntry.namespace === 'A' && !/user\//.test(dirEntry.url)) {
+                        params.isLandingPage = false;
                         readArticle(dirEntry);
                     } else {
                         // If the random title search did not end up on an article,
@@ -2871,6 +3324,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     $("#welcomeText").show();
                 } else {
                     if (dirEntry.namespace === 'A') {
+                        params.isLandingPage = true;
                         readArticle(dirEntry);
                     } else {
                         console.error("The main page of this archive does not seem to be an article");
