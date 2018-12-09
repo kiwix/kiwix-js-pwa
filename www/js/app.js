@@ -2134,7 +2134,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 if (!/wikipedia|wiktionary|wikivoyage/i.test(dirEntry._zimfile._files[0].name)) {
                     var alertHTML = '<div id="activeContent" class="alert alert-info alert-dismissible fade in" style="margin-bottom:0;">' +
                         '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
-                        '<strong>Unable to display active content:</strong> To use Archive Index instead, <a id="titleIndexLink" href="#" class="alert-link">click here</a>, or <b><i>type a space</b></i> in the box above. [<a id="stop" href="#displaySettingsDiv" class="alert-link">Permanently hide</a>]' +
+                        '<strong>Unable to display active content:</strong> To use Archive Index <b><i>type a space</b></i> in the box above, or <a id="titleIndexLink" href="#" class="alert-link">tap here</a>. [<a id="stop" href="#displaySettingsDiv" class="alert-link">Permanently hide</a>]' +
                         '</div>';
                     document.getElementById('alertBoxDiv').innerHTML = alertHTML;
                     document.getElementById('titleIndexLink').addEventListener('click', function() {
