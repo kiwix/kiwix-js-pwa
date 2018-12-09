@@ -2021,6 +2021,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             // Replaces ZIM-style URLs of img, script, link and media tags with a data-kiwixurl to prevent 404 errors [kiwix-js #272 #376]
             // This replacement also processes the URL to remove the path so that the URL is ready for subsequent jQuery functions
             htmlArticle = htmlArticle.replace(regexpTagsWithZimUrl, '$1data-kiwixurl="$2"');
+            // Remove any empty media containers on page
+            htmlArticle = htmlArticle.replace(/(<(audio|video)\b(?:[^<]|<(?!\/\2))+<\/\2>)/ig, function (p0) {
+                return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
+            });
 
             // Remove any download alerts and active content hanging on from previous article
             ['activeContent', 'downloadAlert'].forEach(function (id) {
