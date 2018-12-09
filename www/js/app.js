@@ -581,6 +581,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             $('#articleContent').hide();
             $('#downloadLinks').hide();
             $('#serverResponse').hide();
+            $('#activeContent').hide();
             refreshAPIStatus();
             //Re-enable top-level scrolling
             document.getElementById('top').style.position = "relative";
@@ -2140,7 +2141,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         showZIMIndex(0);
                     });
                     document.getElementById('stop').addEventListener('click', function() {
-                        $('#activeContent').hide();
                         var acwLabel = document.getElementById('hideActiveContentWarningCheck').parentNode;
                         acwLabel.style.borderColor = 'red';
                         acwLabel.style.borderStyle = 'solid';
