@@ -1961,11 +1961,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         // Pattern to find a ZIM URL (with its namespace) - see http://www.openzim.org/wiki/ZIM_file_format#Namespaces
         var regexpZIMUrlWithNamespace = /(?:^|\/)([-ABIJMUVWX]\/.+)/;
         // Regex below finds images, scripts, stylesheets and media sources with ZIM-type metadata and image namespaces [kiwix-js #378]
-        // It first searches for <img, <script, or <link, then scans forward to find, on a word boundary, either src=["'] 
-        // OR href=["'] (ignoring any extra whitespace), and it then tests everything up to the next ["'] against a pattern that
-        // matches ZIM URLs with namespaces [-I] ("-" = metadata or "I" = image). Finally it removes the relative or absolute path. 
-        // DEV: If you want to support more namespaces, add them to the END of the character set [-I] (not to the beginning) 
-        var regexpTagsWithZimUrl = /(<(?:img|script|link|video|audio|source|track)\s+[^>]*?\b)(?:src|href)(\s*=\s*["']\s*)(?:\.\.\/|\/)+([-I]\/[^"']*)/ig;
+        // It first searches for <img, <script, <link, etc., then scans forward to find, on a word boundary, either src=["'] 
+        // or href=["'] (ignoring any extra whitespace), and it then tests everything up to the next ["'] against a pattern that
+        // matches ZIM URLs with namespaces [-IJ] ('-' = metadata or 'I'/'J' = image). When the regex is used below, it will also
+        // remove any relative or absolute path from ZIM-style URLs. 
+        // DEV: If you want to support more namespaces, add them to the END of the character set [-IJ] (not to the beginning) 
+        var regexpTagsWithZimUrl = /(<(?:img|script|link|video|audio|source|track)\b[^>]*?\s)(?:src|href)\s*=\s*["'](?:\.\.\/|\/)+([-IJ]\/[^"']*)["']/ig;
     
         // DEV: The regex below matches ZIM links (anchor hrefs) that should have the html5 "donwnload" attribute added to 
         // the link. This is currently the case for epub files in Project Gutenberg ZIMs -- add any further types you need
@@ -2001,6 +2002,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          * @param {String} htmlArticle
          */
         function displayArticleInForm(dirEntry, htmlArticle) {
+            // Replaces ZIM-style URLs of img, script, link and media tags with a data-kiwixurl to prevent 404 errors [kiwix-js #272 #376]
+            // This replacement also processes the URL to remove the path so that the URL is ready for subsequent jQuery functions
+            htmlArticle = htmlArticle.replace(regexpTagsWithZimUrl, '$1data-kiwixurl="$2"');
+
             // Remove any download alerts and active content hanging on from previous article
             ['activeContent', 'downloadAlert'].forEach(function (id) {
                 var rmv = document.getElementById(id);
@@ -2009,9 +2014,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
             //@BUG WORKAROUND for Kiwix-JS-Windows #18
             htmlArticle = htmlArticle.replace(/(<link\s+[^>]*?\bhref\s*=\s*["'])(s\/[\s\S]+(?!\.css))(["'])/gi, "$1../-/$2.css$3");
-            // Replaces ZIM-style URLs of img, script, link and media tags with a data-url to prevent 404 errors [kiwix-js #272 #376]
-            // This replacement also processes the URL to remove the path so that the URL is ready for subsequent jQuery functions
-            htmlArticle = htmlArticle.replace(regexpTagsWithZimUrl, "$1data-kiwixurl$2$3");            
 
             //TESTING
             console.log("** HTML received **");
