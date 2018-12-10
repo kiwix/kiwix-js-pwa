@@ -16,6 +16,7 @@
 * FIX: Correct logic in binary search so it doesn't stall if assets in A namespace have no title
 * FIX: Missing footnote reference numbers in desktop ZIMs transformed to mobile style
 * FIX: Assets with unescaped characters in URL should now be retrieved correctly
+* FIX: Individual extraction of images when images are disabled in Configuration
 
 ## Release 0.9.9.8 (beta)
 * UPDATE: Ray Charles ZIM to October 2018 version
