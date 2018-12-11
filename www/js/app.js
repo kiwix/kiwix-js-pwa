@@ -316,8 +316,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             localSearch.setMatchType('left');
             var timer = null;
             findInArticle.addEventListener('keyup', function (e) {
-                //Ensure timeout doesn't occur if another key has been pressed within time window
-                clearTimeout(timer);
                 //If user pressed Alt-F or Ctrl-F, exit
                 if ((e.altKey || e.ctrlKey) && e.which == 70) return;
                 var val = this.value;
@@ -333,24 +331,22 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 if (~(val.length - 2)) {
                     localSearch.scrollFrom = 0;
                     localSearch.lastScrollValue = val;
-                    timer = setTimeout(function () {
-                        localSearch.apply(val);
-                        if (val.length) {
-                            var fullTotal = localSearch.countFullMatches(val);
-                            var partialTotal = localSearch.countPartialMatches();
-                            fullTotal = fullTotal > partialTotal ? partialTotal : fullTotal;
-                            document.getElementById('matches').innerHTML = '<a id="scrollLink" href="#">Full: ' + fullTotal + '</a>';
-                            document.getElementById('partial').innerHTML = "Partial: " + partialTotal;
-                            document.getElementById('scrollLink').addEventListener('click', function () {
-                                localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
-                            });
-                            //Auto-scroll: TODO - consider making this an option
+                    localSearch.apply(val);
+                    if (val.length) {
+                        var fullTotal = localSearch.countFullMatches(val);
+                        var partialTotal = localSearch.countPartialMatches();
+                        fullTotal = fullTotal > partialTotal ? partialTotal : fullTotal;
+                        document.getElementById('matches').innerHTML = '<a id="scrollLink" href="#">Full: ' + fullTotal + '</a>';
+                        document.getElementById('partial').innerHTML = "Partial: " + partialTotal;
+                        document.getElementById('scrollLink').addEventListener('click', function () {
                             localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
-                        } else {
-                            document.getElementById('matches').innerHTML = "Full: 0";
-                            document.getElementById('partial').innerHTML = "Partial: 0";
-                        }
-                    }, 500);
+                        });
+                        //Auto-scroll: TODO - consider making this an option
+                        localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
+                    } else {
+                        document.getElementById('matches').innerHTML = "Full: 0";
+                        document.getElementById('partial').innerHTML = "Partial: 0";
+                    }
                 }
             });
         });
