@@ -312,8 +312,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             searchDiv.style.display = "block";
             findInArticle.focus();
             localSearch = new util.Hilitor(innerDocument);
-            //TODO: Check right-to-left language support...
-            localSearch.setMatchType('left');
+            //TODO: MatchType should be language specific
+            localSearch.setMatchType('open');
             var timer = null;
             findInArticle.addEventListener('keyup', function (e) {
                 //If user pressed Alt-F or Ctrl-F, exit
