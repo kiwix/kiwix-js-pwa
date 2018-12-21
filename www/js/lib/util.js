@@ -441,9 +441,8 @@ define(['q'], function (q) {
 
         this.setRegex = function (input) {
             input = input.replace(/\\([^u]|$)/g, "$1");
-            input = input.replace(/[^\w\\\s']+/g, "").replace(/\s+/g, "|");
+            input = input.replace(/\s+/g, "|");
             input = input.replace(/^\||\|$/g, "");
-            input = addAccents(input);
             if (input) {
                 var re = "(" + input + ")";
                 if (!this.openLeft) re = "(?:^|[\\b\\s" + leadingSymbols + "])" + re;
@@ -575,6 +574,7 @@ define(['q'], function (q) {
         this.apply = function (input) {
             this.remove();
             if (input === undefined || !(input = input.replace(/(^\s+|\s+$)/g, ""))) return;
+            input = addAccents(input);
             input = convertCharStr2jEsc(input);
             if (this.setRegex(input)) {
                 this.hiliteWords(targetNode);
