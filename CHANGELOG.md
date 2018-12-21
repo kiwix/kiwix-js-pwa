@@ -1,3 +1,7 @@
+## Release 0.9.9.87 (beta)
+* FIX: Removed timeout preventing fast typing for find in article function (Ctrl-F / Alt-F)
+* FIX: Allow searching in article for languages that do not use spaces (such as Chinese)
+
 ## Release 0.9.9.85 (beta)
 * ENHANCEMENT: Support for playing media (video/audio) in the ZIM if the device has the required codec
 * ENHANCEMENT: Support for "downloading" media (e.g. videos+subtitles) from the ZIM
