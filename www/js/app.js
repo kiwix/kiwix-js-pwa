@@ -326,7 +326,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 }
                 //If value hasn't changed, exit
                 if (val == localSearch.lastScrollValue) return;
-                //Ensure nothing happens if only one value has been entered (not specific enough), but ensure timeout is set 
+                //Ensure nothing happens if only one value has been entered (search is not specific enough) 
                 //if no value has been entered (clears highlighting if user deletes all values in search field)
                 if (~(val.length - 2)) {
                     localSearch.scrollFrom = 0;

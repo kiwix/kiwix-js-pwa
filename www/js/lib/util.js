@@ -479,7 +479,7 @@ define(['q'], function (q) {
             var matches = matchInner(node.innerHTML, '<' + hiliteTag + '\\b[^>]*class="hilitor"[^>]*>', '</' + hiliteTag + '>', 'gi');
             if (matches) return matches.length
             else return 0;
-        }
+        };
 
         this.scrollFrom = 0;
 
@@ -492,7 +492,7 @@ define(['q'], function (q) {
             input = input.replace(/\s+/g, " ");
             var inputWords = input.split(" ");
             var testInput = addAccents(input);
-            var testInput = new RegExp(testInput, "i");
+            testInput = new RegExp(testInput, "i");
             var hilitedNodes = node.getElementsByClassName(className);
             var subNodes = [];
             var start = scrollFrom || 0;
