@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" IgnorableNamespaces="uap mp uap3">
-  <Identity Name="Kiwix.KiwixJS" Version="0.9.987.0" Publisher="CN=0A5438F5-EEA6-4300-9B77-E45BBD148885" />
-  <mp:PhoneIdentity PhoneProductId="e24e2495-242c-4a73-808b-ee5233e84c83" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="Kiwix.WikiMed" Version="0.9.981.0" Publisher="CN=0A5438F5-EEA6-4300-9B77-E45BBD148885" />
+  <mp:PhoneIdentity PhoneProductId="cb0f426b-1361-4832-9351-223fb6d2dce6" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>Kiwix JS</DisplayName>
+    <DisplayName>WikiMed</DisplayName>
     <PublisherDisplayName>Kiwix</PublisherDisplayName>
     <Logo>images\storelogo.png</Logo>
   </Properties>
@@ -18,8 +18,8 @@
       <uap:ApplicationContentUriRules>
         <uap:Rule Match="ms-appx-web:///www/index.html" Type="include" WindowsRuntimeAccess="all" />
       </uap:ApplicationContentUriRules>
-      <uap:VisualElements DisplayName="Kiwix JS" Description="Kiwix Offline Wikipedia and ZIM File Reader" BackgroundColor="transparent" Square150x150Logo="images\Square150x150Logo.png" Square44x44Logo="images\Square44x44Logo.png">
-        <uap:DefaultTile ShortName="Kiwix JS" Square310x310Logo="images\LargeTile.png" Wide310x150Logo="images\Wide310x150Logo.png" Square71x71Logo="images\SmallTile.png">
+      <uap:VisualElements DisplayName="WikiMed" Description="WikiMed offline medical encyclopaedia by Kiwix" BackgroundColor="transparent" Square150x150Logo="images\Square150x150Logo.png" Square44x44Logo="images\Square44x44Logo.png">
+        <uap:DefaultTile ShortName="WikiMed" Square310x310Logo="images\LargeTile.png" Wide310x150Logo="images\Wide310x150Logo.png" Square71x71Logo="images\SmallTile.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square150x150Logo" />
             <uap:ShowOn Tile="wide310x150Logo" />
@@ -34,18 +34,6 @@
           <uap:Rotation Preference="landscapeFlipped" />
         </uap:InitialRotationPreference>
       </uap:VisualElements>
-      <Extensions>
-        <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="zimarchive">
-            <uap:DisplayName>ZIM Archive</uap:DisplayName>
-            <uap:InfoTip>Compressed ZIM FIle Archive</uap:InfoTip>
-            <uap:SupportedFileTypes>
-              <uap:FileType ContentType="application/zlib">.zim</uap:FileType>
-              <uap:FileType ContentType="application/zlib">.zimaa</uap:FileType>
-            </uap:SupportedFileTypes>
-          </uap:FileTypeAssociation>
-        </uap:Extension>
-      </Extensions>
     </Application>
   </Applications>
   <Capabilities>
