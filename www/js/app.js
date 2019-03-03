@@ -109,6 +109,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         // Define behavior of HTML elements
         document.getElementById('searchArticles').addEventListener('click', function () {
             $("#welcomeText").hide();
+            $('.alert').hide();
             document.getElementById('searchingArticles').style.display = 'block';
             pushBrowserHistoryState(null, $('#prefix').val());
             searchDirEntriesFromPrefix($('#prefix').val());
@@ -575,9 +576,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             // Show the selected content in the page
             $('#configuration').show();
             $('#articleContent').hide();
+            $('.alert').hide();
             $('#downloadLinks').hide();
             $('#serverResponse').hide();
-            $('#activeContent').hide();
             $("#myModal").modal('hide');
             refreshAPIStatus();
             //Re-enable top-level scrolling
@@ -630,6 +631,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             // Show the selected content in the page
             $('#about').show();
             $('#articleContent').hide();
+            $('.alert').hide();
             //Re-enable top-level scrolling
             document.getElementById('top').style.position = "relative";
             document.getElementById('scrollbox').style.position = "fixed";
@@ -1641,6 +1643,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          */
         function searchDirEntriesFromPrefix(prefix) {
             if (selectedArchive !== null && selectedArchive.isReady()) {
+                $('#activeContent').alert('close');
                 if (!prefix || /^\s/.test(prefix)) {
                     var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
                     if (sel.length) {
@@ -1648,7 +1651,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             return p1.toUpperCase() + p2;
                         });
                     }
-                    $("#activeContent").hide();
                     showZIMIndex(null, sel);
                 } else {
                     selectedArchive.findDirEntriesWithPrefix(prefix.trim(), MAX_SEARCH_RESULT_SIZE, populateListOfArticles);
@@ -1983,11 +1985,18 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         // remove any relative or absolute path from ZIM-style URLs. 
         // DEV: If you want to support more namespaces, add them to the END of the character set [-IJ] (not to the beginning) 
         var regexpTagsWithZimUrl = /(<(?:img|script|link|video|audio|source|track)\b[^>]*?\s)(?:src|href)(\s*=\s*["'])(?:\.\.\/|\/)+(?=[-IJ]\/)/ig;
+        // Regex below tests the html of an article for active content [kiwix-js #466]
+        // It inspects every <script> block in the html and matches in the following cases: 1) the script loads a UI application called app.js;
+        // 2) the script block has inline content that does not contain "importScript()" or "toggleOpenSection" (these strings are used widely
+        // in our fully supported wikimedia ZIMs, so they are excluded); 3) the script block is not of type "math" (these are MathJax markup
+        // scripts used extensively in Stackexchange ZIMs). Note that the regex will match ReactJS <script type="text/html"> markup, which is
+        // common in unsupported packaged UIs, e.g. PhET ZIMs.
+        var regexpActiveContent = /<script\b(?:(?![^>]+src\b)|(?=[^>]+src\b=["'][^"']+?app\.js))(?!>[^<]+(?:importScript\(\)|toggleOpenSection))(?![^>]+type\s*=\s*["'](?:math\/|[^"']*?math))/i;
     
         // DEV: The regex below matches ZIM links (anchor hrefs) that should have the html5 "donwnload" attribute added to 
-        // the link. This is currently the case for epub files in Project Gutenberg ZIMs -- add any further types you need
+    // the link. This is currently the case for epub and pdf files in Project Gutenberg ZIMs -- add any further types you need
         // to support to this regex. The "zip" has been added here as an example of how to support further filetypes
-        var regexpDownloadLinks = /^.*?\.epub($|\?)|^.*?\.zip($|\?)/i
+    var regexpDownloadLinks = /^.*?\.epub($|\?)|^.*?\.pdf($|\?)|^.*?\.zip($|\?)/i;
     
         // This matches the data-kiwixurl of all <link> tags containing rel="stylesheet" in raw HTML unless commented out
         var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*data-kiwixurl\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
@@ -2018,18 +2027,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          * @param {String} htmlArticle
          */
         function displayArticleInForm(dirEntry, htmlArticle) {
+            // Display Bootstrap warning alert if the landing page contains active content
+            if (!params.hideActiveContentWarning && params.isLandingPage) {
+                if (regexpActiveContent.test(htmlArticle)) uiUtil.displayActiveContentWarning();
+            }
+
             // Replaces ZIM-style URLs of img, script, link and media tags with a data-kiwixurl to prevent 404 errors [kiwix-js #272 #376]
             // This replacement also processes the URL to remove the path so that the URL is ready for subsequent jQuery functions
             htmlArticle = htmlArticle.replace(regexpTagsWithZimUrl, '$1data-kiwixurl$2');
             // Remove any empty media containers on page
             htmlArticle = htmlArticle.replace(/(<(audio|video)\b(?:[^<]|<(?!\/\2))+<\/\2>)/ig, function (p0) {
                 return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
-            });
-
-            // Remove any download alerts and active content hanging on from previous article
-            ['activeContent', 'downloadAlert'].forEach(function (id) {
-                var rmv = document.getElementById(id);
-                if (rmv) rmv.parentElement.removeChild(rmv);
             });
 
             //@BUG WORKAROUND for Kiwix-JS-Windows #18
@@ -2115,9 +2123,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             //    return "";
             //});
             // Neutralize all inline scripts for now (later use above), excluding math blocks or react templates
-            var containsActiveContent = false;
             htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig, function (p0, p1) {
-                containsActiveContent = true;
                 return '<!-- ' + p1 + ' --!>';
             });
             //Neutralize onload events, as they cause a crash in ZIMs with proprietary UIs
@@ -2126,31 +2132,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             htmlArticle = htmlArticle.replace(/(<[^>]+?)onclick\s*=\s*["'][^"']+["']\s*/ig, '$1');
             //Neutralize href="javascript:" links
             htmlArticle = htmlArticle.replace(/href\s*=\s*["']javascript:[^"']+["']/gi, 'href=""');
-
-            // Display an information box if the landing page contains active content
-            if (!params.hideActiveContentWarning && params.isLandingPage && containsActiveContent) {
-                // DEV: Add any other ZIM types that you wish to exclude from showing the active content alert
-                if (!/wikipedia|wiktionary|wikivoyage/i.test(dirEntry._zimfile._files[0].name)) {
-                    var alertHTML = '<div id="activeContent" class="alert alert-info alert-dismissible fade in" style="margin-bottom:0;">' +
-                        '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
-                        '<strong>Unable to display active content:</strong> To use Archive Index <b><i>type a space</b></i> in the box above, or <a id="titleIndexLink" href="#" class="alert-link">tap here</a>. [<a id="stop" href="#displaySettingsDiv" class="alert-link">Permanently hide</a>]' +
-                        '</div>';
-                    document.getElementById('alertBoxDiv').innerHTML = alertHTML;
-                    document.getElementById('titleIndexLink').addEventListener('click', function() {
-                        showZIMIndex(0);
-                    });
-                    document.getElementById('stop').addEventListener('click', function() {
-                        var acwLabel = document.getElementById('hideActiveContentWarningCheck').parentNode;
-                        acwLabel.style.borderColor = 'red';
-                        acwLabel.style.borderStyle = 'solid';
-                        acwLabel.addEventListener('mousedown', function() {
-                            this.style.borderColor = '';
-                            this.style.borderStyle = '';
-                        }); 
-                        document.getElementById('btnConfigure').click();
-                    });
-                }
-            }
 
             //MathJax detection:
             containsMathTeXRaw = params.useMathJax && !/wikivoyage/.test(params.storedFile) ? /\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/.test(htmlArticle) : false;
@@ -2359,6 +2340,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 // Tell jQuery we're removing the iframe document: clears jQuery cache and prevents memory leaks [kiwix-js #361]
                 $('#articleContent').contents().remove();
 
+                // Remove from DOM any download alert box that was activated in uiUtil.displayFileDownloadAlert function
+                $('#downloadAlert').alert('close');
+        
                 var iframeArticleContent = document.getElementById('articleContent');
 
                 iframeArticleContent.onload = function () {
@@ -2536,26 +2520,26 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                 anchor.target = '_blank';
                             } else {
                                 // It's a link to an article or file in the ZIM
-                                var decodedURL = decodeURIComponent(zimUrl);
-                                if (regexpDownloadLinks.test(href)) {
-                                    // It's a link to a file in the ZIM that needs to be downloaded, not displayed (e.g. *.epub)
-                                    var filename = decodedURL.replace(/^.*\/([^\/]+)$/, '$1');
-                                    var downloadAttribute = anchor.getAttribute('download');
-                                    if (!downloadAttribute) anchor.setAttribute('download', filename);
-                                    var contentType = anchor.getAttribute('type');
-                                    if (!contentType) {
-                                        // DEV: Add more contentTypes here for downloadable files
-                                        if (/\.epub/.test(decodedURL)) contentType = 'application/epub+zip';
-                                        if (contentType) anchor.setAttribute('type', contentType);
-                                    }
+                                var uriComponent = uiUtil.removeUrlParameters(zimUrl);
+                                var decodedURL = decodeURIComponent(uriComponent);
+                                var contentType;
+                                var downloadAttrValue;
+                                // Some file types need to be downloaded rather than displayed (e.g. *.epub)
+                                // The HTML download attribute can be Boolean or a string representing the specified filename for saving the file
+                                // For Boolean values, getAttribute can return any of the following: download="" download="download" download="true"
+                                // So we need to test hasAttribute first: see https://developer.mozilla.org/en-US/docs/Web/API/Element/getAttribute
+                                // However, we cannot rely on the download attribute having been set, so we also need to test for known download file types
+                                var isDownloadableLink = anchor.hasAttribute('download') || regexpDownloadLinks.test(href);
+                                if (isDownloadableLink) {
+                                    downloadAttrValue = anchor.getAttribute('download');
+                                    // Normalize the value to a true Boolean or a filename string or true if there is no download attribute
+                                    downloadAttrValue = /^(download|true|\s*)$/i.test(downloadAttrValue) || downloadAttrValue || true;
+                                    contentType = anchor.getAttribute('type');
                                 }    
-
                                 // Add an onclick event to extract this article or file from the ZIM
                                 // instead of following the link
                                 anchor.addEventListener('click', function (e) {
-                                    var downloadAttribute = this.getAttribute('download');
-                                    var contentType = this.getAttribute('type');
-                                    goToArticle(decodedURL, downloadAttribute, contentType);
+                                    goToArticle(decodedURL, downloadAttrValue, contentType);
                                     e.preventDefault();
                                 });
                             }
@@ -3076,7 +3060,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         // if (/track/i.test(mediaSource.tagName)) return;
                         mediaElement.load();
                         // Add a download link in case media source not supported
-                        document.getElementById('alertBoxDivFooter').innerHTML = 
+                        document.getElementById('alertBoxFooter').innerHTML = 
                             '<div id="downloadAlert" class="alert alert-info alert-dismissible">\n' +
                             '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
                             '    <span id="alertMessage"></span>\n' +
@@ -3222,10 +3206,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
 
         /**
-         * Replaces article content with the one of the given title, or extracts a downloadable file from the ZIM
+     * Extracts the content of the given article title, or a downloadable file, from the ZIM
          * 
          * @param {String} title The path and filename to the article or file to be extracted
-         * @param {Boolean} download If true, the file will be prepared for download instead of treated as an article
+     * @param {Boolean|String} download A Bolean value that will trigger download of title, or the filename that should
+     *     be used to save the file in local FS (in HTML5 spec, a string value for the download attribute is optional)
          * @param {String} contentType The mimetype of the downloadable file, if known 
          */
         function goToArticle(title, download, contentType) {
@@ -3243,47 +3228,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     goToMainArticle();
                 } else if (download) {
                     selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                        // We have to create the alert box from scratch each time, because Bootstrap removes it from the DOM when the user closes it
-                        document.getElementById('alertBoxDivFooter').innerHTML =
-                            '<div id="downloadAlert" class="alert alert-info alert-dismissible" style="display:none;">' +
-                            '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
-                            '    <span id="alertMessage"></span>' +
-                            '</div>';
-                        // Download code adapted from https://stackoverflow.com/a/19230668/9727685 
-                        if (!contentType) contentType = 'application/octet-stream';
-                        var a = document.createElement('a');
-                        var blob = new Blob([content], { 'type': contentType });
-                        //var blobDataUri = 'data:' + contentType + ';base64,' + btoa(content);
-                        var filename = download || title.replace(/^.*\/([^\/]+)$/, '$1');
-                        // Make filename safe
-                        filename = filename.replace(/[\/\\:*?"<>|]/g, '_');
-                        a.href = window.URL.createObjectURL(blob);
-                        //a.href = 'microsoft-edge:' + blobDataUri;
-                        a.target = '_blank';
-                        a.type = contentType;
-                        a.download = filename;
-                        a.classList.add('alert-link');
-                        a.innerHTML = filename;
-                        var alertMessage = document.getElementById('alertMessage');
-                        alertMessage.innerHTML = '<strong>Download</strong> If the download does not start, please click the following link: ';
-                        alertMessage.appendChild(a); // NB we have to add the anchor to the document for Firefox to be able to click it
-                        try { a.click(); }
-                        catch (err) {
-                            // If the click fails, use an alternative download method
-                            if (window.navigator && window.navigator.msSaveBlob) {
-                                // This works for IE11
-                                window.navigator.msSaveBlob(blob, filename);
-                            } else {
-                                // Fall back to showing the link in a message box
-                                document.getElementById('downloadAlert').style.display = "block";
-                                // And try to launch through UWP download
-                                if (Windows && Windows.Storage) uiUtil.downloadBlobUWP(blob, filename, alertMessage);
-                            }
-                        }
-                        $("#searchingArticles").hide();
+                        uiUtil.displayFileDownloadAlert(title, download, contentType, content);
                     });
                 } else {
                     params.isLandingPage = false;
+                    $('#activeContent').alert('close');
                     readArticle(dirEntry);
                 }
             }).fail(function () {
@@ -3304,6 +3253,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     //Test below supports Stackexchange-family ZIMs, so we don't call up user profiles
                     if (dirEntry.namespace === 'A' && !/user\//.test(dirEntry.url)) {
                         params.isLandingPage = false;
+                        $('#activeContent').alert('close');
                         readArticle(dirEntry);
                     } else {
                         // If the random title search did not end up on an article,
@@ -3327,6 +3277,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         readArticle(dirEntry);
                     } else {
                         console.error("The main page of this archive does not seem to be an article");
+                        $("#searchingArticles").hide();
                         $("#welcomeText").show();
                     }
                 }
