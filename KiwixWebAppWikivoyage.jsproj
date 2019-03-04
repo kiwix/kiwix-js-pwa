@@ -135,6 +135,7 @@
     <Content Include="www\-\s\css_modules\ext.scribunto.logs.css" />
     <Content Include="www\-\s\css_modules\ext.timeline.styles.css" />
     <Content Include="www\-\s\css_modules\ext.tmh.thumbnail.styles.css" />
+    <Content Include="www\-\s\css_modules\inserted_style.css" />
     <Content Include="www\-\s\css_modules\inserted_style_mobile.css" />
     <Content Include="www\-\s\css_modules\mediawiki.page.gallery.styles.css" />
     <Content Include="www\-\s\css_modules\mediawiki.toc.css" />
@@ -142,6 +143,7 @@
     <Content Include="www\-\s\css_modules\mw.MediaWikiPlayer.loader.css" />
     <Content Include="www\-\s\css_modules\mw.PopUpMediaTransform.css" />
     <Content Include="www\-\s\css_modules\mw.TMHGalleryHook.js.css" />
+    <Content Include="www\-\s\css_modules\style.css" />
     <Content Include="www\-\s\style-dark-invert.css" />
     <Content Include="www\-\s\style-dark.css" />
     <Content Include="www\-\s\style-mobile.css" />

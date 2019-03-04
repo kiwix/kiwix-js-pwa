@@ -2018,22 +2018,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          * @param {String} htmlArticle
          */
         function displayArticleInForm(dirEntry, htmlArticle) {
-            // Replaces ZIM-style URLs of img, script, link and media tags with a data-kiwixurl to prevent 404 errors [kiwix-js #272 #376]
-            // This replacement also processes the URL to remove the path so that the URL is ready for subsequent jQuery functions
-            htmlArticle = htmlArticle.replace(regexpTagsWithZimUrl, '$1data-kiwixurl$2');
-            // Remove any empty media containers on page
-            htmlArticle = htmlArticle.replace(/(<(audio|video)\b(?:[^<]|<(?!\/\2))+<\/\2>)/ig, function (p0) {
-                return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
-            });
-
-            // Remove any download alerts and active content hanging on from previous article
-            ['activeContent', 'downloadAlert'].forEach(function (id) {
-                var rmv = document.getElementById(id);
-                if (rmv) rmv.parentElement.removeChild(rmv);
-            });
-
-            //@BUG WORKAROUND for Kiwix-JS-Windows #18
-            htmlArticle = htmlArticle.replace(/(<link\s+[^>]*?\bhref\s*=\s*["'])(s\/[\s\S]+(?!\.css))(["'])/gi, "$1../-/$2.css$3");
 
             //TESTING
             console.log("** HTML received **");
@@ -2063,6 +2047,23 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }
                 }
             }
+
+            // Replaces ZIM-style URLs of img, script, link and media tags with a data-kiwixurl to prevent 404 errors [kiwix-js #272 #376]
+            // This replacement also processes the URL to remove the path so that the URL is ready for subsequent jQuery functions
+            htmlArticle = htmlArticle.replace(regexpTagsWithZimUrl, '$1data-kiwixurl$2');
+            // Remove any empty media containers on page
+            htmlArticle = htmlArticle.replace(/(<(audio|video)\b(?:[^<]|<(?!\/\2))+<\/\2>)/ig, function (p0) {
+                return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
+            });
+
+            // Remove any download alerts and active content hanging on from previous article
+            ['activeContent', 'downloadAlert'].forEach(function (id) {
+                var rmv = document.getElementById(id);
+                if (rmv) rmv.parentElement.removeChild(rmv);
+            });
+
+            //@BUG WORKAROUND for Kiwix-JS-Windows #18
+            htmlArticle = htmlArticle.replace(/(<link\s+[^>]*?\bhref\s*=\s*["'])(s\/[\s\S]+(?!\.css))(["'])/gi, "$1../-/$2.css$3");
 
             //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
             //so add some whitespace at the end of the document

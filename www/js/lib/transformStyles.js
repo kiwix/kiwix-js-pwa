@@ -64,6 +64,8 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                     /-\/s\/css_modules\/ext.math.scripts.css/i.test(zl) ||
                     /-\/s\/css_modules\/content.parsoid.css/i.test(zl) ||
                     /-\/s\/css_modules\/inserted_style_mobile.css/i.test(zl) ||
+                    /-\/s\/css_modules\/inserted_style.css/i.test(zl) ||
+                    /-\/s\/css_modules\/style.css/i.test(zl) ||
                     /-\/static\/bootstrap\/css\/bootstrap.min.css/i.test(zl) ||
                     /-\/static\/bootstrap\/css\/bootstrap-theme.min.css/i.test(zl) ||
                     /-\/static\/main.css/i.test(zl) ||
@@ -189,6 +191,8 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
         }
         //Remove hard-coded style on h1
         html = html.replace(/(<h1\b[^>]+)background-color\s*:\s*white;\s*/i, '$1');
+        //Remove hard-coded style on infobox
+        html = html.replace(/(<table\s+(?=[^>]*?\bclass=['"][^'"]*infobox)[^>]*\bstyle=['"][^'"]*\b)(?:float:\s*none\s*;?\s*)(?:clear:\s*none\s*;?\s*)?/gi, '$1');
         //Add dark theme if requested
         css += (params.cssTheme == "dark") ? '<link href="-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
         
