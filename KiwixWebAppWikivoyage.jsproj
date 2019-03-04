@@ -1,0 +1,459 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Uap.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Uap.props')" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|AnyCPU">
+      <Configuration>Debug</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x86">
+      <Configuration>Debug</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|AnyCPU">
+      <Configuration>Release</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+      <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+      <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x86">
+      <Configuration>Release</Configuration>
+      <Platform>x86</Platform>
+      <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>a1a5e0b9-13d4-41fb-810d-518949f03df4</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
+    <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0'">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).Default.props" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).props" />
+  <PropertyGroup>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>$(VersionNumberMajor).$(VersionNumberMinor)</MinimumVisualStudioVersion>
+    <DefaultLanguage>en-gb</DefaultLanguage>
+    <PackageCertificateKeyFile>KiwixWebApp_StoreKey.pfx</PackageCertificateKeyFile>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
+    <PackageCertificateThumbprint>95BFD8354C5B02AB76ED8D0DBCE7D830A871BA54</PackageCertificateThumbprint>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="archives\wikivoyage_en.zim" />
+    <Content Include="images\BadgeLogo.scale-100.png" />
+    <Content Include="images\BadgeLogo.scale-125.png" />
+    <Content Include="images\BadgeLogo.scale-150.png" />
+    <Content Include="images\BadgeLogo.scale-200.png" />
+    <Content Include="images\BadgeLogo.scale-400.png" />
+    <Content Include="images\LargeTile.scale-100.png" />
+    <Content Include="images\LargeTile.scale-125.png" />
+    <Content Include="images\LargeTile.scale-150.png" />
+    <Content Include="images\LargeTile.scale-200.png" />
+    <Content Include="images\LargeTile.scale-400.png" />
+    <Content Include="images\SmallTile.scale-100.png" />
+    <Content Include="images\SmallTile.scale-125.png" />
+    <Content Include="images\SmallTile.scale-150.png" />
+    <Content Include="images\SmallTile.scale-200.png" />
+    <Content Include="images\SmallTile.scale-400.png" />
+    <Content Include="images\splashscreen.scale-100.png" />
+    <Content Include="images\splashscreen.scale-125.png" />
+    <Content Include="images\splashscreen.scale-150.png" />
+    <Content Include="images\splashscreen.scale-200.png" />
+    <Content Include="images\splashscreen.scale-400.png" />
+    <Content Include="images\Square150x150Logo.scale-100.png" />
+    <Content Include="images\Square150x150Logo.scale-125.png" />
+    <Content Include="images\Square150x150Logo.scale-150.png" />
+    <Content Include="images\Square150x150Logo.scale-200.png" />
+    <Content Include="images\Square150x150Logo.scale-400.png" />
+    <Content Include="images\Square44x44Logo.altform-unplated_targetsize-16.png" />
+    <Content Include="images\Square44x44Logo.altform-unplated_targetsize-256.png" />
+    <Content Include="images\Square44x44Logo.altform-unplated_targetsize-32.png" />
+    <Content Include="images\Square44x44Logo.altform-unplated_targetsize-48.png" />
+    <Content Include="images\Square44x44Logo.scale-100.png" />
+    <Content Include="images\Square44x44Logo.scale-125.png" />
+    <Content Include="images\Square44x44Logo.scale-150.png" />
+    <Content Include="images\Square44x44Logo.scale-200.png" />
+    <Content Include="images\Square44x44Logo.scale-400.png" />
+    <Content Include="images\Square44x44Logo.targetsize-16.png" />
+    <Content Include="images\Square44x44Logo.targetsize-24.png" />
+    <Content Include="images\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="images\Square44x44Logo.targetsize-256.png" />
+    <Content Include="images\Square44x44Logo.targetsize-32.png" />
+    <Content Include="images\Square44x44Logo.targetsize-48.png" />
+    <Content Include="images\storelogo.scale-100.png" />
+    <Content Include="images\storelogo.scale-125.png" />
+    <Content Include="images\storelogo.scale-150.png" />
+    <Content Include="images\storelogo.scale-200.png" />
+    <Content Include="images\storelogo.scale-400.png" />
+    <Content Include="images\Wide310x150Logo.scale-100.png" />
+    <Content Include="images\Wide310x150Logo.scale-125.png" />
+    <Content Include="images\Wide310x150Logo.scale-150.png" />
+    <Content Include="images\Wide310x150Logo.scale-200.png" />
+    <Content Include="images\Wide310x150Logo.scale-400.png" />
+    <None Include="Package.StoreAssociation.xml" />
+    <Content Include="www\-\static\main.css" />
+    <Content Include="images\Wikivoyage.png" />
+    <Content Include="images\Wikivoyage_220x220.png" />
+    <Content Include="images\Wikivoyage_400x400.png" />
+    <Content Include="images\Wikivoyage_400x400_colour_pop.png" />
+    <Content Include="images\Wikivoyage_400x400_white.png" />
+    <Content Include="www\-\s\css_modules\content.parsoid.css" />
+    <Content Include="www\-\s\css_modules\ext.cite.a11y.css" />
+    <Content Include="www\-\s\css_modules\ext.cite.styles.css" />
+    <Content Include="www\-\s\css_modules\ext.kartographer.frame.css" />
+    <Content Include="www\-\s\css_modules\ext.kartographer.link.css" />
+    <Content Include="www\-\s\css_modules\ext.kartographer.style.css" />
+    <Content Include="www\-\s\css_modules\ext.math.scripts.css" />
+    <Content Include="www\-\s\css_modules\ext.math.styles.css" />
+    <Content Include="www\-\s\css_modules\ext.scribunto.logs.css" />
+    <Content Include="www\-\s\css_modules\ext.timeline.styles.css" />
+    <Content Include="www\-\s\css_modules\ext.tmh.thumbnail.styles.css" />
+    <Content Include="www\-\s\css_modules\inserted_style_mobile.css" />
+    <Content Include="www\-\s\css_modules\mediawiki.page.gallery.styles.css" />
+    <Content Include="www\-\s\css_modules\mediawiki.toc.css" />
+    <Content Include="www\-\s\css_modules\mobile.css" />
+    <Content Include="www\-\s\css_modules\mw.MediaWikiPlayer.loader.css" />
+    <Content Include="www\-\s\css_modules\mw.PopUpMediaTransform.css" />
+    <Content Include="www\-\s\css_modules\mw.TMHGalleryHook.js.css" />
+    <Content Include="www\-\s\style-dark-invert.css" />
+    <Content Include="www\-\s\style-dark.css" />
+    <Content Include="www\-\s\style-mobile.css" />
+    <Content Include="www\-\s\style.css" />
+    <Content Include="www\-\s\vector.css" />
+    <Content Include="www\article.html" />
+    <Content Include="www\A\Wikivoyage%253AOffline_reader_Expedition_Home_page.html" />
+    <Content Include="www\css\app.css" />
+    <Content Include="www\css\bootstrap-theme.min.css" />
+    <Content Include="www\css\bootstrap.min.css" />
+    <Content Include="www\favicon.ico" />
+    <Content Include="www\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="www\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="www\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="www\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="www\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="www\img\icons\kiwix-32.png" />
+    <Content Include="www\img\icons\kiwix-blue-32.png" />
+    <Content Include="www\img\icons\map_marker-18px.png" />
+    <Content Include="www\img\icons\wikivoyage-90-white.png" />
+    <Content Include="www\img\icons\wikivoyage-90.png" />
+    <Content Include="www\img\icons\wikimed-blue-32.png" />
+    <Content Include="www\img\icons\wikimed-lightblue-32.png" />
+    <Content Include="www\img\icons\wikivoyage-black-32.png" />
+    <Content Include="www\img\icons\wikivoyage-white-32.png" />
+    <Content Include="www\img\lightBlue.png" />
+    <Content Include="www\img\spinner.gif" />
+    <Content Include="www\index.html" />
+    <Content Include="www\I\s\Checker-16x16.png" />
+    <Content Include="www\I\s\cog-sprite.png" />
+    <Content Include="www\I\s\Icons-mini-file_acrobat.gif" />
+    <Content Include="www\I\s\Icon_External_Link.png" />
+    <Content Include="www\I\s\magnify-clip-ltr.png" />
+    <Content Include="www\I\s\spinner.gif" />
+    <Content Include="www\js\app.js" />
+    <Content Include="www\js\init.js" />
+    <Content Include="www\js\lib\bootstrap.min.js" />
+    <Content Include="www\js\lib\cookies.js" />
+    <Content Include="www\js\lib\jquery-3.2.1.slim.js" />
+    <Content Include="www\js\lib\kiwixServe.js" />
+    <Content Include="www\js\lib\q.js" />
+    <Content Include="www\js\lib\require.js" />
+    <Content Include="www\js\lib\transformStyles.js" />
+    <Content Include="www\js\lib\uiUtil.js" />
+    <Content Include="www\js\lib\utf8.js" />
+    <Content Include="www\js\lib\util.js" />
+    <Content Include="www\js\lib\xzdec.js" />
+    <Content Include="www\js\lib\xzdec_wrapper.js" />
+    <Content Include="www\js\lib\zimArchive.js" />
+    <Content Include="www\js\lib\zimArchiveLoader.js" />
+    <Content Include="www\js\lib\zimDirEntry.js" />
+    <Content Include="www\js\lib\zimfile.js" />
+    <Content Include="www\js\MathJax\config\config.js" />
+    <Content Include="www\js\MathJax\config\TeX-AMS_HTML-full.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\accessibility-menu.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\auto-collapse.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\collapsible.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\explorer.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\invalid_keypress.mp3" />
+    <Content Include="www\js\MathJax\extensions\a11y\invalid_keypress.ogg" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathjax-sre.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\.htaccess" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\functions\algebra.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\functions\elementary.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\functions\hyperbolic.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\functions\trigonometry.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\mathmaps_ie.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-capital.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-mathfonts.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-scripts.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-small.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\greek-symbols.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\hebrew_letters.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-lower-double-accent.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-lower-normal.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-lower-phonetic.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-lower-single-accent.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-mathfonts.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-rest.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-upper-double-accent.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-upper-normal.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\latin-upper-single-accent.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\math_angles.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\math_arrows.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\math_characters.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\math_delimiters.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\math_digits.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\math_geometry.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\math_harpoons.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\math_non_characters.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\math_symbols.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\math_whitespace.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\symbols\other_stars.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\units\energy.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\units\length.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\units\memory.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\units\other.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\units\speed.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\units\temperature.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\units\time.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\units\volume.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\mathmaps\units\weight.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\semantic-enrich.js" />
+    <Content Include="www\js\MathJax\extensions\a11y\wgxpath.install.js" />
+    <Content Include="www\js\MathJax\extensions\AssistiveMML.js" />
+    <Content Include="www\js\MathJax\extensions\CHTML-preview.js" />
+    <Content Include="www\js\MathJax\extensions\fast-preview.js" />
+    <Content Include="www\js\MathJax\extensions\FontWarnings.js" />
+    <Content Include="www\js\MathJax\extensions\HelpDialog.js" />
+    <Content Include="www\js\MathJax\extensions\HTML-CSS\handle-floats.js" />
+    <Content Include="www\js\MathJax\extensions\MatchWebFonts.js" />
+    <Content Include="www\js\MathJax\extensions\MathEvents.js" />
+    <Content Include="www\js\MathJax\extensions\MathMenu.js" />
+    <Content Include="www\js\MathJax\extensions\MathZoom.js" />
+    <Content Include="www\js\MathJax\extensions\Safe.js" />
+    <Content Include="www\js\MathJax\extensions\tex2jax.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\action.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\AMScd.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\AMSmath.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\AMSsymbols.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\autobold.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\autoload-all.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\bbox.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\begingroup.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\boldsymbol.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\cancel.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\color.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\enclose.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\extpfeil.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\HTML.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\mathchoice.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\mediawiki-texvc.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\mhchem.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\mhchem3\mhchem.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\newcommand.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\noErrors.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\noUndefined.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\unicode.js" />
+    <Content Include="www\js\MathJax\extensions\TeX\verb.js" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_AMS-Regular.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Caligraphic-Bold.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Caligraphic-Regular.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Fraktur-Bold.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Fraktur-Regular.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Main-Bold.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Main-Italic.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Main-Regular.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Math-BoldItalic.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Math-Italic.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Math-Regular.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_SansSerif-Bold.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_SansSerif-Italic.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_SansSerif-Regular.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Script-Regular.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Size1-Regular.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Size2-Regular.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Size3-Regular.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Size4-Regular.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Typewriter-Regular.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Vector-Bold.woff" />
+    <Content Include="www\js\MathJax\fonts\HTML-CSS\TeX\woff\MathJax_Vector-Regular.woff" />
+    <Content Include="www\js\MathJax\jax\element\mml\jax.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\Arrows.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\BasicLatin.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\CombDiacritMarks.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\CombDiactForSymbols.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\Dingbats.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\GeneralPunctuation.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\GeometricShapes.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\GreekAndCoptic.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\Latin1Supplement.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\LetterlikeSymbols.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\MathOperators.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\MiscMathSymbolsA.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\MiscMathSymbolsB.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\MiscSymbolsAndArrows.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\MiscTechnical.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\SpacingModLetters.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\SupplementalArrowsA.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\SupplementalArrowsB.js" />
+    <Content Include="www\js\MathJax\jax\element\mml\optable\SuppMathOperators.js" />
+    <Content Include="www\js\MathJax\jax\input\TeX\config.js" />
+    <Content Include="www\js\MathJax\jax\input\TeX\jax.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\autoload\annotation-xml.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\autoload\maction.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\autoload\menclose.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\autoload\mglyph.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\autoload\mmultiscripts.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\autoload\ms.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\autoload\mtable.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\autoload\multiline.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\config.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\Arrows.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\BBBold.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\BoxDrawing.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\CombDiacritMarks.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\Dingbats.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\EnclosedAlphanum.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\GeneralPunctuation.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\GeometricShapes.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\GreekAndCoptic.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\Latin1Supplement.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\LatinExtendedA.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\LetterlikeSymbols.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\MathOperators.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\MiscMathSymbolsB.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\MiscSymbols.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\MiscTechnical.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\PUA.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\SpacingModLetters.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\AMS\Regular\SuppMathOperators.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Caligraphic\Bold\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Caligraphic\Regular\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\fontdata-extra.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\fontdata.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Bold\BasicLatin.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Bold\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Bold\Other.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Bold\PUA.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Regular\BasicLatin.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Regular\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Regular\Other.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Fraktur\Regular\PUA.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Greek\BoldItalic\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Greek\Bold\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Greek\Italic\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Greek\Regular\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\Arrows.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\CombDiacritMarks.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\CombDiactForSymbols.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\GeneralPunctuation.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\GeometricShapes.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\Latin1Supplement.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\LatinExtendedA.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\LatinExtendedB.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\LetterlikeSymbols.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\MathOperators.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\MiscMathSymbolsA.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\MiscSymbols.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\MiscTechnical.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\SpacingModLetters.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\SupplementalArrowsA.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Bold\SuppMathOperators.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\CombDiacritMarks.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\GeneralPunctuation.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\Latin1Supplement.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\LetterlikeSymbols.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Italic\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\CombDiacritMarks.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\GeometricShapes.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\MiscSymbols.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Main\Regular\SpacingModLetters.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Math\BoldItalic\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Math\Italic\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Bold\BasicLatin.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Bold\CombDiacritMarks.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Bold\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Bold\Other.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Italic\BasicLatin.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Italic\CombDiacritMarks.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Italic\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Italic\Other.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Regular\BasicLatin.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Regular\CombDiacritMarks.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Regular\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\SansSerif\Regular\Other.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Script\Regular\BasicLatin.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Script\Regular\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Script\Regular\Other.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Size1\Regular\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Size2\Regular\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Size3\Regular\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Size4\Regular\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Typewriter\Regular\BasicLatin.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Typewriter\Regular\CombDiacritMarks.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Typewriter\Regular\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\Typewriter\Regular\Other.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\WinChrome\Regular\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\WinIE6\Regular\AMS.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\WinIE6\Regular\Bold.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\fonts\TeX\WinIE6\Regular\Main.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\imageFonts.js" />
+    <Content Include="www\js\MathJax\jax\output\HTML-CSS\jax.js" />
+    <Content Include="www\js\MathJax\MathJax.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{4a0dddb5-7a95-4fbf-97cc-616d07737a77}" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="www\-\static\bootstrap\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Uap.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Uap.targets')" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.jsproj.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.jsproj.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below then uncomment
+       that target and the DisableFastUpToDateCheck PropertyGroup. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  <PropertyGroup>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+  </PropertyGroup>
+  -->
+</Project>
