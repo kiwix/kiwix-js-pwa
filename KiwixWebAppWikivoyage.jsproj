@@ -148,7 +148,7 @@
     <Content Include="www\-\s\style.css" />
     <Content Include="www\-\s\vector.css" />
     <Content Include="www\article.html" />
-    <Content Include="www\A\Wikivoyage%253AOffline_reader_Expedition_Home_page.html" />
+    <Content Include="www\A\Main_Page.html" />
     <Content Include="www\css\app.css" />
     <Content Include="www\css\bootstrap-theme.min.css" />
     <Content Include="www\css\bootstrap.min.css" />
