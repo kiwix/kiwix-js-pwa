@@ -1,29 +1,23 @@
-## Release 0.9.9.87 (beta)
-* FIX: Removed timeout preventing fast typing for find in article function (Ctrl-F / Alt-F)
-* FIX: Allow searching in article for languages that do not use spaces (such as Chinese)
-
-## Release 0.9.9.85 (beta)
+## Release 0.9.9.87 Wikivoyage (beta)
+* UPDATE: March 2019 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2019-03.zim
 * ENHANCEMENT: Support for playing media (video/audio) in the ZIM if the device has the required codec
 * ENHANCEMENT: Support for "downloading" media (e.g. videos+subtitles) from the ZIM
 * ENHANCEMENT: Media are launched via appropriate app selection menu after download (mobile)
-* ENHANCEMENT: Preliminary support for TED and dirtybiology ZIMs
-* ENHANCEMENT: Preliminary support for Project Gutenberg ZIMs
-* ENHANCEMENT: Support for "downloading" epub ebooks from Gutenberg ZIMs
-* ENHANCEMENT: Epubs are launched in Edge's built-in epub reader, or via app selection menu
 * ENHANCEMENT: Typing a space in search box now displays an Archive Index
 * ENHANCEMENT: Option to support non-Roman alphabets for Archive Index
 * ENHANCEMENT: If active content is detected in the ZIM, information is given about accessing the Index instead
 * FIX: Add startup bootloop crash prevention
 * FIX: Exceptions produced by unsupported JS in ZIM articles are now caught
 * FIX: Prevent app crash with malformed anchor references
-* FIX: Rogue ampersands in MathJax output are now correctly escaped
 * FIX: Correct logic in binary search so it doesn't stall if assets in A namespace have no title
 * FIX: Missing footnote reference numbers in desktop ZIMs transformed to mobile style
 * FIX: Assets with unescaped characters in URL should now be retrieved correctly
 * FIX: Individual extraction of images when images are disabled in Configuration
+* FIX: Removed timeout preventing fast typing for find in article function (Ctrl-F / Alt-F)
+* FIX: Allow searching in article for languages that do not use spaces (such as Chinese)
 
-## Release 0.9.9.8 (beta)
-* UPDATE: Ray Charles ZIM to October 2018 version
+## Release 0.9.9.81 Wikivoyage (beta)
+* UPDATE: October 2018 update of Wikvoyage ZIM archive to wikivoyage_en_all_2018-10.zim
 * ENHANCEMENT: Add a modern CSS spinner and rework status messages
 * ENHANCEMENT: Neater presentation of article search results
 * ENHANCEMENT: Test for CORS violation if server cannot be accessed
