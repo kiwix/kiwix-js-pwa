@@ -578,7 +578,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             $('#downloadLinks').hide();
             $('#serverResponse').hide();
             $('#activeContent').hide();
-            $("#myModal").modal('hide');
+            $('#myModal').hide();
             refreshAPIStatus();
             //Re-enable top-level scrolling
             document.getElementById('top').style.position = "relative";
