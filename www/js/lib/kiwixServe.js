@@ -417,7 +417,7 @@ define([], function () {
                 }
                 var headerDoc = 'We found the following links to your file:';
                 var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^\/]*\.meta4$/i, "\/") + '">&lt;&lt; Back to list of files</a></p>\r\n';
-                bodyDoc += /\/ted\//i.test(URL) ? '<h4 style="color:red">IMPORTANT: <b>TED TALKS</b> videos can be played in the UWP app on Windows 10, but not currently on Windows 10 Mobile due to lack of webm support on mobile.</h4>\r\n<p>We apologize for the inconvenience. Please note you will need to search for the talks using standard ZIM search, because the ZIM\'s proprietary UI does not yet work in this app.' : ""; 
+                bodyDoc += /\/ted\//i.test(URL) ? '<h4 style="color:red">IMPORTANT: <b>TED TALKS</b> videos can be played in the UWP app on Windows 10, but on Windows 10 Mobile you may need to play the videos with an external app such as VLC Media Player (from the Store).</h4>\r\n<p>Please note you will need to search for the talks using standard ZIM search, because the ZIM\'s proprietary UI does not yet work in this app.' : ""; 
                 bodyDoc += "<h5";
                 bodyDoc += megabytes > 200 ? ' style="color:red;"> WARNING: ' : '>';
                 bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unknown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
