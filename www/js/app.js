@@ -523,6 +523,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (typeof Windows !== 'undefined') {
                 document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
             }
+            document.getElementById('libraryArea').style.borderColor = '';
+            document.getElementById('libraryArea').style.borderStyle = '';
             //else {
             //    document.getElementById('rescanStorage').style.display = "none";
             //}
@@ -868,12 +870,22 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             cookies.setItem('useMathJax', params.useMathJax, Infinity);
             params.themeChanged = true;
         });
+        document.getElementById('otherLangs').addEventListener('click', function () {
+            if (!params.showFileSelectors) document.getElementById('displayFileSelectorsCheck').click();
+            var library = document.getElementById('libraryArea');
+            library.style.borderColor = 'red';
+            library.style.borderStyle = 'solid';
+            document.getElementById('downloadTrigger').addEventListener('mousedown', function () {
+                library.style.borderColor = '';
+                library.style.borderStyle = '';
+            });
+        });
         $('input:checkbox[name=displayFileSelectors]').on('change', function (e) {
             params.showFileSelectors = this.checked ? true : false;
             document.getElementById('rescanStorage').style.display = "block";
             document.getElementById('openLocalFiles').style.display = "none";
             document.getElementById('hideFileSelectors').style.display = params.showFileSelectors ? "block" : "none";
-            document.getElementById('downloadLinksText').style.display = params.showFileSelectors ? "inline" : "none";
+            document.getElementById('downloadLinksText').style.display = params.showFileSelectors ? "none" : "inline";
             document.getElementById('moreInfo').style.display = params.showFileSelectors ? "none" : "inline";
             if (params.packagedFile && params.storedFile && params.storedFile != params.packagedFile) {
                 var currentArchive = document.getElementById('currentArchive');
@@ -945,7 +957,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (/wikivoyage|medicine/i.test(params.fileVersion)) {
                 document.getElementById('packagedAppFileSelectors').style.display = "block";
                 document.getElementById('hideFileSelectors').style.display = "none";
-                document.getElementById('downloadLinksText').style.display = "none";
+                //document.getElementById('downloadLinksText').style.display = "none";
                 if (params.showFileSelectors) {
                     document.getElementById('hideFileSelectors').style.display = "block";
                     document.getElementById('downloadLinksText').style.display = "inline";
