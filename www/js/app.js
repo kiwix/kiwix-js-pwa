@@ -525,6 +525,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
             document.getElementById('libraryArea').style.borderColor = '';
             document.getElementById('libraryArea').style.borderStyle = '';
+            var currentArchive = document.getElementById('currentArchive');
+            if (params.packagedFile && params.storedFile && params.storedFile != params.packagedFile) {
+                currentArchive.innerHTML = "Currently loaded archive: <b>" + params.storedFile.replace(/\.zim$/i, "") + "</b>";
+                currentArchive.style.display = "block";
+                document.getElementById('downloadLinksText').style.display = "none";
+                document.getElementById('moreInfo').style.display = "none";
+            }
+            if (params.storedFile && params.storedFile == params.packagedFile) {
+                document.getElementById('downloadLinksText').style.display = "block";
+                currentArchive.style.display = "none";
+            }
             //else {
             //    document.getElementById('rescanStorage').style.display = "none";
             //}
@@ -891,6 +902,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 var currentArchive = document.getElementById('currentArchive');
                 currentArchive.innerHTML = "Currently loaded archive: <b>" + params.storedFile.replace(/\.zim$/i, "") + "</b>";
                 currentArchive.style.display = params.showFileSelectors ? "none" : "block";
+                document.getElementById('downloadLinksText').style.display = params.showFileSelectors ? "none" : "block";
             }
             cookies.setItem('showFileSelectors', params.showFileSelectors, Infinity);
             if (params.showFileSelectors) document.getElementById('configuration').scrollIntoView();
