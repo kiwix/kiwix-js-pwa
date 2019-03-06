@@ -237,6 +237,7 @@
                     </h3>
                     <p>Packaged ZIM archive: <b><span class="fileVersion"></span></b></p>
                     <ul style="padding-left:1em;">
+                        <li><a href="#addingArchives">Adding archives (in other languages)</a></li>
                         <li><a href="#changelog">Changelog and Features</a></li>
                         <li><a href="#privacy">Privacy Policy</a></li>
                         <li><a href="#feedback">Feedback and Support</a></li>
@@ -268,7 +269,7 @@
                     <h4>Step 1: download some content</h4>
                     <p>
                         In the Configuration <span class="glyphicon glyphicon-wrench"></span> menu, go to 
-                        <a href="#packagedAppFileSelectors" onclick="$('#btnConfigure').click();"><b>Expert settings</b></a>
+                        <a href="#packagedAppFileSelectors" onclick="document.getElementById('btnConfigure').click();"><b>Expert settings</b></a>
                         and check the option to <b>Display selectors</b>. Then check <b>Allow Internet access</b> and tap the
                         <b>Open library</b> button. Locate your WikiMed ZIM file, and instructions will be provided to download
                         the file on your device.
@@ -420,12 +421,13 @@
                     <div id="returntoArticle" class="returntoArticle" style="text-align:center;padding-top:20px;"></div>
                     <div class="row">
                         <h2 style="margin-top:0;">Configuration</h2>
-                        <p>Packaged ZIM archive: <b><span class="fileVersion"></span></b>
+                        <p>
+                            Packaged ZIM archive: <b><span class="fileVersion"></span></b>
                             <button style="display:none;" id="reloadPackagedArchive" type="button" class="btn btn-primary btn-xs">Reload</button>
                         </p>
                         <p id="currentArchive" style="display: none;"></p>
+                        <p id="downloadLinksText"><a id="otherLangs" href="#btnRescanDeviceStorage">Get more archives (in other languages)</a></p><p></p>
                         <p id="moreInfo">For more information see <a href="#" onclick="document.getElementById('btnAbout').click();">About tab <span class="glyphicon glyphicon-info-sign"></span></a> (top right)</p>
-                        <p id="downloadLinksText">Get more archives from <a href="#downloads">Download links</a>.</p><p></p>
                     </div>
                     <div id="hideFileSelectors">
                         <div id="scanningForArchives" style="display: none;">
@@ -487,10 +489,10 @@
                         <div id="downloads">
                             <div class="row">
                                 <h3>Download links</h3>
+                                <div id="libraryArea" class="col-xs-12">
                                 <p>
                                     Files can be very large, <b>do not attempt to download using mobile data!</b>
                                 </p>
-                                <div class="col-xs-12">
                                     <table>
                                         <tr>
                                             <td><input id="downloadTrigger" type="button" class="btn btn-primary" value="Open library" style="float:left; margin-right:1em;" /></td>
@@ -613,7 +615,7 @@
                                     <div class="panel-body">
                                         <label class="checkbox">
                                             <input type="checkbox" name="displayFileSelectors" id="displayFileSelectorsCheck">
-                                            <b>Display selectors</b> for files and folders : <i>only use this for downloading <b>WikiMed</b> in other languages</i>. If you wish to open different ZIM files, you should instead download Kiwix JS from the Store, as this app is optimized for its packaged contents
+                                            <b>Display selectors</b> for files and folders : <i>This is for downloading <b>WikiMed</b> in other languages</i>. If you wish to open different ZIM files (e.g. Wikipedia), you should instead download Kiwix JS from the Store
                                         </label>
                                     </div>
                                 </div>
