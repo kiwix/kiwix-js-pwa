@@ -50,7 +50,7 @@ params['hideToolbar'] = getCookie('hideToolbar') != null ? getCookie('hideToolba
 params['rememberLastPage'] = getCookie('rememberLastPage') != null ? getCookie('rememberLastPage') : true; //Set default option to remember the last visited page between sessions
 params['useMathJax'] = getCookie('useMathJax') != null ? getCookie('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
 //params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
-params['showFileSelectors'] = false; //This will cause file selectors to be hidden on each load of the app (by ignoring cookie)
+params['showFileSelectors'] = false; //False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
 params['hideActiveContentWarning'] = getCookie('hideActiveContentWarning') != null ? getCookie('hideActiveContentWarning') : false;
 params['alphaChar'] = getCookie('alphaChar') || 'A'; //Set default start of alphabet string (used by the Archive Index)
 params['omegaChar'] = getCookie('omegaChar') || 'Z'; //Set default end of alphabet string
@@ -103,13 +103,6 @@ for (var i = 0; i < versionSpans.length; i++) {
 var fileVersionDivs = document.getElementsByClassName('fileVersion');
 for (i = 0; i < fileVersionDivs.length; i++) {
     fileVersionDivs[i].innerHTML = i ? params.fileVersion.replace(/\s+.+$/, "") : params.fileVersion;
-}
-if (!params.showFileSelectors && params.packagedFile && params.storedFile && params.storedFile != params.packagedFile) {
-    var currentArchive = document.getElementById('currentArchive');
-    if (currentArchive) {
-        currentArchive.innerHTML = "Currently loaded archive: <b>" + params.storedFile.replace(/\.zim$/i, "") + "</b>";
-        currentArchive.style.display = "block";
-    }
 }
 document.getElementById('logUpdate').innerHTML = document.getElementById('update').innerHTML.match(/<ul[^>]*>[\s\S]+/i);
 document.getElementById('logFeatures').innerHTML = document.getElementById('features').innerHTML;
