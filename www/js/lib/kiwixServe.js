@@ -423,9 +423,9 @@ define([], function () {
                 var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^\/]*\.meta4$/i, "\/") + '">&lt;&lt; Back to list of files</a></p>\r\n';
                 bodyDoc += /\/ted\//i.test(URL) ? '<h4 style="color:red">IMPORTANT: <b>TED TALKS</b> videos can be played in the UWP app on Windows 10, but on Windows 10 Mobile you may need to play the videos with an external app such as VLC Media Player (from the Store).</h4>\r\n<p>Please note you will need to search for the talks using standard ZIM search, because the ZIM\'s proprietary UI does not yet work in this app.' : ""; 
                 bodyDoc += "<h5";
-                bodyDoc += megabytes > 200 ? ' style="color:red;"> WARNING: ' : '>';
+                bodyDoc += megabytes > 2000 ? ' style="color:red;"> WARNING: ' : '>';
                 bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unknown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
-                if (megabytes > 100) bodyDoc += '<p><b>Consider using BitTorrent to download file:</b></p>\r\n' + 
+                if (megabytes > 1000) bodyDoc += '<p><b>Consider using BitTorrent to download file:</b></p>\r\n' + 
                     '<p><b>BitTorrent link</b>: <a href="' + URL.replace(/\.meta4$/, ".torrent") + '" target="_blank">' +
                     URL.replace(/\.meta4$/, ".torrent") + '</a></p>';
                 if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
@@ -449,7 +449,7 @@ define([], function () {
                 body.outerHTML = body.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + bodyDoc + '</div>');
                 downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, "File in");
                 if (megabytes > 4000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, "panel-danger");
-                if (megabytes > 200) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, "panel-warning");
+                if (megabytes > 2000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, "panel-warning");
                 var langSel = document.getElementById("langs");
                 var dateSel = document.getElementById("dates");
                 //Set chosen value in language selector (really this is for return)
