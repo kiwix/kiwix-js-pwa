@@ -336,6 +336,10 @@ define([], function () {
         zea: 'Zeeuws'
     };
 
+    // DEV: If you support more packaged files, add to this list
+    var regexpFilter = /_medicine/.test(params.packagedFile) ? /^(?!.+_medicine_)[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$\s+/mig : null;
+    regexpFilter = /_wikivoyage/.test(params.packagedFile) ? /^(?!.+_wikivoyage_)[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$\s+/mig : regexpFilter;
+    
     function requestXhttpData(URL, lang, kiwixDate) {
         if (!params.allowInternetAccess) {
             document.getElementById('serverResponse').innerHTML = "Blocked: select 'Allow Internet access'";
@@ -404,7 +408,7 @@ define([], function () {
                 size = size.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
                 var megabytes$ = megabytes.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
                 doc = "";
-                var mirrorservice = false;
+                //var mirrorservice = false;
                 for (var i = 1; i < linkArray.length; i++) { //NB we'ere intentionally discarding first link to kiwix.org (not to zim)
                     //DEV: Mirrorservice download bug now fixed [kiwix-js-windows #28] @TODO: remove this after period of stable downloads fully tested
                     //ZIP files work fine with mirrorservice, so test for ZIM type only
@@ -437,7 +441,7 @@ define([], function () {
                         'and transfer ALL of the files there to an accessible folder on your device. After that, you can search for the folder in this app (see above).</p>\r\n';
                 }
                 bodyDoc += '<p><i>Links will open in a new browser window</i></p><ol>\r\n' + doc + '</ol>\r\n';
-                if (mirrorservice) bodyDoc += '*** Note: mirrorservice.org currently has a download bug with ZIM archives: on some browsers it will download the ZIM file as plain text in browser window';
+                //if (mirrorservice) bodyDoc += '*** Note: mirrorservice.org currently has a download bug with ZIM archives: on some browsers it will download the ZIM file as plain text in browser window';
                 bodyDoc += '<br /><br />';
                 var header = document.getElementById('dl-panel-heading');
                 header.outerHTML = header.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + headerDoc + '</div>');
@@ -480,7 +484,7 @@ define([], function () {
                 return;
             }
             //Remove images
-            var doc = doc.replace(/<img\b[^>]*>\s*/ig, "");
+            doc = doc.replace(/<img\b[^>]*>\s*/ig, "");
             //Reduce size of header
             doc = doc.replace(/<h1\b[^>]*>([^<]*)<\/h1>/ig, '<h3 id="indexHeader">$1</h3>');
             //Limit height of pre box and prevent word wrapping
@@ -497,6 +501,8 @@ define([], function () {
                 doc = doc.replace(/(\d\d-\w{3}-\d{4}\s\d\d\:\d\d\s+)(\d[\d.\w]+\s+)$/img, "$2$1");
             }
             if (/^[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$/m.test(doc)) {
+                //Delete lines that do not match regexpFilter (this ensures packaged apps only show ZIMs appropriate to the package)
+                doc = regexpFilter ? doc.replace(regexpFilter, "") : doc;
                 //Get list of languages
                 //Delete all lines without a wiki pattern from language list
                 var langList = doc.replace(/^(?![^_\n\r]+_(\w+)_.+$).*[\r\n]*/mg, "");
