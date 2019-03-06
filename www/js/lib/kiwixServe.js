@@ -425,7 +425,7 @@ define([], function () {
                 bodyDoc += "<h5";
                 bodyDoc += megabytes > 2000 ? ' style="color:red;"> WARNING: ' : '>';
                 bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unknown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
-                if (megabytes > 1000) bodyDoc += '<p><b>Consider using BitTorrent to download file:</b></p>\r\n' + 
+                if (megabytes > 200) bodyDoc += '<p><b>Consider using BitTorrent to download file:</b></p>\r\n' + 
                     '<p><b>BitTorrent link</b>: <a href="' + URL.replace(/\.meta4$/, ".torrent") + '" target="_blank">' +
                     URL.replace(/\.meta4$/, ".torrent") + '</a></p>';
                 if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
@@ -561,11 +561,11 @@ define([], function () {
                 }
                 var langSel = document.getElementById("langs");
                 if (langSel) {
-                    langs.value = lang;
+                    langs.value = lang||"All";
                 }
                 var dateSel = document.getElementById("dates");
                 if (dateSel) {
-                    dates.value = kiwixDate;
+                    dates.value = kiwixDate||"All";
                 }
             }
             if (typeof langArray !== "undefined") {
