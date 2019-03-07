@@ -529,7 +529,7 @@ define([], function () {
                 doc = dropdownDate ? doc.replace(/<\/h3>/i, '</h3>' + (dropdownLang ? '' : '\r\n<div class="row">\r\n') + '<div class="col-xs-6">Filter by date:&nbsp;&nbsp;' + dropdownDate + '</div>\r\n</div>\r\n') : doc;
                 doc = dropdownLang ? doc.replace(/<\/h3>/i, '</h3>\r\n<div class="row">\r\n<div class="col-xs-6">Filter by lang code:&nbsp;&nbsp;' + dropdownLang + '</div>\r\n' + (dropdownDate ? '' : '</div>\r\n')) : doc;
                 //Add language and date spans to doc
-                doc = doc.replace(/^([^_\n\r]+_([^_\n\r]+)_.*?(\d[\d_-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2" data-kiwixdate="$3">$1<br /></span>');
+                doc = doc.replace(/^([^_\n\r]+_([^_\n\r]+)_.*?(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2" data-kiwixdate="$3">$1<br /></span>');
             }
             downloadLinks.innerHTML = doc;
             if (lang || kiwixDate) {
@@ -568,13 +568,22 @@ define([], function () {
                             }
                             if (dateID && langEntries[i].dataset.kiwixdate != dateID && dateID != "All") langEntries[i].style.display = "none";
                         }
-                        // Rebuild date selectors
+
+                        // Rebuild date selector
                         dateArray = getDateArray(langPanel.innerHTML);
                         var dateList = dateArray.join('\r\n');
                         dateList = dateList.replace(/^(.*)[\r\n]*/img, function (p0, p1) {
                             return '<option value="' + p1 + '"' + (dateID === p1 ? ' selected' : '') + '>' + p1 + '</option>';
                         });
                         dateSel.innerHTML = dateList;
+
+                        //Rebuild lang selector
+                        langArray = getLangArray(langPanel.innerHTML);
+                        var langList = langArray.join('\r\n');
+                        langList = langList.replace(/^(.*)[\r\n]*/img, function (p0, p1) {
+                            return '<option value="' + p1 + '"' + (langID === p1 ? ' selected' : '') + '>' + p1 + (p1 === 'All' ? '' : ' : ' + langCodes[p1]) + '</option>';
+                        });
+                        langSel.innerHTML = langList;
                     }
                 });
             }
@@ -594,6 +603,7 @@ define([], function () {
                             if (dateEntries[i].dataset.kiwixdate != dateID && dateID != "All") dateEntries[i].style.display = "none";
                             if (langID && dateEntries[i].lang != langID && langID != "All") dateEntries[i].style.display = "none";
                         }
+
                         //Rebuild lang selector
                         langArray = getLangArray(langPanel.innerHTML);
                         var langList = langArray.join('\r\n');
@@ -601,6 +611,14 @@ define([], function () {
                             return '<option value="' + p1 + '"' + (langID === p1 ? ' selected' : '' ) + '>' + p1 + (p1 === 'All' ? '' : ' : ' + langCodes[p1]) + '</option>';
                         });
                         langSel.innerHTML = langList;
+
+                        // Rebuild date selector
+                        dateArray = getDateArray(langPanel.innerHTML);
+                        var dateList = dateArray.join('\r\n');
+                        dateList = dateList.replace(/^(.*)[\r\n]*/img, function (p0, p1) {
+                            return '<option value="' + p1 + '"' + (dateID === p1 ? ' selected' : '') + '>' + p1 + '</option>';
+                        });
+                        dateSel.innerHTML = dateList;
                     }
                 });
             }
@@ -656,7 +674,7 @@ define([], function () {
                 //Add back any missing carriage returns
                 var dateList = fromDoc.replace(/<\/span><span\b/ig, "\r\n");
                 //Delete all lines without a wiki pattern from language list
-                dateList = dateList.replace(/^(?![^_\n\r]+_(\w+)_.+$).*[\r\n]*/mg, "");
+                dateList = dateList.replace(/^(?![^_\n\r]+_[\w-]+_.+$).*[\r\n]*/mg, "");
                 //Delete any hidden lines
                 dateList = dateList.replace(/^.*?display:\s*none;.*[\r\n]*/mg, "");
                 //Get list of all dates
