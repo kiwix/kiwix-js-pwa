@@ -2512,6 +2512,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                 collapsedBlocks[i].classList.add('open-block');
                             }
                         }
+
                         var anchors = Array.prototype.slice.call(iframeArticleContent.getElementsByTagName('a'));
                         anchors.forEach(function (anchor) {
                             // Attempts to access any properties of 'this' with malformed URLs causes app crash in Edge/UWP [kiwix-js #430]
@@ -2522,7 +2523,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                 return;
                             }
                             var href = anchor.getAttribute('href');
-                            if (href === null || href === undefined) return;
+                            if (href === null || href === undefined || href === '#') return;
                             // Compute current link's url (with its namespace), if applicable
                             // NB We need to access 'anchor.href' here because, unlike 'anchor.getAttribute("href")', it contains the fully qualified URL [kiwix-js #432]
                             var zimUrl = regexpZIMUrlWithNamespace.test(anchor.href) ? anchor.href.match(regexpZIMUrlWithNamespace)[1] : '';
@@ -2571,7 +2572,21 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             }
                         });
 
-                        loadImagesJQuery();
+                        // Insert breakout link
+                        if (!params.handlingBreakoutLink) {
+                            var div = document.createElement('div');
+                            div.style.cssText = 'font-size: xx-large; margin-top: 20px; margin-right: 50px; position: relative; opacity: 0.5; float: right; text-decoration: none;';
+                            div.id = "openNewWindow";
+                            div.innerHTML = '<a href="">[⬈]</a>';
+                            div.addEventListener('click', function (e) {
+                                e.preventDefault;
+                                //params.handlingBreakoutLink = true;
+                                handleBreakoutLink();
+                            });
+                            iframeArticleContent.body.insertBefore(div, iframeArticleContent.body.firstChild);
+                        }
+
+                        loadImagesJQuery(params.handlingBreakoutLink);
                         //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
                         insertMediaBlobsJQuery();
 
@@ -2593,6 +2608,46 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             } // End of injectHtml
 
         } //End of displayArticleInForm()
+
+        function handleBreakoutLink() {
+            var title = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
+            if (!params.handlingBreakoutLink && params.handlingBreakoutLink !== 0) {
+                params.handlingBreakoutLink = true;
+                //goToArticle(title);
+                if (params.imageDisplay) loadImagesJQuery(10000);
+                return;
+            }
+            if (params.handlingBreakoutLink >= 1 && params.handlingBreakoutLink !== true) return;
+            //Extract CSS and image data (because blob and other links won't work in browser window)
+            var iframeArticleContent = document.getElementById('articleContent').contentDocument;
+            if (params.handlingBreakoutLink === true) {
+                var items = iframeArticleContent.querySelectorAll('img[src],link[href]');
+                params.handlingBreakoutLink = items.length;
+                Array.prototype.slice.call(items).forEach(function (item) {
+                    // Extract the BLOB itself from the URL (even if it's a blob: URL)                    
+                    uiUtil.XHR(item.href || item.src, function (response, status) {
+                        // Now read the data from the extracted blob
+                        var myReader = new FileReader();
+                        myReader.addEventListener("loadend", function () {
+                            if (item.href) item.href = myReader.result;
+                            if (item.src) item.src = myReader.result;
+                            params.handlingBreakoutLink--;
+                            if (params.handlingBreakoutLink === 0) handleBreakoutLink();
+                        });
+                        //Start the reading process.
+                        myReader.readAsDataURL(response);
+                    }, 'blob');
+                });
+            }
+            if (params.handlingBreakoutLink !== true && params.handlingBreakoutLink > 0) return; //Ensures function stops if we are still extracting css
+            //Make safe filename
+            title = title.replace(/([^/]\/)+/, '');
+            title = title.replace(/(\.html?)*$/i, '.html');
+            var filename = title.replace(/[\/\\:*?"<>|]/g, '_');
+            var blob = new Blob([iframeArticleContent.documentElement.outerHTML], { type: 'text/html' });
+            uiUtil.displayFileDownloadAlert(filename, false, 'text/html', blob);
+            params.handlingBreakoutLink = false;
+        };
 
         function loadMathJax() {
             //Load MathJax if required and if not already loaded
@@ -2665,6 +2720,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     //TESTING
                     console.timeEnd("Time to Document Ready");
                     if (params.printIntercept) printIntercept();
+                    if (params.handlingBreakoutLink) handleBreakoutLink();
                 }
             } else {
                 console.log("Image retrieval disabled by user");
@@ -2688,6 +2744,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 //TESTING
                 console.timeEnd("Time to Document Ready");
                 if (params.printIntercept) printIntercept();
+                if (params.handlingBreakoutLink) handleBreakoutLink();
             }
 
             /** Prepares the main array of images remaining for triage
@@ -2736,6 +2793,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                     "** Waiting for user to scroll **");
                                 windowScroll = true;
                                 if (params.printIntercept) printIntercept();
+                                if (params.handlingBreakoutLink) handleBreakoutLink();
                             }
                         } else {
                             //We don't know where we are because no images are in view, so we'd better fetch some more
@@ -2901,6 +2959,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             windowScroll = true;
                         }
                         if (params.printIntercept) printIntercept();
+                        if (params.handlingBreakoutLink) handleBreakoutLink();
                     }
                 }
 
@@ -2975,7 +3034,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             mimetype = /\.ico$/i.test(url) ? "image/x-icon" : mimetype;
                             mimetype = /\.svg$/i.test(url) ? "image/svg+xml" : mimetype;
                             if (!dataRequested) {
-                                uiUtil.feedNodeWithBlob(image, 'src', content, mimetype);
+                                if (forPrinting) {
+                                    image.src = "data:" + mimetype + ";base64," + btoa(util.uintToString(content));
+                                } else {
+                                    uiUtil.feedNodeWithBlob(image, 'src', content, mimetype);
+                                }
                             }
                             sliceCount++;
                             console.log("Extracted image #" + countImages + "...");
