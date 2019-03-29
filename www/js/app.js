@@ -2575,7 +2575,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         // Insert breakout link
                         if (!params.handlingBreakoutLink) {
                             var div = document.createElement('div');
-                            div.style.cssText = 'font-size: xx-large; margin-top: 20px; margin-right: 50px; position: relative; opacity: 0.5; float: right; text-decoration: none;';
+                            div.style.cssText = 'font-size: xx-large; margin-top: 20px; margin-right: 50px; position: relative; opacity: 0.5; float: right; text-decoration: none; z-index: 2;';
                             div.id = "openNewWindow";
                             div.innerHTML = '<a href="">[⬈]</a>';
                             div.addEventListener('click', function (e) {
