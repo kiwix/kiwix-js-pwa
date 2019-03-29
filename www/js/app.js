@@ -2646,6 +2646,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             var filename = title.replace(/[\/\\:*?"<>|]/g, '_');
             var blob = new Blob([iframeArticleContent.documentElement.outerHTML], { type: 'text/html' });
             uiUtil.displayFileDownloadAlert(filename, false, 'text/html', blob);
+            // Clean up page
+            printCleanup();
             params.handlingBreakoutLink = false;
         };
 
