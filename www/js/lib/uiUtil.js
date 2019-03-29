@@ -308,7 +308,12 @@ define([], function() {
                 });
             } else {
                 // And try to launch through UWP download
-                if (Windows && Windows.Storage) downloadBlobUWP(blob, filename, alertMessage);
+                if (Windows && Windows.Storage) {
+                    downloadBlobUWP(blob, filename, alertMessage);
+                } else {
+                    // Last gasp attempt to open automatically
+                    window.open(a.href);
+                }
             }
         }
         $("#searchingArticles").hide();
