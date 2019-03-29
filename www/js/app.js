@@ -2610,6 +2610,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         } //End of displayArticleInForm()
 
         function handleBreakoutLink() {
+            // Prevent storage of last page temporarily
+            params.rememberLastPage = false;
             var title = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
             if (!params.handlingBreakoutLink && params.handlingBreakoutLink !== 0) {
                 params.handlingBreakoutLink = true;
