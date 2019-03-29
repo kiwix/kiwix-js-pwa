@@ -34,7 +34,7 @@ define([], function() {
      * @param {String} mimeType
      */
     function feedNodeWithBlob(node, nodeAttribute, content, mimeType) {
-        var blob = new Blob([content], { type: mimeType }, {oneTimeOnly: true});
+        var blob = new Blob([content], { type: mimeType });
         var url = URL.createObjectURL(blob);
         /*jQueryNode.on('load', function () {
             URL.revokeObjectURL(url);
@@ -122,19 +122,21 @@ define([], function() {
         document.getElementById('progressMessage').style.display = 'none';
     }
 
-    /**
+  /**
   * Initiates XMLHttpRequest
   * Can be used for loading local files in app context
   *
   * @param {String} file
   * @param {Function} callback
+  * @param {responseType} responseType
   * @returns responseText, status
   */
-    function XHR(file, callback) {
+    function XHR(file, callback, responseType) {
         var xhr = new XMLHttpRequest();
+        if (responseType) xhr.responseType = responseType;
         xhr.onreadystatechange = function (e) {
             if (this.readyState == 4) {
-                callback(this.responseText, this.status);
+                callback(this.response, this.response.type, this.status);
             }
         };
         var err = false;
@@ -203,11 +205,12 @@ define([], function() {
                         if (!/\.(?:ttml|ssa|ass|srt|idx|sub|vtt)$/i.test(filename)) Windows.System.Launcher.launchFileAsync(file);
                         if (file.isAvailable) {
                             var fileLink = file.path.replace(/\\/g, '/');
-                            fileLink = fileLink.replace(/^([^:]+:\/)(.*)/, function (p0, p1, p2) {
+                            fileLink = fileLink.replace(/^([^:]+:\/(?:[^/]+\/)*)(.*)/, function (p0, p1, p2) {
                                 return 'file:///' + p1 + encodeURIComponent(p2);
                             });
-                            message.innerHTML = '<strong>Download:</strong> Your file was saved as <a href="' +
+                            if (message) message.innerHTML = '<strong>Download:</strong> Your file was saved as <a href="' +
                                 fileLink + '" target="_blank" class="alert-link">' + file.path + '</a>';
+                            //window.open(fileLink, null, "msHideView=no");
                         }
                     });
                 });
@@ -260,11 +263,13 @@ define([], function() {
      */
     function displayFileDownloadAlert(title, download, contentType, content) {
         // We have to create the alert box in code, because Bootstrap removes it completely from the DOM when the user dismisses it
-        document.getElementById('alertBoxFooter').innerHTML =
-        '<div id="downloadAlert" class="alert alert-info alert-dismissible">' +
-        '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
-        '    <span id="alertMessage"></span>' +
-        '</div>';
+        if (download) {
+            document.getElementById('alertBoxFooter').innerHTML =
+                '<div id="downloadAlert" class="alert alert-info alert-dismissible">' +
+                '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
+                '    <span id="alertMessage"></span>' +
+                '</div>';
+        }
         // Download code adapted from https://stackoverflow.com/a/19230668/9727685 
         if (!contentType) {
             // DEV: Add more contentTypes here for downloadable files
@@ -277,7 +282,7 @@ define([], function() {
         var a = document.createElement('a');
         var blob = new Blob([content], { 'type': contentType });
         // If the filename to use for saving has not been specified, construct it from title
-        var filename = download === true ? title.replace(/^.*\/([^\/]+)$/, '$1') : download;
+        var filename = (!download || download === true) ? title.replace(/^.*\/([^\/]+)$/, '$1') : download;
         // Make filename safe
         filename = filename.replace(/[\/\\:*?"<>|]/g, '_');
         a.href = window.URL.createObjectURL(blob);
@@ -286,10 +291,12 @@ define([], function() {
         a.download = filename;
         a.classList.add('alert-link');
         a.innerHTML = filename;
-        var alertMessage = document.getElementById('alertMessage');
-        alertMessage.innerHTML = '<strong>Download</strong> If the download does not start, please tap the following link: ';
-        // We have to add the anchor to a UI element for Firefox to be able to click it programmatically: see https://stackoverflow.com/a/27280611/9727685
-        alertMessage.appendChild(a);
+        var alertMessage = download ? document.getElementById('alertMessage') : null;
+        if (download) {
+            alertMessage.innerHTML = '<strong>Download</strong> If the download does not start, please tap the following link: ';
+            // We have to add the anchor to a UI element for Firefox to be able to click it programmatically: see https://stackoverflow.com/a/27280611/9727685
+            alertMessage.appendChild(a);
+        }
         try { a.click(); }
         catch (err) {
             // If the click fails, user may be able to download by manually clicking the link
