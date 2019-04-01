@@ -337,7 +337,7 @@ define(['util'], function(util) {
         var desc = "Open article in new tab or window";
         var iframe = document.getElementById('articleContent').contentDocument;
         // Remove the file and any query string from href
-        var prefix = window.location.href.replace(/^((?!.*\?).*\/|(?=.*\/).*\/(?=[^\/]+\?)).*$/, '$1');
+        var prefix = window.location.href.replace(/^((?!.*\?).*\/|(?=.*\/).*\/(?=[^\/]*\?)).*$/, '$1');
         var div = document.createElement('div');
         div.style.cssText = 'left: 95%; top: 10px; position: absolute; z-index: 2;';
         div.id = "openInTab";
