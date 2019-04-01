@@ -723,6 +723,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             params.hideActiveContentWarning = this.checked ? true : false;
             cookies.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
         });
+        $('input:checkbox[name=allowHTMLExtraction]').on('change', function (e) {
+            params.allowHTMLExtraction = this.checked ? true : false;
+            cookies.setItem('allowHTMLExtraction', params.allowHTMLExtraction, Infinity);
+        });
         $('input:text[name=alphaChar]').on('change', function (e) {
             params.alphaChar = this.value.length == 1 ? this.value : params.alphaChar;
             this.value = params.alphaChar;
@@ -1913,7 +1917,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 var htmlContent = 0;
                 if (params.cachedStartPage && dirEntry.url == decodeURIComponent(params.cachedStartPage)) {
                     htmlContent = -1;
-                    uiUtil.XHR(dirEntry.namespace + '/' + encodeURIComponent(params.cachedStartPage),
+                    uiUtil.XHR(dirEntry.namespace + '/' + encodeURIComponent(params.cachedStartPage), 'text',
                         function (responseTxt, status) {
                             htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
                             if (htmlContent) {
@@ -2492,7 +2496,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         }
                     }, true);
 
-
+                    if (params.allowHTMLExtraction) uiUtil.insertBreakoutLink();
+                    
                     // If the ServiceWorker is not useable, we need to fallback to parse the DOM
                     // to inject math images, and replace some links with javascript calls
                     if (contentInjectionMode === 'jquery') {
@@ -2572,21 +2577,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             }
                         });
 
-                        // Insert breakout link
-                        if (!params.handlingBreakoutLink) {
-                            var div = document.createElement('div');
-                            div.style.cssText = 'font-size: xx-large; margin-top: 20px; margin-right: 50px; position: relative; opacity: 0.5; float: right; text-decoration: none; z-index: 2;';
-                            div.id = "openNewWindow";
-                            div.innerHTML = '<a href="">[⬈]</a>';
-                            div.addEventListener('click', function (e) {
-                                e.preventDefault;
-                                //params.handlingBreakoutLink = true;
-                                handleBreakoutLink();
-                            });
-                            iframeArticleContent.body.insertBefore(div, iframeArticleContent.body.firstChild);
-                        }
-
-                        loadImagesJQuery(params.handlingBreakoutLink);
+                        loadImagesJQuery();
                         //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
                         insertMediaBlobsJQuery();
 
@@ -2609,50 +2600,18 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
         } //End of displayArticleInForm()
 
-        function handleBreakoutLink() {
-            // Prevent storage of last page temporarily
-            params.rememberLastPage = false;
-            var title = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
-            if (!params.handlingBreakoutLink && params.handlingBreakoutLink !== 0) {
-                params.handlingBreakoutLink = true;
-                //goToArticle(title);
+        params.preloadAllImages = function () {
+            if (params.preloadingAllImages !== true) {
+                $('#searchingArticles').show();
+                params.preloadingAllImages = true;
                 if (params.imageDisplay) loadImagesJQuery(10000);
                 return;
             }
-            if (params.handlingBreakoutLink >= 1 && params.handlingBreakoutLink !== true) return;
-            //Extract CSS and image data (because blob and other links won't work in browser window)
-            var iframeArticleContent = document.getElementById('articleContent').contentDocument;
-            if (params.handlingBreakoutLink === true) {
-                var items = iframeArticleContent.querySelectorAll('img[src],link[href]');
-                params.handlingBreakoutLink = items.length;
-                Array.prototype.slice.call(items).forEach(function (item) {
-                    // Extract the BLOB itself from the URL (even if it's a blob: URL)                    
-                    uiUtil.XHR(item.href || item.src, function (response, status) {
-                        // Now read the data from the extracted blob
-                        var myReader = new FileReader();
-                        myReader.addEventListener("loadend", function () {
-                            if (item.href) item.href = myReader.result;
-                            if (item.src) item.src = myReader.result;
-                            params.handlingBreakoutLink--;
-                            if (params.handlingBreakoutLink === 0) handleBreakoutLink();
-                        });
-                        //Start the reading process.
-                        myReader.readAsDataURL(response);
-                    }, 'blob');
-                });
-            }
-            if (params.handlingBreakoutLink !== true && params.handlingBreakoutLink > 0) return; //Ensures function stops if we are still extracting css
-            //Make safe filename
-            title = title.replace(/([^/]\/)+/, '');
-            title = title.replace(/(\.html?)*$/i, '.html');
-            var filename = title.replace(/[\/\\:*?"<>|]/g, '_');
-            var blob = new Blob([iframeArticleContent.documentElement.outerHTML], { type: 'text/html' });
-            uiUtil.displayFileDownloadAlert(filename, true, 'text/html', blob);
-            // Clean up page
-            printCleanup();
-            params.handlingBreakoutLink = false;
+            // All images should now be loaded, or else user did not request loading images
+            uiUtil.extractHTML();
+            $('#searchingArticles').hide();
         };
-
+ 
         function loadMathJax() {
             //Load MathJax if required and if not already loaded
             if (params.useMathJax) {
@@ -2724,7 +2683,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     //TESTING
                     console.timeEnd("Time to Document Ready");
                     if (params.printIntercept) printIntercept();
-                    if (params.handlingBreakoutLink) handleBreakoutLink();
+                    if (params.preloadingAllImages)
+                        params.preloadAllImages();
                 }
             } else {
                 console.log("Image retrieval disabled by user");
@@ -2748,7 +2708,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 //TESTING
                 console.timeEnd("Time to Document Ready");
                 if (params.printIntercept) printIntercept();
-                if (params.handlingBreakoutLink) handleBreakoutLink();
+                if (params.preloadingAllImages)
+                    params.preloadAllImages();
             }
 
             /** Prepares the main array of images remaining for triage
@@ -2797,7 +2758,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                     "** Waiting for user to scroll **");
                                 windowScroll = true;
                                 if (params.printIntercept) printIntercept();
-                                if (params.handlingBreakoutLink) handleBreakoutLink();
+                                if (params.preloadingAllImages)
+                                    params.preloadAllImages();
                             }
                         } else {
                             //We don't know where we are because no images are in view, so we'd better fetch some more
@@ -2811,6 +2773,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     console.log("Unloading scroll listener");
                     $("#articleContent").contents().off('scroll');
                     windowScroll = true; //Check if it's really unloaded...
+                    // All images were already loaded, so we have to check the intercepts here too!
+                    if (params.printIntercept) printIntercept();
+                    if (params.preloadingAllImages)
+                        params.preloadAllImages();
                 }
 
             } //End of prepareImages()
@@ -2962,8 +2928,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                 "** Waiting for user scroll... **");
                             windowScroll = true;
                         }
+                        // Remember that we have requested all images by asking for a huge image slice; therefore it is OK to have these statements here (there will be no more images availabe after that huge slice)
                         if (params.printIntercept) printIntercept();
-                        if (params.handlingBreakoutLink) handleBreakoutLink();
+                        if (params.preloadingAllImages)
+                            params.preloadAllImages();
                     }
                 }
 
@@ -3038,11 +3006,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             mimetype = /\.ico$/i.test(url) ? "image/x-icon" : mimetype;
                             mimetype = /\.svg$/i.test(url) ? "image/svg+xml" : mimetype;
                             if (!dataRequested) {
-                                if (forPrinting) {
-                                    image.src = "data:" + mimetype + ";base64," + btoa(util.uintToString(content));
-                                } else {
-                                    uiUtil.feedNodeWithBlob(image, 'src', content, mimetype);
-                                }
+                                    uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.allowHTMLExtraction);
                             }
                             sliceCount++;
                             console.log("Extracted image #" + countImages + "...");
@@ -3110,7 +3074,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     } else {
                             selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                             // TODO : JavaScript support not yet functional [kiwix-js #152]
-                            uiUtil.feedNodeWithBlob(script, 'src', content, 'text/javascript');
+                                uiUtil.feedNodeWithBlob(script, 'src', content, 'text/javascript', params.allowHTMLExtraction);
                             });
                     }
                     }).fail(function (e) {
