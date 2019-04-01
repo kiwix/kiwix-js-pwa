@@ -156,6 +156,7 @@
     <Content Include="www\img\icons\kiwix-32.png" />
     <Content Include="www\img\icons\kiwix-blue-32.png" />
     <Content Include="www\img\icons\map_marker-18px.png" />
+    <Content Include="www\img\icons\new_window.svg" />
     <Content Include="www\img\icons\wikimed-90.png" />
     <Content Include="www\img\icons\wikimed-blue-32.png" />
     <Content Include="www\img\icons\wikimed-lightblue-32.png" />
