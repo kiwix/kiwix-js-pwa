@@ -3005,7 +3005,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             mimetype = /\.ico$/i.test(url) ? "image/x-icon" : mimetype;
                             mimetype = /\.svg$/i.test(url) ? "image/svg+xml" : mimetype;
                             if (!dataRequested) {
-                                uiUtil.feedNodeWithBlob(image, 'src', content, mimetype);
+                                uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.allowHTMLExtraction);
                             }
                             sliceCount++;
                             console.log("Extracted image #" + countImages + "...");
