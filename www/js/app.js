@@ -745,7 +745,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         });
         // Set up hook into Windows ViewManagement uiSettings
         var uiSettings = null;
-        if (Windows && Windows.UI && Windows.UI.ViewManagement) {
+        if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.ViewManagement) {
             uiSettings = new Windows.UI.ViewManagement.UISettings();
             uiSettings.oncolorvalueschanged = function () {
                 if (params.cssUITheme == 'auto') {
