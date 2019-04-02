@@ -2496,8 +2496,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         }
                     }, true);
 
-                    if (params.allowHTMLExtraction) uiUtil.insertBreakoutLink();
-                    
                     // If the ServiceWorker is not useable, we need to fallback to parse the DOM
                     // to inject math images, and replace some links with javascript calls
                     if (contentInjectionMode === 'jquery') {
@@ -2580,6 +2578,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         loadImagesJQuery();
                         //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
                         insertMediaBlobsJQuery();
+                        if (params.allowHTMLExtraction) uiUtil.insertBreakoutLink();
 
                         // Document has loaded except for images, so we can now change the startup cookie (and delete) [see init.js]
                         document.cookie = 'lastPageLoad=success;expires=Thu, 21 Sep 1979 00:00:01 UTC';
@@ -3006,7 +3005,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             mimetype = /\.ico$/i.test(url) ? "image/x-icon" : mimetype;
                             mimetype = /\.svg$/i.test(url) ? "image/svg+xml" : mimetype;
                             if (!dataRequested) {
-                                    uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.allowHTMLExtraction);
+                                uiUtil.feedNodeWithBlob(image, 'src', content, mimetype);
                             }
                             sliceCount++;
                             console.log("Extracted image #" + countImages + "...");
