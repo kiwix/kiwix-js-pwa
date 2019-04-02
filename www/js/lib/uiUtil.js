@@ -344,12 +344,14 @@ define(['util'], function(util) {
     function insertBreakoutLink() {
         var desc = "Open article in new tab or window";
         var iframe = document.getElementById('articleContent').contentDocument;
-        // Remove the file and any query string from href
-        var prefix = window.location.href.replace(/^((?!.*\?).*\/|.*\/(?=[^\/]*\?)).*$/, '$1');
+        // This code provides an absolute link - keep for reference. Removes the file and any query string from href
+        // var prefix = window.location.href.replace(/^((?!.*\?).*\/|.*\/(?=[^\/]*\?)).*$/, '$1');
+        // But in Kiwix JS Windows, we can easily get the relative path of the current document:
+        var treePath = decodeURIComponent(params.lastPageVisit).replace(/[^/]+\/(?:[^/]+$)?/g, "../");
         var div = document.createElement('div');
         div.style.cssText = 'top: 10px; right: 25px; position: relative; z-index: 2; float: right;';
         div.id = "openInTab";
-        div.innerHTML = '<a href="#"><img src="' + prefix + 'img/icons/new_window.svg" width="30" height="30" alt="'
+        div.innerHTML = '<a href="#"><img src="' + treePath + 'img/icons/new_window.svg" width="30" height="30" alt="'
              + desc + '" title="' + desc + '"></a>';
         iframe.body.insertBefore(div, iframe.body.firstChild);
         var openInTab = iframe.getElementById('openInTab');
