@@ -40,18 +40,24 @@ define(['util'], function(util) {
      */
     function feedNodeWithBlob(node, nodeAttribute, content, mimeType, makeDataURI) {
         var url;
+        var blob = new Blob([content], { type: mimeType });
         if (makeDataURI) {
-            url = 'data:' + mimeType + ';base64,' + btoa(util.uintToString(content));
+            // Because btoa fails on utf8 strings (in SVGs, for example) we need to use FileReader method
+            // See https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding#The_Unicode_Problem
+            // url = 'data:' + mimeType + ';base64,' + btoa(util.uintToString(content));
+            var myReader = new FileReader();
+            myReader.onloadend = function () {
+                url = myReader.result;
+                node.setAttribute(nodeAttribute, url);
+            };
+            myReader.readAsDataURL(blob);
         } else {
-            var blob = new Blob([content], { type: mimeType });
             url = URL.createObjectURL(blob);
-            if (!params.allowHTMLExtraction) {
-                node.addEventListener('load', function () {
-                    URL.revokeObjectURL(url);
-                });
-            }
+            node.addEventListener('load', function () {
+                URL.revokeObjectURL(url);
+            });
+            node.setAttribute(nodeAttribute, url);
         }
-        node.setAttribute(nodeAttribute, url);
     }
         
     var regexpRemoveUrlParameters = new RegExp(/([^\?]+)\?.*$/);
