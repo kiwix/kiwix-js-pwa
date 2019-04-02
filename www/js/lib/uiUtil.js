@@ -43,11 +43,13 @@ define(['util'], function(util) {
         if (makeDataURI) {
             url = 'data:' + mimeType + ';base64,' + btoa(util.uintToString(content));
         } else {
-        var blob = new Blob([content], { type: mimeType });
-        url = URL.createObjectURL(blob);
-        /*node.on('load', function () {
-            URL.revokeObjectURL(url);
-        });*/
+            var blob = new Blob([content], { type: mimeType });
+            url = URL.createObjectURL(blob);
+            if (!params.allowHTMLExtraction) {
+                node.addEventListener('load', function () {
+                    URL.revokeObjectURL(url);
+                });
+            }
         }
         node.setAttribute(nodeAttribute, url);
     }
@@ -339,7 +341,7 @@ define(['util'], function(util) {
         // Remove the file and any query string from href
         var prefix = window.location.href.replace(/^((?!.*\?).*\/|(?=.*\/).*\/(?=[^\/]*\?)).*$/, '$1');
         var div = document.createElement('div');
-        div.style.cssText = 'left: 95%; top: 10px; position: absolute; z-index: 2;';
+        div.style.cssText = 'top: 10px; right: 25px; position: relative; z-index: 2; float: right;';
         div.id = "openInTab";
         div.innerHTML = '<a href="#"><img src="' + prefix + 'img/icons/new_window.svg" width="30" height="30" alt="'
              + desc + '" title="' + desc + '"></a>';
