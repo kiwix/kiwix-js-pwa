@@ -511,7 +511,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('articleContent').style.position = "fixed";
             //Use the "light" navbar if the content is "light" (otherwise it looks shite....)
             var checkTheme = params.cssTheme == "light" ? "light" : "dark";
-            if (checkTheme != params.cssUITheme) {
+            var determinedTheme = cssUIThemeSet(params.cssUITheme);
+            if (checkTheme != determinedTheme) {
                 if (checkTheme == "light" && (!activeBtn || activeBtn == "btnHome" || activeBtn == "findText") ||
                     checkTheme == "dark" && activeBtn && activeBtn != "btnHome" && activeBtn != "findText") {
                     cssUIThemeSet("light");
@@ -742,16 +743,42 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             cookies.setItem('hideToolbar', params.hideToolbar, Infinity);
             //checkToolbar();
         });
-        $('input:checkbox[name=cssUIDarkTheme]').on('change', function (e) {
-            params.cssUITheme = this.checked ? 'dark' : 'light';
+        // Set up hook into Windows ViewManagement uiSettings
+        var uiSettings = null;
+        if (Windows && Windows.UI && Windows.UI.ViewManagement) {
+            uiSettings = new Windows.UI.ViewManagement.UISettings();
+            uiSettings.oncolorvalueschanged = function () {
+                if (params.cssUITheme == 'auto') {
+                    cssUIThemeSet('auto');
+                    document.getElementById('cssWikiDarkThemeCheck').click();
+                }
+            };
+        }
+        document.getElementById('cssUIDarkThemeCheck').addEventListener('click', function () {
+            //This code implements a tri-state checkbox
+            if (this.readOnly) this.checked = this.readOnly = false;
+            else if (!this.checked) this.readOnly = this.indeterminate = true;
+            params.cssUITheme = this.indeterminate ? "auto" : this.checked ? 'dark' : 'light';
             cookies.setItem('cssUITheme', params.cssUITheme, Infinity);
-            cssUIThemeSet(params.cssUITheme);
+            var determinedTheme = cssUIThemeSet(params.cssUITheme);
             //Make subsequent check valid if params.cssTheme is "invert" rather than "dark"
-            var checkTheme = params.cssTheme == "light" ? "light" : "dark";
-            if (params.cssUITheme != checkTheme) $('#cssWikiDarkThemeCheck').click();
+            var checkTheme = params.cssTheme == 'light' ? 'light' : 'dark';
+            if (determinedTheme != checkTheme) $('#cssWikiDarkThemeCheck').click();
         });
-
         function cssUIThemeSet(value) {
+            document.getElementById('cssUIDarkThemeState').innerHTML = '[' + params.cssUITheme + ']';
+            if (value == 'auto') {
+                if (uiSettings) {
+                    // We need to check the system theme
+                    // var uiSettings = new Windows.UI.ViewManagement.UISettings();
+                    // Value 0 below is the 'background' constant in array Windows.UI.ViewManagement.UIColorType
+                    var colour = uiSettings.getColorValue(0);
+                    value = (colour.b + colour.g + colour.r) <= 382 ? 'dark' : 'light';
+                } else {
+                    params.cssUITheme = 'light';
+                    value = 'light';
+                }
+            }
             if (value == 'dark') {
                 document.getElementsByTagName('body')[0].classList.add("dark");
                 document.getElementById('archiveFilesLegacy').classList.add("dark");
@@ -781,6 +808,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? "./img/icons/wikivoyage-black-32.png" : /medicine/i.test(params.storedFile) ? "./img/icons/wikimed-blue-32.png" : "./img/icons/kiwix-blue-32.png";
                 if (/wikivoyage/i.test(params.packagedFile)) document.getElementById('kiwixIconAbout').src = "./img/icons/wikivoyage-90.png";
             }
+            return value;
         }
 
         $('input:checkbox[name=cssWikiDarkTheme]').on('change', function (e) {
