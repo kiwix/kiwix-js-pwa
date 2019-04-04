@@ -764,8 +764,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         if (params.cssTheme == 'auto') document.getElementById('darkInvert').style.display = cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'inline';
         document.getElementById('cssUIDarkThemeCheck').addEventListener('click', function () {
             //This code implements a tri-state checkbox
-            if (this.readOnly) this.checked = this.readOnly = false;
-            else if (!this.checked) this.readOnly = this.indeterminate = true;
+            if (this.readOnly) { this.checked = true; this.readOnly = false; }
+            else if (this.checked) this.readOnly = this.indeterminate = true;
             params.cssUITheme = this.indeterminate ? "auto" : this.checked ? 'dark' : 'light';
             if (!uiSettings) initializeUISettings();
             cookies.setItem('cssUITheme', params.cssUITheme, Infinity);
@@ -775,8 +775,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (params.cssUITheme != params.cssTheme) $('#cssWikiDarkThemeCheck').click();
         });
         document.getElementById('cssWikiDarkThemeCheck').addEventListener('click', function () {
-            if (this.readOnly) this.checked = this.readOnly = false;
-            else if (!this.checked) this.readOnly = this.indeterminate = true;
+            if (this.readOnly) { this.checked = true; this.readOnly = false; }
+            else if (this.checked) this.readOnly = this.indeterminate = true;
             params.cssTheme = this.indeterminate ? "auto" : this.checked ? 'dark' : 'light';
             if (!uiSettings) initializeUISettings();
             var determinedValue = params.cssTheme;
@@ -806,7 +806,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     value = (colour.b + colour.g + colour.r) <= 382 ? 'dark' : 'light';
                 } else {
                     // There is no system default, so use light, as it is what most people will expect
-                    if (!getOnly) params.cssUITheme = 'light';
                     value = 'light';
                 }
             }
