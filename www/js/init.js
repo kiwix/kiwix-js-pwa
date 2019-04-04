@@ -43,8 +43,8 @@ params['cssSource'] = getCookie('cssSource') || "auto"; //Set default to "auto",
 params['removePageMaxWidth'] = getCookie('removePageMaxWidth') != null ? getCookie('removePageMaxWidth') : "auto"; //Set default for removing max-width restriction on Wikimedia pages ("auto" = removed in desktop, not in mobile; true = always remove; false = never remove)
 params['openAllSections'] = getCookie('openAllSections') != null ? getCookie('openAllSections') : true; //Set default for opening all sections in ZIMs that have collapsible sections and headings ("auto" = let CSS decide according to screen width; true = always open until clicked by user; false = always closed until clicked by user)
 params['cssCache'] = getCookie('cssCache') != null ? getCookie('cssCache') : true; //Set default to true to use cached CSS, false to use Zim only
-params['cssTheme'] = getCookie('cssTheme') || 'light'; //Set default to 'light', 'dark' or 'invert' to use respective themes for articles
-params['cssUITheme'] = getCookie('cssUITheme') || 'light'; //Set default to 'light' or 'dark' to use respective themes for UI
+params['cssTheme'] = getCookie('cssTheme') || 'auto'; //Set default to 'auto', 'light', 'dark' or 'invert' to use respective themes for articles
+params['cssUITheme'] = getCookie('cssUITheme') || 'auto'; //Set default to 'auto', 'light' or 'dark' to use respective themes for UI
 params['imageDisplay'] = getCookie('imageDisplay') != null ? getCookie('imageDisplay') : true; //Set default to display images from Zim
 params['hideToolbar'] = getCookie('hideToolbar') != null ? getCookie('hideToolbar') : false; //Set default to hide the top toolbar on scroll
 params['rememberLastPage'] = getCookie('rememberLastPage') != null ? getCookie('rememberLastPage') : true; //Set default option to remember the last visited page between sessions
@@ -81,17 +81,21 @@ if (getCookie('lastPageLoad') == 'failed') {
 //Initialize checkbox, radio and other values
 document.getElementById('cssCacheModeCheck').checked = params.cssCache;
 document.getElementById('imageDisplayModeCheck').checked = params.imageDisplay;
-document.getElementById('removePageMaxWidthCheck').checked = params.removePageMaxWidth == "auto" ? false : params.removePageMaxWidth;
+document.getElementById('removePageMaxWidthCheck').checked = params.removePageMaxWidth === true; // Will be false if false or auto
 document.getElementById('removePageMaxWidthCheck').indeterminate = params.removePageMaxWidth == "auto" ? true : false;
 document.getElementById('removePageMaxWidthCheck').readOnly = params.removePageMaxWidth == "auto" ? true : false;
 document.getElementById('pageMaxWidthState').innerHTML = (params.removePageMaxWidth == "auto" ? "[auto]" : params.removePageMaxWidth ? "[true]" : "[false]");
 document.getElementById('hideToolbarCheck').checked = params.hideToolbar;
-document.getElementById('cssWikiDarkThemeCheck').checked = params.cssTheme == 'dark' ? true : params.cssTheme == 'invert' ? true : false;
-document.getElementById('darkInvert').style.display = params.cssTheme == 'dark' ? "inline" : params.cssTheme == 'invert' ? "inline" : "none";
-document.getElementById('cssWikiDarkThemeInvertCheck').checked = params.cssTheme == 'invert' ? true : false;
-//document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme == 'dark' ? true : false;
-document.getElementById('cssUIDarkThemeCheck').indeterminate = params.removePageMaxWidth == "auto" ? true : false;
-document.getElementById('cssUIDarkThemeCheck').readOnly = params.removePageMaxWidth == "auto" ? true : false;
+document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme == "dark"; // Will be true, or false if light or auto
+document.getElementById('cssUIDarkThemeCheck').indeterminate = params.cssUITheme == "auto";
+document.getElementById('cssUIDarkThemeCheck').readOnly = params.cssUITheme == "auto";
+document.getElementById('cssUIDarkThemeState').innerHTML = params.cssUITheme;
+document.getElementById('cssWikiDarkThemeCheck').checked = /dark|invert/.test(params.cssTheme);
+document.getElementById('cssWikiDarkThemeCheck').indeterminate = params.cssTheme == "auto";
+document.getElementById('cssWikiDarkThemeCheck').readOnly = params.cssTheme == "auto";
+document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
+document.getElementById('darkInvert').style.display = /dark|invert/i.test(params.cssTheme) ? "inline" : "none";
+document.getElementById('cssWikiDarkThemeInvertCheck').checked = params.cssTheme == 'invert';
 document.getElementById('useMathJaxRadio' + (params.useMathJax ? 'True' : 'False')).checked = true;
 document.getElementById('rememberLastPageCheck').checked = params.rememberLastPage;
 document.getElementById('displayFileSelectorsCheck').checked = params.showFileSelectors;
