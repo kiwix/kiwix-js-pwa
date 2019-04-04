@@ -865,6 +865,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 link.setAttribute("type", "text/css");
                 link.setAttribute("href", determinedWikiTheme == "dark" ? treePath + "-/s/style-dark.css" : treePath + "-/s/style-dark-invert.css");
                 doc.head.appendChild(link);
+                doc.getElementById('breakoutLink').src = treePath + 'img/icons/new_window_lb.svg';
+            } else {
+                doc.getElementById('breakoutLink').src = treePath + 'img/icons/new_window.svg';
             }
             document.getElementById('darkInvert').style.display = determinedWikiTheme == 'light' ? 'none' : 'inline';
         }
@@ -2624,7 +2627,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         loadImagesJQuery();
                         //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
                         insertMediaBlobsJQuery();
-                        if (params.allowHTMLExtraction) uiUtil.insertBreakoutLink();
+                        var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
+                        if (params.allowHTMLExtraction) uiUtil.insertBreakoutLink(determinedTheme);
 
                         // Document has loaded except for images, so we can now change the startup cookie (and delete) [see init.js]
                         document.cookie = 'lastPageLoad=success;expires=Thu, 21 Sep 1979 00:00:01 UTC';
