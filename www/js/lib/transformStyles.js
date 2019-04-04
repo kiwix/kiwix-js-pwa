@@ -156,8 +156,6 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
         }
         //Remove hard-coded style on h1
         html = html.replace(/(<h1\b[^>]+)background-color\s*:\s*white;\s*/i, '$1');
-        //Add dark theme if requested
-        css += (params.cssTheme == "dark") ? '<link href="-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' :"";
         
         return { html : html, css : css };
     }
@@ -193,8 +191,6 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
         html = html.replace(/(<h1\b[^>]+)background-color\s*:\s*white;\s*/i, '$1');
         //Remove hard-coded style on infobox
         html = html.replace(/(<table\s+(?=[^>]*?\bclass=['"][^'"]*infobox)[^>]*\bstyle=['"][^'"]*\b)(?:float:\s*none\s*;?\s*)(?:clear:\s*none\s*;?\s*)?/gi, '$1');
-        //Add dark theme if requested
-        css += (params.cssTheme == "dark") ? '<link href="-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
         
         return { html : html, css : css };
     }

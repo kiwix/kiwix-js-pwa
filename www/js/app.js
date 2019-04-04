@@ -238,7 +238,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             btnContinue.innerHTML = "Continue";
             var printModalContent = document.getElementById('print-modal-content');
             printModalContent.classList.remove('dark');
-            if (params.cssUITheme != "light") {
+            var determinedTheme = params.cssUITheme;
+            determinedTheme = determinedTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : determinedTheme;
+            if (determinedTheme != "light") {
                 printModalContent.classList.add('dark');
             }
             //If document is in wrong style, reload it
@@ -510,17 +512,18 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('scrollbox').style.height = window.innerHeight + "px";
             document.getElementById('articleContent').style.position = "fixed";
             //Use the "light" navbar if the content is "light" (otherwise it looks shite....)
-            var checkTheme = params.cssTheme == "light" ? "light" : "dark";
-            var determinedTheme = cssUIThemeSet(params.cssUITheme);
-            if (checkTheme != determinedTheme) {
-                if (checkTheme == "light" && (!activeBtn || activeBtn == "btnHome" || activeBtn == "findText") ||
-                    checkTheme == "dark" && activeBtn && activeBtn != "btnHome" && activeBtn != "findText") {
-                    cssUIThemeSet("light");
+            var determinedTheme = cssUIThemeGetOrSet(params.cssUITheme);
+            var determinedWikiTheme = params.cssTheme == 'auto' ? determinedTheme : params.cssTheme == 'inverted' ? 'dark' : params.cssTheme;
+            if (determinedWikiTheme != determinedTheme) {
+                if (determinedWikiTheme == "light" && (!activeBtn || activeBtn == "btnHome" || activeBtn == "findText") ||
+                    determinedWikiTheme == "dark" && activeBtn && activeBtn != "btnHome" && activeBtn != "findText") {
+                    cssUIThemeGetOrSet("light");
                 } else {
-                    cssUIThemeSet("dark");
+                    cssUIThemeGetOrSet("dark");
                 }
+            } else {
+                cssUIThemeGetOrSet(determinedTheme);
             }
-
             if (typeof Windows !== 'undefined') {
                 document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
             }
@@ -743,30 +746,57 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             cookies.setItem('hideToolbar', params.hideToolbar, Infinity);
             //checkToolbar();
         });
-        // Set up hook into Windows ViewManagement uiSettings
+        // Set up hook into Windows ViewManagement uiSettings if needed
         var uiSettings = null;
-        if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.ViewManagement) {
-            uiSettings = new Windows.UI.ViewManagement.UISettings();
-            uiSettings.oncolorvalueschanged = function () {
-                if (params.cssUITheme == 'auto') {
-                    cssUIThemeSet('auto');
-                    document.getElementById('cssWikiDarkThemeCheck').click();
-                }
-            };
+        initializeUISettings();
+        function initializeUISettings() {
+            var checkAuto = params.cssUITheme == 'auto' || params.cssTheme == 'auto';
+            if (checkAuto && typeof Windows !== 'undefined' && Windows.UI && Windows.UI.ViewManagement) {
+                uiSettings = new Windows.UI.ViewManagement.UISettings();
+                uiSettings.oncolorvalueschanged = function () {
+                    if (params.cssUITheme == 'auto') cssUIThemeGetOrSet('auto');
+                    if (params.cssTheme == 'auto') switchCSSTheme();
+                };
+            }
         }
+        // Code below is needed on startup to show or hide the inverted dark theme checkbox; 
+        // similar code also runs in switchCSSTheme(), but that is not evoked on startup
+        if (params.cssTheme == 'auto') document.getElementById('darkInvert').style.display = cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'inline';
         document.getElementById('cssUIDarkThemeCheck').addEventListener('click', function () {
             //This code implements a tri-state checkbox
             if (this.readOnly) this.checked = this.readOnly = false;
             else if (!this.checked) this.readOnly = this.indeterminate = true;
             params.cssUITheme = this.indeterminate ? "auto" : this.checked ? 'dark' : 'light';
+            if (!uiSettings) initializeUISettings();
             cookies.setItem('cssUITheme', params.cssUITheme, Infinity);
-            var determinedTheme = cssUIThemeSet(params.cssUITheme);
+            document.getElementById('cssUIDarkThemeState').innerHTML = params.cssUITheme;
+            cssUIThemeGetOrSet(params.cssUITheme);
             //Make subsequent check valid if params.cssTheme is "invert" rather than "dark"
-            var checkTheme = params.cssTheme == 'light' ? 'light' : 'dark';
-            if (determinedTheme != checkTheme) $('#cssWikiDarkThemeCheck').click();
+            if (params.cssUITheme != params.cssTheme) $('#cssWikiDarkThemeCheck').click();
         });
-        function cssUIThemeSet(value) {
-            document.getElementById('cssUIDarkThemeState').innerHTML = '[' + params.cssUITheme + ']';
+        document.getElementById('cssWikiDarkThemeCheck').addEventListener('click', function () {
+            if (this.readOnly) this.checked = this.readOnly = false;
+            else if (!this.checked) this.readOnly = this.indeterminate = true;
+            params.cssTheme = this.indeterminate ? "auto" : this.checked ? 'dark' : 'light';
+            if (!uiSettings) initializeUISettings();
+            var determinedValue = params.cssTheme;
+            if (params.cssTheme == "auto") determinedValue = cssUIThemeGetOrSet('auto', true);
+            if (determinedValue == "light") document.getElementById('footer').classList.remove("darkfooter");
+            if (params.cssTheme == "light") document.getElementById('cssWikiDarkThemeInvertCheck').checked = false;
+            if (determinedValue == "dark") document.getElementById('footer').classList.add("darkfooter");
+            document.getElementById('darkInvert').style.display = determinedValue == 'light' ? 'none' : 'inline';
+            params.cssTheme = document.getElementById('cssWikiDarkThemeInvertCheck').checked && determinedValue == 'dark' ? 'invert' : params.cssTheme;
+            document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
+            cookies.setItem('cssTheme', params.cssTheme, Infinity);
+            switchCSSTheme();
+        });
+        $('input:checkbox[name=cssWikiDarkThemeInvert]').on('change', function (e) {
+            if (params.cssTheme == "light" && this.checked) document.getElementById('cssWikiDarkThemeInvertCheck').checked = true;
+            params.cssTheme = this.checked ? 'invert' : params.cssTheme;
+            cookies.setItem('cssTheme', params.cssTheme, Infinity);
+            switchCSSTheme();
+        });
+        function cssUIThemeGetOrSet(value, getOnly) {
             if (value == 'auto') {
                 if (uiSettings) {
                     // We need to check the system theme
@@ -775,10 +805,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     var colour = uiSettings.getColorValue(0);
                     value = (colour.b + colour.g + colour.r) <= 382 ? 'dark' : 'light';
                 } else {
-                    params.cssUITheme = 'light';
+                    // There is no system default, so use light, as it is what most people will expect
+                    if (!getOnly) params.cssUITheme = 'light';
                     value = 'light';
                 }
             }
+            if (getOnly) return value;
+            var elements;
             if (value == 'dark') {
                 document.getElementsByTagName('body')[0].classList.add("dark");
                 document.getElementById('archiveFilesLegacy').classList.add("dark");
@@ -786,7 +819,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 document.getElementById('archiveFilesLegacy').classList.remove("btn");
                 document.getElementById('findInArticle').classList.add("dark");
                 document.getElementById('prefix').classList.add("dark");
-                var elements = document.querySelectorAll(".settings");
+                elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) {
                     elements[i].style.border = "1px solid darkgray";
                 }
@@ -801,7 +834,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 document.getElementById('archiveFilesLegacy').classList.add("btn");
                 document.getElementById('findInArticle').classList.remove("dark");
                 document.getElementById('prefix').classList.remove("dark");
-                var elements = document.querySelectorAll(".settings");
+                elements = document.querySelectorAll(".settings");
                 for (var i = 0; i < elements.length; i++) {
                     elements[i].style.border = "1px solid black";
                 }
@@ -810,25 +843,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
             return value;
         }
-
-        $('input:checkbox[name=cssWikiDarkTheme]').on('change', function (e) {
-            params.cssTheme = this.checked ? 'dark' : 'light';
-            if (!this.checked) document.getElementById('cssWikiDarkThemeInvertCheck').checked = false;
-            if (this.checked) document.getElementById('footer').classList.add("darkfooter");
-            if (!this.checked) document.getElementById('footer').classList.remove("darkfooter");
-            document.getElementById('darkInvert').style.display = this.checked ? "inline" : "none";
-            params.cssTheme = document.getElementById('cssWikiDarkThemeInvertCheck').checked && params.cssTheme == 'dark' ? 'invert' : params.cssTheme;
-            cookies.setItem('cssTheme', params.cssTheme, Infinity);
-            switchTheme();
-        });
-        $('input:checkbox[name=cssWikiDarkThemeInvert]').on('change', function (e) {
-            if (params.cssTheme == "light" && this.checked) document.getElementById('cssWikiDarkThemeInvertCheck').checked = true;
-            params.cssTheme = this.checked ? 'invert' : 'dark';
-            cookies.setItem('cssTheme', params.cssTheme, Infinity);
-            switchTheme();
-        });
-
-        function switchTheme() {
+        function switchCSSTheme() {
             var doc = window.frames[0].frameElement.contentDocument;
             var treePath = decodeURIComponent(params.lastPageVisit).replace(/[^/]+\/(?:[^/]+$)?/g, "../");
             //If something went wrong, use the page reload method
@@ -844,13 +859,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     styleSheets[i].parentNode.removeChild(styleSheets[i]);
                 }
             }
-            if (params.cssTheme != "light") {
+            var determinedWikiTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
+            if (determinedWikiTheme != "light") {
                 var link = doc.createElement("link");
                 link.setAttribute("rel", "stylesheet");
                 link.setAttribute("type", "text/css");
-                link.setAttribute("href", params.cssTheme == "dark" ? treePath + "-/s/style-dark.css" : treePath + "-/s/style-dark-invert.css");
+                link.setAttribute("href", determinedWikiTheme == "dark" ? treePath + "-/s/style-dark.css" : treePath + "-/s/style-dark-invert.css");
                 doc.head.appendChild(link);
             }
+            document.getElementById('darkInvert').style.display = determinedWikiTheme == 'light' ? 'none' : 'inline';
         }
         $('input:checkbox[name=rememberLastPage]').on('change', function (e) {
             if (params.rememberLastPage && this.checked) document.getElementById('rememberLastPageCheck').checked = true;
@@ -993,8 +1010,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
         $(document).ready(function (e) {
             // Set initial behaviour (see also init.js)
-            if (params.cssTheme != "light") document.getElementById('footer').classList.add("darkfooter");
-            cssUIThemeSet(params.cssUITheme);
+            cssUIThemeGetOrSet(params.cssUITheme);
             //@TODO - this is initialization code, and should be in init.js (withoug jQuery)
             $('input:radio[name=cssInjectionMode]').filter('[value="' + params.cssSource + '"]').prop('checked', true);
             //DEV this hides file selectors if it is a packaged file -- add your own packaged file test to regex below
@@ -1595,7 +1611,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }
                 }
                 //This ensures the correct icon is set for the newly loaded archive
-                cssUIThemeSet(params.cssUITheme);
+                cssUIThemeGetOrSet(params.cssUITheme);
                 if (params.rescan) {
                     document.getElementById('btnConfigure').click();
                     document.getElementById('btnConfigure').click();
@@ -2346,6 +2362,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         htmlArticle = desktopCSS.html;
                         cssArray$ = desktopCSS.css;
                     }
+                    //Add dark mode CSS if required
+                    var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
+                    cssArray$ += (determinedTheme == "dark") ? '<link href="-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
                     //Add required path in front of injected styles (i.e. those that have no ./ or ../../.. etc)
                     cssArray$ = cssArray$.replace(/(\bhref\s*=\s*["']\s*)(?![./]+|blob:)/ig, "$1" + treePath);
                     //Ensure all headings are open
