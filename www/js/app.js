@@ -791,8 +791,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             switchCSSTheme();
         });
         $('input:checkbox[name=cssWikiDarkThemeInvert]').on('change', function (e) {
-            if (params.cssTheme == "light" && this.checked) document.getElementById('cssWikiDarkThemeInvertCheck').checked = true;
-            params.cssTheme = this.checked ? 'invert' : params.cssTheme;
+            if (this.checked) {
+                params.cssTheme = 'invert';
+            } else {
+                var darkThemeCheckbox = document.getElementById('cssWikiDarkThemeCheck');
+                params.cssTheme = darkThemeCheckbox.indeterminate ? 'auto' : darkThemeCheckbox.checked ? 'dark' : 'light';
+            }
             cookies.setItem('cssTheme', params.cssTheme, Infinity);
             switchCSSTheme();
         });
