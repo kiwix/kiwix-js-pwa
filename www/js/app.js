@@ -1845,7 +1845,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 $('#articleListWithHeader').hide();
                 var modalTheme = document.getElementById('modalTheme');
                 modalTheme.classList.remove('dark');
-                if (params.cssUITheme === 'dark') modalTheme.classList.add('dark');
+                var determinedTheme = params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme;
+                if (determinedTheme === 'dark') modalTheme.classList.add('dark');
                 $('#myModal').modal({
                     backdrop: "static"
                 });
