@@ -336,15 +336,13 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     window.clearTimeout(window.timeoutFIAKeyup);
                 }
                 window.timeoutFIAKeyup = window.setTimeout(function () {
-                    if (val && val.length > 0) {
-                        findInArticleInitiate(val);
-                    }
+                    findInArticleInitiate(val);
                 }, 500);
             };
             var findInArticleInitiate = function (val) {
                 //Ensure nothing happens if only one or two ASCII values have been entered (search is not specific enough) 
                 //if no value has been entered (clears highlighting if user deletes all values in search field)
-                if (!/^\s*[\w\s]{1,2}$/.test(val)) {
+                if (!/^\s*[A-Za-z\s]{1,2}$/.test(val)) {
                     localSearch.scrollFrom = 0;
                     localSearch.lastScrollValue = val;
                     localSearch.setMatchType('open');
