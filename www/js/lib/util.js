@@ -441,7 +441,9 @@ define(['q'], function (q) {
 
         this.setRegex = function (input) {
             input = input.replace(/\\([^u]|$)/g, "$1");
+            // Replace any spaces with regex OR
             input = input.replace(/\s+/g, "|");
+            // Remove leading and trailing
             input = input.replace(/^\||\|$/g, "");
             if (input) {
                 var re = "(" + input + ")";
@@ -470,9 +472,9 @@ define(['q'], function (q) {
             input = input.replace(/[\s.,;:?!¿¡-]+/g, " ");
             var inputMatcher = new RegExp(input, "ig");
             var matches = strippedText.match(inputMatcher);
-            if (matches) return matches.length
+            if (matches) return matches.length;
             else return 0;
-        }
+        };
 
         this.countPartialMatches = function () {
             if (node === undefined || !node) return;
