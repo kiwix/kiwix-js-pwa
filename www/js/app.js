@@ -316,7 +316,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             findInArticle.focus();
             localSearch = new util.Hilitor(innerDocument);
             //TODO: MatchType should be language specific
-            localSearch.setMatchType('open');
             var timer = null;
             findInArticle.addEventListener('keyup', function (e) {
                 //If user pressed Alt-F or Ctrl-F, exit
@@ -329,11 +328,28 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 }
                 //If value hasn't changed, exit
                 if (val == localSearch.lastScrollValue) return;
-                //Ensure nothing happens if only one value has been entered (search is not specific enough) 
+                findInArticleKeyup(val);
+            });
+            var findInArticleKeyup = function (val) {
+                // Use a timeout, so that very quick typing does not cause a lot of overhead
+                if (window.timeoutFIAKeyup) {
+                    window.clearTimeout(window.timeoutFIAKeyup);
+                }
+                window.timeoutFIAKeyup = window.setTimeout(function () {
+                    if (val && val.length > 0) {
+                        findInArticleInitiate(val);
+                    }
+                }, 500);
+            };
+            var findInArticleInitiate = function (val) {
+                //Ensure nothing happens if only one or two ASCII values have been entered (search is not specific enough) 
                 //if no value has been entered (clears highlighting if user deletes all values in search field)
-                if (~(val.length - 2)) {
+                if (!/^\s*[\w\s]{1,2}$/.test(val)) {
                     localSearch.scrollFrom = 0;
                     localSearch.lastScrollValue = val;
+                    localSearch.setMatchType('open');
+                    //Change matchType to 'left' if we are dealing with an ASCII language and a space has been typed
+                    if (/\s/.test(val) && /(?:^|[\s\b])[A-Za-z]+(?:[\b\s]|$)/.test(val)) localSearch.setMatchType('left');
                     localSearch.apply(val);
                     if (val.length) {
                         var fullTotal = localSearch.countFullMatches(val);
@@ -351,7 +367,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         document.getElementById('partial').innerHTML = "Partial: 0";
                     }
                 }
-            });
+            };
         });
 
         document.getElementById('btnRandomArticle').addEventListener('click', function () {
