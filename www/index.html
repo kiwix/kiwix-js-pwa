@@ -516,16 +516,19 @@
                                 <div id="displayThemeDiv" class="panel panel-info" style="clear: left;">
                                     <div class="panel-heading">Dark mode:</div>
                                     <div class="panel-body">
-                                        <label class="checkbox">
+                                        <label class="checkbox" title="Tap three times for dark | auto | light">
                                             <input type="checkbox" name="cssUIDarkTheme" id="cssUIDarkThemeCheck">
-                                            <b>Set dark mode for User Interface</b>: [<span id="cssUIDarkThemeState"></span>] (<i>auto</i> mode uses UWP system Settings if available)
+                                            <span class="checkmark"></span>
+                                            <b>Set dark mode for User Interface</b>: [ <b><span id="cssUIDarkThemeState"></span></b> ] (<i>auto</i> mode uses UWP system Settings if available)
                                         </label>
-                                        <label class="checkbox">
+                                        <label class="checkbox" title="Tap three times for dark | auto | light">
                                             <input type="checkbox" name="cssWikiDarkTheme" id="cssWikiDarkThemeCheck">
-                                            <b>Set dark theme for articles</b>: [<span id="cssWikiDarkThemeState"></span>]  (<i>experimental</i>: tested with Wikimedia ZIMs)
+                                            <span class="checkmark"></span>
+                                            <b>Set dark theme for articles</b>: [ <b><span id="cssWikiDarkThemeState"></span></b> ]  (<i>experimental</i>: tested with Wikimedia ZIMs)
                                         </label>
                                         <label id="darkInvert" style="display:none;" class="checkbox">
                                             <input type="checkbox" name="cssWikiDarkThemeInvert" id="cssWikiDarkThemeInvertCheck">
+                                            <span class="checkmark"></span>
                                             <b>Use simple inversion for dark theme</b> (should work with all archive types)
                                         </label>
                                     </div>
@@ -535,19 +538,23 @@
                                     <div class="panel-body">
                                         <label class="radio">
                                             <input name="cssInjectionMode" id="cssModeAutoRadio" type="radio" value="auto">
+                                            <span class="radiobtn"></span>
                                             <b>Select style automatically</b> (<i>recommended</i>: matches the ZIM style)
                                         </label>
                                         <label class="radio">
                                             <input name="cssInjectionMode" id="cssModeDesktopRadio" type="radio" value="desktop">
+                                            <span class="radiobtn"></span>
                                             <b>Use Wikimedia desktop style</b> (and transform if necessary)
                                         </label>
                                         <label class="radio">
                                             <input name="cssInjectionMode" id="cssModeMobileRadio" type="radio" value="mobile">
+                                            <span class="radiobtn"></span>
                                             <b>Use Wikimedia mobile style</b> (and transform if necessary)
                                         </label>
-                                        <label class="checkbox">
+                                        <label class="checkbox" title="Tap three times for always | auto | never">
                                             <input name="pageMaxWidth" id="removePageMaxWidthCheck" type="checkbox" value="false">
-                                            <b>Remove max page width restriction</b>: <span id="pageMaxWidthState"></span> (useful for recent Wikipedia archives)
+                                            <span class="checkmark"></span>
+                                            <b>Remove max page width restriction</b>: [ <b><span id="pageMaxWidthState"></span></b> ] (useful for recent Wikipedia archives)
                                         </label>
                                     </div>
                                 </div>
@@ -556,6 +563,7 @@
                                     <div class="panel-body">
                                         <label class="checkbox">
                                             <input type="checkbox" name="hideToolbar" id="hideToolbarCheck">
+                                            <span class="checkmark"></span>
                                             <b>Hide top toolbar while scrolling</b> (tap <span class="glyphicon glyphicon-arrow-up"></span> once to reveal)
                                         </label>
                                         <label oninput="document.getElementById('spinnerVal').innerHTML = relativeUIFontSizeSlider.value + '%';" style="width: 80%;">
@@ -566,27 +574,31 @@
                                         </label>
                                         <label class="checkbox">
                                             <input type="checkbox" name="cssCacheMode" id="cssCacheModeCheck">
+                                            <span class="checkmark"></span>
                                             <b>Use locally cached display styles</b> (<i>recommended</i> for Wikipedia ZIM)
                                         </label>
                                         <label class="checkbox">
                                             <input type="checkbox" name="imageDisplayMode" id="imageDisplayModeCheck">
+                                            <span class="checkmark"></span>
                                             <b>Display images if any</b> (if hidden, tap the <span style="background-color:lightblue; color:black;">&nbsp;blue area&nbsp;</span> to display one-by-one)
                                         </label>
                                         <label class="checkbox">
                                             <input type="checkbox" name="hideActiveContentWarning" id="hideActiveContentWarningCheck">
-                                            <b>Permanently hide warning about active content</b> (only hide if you know how to access the Archive Index [<i>Hint: type a space in the search box</i>])
+                                            <span class="checkmark"></span>
+                                            <b>Permanently hide active content warning</b> (for experienced users)
                                         </label>
                                         <label class="text">
                                             <b>Start character</b> of alphabet:
-                                            <input type="text" name="alphaChar" id="alphaCharTxt" value="A" style="width:2em;">
+                                            <input type="text" name="alphaChar" id="alphaCharTxt" value="A" style="width:2em;color:steelblue;">
                                             (use capital letters if they exist in your locale)<br />
                                             <b>End character</b> of alphabet:&nbsp;&nbsp;
-                                            <input type="text" name="omegaChar" id="omegaCharTxt" value="Z" style="width:2em;">
+                                            <input type="text" name="omegaChar" id="omegaCharTxt" value="Z" style="width:2em;color:steelblue;">
                                             (these are used to set appropriate alphabet for the Archive Index)
                                         </label>
                                         <label class="checkbox">
                                             <input type="checkbox" name="allowHTMLExtraction" id="allowHTMLExtractionCheck">
-                                            <strong>Allow opening articles in a separate browser tab</strong> (slightly increases app's memory usage)
+                                            <span class="checkmark"></span>
+                                            <b>Allow opening articles in a separate browser tab</b> (slightly increases app's memory usage)
                                         </label>
                                     </div> 
                                 </div>
@@ -603,6 +615,7 @@
                                     <div class="panel-body">
                                         <label class="checkbox">
                                             <input type="checkbox" name="rememberLastPage" id="rememberLastPageCheck">
+                                            <span class="checkmark"></span>
                                             <b>Reopen last-visited page</b> on next app launch
                                         </label>
                                     </div>
@@ -619,7 +632,8 @@
                                     <div class="panel-body">
                                         <label class="checkbox">
                                             <input type="checkbox" name="displayFileSelectors" id="displayFileSelectorsCheck">
-                                            <b>Display selectors</b> for files and folders : <i>This is for downloading <b>WikiMed</b> in other languages</i>. If you wish to open different ZIM files (e.g. Wikipedia), you should instead download Kiwix JS from the Store
+                                            <span class="checkmark"></span>
+                                            <b>Display selectors</b> for files and folders : <i>This is for downloading <b>Wikivoyage</b> in other languages</i>. If you wish to open different ZIM files (e.g. Wikipedia), you should instead download Kiwix JS from the Store
                                         </label>
                                     </div>
                                 </div>
@@ -628,10 +642,12 @@
                                     <div class="panel-body">
                                         <label class="radio">
                                             <input type="radio" name="useMathJax" id="useMathJaxRadioTrue" value="true">
+                                            <span class="radiobtn"></span>
                                             <b>Typeset TeX equations with MathJax</b> (<i>recommended</i>: very fast, but not all symbols supported in all languages; will use SVG fallbacks if TeX string not available)
                                         </label>
                                         <label class="radio">
                                             <input type="radio" name="useMathJax" id="useMathJaxRadioFalse" value="false">
+                                            <span class="radiobtn"></span>
                                             <b>Use SVG fallback images</b> (very slow and memory hungry, but will dislplay all symbols)
                                         </label>
                                     </div>
@@ -641,10 +657,12 @@
                                     <div class="panel-body">
                                         <label class="radio">
                                             <input type="radio" name="contentInjectionMode" value="jquery" id="jQueryModeRadio" checked>
+                                            <span class="radiobtn"></span>
                                             <b>JQuery</b> (slow and memory hungry, but safer)
                                         </label>
                                         <label class="radio">
                                             <input type="radio" name="contentInjectionMode" value="serviceworker" id="serviceworkerModeRadio">
+                                            <span class="radiobtn"></span>
                                             <b>ServiceWorker</b> (faster but unstable, and not supported by all platforms)
                                         </label>
                                         <div id="serviceWorkerStatus"></div>

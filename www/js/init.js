@@ -82,9 +82,9 @@ if (getCookie('lastPageLoad') == 'failed') {
 document.getElementById('cssCacheModeCheck').checked = params.cssCache;
 document.getElementById('imageDisplayModeCheck').checked = params.imageDisplay;
 document.getElementById('removePageMaxWidthCheck').checked = params.removePageMaxWidth === true; // Will be false if false or auto
-document.getElementById('removePageMaxWidthCheck').indeterminate = params.removePageMaxWidth == "auto" ? true : false;
-document.getElementById('removePageMaxWidthCheck').readOnly = params.removePageMaxWidth == "auto" ? true : false;
-document.getElementById('pageMaxWidthState').innerHTML = (params.removePageMaxWidth == "auto" ? "[auto]" : params.removePageMaxWidth ? "[true]" : "[false]");
+document.getElementById('removePageMaxWidthCheck').indeterminate = params.removePageMaxWidth == "auto";
+document.getElementById('removePageMaxWidthCheck').readOnly = params.removePageMaxWidth == "auto";
+document.getElementById('pageMaxWidthState').innerHTML = (params.removePageMaxWidth == "auto" ? "auto" : params.removePageMaxWidth ? "always" : "never");
 document.getElementById('hideToolbarCheck').checked = params.hideToolbar;
 document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme == "dark"; // Will be true, or false if light or auto
 document.getElementById('cssUIDarkThemeCheck').indeterminate = params.cssUITheme == "auto";
