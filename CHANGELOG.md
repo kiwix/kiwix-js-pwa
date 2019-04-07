@@ -1,3 +1,19 @@
+## Release 0.9.9.88 (beta)
+* ENHANCEMENT: Article can now be sent to device's browser for reading, side-by-side viewing, printing
+* ENHANCEMENT: A breakout icon can optionally be shown on each page to enable sending page to browser (see Settings)
+* ENHANCEMENT: A new "auto" setting for dark mode and dark theme follows the system default for UWP apps
+* ENHANCEMENT: Checkbox and radio buttons are now styled and coloured for better visibility (also larger)
+* ENHANCEMENT: Packaged apps now default to showing the most appropriate ZIM archive types from Library
+* ENHANCEMENT: Streamlined the process for adding other languages of packaged app ZIM files
+* ENHANCEMENT: Language and date selectors in Library are now responsive to each other
+* ENHANCEMENT: Download link more clearly signalled
+* UPDATE: Deal with re-organized stylesheets in mwoffliner ZIMs
+* FIX: Fixed regression caused by removal of timeout for find in article function
+* FIX: App detects a language that is predominantly ASCII and uses left-side word searching in that case (Chinese open-type search should be unaffected)
+* FIX: Prevent crash if changing language selector on "wrong" screen
+* FIX: Prevent timeout-related crashes on slower 
+* FIX: Prevent unusable app state after clicking non-Roman alphabet button in Archive Index
+
 ## Release 0.9.9.87 (beta)
 * FIX: Removed timeout preventing fast typing for find in article function (Ctrl-F / Alt-F)
 * FIX: Allow searching in article for languages that do not use spaces (such as Chinese)
