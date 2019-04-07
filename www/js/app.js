@@ -778,8 +778,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         if (params.cssTheme == 'auto') document.getElementById('darkInvert').style.display = cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'inline';
         document.getElementById('cssUIDarkThemeCheck').addEventListener('click', function () {
             //This code implements a tri-state checkbox
-            if (this.readOnly) { this.checked = true; this.readOnly = false; }
-            else if (this.checked) this.readOnly = this.indeterminate = true;
+            if (this.readOnly) this.checked = this.readOnly = false;
+            else if (!this.checked) this.readOnly = this.indeterminate = true;
+            //Code below shows how to invert the order
+            //if (this.readOnly) { this.checked = true; this.readOnly = false; }
+            //else if (this.checked) this.readOnly = this.indeterminate = true;
             params.cssUITheme = this.indeterminate ? "auto" : this.checked ? 'dark' : 'light';
             if (!uiSettings) initializeUISettings();
             cookies.setItem('cssUITheme', params.cssUITheme, Infinity);
@@ -789,8 +792,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (params.cssUITheme != params.cssTheme) $('#cssWikiDarkThemeCheck').click();
         });
         document.getElementById('cssWikiDarkThemeCheck').addEventListener('click', function () {
-            if (this.readOnly) { this.checked = true; this.readOnly = false; }
-            else if (this.checked) this.readOnly = this.indeterminate = true;
+            if (this.readOnly) this.checked = this.readOnly = false;
+            else if (!this.checked) this.readOnly = this.indeterminate = true;
             params.cssTheme = this.indeterminate ? "auto" : this.checked ? 'dark' : 'light';
             if (!uiSettings) initializeUISettings();
             var determinedValue = params.cssTheme;
@@ -877,15 +880,16 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 }
             }
             var determinedWikiTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
+            var breakoutLink = doc.getElementById('breakoutLink');
             if (determinedWikiTheme != "light") {
                 var link = doc.createElement("link");
                 link.setAttribute("rel", "stylesheet");
                 link.setAttribute("type", "text/css");
                 link.setAttribute("href", determinedWikiTheme == "dark" ? treePath + "-/s/style-dark.css" : treePath + "-/s/style-dark-invert.css");
                 doc.head.appendChild(link);
-                doc.getElementById('breakoutLink').src = treePath + 'img/icons/new_window_lb.svg';
+                if (breakoutLink) breakoutLink.src = treePath + 'img/icons/new_window_lb.svg';
             } else {
-                doc.getElementById('breakoutLink').src = treePath + 'img/icons/new_window.svg';
+                if (breakoutLink) breakoutLink.src = treePath + 'img/icons/new_window.svg';
             }
             document.getElementById('darkInvert').style.display = determinedWikiTheme == 'light' ? 'none' : 'inline';
         }
@@ -915,7 +919,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (this.readOnly) this.checked = this.readOnly = false;
             else if (!this.checked) this.readOnly = this.indeterminate = true;
             params.removePageMaxWidth = this.indeterminate ? "auto" : this.checked;
-            document.getElementById('pageMaxWidthState').innerHTML = (params.removePageMaxWidth == "auto" ? "[auto]" : params.removePageMaxWidth ? "[always]" : "[never]") + "&nbsp;";
+            document.getElementById('pageMaxWidthState').innerHTML = (params.removePageMaxWidth == "auto" ? "auto" : params.removePageMaxWidth ? "always" : "never");
             cookies.setItem('removePageMaxWidth', params.removePageMaxWidth, Infinity);
             removePageMaxWidth();
         });

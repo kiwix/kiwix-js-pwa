@@ -383,19 +383,145 @@ pre {
     margin-bottom: 15% !important;
 }
 
-@media (max-width: 768px) {
-    /*Increase touchability of bottom buttons*/
-    footer .btn-default {
-        font-size: 120% !important;
+  /*********************************/
+ /******* Custom checkboxes *******/
+/*********************************/
+
+/* Hide the browser's default checkbox */
+.container input[type=checkbox], .container input[type=radio] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: -25px;
+    height: 20px;
+    width: 20px;
+    background-color: #eee;
+    border: 2px solid #0078d7;
+}
+
+.panel-warning .checkmark, .panel-warning .radiobtn {
+    border-color: darkkhaki;
+}
+
+.panel-danger .checkmark, .panel-danger .radiobtn {
+    border-color: #a94442;
+}
+
+.dark .checkmark, .dark .radiobtn {
+    border-color: darkslategray;
+}
+
+/* On mouse-over, add a grey background color */
+.checkbox:hover input ~ .checkmark {
+    background-color: #ccc;
+}
+
+.dark .panel-warning .checkmark, .dark .panel-warning .radiobtn {
+    border-color: #808000;
+}
+
+.dark .panel-danger .checkmark, .dark .panel-danger .radiobtn {
+    border-color: #800000;
+}
+
+/* When the checkbox is checked, add a blue background */
+.container input:checked ~ .checkmark, .container input:indeterminate ~ .checkmark, .container input:checked ~ .radiobtn {
+    background-color: steelblue;
+}
+
+.dark .container input:checked ~ .checkmark, .dark .container input:indeterminate ~ .checkmark, .dark .container input:checked ~ .radiobtn {
+    background-color: #12303b;
+}
+
+.panel-warning input:checked ~ .checkmark, .panel-warning input:checked ~ .radiobtn {
+    background-color: darkkhaki;
+}
+
+.dark .panel-warning input:checked ~ .checkmark, .dark .panel-warning input:checked ~ .radiobtn {
+    background-color: #4d4d00;
+}
+
+.panel-danger input:checked ~ .checkmark, .panel-danger input:checked ~ .radiobtn {
+    background-color: #a94442;
+}
+
+.dark .panel-danger input:checked ~ .checkmark, .dark .panel-danger input:checked ~ .radiobtn {
+    background-color: #4d0000;
+}
+
+/* Style the checkmark/indicator */
+.container input:checked ~ .checkmark:after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+.container input:indeterminate ~ .checkmark:after {
+    content: "";
+    position: absolute;
+    top: 30%;
+    left: 30%;
+    width: 40%;
+    height: 40%;
+    background: white;
+}
+
+/* Create a custom radio button */
+.radiobtn {
+    position: absolute;
+    top: 0;
+    left: -25px;
+    height: 20px;
+    width: 20px;
+    background-color: #eee;
+    border-radius: 50%;
+    border: 2px solid #0078d7;
+}
+
+/* On mouse-over, add a grey background color */
+.radio:hover input ~ .radiobtn {
+    background-color: #ccc;
+}
+
+/* Style the indicator (dot/circle) */
+    .container input:checked ~ .radiobtn:after {
+        content: "";
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: white;
     }
 
-    /* Pour réduire la taille du menu en haut */
-    .navbar {
-        min-height: 20px !important;
-        margin-bottom: 1px !important;
-    }
-    /*.navbar-brand, .navbar-nav a { /* GK added navbar-nav a*/
-    /*padding-top: 2px !important;
+    @media (max-width: 768px) {
+        /*Increase touchability of bottom buttons*/
+        footer .btn-default {
+            font-size: 120% !important;
+        }
+
+        /* Pour réduire la taille du menu en haut */
+        .navbar {
+            min-height: 20px !important;
+            margin-bottom: 1px !important;
+        }
+        /*.navbar-brand, .navbar-nav a { /* GK added navbar-nav a*/
+        /*padding-top: 2px !important;
         padding-bottom: 1px !important;
         height: 25px !important;
     }
@@ -404,49 +530,49 @@ pre {
         padding-bottom: 15px !important;
     }*/
 
-    .navbar-toggle {
-        padding-top: 2px !important;
-        padding-bottom: 2px !important;
-        margin-top: 2px !important;
-        margin-bottom: 0px !important;
-        background-color: lightgray !important;
-    }
-    /* Pour réduire la taille des éléments et boutons dans l'aréa de navégation - GK
+        .navbar-toggle {
+            padding-top: 2px !important;
+            padding-bottom: 2px !important;
+            margin-top: 2px !important;
+            margin-bottom: 0px !important;
+            background-color: lightgray !important;
+        }
+        /* Pour réduire la taille des éléments et boutons dans l'aréa de navégation - GK
     .navbar-nav, .navbar-nav > li {
         padding-top: 2px !important;
         padding-bottom: 2px !important;
         margin-top: 2px !important;
         margin-bottom: 0px !important;
     } */
-    .navbar-nav {
-        margin-top: 0 !important;
-        margin-bottom: 0 !important;
-    }
-        /*Make sure these align correctly rather than stacking at full width - GK*/
-        .navbar-nav > li > a {
-            /*float: left !important;*/
-            /*Added this to prevent the buttons becoming so small*/
-            padding-top: 15px !important;
+        .navbar-nav {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
         }
+            /*Make sure these align correctly rather than stacking at full width - GK*/
+            .navbar-nav > li > a {
+                /*float: left !important;*/
+                /*Added this to prevent the buttons becoming so small*/
+                padding-top: 15px !important;
+            }
 
-    /*.col-md-offset-1 {
+        /*.col-md-offset-1 {
         padding-left: 5px !important;
     }
 
     [role=region] > header {
         margin-bottom: 10px !important;
     }*/
-    /* Pour supprimer l'espace entre la zone de recherche et l'iframe 
+        /* Pour supprimer l'espace entre la zone de recherche et l'iframe 
     .list-group {
         margin-bottom: 0 !important;
     } */
-    /* Pour réduire la taille du champ de recherche 
+        /* Pour réduire la taille du champ de recherche 
     .form-control {
         height: 28px !important;
         padding-bottom: 5px !important;
     } */
 
-    /*.dropdown-menu {
+        /*.dropdown-menu {
         font-size: 20px !important;
     }
 
@@ -458,15 +584,16 @@ pre {
     .btn-xs, .btn-sm, .btn-default, .btn-group-xs > .btn, .btn-group-sm > .btn {
         font-size: 10px !important;
     }*/
-    /* Pour réduire la taille des boutons en bas de l'écran 
+        /* Pour réduire la taille des boutons en bas de l'écran 
     .btn-lg, .btn-group-lg > .btn {
         padding-top: 1px !important;
         padding-bottom: 1px !important;
         font-size: 16px !important;
     }*/
-}
-@media (max-width: 440px) {
-    /*.btn-primary {
+    }
+
+    @media (max-width: 440px) {
+        /*.btn-primary {
         font-size: 12px !important;
     }
     .input-group-btn {
@@ -475,4 +602,4 @@ pre {
     #btnHome {
         float: left;
     }*/
-}
+    }
