@@ -1880,31 +1880,31 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
         /**
          * Display the list of articles with the given array of DirEntry
-         * @param {Array.<DirEntry>} dirEntryArray
-         * @param {Integer} maxArticles
+     * @param {Array} dirEntryArray The array of dirEntries returned from the binary search
          */
         function populateListOfArticles(dirEntryArray) {
             var articleListHeaderMessageDiv = $('#articleListHeaderMessage');
             var nbDirEntry = dirEntryArray ? dirEntryArray.length : 0;
             var message;
             if (nbDirEntry >= MAX_SEARCH_RESULT_SIZE) {
-                message = "First " + MAX_SEARCH_RESULT_SIZE + " articles below (refine your search):";
+            message = 'First ' + MAX_SEARCH_RESULT_SIZE + ' articles below (refine your search).';
             } else {
-                message = nbDirEntry + " articles found:";
+            message = nbDirEntry + ' articles found.';
             }
             if (nbDirEntry === 0) {
-                message = "No articles found.";
+            message = 'No articles found.';
             }
 
             articleListHeaderMessageDiv.html(message);
 
             var articleListDiv = $('#articleList');
-            var articleListDivHtml = "";
+        var articleListDivHtml = '';
             var listLength = dirEntryArray.length < MAX_SEARCH_RESULT_SIZE ? dirEntryArray.length : MAX_SEARCH_RESULT_SIZE;
             for (var i = 0; i < listLength; i++) {
                 var dirEntry = dirEntryArray[i];
-                articleListDivHtml += "<a href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g, "&apos;") +
-                    "' class='list-group-item'>" + dirEntry.title + "</a>";
+            var title = dirEntry.title ? dirEntry.title : '[' + dirEntry.url + ']';
+            articleListDivHtml += '<a href="#" dirEntryId="' + dirEntry.toStringId().replace(/'/g, '&apos;') +
+                '" class="list-group-item">' + title + '</a>';
             }
             articleListDiv.html(articleListDivHtml);
             // @TODO - why doesn't this work?
@@ -1919,7 +1919,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 return false;
             });
             $('#searchingArticles').hide();
-            $('#articleList').show();
             $('#articleListWithHeader').show();
         }
 
