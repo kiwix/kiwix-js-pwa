@@ -403,7 +403,7 @@ pre {
     left: -25px;
     height: 20px;
     width: 20px;
-    background-color: #eee;
+    background-color: whitesmoke;
     border: 2px solid #0078d7;
 }
 
@@ -420,7 +420,7 @@ pre {
 }
 
 /* On mouse-over, add a grey background color */
-.checkbox:hover input ~ .checkmark {
+.checkbox:hover input ~ .checkmark, .checkbox:hover input:checked ~ .checkmark, .checkbox:hover input:indeterminate ~ .checkmark {
     background-color: #ccc;
 }
 
@@ -437,7 +437,7 @@ pre {
     background-color: steelblue;
 }
 
-.dark .container input:checked ~ .checkmark, .dark .container input:indeterminate ~ .checkmark, .dark .container input:checked ~ .radiobtn {
+.dark input ~ .checkmark, .dark input ~ .radiobtn, .dark input:checked ~ .checkmark, .dark input:indeterminate ~ .checkmark, .dark input:checked ~ .radiobtn {
     background-color: #12303b;
 }
 
@@ -445,7 +445,7 @@ pre {
     background-color: darkkhaki;
 }
 
-.dark .panel-warning input:checked ~ .checkmark, .dark .panel-warning input:checked ~ .radiobtn {
+.dark .panel-warning input ~ .checkmark, .dark .panel-warning input ~ .radiobtn, .dark .panel-warning input:checked ~ .checkmark, .dark .panel-warning input:checked ~ .radiobtn {
     background-color: #4d4d00;
 }
 
@@ -453,7 +453,7 @@ pre {
     background-color: #a94442;
 }
 
-.dark .panel-danger input:checked ~ .checkmark, .dark .panel-danger input:checked ~ .radiobtn {
+.dark .panel-danger input ~ .checkmark, .dark .panel-danger input ~ .radiobtn, .dark .panel-danger input:checked ~ .checkmark, .dark .panel-danger input:checked ~ .radiobtn {
     background-color: #4d0000;
 }
 
@@ -487,7 +487,7 @@ pre {
     left: -25px;
     height: 20px;
     width: 20px;
-    background-color: #eee;
+    background-color: whitesmoke;
     border-radius: 50%;
     border: 2px solid #0078d7;
 }
