@@ -25,7 +25,7 @@ define([], function() {
     /**
      * A Directory Entry in a ZIM File
      * 
-     * See http://www.openzim.org/wiki/ZIM_file_format#Directory_Entries
+     * See https://wiki.openzim.org/wiki/ZIM_file_format#Directory_Entries
      * 
      * @typedef DirEntry
      * @property {File} _zimfile The ZIM file
@@ -105,6 +105,15 @@ define([], function() {
         data.redirect = ( idParts[7] === "true" );
         data.redirectTarget = idParts[8];
         return new DirEntry(zimfile, data);
+    };
+
+    /**
+     * Defines a getter function that returns the URL if the title is empty
+     * 
+     * @returns {String} The dirEntry's title or, if empty, the dirEntry's (unescaped) URL   
+     */
+    DirEntry.prototype.getTitleOrUrl = function() {
+        return this.title ? this.title : this.url;
     };
 
     /**
