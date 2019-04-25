@@ -1775,15 +1775,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         }
         if (selectedArchive !== null && selectedArchive.isReady()) {
             selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, MAX_SEARCH_RESULT_SIZE, function(dirEntryArray, nextStart) {
-                //var docBody = document.getElementById('articleContent').contentDocument.body;
                 var docBody = document.getElementById('largeModal');
                 var newHtml = "";
                 for (var i = 0; i < dirEntryArray.length; i++) {
                     var dirEntry = dirEntryArray[i];
-                    //newHtml += "\n<li><a  class='list-group-item' href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g,"&apos;")
-                    //        + "'>" + (dirEntry.title ? dirEntry.title : '[' + dirEntry.url + ']') + "</a></li>";
                     newHtml += "\n<a  class='list-group-item' href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g, "&apos;")
-                        + "'>" + (dirEntry.title ? dirEntry.title : '[' + dirEntry.url + ']') + "</a>";
+                        + "'>" + (dirEntry.getTitleOrUrl()) + "</a>";
                 }
                 start = start ? start : 0;
                 var back = start ? '<a href="#" data-start="' + (start - MAX_SEARCH_RESULT_SIZE) +
@@ -1898,13 +1895,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             articleListHeaderMessageDiv.html(message);
 
             var articleListDiv = $('#articleList');
-        var articleListDivHtml = '';
+            var articleListDivHtml = '';
             var listLength = dirEntryArray.length < MAX_SEARCH_RESULT_SIZE ? dirEntryArray.length : MAX_SEARCH_RESULT_SIZE;
             for (var i = 0; i < listLength; i++) {
                 var dirEntry = dirEntryArray[i];
-            var title = dirEntry.title ? dirEntry.title : '[' + dirEntry.url + ']';
             articleListDivHtml += '<a href="#" dirEntryId="' + dirEntry.toStringId().replace(/'/g, '&apos;') +
-                '" class="list-group-item">' + title + '</a>';
+                '" class="list-group-item">' + dirEntry.getTitleOrUrl() + '</a>';
             }
             articleListDiv.html(articleListDivHtml);
             // @TODO - why doesn't this work?
@@ -2267,7 +2263,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             });
 
             //Clean up remaining geo: links
-            htmlArticle = htmlArticle.replace(/href\s*=\s*"\s*geo:([\d.-]+),([\d.-]+)/ig, 'href="bingmaps:?collection=point.$1_$2_' + encodeURIComponent(dirEntry.title));
+            htmlArticle = htmlArticle.replace(/href\s*=\s*"\s*geo:([\d.-]+),([\d.-]+)/ig, 'href="bingmaps:?collection=point.$1_$2_' + encodeURIComponent(dirEntry.getTitleOrUrl()));
 
             //Setup footnote backlinks if the ZIM doesn't have any
             htmlArticle = htmlArticle.replace(/<li\s+id\s*=\s*"cite_note-([^"]+)"\s*>(?![^/]+↑)/ig, function (match, p1) {
@@ -2540,7 +2536,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     document.getElementById('search-article').scrollTop = 0;
                     document.getElementById('search-article').style.overflow = "hidden";
 
-                    var makeLink = uiUtil.makeReturnLink(dirEntry.title); //[kiwix-js #127]
+                    var makeLink = uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
                     var linkListener = eval(makeLink);
                     //Prevent multiple listeners being attached on each browse
                     var returnDivs = document.getElementsByClassName("returntoArticle");
