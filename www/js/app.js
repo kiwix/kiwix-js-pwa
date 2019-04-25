@@ -478,8 +478,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 params.hideToolbar = true;
                 return;
             }
-            $("#articleContent").contents().scrollTop(0);
-            $("#search-article").scrollTop(0);
+            document.getElementById('articleContent').contentWindow.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('search-article').scrollTop = 0;
         });
         // Top menu :
         document.getElementById('btnHome').addEventListener('click', function () {
@@ -2575,8 +2575,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         // Percent-encode dirEntry.url and add regex escape character \ to the RegExp special characters - see https://www.regular-expressions.info/characters.html;
                         // NB dirEntry.url can also contain path separator / in some ZIMs (Stackexchange). } and ] do not need to be escaped as they have no meaning on their own. 
                         var escapedUrl = encodeURIComponent(dirEntry.url).replace(/([\\$^.|?*+\/()[{])/g, '\\$1');
-                        // Pattern to match a local anchor in an href even if prefixed by escaped url
-                        var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#]+$)');
+                        // Pattern to match a local anchor in an href even if prefixed by escaped url; will also match # on its own
+                        var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#]*$)');
 
                         var iframeArticleContent = document.getElementById('articleContent').contentDocument;
                         // Set state of collapsible sections
@@ -2597,7 +2597,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                 return;
                             }
                             var href = anchor.getAttribute('href');
-                            if (href === null || href === undefined || href === '#') return;
+                            if (href === null || href === undefined) return;
                             // Compute current link's url (with its namespace), if applicable
                             // NB We need to access 'anchor.href' here because, unlike 'anchor.getAttribute("href")', it contains the fully qualified URL [kiwix-js #432]
                             var zimUrl = regexpZIMUrlWithNamespace.test(anchor.href) ? anchor.href.match(regexpZIMUrlWithNamespace)[1] : '';
@@ -2608,13 +2608,20 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                     e.preventDefault();
                                 });
                             } else if (regexpLocalAnchorHref.test(href)) {
-                                // It's an anchor link : we need to make it work with javascript
-                                // because of the base tag
+                                // It's an anchor link : we need to make it work with javascript because of the base tag
                                 var anchorRef = href.replace(regexpLocalAnchorHref, '$1');
-                                anchor.addEventListener('click', function (e) {
-                                    e.preventDefault();
-                                    document.getElementById('articleContent').contentWindow.location.hash = anchorRef;
-                                });
+                                // Avoid attaching a click event if one is already defined in the HTML
+                                // DEV: If jQuery mode ever supports JS-in-the-ZIM, this code may need to be revisited
+                                if (!anchor.getAttribute('onclick')) {
+                                    anchor.addEventListener('click', function (e) {
+                                        e.preventDefault();
+                                        var iframeWindow = document.getElementById('articleContent').contentWindow;
+                                        if (anchorRef)
+                                            iframeWindow.location.hash = anchorRef;
+                                        else
+                                            iframeWindow.scrollTo({ top: 0, behavior: 'smooth' });
+                                    });
+                                }
                             } else if (anchor.protocol !== currentProtocol ||
                                 anchor.host !== currentHost) {
                                 // It's an external URL : we should open it in a new tab
