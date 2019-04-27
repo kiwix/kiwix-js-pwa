@@ -1,3 +1,21 @@
+## Release 0.9.9.89 WikiMed (beta)
+* ENHANCEMENT: Article can now be sent to device's browser for reading, side-by-side viewing, printing
+* ENHANCEMENT: A breakout icon can optionally be shown on each page to enable sending page to browser (see Settings)
+* ENHANCEMENT: A new "auto" setting for dark mode and dark theme follows the system default for UWP apps
+* ENHANCEMENT: Checkbox and radio buttons are now styled and coloured for better visibility (also larger)
+* ENHANCEMENT: Packaged apps now default to showing the most appropriate ZIM archive types from Library
+* ENHANCEMENT: Streamlined the process for adding other languages of packaged app ZIM files
+* ENHANCEMENT: Language and date selectors in Library are now responsive to each other
+* ENHANCEMENT: Download link more clearly signalled
+* UPDATE: Deal with re-organized stylesheets in mwoffliner ZIMs
+* FIX: Fixed regression caused by removal of timeout for find in article function
+* FIX: Fixed problems searching for dirEntries with empty titles in new ZIMs
+* FIX: Correctly handle anchor links with a single #
+* FIX: App detects a language that is predominantly ASCII and uses left-side word searching in that case (Chinese open-type search should be unaffected)
+* FIX: Prevent crash if changing language selector on "wrong" screen
+* FIX: Prevent timeout-related crashes on slower devices
+* FIX: Prevent unusable app state after clicking non-Roman alphabet button in Archive Index
+
 ## Release 0.9.9.87 WikiMed (beta)
 * ENHANCEMENT: Support for playing media (video/audio) in the ZIM if the device has the required codec
 * ENHANCEMENT: Support for "downloading" media (e.g. videos+subtitles) from the ZIM
