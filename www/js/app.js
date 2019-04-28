@@ -1646,6 +1646,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         var lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
                         goToArticle(lastPage);
                     } else {
+                        // The archive has changed, so we must blank the last page in case the Home page of the new archive
+                        // has the same title as the previous archive (possible if it is, for example, "index") 
+                        params.lastPageVisit = "";
                         document.getElementById('btnHome').click();
                     }
                 }
@@ -1877,7 +1880,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
         /**
          * Display the list of articles with the given array of DirEntry
-     * @param {Array} dirEntryArray The array of dirEntries returned from the binary search
+         * @param {Array} dirEntryArray The array of dirEntries returned from the binary search
          */
         function populateListOfArticles(dirEntryArray) {
             var articleListHeaderMessageDiv = $('#articleListHeaderMessage');
@@ -2349,7 +2352,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
 
             function injectCSS() {
-                if (blobArray.length >= cssArray.length) { //If all promised values have been obtained
+                // We have to count the blobArray elements because some may have been spliced out
+                // See https://stackoverflow.com/questions/28811911/find-array-length-in-javascript
+                var blobArrayLength = blobArray.filter(function () { return true; }).length;
+                if (blobArrayLength >= cssArray.length) { //If all promised values have been obtained
                     var resultsArray = [];
                     var testBlob;
                     for (var i in cssArray) { //Put them back in the correct order
@@ -2393,7 +2399,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     console.log("All CSS resolved");
                     injectHTML(); //Pass the revised HTML to the image and JS subroutine...
                 } else {
-                    uiUtil.poll("Waiting for CSS # " + (cssArray.length - blobArray.length) + " out of " + cssArray.length + "...");
+                    uiUtil.poll("Waiting for CSS # " + (cssArray.length - blobArrayLength) + " out of " + cssArray.length + "...");
                 }
             }
             //End of preload stylesheets code
@@ -2428,7 +2434,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             function injectHTML() {
                 //Inject htmlArticle into iframe
                 uiUtil.clear(); //Void progress messages
-                setTab();
                 //Inject base tag into html
                 htmlArticle = htmlArticle.replace(/(<head[^>]*>\s*)/i, '$1<base href="' + baseUrl + '" />\r\n');
                 // Extract any css classes from the html tag (they will be stripped when injected in iframe with .innerHTML)
@@ -2454,6 +2459,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     var articleContent = document.getElementById('articleContent').contentDocument;
                     // Inject the new article's HTML into the iframe
                     articleContent.documentElement.innerHTML = htmlArticle;
+                    // Make sure the article area is displayed
+                    setTab();
                     // Add any missing classes stripped from the <html> tag
                     if (htmlCSS) articleContent.getElementsByTagName('body')[0].classList.add(htmlCSS);
 
