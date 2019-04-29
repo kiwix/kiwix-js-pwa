@@ -1980,15 +1980,21 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 //Void the iframe
                 //window.frames[0].frameElement.src = "about:blank";
 
-                //Load cached start page if it exists
+                //Load cached start page if it exists and we have loaded the packaged file
                 var htmlContent = 0;
-                if (params.cachedStartPage && dirEntry.url == decodeURIComponent(params.cachedStartPage)) {
+                if (params.cachedStartPage && ~selectedArchive._file._files[0].name.indexOf(params.packagedFile) && params.isLandingPage) {
                     htmlContent = -1;
+                    // DEV: You should deal with the rare possibility that the cachedStartPage is not in the same namespace as the main page dirEntry...
+                    // Ideally include the namespace in params.cachedStartPage and adjust/test code (not hard)
                     uiUtil.XHR(dirEntry.namespace + '/' + encodeURIComponent(params.cachedStartPage), 'text',
                         function (responseTxt, status) {
                             htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
                             if (htmlContent) {
                                 console.log('Article retrieved from storage cache...');
+                                // Alter the dirEntry url and title parameters in case we are overriding the start page
+                                dirEntry.url = params.cachedStartPage;
+                                var title = htmlContent.match(/<title[^>]*>((?:[^<]|<(?!\/title))+)/);
+                                dirEntry.title = title ? title[1] : dirEntry.title;
                                 displayArticleInForm(dirEntry, htmlContent);
                             } else {
                                 document.getElementById('searchingArticles').style.display = 'block';
