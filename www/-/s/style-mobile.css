@@ -2192,6 +2192,11 @@ input.search::-webkit-search-decoration, input.search::-webkit-search-cancel-but
     margin-bottom: 0.5em
 }
 
+summary.section-heading > h2 {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
     .content .section-heading .indicator {
         font-size: 0.4em
     }
