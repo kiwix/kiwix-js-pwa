@@ -76,7 +76,7 @@ define(['util'], function(util) {
 
         this.getHeadingObjects = function () {
             var headings = [];
-            for (var i = 0; i < this.headings.length; i++) { 
+            for (var i = 0; i < this.headings.length; i++) {
                 var element = this.headings[i];
                 var obj = {};
                 obj.id = element.id;
@@ -88,7 +88,7 @@ define(['util'], function(util) {
                 headings.push(obj);
             }
             return headings;
-        }
+        };
     }
 
     /**
