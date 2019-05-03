@@ -2596,7 +2596,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             try {
                                 var testHref = anchor.href;
                             } catch (err) {
-                                console.error("Malformed href caused error:" + err.message);
+                                console.error('Malformed href caused error:' + err.message);
                                 return;
                             }
                             var href = anchor.getAttribute('href');
@@ -2613,18 +2613,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             } else if (regexpLocalAnchorHref.test(href)) {
                                 // It's an anchor link : we need to make it work with javascript because of the base tag
                                 var anchorRef = href.replace(regexpLocalAnchorHref, '$1');
-                                // Avoid attaching a click event if one is already defined in the HTML
-                                // DEV: If jQuery mode ever supports JS-in-the-ZIM, this code may need to be revisited
-                                if (!anchor.getAttribute('onclick')) {
-                                    anchor.addEventListener('click', function (e) {
-                                        e.preventDefault();
-                                        var iframeWindow = document.getElementById('articleContent').contentWindow;
-                                        if (anchorRef)
-                                            iframeWindow.location.hash = anchorRef;
-                                        else
-                                            iframeWindow.scrollTo({ top: 0, behavior: 'smooth' });
-                                    });
-                                }
+                                // DEV: If jQuery mode ever supports JS-in-the-ZIM, the check for an onclick event may need to be revisited
+                                var onClickAttr = anchor.getAttribute('onclick');
+                                anchor.addEventListener('click', function (e) {
+                                    var iframeWindow = document.getElementById('articleContent').contentWindow;
+                                    if (anchorRef)
+                                        iframeWindow.location.hash = anchorRef;
+                                    else if (!onClickAttr)
+                                        // It's just a single # and there is no onclick in the HTML, so scroll to top
+                                        iframeWindow.scrollTo({ top: 0, behavior: 'smooth' });
+                                    e.preventDefault();
+                                });
                             } else if (anchor.protocol !== currentProtocol ||
                                 anchor.host !== currentHost) {
                                 // It's an external URL : we should open it in a new tab
