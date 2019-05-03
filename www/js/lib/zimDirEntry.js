@@ -108,7 +108,8 @@ define([], function() {
     };
 
     /**
-     * Defines a getter function that returns the URL if the title is empty
+     * Defines a function that returns the URL if the title is empty, as per the specification
+     * See https://wiki.openzim.org/wiki/ZIM_file_format#Directory_Entries
      * 
      * @returns {String} The dirEntry's title or, if empty, the dirEntry's (unescaped) URL   
      */
