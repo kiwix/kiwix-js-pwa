@@ -2590,8 +2590,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             }
                         }
 
-                        var anchors = Array.prototype.slice.call(iframeArticleContent.getElementsByTagName('a'));
-                        anchors.forEach(function (anchor) {
+                        Array.prototype.slice.call(iframeArticleContent.querySelectorAll('a, area')).forEach(function (anchor) {
                             // Attempts to access any properties of 'this' with malformed URLs causes app crash in Edge/UWP [kiwix-js #430]
                             try {
                                 var testHref = anchor.href;
