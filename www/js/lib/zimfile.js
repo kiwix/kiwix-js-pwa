@@ -36,7 +36,7 @@ define(['xzdec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry'], function(xz, util,
     /**
      * A ZIM File
      * 
-     * See http://www.openzim.org/wiki/ZIM_file_format#Header
+     * See https://wiki.openzim.org/wiki/ZIM_file_format#Header
      * 
      * @typedef ZIMFile
      * @property {Array.<File>} _files Array of ZIM files
@@ -110,6 +110,42 @@ define(['xzdec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry'], function(xz, util,
         }
     };
 
+    /**
+     * Reads the whole MIME type list and returns it as a populated Map
+     * The mimeTypeMap is extracted once after the user has picked the ZIM file
+     * and is stored as ZIMFile.mimetypes.
+     * 
+     * @returns {Promise} A promise for the MIME Type list as a Map
+     */
+    ZIMFile.prototype._mimeTypeMap = function() {
+        var typeMap = new Map;
+        return this._readSlice(this.mimeListPos, 256).then(function(data) {
+            // DEV: We have read 256 bytes: increase this if you encounter longer MIME type lists
+            // also change "while (pos < 255)" below
+            if (data.subarray) {
+                var i = 1;
+                var pos = -1;
+                var mimeString;
+                while (pos < 255) {
+                    pos++; 
+                    mimeString = utf8.parse(data.subarray(pos), true);
+                    // If the parsed data is an empty string, we have reached the end of the MIME type list, so break 
+                    if (!mimeString) break;
+                    // Store the parsed string in the Map
+                    typeMap.set(i, mimeString);
+                    i++;
+                    while (data[pos]) {
+                        pos++;
+                    }
+                }
+            }
+            return typeMap;
+        }).fail(function(err) {
+            console.errror('Unable to read MIME type list: ' + err);
+            return new Map;
+        });
+    };
+    
     /**
      * 
      * @param {Integer} offset
@@ -238,6 +274,9 @@ define(['xzdec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry'], function(xz, util,
                 zf.mimeListPos = readInt(header, 56, 8);
                 zf.mainPage = readInt(header, 64, 4);
                 zf.layoutPage = readInt(header, 68, 4);
+                zf._mimeTypeMap().then(function(data) {
+                    zf.mimeTypes = data;
+                });
                 return zf;
             });
         }
