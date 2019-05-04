@@ -84,7 +84,7 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
                 });
             }
         }
-    };
+    }
 
     /**
      * Searches the directory for all parts of a split archive.
@@ -113,6 +113,16 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
      */
     ZIMArchive.prototype.isReady = function() {
         return this._file !== null;
+    };
+    
+    /**
+     * Looks up the dirEntry's mimetype number in the ZIM file's MIME type list, and returns the corresponding MIME type
+     * 
+     * @param {Integer} mimetype The mimetype number stored in dirEntry.mimetype, used as a lookup value
+     * @return {String} The MIME type corresponding to mimetype in the ZIM file's MIME type list
+     */
+    ZIMArchive.prototype.getMimetype = function(mimetype) {
+        return this._file.mimeTypes.get(mimetype);
     };
     
     /**
