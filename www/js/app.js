@@ -3084,12 +3084,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
                         selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                             var url = fileDirEntry.url;
-                            var mimetype = url.match(/\.(\w{2,4})$/);
-                            mimetype = mimetype ? "image/" + mimetype[1].toLowerCase() : "image";
-                            mimetype = /\.jpg$/i.test(url) ? "image/jpeg" : mimetype;
-                            mimetype = /\.tif$/i.test(url) ? "image/tiff" : mimetype;
-                            mimetype = /\.ico$/i.test(url) ? "image/x-icon" : mimetype;
-                            mimetype = /\.svg$/i.test(url) ? "image/svg+xml" : mimetype;
+                            var mimetype = selectedArchive.getMimetype(dirEntry.mimetype);
                             if (!dataRequested) {
                                 uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.allowHTMLExtraction);
                             }
