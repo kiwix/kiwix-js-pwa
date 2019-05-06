@@ -420,6 +420,20 @@ define(['util'], function(util) {
         params.preloadingAllImages = false;
     }
 
+    /** 
+     * Provides system-specific alert function
+     * 
+     * @param {String} message The message to display
+     */
+    function systemAlert(message) {
+        // Test for UWP
+        if (typeof Windows !== 'undefined' && typeof Windows.UI !== 'undefined' && typeof Windows.UI.Popups !== 'undefined') {
+            var dialog = new Windows.UI.Popups.MessageDialog(message);
+            dialog.showAsync();
+        } else {
+            alert(message);
+        }
+    }
 
     /**
      * Functions and classes exposed by this module
@@ -438,6 +452,7 @@ define(['util'], function(util) {
         displayActiveContentWarning: displayActiveContentWarning,
         displayFileDownloadAlert: displayFileDownloadAlert,
         insertBreakoutLink: insertBreakoutLink,
-        extractHTML: extractHTML
+        extractHTML: extractHTML,
+        systemAlert: systemAlert
     };
 });
