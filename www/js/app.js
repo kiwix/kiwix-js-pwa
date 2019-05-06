@@ -1132,12 +1132,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 refreshAPIStatus();
             } else if (value === 'serviceworker') {
                 if (!isServiceWorkerAvailable()) {
-                    alert("The ServiceWorker API is not available on your device. Falling back to JQuery mode");
+                    uiUtil.systemAlert("The ServiceWorker API is not available on your device. Falling back to JQuery mode");
                     setContentInjectionMode('jquery');
                     return;
                 }
                 if (!isMessageChannelAvailable()) {
-                    alert("The MessageChannel API is not available on your device. Falling back to JQuery mode");
+                    uiUtil.systemAlert("The MessageChannel API is not available on your device. Falling back to JQuery mode");
                     setContentInjectionMode('jquery');
                     return;
                 }
@@ -1358,7 +1358,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             for (var i = 0; i < archiveDirectories.length; i++) {
                 var archiveDirectory = archiveDirectories[i];
                 if (archiveDirectory === "/") {
-                    alert("It looks like you have put some archive files at the root of your sdcard (or internal storage). Please move them in a subdirectory");
+                    uiUtil.systemAlert("It looks like you have put some archive files at the root of your sdcard (or internal storage). Please move them in a subdirectory");
                 } else {
                     comboArchiveList.options[i] = new Option(archiveDirectory, archiveDirectory);
                 }
@@ -1389,7 +1389,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }
                 }
             } else {
-                alert("Welcome to Kiwix! This application needs at least a ZIM file in your SD-card (or internal storage). Please download one and put it on the device (see About section). Also check that your device is not connected to a computer through USB device storage (which often locks the SD-card content)");
+                uiUtil.systemAlert("Welcome to Kiwix! This application needs at least a ZIM file in your SD-card (or internal storage). Please download one and put it on the device (see About section). Also check that your device is not connected to a computer through USB device storage (which often locks the SD-card content)");
                 $("#btnAbout").click();
                 var isAndroid = navigator.userAgent.indexOf("Android") !== -1;
                 if (isAndroid) {
@@ -1419,7 +1419,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         }
                     }
                     if (selectedStorage === null) {
-                        alert("Unable to find which device storage corresponds to directory " + archiveDirectory);
+                        uiUtil.systemAlert("Unable to find which device storage corresponds to directory " + archiveDirectory);
                     }
                 } else {
                     // This happens when the archiveDirectory is not prefixed by the name of the storage
@@ -1522,16 +1522,17 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          * Displays the zone to select files from the archive
          */
         function displayFileSelect() {
-            $('#openLocalFiles').show();
-            //if (typeof Windows === 'undefined') {
-            //    //If not UWP, display legacy File Select
-            //    $('#btnConfigure').click();
-            //}
-            //TODO - check if this is necessary or if it causes the archiveList change event to fire 
-            //Make archive list combo box fit the number of files
-            //var comboArchiveList = document.getElementById('archiveList');
-            //if (comboArchiveList.length > 0) { comboArchiveList.size = comboArchiveList.length; }
+            document.getElementById('openLocalFiles').style.display = 'block';
+            document.getElementById('archiveFiles').addEventListener('change', setLocalArchiveFromFileSelect);
         }
+        // Make the whole app a drop zone
+        var dropZone = document.getElementById('search-article');
+        dropZone.addEventListener('dragover', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+        }, false);
+        dropZone.addEventListener('drop', setLocalArchiveFromFileList);
 
         function pickFileUWP() { //Support UWP FilePicker [kiwix-js-windows #3]
             // Create the picker object and set options
@@ -1610,8 +1611,23 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
         }
 
-
         function setLocalArchiveFromFileList(files) {
+            // Check to see if the files are from file select or from drag-and-drop
+            if (files.dataTransfer) {
+                files.stopPropagation();
+                files.preventDefault();
+                files = files.dataTransfer.files;
+                document.getElementById('openLocalFiles').style.display = 'none';
+                //document.getElementById('downloadInstruction').style.display = 'none';
+                //document.getElementById('selectorsDisplay').style.display = 'inline';
+            }
+            // Check for usable file types
+            for (var i = files.length; i--;) {
+                if (!/\.(?:zim\w{0,2}|dat|idx|txt)$/i.test(files[i].name)) {
+                    uiUtil.systemAlert("One or more files does not appear to be a ZIM file!");
+                    return;
+                }
+            }
             // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
             if (cssBlobCache)
                 cssBlobCache = new Map();
@@ -1759,7 +1775,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 // We have to remove the focus from the search field,
                 // so that the keyboard does not stay above the message
                 $('#searchArticles').focus();
-                alert("Archive not set : please select an archive");
+                uiUtil.systemAlert("Archive not set : please select an archive");
                 document.getElementById('btnConfigure').click();
         }
     }
@@ -1952,7 +1968,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     readArticle(dirEntry);
                 }
             } else {
-                alert('Data files not set');
+                uiUtil.systemAlert('Data files not set');
             }
         }
 
@@ -3385,7 +3401,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             selectedArchive.getRandomDirEntry(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
                     document.getElementById('searchingArticles').style.display = 'none';
-                    alert("Error finding random article.");
+                    uiUtil.systemAlert("Error finding random article.");
                 } else {
                     //Test below supports Stackexchange-family ZIMs, so we don't call up user profiles
                     if (dirEntry.namespace === 'A' && !/user\//.test(dirEntry.url)) {
