@@ -382,12 +382,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             for (var i = 0; i < returnDivs.length; i++) {
                 returnDivs[i].innerHTML = "";
             }
-            //Stop app from jumping straight into to first archive if user initiated the scan (to give user a chance to select the archive manually)
             params.rescan = true;
             //Reload any ZIM files in local storage (whcih the usar can't otherwise select with the filepicker)
-            if (params.localStorage) {
-                scanUWPFolderforArchives(params.localStorage);
-            }
+            loadPackagedArchive();
             if (storages.length) {
                 searchForArchivesInStorage();
             } else {
@@ -1372,10 +1369,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (comboArchiveList.options.length > 0) {
                 var plural = comboArchiveList.length > 1 ? "s" : "";
                 document.getElementById('archiveNumber').innerHTML = '<b>' + comboArchiveList.length + '</b> Archive' + plural + ' found in selected location (tap "Select storage" to change)';
-                var lastSelectedArchive = cookies.getItem("lastSelectedArchive") || params.storedFile;
-                params.storedFile = lastSelectedArchive;
-                if (lastSelectedArchive !== null && lastSelectedArchive !== undefined && lastSelectedArchive !== "" ||
-                    comboArchiveList.options.length == 1) { //Either we have previously chosen a file, or there is only one file
+                // If we're doing a rescan, then don't attempt to jump to the last selected archive, but leave selectors open
+                var lastSelectedArchive = params.rescan ? '' : params.storedFile;
+                if (lastSelectedArchive !== null && lastSelectedArchive !== undefined && lastSelectedArchive !== "") {
+                    //  || comboArchiveList.options.length == 1
+                    // Either we have previously chosen a file, // or there is only one file
                     // Attempt to select the corresponding item in the list, if it exists
                     var success = false;
                     if ($("#archiveList option[value='" + lastSelectedArchive + "']").length > 0) {
@@ -1384,8 +1382,23 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         cookies.setItem("lastSelectedArchive", lastSelectedArchive, Infinity);
                     }
                     // Set the localArchive as the last selected (if none has been selected previously, wait for user input)
-                    if (success || comboArchiveList.options.length == 1) {
+                    //if (success || comboArchiveList.options.length == 1) {
+                    if (success) {
                         setLocalArchiveFromArchiveList();
+                    } else {
+                        // We can't find lastSelectedArchive in the archive list, so let's ask the user to pick it
+                        //uiUtil.systemAlert(lastSelectedArchive + ' could not be found in the known list of archives!');
+                        document.getElementById('alert-content').innerHTML = '<p>We could not find the archive <b>' + lastSelectedArchive + '</b>!</p><p>Please select its location...</p>';
+                        $('#alertModal').off('hide.bs.modal');
+                        $('#alertModal').on('hide.bs.modal', function () {
+                            displayFileSelect();
+                        });
+                        $('#alertModal').modal({
+                            backdrop: 'static',
+                            keyboard: true
+                        });
+                        if (document.getElementById('configuration').style.display == 'none')
+                            document.getElementById('btnConfigure').click();
                     }
                 }
             } else {
@@ -1402,6 +1415,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          * Sets the localArchive from the selected archive in the drop-down list
          */
         function setLocalArchiveFromArchiveList(archiveDirectory) {
+            params.rescan = false;
             archiveDirectory = archiveDirectory || $('#archiveList').val();
             if (archiveDirectory && archiveDirectory.length > 0) {
                 // Now, try to find which DeviceStorage has been selected by the user
@@ -1429,7 +1443,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         selectedStorage = storages[0];
                     } else { //IT'S NOT FREAKIN FFOS!!!!!!!!!!
                         //Patched for UWP support:
-                        if (params.pickedFolder && Windows && Windows.Storage) {
+                        if (params.pickedFolder && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                             var query = params.pickedFolder.createFileQuery();
                             query.getFilesAsync().done(function (files) {
                                 var file;
@@ -1480,22 +1494,23 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                     return;
                                 } catch (err){
                                     // Probably user has moved or deleted the previously selected file
-                                    console.error("The previously picked archive can no longer be found!");
+                                    uiUtil.systemAlert("The previously picked archive can no longer be found!");
+                                    console.error("Picked archive not found: " + err);
                                 }
                             }
                         }
                         //There was no picked file or folder, so we'll try setting the default localStorage
-                        if (!params.pickedFolder) {
+                        //if (!params.pickedFolder) {
                             //This gets called, for example, if the picked folder or picked file are in FutureAccessList but now are
                             //no longer accessible. There will be a (handled) error in cosole log, and params.pickedFolder and params.pickedFile will be blank
-                            //params.rescan = true;
+                            params.rescan = true;
                             if (params.localStorage) {
                                 scanUWPFolderforArchives(params.localStorage);
                             } else {
                                 document.getElementById('btnConfigure').click();
                             }
                             return;
-                        }
+                        //}
                     }
                 }
                 // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
@@ -1549,6 +1564,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.remove(params.falFolderToken);
                     params.pickedFolder = "";
                     cookies.setItem("lastSelectedArchive", file.name, Infinity);
+                    params.storedFile = file.name;
+                    // Since we've explicitly picked a file, we should jump to it
+                    params.rescan = false;
                     document.getElementById('openLocalFiles').style.display = "none";
                     populateDropDownListOfArchives([file.name]);
                 } else {
@@ -1672,12 +1690,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         }
 
         function loadPackagedArchive() {
-            params.rescan = false;
-            //Reload any ZIM files in local storage (whcih the user can't otherwise select with the filepicker)
-            if (params.packagedFile && params.localStorage) {
+            // Reload any ZIM files in local storage (whcih the user can't otherwise select with the filepicker)
+            if (params.localStorage) {
+                params.storedFile = params.packagedFile || '';
                 params.pickedFolder = params.localStorage;
                 scanUWPFolderforArchives(params.localStorage);
-                setLocalArchiveFromArchiveList(params.packagedFile);
+                if (!params.rescan) setLocalArchiveFromArchiveList(params.storedFile);
             }
         }
 
