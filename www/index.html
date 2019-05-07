@@ -38,6 +38,18 @@
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen" />
     <!-- link href="css/bootstrap-theme.min.css" rel="stylesheet" media="screen" /-->
+    <script type="text/javascript">
+        // This script is needed to retrieve launch arguments when the app is started by double-clicking on a file
+        var launchArguments = null;
+        if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.UI.WebUI.WebUIApplication) {
+            Windows.UI.WebUI.WebUIApplication.addEventListener('activated', function (eventArgs) {
+                if (eventArgs.kind === Windows.ApplicationModel.Activation.ActivationKind.file) {
+                    console.log("App was activated with a file: " + eventArgs.files[0].name);
+                    launchArguments = eventArgs;
+                }
+            }, false);
+        }
+    </script>
 </head>
 <body role="application" class="dark">
     <!-- Modal info -->
@@ -446,7 +458,7 @@
                             <div id="openLocalFiles" style="display: block;">
                                 <div class="row">
                                     <div class="col-xs-6">
-                                        <input type="button" class="btn btn-primary" value="Select archive" id="archiveFile" accept=".zim" />
+                                        <input type="button" class="btn btn-primary" value="Select file" id="archiveFile" accept=".zim" />
                                     </div>
                                     <div class="col-xs-6">
                                         <input type="button" class="btn btn-primary" value="Select folder" id="archiveFiles" accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
