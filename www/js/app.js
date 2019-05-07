@@ -674,6 +674,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         });
         document.getElementById('archiveList').addEventListener('click', function () {
             if (selectFired) return;
+            // If nothing was selected, user will have to click again
+            // (NB this.selectedIndex will be -1 if no value has been selected)
+            if (!~this.selectedIndex) return;
             selectFired = true;
             $('#openLocalFiles').hide();
             // Void any previous picked file to prevent it launching
@@ -1654,6 +1657,20 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     uiUtil.systemAlert("One or more files does not appear to be a ZIM file!");
                     return;
                 }
+            }
+            // Check that user hasn't picked just part of split ZIM
+            if (files.length == 1 && /\.zim\w\w/i.test(files[0].name)) {
+                document.getElementById('alert-content').innerHTML = '<p>You have picked only part of a split archive!</p><p>Please select its folder in Config, or drag and drop <b>all</b> of its parts into Config.</p>';
+                $('#alertModal').off('hide.bs.modal');
+                $('#alertModal').on('hide.bs.modal', function () {
+                    if (document.getElementById('configuration').style.display == 'none')
+                        document.getElementById('btnConfigure').click();
+                    displayFileSelect();
+                });
+                $('#alertModal').modal({
+                    backdrop: 'static',
+                    keyboard: true
+                });
             }
             // If the file name is already in the archive list, try to select it in the list
             var listOfArchives = document.getElementById('archiveList');
