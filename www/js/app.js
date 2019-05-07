@@ -666,27 +666,29 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             document.getElementById('scrollbox').style.height = document.documentElement.clientHeight + "px";
             document.getElementById('search-article').style.overflowY = "auto";
         });
-        // TODO: I've set up two event listeners below because the archive list doesn't "change" if there is only one element in it
-        // See if this can be simplified.... (but note that keyboard users might not click)
+        // Two event listeners are needed because the archive list doesn't "change" if there is only one element in it
+        // (also note that keyboard users might not click)
+        var selectFired = false;
         document.getElementById('archiveList').addEventListener('change', function () {
-            console.log("***Archive List change event fired");
-            $('#openLocalFiles').hide();
-            setLocalArchiveFromArchiveList();
+            this.click();
         });
         document.getElementById('archiveList').addEventListener('click', function () {
-            console.log("***Archive List click event fired:  ***WHY***??? checking length of options list...");
-            //Doh, why are you testing for this? Surely you want to jump to the file if it's been clicked on? There was a reason @REMIND_ME....
-            //var comboArchiveList = document.getElementById('archiveList');
-            //if (comboArchiveList.options.length == 1) {
-            //console.log("***Only one item, so, fire away...");
+            if (selectFired) return;
+            selectFired = true;
             $('#openLocalFiles').hide();
+            // Void any previous picked file to prevent it launching
+            if (params.pickedFile && params.pickedFile.name !== this.options[this.selectedIndex].value) {
+                params.pickedFile = '';
+            }
             setLocalArchiveFromArchiveList();
-            //}
+            setTimeout(function () {
+                selectFired = false;
+            }, 0);
         });
 
         document.getElementById('archiveFile').addEventListener('click', function () {
             if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
-                //UWP FilePicker [kiwix-js-windows #3]
+                //UWP FilePicker
                 pickFileUWP();
             } else {
                 //@TODO enable and provide classic filepicker
@@ -1254,7 +1256,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          * @type Array.<StorageFirefoxOS>
          */
         var storages = [];
-        //var storages = [appFolder.path];  //UWP
+        //var storages = [appFolder.path];  //UWP @UWP
         function searchForArchivesInPreferencesOrStorage() {
             // First see if the list of archives is stored in the cookie
             var listOfArchivesFromCookie = cookies.getItem("listOfArchives");
@@ -1301,8 +1303,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             // This way, it is only done once at this moment, instead of being done several times in callbacks
             // After that, we can start looking for archives
             //storages[0].get("fake-file-to-read").then(searchForArchivesInPreferencesOrStorage,
-            //searchForArchivesInPreferencesOrStorage);
-            searchForArchivesInPreferencesOrStorage();
+            if (!params.pickedFile) {
+                searchForArchivesInPreferencesOrStorage();
+            } else {
+                processPickedFileUWP(params.pickedFile);
+            }
         } else {
             // If DeviceStorage is not available, we display the file select components
             displayFileSelect();
@@ -1443,7 +1448,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         selectedStorage = storages[0];
                     } else { //IT'S NOT FREAKIN FFOS!!!!!!!!!!
                         //Patched for UWP support:
-                        if (params.pickedFolder && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
+                        if (!params.pickedFile && params.pickedFolder && typeof MSApp !== 'undefined') {
                             var query = params.pickedFolder.createFileQuery();
                             query.getFilesAsync().done(function (files) {
                                 var file;
@@ -1538,16 +1543,19 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          */
         function displayFileSelect() {
             document.getElementById('openLocalFiles').style.display = 'block';
-            document.getElementById('archiveFiles').addEventListener('change', setLocalArchiveFromFileSelect);
+            document.getElementById('rescanStorage').style.display = 'none';
         }
         // Make the whole app a drop zone
         var dropZone = document.getElementById('search-article');
-        dropZone.addEventListener('dragover', function (e) {
+        dropZone.addEventListener('dragover', function(e) {
             e.stopPropagation();
             e.preventDefault();
             e.dataTransfer.dropEffect = 'copy';
         }, false);
-        dropZone.addEventListener('drop', setLocalArchiveFromFileList);
+        dropZone.addEventListener('drop', function(files) {
+            params.rescan = false;
+            setLocalArchiveFromFileList(files);
+        });
 
         function pickFileUWP() { //Support UWP FilePicker [kiwix-js-windows #3]
             // Create the picker object and set options
@@ -1555,25 +1563,26 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             filePicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.downloads;
             // Filter folder contents
             filePicker.fileTypeFilter.replaceAll([".zim"]);
+            filePicker.pickSingleFileAsync().then(processPickedFileUWP);
+        }
 
-            filePicker.pickSingleFileAsync().then(function (file) {
-                if (file) {
-                    // Cache file so the contents can be accessed at a later time
-                    Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.addOrReplace(params.falFileToken, file);
-                    params.pickedFile = file;
-                    Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.remove(params.falFolderToken);
-                    params.pickedFolder = "";
-                    cookies.setItem("lastSelectedArchive", file.name, Infinity);
-                    params.storedFile = file.name;
-                    // Since we've explicitly picked a file, we should jump to it
-                    params.rescan = false;
-                    document.getElementById('openLocalFiles').style.display = "none";
-                    populateDropDownListOfArchives([file.name]);
-                } else {
-                    // The picker was dismissed with no selected file
-                    console.log("User closed folder picker without picking a file");
-                }
-            });
+        function processPickedFileUWP(file) {
+            if (file) {
+                // Cache file so the contents can be accessed at a later time
+                Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.addOrReplace(params.falFileToken, file);
+                params.pickedFile = file;
+                if (params.pickedFolder) Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.remove(params.falFolderToken);
+                params.pickedFolder = "";
+                cookies.setItem("lastSelectedArchive", file.name, Infinity);
+                params.storedFile = file.name;
+                // Since we've explicitly picked a file, we should jump to it
+                params.rescan = false;
+                document.getElementById('openLocalFiles').style.display = "none";
+                populateDropDownListOfArchives([file.name]);
+            } else {
+                // The picker was dismissed with no selected file
+                console.log("User closed folder picker without picking a file");
+            }
         }
 
         function pickFolderUWP() { //Support UWP FilePicker [kiwix-js-windows #3]
@@ -1646,6 +1655,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     return;
                 }
             }
+            // If the file name is already in the archive list, try to select it in the list
+            var listOfArchives = document.getElementById('archiveList');
+            if (listOfArchives) listOfArchives.value = files[0].name;
             // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
             if (cssBlobCache)
                 cssBlobCache = new Map();
