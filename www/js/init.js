@@ -58,10 +58,11 @@ params['omegaChar'] = getCookie('omegaChar') || 'Z'; //Set default end of alphab
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['storedFile'] = getCookie('lastSelectedArchive') || params['packagedFile'];
+params.storedFile = launchArguments ? launchArguments.files[0].name : params.storedFile;
 params['falFileToken'] = params['falFileToken'] || "zimfile"; //UWP support
 params['falFolderToken'] = params['falFolderToken'] || "zimfilestore"; //UWP support
 params['localStorage'] = params['localStorage'] || "";
-params['pickedFile'] = params['pickeFile'] || "";
+params['pickedFile'] = launchArguments ? launchArguments.files[0] : "";
 params['pickedFolder'] = params['pickedFolder'] || "";
 params['lastPageVisit'] = getCookie('lastPageVisit') || "";
 params['lastPageVisit'] = params['lastPageVisit'] ? decodeURIComponent(params['lastPageVisit']) : "";
@@ -124,13 +125,6 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
         console.error("This app doesn't appear to have access to local storage!");
     });
     var futureAccessList = Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList;
-    if (futureAccessList.containsItem(params.falFileToken)) {
-        futureAccessList.getFileAsync(params.falFileToken).done(function (file) {
-            if (file) params.pickedFile = file;
-        }, function (err) {
-            console.error("The previously picked file is no longer accessible: " + err.message);
-        });
-    }
     if (futureAccessList.containsItem(params.falFolderToken)) {
         futureAccessList.getFolderAsync(params.falFolderToken).then(function (folder) {
             if (folder) params.pickedFolder = folder;
@@ -138,8 +132,22 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
             console.error("The previously picked folder is no longer accessible: " + err.message);
         });
     }
+    //If we don't already have a picked file (e.g. by launching app with click on a ZIM file), then retrieve it from futureAccessList if possible
+    var listOfArchives = getCookie('listOfArchives');
+    // But don't get the picked file if we already have access to the folder and the file is in it!
+    if (listOfArchives && ~listOfArchives.indexOf(params.storedFile) && params.pickedFolder) {
+        params.pickedFile = '';
+    } else {
+        if (!params.pickedFile && futureAccessList.containsItem(params.falFileToken)) {
+            params.pickedFile = '';
+            futureAccessList.getFileAsync(params.falFileToken).done(function (file) {
+                if (file && file.name === params.storedFile) params.pickedFile = file;
+            }, function (err) {
+                console.error("The previously picked file is no longer accessible: " + err.message);
+            });
+        }
+    }
 }
-
 
 function getCookie(name) {
     var regexp = new RegExp('(?:^|;)\\s*' + name + '=([^;]+)(?:;|$)');

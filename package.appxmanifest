@@ -36,7 +36,7 @@
       </uap:VisualElements>
       <Extensions>
         <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="zimarchive">
+          <uap:FileTypeAssociation Name="zimarchive" DesiredView="default">
             <uap:DisplayName>ZIM Archive</uap:DisplayName>
             <uap:InfoTip>Compressed ZIM FIle Archive</uap:InfoTip>
             <uap:SupportedFileTypes>
