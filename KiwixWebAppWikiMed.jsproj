@@ -73,6 +73,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="archives\wikipedia_en_medicine.zim" />
+    <Content Include="images\Kiwix_midnightblue_icon_transparent_530.png" />
     <Content Include="images\LargeTile.scale-100.png" />
     <Content Include="images\LargeTile.scale-125.png" />
     <Content Include="images\LargeTile.scale-150.png" />
