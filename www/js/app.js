@@ -35,18 +35,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          */
         var MAX_SEARCH_RESULT_SIZE = params.results; //This value is controlled in init.js, as are all parameters
 
-        //TESTING
-        // Get the app's installation folder.
-        //var appFolder = Windows.ApplicationModel.Package.current.installedLocation;
-        var appfolder = "";
-        // Print the folder's path to the Visual Studio Output window.
-        //console.log(appFolder.name, "folder path:", appFolder.path);
-        //END TESTING
-
         /**
          * @type ZIMArchive
          */
         var selectedArchive = null;
+
+        // Define globalDropZone (universal drop area) and configDropZone (highlighting area on Config page)
+        var globalDropZone = document.getElementById('search-article');
+        var scrollBoxDropZone = document.getElementById('scrollbox');
+        var configDropZone = document.getElementById('configuration');
 
         /**
          * Resize the IFrame height, so that it fills the whole available height in the window
@@ -1546,19 +1543,50 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          */
         function displayFileSelect() {
             document.getElementById('openLocalFiles').style.display = 'block';
-            document.getElementById('rescanStorage').style.display = 'none';
+            // Set the main drop zone
+            scrollBoxDropZone.addEventListener('dragover', handleGlobalDragover, false);
+            scrollBoxDropZone.addEventListener('dragleave', function (e) {
+                configDropZone.style.border = '';
+            });
+            // Also set a global drop zone (allows us to ensure Config is always displayed for the file drop)
+            globalDropZone.addEventListener('dragover', function (e) {
+                e.preventDefault();
+                if (document.getElementById('configuration').style.display === 'none') document.getElementById('btnConfigure').click();
+                e.dataTransfer.dropEffect = 'link';
+            }, false);
+            globalDropZone.addEventListener('drop', handleFileDrop);
+            // This handles use of the file picker
+            document.getElementById('archiveFiles').addEventListener('change', setLocalArchiveFromFileSelect);
         }
-        // Make the whole app a drop zone
-        var dropZone = document.getElementById('search-article');
-        dropZone.addEventListener('dragover', function(e) {
+
+        function handleGlobalDragover(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'link';
+            configDropZone.style.border = '3px dotted red';
+        }
+
+        function handleIframeDragover(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'link';
+            document.getElementById('btnConfigure').click();
+        }
+
+        function handleIframeDrop(e) {
             e.stopPropagation();
             e.preventDefault();
-            e.dataTransfer.dropEffect = 'copy';
-        }, false);
-        dropZone.addEventListener('drop', function(files) {
-            params.rescan = false;
+            return;
+        }
+
+        function handleFileDrop(packet) {
+            packet.stopPropagation();
+            packet.preventDefault();
+            configDropZone.style.border = '';
+            var files = packet.dataTransfer.files;
+            document.getElementById('openLocalFiles').style.display = 'none';
             setLocalArchiveFromFileList(files);
-        });
+            // This clears the display of any previously picked archive in the file selector
+            document.getElementById('archiveFiles').value = null;
+        }
 
         function pickFileUWP() { //Support UWP FilePicker [kiwix-js-windows #3]
             // Create the picker object and set options
@@ -1642,18 +1670,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         }
 
         function setLocalArchiveFromFileList(files) {
-            // Check to see if the files are from file select or from drag-and-drop
-            if (files.dataTransfer) {
-                files.stopPropagation();
-                files.preventDefault();
-                files = files.dataTransfer.files;
-                document.getElementById('openLocalFiles').style.display = 'none';
-                //document.getElementById('downloadInstruction').style.display = 'none';
-                //document.getElementById('selectorsDisplay').style.display = 'inline';
-            }
             // Check for usable file types
             for (var i = files.length; i--;) {
-                if (!/\.(?:zim\w{0,2}|dat|idx|txt)$/i.test(files[i].name)) {
+                // DEV: you can support other file types by adding (e.g.) '|dat|idx' after 'zim\w{0,2}'
+                if (!/\.(?:zim\w{0,2})$/i.test(files[i].name)) {
                     uiUtil.systemAlert("One or more files does not appear to be a ZIM file!");
                     return;
                 }
@@ -2085,6 +2105,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
                     }
                 }
+
             }
         }
 
@@ -2638,6 +2659,11 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             printIntercept();
                         }
                     }, true);
+
+                    // Deflect drag-and-drop of ZIM file on the iframe to Config
+                    var docBody = articleContent.getElementsByTagName('body')[0];
+                    docBody.addEventListener('dragover', handleIframeDragover);
+                    docBody.addEventListener('drop', handleIframeDrop);
 
                     // If the ServiceWorker is not useable, we need to fallback to parse the DOM
                     // to inject math images, and replace some links with javascript calls
