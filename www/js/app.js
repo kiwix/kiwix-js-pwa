@@ -3173,7 +3173,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
                         selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                             var url = fileDirEntry.url;
-                            var mimetype = selectedArchive.getMimetype(dirEntry.mimetype);
+                            var mimetype = dirEntry.getMimetype();
                             if (!dataRequested) {
                                 uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.allowHTMLExtraction);
                             }
