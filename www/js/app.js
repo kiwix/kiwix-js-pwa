@@ -51,8 +51,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         function resizeIFrame() {
             var height = $(window).outerHeight()
                 //- $("#top").outerHeight(true)
-                -
-                $("#articleListWithHeader").outerHeight(true)
                 // TODO : this 5 should be dynamically computed, and not hard-coded
                 //- 5;
                 +
@@ -132,17 +130,26 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }
                 }
                 if (e.which == 27) {
-                    //Esc, so hide the list behind article
-                    document.getElementById('articleContent').style.position = "fixed";
+                    //User pressed Esc, so hide the article list
+                    $('#articleListWithHeader').hide();
+                    document.getElementById('articleContent').style.position = 'fixed';
+                    $('#articleContent').focus();
+
                     $("#myModal").modal('hide'); // This is in case the modal box is showing with an index search
                     return;
                 }
                 onKeyUpPrefix(e);
             }
         });
-        // This is touch equivalent of Esc above
-        document.getElementById('prefix').addEventListener('blur', function (e) {
-            document.getElementById('articleContent').style.position = "fixed";
+        $('#prefix').on('focus', function(e) {
+            if ($('#prefix').val() !== '') {
+                $('#articleListWithHeader').show();
+                document.getElementById('articleContent').style.position = 'static';
+            }
+        });
+        $('#prefix').on('blur', function() {
+            $('#articleListWithHeader').hide();
+            document.getElementById('articleContent').style.position = 'fixed';
         });
 
         //Add keyboard shortcuts
@@ -1989,13 +1996,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 '" class="list-group-item">' + dirEntry.getTitleOrUrl() + '</a>';
             }
             articleListDiv.html(articleListDivHtml);
-            // @TODO - why doesn't this work?
-            //Array.prototype.slice.call(document.querySelectorAll('articleList a')).forEach(function (el) {
-            //    el.addEventListener('click', function () { handleTitleClick(); });
-            //});
             // Needed so that results show on top of article
             document.getElementById('articleContent').style.position = 'static';
-            // We have to use mousedown instead of click as otherwise the blur event fires first and prevents this event from firing
+            // We have to use mousedown below instead of click as otherwise the prefix blur event fires first 
+            // and prevents this event from firing; note that touch also triggers mousedown
             $('#articleList a').on('mousedown', function (e) {
                 handleTitleClick(e);
                 return false;
