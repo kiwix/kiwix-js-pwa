@@ -141,8 +141,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 onKeyUpPrefix(e);
             }
         });
-        $('#prefix').on('focus', function(e) {
-            if ($('#prefix').val() !== '') {
+        $('#prefix').on('focus', function (e) {
+            var prefixVal = $('#prefix').val();
+            if (/^\s/.test(prefixVal)) {
+                // If user had previously had the archive index open, clear it
+                document.getElementById('prefix').value = '';
+            } else if (prefixVal !== '') {
                 $('#articleListWithHeader').show();
                 document.getElementById('articleContent').style.position = 'static';
             }
