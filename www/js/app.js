@@ -1344,7 +1344,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 }
                 $('#searchingArticles').hide();
                 $('#configuration').hide();
-                $('#articleList').hide();
                 $('#articleListWithHeader').hide();
                 $('#articleContent').contents().empty();
 
@@ -1991,7 +1990,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
 
             articleListHeaderMessageDiv.html(message);
 
-            var articleListDiv = $('#articleList');
+            var articleListDiv = document.getElementById('articleList');
             var articleListDivHtml = '';
             var listLength = dirEntryArray.length < MAX_SEARCH_RESULT_SIZE ? dirEntryArray.length : MAX_SEARCH_RESULT_SIZE;
             for (var i = 0; i < listLength; i++) {
@@ -1999,7 +1998,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             articleListDivHtml += '<a href="#" dirEntryId="' + dirEntry.toStringId().replace(/'/g, '&apos;') +
                 '" class="list-group-item">' + dirEntry.getTitleOrUrl() + '</a>';
             }
-            articleListDiv.html(articleListDivHtml);
+            articleListDiv.innerHTML = articleListDivHtml;
             // Needed so that results show on top of article
             document.getElementById('articleContent').style.position = 'static';
             // We have to use mousedown below instead of click as otherwise the prefix blur event fires first 
