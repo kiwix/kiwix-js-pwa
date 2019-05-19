@@ -162,7 +162,10 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     activeElement = activeElement.previousElementSibling || activeElement;
                     var previousElement = activeElement.previousElementSibling || activeElement;
                     if (!uiUtil.isElementInView(previousElement, true)) previousElement.scrollIntoView();
-                    if (previousElement === activeElement) document.getElementById('top').scrollIntoView();
+                    if (previousElement === activeElement) {
+                        document.getElementById('articleListWithHeader').scrollIntoView();
+                        document.getElementById('top').scrollIntoView();
+                    }
                 }
                 activeElement.classList.add('hover');
 
@@ -2945,7 +2948,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 var lastRemovedPosition = 0;
                 for (var i = 0; i < images.length; i++) {
                     if (images[i].src) {
-                        visibleImage = uiUtil.isElementInView(images[i], true) ? lastRemovedPosition : visibleImage;
+                        visibleImage = uiUtil.isElementInView(images[i]) ? lastRemovedPosition : visibleImage;
                         images.splice(i, 1);
                         i--; //If we removed an image, reset the index
                         lastRemovedPosition++;
@@ -3248,7 +3251,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 //Determine first and last visible images in the current window
                 for (var i = 0; i < images.length; i++) {
                     //console.log("Checking #" + i + ": " + images[i].getAttribute("data-kiwixurl"));
-                    if (uiUtil.isElementInView(images[i], true)) {
+                    if (uiUtil.isElementInView(images[i])) {
                         //console.log("#" + i + " *is* visible");
                         if (firstVisible == null) {
                             firstVisible = i;
