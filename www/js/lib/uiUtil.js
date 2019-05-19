@@ -91,23 +91,6 @@ define(['util'], function(util) {
         };
     }
 
-    /**
-     * Checks whether an element is fully or partially in view
-     * This is useful for progressive download of images inside an article
-     *
-     * @param {Object} el
-     * @param {Boolean} fully
-     */
-    function isElementInView(el, fully) {
-        var elemTop = el.getBoundingClientRect().top;
-        var elemBottom = el.getBoundingClientRect().bottom;
-
-        var isVisible = fully ? elemTop < window.innerHeight && elemBottom >= 0 :
-            elemTop >= 0 && elemBottom <= window.innerHeight;
-        return isVisible;
-    }
-
-
     function makeReturnLink(title) {
         //Abbreviate title if necessary
         var shortTitle = title.substring(0, 25);
@@ -433,6 +416,21 @@ define(['util'], function(util) {
         } else {
             alert(message);
         }
+    }
+
+    /**
+     * Checks whether an element is partially or fully inside the current viewport
+     * 
+     * @param {Element} el The DOM element for which to check visibility
+     * @param {Boolean} fully If true, checks that the entire element is inside the viewport
+     * @returns {Boolean} True if the element is fully or partially inside the current viewport
+     */
+    function isElementInView(el, fully) {
+        var rect = el.getBoundingClientRect();
+        if (fully)
+            return rect.top > 0 && rect.bottom < window.innerHeight && rect.left > 0 && rect.right < window.innerWidth;
+        else 
+            return rect.top < window.innerHeight && rect.bottom > 0 && rect.left < window.innerWidth && rect.right > 0;
     }
 
     /**
