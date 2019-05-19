@@ -97,6 +97,10 @@ div:not(.panel-success, .alert-message) {
     background: lightblue;
 }
 
+#articleList a:hover, #articleList a.hover {
+    background: lightblue;
+}
+
 .dark #articleListWithHeader {
     background: darkslategrey;
 }

@@ -121,24 +121,59 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         document.getElementById('formArticleSearch').addEventListener('submit', function () {
             document.getElementById("searchArticles").click();
         });
-        document.getElementById('prefix').addEventListener('keyup', function (e) {
-            if (selectedArchive !== null && selectedArchive.isReady()) {
-                if (e.which == 40) {
-                    var articleResults = document.querySelectorAll('.list-group-item');
-                    if (articleResults && articleResults.length) {
-                        articleResults[0].focus();
+        var keyPressHandled = false;
+        $('#prefix').on('keydown', function (e) {
+            if (/^Esc/.test(e.key)) {
+                // Hide the article list
+                e.preventDefault();
+                e.stopPropagation();
+                $('#articleListWithHeader').hide();
+                document.getElementById('articleContent').style.position = 'fixed';
+                $('#articleContent').focus();
+                $("#myModal").modal('hide'); // This is in case the modal box is showing with an index search
+                keyPressHandled = true;
+            }
+            // Keyboard selection code adapted from https://stackoverflow.com/a/14747926/9727685
+            if (/^((Arrow)?Down|(Arrow)?Up|Enter)$/.test(e.key)) {
+                // User pressed Down arrow or Up arrow or Enter
+                e.preventDefault();
+                e.stopPropagation();
+                // This is needed to prevent processing in the keyup event : https://stackoverflow.com/questions/9951274
+                keyPressHandled = true;
+                var activeElement = document.querySelector("#articleList .hover") || document.querySelector("#articleList a");
+                if (!activeElement) return;
+                if (/Enter/.test(e.key)) {
+                    if (activeElement.classList.contains('hover')) {
+                        var dirEntryId = activeElement.getAttribute('dirEntryId');
+                        findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId);
+                        return;
                     }
                 }
-                if (e.which == 27) {
-                    //User pressed Esc, so hide the article list
-                    $('#articleListWithHeader').hide();
-                    document.getElementById('articleContent').style.position = 'fixed';
-                    $('#articleContent').focus();
-
-                    $("#myModal").modal('hide'); // This is in case the modal box is showing with an index search
-                    return;
+                if (/(Arrow)?Down/.test(e.key)) {
+                    if (activeElement.classList.contains('hover')) {
+                        activeElement.classList.remove('hover');
+                        activeElement = activeElement.nextElementSibling || activeElement;
+                        var nextElement = activeElement.nextElementSibling || activeElement;
+                        if (!uiUtil.isElementInView(nextElement, true)) nextElement.scrollIntoView(false);
+                    }
                 }
-                onKeyUpPrefix(e);
+                if (/(Arrow)?Up/.test(e.key)) {
+                    activeElement.classList.remove('hover');
+                    activeElement = activeElement.previousElementSibling || activeElement;
+                    var previousElement = activeElement.previousElementSibling || activeElement;
+                    if (!uiUtil.isElementInView(previousElement, true)) previousElement.scrollIntoView();
+                    if (previousElement === activeElement) document.getElementById('top').scrollIntoView();
+                }
+                activeElement.classList.add('hover');
+
+            }
+        });
+        $('#prefix').on('keyup', function (e) {
+            if (selectedArchive !== null && selectedArchive.isReady()) {
+                if (keyPressHandled)
+                    keyPressHandled = false;
+                else
+                    onKeyUpPrefix(e);
             }
         });
         $('#prefix').on('focus', function (e) {
@@ -2019,7 +2054,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         function handleTitleClick(event) {       
             var dirEntryId = event.target.getAttribute("dirEntryId");
             findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId);
-            var dirEntry = selectedArchive.parseDirEntryId(dirEntryId);
             return false;
         }
 
