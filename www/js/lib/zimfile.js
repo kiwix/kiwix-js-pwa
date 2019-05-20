@@ -224,7 +224,7 @@ define(['xzdec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry'], function(xz, util,
         var size = urlPtrPos - mimeListPos;
         return util.readFileSlice(file, mimeListPos, size).then(function(data) {
             if (data.subarray) {
-                var i = 1;
+                var i = 0;
                 var pos = -1;
                 var mimeString;
                 while (pos < size) {
@@ -270,15 +270,15 @@ define(['xzdec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry'], function(xz, util,
                 var mimeListPos = readInt(header, 56, 8);
                 var urlPtrPos = readInt(header, 32, 8);
                 return readMimetypeMap(fileArray[0], mimeListPos, urlPtrPos).then(function(data) {
-                var zf = new ZIMFile(fileArray);
-                zf.articleCount = readInt(header, 24, 4);
-                zf.clusterCount = readInt(header, 28, 4);
+                    var zf = new ZIMFile(fileArray);
+                    zf.articleCount = readInt(header, 24, 4);
+                    zf.clusterCount = readInt(header, 28, 4);
                     zf.urlPtrPos = urlPtrPos;
-                zf.titlePtrPos = readInt(header, 40, 8);
-                zf.clusterPtrPos = readInt(header, 48, 8);
+                    zf.titlePtrPos = readInt(header, 40, 8);
+                    zf.clusterPtrPos = readInt(header, 48, 8);
                     zf.mimeListPos = mimeListPos;
-                zf.mainPage = readInt(header, 64, 4);
-                zf.layoutPage = readInt(header, 68, 4);
+                    zf.mainPage = readInt(header, 64, 4);
+                    zf.layoutPage = readInt(header, 68, 4);
                     zf.mimeTypes = data;
                     return zf;
                 });
