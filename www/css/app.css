@@ -101,6 +101,10 @@ div:not(.panel-success, .alert-message) {
     background: lightblue;
 }
 
+.dark #articleList a:hover, .dark #articleList a.hover {
+    background: darkslategray;
+}
+
 .dark #articleListWithHeader {
     background: darkslategrey;
 }
@@ -353,7 +357,7 @@ pre {
 
 .dark .list-group-item, .modal .dark .close {
     color: lightblue !important;
-    background-color: #222 !important;
+    background-color: #222;
 }
 
 .dark a.list-group-item:hover, .dark a.list-group-item:focus, .dark nav a:hover, .dark nav a:focus, .dark nav .active {
