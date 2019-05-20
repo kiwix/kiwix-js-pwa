@@ -188,6 +188,30 @@ define(['util'], function(util) {
     }
 
     /**
+     * Derives the URL.pathname from a relative or semi-relative URL using the given base ZIM URL
+     * 
+     * @param {String} url The (URI-encoded) URL to convert (e.g. "Einstein", "../Einstein",
+     *      "../../I/im%C3%A1gen.png", "-/s/style.css", "/A/Einstein.html")
+     * @param {String} base The base ZIM URL of the currently loaded article (e.g. "A/" or "A/subdir1/subdir2/")
+     * @returns {String} The derived ZIM URL in decoded form (e.g. "A/Einstein", "I/imágen.png")
+     */
+    function deriveZimUrlFromRelativeUrl(url, base) {
+        // We use a dummy domain because URL API requires a valid URI
+        var dummy = 'http://d/';
+        var deriveZimUrl = function (url, base) {
+            if (typeof URL === 'function') return new URL(url, base);
+            // IE11 lacks URL API: workaround adapted from https://stackoverflow.com/a/28183162/9727685
+            var d = document.implementation.createHTMLDocument('t');
+            d.head.innerHTML = '<base href="' + base + '">';
+            var a = d.createElement('a');
+            a.href = url;
+            return { pathname: a.href.replace(dummy, '') };
+        };
+        var zimUrl = deriveZimUrl(url, dummy + base);
+        return decodeURIComponent(zimUrl.pathname.replace(/^\//, ''));
+    }
+
+    /**
      * Displays a Bootstrap warning alert with information about how to access content in a ZIM with unsupported active UI
      */
     function displayActiveContentWarning() {
@@ -438,6 +462,7 @@ define(['util'], function(util) {
      */
     return {
         feedNodeWithBlob: feedNodeWithBlob,
+        deriveZimUrlFromRelativeUrl: deriveZimUrlFromRelativeUrl,
         removeUrlParameters: removeUrlParameters,
         toc: TableOfContents,
         isElementInView: isElementInView,
