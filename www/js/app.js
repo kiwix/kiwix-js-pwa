@@ -899,8 +899,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 for (var i = 0; i < elements.length; i++) {
                     elements[i].style.border = "1px solid darkgray";
                 }
-                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? "./img/icons/wikivoyage-white-32.png" : /medicine/i.test(params.storedFile) ? "./img/icons/wikimed-lightblue-32.png" : "./img/icons/kiwix-32.png";
-                if (/wikivoyage/i.test(params.storedFile)) document.getElementById('kiwixIconAbout').src = "./img/icons/wikivoyage-90-white.png";
+                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? "img/icons/wikivoyage-white-32.png" : /medicine/i.test(params.storedFile) ? "img/icons/wikimed-lightblue-32.png" : "img/icons/kiwix-32.png";
+                if (/wikivoyage/i.test(params.storedFile)) document.getElementById('kiwixIconAbout').src = "img/icons/wikivoyage-90-white.png";
             }
             if (value == 'light') {
                 document.getElementsByTagName('body')[0].classList.remove("dark");
@@ -914,8 +914,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 for (var i = 0; i < elements.length; i++) {
                     elements[i].style.border = "1px solid black";
                 }
-                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? "./img/icons/wikivoyage-black-32.png" : /medicine/i.test(params.storedFile) ? "./img/icons/wikimed-blue-32.png" : "./img/icons/kiwix-blue-32.png";
-                if (/wikivoyage/i.test(params.packagedFile)) document.getElementById('kiwixIconAbout').src = "./img/icons/wikivoyage-90.png";
+                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? "img/icons/wikivoyage-black-32.png" : /medicine/i.test(params.storedFile) ? "img/icons/wikimed-blue-32.png" : "img/icons/kiwix-blue-32.png";
+                if (/wikivoyage/i.test(params.packagedFile)) document.getElementById('kiwixIconAbout').src = "img/icons/wikivoyage-90.png";
             }
             return value;
         }
@@ -943,9 +943,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 link.setAttribute("type", "text/css");
                 link.setAttribute("href", determinedWikiTheme == "dark" ? "-/s/style-dark.css" : "-/s/style-dark-invert.css");
                 doc.head.appendChild(link);
-                if (breakoutLink) breakoutLink.src = '/img/icons/new_window_lb.svg';
+                if (breakoutLink) breakoutLink.src = 'img/icons/new_window_lb.svg';
             } else {
-                if (breakoutLink) breakoutLink.src = '/img/icons/new_window.svg';
+                if (breakoutLink) breakoutLink.src = 'img/icons/new_window.svg';
             }
             document.getElementById('darkInvert').style.display = determinedWikiTheme == 'light' ? 'none' : 'inline';
         }
@@ -2336,7 +2336,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             if (!params.imageDisplay) {
                 //Ensure 36px clickable image height so user can request images by clicking [kiwix-js #173]
                 htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)height(\s*=\s*)/ig,
-                    '$1height="36" src="../img/lightBlue.png" style="color: lightblue; background-color: lightblue;" ' +
+                    '$1height="36" src="img/lightBlue.png" style="color: lightblue; background-color: lightblue;" ' +
                     'data-kiwixheight$2');
             }
 
@@ -2973,8 +2973,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     var doc = $("#articleContent").contents()[0];
                     var script = doc.createElement("script");
                     script.type = "text/javascript";
-                    //script.src = treePath + "js/MathJax/MathJax.js?config=TeX-AMS_HTML-full,config";
-                    //script.src = treePath + "js/MathJax/MathJax.js?config=TeX-AMS_SVG-full";
                     script.src = "js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
                     if (containsMathTeX || containsMathTeXRaw) script.innerHTML = 'MathJax.Hub.Queue(["Typeset", MathJax.Hub]); \
                             console.log("Typesetting maths with MathJax");';
