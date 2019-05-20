@@ -2273,6 +2273,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             console.time("Time to First Paint");
             //return;
 
+            // Calculate the current article's ZIM baseUrl to use when processing relative links
+            var baseUrl = dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, '');
+
             //Since page has been successfully loaded, store it in the browser history
             if (!window.history.state ||
                 !window.history.state.title ||
@@ -2386,11 +2389,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             }
             containsMathTeX = params.useMathJax ? /<script\s+type\s*=\s*['"]\s*math\/tex\s*['"]/i.test(htmlArticle) : false;
             containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
-
-            // Compute base URL
-            var urlPath = regexpPath.test(dirEntry.url) ? urlPath = dirEntry.url.match(regexpPath)[1] : '';
-            var baseUrl = dirEntry.namespace + '/' + urlPath;
-            treePath = baseUrl.replace(/([^/]+\/)/g, '../');
 
             //Adapt German Wikivoyage POI data format
             var regexpGeoLocationDE = /<span\s+class\s?=\s?"[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<span[^>]+listing-name[^>]+>([^<]+)<\/span>)/ig;
@@ -2576,8 +2574,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             function injectHTML() {
                 //Inject htmlArticle into iframe
                 uiUtil.clear(); //Void progress messages
-                //Inject base tag into html
-                htmlArticle = htmlArticle.replace(/(<head[^>]*>\s*)/i, '$1<base href="' + baseUrl + '" />\r\n');
                 // Extract any css classes from the html tag (they will be stripped when injected in iframe with .innerHTML)
                 var htmlCSS = htmlArticle.match(/<html[^>]*class\s*=\s*["']\s*([^"']+)/i);
                 htmlCSS = htmlCSS ? htmlCSS[1] : '';
@@ -2747,37 +2743,18 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             }
                             var href = anchor.getAttribute('href');
                             if (href === null || href === undefined) return;
-                            // Compute current link's url (with its namespace), if applicable
-                            // NB We need to access 'anchor.href' here because, unlike 'anchor.getAttribute("href")', it contains the fully qualified URL [kiwix-js #432]
-                            var zimUrl = regexpZIMUrlWithNamespace.test(anchor.href) ? anchor.href.match(regexpZIMUrlWithNamespace)[1] : '';
                             if (href.length === 0) {
-                                // It's a link with an empty href, pointing to the current page.
-                                // Because of the base tag, we need to modify it
-                                anchor.addEventListener('click', function (e) {
-                                    e.preventDefault();
-                                });
+                                // It's a link with an empty href, pointing to the current page: do nothing.
                             } else if (regexpLocalAnchorHref.test(href)) {
-                                // It's an anchor link : we need to make it work with javascript because of the base tag
-                                var anchorRef = href.replace(regexpLocalAnchorHref, '$1');
-                                // DEV: If jQuery mode ever supports JS-in-the-ZIM, the check for an onclick event may need to be revisited
-                                var onClickAttr = anchor.getAttribute('onclick');
-                                anchor.addEventListener('click', function (e) {
-                                    var iframeWindow = document.getElementById('articleContent').contentWindow;
-                                    if (anchorRef)
-                                        iframeWindow.location.hash = anchorRef;
-                                    else if (!onClickAttr)
-                                        // It's just a single # and there is no onclick in the HTML, so scroll to top
-                                        iframeWindow.scrollTo({ top: 0, behavior: 'smooth' });
-                                    e.preventDefault();
-                                });
+                                // It's a local anchor link : remove escapedUrl if any (see above)
+                                anchor.setAttribute('href', href.replace(/^[^#]*/, ''));
                             } else if (anchor.protocol !== currentProtocol ||
                                 anchor.host !== currentHost) {
                                 // It's an external URL : we should open it in a new tab
                                 anchor.target = '_blank';
                             } else {
                                 // It's a link to an article or file in the ZIM
-                                var uriComponent = uiUtil.removeUrlParameters(zimUrl);
-                                var decodedURL = decodeURIComponent(uriComponent);
+                                var uriComponent = uiUtil.removeUrlParameters(href);
                                 var contentType;
                                 var downloadAttrValue;
                                 // Some file types need to be downloaded rather than displayed (e.g. *.epub)
@@ -2791,11 +2768,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                     // Normalize the value to a true Boolean or a filename string or true if there is no download attribute
                                     downloadAttrValue = /^(download|true|\s*)$/i.test(downloadAttrValue) || downloadAttrValue || true;
                                     contentType = anchor.getAttribute('type');
-                                }    
+                                }
                                 // Add an onclick event to extract this article or file from the ZIM
                                 // instead of following the link
                                 anchor.addEventListener('click', function (e) {
-                                    goToArticle(decodedURL, downloadAttrValue, contentType);
+                                    var zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
+                                    goToArticle(zimUrl, downloadAttrValue, contentType);
                                     e.preventDefault();
                                 });
                             }
@@ -2823,6 +2801,90 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 //articleContent.close();
 
             } // End of injectHtml
+
+            function insertMediaBlobsJQuery() {
+                var iframe = document.getElementById('articleContent').contentDocument;
+                var trackBlob;
+                Array.prototype.slice.call(iframe.querySelectorAll('video, audio, source, track')).forEach(function (mediaSource) {
+                    var source = mediaSource.getAttribute('src');
+                    source = source ? uiUtil.deriveZimUrlFromRelativeUrl(source, baseUrl) : null;
+                    if (!source || !regexpZIMUrlWithNamespace.test(source)) {
+                        if (source) console.error('No usable media source was found for: ' + source);
+                        return;
+                    }
+                    var mediaElement = /audio|video/i.test(mediaSource.tagName) ? mediaSource : mediaSource.parentElement;
+                    // Create custom subtitle / cc load menu if it doesn't already exist
+                    if (!iframe.getElementById('kiwixCCMenu')) buildCustomCCMenu(iframe, mediaElement, function (ccBlob) {
+                        trackBlob = ccBlob;
+                    });
+                    // Load media file
+                    selectedArchive.getDirEntryByTitle(decodeURIComponent(source)).then(function (dirEntry) {
+                        return selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, mediaArray) {
+                            var mimeType = mediaSource.type ? mediaSource.type : dirEntry.getMimetype();
+                            var blob = new Blob([mediaArray], { type: mimeType });
+                            mediaSource.src = URL.createObjectURL(blob);
+                            // In Firefox and Chromium it is necessary to re-register the inserted media source
+                            // but do not reload for text tracks (closed captions / subtitles)
+                            if (/track/i.test(mediaSource.tagName)) return;
+                            mediaElement.load();
+                            // Add a download link in case media source not supported
+                            document.getElementById('alertBoxDivFooter').innerHTML =
+                                '<div id="downloadAlert" class="alert alert-info alert-dismissible">\n' +
+                                '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
+                                '    <span id="alertMessage"></span>\n' +
+                                '</div>\n';
+                            var alertMessage = document.getElementById('alertMessage');
+                            var filename = iframe.title + '_' + dirEntry.url.replace(/^.*\/([^\/]+)$/, '$1');
+                            // Make filename safe
+                            filename = filename.replace(/[\/\\:*?"<>|]/g, '_');
+                            alertMessage.innerHTML = '<a href="#" class="alert-link" id="downloadMedia">Download this file</a> (and any selected subtitles) to play with another app';
+                            document.getElementById('downloadMedia').addEventListener('click', function () {
+                                var downloadFiles = [];
+                                downloadFiles.push({
+                                    'blob': blob,
+                                    'filename': filename,
+                                    'src': mediaSource.src
+                                });
+                                // Add any selected subtitle file to the download package
+                                var selTextTrack = iframe.getElementById('kiwixSelCC');
+                                if (selTextTrack) {
+                                    var selTextExt = selTextTrack.dataset.kiwixurl.replace(/^.*\.([^.]+)$/, '$1');
+                                    // Subtitle files should have same name as video + .es.vtt (for example)
+                                    downloadFiles.push({
+                                        'blob': trackBlob,
+                                        'filename': filename.replace(/^(.*)\.[^.]+$/, '$1.' + selTextTrack.srclang + '.' + selTextExt),
+                                        'src': selTextTrack.src
+                                    });
+                                }
+                                for (var j = downloadFiles.length; j--;) {
+                                    if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
+                                        uiUtil.downloadBlobUWP(downloadFiles[j].blob, downloadFiles[j].filename, alertMessage);
+                                    } else {
+                                        var mimeType = downloadFiles[j].blob.type ? downloadFiles[j].blob.type : 'application/octet-stream';
+                                        var a = document.createElement('a');
+                                        a.href = downloadFiles[j].src;
+                                        a.target = '_blank';
+                                        a.type = mimeType;
+                                        a.download = downloadFiles[j].filename;
+                                        alertMessage.appendChild(a); // NB we have to add the anchor to the document for Firefox to be able to click it
+                                        try { a.click(); }
+                                        catch (err) {
+                                            // If the click fails, use an alternative download method
+                                            if (window.navigator && window.navigator.msSaveBlob) {
+                                                // This works for IE11
+                                                window.navigator.msSaveBlob(downloadFiles[j].blob, downloadFiles[j].filename);
+                                            }
+                                        }
+                                    }
+                                }
+                                iframe.addEventListener('unload', function (e) {
+                                    alertMessage.remove();
+                                });
+                            });
+                        });
+                    });
+                });
+            }
 
         } //End of displayArticleInForm()
 
@@ -3301,98 +3363,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }).fail(function (e) {
                         console.error("could not find DirEntry for javascript : " + title, e);
                     });
-            });
-        }
-
-        function insertMediaBlobsJQuery() {
-            var iframe = document.getElementById('articleContent').contentDocument;
-            var trackBlob;
-            Array.prototype.slice.call(iframe.querySelectorAll('video[data-kiwixurl], audio[data-kiwixurl], source[data-kiwixurl]'))
-            .forEach(function(mediaSource) {
-                var source = mediaSource.dataset.kiwixurl;
-                if (!source || !regexpZIMUrlWithNamespace.test(source)) {
-                    console.error('No usable media source was found!');
-                    return;
-                }
-                var mediaElement = /audio|video/i.test(mediaSource.tagName) ? mediaSource : mediaSource.parentElement;
-                var mimeType = mediaSource.type;
-                // Check mimeType
-                if (!mimeType) {
-                    // Try to guess type from file extension
-                    var mediaType = mediaElement.tagName.toLowerCase();
-                    if (!/audio|video/i.test(mediaType)) mediaType = 'video';
-                    // if (/track/i.test(mediaSource.tagName)) mediaType = 'text';
-                    mimeType = source.replace(/^.*\.([^.]+)$/, mediaType + '/$1');
-                }
-                // Create custom subtitle / cc load menu if it doesn't already exist
-                if (!iframe.getElementById('kiwixCCMenu')) buildCustomCCMenu(iframe, mediaElement, function (ccBlob) {
-                    trackBlob = ccBlob;
-                });
-                // Load media file
-                selectedArchive.getDirEntryByTitle(decodeURIComponent(source)).then(function(dirEntry) {
-                    return selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, mediaArray) {
-                        var blob = new Blob([mediaArray], { type: mimeType });
-                        mediaSource.src = URL.createObjectURL(blob);
-                        // In Firefox and Chromium it is necessary to re-register the inserted media source
-                        // but do not reload for text tracks (closed captions / subtitles)
-                        // if (/track/i.test(mediaSource.tagName)) return;
-                        mediaElement.load();
-                        // Add a download link in case media source not supported
-                        document.getElementById('alertBoxFooter').innerHTML = 
-                            '<div id="downloadAlert" class="alert alert-info alert-dismissible">\n' +
-                            '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
-                            '    <span id="alertMessage"></span>\n' +
-                            '</div>\n';
-                        var alertMessage = document.getElementById('alertMessage');
-                        var filename = iframe.title + '_' + dirEntry.url.replace(/^.*\/([^\/]+)$/, '$1');
-                        // Make filename safe
-                        filename = filename.replace(/[\/\\:*?"<>|]/g, '_');
-                        alertMessage.innerHTML = '<a href="#" class="alert-link" id="downloadMedia">Download this file</a> (and any selected subtitles) to play with another app';
-                        document.getElementById('downloadMedia').addEventListener('click', function () {
-                            var downloadFiles = [];
-                            downloadFiles.push({
-                                'blob': blob,
-                                'filename': filename,
-                                'src': mediaSource.src
-                            });
-                            // Add any selected subtitle file to the download package
-                            var selTextTrack = iframe.getElementById('kiwixSelCC');
-                            if (selTextTrack) {
-                                var selTextExt = selTextTrack.dataset.kiwixurl.replace(/^.*\.([^.]+)$/, '$1');
-                                // Subtitle files should have same name as video + .es.vtt (for example)
-                                downloadFiles.push({
-                                    'blob': trackBlob,
-                                    'filename': filename.replace(/^(.*)\.[^.]+$/, '$1.' + selTextTrack.srclang + '.' + selTextExt),
-                                    'src': selTextTrack.src
-                                });
-                            }
-                            for (var j = downloadFiles.length; j--;) {
-                                if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
-                                    uiUtil.downloadBlobUWP(downloadFiles[j].blob, downloadFiles[j].filename, alertMessage);
-                                } else {
-                                    var mimeType = downloadFiles[j].blob.type ? downloadFiles[j].blob.type : 'application/octet-stream';
-                                    var a = document.createElement('a');
-                                    a.href = downloadFiles[j].src;
-                                    a.target = '_blank';
-                                    a.type = mimeType;
-                                    a.download = downloadFiles[j].filename;
-                                    alertMessage.appendChild(a); // NB we have to add the anchor to the document for Firefox to be able to click it
-                                    try { a.click(); }
-                                    catch (err) {
-                                        // If the click fails, use an alternative download method
-                                        if (window.navigator && window.navigator.msSaveBlob) {
-                                            // This works for IE11
-                                            window.navigator.msSaveBlob(downloadFiles[j].blob, downloadFiles[j].filename);
-                                        }
-                                    }
-                                }
-                            }
-                            iframe.addEventListener('unload', function (e) {
-                                alertMessage.remove();
-                            });
-                        });
-                    });
-                });
             });
         }
 
