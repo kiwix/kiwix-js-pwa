@@ -2814,7 +2814,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             function insertMediaBlobsJQuery() {
                 var iframe = document.getElementById('articleContent').contentDocument;
                 var trackBlob;
-                Array.prototype.slice.call(iframe.querySelectorAll('video, audio, source, track')).forEach(function (mediaSource) {
+                Array.prototype.slice.call(iframe.querySelectorAll('video, audio, source')).forEach(function (mediaSource) {
                     var source = mediaSource.getAttribute('src');
                     source = source ? uiUtil.deriveZimUrlFromRelativeUrl(source, baseUrl) : null;
                     if (!source || !regexpZIMUrlWithNamespace.test(source)) {
@@ -2890,6 +2890,63 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                                     alertMessage.remove();
                                 });
                             });
+                        });
+                    });
+                });
+            }
+
+            /**
+             * Create a custom dropdown menu item beneath the given mediaElement (audio or video block) to allow the user to
+             * select the language of text tracks (subtitles/CC) to extract from the ZIM (this is necessary because there is
+             * no universal onchange event that fires for subtitle changes in the html5 video widget when the URL is invalid)
+             * 
+             * @param {Document} doc The document in which the new menu will be placed (usually window.document or iframe)
+             * @param {Element} mediaElement The media element (usually audio or video block) which contains the text tracks
+             * @param {Function} callback The function to call wtih the blob
+             */
+            function buildCustomCCMenu(doc, mediaElement, callback) {
+                var optionList = [];
+                var langs = '';
+                var src = '';
+                var currentTracks = mediaElement.getElementsByTagName('track');
+                // Extract track data from current media element
+                for (var i = currentTracks.length; i--;) {
+                    langs = currentTracks[i].label + ' [' + currentTracks[i].srclang + ']';
+                    src = currentTracks[i].getAttribute('src');
+                    src = src ? uiUtil.deriveZimUrlFromRelativeUrl(src, baseUrl) : null;
+                    if (src && regexpZIMUrlWithNamespace.test(src)) {
+                        optionList.unshift('<option value="' + currentTracks[i].srclang + '" data-kiwixsrc="' +
+                            src + '" data-kiwixkind="' + currentTracks[i].kind + '">' + langs + '</option>');
+                    }
+                    currentTracks[i].parentNode.removeChild(currentTracks[i]);
+                }
+                optionList.unshift('<option value="" data-kiwixsrc="">None</option>');
+                var newKiwixCCMenu = '<select id="kiwixCCMenuLangList">\n' + optionList.join('\n') + '\n</select>';
+                // Create the new container and menu
+                var d = doc.createElement('DIV');
+                d.id = 'kiwixCCMenu';
+                d.setAttribute('style', 'margin-top: 1em; text-align: left;');
+                d.innerHTML = 'Please select subtitle language: ' + newKiwixCCMenu;
+                mediaElement.parentElement.insertBefore(d, mediaElement.nextSibling);
+                // Add event listener to extract the text track from the ZIM and insert it into the media element when the user selects it
+                newKiwixCCMenu = doc.getElementById('kiwixCCMenu').addEventListener('change', function (v) {
+                    var existingCC = doc.getElementById('kiwixSelCC');
+                    if (existingCC) existingCC.parentNode.removeChild(existingCC);
+                    var sel = v.target.options[v.target.selectedIndex];
+                    if (!sel.value) return; // User selected "none"
+                    selectedArchive.getDirEntryByTitle(sel.dataset.kiwixsrc).then(function (dirEntry) {
+                        return selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, trackContents) {
+                            var blob = new Blob([trackContents], { type: 'text/vtt' });
+                            var t = doc.createElement('track');
+                            t.id = 'kiwixSelCC';
+                            t.kind = sel.dataset.kiwixkind;
+                            t.label = sel.innerHTML;
+                            t.srclang = sel.value;
+                            t.default = true;
+                            t.src = URL.createObjectURL(blob);
+                            t.dataset.kiwixurl = sel.dataset.kiwixsrc;
+                            mediaElement.appendChild(t);
+                            callback(blob);
                         });
                     });
                 });
@@ -3374,66 +3431,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     });
             });
         }
-
-        /**
-         * Create a custom dropdown menu item beneath the given mediaElement (audio or video block) to allow the user to
-         * select the language of text tracks (subtitles/CC) to extract from the ZIM (this is necessary because there is
-         * no universal onchange event that fires for subtitle changes in the html5 video widget when the URL is invalid)
-         * 
-         * @param {Document} doc The document in which the new menu will be placed (usually window.document or iframe)
-         * @param {Element} mediaElement The media element (usually audio or video block) which contains the text tracks
-         * @param {Function} callback The function to call wtih the blob
-         */
-        function buildCustomCCMenu(doc, mediaElement, callback) {
-            var optionList = [];
-            var langs = '';
-            var src = '';
-            var currentTracks = mediaElement.getElementsByTagName('track');
-            // Extract track data from current media element
-            for (var i = currentTracks.length; i--;) {
-                langs = currentTracks[i].label + ' [' + currentTracks[i].srclang + ']';
-                src = currentTracks[i].dataset.kiwixurl;
-                if (!src && currentTracks[i].src) {
-                    // Some ZIMs list the text track as a relative link within the directory containing the media source
-                    src = regexpZIMUrlWithNamespace.test(currentTracks[i].src) ? currentTracks[i].src.match(regexpZIMUrlWithNamespace)[1] : src;
-                }
-                if (src) {
-                    optionList.unshift('<option value="' + currentTracks[i].srclang + '" data-kiwixsrc="' +
-                        src + '" data-kiwixkind="' + currentTracks[i].kind + '">' + langs + '</option>');
-                }
-                currentTracks[i].parentNode.removeChild(currentTracks[i]);
-            }
-            optionList.unshift('<option value="" data-kiwixsrc="">None</option>');
-            var newKiwixCCMenu = '<select id="kiwixCCMenuLangList">\n' + optionList.join('\n') + '\n</select>';
-            // Create the new container and menu
-            var d = doc.createElement('DIV');
-            d.id = 'kiwixCCMenu';
-            d.setAttribute('style', 'margin-top: 1em; text-align: left;');
-            d.innerHTML = 'Please select subtitle language: ' + newKiwixCCMenu;
-            mediaElement.parentElement.insertBefore(d, mediaElement.nextSibling);
-            // Add event listener to extract the text track from the ZIM and insert it into the media element when the user selects it
-            newKiwixCCMenu = doc.getElementById('kiwixCCMenu').addEventListener('change', function (v) {
-                var existingCC = doc.getElementById('kiwixSelCC');
-                if (existingCC) existingCC.parentNode.removeChild(existingCC);
-                var sel = v.target.options[v.target.selectedIndex];
-                if (!sel.value) return; // User selected "none"
-                selectedArchive.getDirEntryByTitle(sel.dataset.kiwixsrc).then(function (dirEntry) {
-                    return selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, trackContents) {
-                        var blob = new Blob([trackContents], { type: 'text/vtt' });
-                        var t = doc.createElement('track');
-                        t.id = 'kiwixSelCC';
-                        t.kind = sel.dataset.kiwixkind;
-                        t.label = sel.innerHTML;
-                        t.srclang = sel.value;
-                        t.default = true;
-                        t.src = URL.createObjectURL(blob);
-                        t.dataset.kiwixurl = sel.dataset.kiwixsrc;
-                        mediaElement.appendChild(t);
-                        callback(blob);
-                    });
-                });
-            });
-        } 
 
         /**
          * Changes the URL of the browser page, so that the user might go back to it
