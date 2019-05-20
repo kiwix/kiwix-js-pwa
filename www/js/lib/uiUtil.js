@@ -356,11 +356,10 @@ define(['util'], function(util) {
         // This code provides an absolute link - keep for reference. Removes the file and any query string from href
         // var prefix = window.location.href.replace(/^((?!.*\?).*\/|.*\/(?=[^\/]*\?)).*$/, '$1');
         // But in Kiwix JS Windows, we can easily get the relative path of the current document:
-        var treePath = decodeURIComponent(params.lastPageVisit).replace(/[^/]+\/(?:[^/]+$)?/g, "../");
         var div = document.createElement('div');
         div.style.cssText = 'top: 10px; right: 25px; position: relative; z-index: 2; float: right;';
         div.id = "openInTab";
-        div.innerHTML = '<a href="#"><img id="breakoutLink" src="' + treePath + 'img/icons/' + (mode == 'light' ? 'new_window.svg' : 'new_window_lb.svg') + '" width="30" height="30" alt="' + desc + '" title="' + desc + '"></a>';
+        div.innerHTML = '<a href="#"><img id="breakoutLink" src="img/icons/' + (mode == 'light' ? 'new_window.svg' : 'new_window_lb.svg') + '" width="30" height="30" alt="' + desc + '" title="' + desc + '"></a>';
         iframe.body.insertBefore(div, iframe.body.firstChild);
         var openInTab = iframe.getElementById('openInTab');
         // Have to use jQuery here becasue e.preventDefault is not working properly in some browsers
