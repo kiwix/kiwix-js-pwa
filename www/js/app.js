@@ -2214,15 +2214,22 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         // Compile some regular expressions needed to modify links
         // Pattern to find the path in a url
         var regexpPath = /^(.*\/)[^\/]+$/;
-        // Pattern to find a ZIM URL (with its namespace) - see http://www.openzim.org/wiki/ZIM_file_format#Namespaces
-        var regexpZIMUrlWithNamespace = /(?:^|\/)([-ABIJMUVWX]\/.+)/;
-        // Regex below finds images, scripts, stylesheets and media sources with ZIM-type metadata and image namespaces [kiwix-js #378]
-        // It first searches for <img, <script, <link, etc., then scans forward to find, on a word boundary, either src=["'] 
-        // or href=["'] (ignoring any extra whitespace), and it then tests everything up to the next ["'] against a pattern that
+        // Pattern to find a ZIM URL (with its namespace) - see https://wiki.openzim.org/wiki/ZIM_file_format#Namespaces
+        var regexpZIMUrlWithNamespace = /^[.\/]*([-ABIJMUVWX]\/.+)$/;
+        // Regex below finds images, scripts, and stylesheets with ZIM-type metadata and image namespaces [kiwix-js #378]
+        // It first searches for <img, <script, <link, etc., then scans forward to find, on a word boundary, either src=["']
+        // or href=["'] (ignoring any extra whitespace), and it then tests the path of the URL with a non-capturing lookahead that
         // matches ZIM URLs with namespaces [-IJ] ('-' = metadata or 'I'/'J' = image). When the regex is used below, it will also
-        // remove any relative or absolute path from ZIM-style URLs. 
+        // remove any relative or absolute path from ZIM-style URLs.
         // DEV: If you want to support more namespaces, add them to the END of the character set [-IJ] (not to the beginning) 
-        var regexpTagsWithZimUrl = /(<(?:img|script|link|video|audio|source|track)\b[^>]*?\s)(?:src|href)(\s*=\s*["'])(?:\.\.\/|\/)+(?=[-IJ]\/)/ig;
+        var regexpTagsWithZimUrl = /(<(?:img|script|link)\b[^>]*?\s)(?:src|href)(\s*=\s*["'])(?:\.\.\/|\/)+(?=[-IJ]\/)/ig;
+        // Regex below tests the html of an article for active content [kiwix-js #466]
+        // It inspects every <script> block in the html and matches in the following cases: 1) the script loads a UI application called app.js;
+        // 2) the script block has inline content that does not contain "importScript()" or "toggleOpenSection" (these strings are used widely
+        // in our fully supported wikimedia ZIMs, so they are excluded); 3) the script block is not of type "math" (these are MathJax markup
+        // scripts used extensively in Stackexchange ZIMs). Note that the regex will match ReactJS <script type="text/html"> markup, which is
+        // common in unsupported packaged UIs, e.g. PhET ZIMs.
+        var regexpActiveContent = /<script\b(?:(?![^>]+src\b)|(?=[^>]+src\b=["'][^"']+?app\.js))(?!>[^<]+(?:importScript\(\)|toggleOpenSection))(?![^>]+type\s*=\s*["'](?:math\/|[^"']*?math))/i;
         // Regex below tests the html of an article for active content [kiwix-js #466]
         // It inspects every <script> block in the html and matches in the following cases: 1) the script loads a UI application called app.js;
         // 2) the script block has inline content that does not contain "importScript()" or "toggleOpenSection" (these strings are used widely
@@ -2830,7 +2837,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                             if (/track/i.test(mediaSource.tagName)) return;
                             mediaElement.load();
                             // Add a download link in case media source not supported
-                            document.getElementById('alertBoxDivFooter').innerHTML =
+                            document.getElementById('alertBoxFooter').innerHTML =
                                 '<div id="downloadAlert" class="alert alert-info alert-dismissible">\n' +
                                 '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
                                 '    <span id="alertMessage"></span>\n' +
