@@ -123,7 +123,7 @@ define(['util'], function(util) {
         document.getElementById('progressMessage').style.display = 'none';
     }
 
-     function printCustomElements() {
+    function printCustomElements() {
         var innerDocument = window.frames[0].frameElement.contentDocument;
         //Add any missing classes
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(class\s*=\s*["'][^"']*vcard\b[^>]+>\s*<span)>/ig, '$1 class="map-pin">');
