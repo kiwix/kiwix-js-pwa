@@ -1,3 +1,15 @@
+## Release 0.9.9.91 Wikivoyage (beta)
+* ENHANCEMENT: Links in clickable image maps (e.g. in Wikivoyage) are now supported
+* ENHANCEMENT: App code supports developer setting a custom start page for a packaged ZIM
+* ENHANCEMENT: A ZIM archive can be loaded through drag-and-drop of the file into the app
+* ENHANCEMENT: Article search results can now be selected with physical keyboard (down, up, enter keys)
+* UPDATE: Removed dependency on base tag, simplifying handling of hyperlinks
+* FIX: New MediaWiki ZIMs with details-summary tags are now supported
+* FIX: Low-level ZIM reader now conforms to libzim logic in deriving title from url
+* FIX: Low-level ZIM reader now reads the MIME type list from the ZIM
+* FIX: A system alert utility is now provided, to avoid using synchronous alert()
+* FIX: A workaround has been added for improperly coded hyperlinks in subdirectories in WikiMedia ZIM files
+
 ## Release 0.9.9.90 Wikivoyage (beta)
 * CRITICAL FIX: Remembered last page is now properly blanked on new archive load
 * CRITICAL FIX: Fixed regression preventing use of download library
