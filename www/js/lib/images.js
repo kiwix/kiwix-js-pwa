@@ -156,8 +156,29 @@ define(['uiUtil', 'cookies'], function(uiUtil, cookies) {
         iframeWindow.addEventListener('scroll', function() {
             clearTimeout(timer);
             // Waits for a period after scroll start to start checking for images
-            var timer = setTimeout(getImages, 600);
+            var timer = setTimeout(getImages, 500);
         });
+    }
+
+    function loadMathJax() {
+        //Load MathJax if required and if not already loaded
+        if (params.useMathJax) {
+            if (!window.frames[0].MathJax && (params.containsMathTexRaw || params.containsMathTex || params.containsMathSVG)) {
+                var doc = document.getElementById('articleContent').contentDocument;
+                var script = doc.createElement("script");
+                script.type = "text/javascript";
+                script.src = "js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
+                if (params.containsMathTex || params.containsMathTexRaw) script.innerHTML = 'MathJax.Hub.Queue(["Typeset", MathJax.Hub]); \
+                    console.log("Typesetting maths with MathJax");';
+                params.containsMathTexRaw = false; //Prevents doing a second Typeset run on the same document
+                params.containsMathTex = false;
+                doc.head.appendChild(script);
+            } else if (window.frames[0].MathJax && (params.containsMathTexRaw || params.containsMathTex || params.containsMathSVG)) {
+                window.frames[0].MathJax.Hub.Queue(["Typeset", window.frames[0].MathJax.Hub]);
+                console.log("Typesetting maths with MathJax");
+                params.containsMathTexRaw = false; //Prevents doing a second Typeset run on the same document
+            }
+        }
     }
 
     /**
@@ -178,6 +199,7 @@ define(['uiUtil', 'cookies'], function(uiUtil, cookies) {
         setupManualImageExtraction: setupManualImageExtraction,
         prepareImagesServiceWorker: prepareImagesServiceWorker,
         lazyLoad: lazyLoad,
+        loadMathJax: loadMathJax,
         setContentInjectionMode: setContentInjectionMode
     };
 });
