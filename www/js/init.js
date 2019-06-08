@@ -57,6 +57,7 @@ params['alphaChar'] = getCookie('alphaChar') || 'A'; //Set default start of alph
 params['omegaChar'] = getCookie('omegaChar') || 'Z'; //Set default end of alphabet string
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
+params['imageDisplayMode'] = params.imageDisplay ? 'progressive' : 'manual';
 params['storedFile'] = getCookie('lastSelectedArchive') || params['packagedFile'];
 params.storedFile = launchArguments ? launchArguments.files[0].name : params.storedFile;
 params['falFileToken'] = params['falFileToken'] || "zimfile"; //UWP support

@@ -26,8 +26,8 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'abstractFilesystemAccess', 'q', 'transformStyles', 'kiwixServe'],
- function ($, zimArchiveLoader, uiUtil, images, cookies, abstractFilesystemAccess, q, transformStyles, kiwixServe) {
+define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'transformStyles', 'kiwixServe'],
+ function ($, zimArchiveLoader, uiUtil, images, cookies, q, transformStyles, kiwixServe) {
 
         /**
          * Maximum number of articles to display in a search
@@ -99,15 +99,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'abstractFi
         $(document).ready(resizeIFrame);
         $(window).resize(resizeIFrame);
 
-        //Polyfill scrollStopped event
-        $.fn.scrollStopped = function (callback) {
-            var that = this,
-                $this = $(that);
-            $this.scroll(function (ev) {
-                clearTimeout($this.data('scrollTimeout'));
-                $this.data('scrollTimeout', setTimeout(callback.bind(that), 250, ev));
-            });
-        };
+        ////Polyfill scrollStopped event
+        //$.fn.scrollStopped = function (callback) {
+        //    var that = this,
+        //        $this = $(that);
+        //    $this.scroll(function (ev) {
+        //        clearTimeout($this.data('scrollTimeout'));
+        //        $this.data('scrollTimeout', setTimeout(callback.bind(that), 250, ev));
+        //    });
+        //};
 
         // Define behavior of HTML elements
         document.getElementById('searchArticles').addEventListener('click', function () {
@@ -772,16 +772,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'abstractFi
         });
 
         $('input:radio[name=contentInjectionMode]').on('change', function (e) {
-            if (checkWarnServiceWorkerMode(this.value)) {
-                var returnDivs = document.getElementsByClassName("returntoArticle");
-                for (var i = 0; i < returnDivs.length; i++) {
-                    returnDivs[i].innerHTML = "";
-                }
-                // Do the necessary to enable or disable the Service Worker
-                setContentInjectionMode(this.value);
-            } else {
-                setContentInjectionMode('jquery');
+            var returnDivs = document.getElementsByClassName("returntoArticle");
+            for (var i = 0; i < returnDivs.length; i++) {
+                returnDivs[i].innerHTML = "";
             }
+            // Do the necessary to enable or disable the Service Worker
+            setContentInjectionMode(this.value);
         });
         $('input:checkbox[name=allowInternetAccess]').on('change', function (e) {
             params.allowInternetAccess = this.checked ? true : false;
@@ -798,6 +794,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'abstractFi
         });
         $('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
             params.imageDisplay = this.checked ? true : false;
+            params.imageDisplayMode = this.checked ? 'progressive' : 'manual';
             params.themeChanged = params.imageDisplay; //Only reload page if user asked for all images to be displayed
             cookies.setItem('imageDisplay', params.imageDisplay, Infinity);
         });
@@ -2099,121 +2096,159 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'abstractFi
          * Read the article corresponding to the given dirEntry
          * @param {DirEntry} dirEntry
          */
-        function readArticle(dirEntry) {
-            if (dirEntry.isRedirect()) {
-                selectedArchive.resolveRedirect(dirEntry, readArticle);
-            } else {
-                //TESTING//
-                console.log("Initiating HTML load...");
-                console.time("Time to HTML load");
-                console.log("Initiating Document Ready timer...");
-                console.time("Time to Document Ready");
+         function readArticle(dirEntry) {
+             if (contentInjectionMode === 'serviceworker') {
+                 // In ServiceWorker mode, we simply set the iframe src.
+                 // (reading the backend is handled by the ServiceWorker itself)
+                 var iframeArticleContent = document.getElementById('articleContent');
+                 iframeArticleContent.onload = function () {
+                     // The iframe is empty, show spinner on load of landing page
+                     $("#searchingArticles").show();
+                     $("#articleList").empty();
+                     $('#articleListHeaderMessage').empty();
+                     $('#articleListWithHeader').hide();
+                     $("#prefix").val("");
+                     iframeArticleContent.onload = function () {
+                         // The content is fully loaded by the browser : we can hide the spinner
+                         $("#searchingArticles").hide();
+                         // Deflect drag-and-drop of ZIM file on the iframe to Config
+                         var doc = iframeArticleContent.contentDocument.documentElement;
+                         var docBody = doc ? doc.getElementsByTagName('body') : null;
+                         docBody = docBody ? docBody[0] : null;
+                         if (docBody) {
+                             docBody.addEventListener('dragover', handleIframeDragover);
+                             docBody.addEventListener('drop', handleIframeDrop);
+                         }
+                         if (/manual|progressive/.test(params.imageDisplayMode)) {
+                             var imageList = doc.querySelectorAll('img');
+                             if (imageList.length) {
+                                 images.prepareImagesServiceWorker(imageList, params.imageDisplayMode);
+                             }
+                         }
+                         iframeArticleContent.contentWindow.onunload = function () {
+                             $("#searchingArticles").show();
+                         };
+                     };
+                     iframeArticleContent.src = '../' + dirEntry.namespace + "/" + encodeURIComponent(dirEntry.url);
+                     // Display the iframe content
+                     $("#articleContent").show();
+                 };
+                 iframeArticleContent.src = "article.html";
+             } else {
+                 if (dirEntry.isRedirect()) {
+                     selectedArchive.resolveRedirect(dirEntry, readArticle);
+                 } else {
+                     //TESTING//
+                     console.log("Initiating HTML load...");
+                     console.time("Time to HTML load");
+                     console.log("Initiating Document Ready timer...");
+                     console.time("Time to Document Ready");
 
-                //Set startup cookie to guard against boot loop
-                //Cookie will signal failure until article is fully loaded
-                document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
+                     //Set startup cookie to guard against boot loop
+                     //Cookie will signal failure until article is fully loaded
+                     document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
 
-                //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
-                localSearch = {};
+                     //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
+                     localSearch = {};
 
-                //Void the iframe
-                //window.frames[0].frameElement.src = "about:blank";
+                     //Load cached start page if it exists and we have loaded the packaged file
+                     var htmlContent = 0;
+                     if (params.cachedStartPage && ~selectedArchive._file._files[0].name.indexOf(params.packagedFile) && params.isLandingPage) {
+                         htmlContent = -1;
+                         // DEV: You should deal with the rare possibility that the cachedStartPage is not in the same namespace as the main page dirEntry...
+                         // Ideally include the namespace in params.cachedStartPage and adjust/test code (not hard)
+                         uiUtil.XHR(dirEntry.namespace + '/' + encodeURIComponent(params.cachedStartPage), 'text', function (responseTxt, status) {
+                             htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
+                             if (htmlContent) {
+                                 console.log('Article retrieved from storage cache...');
+                                 // Alter the dirEntry url and title parameters in case we are overriding the start page
+                                 dirEntry.url = params.cachedStartPage;
+                                 var title = htmlContent.match(/<title[^>]*>((?:[^<]|<(?!\/title))+)/);
+                                 dirEntry.title = title ? title[1] : dirEntry.title;
+                                 displayArticleInForm(dirEntry, htmlContent);
+                             } else {
+                                 document.getElementById('searchingArticles').style.display = 'block';
+                                 selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
+                             }
+                         });
+                     }
 
-                //Load cached start page if it exists and we have loaded the packaged file
-                var htmlContent = 0;
-                if (params.cachedStartPage && ~selectedArchive._file._files[0].name.indexOf(params.packagedFile) && params.isLandingPage) {
-                    htmlContent = -1;
-                    // DEV: You should deal with the rare possibility that the cachedStartPage is not in the same namespace as the main page dirEntry...
-                    // Ideally include the namespace in params.cachedStartPage and adjust/test code (not hard)
-                    uiUtil.XHR(dirEntry.namespace + '/' + encodeURIComponent(params.cachedStartPage), 'text',
-                        function (responseTxt, status) {
-                            htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
-                            if (htmlContent) {
-                                console.log('Article retrieved from storage cache...');
-                                // Alter the dirEntry url and title parameters in case we are overriding the start page
-                                dirEntry.url = params.cachedStartPage;
-                                var title = htmlContent.match(/<title[^>]*>((?:[^<]|<(?!\/title))+)/);
-                                dirEntry.title = title ? title[1] : dirEntry.title;
-                                displayArticleInForm(dirEntry, htmlContent);
-                            } else {
-                                document.getElementById('searchingArticles').style.display = 'block';
-                                selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
-                            }
-                        });
-                }
+                     //Load lastPageVisit if it is the currently requested page
+                     if (!htmlContent) {
+                         if (params.rememberLastPage && typeof Storage !== "undefined" &&
+                             dirEntry.namespace + '/' + dirEntry.url == decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""))) {
+                             try {
+                                 htmlContent = localStorage.getItem('lastPageHTML');
+                             } catch (err) {
+                                 console.log("localStorage not supported: " + err);
+                             }
+                         }
+                         if (/<html[^>]*>/.test(htmlContent)) {
+                             console.log("Fast article retrieval from localStorage...");
+                             setTimeout(function () {
+                                 displayArticleInForm(dirEntry, htmlContent);
+                             }, 100);
+                         } else {
+                             selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
+                         }
+                     }
 
-                //Load lastPageVisit if it is the currently requested page
-                if (!htmlContent) {
-                    if (params.rememberLastPage && typeof Storage !== "undefined" &&
-                        dirEntry.namespace + '/' + dirEntry.url == decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""))) {
-                        try {
-                            htmlContent = localStorage.getItem('lastPageHTML');
-                        } catch (err) {
-                            console.log("localStorage not supported: " + err);
-                        }
-                    }
-                    if (/<html[^>]*>/.test(htmlContent)) {
-                        console.log("Fast article retrieval from localStorage...");
-                        setTimeout(function () {
-                            displayArticleInForm(dirEntry, htmlContent);
-                        }, 100);
-                    } else {
-                        selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
-                    }
-                }
-
-            }
-        }
+                 }
+             }
+         }
 
         var messageChannel;
 
-        /**
-         * Function that handles a message of the messageChannel.
-         * It tries to read the content in the backend, and sends it back to the ServiceWorker
-         * @param {Event} event
-         */
-        function handleMessageChannelMessage(event) {
-            if (event.data.error) {
-                console.error("Error in MessageChannel", event.data.error);
-                reject(event.data.error);
-            } else {
-                console.log("the ServiceWorker sent a message on port1", event.data);
-                if (event.data.action === "askForContent") {
-                    console.log("we are asked for a content : let's try to answer to this message");
-                    var title = event.data.title;
-                    var messagePort = event.ports[0];
-                    var readFile = function (dirEntry) {
-                        if (dirEntry === null) {
-                            console.error("Title " + title + " not found in archive.");
-                        messagePort.postMessage({'action': 'giveContent', 'title' : title, 'content': ''});
-                    } else if (dirEntry.isRedirect()) {
-                        selectedArchive.resolveRedirect(dirEntry, function(resolvedDirEntry) {
-                            var redirectURL = resolvedDirEntry.namespace + "/" +resolvedDirEntry.url;
-                            // Ask the ServiceWork to send anÂ HTTP redirect to the browser.
-                            // We could send the final content directly, but it is necessary to let the browser know in which directory it ends up.
-                            // Else, if the redirect URL is in a different directory than the original URL,
-                            // the relative links in the HTML content would fail. See #312
-                            messagePort.postMessage({'action':'sendRedirect', 'title':title, 'redirectUrl': redirectURL});
-                            console.log("redirect to " + redirectURL + " sent to ServiceWorker");                            
-                            });
-                        } else {
-                            console.log("Reading binary file...");
-                            selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                            var message = {'action': 'giveContent', 'title' : title, 'content': content.buffer};
-                            messagePort.postMessage(message, [content.buffer]);
-                                console.log("content sent to ServiceWorker");
-                            });
-                        }
-                    };
-                    selectedArchive.getDirEntryByTitle(title).then(readFile).fail(function () {
-                    messagePort.postMessage({'action': 'giveContent', 'title' : title, 'content': new UInt8Array()});
-                        });
-            }
-            else {
-                    console.error("Invalid message received", event.data);
-                }
-            }
-        }
+         /**
+          * Function that handles a message of the messageChannel.
+          * It tries to read the content in the backend, and sends it back to the ServiceWorker
+          * 
+          * @param {Event} event The event object of the message channel
+          */
+         function handleMessageChannelMessage(event) {
+             if (event.data.error) {
+                 console.error("Error in MessageChannel", event.data.error);
+                 reject(event.data.error);
+             } else {
+                 // We received a message from the ServiceWorker
+                 if (event.data.action === "askForContent") {
+                     // The ServiceWorker asks for some content
+                     var title = event.data.title;
+                     var messagePort = event.ports[0];
+                     var readFile = function (dirEntry) {
+                         if (dirEntry === null) {
+                             console.error("Title " + title + " not found in archive.");
+                             messagePort.postMessage({ 'action': 'giveContent', 'title': title, 'content': '' });
+                         } else if (dirEntry.isRedirect()) {
+                             selectedArchive.resolveRedirect(dirEntry, function (resolvedDirEntry) {
+                                 var redirectURL = resolvedDirEntry.namespace + "/" + resolvedDirEntry.url;
+                                 // Ask the ServiceWork to send an HTTP redirect to the browser.
+                                 // We could send the final content directly, but it is necessary to let the browser know in which directory it ends up.
+                                 // Else, if the redirect URL is in a different directory than the original URL,
+                                 // the relative links in the HTML content would fail. See #312
+                                 messagePort.postMessage({ 'action': 'sendRedirect', 'title': title, 'redirectUrl': redirectURL });
+                             });
+                         } else {
+                             // Let's read the content in the ZIM file
+                             selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                                 var mimetype = fileDirEntry.getMimetype();
+                                 // Let's send the content to the ServiceWorker
+                                 var message = {
+                                     'action': 'giveContent', 'title': title, 'content': content.buffer,
+                                     'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode
+                                 };
+                                 messagePort.postMessage(message, [content.buffer]);
+                             });
+                         }
+                     };
+                     selectedArchive.getDirEntryByTitle(title).then(readFile).fail(function () {
+                         messagePort.postMessage({ 'action': 'giveContent', 'title': title, 'content': new UInt8Array() });
+                     });
+                 } else {
+                     console.error("Invalid message received", event.data);
+                 }
+             }
+         }
 
         // Compile some regular expressions needed to modify links
         // Pattern to find the path in a url
@@ -2243,9 +2278,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'abstractFi
         var regexpActiveContent = /<script\b(?:(?![^>]+src\b)|(?=[^>]+src\b=["'][^"']+?app\.js))(?!>[^<]+(?:importScript\(\)|toggleOpenSection))(?![^>]+type\s*=\s*["'](?:math\/|[^"']*?math))/i;
     
         // DEV: The regex below matches ZIM links (anchor hrefs) that should have the html5 "donwnload" attribute added to 
-    // the link. This is currently the case for epub and pdf files in Project Gutenberg ZIMs -- add any further types you need
+        // the link. This is currently the case for epub and pdf files in Project Gutenberg ZIMs -- add any further types you need
         // to support to this regex. The "zip" has been added here as an example of how to support further filetypes
-    var regexpDownloadLinks = /^.*?\.epub($|\?)|^.*?\.pdf($|\?)|^.*?\.zip($|\?)/i;
+        var regexpDownloadLinks = /^.*?\.epub($|\?)|^.*?\.pdf($|\?)|^.*?\.zip($|\?)/i;
     
         // This matches the data-kiwixurl of all <link> tags containing rel="stylesheet" in raw HTML unless commented out
         var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*data-kiwixurl\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
@@ -2256,9 +2291,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'abstractFi
         // This matches the title of a mw-offliner (Type2) Wikimedia ZIM file, specifically 
         //var regexpType2ZIMTitle = /id\s*=\s*['"][^'"]*title_0[^"']*["'][^>]*>\s*([^<]+)\s*</i;
 
-        var containsMathTeXRaw = false;
-        var containsMathTeX = false;
-        var containsMathSVG = false;
+        params.containsMathTexRaw = false;
+        params.containsMathTex = false;
+        params.containsMathSVG = false;
         var treePath;
 
         // Stores a url to direntry mapping and is refered to/updated anytime there is a css lookup
@@ -2337,13 +2372,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'abstractFi
             //@TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
             htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, "$1");
 
-            if (!params.imageDisplay) {
-                //Ensure 36px clickable image height so user can request images by clicking [kiwix-js #173]
-                htmlArticle = htmlArticle.replace(/(<img\s+[^>]*\b)height(\s*=\s*)/ig,
-                    '$1height="36" src="img/lightBlue.png" style="color: lightblue; background-color: lightblue;" ' +
-                    'data-kiwixheight$2');
-            }
-
             //Remove erroneous content frequently on front page
             htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, "");
             htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, "");
@@ -2387,9 +2415,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'abstractFi
             htmlArticle = htmlArticle.replace(/href\s*=\s*["']javascript:[^"']+["']/gi, 'href=""');
 
             //MathJax detection:
-            containsMathTeXRaw = params.useMathJax && !/wikivoyage/.test(params.storedFile) ? /\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/.test(htmlArticle) : false;
+            params.containsMathTexRaw = params.useMathJax && !/wikivoyage/.test(params.storedFile) ? /\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/.test(htmlArticle) : false;
             //Simplify any configuration script
-            //if (containsMathTeXRaw) htmlArticle = htmlArticle.replace(/(<script\s+[^>]*?type\s*=\s*['"]\s*text\/x-mathjax-config[^>]+>[^<]+?Hub\.Config\s*\(\s*{\s*)[^<]*?(tex2jax\s*:[^}]+?})\s*,[^<]+(<\/script>)/i, "$1$2});$3");
+            //if (params.containsMathTexRaw) htmlArticle = htmlArticle.replace(/(<script\s+[^>]*?type\s*=\s*['"]\s*text\/x-mathjax-config[^>]+>[^<]+?Hub\.Config\s*\(\s*{\s*)[^<]*?(tex2jax\s*:[^}]+?})\s*,[^<]+(<\/script>)/i, "$1$2});$3");
             //Replace all TeX SVGs with MathJax scripts
             if (params.useMathJax) {
                 htmlArticle = htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"]([^'"]+)[^>]+>/ig, function (p0, math) {
@@ -2398,8 +2426,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'abstractFi
                     return '<script type="math/tex">' + math + '</script>';
                 });
             }
-            containsMathTeX = params.useMathJax ? /<script\s+type\s*=\s*['"]\s*math\/tex\s*['"]/i.test(htmlArticle) : false;
-            containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
+            params.containsMathTex = params.useMathJax ? /<script\s+type\s*=\s*['"]\s*math\/tex\s*['"]/i.test(htmlArticle) : false;
+            params.containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
 
             //Adapt German Wikivoyage POI data format
             var regexpGeoLocationDE = /<span\s+class\s?=\s?"[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<span[^>]+listing-name[^>]+>([^<]+)<\/span>)/ig;
@@ -2726,81 +2754,78 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'abstractFi
                     docBody.addEventListener('dragover', handleIframeDragover);
                     docBody.addEventListener('drop', handleIframeDrop);
 
-                    // If the ServiceWorker is not useable, we need to fallback to parse the DOM
-                    // to inject math images, and replace some links with javascript calls
-                    if (contentInjectionMode === 'jquery') {
-                        var currentProtocol = location.protocol;
-                        var currentHost = location.host;
-                        // Percent-encode dirEntry.url and add regex escape character \ to the RegExp special characters - see https://www.regular-expressions.info/characters.html;
-                        // NB dirEntry.url can also contain path separator / in some ZIMs (Stackexchange). } and ] do not need to be escaped as they have no meaning on their own. 
-                        var escapedUrl = encodeURIComponent(dirEntry.url).replace(/([\\$^.|?*+\/()[{])/g, '\\$1');
-                        // Pattern to match a local anchor in an href even if prefixed by escaped url; will also match # on its own
-                        var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#]*$)');
+                    var currentProtocol = location.protocol;
+                    var currentHost = location.host;
+                    // Percent-encode dirEntry.url and add regex escape character \ to the RegExp special characters - see https://www.regular-expressions.info/characters.html;
+                    // NB dirEntry.url can also contain path separator / in some ZIMs (Stackexchange). } and ] do not need to be escaped as they have no meaning on their own. 
+                    var escapedUrl = encodeURIComponent(dirEntry.url).replace(/([\\$^.|?*+\/()[{])/g, '\\$1');
+                    // Pattern to match a local anchor in an href even if prefixed by escaped url; will also match # on its own
+                    var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#]*$)');
 
-                        var iframeArticleContent = document.getElementById('articleContent').contentDocument;
-                        // Set state of collapsible sections
-                        if (params.openAllSections === true) {
-                            var collapsedBlocks = iframeArticleContent.querySelectorAll('.collapsible-block:not(.open-block), .collapsible-heading:not(.open-block)');
-                            for (var i = collapsedBlocks.length; i--;) {
-                                collapsedBlocks[i].classList.add('open-block');
-                            }
+                    var iframeArticleContent = document.getElementById('articleContent').contentDocument;
+                    // Set state of collapsible sections
+                    if (params.openAllSections === true) {
+                        var collapsedBlocks = iframeArticleContent.querySelectorAll('.collapsible-block:not(.open-block), .collapsible-heading:not(.open-block)');
+                        for (var i = collapsedBlocks.length; i--;) {
+                            collapsedBlocks[i].classList.add('open-block');
                         }
-
-                        Array.prototype.slice.call(iframeArticleContent.querySelectorAll('a, area')).forEach(function (anchor) {
-                            // Attempts to access any properties of 'this' with malformed URLs causes app crash in Edge/UWP [kiwix-js #430]
-                            try {
-                                var testHref = anchor.href;
-                            } catch (err) {
-                                console.error('Malformed href caused error:' + err.message);
-                                return;
-                            }
-                            var href = anchor.getAttribute('href');
-                            if (href === null || href === undefined) return;
-                            if (href.length === 0) {
-                                // It's a link with an empty href, pointing to the current page: do nothing.
-                            } else if (regexpLocalAnchorHref.test(href)) {
-                                // It's a local anchor link : remove escapedUrl if any (see above)
-                                anchor.setAttribute('href', href.replace(/^[^#]*/, ''));
-                            } else if (anchor.protocol !== currentProtocol ||
-                                anchor.host !== currentHost) {
-                                // It's an external URL : we should open it in a new tab
-                                anchor.target = '_blank';
-                            } else {
-                                // It's a link to an article or file in the ZIM
-                                var uriComponent = uiUtil.removeUrlParameters(href);
-                                var contentType;
-                                var downloadAttrValue;
-                                // Some file types need to be downloaded rather than displayed (e.g. *.epub)
-                                // The HTML download attribute can be Boolean or a string representing the specified filename for saving the file
-                                // For Boolean values, getAttribute can return any of the following: download="" download="download" download="true"
-                                // So we need to test hasAttribute first: see https://developer.mozilla.org/en-US/docs/Web/API/Element/getAttribute
-                                // However, we cannot rely on the download attribute having been set, so we also need to test for known download file types
-                                var isDownloadableLink = anchor.hasAttribute('download') || regexpDownloadLinks.test(href);
-                                if (isDownloadableLink) {
-                                    downloadAttrValue = anchor.getAttribute('download');
-                                    // Normalize the value to a true Boolean or a filename string or true if there is no download attribute
-                                    downloadAttrValue = /^(download|true|\s*)$/i.test(downloadAttrValue) || downloadAttrValue || true;
-                                    contentType = anchor.getAttribute('type');
-                                }
-                                // Add an onclick event to extract this article or file from the ZIM
-                                // instead of following the link
-                                anchor.addEventListener('click', function (e) {
-                                    var zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
-                                    goToArticle(zimUrl, downloadAttrValue, contentType);
-                                    e.preventDefault();
-                                });
-                            }
-                        });
-
-                        loadImagesJQuery();
-                        //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
-                        insertMediaBlobsJQuery();
-                        var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
-                        if (params.allowHTMLExtraction) uiUtil.insertBreakoutLink(determinedTheme);
-
-                        // Document has loaded except for images, so we can now change the startup cookie (and delete) [see init.js]
-                        document.cookie = 'lastPageLoad=success;expires=Thu, 21 Sep 1979 00:00:01 UTC';
                     }
+
+                    Array.prototype.slice.call(iframeArticleContent.querySelectorAll('a, area')).forEach(function (anchor) {
+                        // Attempts to access any properties of 'this' with malformed URLs causes app crash in Edge/UWP [kiwix-js #430]
+                        try {
+                            var testHref = anchor.href;
+                        } catch (err) {
+                            console.error('Malformed href caused error:' + err.message);
+                            return;
+                        }
+                        var href = anchor.getAttribute('href');
+                        if (href === null || href === undefined) return;
+                        if (href.length === 0) {
+                            // It's a link with an empty href, pointing to the current page: do nothing.
+                        } else if (regexpLocalAnchorHref.test(href)) {
+                            // It's a local anchor link : remove escapedUrl if any (see above)
+                            anchor.setAttribute('href', href.replace(/^[^#]*/, ''));
+                        } else if (anchor.protocol !== currentProtocol ||
+                            anchor.host !== currentHost) {
+                            // It's an external URL : we should open it in a new tab
+                            anchor.target = '_blank';
+                        } else {
+                            // It's a link to an article or file in the ZIM
+                            var uriComponent = uiUtil.removeUrlParameters(href);
+                            var contentType;
+                            var downloadAttrValue;
+                            // Some file types need to be downloaded rather than displayed (e.g. *.epub)
+                            // The HTML download attribute can be Boolean or a string representing the specified filename for saving the file
+                            // For Boolean values, getAttribute can return any of the following: download="" download="download" download="true"
+                            // So we need to test hasAttribute first: see https://developer.mozilla.org/en-US/docs/Web/API/Element/getAttribute
+                            // However, we cannot rely on the download attribute having been set, so we also need to test for known download file types
+                            var isDownloadableLink = anchor.hasAttribute('download') || regexpDownloadLinks.test(href);
+                            if (isDownloadableLink) {
+                                downloadAttrValue = anchor.getAttribute('download');
+                                // Normalize the value to a true Boolean or a filename string or true if there is no download attribute
+                                downloadAttrValue = /^(download|true|\s*)$/i.test(downloadAttrValue) || downloadAttrValue || true;
+                                contentType = anchor.getAttribute('type');
+                            }
+                            // Add an onclick event to extract this article or file from the ZIM
+                            // instead of following the link
+                            anchor.addEventListener('click', function (e) {
+                                var zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
+                                goToArticle(zimUrl, downloadAttrValue, contentType);
+                                e.preventDefault();
+                            });
+                        }
+                    });
+
+                    loadImagesJQuery();
+                    //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
+                    insertMediaBlobsJQuery();
+                    var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
+                    if (params.allowHTMLExtraction) uiUtil.insertBreakoutLink(determinedTheme);
+
+                    // Document has loaded except for images, so we can now change the startup cookie (and delete) [see init.js]
+                    document.cookie = 'lastPageLoad=success;expires=Thu, 21 Sep 1979 00:00:01 UTC';
+                    
 
                      //End of injectHTML()
                 };
@@ -2970,26 +2995,28 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'abstractFi
             $('#searchingArticles').hide();
         };
  
-        function loadMathJax() {
-            //Load MathJax if required and if not already loaded
-            if (params.useMathJax) {
-                if (!window.frames[0].MathJax && (containsMathTeXRaw || containsMathTeX || containsMathSVG)) {
-                    var doc = $("#articleContent").contents()[0];
-                    var script = doc.createElement("script");
-                    script.type = "text/javascript";
-                    script.src = "js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
-                    if (containsMathTeX || containsMathTeXRaw) script.innerHTML = 'MathJax.Hub.Queue(["Typeset", MathJax.Hub]); \
-                            console.log("Typesetting maths with MathJax");';
-                    containsMathTeXRaw = false; //Prevents doing a second Typeset run on the same document
-                    containsMathTeX = false;
-                    doc.head.appendChild(script);
-                } else if (window.frames[0].MathJax && (containsMathTeXRaw || containsMathTeX || containsMathSVG)) {
-                    window.frames[0].MathJax.Hub.Queue(["Typeset", window.frames[0].MathJax.Hub]);
-                    console.log("Typesetting maths with MathJax");
-                    containsMathTeXRaw = false; //Prevents doing a second Typeset run on the same document
+        function loadImagesJQuery(forPrinting) {
+            var iframeArticleContent = document.getElementById('articleContent');
+            var imageNodes = iframeArticleContent.contentDocument.querySelectorAll('img[data-kiwixurl]');
+            if (!imageNodes.length) return;
+            if (forPrinting) {
+                // We have to pass the selectedArchive to the images module
+                images.extractImages(imageNodes, selectedArchive);
+            } else if (params.imageDisplayMode === 'progressive') {
+                // Firefox squashes empty images, but we don't want to alter the vertical heights constantly as we scroll
+                // so substitute empty images with a plain svg
+                for (var i = imageNodes.length; i--;) {
+                    imageNodes[i].src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
                 }
+                images.lazyLoad(imageNodes, selectedArchive);
+            } else {
+                // User wishes to extract images manually
+                images.setupManualImageExtraction(imageNodes, selectedArchive);
             }
+            setTimeout(images.loadMathJax, 1000);
         }
+
+
 
         /**
          * This is the main image loading function.
@@ -2998,419 +3025,419 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'abstractFi
          * 
          * @param {Boolean} forPrinting A flag to indicate that all images should be injected 
          */
-        function loadImagesJQuery(forPrinting) {
+        //function loadImagesJQuery(forPrinting) {
 
-            //TESTING
-            console.log("** First Paint complete **");
-            console.timeEnd("Time to First Paint");
+        //    //TESTING
+        //    console.log("** First Paint complete **");
+        //    console.timeEnd("Time to First Paint");
 
-            //Set up tracking variables
-            var countImages = 0;
-            //DEV: This sets the maximum number of visible images to request in a single batch (too many will slow image display)
-            //NB remaining visible images are shunted into prefetchSlice, which works in the background
-            var maxVisibleSliceSize = 10;
-            //DEV: Set this to the number of images you want to prefetch after the on-screen images have been fetched
-            var prefetchSliceSize = forPrinting ? 10000 : 20;
-            //DEV: SVG images are currently very taxing: keep this number at 5 or below and test on your system with Sine.html
-            var svgSliceSize = 1;
-            var visibleSlice = [];
-            var svgSlice = [];
-            var svgGroup1 = [];
-            var initialSVGRun = true;
-            var prefetchSlice = [];
-            var windowScroll = true;
-            var imageDisplay = params.imageDisplay;
+        //    //Set up tracking variables
+        //    var countImages = 0;
+        //    //DEV: This sets the maximum number of visible images to request in a single batch (too many will slow image display)
+        //    //NB remaining visible images are shunted into prefetchSlice, which works in the background
+        //    var maxVisibleSliceSize = 10;
+        //    //DEV: Set this to the number of images you want to prefetch after the on-screen images have been fetched
+        //    var prefetchSliceSize = forPrinting ? 10000 : 20;
+        //    //DEV: SVG images are currently very taxing: keep this number at 5 or below and test on your system with Sine.html
+        //    var svgSliceSize = 1;
+        //    var visibleSlice = [];
+        //    var svgSlice = [];
+        //    var svgGroup1 = [];
+        //    var initialSVGRun = true;
+        //    var prefetchSlice = [];
+        //    var windowScroll = true;
+        //    var imageDisplay = params.imageDisplay;
 
-            //Establish master image array
-            var images = $('#articleContent').contents().find('body').find('img[data-kiwixurl]');
-            var allImages = images.length;
+        //    //Establish master image array
+        //    var images = $('#articleContent').contents().find('body').find('img[data-kiwixurl]');
+        //    var allImages = images.length;
 
-            //If user wants to display images...
-            if (imageDisplay) {
-                //Set up a listener function for onscroll event
-                if (allImages > prefetchSliceSize) {
-                    $("#articleContent").contents().scrollStopped(prepareImages);
-                }
-                if (allImages) {
-                    prepareImages();
-                } else {
-                    console.log("There are no images to display in this article.");
-                    loadMathJax();
-                    //TESTING
-                    console.timeEnd("Time to Document Ready");
-                    if (params.printIntercept) printIntercept();
-                    if (params.preloadingAllImages)
-                        params.preloadAllImages();
-                }
-            } else {
-                console.log("Image retrieval disabled by user");
-                //User did not request images, so give option of loading one by one {kiwix-js #173]
-                if (images.length) {
-                    images.each(function () {
-                        // Attach an onclick function to load the image
-                        var img = $(this);
-                        img.on('click', function () {
-                            this.height = this.getAttribute('data-kiwixheight');
-                            this.style.background = "";
-                            loadImageSlice([this], 0, 0, function (sliceID, sliceCount, sliceEnd, mimetype, data) {
-                                img[0].src = "data:" + mimetype + ";base64," + btoa(data);
-                            }, true);
-                        });
-                    });
-                }
-                //Although user didn't request images, typeset equations
-                loadMathJax();
+        //    //If user wants to display images...
+        //    if (imageDisplay) {
+        //        //Set up a listener function for onscroll event
+        //        if (allImages > prefetchSliceSize) {
+        //            $("#articleContent").contents().scrollStopped(prepareImages);
+        //        }
+        //        if (allImages) {
+        //            prepareImages();
+        //        } else {
+        //            console.log("There are no images to display in this article.");
+        //            loadMathJax();
+        //            //TESTING
+        //            console.timeEnd("Time to Document Ready");
+        //            if (params.printIntercept) printIntercept();
+        //            if (params.preloadingAllImages)
+        //                params.preloadAllImages();
+        //        }
+        //    } else {
+        //        console.log("Image retrieval disabled by user");
+        //        //User did not request images, so give option of loading one by one {kiwix-js #173]
+        //        if (images.length) {
+        //            images.each(function () {
+        //                // Attach an onclick function to load the image
+        //                var img = $(this);
+        //                img.on('click', function () {
+        //                    this.height = this.getAttribute('data-kiwixheight');
+        //                    this.style.background = "";
+        //                    loadImageSlice([this], 0, 0, function (sliceID, sliceCount, sliceEnd, mimetype, data) {
+        //                        img[0].src = "data:" + mimetype + ";base64," + btoa(data);
+        //                    }, true);
+        //                });
+        //            });
+        //        }
+        //        //Although user didn't request images, typeset equations
+        //        loadMathJax();
 
-                //TESTING
-                console.timeEnd("Time to Document Ready");
-                if (params.printIntercept) printIntercept();
-                if (params.preloadingAllImages)
-                    params.preloadAllImages();
-            }
+        //        //TESTING
+        //        console.timeEnd("Time to Document Ready");
+        //        if (params.printIntercept) printIntercept();
+        //        if (params.preloadingAllImages)
+        //            params.preloadAllImages();
+        //    }
 
-            /** Prepares the main array of images remaining for triage
-             * and determines which images are visible
-             */
-            function prepareImages() {
-                //Ensure the function isn't launched multiple times
-                if (!windowScroll) {
-                    return;
-                }
-                windowScroll = false;
+        //    /** Prepares the main array of images remaining for triage
+        //     * and determines which images are visible
+        //     */
+        //    function prepareImages() {
+        //        //Ensure the function isn't launched multiple times
+        //        if (!windowScroll) {
+        //            return;
+        //        }
+        //        windowScroll = false;
 
-                //Reload images array because we may have spliced it on a previous loop
-                images = $('#articleContent').contents().find('body').find('img[data-kiwixurl]');
+        //        //Reload images array because we may have spliced it on a previous loop
+        //        images = $('#articleContent').contents().find('body').find('img[data-kiwixurl]');
 
-                //Remove images that have already been loaded
-                var visibleImage = null;
-                var lastRemovedPosition = 0;
-                for (var i = 0; i < images.length; i++) {
-                    if (images[i].src) {
-                        visibleImage = uiUtil.isElementInView(images[i]) ? lastRemovedPosition : visibleImage;
-                        images.splice(i, 1);
-                        i--; //If we removed an image, reset the index
-                        lastRemovedPosition++;
-                    }
-                }
+        //        //Remove images that have already been loaded
+        //        var visibleImage = null;
+        //        var lastRemovedPosition = 0;
+        //        for (var i = 0; i < images.length; i++) {
+        //            if (images[i].src) {
+        //                visibleImage = uiUtil.isElementInView(images[i]) ? lastRemovedPosition : visibleImage;
+        //                images.splice(i, 1);
+        //                i--; //If we removed an image, reset the index
+        //                lastRemovedPosition++;
+        //            }
+        //        }
 
-                if (images.length) {
-                    console.log("Processing " + images.length + " images...");
-                    //Determine first and last visible images in the current window
-                    var view = checkVisibleImages();
-                    //windowScroll = true;
-                    //return;
+        //        if (images.length) {
+        //            console.log("Processing " + images.length + " images...");
+        //            //Determine first and last visible images in the current window
+        //            var view = checkVisibleImages();
+        //            //windowScroll = true;
+        //            //return;
 
-                    //If there are undisplayed images in the current window...
-                    if (view.lastVisible >= 0) {
-                        triageImages(view.firstVisible, view.lastVisible);
-                    } else {
-                        //If the currently visible image(s) have already been loaded...
-                        if (visibleImage != null) {
-                            //If we are viewing an image within 5 images of the next unloaded image
-                            if (lastRemovedPosition - visibleImage <= 5) {
-                                triageImages();
-                            } else {
-                                console.log("No images need prefetching\n\n" +
-                                    "** Waiting for user to scroll **");
-                                windowScroll = true;
-                                if (params.printIntercept) printIntercept();
-                                if (params.preloadingAllImages)
-                                    params.preloadAllImages();
-                            }
-                        } else {
-                            //We don't know where we are because no images are in view, so we'd better fetch some more
-                            triageImages();
-                        }
-                    }
-                } else {
-                    //Typeset equations
-                    loadMathJax();
-                    //Unload scroll listener
-                    console.log("Unloading scroll listener");
-                    $("#articleContent").contents().off('scroll');
-                    windowScroll = true; //Check if it's really unloaded...
-                    // All images were already loaded, so we have to check the intercepts here too!
-                    if (params.printIntercept) printIntercept();
-                    if (params.preloadingAllImages)
-                        params.preloadAllImages();
-                }
+        //            //If there are undisplayed images in the current window...
+        //            if (view.lastVisible >= 0) {
+        //                triageImages(view.firstVisible, view.lastVisible);
+        //            } else {
+        //                //If the currently visible image(s) have already been loaded...
+        //                if (visibleImage != null) {
+        //                    //If we are viewing an image within 5 images of the next unloaded image
+        //                    if (lastRemovedPosition - visibleImage <= 5) {
+        //                        triageImages();
+        //                    } else {
+        //                        console.log("No images need prefetching\n\n" +
+        //                            "** Waiting for user to scroll **");
+        //                        windowScroll = true;
+        //                        if (params.printIntercept) printIntercept();
+        //                        if (params.preloadingAllImages)
+        //                            params.preloadAllImages();
+        //                    }
+        //                } else {
+        //                    //We don't know where we are because no images are in view, so we'd better fetch some more
+        //                    triageImages();
+        //                }
+        //            }
+        //        } else {
+        //            //Typeset equations
+        //            loadMathJax();
+        //            //Unload scroll listener
+        //            console.log("Unloading scroll listener");
+        //            $("#articleContent").contents().off('scroll');
+        //            windowScroll = true; //Check if it's really unloaded...
+        //            // All images were already loaded, so we have to check the intercepts here too!
+        //            if (params.printIntercept) printIntercept();
+        //            if (params.preloadingAllImages)
+        //                params.preloadAllImages();
+        //        }
 
-            } //End of prepareImages()
+        //    } //End of prepareImages()
 
-            /**
-             * Sort the images into three arrays:
-             * visibleSlice (visible images which will be loaded first)
-             * svgSlice (groups together SVG images)
-             * prefetchSlice (preload set number of non-visible images)
-             * Pass the index of the first and last images of visible area if known 
-             *
-             * @param {number} firstVisible
-             * @param {number} lastVisible
-             */
-            function triageImages(firstVisible, lastVisible) {
-                //Set the window of images to be requested
-                if (typeof firstVisible === 'undefined' || firstVisible == null) {
-                    firstVisible = -1;
-                } //No first images was set
-                if (typeof lastVisible === 'undefined' || lastVisible == null) {
-                    lastVisible = -1;
-                } //No first images was set
-                var lengthSlice = lastVisible + prefetchSliceSize + 1;
-                var startSlice = firstVisible;
-                //If the requested images window extends beyond the end of the image array...
-                if (lengthSlice > images.length) {
-                    //Move the window backwards
-                    startSlice -= lengthSlice - images.length;
-                    lengthSlice = images.length;
-                }
-                //Check that the start of the window isn't before the beginning of the array
-                startSlice = startSlice < 0 ? 0 : startSlice;
+        //    /**
+        //     * Sort the images into three arrays:
+        //     * visibleSlice (visible images which will be loaded first)
+        //     * svgSlice (groups together SVG images)
+        //     * prefetchSlice (preload set number of non-visible images)
+        //     * Pass the index of the first and last images of visible area if known 
+        //     *
+        //     * @param {number} firstVisible
+        //     * @param {number} lastVisible
+        //     */
+        //    function triageImages(firstVisible, lastVisible) {
+        //        //Set the window of images to be requested
+        //        if (typeof firstVisible === 'undefined' || firstVisible == null) {
+        //            firstVisible = -1;
+        //        } //No first images was set
+        //        if (typeof lastVisible === 'undefined' || lastVisible == null) {
+        //            lastVisible = -1;
+        //        } //No first images was set
+        //        var lengthSlice = lastVisible + prefetchSliceSize + 1;
+        //        var startSlice = firstVisible;
+        //        //If the requested images window extends beyond the end of the image array...
+        //        if (lengthSlice > images.length) {
+        //            //Move the window backwards
+        //            startSlice -= lengthSlice - images.length;
+        //            lengthSlice = images.length;
+        //        }
+        //        //Check that the start of the window isn't before the beginning of the array
+        //        startSlice = startSlice < 0 ? 0 : startSlice;
 
 
-                //Sort through images to put them in the appropriate slice arrays
-                svgGroup1 = [];
-                var svgGroup2 = [];
-                for (var i = startSlice; i < lengthSlice; i++) {
-                    if (/\.svg$/i.test(images[i].getAttribute('data-kiwixurl')) ||
-                        //Include any kind of maths image fallback that has an alt string in SVG bucket
-                        /mwe-math-fallback/i.test(images[i].className) && images[i].alt) {
-                        if (i < firstVisible || i > lastVisible) {
-                            svgGroup2.push(images[i]);
-                        } else {
-                            svgGroup1.push(images[i]);
-                        }
-                    } else {
-                        if (i <= lastVisible && visibleSlice.length <= maxVisibleSliceSize) {
-                            visibleSlice.push(images[i]);
-                        } else {
-                            prefetchSlice.push(images[i]);
-                        }
-                    }
-                }
-                svgSlice = svgGroup1.concat(svgGroup2);
+        //        //Sort through images to put them in the appropriate slice arrays
+        //        svgGroup1 = [];
+        //        var svgGroup2 = [];
+        //        for (var i = startSlice; i < lengthSlice; i++) {
+        //            if (/\.svg$/i.test(images[i].getAttribute('data-kiwixurl')) ||
+        //                //Include any kind of maths image fallback that has an alt string in SVG bucket
+        //                /mwe-math-fallback/i.test(images[i].className) && images[i].alt) {
+        //                if (i < firstVisible || i > lastVisible) {
+        //                    svgGroup2.push(images[i]);
+        //                } else {
+        //                    svgGroup1.push(images[i]);
+        //                }
+        //            } else {
+        //                if (i <= lastVisible && visibleSlice.length <= maxVisibleSliceSize) {
+        //                    visibleSlice.push(images[i]);
+        //                } else {
+        //                    prefetchSlice.push(images[i]);
+        //                }
+        //            }
+        //        }
+        //        svgSlice = svgGroup1.concat(svgGroup2);
 
-                //Call displaySlices with all counters zeroed
-                //This lets the function know that it should initialize display process
-                displaySlices(0, 0, 0);
+        //        //Call displaySlices with all counters zeroed
+        //        //This lets the function know that it should initialize display process
+        //        displaySlices(0, 0, 0);
 
-            } //End of triageImages()
+        //    } //End of triageImages()
 
-            /**
-             * This controls the order in which slices will be displayed and acts as a callback function for loadImageSlice
-             * sliceID (callback value) identifies the slices: 1=visibleSlice; 2=prefetchSlice; 3=svgSlice 
-             * sliceCount (callback value) keeps count of the images loaded in the current slice
-             * sliceEnd (callback value) is the index of the last image in the current slice 
-             * Start the function with all values zeroed
-             *
-             * @callback requestCallback
-             * @param {number} sliceID
-             * @param {number} sliceCount
-             * @param {number} sliceEnd
-             */
-            function displaySlices(sliceID, sliceCount, sliceEnd) {
-                //Only respond to callback if all slice images have been extracted (or on startup)
-                if (sliceCount === sliceEnd) {
-                    sliceID++; //Get ready to process next slice
-                    if (sliceID == 1) {
-                        if (visibleSlice.length) {
-                            console.log("** Accessing " + visibleSlice.length + " visible image(s)...");
-                            loadImageSlice(visibleSlice, 1, visibleSlice.length, displaySlices);
-                            visibleSlice = [];
-                        } else { //No images in this slice so move on to next
-                            sliceID++;
-                        }
-                    }
-                    if (sliceID == 2) {
-                        if (prefetchSlice.length) {
-                            console.log("** Prefetching " + prefetchSlice.length + " offscreen images...");
-                            loadImageSlice(prefetchSlice, 2, prefetchSlice.length, displaySlices);
-                            prefetchSlice = [];
-                        } else { //No images in this slice so move on to next
-                            sliceID++;
-                        }
-                    }
-                    if (sliceID == 3) {
-                        //Only load MathJax after visible and prefetched images have been extracted, but before SVGs are pulled
-                        loadMathJax();
+        //    /**
+        //     * This controls the order in which slices will be displayed and acts as a callback function for loadImageSlice
+        //     * sliceID (callback value) identifies the slices: 1=visibleSlice; 2=prefetchSlice; 3=svgSlice 
+        //     * sliceCount (callback value) keeps count of the images loaded in the current slice
+        //     * sliceEnd (callback value) is the index of the last image in the current slice 
+        //     * Start the function with all values zeroed
+        //     *
+        //     * @callback requestCallback
+        //     * @param {number} sliceID
+        //     * @param {number} sliceCount
+        //     * @param {number} sliceEnd
+        //     */
+        //    function displaySlices(sliceID, sliceCount, sliceEnd) {
+        //        //Only respond to callback if all slice images have been extracted (or on startup)
+        //        if (sliceCount === sliceEnd) {
+        //            sliceID++; //Get ready to process next slice
+        //            if (sliceID == 1) {
+        //                if (visibleSlice.length) {
+        //                    console.log("** Accessing " + visibleSlice.length + " visible image(s)...");
+        //                    loadImageSlice(visibleSlice, 1, visibleSlice.length, displaySlices);
+        //                    visibleSlice = [];
+        //                } else { //No images in this slice so move on to next
+        //                    sliceID++;
+        //                }
+        //            }
+        //            if (sliceID == 2) {
+        //                if (prefetchSlice.length) {
+        //                    console.log("** Prefetching " + prefetchSlice.length + " offscreen images...");
+        //                    loadImageSlice(prefetchSlice, 2, prefetchSlice.length, displaySlices);
+        //                    prefetchSlice = [];
+        //                } else { //No images in this slice so move on to next
+        //                    sliceID++;
+        //                }
+        //            }
+        //            if (sliceID == 3) {
+        //                //Only load MathJax after visible and prefetched images have been extracted, but before SVGs are pulled
+        //                loadMathJax();
 
-                        //TESTING
-                        if (countImages <= maxVisibleSliceSize + prefetchSliceSize) {
-                            console.timeEnd("Time to Document Ready");
-                        }
+        //                //TESTING
+        //                if (countImages <= maxVisibleSliceSize + prefetchSliceSize) {
+        //                    console.timeEnd("Time to Document Ready");
+        //                }
 
-                        if (svgSlice.length) {
-                            //Use the MathJax method of typesetting formulae if user has requested this
-                            if (params.useMathJax && window.frames[0].MathJax) {
-                                /*/If MathJax has not yet completed a typesetting run, discard non-visible SVGs to speed up the initial typesetting operation
-                                if (initialSVGRun && svgGroup1.length > 0) {
-                                    svgSlice = svgGroup1;
-                                }
-                                initialSVGRun = false;*/
-                                var counter = 0;
-                                $(svgSlice).each(function () {
-                                    var node = this;
-                                    if (/mwe-math-fallback-image/i.test(node.className) && node.alt) {
-                                        var script = document.createElement("script");
-                                        script.type = "math/tex";
-                                        script.text = node.alt;
-                                        $(this).replaceWith(script);
-                                        console.log("Typesetting image #" + countImages + "...");
-                                        countImages++;
-                                        svgSlice.splice(counter, 1);
-                                    } else {
-                                        counter++;
-                                    }
-                                });
-                                window.frames[0].MathJax.Hub.Queue(["Typeset", window.frames[0].MathJax.Hub]);
-                            }
-                        }
-                        //If there are any SVGs left which were not dealt with by MathJax, process fallback images
-                        if (svgSlice.length) {
-                            console.log("** Slicing " + svgSlice.length + " SVG images...");
-                            //Set up variables to hold visible image range (to check whether user scrolls during lengthy procedure)
-                            var startSVG;
-                            var endSVG;
-                            iterateSVGSlice(3, 0, 0);
-                        } else { //No images in this slice so move on to next
-                            sliceID++;
-                        }
-                    }
-                    if (sliceID > 3) {
-                        if (countImages === allImages) {
-                            console.log("** All images extracted from current document **");
-                            windowScroll = true; //Go back to prove this!
-                        } else {
-                            console.log("All requested image slices have been processed\n" +
-                                "** Waiting for user scroll... **");
-                            windowScroll = true;
-                        }
-                        // Remember that we have requested all images by asking for a huge image slice; therefore it is OK to have these statements here (there will be no more images availabe after that huge slice)
-                        if (params.printIntercept) printIntercept();
-                        if (params.preloadingAllImages)
-                            params.preloadAllImages();
-                    }
-                }
+        //                if (svgSlice.length) {
+        //                    //Use the MathJax method of typesetting formulae if user has requested this
+        //                    if (params.useMathJax && window.frames[0].MathJax) {
+        //                        /*/If MathJax has not yet completed a typesetting run, discard non-visible SVGs to speed up the initial typesetting operation
+        //                        if (initialSVGRun && svgGroup1.length > 0) {
+        //                            svgSlice = svgGroup1;
+        //                        }
+        //                        initialSVGRun = false;*/
+        //                        var counter = 0;
+        //                        $(svgSlice).each(function () {
+        //                            var node = this;
+        //                            if (/mwe-math-fallback-image/i.test(node.className) && node.alt) {
+        //                                var script = document.createElement("script");
+        //                                script.type = "math/tex";
+        //                                script.text = node.alt;
+        //                                $(this).replaceWith(script);
+        //                                console.log("Typesetting image #" + countImages + "...");
+        //                                countImages++;
+        //                                svgSlice.splice(counter, 1);
+        //                            } else {
+        //                                counter++;
+        //                            }
+        //                        });
+        //                        window.frames[0].MathJax.Hub.Queue(["Typeset", window.frames[0].MathJax.Hub]);
+        //                    }
+        //                }
+        //                //If there are any SVGs left which were not dealt with by MathJax, process fallback images
+        //                if (svgSlice.length) {
+        //                    console.log("** Slicing " + svgSlice.length + " SVG images...");
+        //                    //Set up variables to hold visible image range (to check whether user scrolls during lengthy procedure)
+        //                    var startSVG;
+        //                    var endSVG;
+        //                    iterateSVGSlice(3, 0, 0);
+        //                } else { //No images in this slice so move on to next
+        //                    sliceID++;
+        //                }
+        //            }
+        //            if (sliceID > 3) {
+        //                if (countImages === allImages) {
+        //                    console.log("** All images extracted from current document **");
+        //                    windowScroll = true; //Go back to prove this!
+        //                } else {
+        //                    console.log("All requested image slices have been processed\n" +
+        //                        "** Waiting for user scroll... **");
+        //                    windowScroll = true;
+        //                }
+        //                // Remember that we have requested all images by asking for a huge image slice; therefore it is OK to have these statements here (there will be no more images availabe after that huge slice)
+        //                if (params.printIntercept) printIntercept();
+        //                if (params.preloadingAllImages)
+        //                    params.preloadAllImages();
+        //            }
+        //        }
 
-                /**
-                 * This is a specialized callback to iterate the SVGSlice
-                 * This slice needs special handling because svg images can hang the program
-                 *
-                 * @callback requestCallback
-                 * @param {number} sliceID
-                 * @param {number} sliceCount
-                 * @param {number} sliceEnd
-                 */
-                function iterateSVGSlice(sliceID, sliceCount, sliceEnd) {
-                    if (sliceCount === sliceEnd) {
-                        //Check to see if visible images have changed (i.e. if user has scrolled)
-                        if (!sliceCount) {
-                            //console.log("startSVG");
-                            startSVG = checkVisibleImages();
-                        } else {
-                            //console.log("endSVG");
-                            endSVG = checkVisibleImages();
-                        }
-                        if (endSVG) {
-                            if (startSVG.firstVisible != endSVG.firstVisible || startSVG.lastVisible != endSVG.lastVisible) {
-                                //Visible images have changed, so abandon this svgSlice
-                                console.log("** Abandoning svgSlice due to user scroll **");
-                                svgSlice = [];
-                                windowScroll = true;
-                                prepareImages();
-                                return;
-                            }
-                        }
-                        var batchSize = svgSliceSize > svgSlice.length ? svgSlice.length : svgSliceSize;
-                        if (batchSize) {
-                            //Split svgSlice into chunks to avoid hanging the program
-                            var svgSubSlice = svgSlice.slice(0, batchSize);
-                            svgSlice = svgSlice.slice(batchSize, svgSlice.length);
-                            console.log("Requesting batch of " + batchSize + " SVG image(s)...");
-                            loadImageSlice(svgSubSlice, 3, batchSize, iterateSVGSlice);
-                        } else {
-                            console.log("** Finished iterating svgSlice");
-                            displaySlices(3, 0, 0);
-                        }
-                    }
-                } //End of iterateSVGSlice()
+        //        /**
+        //         * This is a specialized callback to iterate the SVGSlice
+        //         * This slice needs special handling because svg images can hang the program
+        //         *
+        //         * @callback requestCallback
+        //         * @param {number} sliceID
+        //         * @param {number} sliceCount
+        //         * @param {number} sliceEnd
+        //         */
+        //        function iterateSVGSlice(sliceID, sliceCount, sliceEnd) {
+        //            if (sliceCount === sliceEnd) {
+        //                //Check to see if visible images have changed (i.e. if user has scrolled)
+        //                if (!sliceCount) {
+        //                    //console.log("startSVG");
+        //                    startSVG = checkVisibleImages();
+        //                } else {
+        //                    //console.log("endSVG");
+        //                    endSVG = checkVisibleImages();
+        //                }
+        //                if (endSVG) {
+        //                    if (startSVG.firstVisible != endSVG.firstVisible || startSVG.lastVisible != endSVG.lastVisible) {
+        //                        //Visible images have changed, so abandon this svgSlice
+        //                        console.log("** Abandoning svgSlice due to user scroll **");
+        //                        svgSlice = [];
+        //                        windowScroll = true;
+        //                        prepareImages();
+        //                        return;
+        //                    }
+        //                }
+        //                var batchSize = svgSliceSize > svgSlice.length ? svgSlice.length : svgSliceSize;
+        //                if (batchSize) {
+        //                    //Split svgSlice into chunks to avoid hanging the program
+        //                    var svgSubSlice = svgSlice.slice(0, batchSize);
+        //                    svgSlice = svgSlice.slice(batchSize, svgSlice.length);
+        //                    console.log("Requesting batch of " + batchSize + " SVG image(s)...");
+        //                    loadImageSlice(svgSubSlice, 3, batchSize, iterateSVGSlice);
+        //                } else {
+        //                    console.log("** Finished iterating svgSlice");
+        //                    displaySlices(3, 0, 0);
+        //                }
+        //            }
+        //        } //End of iterateSVGSlice()
 
-            } //End of displaySlices()
+        //    } //End of displaySlices()
 
-            /**
-             * Loads images in the array passed as images
-             * sliceID will be passed to the callback 
-             * sliceEnd is the index of the last image in the current slice 
-             * dataRequested == true returns the content and disables creation of blob
-             *
-             * @param {Array} images
-             * @param {number} sliceID
-             * @param {number} sliceEnd
-             * @param {requestCallback} callback
-             * @param {Boolean} dataRequested
-             */
-            function loadImageSlice(images, sliceID, sliceEnd, callback, dataRequested) {
-                var sliceCount = 0;
-                Array.prototype.slice.call(images).forEach(function (image) {
-                    var title = decodeURIComponent(image.dataset.kiwixurl);
-                    selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                        selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                            var url = fileDirEntry.url;
-                            var mimetype = dirEntry.getMimetype();
-                            if (!dataRequested) {
-                                uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.allowHTMLExtraction);
-                            }
-                            sliceCount++;
-                            console.log("Extracted image #" + countImages + "...");
-                            countImages++;
-                            if (!dataRequested) {
-                                callback(sliceID, sliceCount, sliceEnd, url);
-                            } else {
-                                callback(sliceID, sliceCount, sliceEnd, mimetype, util.uintToString(content));
-                            }
-                        });
-                    }).fail(function (e) {
-                        sliceCount++;
-                        console.error("Could not find DirEntry for image:" + title, e);
-                        countImages++;
-                        callback(sliceID, sliceCount, sliceEnd, "Error!");
-                    });
-                });
-            } //End of loadImageRange()
+        //    /**
+        //     * Loads images in the array passed as images
+        //     * sliceID will be passed to the callback 
+        //     * sliceEnd is the index of the last image in the current slice 
+        //     * dataRequested == true returns the content and disables creation of blob
+        //     *
+        //     * @param {Array} images
+        //     * @param {number} sliceID
+        //     * @param {number} sliceEnd
+        //     * @param {requestCallback} callback
+        //     * @param {Boolean} dataRequested
+        //     */
+        //    function loadImageSlice(images, sliceID, sliceEnd, callback, dataRequested) {
+        //        var sliceCount = 0;
+        //        Array.prototype.slice.call(images).forEach(function (image) {
+        //            var title = decodeURIComponent(image.dataset.kiwixurl);
+        //            selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+        //                selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+        //                    var url = fileDirEntry.url;
+        //                    var mimetype = dirEntry.getMimetype();
+        //                    if (!dataRequested) {
+        //                        uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.allowHTMLExtraction);
+        //                    }
+        //                    sliceCount++;
+        //                    console.log("Extracted image #" + countImages + "...");
+        //                    countImages++;
+        //                    if (!dataRequested) {
+        //                        callback(sliceID, sliceCount, sliceEnd, url);
+        //                    } else {
+        //                        callback(sliceID, sliceCount, sliceEnd, mimetype, util.uintToString(content));
+        //                    }
+        //                });
+        //            }).fail(function (e) {
+        //                sliceCount++;
+        //                console.error("Could not find DirEntry for image:" + title, e);
+        //                countImages++;
+        //                callback(sliceID, sliceCount, sliceEnd, "Error!");
+        //            });
+        //        });
+        //    } //End of loadImageRange()
 
-            /**
-             * This is a utility function to check the window of images visible to the user.
-             * It needs to be run within the scope of the main images array.
-             * Returns an object with attributes .firstVisible and .lastVisible
-             * They return null if no images are currently visible.
-             */
-            function checkVisibleImages() {
-                var firstVisible = null;
-                var lastVisible = null;
-                //Determine first and last visible images in the current window
-                for (var i = 0; i < images.length; i++) {
-                    //console.log("Checking #" + i + ": " + images[i].getAttribute("data-kiwixurl"));
-                    if (uiUtil.isElementInView(images[i])) {
-                        //console.log("#" + i + " *is* visible");
-                        if (firstVisible == null) {
-                            firstVisible = i;
-                        }
-                        lastVisible = i;
-                    } else {
-                        //console.log("#" + i + " is not visible");
-                        if (firstVisible != null && lastVisible != null) {
-                            console.log("First visible image is #" + firstVisible + "\n" +
-                                "Last visible image is #" + lastVisible);
-                            break; //We've found the last visible image, so stop the loop
-                        }
-                    }
-                }
-                return {
-                    firstVisible: firstVisible,
-                    lastVisible: lastVisible
-                };
-            }
+        //    /**
+        //     * This is a utility function to check the window of images visible to the user.
+        //     * It needs to be run within the scope of the main images array.
+        //     * Returns an object with attributes .firstVisible and .lastVisible
+        //     * They return null if no images are currently visible.
+        //     */
+        //    function checkVisibleImages() {
+        //        var firstVisible = null;
+        //        var lastVisible = null;
+        //        //Determine first and last visible images in the current window
+        //        for (var i = 0; i < images.length; i++) {
+        //            //console.log("Checking #" + i + ": " + images[i].getAttribute("data-kiwixurl"));
+        //            if (uiUtil.isElementInView(images[i])) {
+        //                //console.log("#" + i + " *is* visible");
+        //                if (firstVisible == null) {
+        //                    firstVisible = i;
+        //                }
+        //                lastVisible = i;
+        //            } else {
+        //                //console.log("#" + i + " is not visible");
+        //                if (firstVisible != null && lastVisible != null) {
+        //                    console.log("First visible image is #" + firstVisible + "\n" +
+        //                        "Last visible image is #" + lastVisible);
+        //                    break; //We've found the last visible image, so stop the loop
+        //                }
+        //            }
+        //        }
+        //        return {
+        //            firstVisible: firstVisible,
+        //            lastVisible: lastVisible
+        //        };
+        //    }
 
-        } //End of loadImagesJQuery()
+        //} //End of loadImagesJQuery()
 
         // Load Javascript content
         function loadJavaScriptJQuery() {
@@ -3461,14 +3488,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'abstractFi
         }
 
 
-        /**
-     * Extracts the content of the given article title, or a downloadable file, from the ZIM
-         * 
-         * @param {String} title The path and filename to the article or file to be extracted
-     * @param {Boolean|String} download A Bolean value that will trigger download of title, or the filename that should
-     *     be used to save the file in local FS (in HTML5 spec, a string value for the download attribute is optional)
-         * @param {String} contentType The mimetype of the downloadable file, if known 
-         */
+       /**
+        * Extracts the content of the given article title, or a downloadable file, from the ZIM
+        * 
+        * @param {String} title The path and filename to the article or file to be extracted
+        * @param {Boolean|String} download A Bolean value that will trigger download of title, or the filename that should
+        *     be used to save the file in local FS (in HTML5 spec, a string value for the download attribute is optional)
+        * @param {String} contentType The mimetype of the downloadable file, if known 
+        */
         function goToArticle(title, download, contentType) {
             //This removes any search highlighting
             clearFindInArticle();
