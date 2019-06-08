@@ -180,6 +180,7 @@
     <Content Include="www\js\init.js" />
     <Content Include="www\js\lib\bootstrap.min.js" />
     <Content Include="www\js\lib\cookies.js" />
+    <Content Include="www\js\lib\images.js" />
     <Content Include="www\js\lib\jquery-3.2.1.slim.js" />
     <Content Include="www\js\lib\kiwixServe.js" />
     <Content Include="www\js\lib\q.js" />
