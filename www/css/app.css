@@ -97,7 +97,7 @@ div:not(.panel-success, .alert-message) {
     background: lightblue;
 }
 
-#articleList a:hover, #articleList a.hover {
+#articleList a:hover, #articleList a.hover, .backgroundLightBlue {
     background: lightblue;
 }
 
