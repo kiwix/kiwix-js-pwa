@@ -26,14 +26,22 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module', 'transformStyles', 'kiwixServe'],
-    function ($, zimArchiveLoader, util, uiUtil, cookies, q, module, transformStyles, kiwixServe) {
+define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'abstractFilesystemAccess', 'q', 'transformStyles', 'kiwixServe'],
+ function ($, zimArchiveLoader, uiUtil, images, cookies, abstractFilesystemAccess, q, transformStyles, kiwixServe) {
 
         /**
          * Maximum number of articles to display in a search
          * @type Integer
          */
         var MAX_SEARCH_RESULT_SIZE = params.results; //This value is controlled in init.js, as are all parameters
+        /**
+         * The delay (in milliseconds) between two "keepalive" messages
+         * sent to the ServiceWorker (so that it is not stopped by
+         * the browser, and keeps the MessageChannel to communicate
+         * with the application)
+         * @type Integer
+         */
+        var DELAY_BETWEEN_KEEPALIVE_SERVICEWORKER = 30000;
 
         /**
          * @type ZIMArchive
@@ -1117,11 +1125,15 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          * Displays or refreshes the API status shown to the user
          */
         function refreshAPIStatus() {
+            var apiStatusPanel = document.getElementById('apiStatusDiv');
+            apiStatusPanel.classList.remove('panel-success', 'panel-warning');
+            var apiPanelClass = 'panel-success';
             if (isMessageChannelAvailable()) {
                 $('#messageChannelStatus').html("MessageChannel API available");
                 $('#messageChannelStatus').removeClass("apiAvailable apiUnavailable")
                     .addClass("apiAvailable");
             } else {
+                apiPanelClass = 'panel-warning';
                 $('#messageChannelStatus').html("MessageChannel API unavailable");
                 $('#messageChannelStatus').removeClass("apiAvailable apiUnavailable")
                     .addClass("apiUnavailable");
@@ -1132,15 +1144,18 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     $('#serviceWorkerStatus').removeClass("apiAvailable apiUnavailable")
                         .addClass("apiAvailable");
                 } else {
+                    apiPanelClass = 'panel-warning';
                     $('#serviceWorkerStatus').html("ServiceWorker API available, but not registered");
                     $('#serviceWorkerStatus').removeClass("apiAvailable apiUnavailable")
                         .addClass("apiUnavailable");
                 }
             } else {
+                apiPanelClass = 'panel-warning';
                 $('#serviceWorkerStatus').html("ServiceWorker API unavailable");
                 $('#serviceWorkerStatus').removeClass("apiAvailable apiUnavailable")
                     .addClass("apiUnavailable");
             }
+            apiStatusPanel.classList.add(apiPanelClass);
         }
 
         var contentInjectionMode;
@@ -1160,7 +1175,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 // Send the init message to the ServiceWorker, with this MessageChannel as a parameter
                 navigator.serviceWorker.controller.postMessage({'action': 'init'}, [tmpMessageChannel.port2]);
                 messageChannel = tmpMessageChannel;
-                console.log("init message sent to ServiceWorker");
                 // Schedule to do it again regularly to keep the 2-way communication alive.
                 // See https://github.com/kiwix/kiwix-js/issues/145 to understand why
                 clearTimeout(keepAliveServiceWorkerHandle);
@@ -1201,7 +1215,7 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                 if (!isServiceWorkerReady()) {
                     $('#serviceWorkerStatus').html("ServiceWorker API available : trying to register it...");
                     navigator.serviceWorker.register('../service-worker.js').then(function (reg) {
-                        console.log('serviceWorker registered', reg);
+                        // The ServiceWorker is registered
                         serviceWorkerRegistration = reg;
                         refreshAPIStatus();
 
@@ -1210,6 +1224,8 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                         var serviceWorker = reg.installing || reg.waiting || reg.active;
                         serviceWorker.addEventListener('statechange', function (statechangeevent) {
                             if (statechangeevent.target.state === 'activated') {
+                            // Remove any jQuery hooks from a previous jQuery session
+                            $('#articleContent').contents().remove();
                             // Create the MessageChannel
                             // and send the 'init' message to the ServiceWorker
                             initOrKeepAliveServiceWorker();
@@ -1225,43 +1241,31 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
                     }, function (err) {
                         console.error('error while registering serviceWorker', err);
                         refreshAPIStatus();
+                        var message = "The ServiceWorker could not be properly registered. Switching back to jQuery mode. Error message : " + err;
+                        var protocol = window.location.protocol;
+                        if (protocol === 'moz-extension:') {
+                            message += "\n\nYou seem to be using kiwix-js through a Firefox extension : ServiceWorkers are disabled by Mozilla in extensions.";
+                            message += "\nPlease vote for https://bugzilla.mozilla.org/show_bug.cgi?id=1344561 so that some future Firefox versions support it";
+                        }
+                        else if (protocol === 'file:') {
+                            message += "\n\nYou seem to be opening kiwix-js with the file:// protocol. You should open it through a web server : either through a local one (http://localhost/...) or through a remote one (but you need SSL : https://webserver/...)";
+                        }
+                        uiUtil.systemAlert(message);                        
+                        setContentInjectionMode("jquery");
+                        return;
                     });
                 } else {
+                // We need to set this variable earlier else the ServiceWorker does not get reactivated
+                contentInjectionMode = value;
                 initOrKeepAliveServiceWorker();
                 }
             }
             $('input:radio[name=contentInjectionMode]').prop('checked', false);
             $('input:radio[name=contentInjectionMode]').filter('[value="' + value + '"]').prop('checked', true);
             contentInjectionMode = value;
+            images.setContentInjectionMode(contentInjectionMode);
             // Save the value in a cookie, so that to be able to keep it after a reload/restart
             cookies.setItem('lastContentInjectionMode', value, Infinity);
-        }
-
-        /**
-         * If the ServiceWorker mode is selected, warn the user before activating it
-         * @param chosenContentInjectionMode The mode that the user has chosen
-         */
-        function checkWarnServiceWorkerMode(chosenContentInjectionMode) {
-            if (chosenContentInjectionMode === 'serviceworker' && !cookies.hasItem("warnedServiceWorkerMode")) {
-                // The user selected the "serviceworker" mode, which is still unstable
-                // So let's display a warning to the user
-
-                // If the focus is on the search field, we have to move it,
-                // else the keyboard hides the message
-                if ($("#prefix").is(":focus")) {
-                    $("#searchArticles").focus();
-                }
-                if (confirm("The 'Service Worker' mode is still UNSTABLE for now." +
-                        " It happens that the application needs to be reinstalled (or the ServiceWorker manually removed)." +
-                        " Please confirm with OK that you're ready to face this kind of bugs, or click Cancel to stay in 'jQuery' mode.")) {
-                    // We will not display this warning again for one day
-                    cookies.setItem("warnedServiceWorkerMode", true, 86400);
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            return true;
         }
 
         // At launch, we try to set the last content injection mode (stored in a cookie)
@@ -1313,7 +1317,6 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
          * @type Array.<StorageFirefoxOS>
          */
         var storages = [];
-        //var storages = [appFolder.path];  //UWP @UWP
         function searchForArchivesInPreferencesOrStorage() {
             // First see if the list of archives is stored in the cookie
             var listOfArchivesFromCookie = cookies.getItem("listOfArchives");
@@ -1600,16 +1603,16 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         function displayFileSelect() {
             document.getElementById('openLocalFiles').style.display = 'block';
             // Set the main drop zone
-            scrollBoxDropZone.addEventListener('dragover', handleGlobalDragover, false);
-            scrollBoxDropZone.addEventListener('dragleave', function (e) {
+            scrollBoxDropZone.addEventListener('dragover', handleGlobalDragover);
+            scrollBoxDropZone.addEventListener('dragleave', function(e) {
                 configDropZone.style.border = '';
             });
             // Also set a global drop zone (allows us to ensure Config is always displayed for the file drop)
             globalDropZone.addEventListener('dragover', function (e) {
                 e.preventDefault();
-                if (document.getElementById('configuration').style.display === 'none') document.getElementById('btnConfigure').click();
+                if (configDropZone.style.display === 'none') document.getElementById('btnConfigure').click();
                 e.dataTransfer.dropEffect = 'link';
-            }, false);
+            });
             globalDropZone.addEventListener('drop', handleFileDrop);
             // This handles use of the file picker
             document.getElementById('archiveFiles').addEventListener('change', setLocalArchiveFromFileSelect);
@@ -1825,11 +1828,12 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
             request.responseType = "blob";
             request.onreadystatechange = function () {
                 if (request.readyState === XMLHttpRequest.DONE) {
-                    if (request.status >= 200 && request.status < 300 || request.status === 0) {
+                    if ((request.status >= 200 && request.status < 300) || request.status === 0) {
                         // Hack to make this look similar to a file
                         request.response.name = url;
                         deferred.resolve(request.response);
-                    } else {
+                }
+                else {
                         deferred.reject("HTTP status " + request.status + " when reading " + url);
                     }
                 }
@@ -2077,9 +2081,9 @@ define(['jquery', 'zimArchiveLoader', 'util', 'uiUtil', 'cookies', 'q', 'module'
         function findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId) {
             if (selectedArchive.isReady()) {
                 var dirEntry = selectedArchive.parseDirEntryId(dirEntryId);
-                // Remove focus from search field to hide keyboard
-                document.getElementById('searchArticles').focus();
-                document.getElementById('searchingArticles').style.display = 'block';
+                // Remove focus from search field to hide keyboard and to allow navigation keys to be used
+                document.getElementById('articleContent').contentWindow.focus();
+                $("#searchingArticles").show();
                 if (dirEntry.isRedirect()) {
                     selectedArchive.resolveRedirect(dirEntry, readArticle);
                 } else {
