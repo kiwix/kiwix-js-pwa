@@ -33,9 +33,11 @@ define(['uiUtil', 'cookies'], function(uiUtil, cookies) {
      * and inserting a BLOB URL to each image in the image's src attribute
      * 
      * @param {Object} images An array or collection of DOM image nodes
-     * @param {Object} selectedArchive The ZIM archive picked by the user
+     * @param {Function} callback An optional function to call when all requested images have been loaded
      */
-    function extractImages(images, selectedArchive) {
+    function extractImages(images, callback) {
+        var remaining = images.length;
+        if (!remaining && callback) callback();
         Array.prototype.slice.call(images).forEach(function (image) {
             var imageUrl = image.getAttribute('data-kiwixurl');
             if (!imageUrl) return;
@@ -44,17 +46,24 @@ define(['uiUtil', 'cookies'], function(uiUtil, cookies) {
             if (contentInjectionMode === 'serviceworker') {
                 image.src = imageUrl + '?kiwix-display';
             } else {
-                selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                    return selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                state.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+                    return state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                         image.style.background = '';
                         var mimetype = dirEntry.getMimetype();
-                        uiUtil.feedNodeWithBlob(image, 'src', content, mimetype);
+                        uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.allowHTMLExtraction, function () {
+                            checkBatch();
+                        });
                     });
                 }).fail(function (e) {
                     console.error('Could not find DirEntry for image: ' + title, e);
+                    checkBatch();
                 });
             }
         });
+        var checkBatch = function () {
+            remaining--;
+            if (!remaining && callback) callback();
+        };
     }
 
     /**
@@ -62,9 +71,8 @@ define(['uiUtil', 'cookies'], function(uiUtil, cookies) {
      * extraction when user taps the indicated area
      * 
      * @param {Object} images An array or collection of DOM image nodes
-     * @param {Object} selectedArchive The ZIM archive picked by the user
      */
-    function setupManualImageExtraction(images, selectedArchive) {
+    function setupManualImageExtraction(images) {
         Array.prototype.slice.call(images).forEach(function (image) {
             var originalHeight = image.getAttribute('height') || '';
             //Ensure 36px clickable image height so user can request images by tapping
@@ -89,7 +97,7 @@ define(['uiUtil', 'cookies'], function(uiUtil, cookies) {
                     // images are being fetched; this is not necessary in SW mode because SW is only supported by faster browsers
                     if (contentInjectionMode ==='jquery') image.style.background = 'lightgray';
                 });
-                extractImages(visibleImages, selectedArchive);
+                extractImages(visibleImages);
             });
         });
     }
@@ -98,17 +106,28 @@ define(['uiUtil', 'cookies'], function(uiUtil, cookies) {
      * Sorts an array or collection of image nodes, returning a list of those that are inside the visible viewport 
      * 
      * @param {Object} images An array or collection of DOM image nodes
+     * @param {Boolean} visibleOnly If true, only processes visible images
      * @returns {Array} An array of image nodes that are within the visible viewport 
      */
-    function queueImages(images) {
-        var visibleImages = [];
+    function queueImages(images, visibleOnly) {
+        var numPrefetchImages = 10;
+        var queue = {};
+        queue.visibleImages = [];
+        queue.prefetchImages = [];
         for (var i = 0, l = images.length; i < l; i++) {
-            if (!images[i].dataset.kiwixurl) continue;
+            if (!images[i].dataset.kiwixurl || images[i].queued) continue;
             if (uiUtil.isElementInView(images[i])) {
-                visibleImages.push(images[i]);
+                queue.visibleImages.push(images[i]);
+                images[i].queued = true;
+            } else {
+                if (visibleOnly) continue;
+                if (queue.prefetchImages.length < numPrefetchImages && images[i].top > window.innerHeight) {
+                    queue.prefetchImages.push(images[i]);
+                    images[i].queued = true;
+                }
             }
         }
-        return visibleImages;
+        return queue;
     }
 
     /**
@@ -138,25 +157,35 @@ define(['uiUtil', 'cookies'], function(uiUtil, cookies) {
      * 
      * @param {Object} images And array or collection of DOM image nodes which will be processed for 
      *        progressive image extraction 
-     * @param {Object} selectedArchive The archive picked by the user
      */
-    function lazyLoad(images, selectedArchive) {
+    function lazyLoad(images) {
         var queue;
-        var getImages = function() {
-            queue = queueImages(images);
-            extractImages(queue, selectedArchive);
+        var getImages = function(visibleOnly) {
+            queue = queueImages(images, visibleOnly);
+            extractImages(queue.visibleImages, function () {
+                extractImages(queue.prefetchImages);
+            });
         };
         getImages();
         // Sometimes the page hasn't been rendered when getImages() is run, especially in Firefox, so run again after delay
-        setTimeout(getImages, 700);
-        if (queue.length === images.length) return;
+        //setTimeout(function () {
+        //    getImages(true);
+        //}, 700);
+        if (queue.visibleImages.length + queue.prefetchImages.length === images.length) return;
         // There are images remaining, so set up an event listener to load more images once user has stopped scrolling the iframe
         var iframe = document.getElementById('articleContent');
         var iframeWindow = iframe.contentWindow;
+        var timer;
+        var scrollPos;
         iframeWindow.addEventListener('scroll', function() {
             clearTimeout(timer);
-            // Waits for a period after scroll start to start checking for images
-            var timer = setTimeout(getImages, 500);
+            if (Math.abs(iframeWindow.pageYOffset - scrollPos) < 30) {
+                // Scroll is very slow, so start getting images in viewport
+                getImages(true);
+            }
+            // Timer will go off only when we have come to a standstill, and only then will prefetch images be processed
+            timer = setTimeout(getImages, 250);
+            scrollPos = iframeWindow.pageYOffset;
         });
     }
 
