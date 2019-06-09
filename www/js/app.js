@@ -46,7 +46,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
         /**
          * @type ZIMArchive
          */
-        var selectedArchive = null;
+        state.selectedArchive = null;
 
         // Define globalDropZone (universal drop area) and configDropZone (highlighting area on Config page)
         var globalDropZone = document.getElementById('search-article');
@@ -185,7 +185,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
         });
         // Search for titles as user types characters
         $('#prefix').on('keyup', function (e) {
-            if (selectedArchive !== null && selectedArchive.isReady()) {
+            if (state.selectedArchive !== null && state.selectedArchive.isReady()) {
                 // Prevent processing by keyup event if we already handled the keypress in keydown event
                 if (keyPressHandled)
                     keyPressHandled = false;
@@ -553,7 +553,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
             $('#welcomeText').show();
             //$('#articleList').show();
             //$('#articleListWithHeader').show();
-            if (selectedArchive !== null && selectedArchive.isReady()) {
+            if (state.selectedArchive !== null && state.selectedArchive.isReady()) {
                 $('#welcomeText').hide();
                 goToMainArticle();
             }
@@ -1579,7 +1579,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                     cssBlobCache = new Map();
                 //if (cssDirEntryCache)
                 //    cssDirEntryCache = new Map();
-                selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
+                state.selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
                     cookies.setItem("lastSelectedArchive", archiveDirectory, Infinity);
                     // The archive is set : go back to home page to start searching
                     if (params.rescan) {
@@ -1756,7 +1756,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                 cssBlobCache = new Map();
             //if (cssDirEntryCache)
             //    cssDirEntryCache = new Map();
-            selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
+            state.selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
                 // The archive is set : go back to home page to start searching
                 params.storedFile = archive._file._files[0].name;
                 cookies.setItem("lastSelectedArchive", params.storedFile, Infinity);
@@ -1881,7 +1881,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
          * @param {String} prefix
          */
         function searchDirEntriesFromPrefix(prefix) {
-            if (selectedArchive !== null && selectedArchive.isReady()) {
+            if (state.selectedArchive !== null && state.selectedArchive.isReady()) {
                 $('#activeContent').alert('close');
                 if (!prefix || /^\s/.test(prefix)) {
                     var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
@@ -1892,7 +1892,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                     }
                     showZIMIndex(null, sel);
                 } else {
-                    selectedArchive.findDirEntriesWithPrefix(prefix.trim(), MAX_SEARCH_RESULT_SIZE, populateListOfArticles);
+                    state.selectedArchive.findDirEntriesWithPrefix(prefix.trim(), MAX_SEARCH_RESULT_SIZE, populateListOfArticles);
                 }
             } else {
                 $('#searchingArticles').hide();
@@ -1916,8 +1916,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
         } else {
             prefix = start > 0 ? '' : prefix;
         }
-        if (selectedArchive !== null && selectedArchive.isReady()) {
-            selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, MAX_SEARCH_RESULT_SIZE, function(dirEntryArray, nextStart) {
+        if (state.selectedArchive !== null && state.selectedArchive.isReady()) {
+            state.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, MAX_SEARCH_RESULT_SIZE, function(dirEntryArray, nextStart) {
                 var docBody = document.getElementById('largeModal');
                 var newHtml = "";
                 for (var i = 0; i < dirEntryArray.length; i++) {
@@ -2076,13 +2076,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
          * @param {String} dirEntryId
          */
         function findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId) {
-            if (selectedArchive.isReady()) {
-                var dirEntry = selectedArchive.parseDirEntryId(dirEntryId);
+            if (state.selectedArchive.isReady()) {
+                var dirEntry = state.selectedArchive.parseDirEntryId(dirEntryId);
                 // Remove focus from search field to hide keyboard and to allow navigation keys to be used
                 document.getElementById('articleContent').contentWindow.focus();
                 $("#searchingArticles").show();
                 if (dirEntry.isRedirect()) {
-                    selectedArchive.resolveRedirect(dirEntry, readArticle);
+                    state.selectedArchive.resolveRedirect(dirEntry, readArticle);
                 } else {
                     params.isLandingPage = false;
                     readArticle(dirEntry);
@@ -2136,7 +2136,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                  iframeArticleContent.src = "article.html";
              } else {
                  if (dirEntry.isRedirect()) {
-                     selectedArchive.resolveRedirect(dirEntry, readArticle);
+                     state.selectedArchive.resolveRedirect(dirEntry, readArticle);
                  } else {
                      //TESTING//
                      console.log("Initiating HTML load...");
@@ -2153,7 +2153,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
 
                      //Load cached start page if it exists and we have loaded the packaged file
                      var htmlContent = 0;
-                     if (params.cachedStartPage && ~selectedArchive._file._files[0].name.indexOf(params.packagedFile) && params.isLandingPage) {
+                     if (params.cachedStartPage && ~state.selectedArchive._file._files[0].name.indexOf(params.packagedFile) && params.isLandingPage) {
                          htmlContent = -1;
                          // DEV: You should deal with the rare possibility that the cachedStartPage is not in the same namespace as the main page dirEntry...
                          // Ideally include the namespace in params.cachedStartPage and adjust/test code (not hard)
@@ -2168,7 +2168,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                                  displayArticleInForm(dirEntry, htmlContent);
                              } else {
                                  document.getElementById('searchingArticles').style.display = 'block';
-                                 selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
+                                 state.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
                              }
                          });
                      }
@@ -2189,7 +2189,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                                  displayArticleInForm(dirEntry, htmlContent);
                              }, 100);
                          } else {
-                             selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
+                             state.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
                          }
                      }
 
@@ -2220,7 +2220,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                              console.error("Title " + title + " not found in archive.");
                              messagePort.postMessage({ 'action': 'giveContent', 'title': title, 'content': '' });
                          } else if (dirEntry.isRedirect()) {
-                             selectedArchive.resolveRedirect(dirEntry, function (resolvedDirEntry) {
+                             state.selectedArchive.resolveRedirect(dirEntry, function (resolvedDirEntry) {
                                  var redirectURL = resolvedDirEntry.namespace + "/" + resolvedDirEntry.url;
                                  // Ask the ServiceWork to send an HTTP redirect to the browser.
                                  // We could send the final content directly, but it is necessary to let the browser know in which directory it ends up.
@@ -2230,7 +2230,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                              });
                          } else {
                              // Let's read the content in the ZIM file
-                             selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                             state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                                  var mimetype = fileDirEntry.getMimetype();
                                  // Let's send the content to the ServiceWorker
                                  var message = {
@@ -2241,7 +2241,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                              });
                          }
                      };
-                     selectedArchive.getDirEntryByTitle(title).then(readFile).fail(function () {
+                     state.selectedArchive.getDirEntryByTitle(title).then(readFile).fail(function () {
                          messagePort.postMessage({ 'action': 'giveContent', 'title': title, 'content': new UInt8Array() });
                      });
                  } else {
@@ -2330,7 +2330,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
             }
             if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
                 params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
-                    "@kiwixKey@" + selectedArchive._file._files[0].name;
+                    "@kiwixKey@" + state.selectedArchive._file._files[0].name;
                 if (params.rememberLastPage) {
                     cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
                     //Store current document's raw HTML in localStorage for fast restart
@@ -2507,10 +2507,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                     blobArray.push([title, cssBlobCache.get(title)]);
                     injectCSS();
                 } else {
-                    selectedArchive.getDirEntryByTitle(title)
+                    state.selectedArchive.getDirEntryByTitle(title)
                         .then(function (dirEntry) {
                             uiUtil.poll("Resolving CSS [" + title.replace(/[^/]+\//g, '').substring(0, 18) + "]...");
-                            return selectedArchive.readBinaryFile(dirEntry,
+                            return state.selectedArchive.readBinaryFile(dirEntry,
                                 function (fileDirEntry, content) {
                                     //DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
                                     //var cssContent = util.uintToString(content);
@@ -2856,8 +2856,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                         trackBlob = ccBlob;
                     });
                     // Load media file
-                    selectedArchive.getDirEntryByTitle(decodeURIComponent(source)).then(function (dirEntry) {
-                        return selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, mediaArray) {
+                    state.selectedArchive.getDirEntryByTitle(decodeURIComponent(source)).then(function (dirEntry) {
+                        return state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, mediaArray) {
                             var mimeType = mediaSource.type ? mediaSource.type : dirEntry.getMimetype();
                             var blob = new Blob([mediaArray], { type: mimeType });
                             mediaSource.src = URL.createObjectURL(blob);
@@ -2963,8 +2963,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                     if (existingCC) existingCC.parentNode.removeChild(existingCC);
                     var sel = v.target.options[v.target.selectedIndex];
                     if (!sel.value) return; // User selected "none"
-                    selectedArchive.getDirEntryByTitle(sel.dataset.kiwixsrc).then(function (dirEntry) {
-                        return selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, trackContents) {
+                    state.selectedArchive.getDirEntryByTitle(sel.dataset.kiwixsrc).then(function (dirEntry) {
+                        return state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, trackContents) {
                             var blob = new Blob([trackContents], { type: 'text/vtt' });
                             var t = doc.createElement('track');
                             t.id = 'kiwixSelCC';
@@ -3000,20 +3000,19 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
             var imageNodes = iframeArticleContent.contentDocument.querySelectorAll('img[data-kiwixurl]');
             if (!imageNodes.length) return;
             if (forPrinting) {
-                // We have to pass the selectedArchive to the images module
-                images.extractImages(imageNodes, selectedArchive);
+                images.extractImages(imageNodes, params.preloadingAllImages ? params.preloadAllImages : params.printIntercept ? printIntercept : null);
             } else if (params.imageDisplayMode === 'progressive') {
                 // Firefox squashes empty images, but we don't want to alter the vertical heights constantly as we scroll
                 // so substitute empty images with a plain svg
                 for (var i = imageNodes.length; i--;) {
                     imageNodes[i].src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
                 }
-                images.lazyLoad(imageNodes, selectedArchive);
+                images.lazyLoad(imageNodes);
             } else {
                 // User wishes to extract images manually
-                images.setupManualImageExtraction(imageNodes, selectedArchive);
+                images.setupManualImageExtraction(imageNodes);
             }
-            setTimeout(images.loadMathJax, 1000);
+            setTimeout(images.loadMathJax, 3000);
         }
 
 
@@ -3446,11 +3445,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                 var scriptUrl = script.attr("data-kiwixurl");
                 // TODO check that the type of the script is text/javascript or application/javascript
                 var title = uiUtil.removeUrlParameters(decodeURIComponent(scriptUrl));
-                    selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+                    state.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
                     if (dirEntry === null) {
                             console.log("Error: js file not found: " + title);
                     } else {
-                            selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                            state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                             // TODO : JavaScript support not yet functional [kiwix-js #152]
                                 uiUtil.feedNodeWithBlob(script, 'src', content, 'text/javascript', params.allowHTMLExtraction);
                             });
@@ -3504,7 +3503,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
             document.getElementById('scrollbox').style.position = "fixed";
             document.getElementById('scrollbox').style.height = window.innerHeight + "px";
             document.getElementById('searchingArticles').style.display = 'block';
-            selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+            state.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
                     document.getElementById('searchingArticles').style.display = 'none';
                     console.error("Article with title " + title + " not found in the archive");
@@ -3516,7 +3515,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                         goToMainArticle();
                     }
                 } else if (download) {
-                    selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                    state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                         uiUtil.displayFileDownloadAlert(title, download, contentType, content);
                     });
                 } else {
@@ -3531,10 +3530,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
 
         function goToRandomArticle() {
             document.getElementById('searchingArticles').style.display = 'block';
-            if (selectedArchive === null) {
+            if (state.selectedArchive === null) {
                 return;
             } //Prevents exception if user hasn't selected an archive
-            selectedArchive.getRandomDirEntry(function (dirEntry) {
+            state.selectedArchive.getRandomDirEntry(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
                     document.getElementById('searchingArticles').style.display = 'none';
                     uiUtil.systemAlert("Error finding random article.");
@@ -3555,7 +3554,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
 
         function goToMainArticle() {
             document.getElementById('searchingArticles').style.display = 'block';
-            selectedArchive.getMainPageDirEntry(function (dirEntry) {
+            state.selectedArchive.getMainPageDirEntry(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
                     console.error("Error finding main article.");
                     document.getElementById('searchingArticles').style.display = 'none';

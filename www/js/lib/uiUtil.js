@@ -37,8 +37,9 @@ define(['util'], function(util) {
      * @param {Uint8Array} content
      * @param {String} mimeType
      * @param {Boolean} makeDataURI If true, make a data: URI instead of a blob URL
+     * @param {Function} callback The function to call when the data are read
      */
-    function feedNodeWithBlob(node, nodeAttribute, content, mimeType, makeDataURI) {
+    function feedNodeWithBlob(node, nodeAttribute, content, mimeType, makeDataURI, callback) {
         var url;
         var blob = new Blob([content], { type: mimeType });
         if (makeDataURI) {
@@ -49,6 +50,7 @@ define(['util'], function(util) {
             myReader.onloadend = function () {
                 url = myReader.result;
                 node.setAttribute(nodeAttribute, url);
+                if (callback) callback();
             };
             myReader.readAsDataURL(blob);
         } else {
@@ -57,6 +59,7 @@ define(['util'], function(util) {
                 URL.revokeObjectURL(url);
             });
             node.setAttribute(nodeAttribute, url);
+            if (callback) callback();
         }
     }
         
@@ -442,7 +445,7 @@ define(['util'], function(util) {
     }
 
     /**
-     * Checks whether an element is partially or fully inside the current viewport
+     * Checks whether an element is partially or fully inside the current viewport, and adds the rect.top value to element.top
      * 
      * @param {Element} el The DOM element for which to check visibility
      * @param {Boolean} fully If true, checks that the entire element is inside the viewport
@@ -450,6 +453,7 @@ define(['util'], function(util) {
      */
     function isElementInView(el, fully) {
         var rect = el.getBoundingClientRect();
+        el.top = rect.top;
         if (fully)
             return rect.top > 0 && rect.bottom < window.innerHeight && rect.left > 0 && rect.right < window.innerWidth;
         else 
