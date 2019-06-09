@@ -27,7 +27,8 @@ window.onerror = function (msg, url) {
     console.error('Error caught in app [' + url + ']:\n' + msg);
     return true;
 };
-
+// State variables that are needed across different modules
+var state = {};
 // Parameters that define overall operation of app
 var params = {};
 params['version'] = "0.9.9.90 WikiMed Beta-dev"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
