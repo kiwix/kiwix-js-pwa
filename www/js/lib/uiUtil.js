@@ -449,15 +449,18 @@ define(['util'], function(util) {
      * 
      * @param {Element} el The DOM element for which to check visibility
      * @param {Boolean} fully If true, checks that the entire element is inside the viewport
+     * @param {Integer} offset An additional bottom (+) or top (-) margin to include in the search window
      * @returns {Boolean} True if the element is fully or partially inside the current viewport
      */
-    function isElementInView(el, fully) {
+    function isElementInView(el, fully, offset) {
+        offset = offset || 0;
         var rect = el.getBoundingClientRect();
         el.top = rect.top;
+        //console.log(el.dataset.kiwixurl + ': ' + rect.top);
         if (fully)
-            return rect.top > 0 && rect.bottom < window.innerHeight && rect.left > 0 && rect.right < window.innerWidth;
+            return rect.top > 0 + (offset < 0 ? offset : 0) && rect.bottom < window.innerHeight + (offset > 0 ? offset : 0) && rect.left > 0 && rect.right < window.innerWidth;
         else 
-            return rect.top < window.innerHeight && rect.bottom > 0 && rect.left < window.innerWidth && rect.right > 0;
+            return rect.top < window.innerHeight + (offset > 0 ? offset : 0) && rect.bottom > 0 + (offset < 0 ? offset : 0) && rect.left < window.innerWidth && rect.right > 0;
     }
 
     /**
