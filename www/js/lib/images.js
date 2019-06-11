@@ -20,13 +20,19 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
-define(['uiUtil', 'cookies'], function(uiUtil, cookies) {
+
+define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
 
     /**
      * Declare a module-specific variable defining the contentInjectionMode. Its value may be 
      * changed in setContentInjectionMode() 
      */
     var contentInjectionMode = cookies.getItem('lastContentInjectionMode');
+
+    /**
+     * A variable to keep track of how many images are being extracted by the extractor
+     */
+    var extractorBusy = 0;
 
     /**
      * Iterates over an array or collection of image nodes, extracting the image data from the ZIM
@@ -43,25 +49,32 @@ define(['uiUtil', 'cookies'], function(uiUtil, cookies) {
             if (!imageUrl) return;
             image.removeAttribute('data-kiwixurl');
             var title = decodeURIComponent(imageUrl);
-            if (contentInjectionMode === 'serviceworker') {
-                image.src = imageUrl + '?kiwix-display';
-            } else {
-                state.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                    return state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                        image.style.background = '';
-                        var mimetype = dirEntry.getMimetype();
-                        uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.allowHTMLExtraction, function () {
-                            checkBatch();
-                        });
+            //if (contentInjectionMode === 'serviceworker') {
+            //    image.style.opacity = '0';
+            //    image.src = imageUrl + '?kiwix-display';
+            //    setTimeout(function () { fadeIn(image); }, 200);
+            //} else {
+            extractorBusy++;
+            state.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+                return state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                    image.style.background = '';
+                    //image.style.opacity = '0';
+                    var mimetype = dirEntry.getMimetype();
+                    uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.allowHTMLExtraction, function () {
+                        checkBatch();
                     });
-                }).fail(function (e) {
-                    console.error('Could not find DirEntry for image: ' + title, e);
-                    checkBatch();
+                    fadeIn(image);
                 });
-            }
+            }).fail(function (e) {
+                console.error('Could not find DirEntry for image: ' + title, e);
+                checkBatch();
+            });
+            //}
         });
         var checkBatch = function () {
+            extractorBusy--;
             remaining--;
+            queueImages();
             if (!remaining && callback) callback();
         };
     }
@@ -77,8 +90,8 @@ define(['uiUtil', 'cookies'], function(uiUtil, cookies) {
             var originalHeight = image.getAttribute('height') || '';
             //Ensure 36px clickable image height so user can request images by tapping
             image.height = '36';
-            if (contentInjectionMode ==='jquery') {
-                image.src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
+            if (contentInjectionMode === 'jquery') {
+                image.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
                 image.style.background = 'lightblue';
             }
             image.dataset.kiwixheight = originalHeight;
@@ -89,45 +102,63 @@ define(['uiUtil', 'cookies'], function(uiUtil, cookies) {
                     e.preventDefault();
                     e.stopPropagation();
                 }
-                var visibleImages = queueImages(images);
+                var visibleImages = queueImages(images).visible;
                 visibleImages.forEach(function (image) {
                     if (image.dataset.kiwixheight) image.height = image.dataset.kiwixheight;
                     else image.removeAttribute('height');
                     // Line below provides a visual indication to users of slow browsers that their click has been registered and
                     // images are being fetched; this is not necessary in SW mode because SW is only supported by faster browsers
-                    if (contentInjectionMode ==='jquery') image.style.background = 'lightgray';
+                    if (contentInjectionMode === 'jquery') image.style.background = 'lightgray';
                 });
                 extractImages(visibleImages);
             });
         });
     }
 
+    // Image store to pause processing
+    var imageStore = [];
+    var maxImageBatch = 20;
+
     /**
      * Sorts an array or collection of image nodes, returning a list of those that are inside the visible viewport 
      * 
      * @param {Object} images An array or collection of DOM image nodes
-     * @param {Boolean} visibleOnly If true, only processes visible images
-     * @returns {Array} An array of image nodes that are within the visible viewport 
+     * @param {Boolean} extract If true, extract images immediately, otherwise sort images into arrays
+     * @param {Number} windowHeight The size in pixels of the visible window; defaults to window.innerHeight
+     * @param {Function} callback Function to call when last image has been extracted (only called if <extract> is true)
+     * @returns {Array} The array of remaining (unprocessed) image nodes
      */
-    function queueImages(images, visibleOnly) {
-        var numPrefetchImages = 10;
-        var queue = {};
-        queue.visibleImages = [];
-        queue.prefetchImages = [];
-        for (var i = 0, l = images.length; i < l; i++) {
-            if (!images[i].dataset.kiwixurl || images[i].queued) continue;
-            if (uiUtil.isElementInView(images[i])) {
-                queue.visibleImages.push(images[i]);
-                images[i].queued = true;
-            } else {
-                if (visibleOnly) continue;
-                if (queue.prefetchImages.length < numPrefetchImages && images[i].top > window.innerHeight) {
-                    queue.prefetchImages.push(images[i]);
-                    images[i].queued = true;
-                }
-            }
+    function queueImages(images, extract, windowHeight, callback) {
+        console.log('images: ' + (images ? images.length : 'null') + '; store: ' + imageStore.length);
+        if (imageStore.length && !extractorBusy) {
+            extractImages(imageStore.splice(0, imageStore.length < maxImageBatch ? imageStore.length : maxImageBatch));
         }
-        return queue;
+        if (!images) return;
+        windowHeight = windowHeight || window.innerHeight;
+        var visible = [];
+        var remaining = [];
+        var batchCount = 0;
+        for (var i = 0, l = images.length; i < l; i++) {
+            if (images[i].queued || !images[i].dataset.kiwixurl) continue;
+            if (uiUtil.isElementInView(images[i], null, windowHeight)) {
+                visible.push(images[i]);
+                if (extract) {
+                    images[i].queued = true;
+                    if (extractorBusy < maxImageBatch) {
+                        batchCount++;
+                        extractImages([images[i]], function () {
+                            batchCount--;
+                            if (callback && !batchCount) callback();
+                        });
+                    } else {
+                        imageStore.push(images[i]);
+                    }
+                }
+            } else {
+                remaining.push(images[i]);
+            } 
+        }
+        return { 'visible': visible, 'remaining': remaining };
     }
 
     /**
@@ -141,7 +172,8 @@ define(['uiUtil', 'cookies'], function(uiUtil, cookies) {
         for (var i = 0, l = images.length; i < l; i++) {
             // DEV: make sure list of file types here is the same as the list in Service Worker code
             if (/(^|\/)[IJ]\/.*\.(jpe?g|png|svg|gif)($|[?#])/i.test(images[i].src)) {
-                images[i].dataset.kiwixurl = images[i].getAttribute('src');
+                //images[i].dataset.kiwixurl = images[i].getAttribute('src');
+                images[i].dataset.kiwixurl = images[i].getAttribute('src').replace(/^[./]*?([IJ]\/)/, '$1');
                 zimImages.push(images[i]);
             }
         }
@@ -159,34 +191,28 @@ define(['uiUtil', 'cookies'], function(uiUtil, cookies) {
      *        progressive image extraction 
      */
     function lazyLoad(images) {
-        var queue;
-        var getImages = function(visibleOnly) {
-            queue = queueImages(images, visibleOnly);
-            extractImages(queue.visibleImages, function () {
-                extractImages(queue.prefetchImages);
-            });
-        };
-        getImages();
-        // Sometimes the page hasn't been rendered when getImages() is run, especially in Firefox, so run again after delay
-        //setTimeout(function () {
-        //    getImages(true);
-        //}, 700);
-        if (queue.visibleImages.length + queue.prefetchImages.length === images.length) return;
+        // Perform an immediate extraction of visible images so as not to disconcert the user
+        images = queueImages(images, true, null, function () {
+            images = queueImages(images, true, window.innerHeight * 2).remaining;
+        }).remaining;
+        if (!images.length) return;
         // There are images remaining, so set up an event listener to load more images once user has stopped scrolling the iframe
         var iframe = document.getElementById('articleContent');
         var iframeWindow = iframe.contentWindow;
-        var timer;
         var scrollPos;
-        iframeWindow.addEventListener('scroll', function() {
-            clearTimeout(timer);
-            if (Math.abs(iframeWindow.pageYOffset - scrollPos) < 30) {
+        // NB we add the event listener this way so we can access it in app.js
+        iframeWindow.onscroll = function () {
+            if (!images.length) return;
+            var velo = iframeWindow.pageYOffset - scrollPos;
+            var height = window.innerHeight * 2;
+            if (velo < 10 && velo > -10) {
                 // Scroll is very slow, so start getting images in viewport
-                getImages(true);
+                images = queueImages(images, true, null, function () {
+                    images = queueImages(images, true, velo >= 0 ? height : -height).remaining;
+                }).remaining;
             }
-            // Timer will go off only when we have come to a standstill, and only then will prefetch images be processed
-            timer = setTimeout(getImages, 250);
             scrollPos = iframeWindow.pageYOffset;
-        });
+        };
     }
 
     function loadMathJax() {
@@ -208,6 +234,28 @@ define(['uiUtil', 'cookies'], function(uiUtil, cookies) {
                 params.containsMathTexRaw = false; //Prevents doing a second Typeset run on the same document
             }
         }
+    }
+
+    /**
+     * Fade in an element over <duration> seconds in intervals of <interval> milliseconds
+     * @param {Object} element DOM node to fade in
+     * @param {Number} duration The duration of the fade in seconds
+     * @param {Integer} interval The frame rate of the fade in milliseconds
+     */
+    function fadeIn(element, duration, interval) {
+        duration = duration || 0.5; //s
+        interval = interval || 50; //ms
+        var op = 0.0;
+        var iop = 1;
+        element.style.opacity = op;
+        var timer = setInterval(function () {
+            if (op >= iop) {
+                op = iop;
+                clearInterval(timer);
+            }
+            element.style.opacity = op;
+            op += iop / (1000 / interval * duration);
+        }, interval);
     }
 
     /**

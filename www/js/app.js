@@ -2607,7 +2607,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                 ToCList.innerHTML = dropup;
                 Array.prototype.slice.call(ToCList.getElementsByTagName('a')).forEach(function (listElement) {
                     listElement.addEventListener('click', function () {
-                        window.frames[0].frameElement.contentWindow.location.hash = this.dataset.headingId;
+                        var iframeWin = document.getElementById('articleContent').contentWindow;
+                        iframeWin.location.hash = this.dataset.headingId;
+                        iframeWin.onscroll();
                     });
                 });
             }
