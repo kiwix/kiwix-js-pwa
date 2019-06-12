@@ -964,6 +964,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                 if (typeof Storage !== "undefined") {
                     try {
                         localStorage.setItem('lastPageHTML', "");
+                        localStorage.clear();
                     } catch (err) {
                         console.log("localStorage not supported: " + err);
                     }
@@ -2336,6 +2337,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                     //Store current document's raw HTML in localStorage for fast restart
                     if (typeof Storage !== "undefined") {
                         try {
+                            // Ensure we don't go over quota
+                            localStorage.clear();
                             localStorage.setItem('lastPageHTML', htmlArticle);
                         } catch (err) {
                             console.log("localStorage not supported: " + err);
@@ -3008,6 +3011,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                 // so substitute empty images with a plain svg
                 for (var i = imageNodes.length; i--;) {
                     imageNodes[i].src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
+                    imageNodes[i].style.opacity = '0';
+                    imageNodes[i].style.transition = 'opacity 0.5s ease-in';
                 }
                 images.lazyLoad(imageNodes);
             } else {
