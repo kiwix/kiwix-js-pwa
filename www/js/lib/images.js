@@ -49,32 +49,32 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
             if (!imageUrl) return;
             image.removeAttribute('data-kiwixurl');
             var title = decodeURIComponent(imageUrl);
-            //if (contentInjectionMode === 'serviceworker') {
-            //    image.style.opacity = '0';
-            //    image.src = imageUrl + '?kiwix-display';
-            //    setTimeout(function () { fadeIn(image); }, 200);
-            //} else {
-            extractorBusy++;
-            state.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                return state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                    image.style.background = '';
-                    //image.style.opacity = '0';
-                    var mimetype = dirEntry.getMimetype();
-                    uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.allowHTMLExtraction, function () {
-                        checkBatch();
-                    });
-                    fadeIn(image);
-                });
-            }).fail(function (e) {
-                console.error('Could not find DirEntry for image: ' + title, e);
-                checkBatch();
+            image.addEventListener('load', function () {
+                image.style.opacity = '1';
             });
-            //}
+            if (contentInjectionMode === 'serviceworker') {
+                // image.style.opacity = '0';
+                image.src = imageUrl + '?kiwix-display';
+            } else {
+                extractorBusy++;
+                state.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+                    return state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                        image.style.background = '';
+                        var mimetype = dirEntry.getMimetype();
+                        uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.allowHTMLExtraction, function () {
+                            checkBatch();
+                        });
+                    });
+                }).fail(function (e) {
+                    console.error('Could not find DirEntry for image: ' + title, e);
+                    checkBatch();
+                });
+            }
         });
         var checkBatch = function () {
             extractorBusy--;
             remaining--;
-            queueImages();
+            if (!remaining) queueImages();
             if (!remaining && callback) callback();
         };
     }
@@ -85,7 +85,7 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
      * 
      * @param {Object} images An array or collection of DOM image nodes
      */
-    function setupManualImageExtraction(images) {
+    function prepareManualExtraction(images) {
         Array.prototype.slice.call(images).forEach(function (image) {
             var originalHeight = image.getAttribute('height') || '';
             //Ensure 36px clickable image height so user can request images by tapping
@@ -106,11 +106,15 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
                 visibleImages.forEach(function (image) {
                     if (image.dataset.kiwixheight) image.height = image.dataset.kiwixheight;
                     else image.removeAttribute('height');
-                    // Line below provides a visual indication to users of slow browsers that their click has been registered and
-                    // images are being fetched; this is not necessary in SW mode because SW is only supported by faster browsers
-                    if (contentInjectionMode === 'jquery') image.style.background = 'lightgray';
+                    image.style.opacity = '0';
+                    image.style.transition = 'opacity 0.5s ease-in';
                 });
-                extractImages(visibleImages);
+                var leftover = queueImages(visibleImages, true).remaining;
+                leftover.forEach(function (image) {
+                    //image.style.background = 'lightblue';
+                    image.height = '36';
+                    image.style.opacity = '1';
+                });
             });
         });
     }
@@ -129,7 +133,7 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
      * @returns {Array} The array of remaining (unprocessed) image nodes
      */
     function queueImages(images, extract, windowHeight, callback) {
-        console.log('images: ' + (images ? images.length : 'null') + '; store: ' + imageStore.length);
+        // console.log('images: ' + (images ? images.length : 'null') + '; store: ' + imageStore.length);
         if (imageStore.length && !extractorBusy) {
             extractImages(imageStore.splice(0, imageStore.length < maxImageBatch ? imageStore.length : maxImageBatch));
         }
@@ -144,6 +148,8 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
                 visible.push(images[i]);
                 if (extract) {
                     images[i].queued = true;
+                    // images[i].style.opacity = '0';
+                    // images[i].style.transition = 'opacity 0.5s ease-in';
                     if (extractorBusy < maxImageBatch) {
                         batchCount++;
                         extractImages([images[i]], function () {
@@ -172,13 +178,18 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
         for (var i = 0, l = images.length; i < l; i++) {
             // DEV: make sure list of file types here is the same as the list in Service Worker code
             if (/(^|\/)[IJ]\/.*\.(jpe?g|png|svg|gif)($|[?#])/i.test(images[i].src)) {
-                //images[i].dataset.kiwixurl = images[i].getAttribute('src');
-                images[i].dataset.kiwixurl = images[i].getAttribute('src').replace(/^[./]*?([IJ]\/)/, '$1');
+                images[i].dataset.kiwixurl = images[i].getAttribute('src');
+                //images[i].dataset.kiwixurl = images[i].getAttribute('src').replace(/^[./]*?([IJ]\/)/, '$1');
+                images[i].style.transition = 'opacity 0.5s ease-in';
+                if (displayType === 'progressive') {
+                    images[i].style.opacity = '0';
+                    images[i].style.transition = 'opacity 0.5s ease-in';
+                }
                 zimImages.push(images[i]);
             }
         }
         if (displayType === 'manual') {
-            setupManualImageExtraction(zimImages);
+            prepareManualExtraction(zimImages);
         } else {
             lazyLoad(zimImages);
         }
@@ -192,8 +203,9 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
      */
     function lazyLoad(images) {
         // Perform an immediate extraction of visible images so as not to disconcert the user
+        // We request images twice because frequently the position of all of them is not known at this stage in rendering
         images = queueImages(images, true, null, function () {
-            images = queueImages(images, true, window.innerHeight * 2).remaining;
+            images = queueImages(images, true).remaining;
         }).remaining;
         if (!images.length) return;
         // There are images remaining, so set up an event listener to load more images once user has stopped scrolling the iframe
@@ -204,11 +216,13 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
         iframeWindow.onscroll = function () {
             if (!images.length) return;
             var velo = iframeWindow.pageYOffset - scrollPos;
-            var height = window.innerHeight * 2;
-            if (velo < 10 && velo > -10) {
-                // Scroll is very slow, so start getting images in viewport
+            var height = window.innerHeight * 1.5;
+            if (velo < 15 && velo > -15) {
+                // Scroll is now quite slow, so start getting images in viewport
+                //images = queueImages(images, true).remaining;
                 images = queueImages(images, true, null, function () {
-                    images = queueImages(images, true, velo >= 0 ? height : -height).remaining;
+                    //images = queueImages(images, true, velo >= 0 ? height : -height).remaining;
+                    images = queueImages(images, true).remaining;
                 }).remaining;
             }
             scrollPos = iframeWindow.pageYOffset;
@@ -237,28 +251,6 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
     }
 
     /**
-     * Fade in an element over <duration> seconds in intervals of <interval> milliseconds
-     * @param {Object} element DOM node to fade in
-     * @param {Number} duration The duration of the fade in seconds
-     * @param {Integer} interval The frame rate of the fade in milliseconds
-     */
-    function fadeIn(element, duration, interval) {
-        duration = duration || 0.5; //s
-        interval = interval || 50; //ms
-        var op = 0.0;
-        var iop = 1;
-        element.style.opacity = op;
-        var timer = setInterval(function () {
-            if (op >= iop) {
-                op = iop;
-                clearInterval(timer);
-            }
-            element.style.opacity = op;
-            op += iop / (1000 / interval * duration);
-        }, interval);
-    }
-
-    /**
      * A utility to set the contentInjectionmode in this module
      * It should be called when the user changes the contentInjectionMode
      * 
@@ -273,7 +265,7 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
      */
     return {
         extractImages: extractImages,
-        setupManualImageExtraction: setupManualImageExtraction,
+        setupManualImageExtraction: prepareManualExtraction,
         prepareImagesServiceWorker: prepareImagesServiceWorker,
         lazyLoad: lazyLoad,
         loadMathJax: loadMathJax,
