@@ -97,7 +97,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
             }
         }
         $(document).ready(resizeIFrame);
-        $(window).resize(resizeIFrame);
+        $(window).resize(function() {
+            resizeIFrame;
+            // We need to load any images exposed by the resize
+            document.getElementById('articleContent').contentWindow.onscroll();
+        });
 
         ////Polyfill scrollStopped event
         //$.fn.scrollStopped = function (callback) {
