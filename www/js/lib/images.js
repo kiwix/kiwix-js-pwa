@@ -119,7 +119,7 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
         });
     }
 
-    // Image store to pause processing
+    // Image store is a buffer for images that are waiting for the extractor to finish
     var imageStore = [];
     var maxImageBatch = 20;
 
@@ -128,37 +128,34 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
      * 
      * @param {Object} images An array or collection of DOM image nodes
      * @param {Boolean} extract If true, extract images immediately, otherwise sort images into arrays
-     * @param {Number} windowHeight The size in pixels of the visible window; defaults to window.innerHeight
+     * @param {Number} offset The offset, if any, from windows.innerHeight
      * @param {Function} callback Function to call when last image has been extracted (only called if <extract> is true)
      * @returns {Array} The array of remaining (unprocessed) image nodes
      */
-    function queueImages(images, extract, windowHeight, callback) {
-        // console.log('images: ' + (images ? images.length : 'null') + '; store: ' + imageStore.length);
+    function queueImages(images, extract, offset, callback) {
         if (imageStore.length && !extractorBusy) {
             extractImages(imageStore.splice(0, imageStore.length < maxImageBatch ? imageStore.length : maxImageBatch));
         }
         if (!images) return;
-        windowHeight = windowHeight || window.innerHeight;
+        if (!images.length) { if (callback) callback(); return; }
+        offset = offset || 0;
         var visible = [];
         var remaining = [];
         var batchCount = 0;
         for (var i = 0, l = images.length; i < l; i++) {
             if (images[i].queued || !images[i].dataset.kiwixurl) continue;
-            if (uiUtil.isElementInView(images[i], null, windowHeight)) {
+            if (uiUtil.isElementInView(images[i], null, offset)) {
                 visible.push(images[i]);
-                if (extract) {
-                    images[i].queued = true;
-                    // images[i].style.opacity = '0';
-                    // images[i].style.transition = 'opacity 0.5s ease-in';
-                    if (extractorBusy < maxImageBatch) {
-                        batchCount++;
-                        extractImages([images[i]], function () {
-                            batchCount--;
-                            if (callback && !batchCount) callback();
-                        });
-                    } else {
-                        imageStore.push(images[i]);
-                    }
+                if (!extract) continue;
+                images[i].queued = true;
+                if (extractorBusy < maxImageBatch) {
+                    batchCount++;
+                    extractImages([images[i]], function () {
+                        batchCount--;
+                        if (callback && !batchCount) callback();
+                    });
+                } else {
+                    imageStore.push(images[i]);
                 }
             } else {
                 remaining.push(images[i]);
@@ -179,11 +176,9 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
             // DEV: make sure list of file types here is the same as the list in Service Worker code
             if (/(^|\/)[IJ]\/.*\.(jpe?g|png|svg|gif)($|[?#])/i.test(images[i].src)) {
                 images[i].dataset.kiwixurl = images[i].getAttribute('src');
-                //images[i].dataset.kiwixurl = images[i].getAttribute('src').replace(/^[./]*?([IJ]\/)/, '$1');
                 images[i].style.transition = 'opacity 0.5s ease-in';
                 if (displayType === 'progressive') {
                     images[i].style.opacity = '0';
-                    images[i].style.transition = 'opacity 0.5s ease-in';
                 }
                 zimImages.push(images[i]);
             }
@@ -202,27 +197,32 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
      *        progressive image extraction 
      */
     function lazyLoad(images) {
+        // The amount by which to offset the second reading of the viewport
+        var offset = window.innerHeight;
         // Perform an immediate extraction of visible images so as not to disconcert the user
         // We request images twice because frequently the position of all of them is not known at this stage in rendering
-        images = queueImages(images, true, null, function () {
-            images = queueImages(images, true).remaining;
+        images = queueImages(images, true, 0, function () {
+            images = queueImages(images, true, window.innerHeight).remaining;
         }).remaining;
         if (!images.length) return;
         // There are images remaining, so set up an event listener to load more images once user has stopped scrolling the iframe
         var iframe = document.getElementById('articleContent');
         var iframeWindow = iframe.contentWindow;
         var scrollPos;
+        var rateLimiter = 0;
         // NB we add the event listener this way so we can access it in app.js
         iframeWindow.onscroll = function () {
             if (!images.length) return;
             var velo = iframeWindow.pageYOffset - scrollPos;
-            var height = window.innerHeight * 1.5;
             if (velo < 15 && velo > -15) {
                 // Scroll is now quite slow, so start getting images in viewport
-                //images = queueImages(images, true).remaining;
-                images = queueImages(images, true, null, function () {
-                    //images = queueImages(images, true, velo >= 0 ? height : -height).remaining;
-                    images = queueImages(images, true).remaining;
+                images = queueImages(images, true, 0, function () {
+                    if (!rateLimiter) {
+                        rateLimiter = 1;
+                        images = queueImages(images, true, velo >= 0 ? offset : -offset, function () {
+                            rateLimiter = 0;
+                        }).remaining;
+                    }
                 }).remaining;
             }
             scrollPos = iframeWindow.pageYOffset;
