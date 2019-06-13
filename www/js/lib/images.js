@@ -46,30 +46,34 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
         if (!remaining && callback) callback();
         Array.prototype.slice.call(images).forEach(function (image) {
             var imageUrl = image.getAttribute('data-kiwixurl');
-            if (!imageUrl) return;
+            extractorBusy++;
+            if (!imageUrl) { checkbatch(); return; }
             image.removeAttribute('data-kiwixurl');
             var title = decodeURIComponent(imageUrl);
-            image.addEventListener('load', function () {
-                image.style.opacity = '1';
-            });
             if (contentInjectionMode === 'serviceworker') {
-                // image.style.opacity = '0';
+                image.addEventListener('load', function () {
+                    image.style.opacity = '1';
+                });
                 image.src = imageUrl + '?kiwix-display';
-            } else {
-                extractorBusy++;
-                state.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                    return state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                        image.style.background = '';
-                        var mimetype = dirEntry.getMimetype();
-                        uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.allowHTMLExtraction, function () {
-                            checkBatch();
-                        });
-                    });
-                }).fail(function (e) {
-                    console.error('Could not find DirEntry for image: ' + title, e);
+                // Timeout allows the loop to complete so we get an accurate busy count
+                setTimeout(function () {
                     checkBatch();
                 });
+                return;
             }
+            state.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+                return state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                    image.style.background = '';
+                    var mimetype = dirEntry.getMimetype();
+                    uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.allowHTMLExtraction, function () {
+                        checkBatch();
+                    });
+                    image.style.opacity = '1';
+                });
+            }).fail(function (e) {
+                console.error('Could not find DirEntry for image: ' + title, e);
+                checkBatch();
+            });
         });
         var checkBatch = function () {
             extractorBusy--;
