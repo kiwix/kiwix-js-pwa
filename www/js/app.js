@@ -330,7 +330,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
             }
             //Pre-load all images in case user wants to print them
             if (params.imageDisplay) {
-                loadImagesJQuery(10000);
+                loadImagesJQuery(printIntercept);
                 document.getElementById("printImageCheck").disabled = false;
             } else {
                 document.getElementById("printImageCheck").checked = false;
@@ -2122,12 +2122,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                              docBody.addEventListener('dragover', handleIframeDragover);
                              docBody.addEventListener('drop', handleIframeDrop);
                          }
-                         if (/manual|progressive/.test(params.imageDisplayMode)) {
-                             var imageList = doc.querySelectorAll('img');
-                             if (imageList.length) {
-                                 images.prepareImagesServiceWorker(imageList, params.imageDisplayMode);
-                             }
-                         }
+                         if (/manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker();
                          iframeArticleContent.contentWindow.onunload = function () {
                              $("#searchingArticles").show();
                          };
@@ -2824,7 +2819,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                         }
                     });
 
-                    loadImagesJQuery();
+                    images.prepareImagesJQuery();
                     //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
                     insertMediaBlobsJQuery();
                     var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
@@ -2994,37 +2989,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
             if (params.preloadingAllImages !== true) {
                 $('#searchingArticles').show();
                 params.preloadingAllImages = true;
-                if (params.imageDisplay) loadImagesJQuery(10000);
+                if (params.imageDisplay) images.prepareImagesJQuery(printIntercept);
                 return;
             }
             // All images should now be loaded, or else user did not request loading images
             uiUtil.extractHTML();
             $('#searchingArticles').hide();
         };
- 
-        function loadImagesJQuery(forPrinting) {
-            var iframeArticleContent = document.getElementById('articleContent');
-            var imageNodes = iframeArticleContent.contentDocument.querySelectorAll('img[data-kiwixurl]');
-            if (!imageNodes.length) return;
-            if (forPrinting) {
-                images.extractImages(imageNodes, params.preloadingAllImages ? params.preloadAllImages : params.printIntercept ? printIntercept : null);
-            } else if (params.imageDisplayMode === 'progressive') {
-                // Firefox squashes empty images, but we don't want to alter the vertical heights constantly as we scroll
-                // so substitute empty images with a plain svg
-                for (var i = imageNodes.length; i--;) {
-                    imageNodes[i].src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
-                    imageNodes[i].style.opacity = '0';
-                    imageNodes[i].style.transition = 'opacity 0.5s ease-in';
-                }
-                images.lazyLoad(imageNodes);
-            } else {
-                // User wishes to extract images manually
-                images.setupManualImageExtraction(imageNodes);
-            }
-            setTimeout(images.loadMathJax, 3000);
-        }
-
-
 
         /**
          * This is the main image loading function.
