@@ -24,6 +24,11 @@
 define(['uiUtil'], function (uiUtil) {
 
     /**
+     * An array to hold all the images in the current document
+     */
+    var documentImages = [];
+
+    /**
      * A variable to keep track of how many images are being extracted by the extractor
      */
     var extractorBusy = 0;
@@ -168,45 +173,67 @@ define(['uiUtil'], function (uiUtil) {
 
     /**
      * Prepares an array or collection of image nodes that have been disabled in Service Worker for manual extraction
-     * 
-     * @param {Object} images An array or collection of DOM image nodes
-     * @param {String} displayType If 'progressive', lazyLoad will be used; if 'manual', setupManualImageExtraction will be used
      */
-    function prepareImagesServiceWorker (images, displayType) {
-        var zimImages = [];
-        for (var i = 0, l = images.length; i < l; i++) {
+    function prepareImagesServiceWorker () {
+        var iframe = document.getElementById('articleContent');
+        var doc = iframe.contentDocument.documentElement;
+        documentImages = doc.getElementsByTagName('img');
+        if (!documentImages.length) return;
+        for (var i = 0, l = documentImages.length; i < l; i++) {
             // DEV: make sure list of file types here is the same as the list in Service Worker code
             if (/(^|\/)[IJ]\/.*\.(jpe?g|png|svg|gif)($|[?#])/i.test(images[i].src)) {
-                images[i].dataset.kiwixurl = images[i].getAttribute('src');
-                images[i].style.transition = 'opacity 0.5s ease-in';
+                documentImages[i].dataset.kiwixurl = documentImages[i].getAttribute('src');
+                documentImages[i].style.transition = 'opacity 0.5s ease-in';
                 if (displayType === 'progressive') {
-                    images[i].style.opacity = '0';
+                    documentImages[i].style.opacity = '0';
                 }
-                zimImages.push(images[i]);
             }
         }
-        if (displayType === 'manual') {
-            prepareManualExtraction(zimImages);
+        if (params.imageDisplayMode === 'manual') {
+            prepareManualExtraction();
         } else {
-            lazyLoad(zimImages);
+            lazyLoad();
         }
+    }
+
+    function prepareImagesJQuery (forPrinting) {
+        var iframe = document.getElementById('articleContent');
+        var doc = iframe.contentDocument.documentElement;
+        documentImages = doc.querySelectorAll('img[data-kiwixurl]');
+        if (!documentImages.length) return;
+        if (forPrinting) {
+            extractImages(documentImages, params.preloadingAllImages ? params.preloadAllImages : params.printIntercept ? forPrinting : null);
+        } else if (params.imageDisplayMode === 'progressive') {
+            // Firefox squashes empty images, but we don't want to alter the vertical heights constantly as we scroll
+            // so substitute empty images with a plain svg
+            for (var i = documentImages.length; i--;) {
+                documentImages[i].src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
+                documentImages[i].style.opacity = '0';
+                documentImages[i].style.transition = 'opacity 0.5s ease-in';
+            }
+            lazyLoad();
+        } else {
+            // User wishes to extract images manually
+            setupManualImageExtraction();
+        }
+        setTimeout(loadMathJax, 3000);
     }
 
     /**
      * Processes an array or collection of image nodes so that they will be lazy loaded (progressive extraction)
      * 
-     * @param {Object} images And array or collection of DOM image nodes which will be processed for 
+     * @param {Object} documentImages And array or collection of DOM image nodes which will be processed for 
      *        progressive image extraction 
      */
-    function lazyLoad(images) {
+    function lazyLoad() {
         // The amount by which to offset the second reading of the viewport
         var offset = window.innerHeight;
         // Perform an immediate extraction of visible images so as not to disconcert the user
         // We request images twice because frequently the position of all of them is not known at this stage in rendering
-        images = queueImages(images, true, 0, function () {
-            images = queueImages(images, true, window.innerHeight).remaining;
-        }).remaining;
-        if (!images.length) return;
+        queueImages(documentImages, true, 0, function () {
+            queueImages(documentImages, true, window.innerHeight);
+        });
+        if (!documentImages.length) return;
         // There are images remaining, so set up an event listener to load more images once user has stopped scrolling the iframe
         var iframe = document.getElementById('articleContent');
         var iframeWindow = iframe.contentWindow;
@@ -214,18 +241,18 @@ define(['uiUtil'], function (uiUtil) {
         var rateLimiter = 0;
         // NB we add the event listener this way so we can access it in app.js
         iframeWindow.onscroll = function () {
-            if (!images.length) return;
+            if (!documentImages.length) return;
             var velo = iframeWindow.pageYOffset - scrollPos;
             if (velo < 15 && velo > -15) {
                 // Scroll is now quite slow, so start getting images in viewport
-                images = queueImages(images, true, 0, function () {
+                queueImages(documentImages, true, 0, function () {
                     if (!rateLimiter) {
                         rateLimiter = 1;
-                        images = queueImages(images, true, velo >= 0 ? offset : -offset, function () {
+                        queueImages(documentImages, true, velo >= 0 ? offset : -offset, function () {
                             rateLimiter = 0;
-                        }).remaining;
+                        });
                     }
-                }).remaining;
+                });
             }
             scrollPos = iframeWindow.pageYOffset;
         };
@@ -259,6 +286,7 @@ define(['uiUtil'], function (uiUtil) {
         extractImages: extractImages,
         setupManualImageExtraction: prepareManualExtraction,
         prepareImagesServiceWorker: prepareImagesServiceWorker,
+        prepareImagesJQuery: prepareImagesJQuery,
         lazyLoad: lazyLoad,
         loadMathJax: loadMathJax
     };
