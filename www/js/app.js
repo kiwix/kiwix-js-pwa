@@ -1160,7 +1160,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
             apiStatusPanel.classList.add(apiPanelClass);
         }
 
-        var contentInjectionMode;
         var keepAliveServiceWorkerHandle;
     
         /**
@@ -1170,7 +1169,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
          * and the application
          */
         function initOrKeepAliveServiceWorker() {
-            if (contentInjectionMode === 'serviceworker') {
+            if (params.contentInjectionMode === 'serviceworker') {
                 // Create a new messageChannel
                 var tmpMessageChannel = new MessageChannel();
                 tmpMessageChannel.port1.onmessage = handleMessageChannelMessage;
@@ -1258,14 +1257,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                     });
                 } else {
                 // We need to set this variable earlier else the ServiceWorker does not get reactivated
-                contentInjectionMode = value;
+                params.contentInjectionMode = value;
                 initOrKeepAliveServiceWorker();
                 }
             }
             $('input:radio[name=contentInjectionMode]').prop('checked', false);
             $('input:radio[name=contentInjectionMode]').filter('[value="' + value + '"]').prop('checked', true);
-            contentInjectionMode = value;
-            images.setContentInjectionMode(contentInjectionMode);
+            params.contentInjectionMode = value;
             // Save the value in a cookie, so that to be able to keep it after a reload/restart
             cookies.setItem('lastContentInjectionMode', value, Infinity);
         }
@@ -2102,7 +2100,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
          * @param {DirEntry} dirEntry
          */
          function readArticle(dirEntry) {
-             if (contentInjectionMode === 'serviceworker') {
+             if (params.contentInjectionMode === 'serviceworker') {
                  // In ServiceWorker mode, we simply set the iframe src.
                  // (reading the backend is handled by the ServiceWorker itself)
                  var iframeArticleContent = document.getElementById('articleContent');

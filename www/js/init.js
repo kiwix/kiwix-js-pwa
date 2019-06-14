@@ -56,6 +56,7 @@ params['hideActiveContentWarning'] = getCookie('hideActiveContentWarning') != nu
 params['allowHTMLExtraction'] = getCookie('allowHTMLExtraction') == true;
 params['alphaChar'] = getCookie('alphaChar') || 'A'; //Set default start of alphabet string (used by the Archive Index)
 params['omegaChar'] = getCookie('omegaChar') || 'Z'; //Set default end of alphabet string
+params['contentInjectionMode'] = getCookie('contentInjectionMode') || 'jquery'; //Defaults to jquery mode (widest compatibility)
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['imageDisplayMode'] = params.imageDisplay ? 'progressive' : 'manual';

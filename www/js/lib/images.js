@@ -21,13 +21,7 @@
  */
 'use strict';
 
-define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
-
-    /**
-     * Declare a module-specific variable defining the contentInjectionMode. Its value may be 
-     * changed in setContentInjectionMode() 
-     */
-    var contentInjectionMode = cookies.getItem('lastContentInjectionMode');
+define(['uiUtil'], function (uiUtil) {
 
     /**
      * A variable to keep track of how many images are being extracted by the extractor
@@ -50,7 +44,7 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
             if (!imageUrl) { checkbatch(); return; }
             image.removeAttribute('data-kiwixurl');
             var title = decodeURIComponent(imageUrl);
-            if (contentInjectionMode === 'serviceworker') {
+            if (params.contentInjectionMode === 'serviceworker') {
                 image.addEventListener('load', function () {
                     image.style.opacity = '1';
                 });
@@ -94,7 +88,7 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
             var originalHeight = image.getAttribute('height') || '';
             //Ensure 36px clickable image height so user can request images by tapping
             image.height = '36';
-            if (contentInjectionMode === 'jquery') {
+            if (params.contentInjectionMode === 'jquery') {
                 image.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
                 image.style.background = 'lightblue';
             }
@@ -165,6 +159,10 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
                 remaining.push(images[i]);
             } 
         }
+        // Callback has to be run inside a timeout because receiving function will expect the visible and remaining arrays to
+        // have been returned before running callback code; NB if images have been scheduled for extraction, callback will be
+        // called above instead of here, but we still need this in case there are no immediately visible images
+        if (callback && !batchCount) setTimeout(callback);
         return { 'visible': visible, 'remaining': remaining };
     }
 
@@ -255,16 +253,6 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
     }
 
     /**
-     * A utility to set the contentInjectionmode in this module
-     * It should be called when the user changes the contentInjectionMode
-     * 
-     * @param {String} injectionMode The contentInjectionMode selected by the user
-     */
-    function setContentInjectionMode(injectionMode) {
-        contentInjectionMode = injectionMode;
-    }
-
-    /**
      * Functions and classes exposed by this module
      */
     return {
@@ -272,7 +260,6 @@ define(['uiUtil', 'cookies'], function (uiUtil, cookies) {
         setupManualImageExtraction: prepareManualExtraction,
         prepareImagesServiceWorker: prepareImagesServiceWorker,
         lazyLoad: lazyLoad,
-        loadMathJax: loadMathJax,
-        setContentInjectionMode: setContentInjectionMode
+        loadMathJax: loadMathJax
     };
 });
