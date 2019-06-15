@@ -100,7 +100,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
         $(window).resize(function() {
             resizeIFrame;
             // We need to load any images exposed by the resize
-            document.getElementById('articleContent').contentWindow.onscroll();
+            var scrollFunc = document.getElementById('articleContent').contentWindow;
+            scrollFunc = scrollFunc ? scrollFunc.onscroll : null;
+            if (scrollFunc) scrollFunc();
         });
 
         ////Polyfill scrollStopped event
