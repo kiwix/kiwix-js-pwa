@@ -332,7 +332,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
             }
             //Pre-load all images in case user wants to print them
             if (params.imageDisplay) {
-                loadImagesJQuery(printIntercept);
+                images.prepareImagesJQuery(printIntercept);
                 document.getElementById("printImageCheck").disabled = false;
             } else {
                 document.getElementById("printImageCheck").checked = false;
