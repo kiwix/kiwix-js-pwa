@@ -217,9 +217,10 @@ define(['uiUtil'], function (uiUtil) {
     function prepareImagesJQuery (forPrinting) {
         var doc = iframe.contentDocument.documentElement;
         documentImages = doc.querySelectorAll('img[data-kiwixurl]');
-        if (!documentImages.length) return;
+        if (!forPrinting && !documentImages.length) return;
         if (forPrinting) {
-            extractImages(documentImages, params.preloadingAllImages ? params.preloadAllImages : params.printIntercept ? forPrinting : null);
+            extractImages(documentImages, params.preloadingAllImages ? params.preloadAllImages : params.printImagesLoaded);
+            return;
         } else if (params.imageDisplayMode === 'progressive') {
             // Firefox squashes empty images, but we don't want to alter the vertical heights constantly as we scroll
             // so substitute empty images with a plain svg

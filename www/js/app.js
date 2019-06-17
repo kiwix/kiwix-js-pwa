@@ -332,8 +332,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
             }
             //Pre-load all images in case user wants to print them
             if (params.imageDisplay) {
-                images.prepareImagesJQuery(printIntercept);
                 document.getElementById("printImageCheck").disabled = false;
+                btnCancel.disabled = true;
+                btnContinue.disabled = true;
+                btnContinue.innerHTML = "Loading images...";
+                //Callback for when all images are loaded
+                params.printImagesLoaded = function() {
+                    // Images have finished loading, so enable buttons
+                    btnCancel.disabled = false;
+                    btnContinue.disabled = false;
+                    btnContinue.innerHTML = "Continue";
+                };
+                images.prepareImagesJQuery(printIntercept);
             } else {
                 document.getElementById("printImageCheck").checked = false;
                 document.getElementById("printImageCheck").disabled = true;
@@ -2830,6 +2840,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                     // Document has loaded except for images, so we can now change the startup cookie (and delete) [see init.js]
                     document.cookie = 'lastPageLoad=success;expires=Thu, 21 Sep 1979 00:00:01 UTC';
                     
+                    // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
+                    if (params.printIntercept) printIntercept();
 
                      //End of injectHTML()
                 };

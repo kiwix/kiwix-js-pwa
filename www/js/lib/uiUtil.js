@@ -55,9 +55,10 @@ define(['util'], function(util) {
             myReader.readAsDataURL(blob);
         } else {
             url = URL.createObjectURL(blob);
-            node.addEventListener('load', function () {
-                URL.revokeObjectURL(url);
-            });
+            // We cannot revoke images if we wish to print
+            // node.addEventListener('load', function () {
+            //     URL.revokeObjectURL(url);
+            // });
             node.setAttribute(nodeAttribute, url);
             if (callback) callback();
         }
