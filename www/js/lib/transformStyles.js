@@ -34,7 +34,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                     "\nbut your display options require a " + cs + " style");
                 uiUtil.poll("Matched [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] from cache" + " because your display options require a " + cs + " style...");
             }
-            if (cs == "desktop" && zl.match(/minerva|mobile|parsoid/)) { //If user selected desktop style and style is one of the mobile styles
+            if (cs == "desktop" && /minerva|mobile|parsoid|css_modules\/style\.css/.test(zl)) { //If user selected desktop style and style is one of the mobile styles
                 console.log("Voiding #" + i + " [" + zl + "] from document header \nbecause your display options require a desktop style");
                 uiUtil.poll("Voiding [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] because your display options require a " + cs + " style...");
                 zl = "#"; //Void these mobile styles

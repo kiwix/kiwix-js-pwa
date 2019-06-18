@@ -88,13 +88,14 @@ div.float-right, table.float-right, ul.float-right, .float-right {
     margin: 1em 0 1em 1em;
 }
 
-.collapsible-blocl {
+.collapsible-block {
     clear: none !important;
 }
 
-html, body {
-    line-height: 1.4;
+html, body, .content {
+    line-height: 1.4 !important;
 }
+
 
 
 
