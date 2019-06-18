@@ -1954,6 +1954,7 @@ html, body, div, span, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acro
     border: 0;
     font: inherit;
     font-size: 100%;
+    line-height: 1.6;
     vertical-align: baseline;
     background: none
 }
