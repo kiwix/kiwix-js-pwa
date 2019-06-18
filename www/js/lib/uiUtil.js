@@ -368,6 +368,8 @@ define(['util'], function(util) {
         var openInTab = iframe.getElementById('openInTab');
         // Have to use jQuery here becasue e.preventDefault is not working properly in some browsers
         $(openInTab).on('click', function() {
+            itemsCount = false;
+            params.preloadingAllImages = false;
             extractHTML();
             return false;
         });
@@ -404,9 +406,11 @@ define(['util'], function(util) {
                     // Now read the data from the extracted blob
                     var myReader = new FileReader();
                     myReader.addEventListener("loadend", function () {
-                        var dataURL = myReader.result.replace(/data:;/, 'data:' + mimetype + ';');
-                        if (item.href) item.href = dataURL;
-                        if (item.src) item.src = dataURL;
+                        if (myReader.result) {
+                            var dataURL = myReader.result.replace(/data:;/, 'data:' + mimetype + ';');
+                            if (item.href) item.href = dataURL;
+                            if (item.src) item.src = dataURL;
+                        }
                         itemsCount--;
                         if (itemsCount === 0) extractHTML();
                     });
