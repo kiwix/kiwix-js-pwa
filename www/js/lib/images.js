@@ -279,16 +279,32 @@ define(['uiUtil'], function (uiUtil) {
     function loadMathJax() {
         //Load MathJax if required and if not already loaded
         if (params.useMathJax) {
-            if (!window.frames[0].MathJax && (params.containsMathTexRaw || params.containsMathTex || params.containsMathSVG)) {
+            // if (!window.frames[0].MathJax && (params.containsMathTexRaw || params.containsMathTex || params.containsMathSVG)) {
+            if (!window.frames[0].katex && (params.containsMathTexRaw || params.containsMathTex || params.containsMathSVG)) {
                 var doc = document.getElementById('articleContent').contentDocument;
-                var script = doc.createElement("script");
-                script.type = "text/javascript";
-                script.src = "js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
-                if (params.containsMathTex || params.containsMathTexRaw) script.innerHTML = 'MathJax.Hub.Queue(["Typeset", MathJax.Hub]); \
-                    console.log("Typesetting maths with MathJax");';
+                var link = doc.createElement("link");
+                link.rel = "stylesheet";
+                link.href = "js/katex/katex.min.css";
+                doc.head.appendChild(link);
+                var script1 = doc.createElement("script");
+                script1.type = "text/javascript";
+                //script.src = "js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
+                script1.src = "js/katex/katex.min.js";
+                doc.head.appendChild(script1);
+                var script2 = doc.createElement("script");
+                script2.type = "text/javascript";
+                script2.src = "js/katex/contrib/mathtex-script-type.min.js";
+                // script2.innerHTML = 'renderMathInElement\(document.body, { delimiters: \[' +
+                //     '{left: "$$", right: "$$", display: true},' +
+                //     '{left: "\\(", right: "\\)", display: false},' +
+                //     '{left: "$", right: "$", display: false},' +
+                //     '{left: "\\[", right: "\\]", display: true}' +
+                // '\]}\);"';
+                doc.head.appendChild(script2);
+                // if (params.containsMathTex || params.containsMathTexRaw) script.innerHTML = 'MathJax.Hub.Queue(["Typeset", MathJax.Hub]); \
+                //     console.log("Typesetting maths with MathJax");';
                 params.containsMathTexRaw = false; //Prevents doing a second Typeset run on the same document
                 params.containsMathTex = false;
-                doc.head.appendChild(script);
             } else if (window.frames[0].MathJax && (params.containsMathTexRaw || params.containsMathTex || params.containsMathSVG)) {
                 window.frames[0].MathJax.Hub.Queue(["Typeset", window.frames[0].MathJax.Hub]);
                 console.log("Typesetting maths with MathJax");
