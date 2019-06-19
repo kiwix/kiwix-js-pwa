@@ -2138,6 +2138,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                          iframeArticleContent.contentWindow.onunload = function () {
                              $("#searchingArticles").show();
                          };
+                         if (params.allowHTMLExtraction) {
+                             var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
+                             uiUtil.insertBreakoutLink(determinedTheme);
+                         }
                      };
                      iframeArticleContent.src = '../' + dirEntry.namespace + "/" + encodeURIComponent(dirEntry.url);
                      // Display the iframe content
