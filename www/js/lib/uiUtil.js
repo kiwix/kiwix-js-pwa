@@ -357,13 +357,12 @@ define(['util'], function(util) {
     function insertBreakoutLink(mode) {
         var desc = "Open article in new tab or window";
         var iframe = document.getElementById('articleContent').contentDocument;
-        // This code provides an absolute link - keep for reference. Removes the file and any query string from href
-        // var prefix = window.location.href.replace(/^((?!.*\?).*\/|.*\/(?=[^\/]*\?)).*$/, '$1');
-        // But in Kiwix JS Windows, we can easily get the relative path of the current document:
+        // This code provides an absolute link, removing the file and any query string from href (we need this because of SW mode)
+        var prefix = window.location.href.replace(/^((?!.*\?).*\/|.*\/(?=[^\/]*\?)).*$/, '$1');
         var div = document.createElement('div');
         div.style.cssText = 'top: 10px; right: 25px; position: relative; z-index: 2; float: right;';
         div.id = "openInTab";
-        div.innerHTML = '<a href="#"><img id="breakoutLink" src="img/icons/' + (mode == 'light' ? 'new_window.svg' : 'new_window_lb.svg') + '" width="30" height="30" alt="' + desc + '" title="' + desc + '"></a>';
+        div.innerHTML = '<a href="#"><img id="breakoutLink" src="' + prefix + 'img/icons/' + (mode == 'light' ? 'new_window.svg' : 'new_window_lb.svg') + '" width="30" height="30" alt="' + desc + '" title="' + desc + '"></a>';
         iframe.body.insertBefore(div, iframe.body.firstChild);
         var openInTab = iframe.getElementById('openInTab');
         // Have to use jQuery here becasue e.preventDefault is not working properly in some browsers
