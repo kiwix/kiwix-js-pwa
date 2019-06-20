@@ -2429,7 +2429,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
             //if (params.containsMathTexRaw) htmlArticle = htmlArticle.replace(/(<script\s+[^>]*?type\s*=\s*['"]\s*text\/x-mathjax-config[^>]+>[^<]+?Hub\.Config\s*\(\s*{\s*)[^<]*?(tex2jax\s*:[^}]+?})\s*,[^<]+(<\/script>)/i, "$1$2});$3");
             //Replace all TeX SVGs with MathJax scripts
             if (params.useMathJax) {
-                htmlArticle = htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"]([^'"]+)[^>]+>/ig, function (p0, math) {
+                htmlArticle = htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*(['"])((?:[^"']|(?!\1)[\s\S])+)[^>]+>/ig, function (p0, p1, math) {
                     // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
                     math = math.replace(/&amp;/g, '&');
                     return '<script type="math/tex">' + math + '</script>';
