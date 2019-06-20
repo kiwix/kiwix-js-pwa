@@ -2424,9 +2424,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
             htmlArticle = htmlArticle.replace(/href\s*=\s*["']javascript:[^"']+["']/gi, 'href=""');
 
             //MathJax detection:
-            params.containsMathTexRaw = params.useMathJax && !/wikivoyage/.test(params.storedFile) ? /\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/.test(htmlArticle) : false;
+            params.containsMathTexRaw = params.useMathJax && /stackexchange|askubuntu|superuser|stackoverflow|mathoverflow|serverfault|stackapps/i.test(params.storedFile) ? /\$\$?((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/.test(htmlArticle) : false;
             //Simplify any configuration script
             //if (params.containsMathTexRaw) htmlArticle = htmlArticle.replace(/(<script\s+[^>]*?type\s*=\s*['"]\s*text\/x-mathjax-config[^>]+>[^<]+?Hub\.Config\s*\(\s*{\s*)[^<]*?(tex2jax\s*:[^}]+?})\s*,[^<]+(<\/script>)/i, "$1$2});$3");
+            // Remove MathJax config script and convert $ delimiters
+            if (params.containsMathTexRaw) {
+                htmlArticle = htmlArticle.replace(/<script\b[^>]+?type=['"]text\/x-mathjax-config['"][^>]*?>MathJax\.Hub\.Config(?:[^<]|<(?!\/script>))+<\/script>/i, '');
+                htmlArticle = htmlArticle.replace(/(\$\$?)((?:[^$<>]|<\s|\s>)+)\$\$?([\s<.,;:?!'")\]])/g, function(p0, delim, math, rest) {
+                    var display  = /$$/.test(delim) ? '\\displaystyle ' : '';
+                    return '<script type="math/tex">' + display + math + '</script>' + rest;
+                });
+            }
             //Replace all TeX SVGs with MathJax scripts
             if (params.useMathJax) {
                 htmlArticle = htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*(['"])((?:[^"']|(?!\1)[\s\S])+)[^>]+>/ig, function (p0, p1, math) {
