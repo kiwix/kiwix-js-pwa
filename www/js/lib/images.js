@@ -282,42 +282,42 @@ define(['uiUtil'], function (uiUtil) {
     function loadMathJax() {
         if (params.useMathJax && (params.containsMathTexRaw || params.containsMathTex || params.containsMathSVG)) {
             var doc = iframe.contentDocument;
+            var script1, script2, script3;
             var link = doc.createElement("link");
             link.rel = "stylesheet";
             link.href = "js/katex/katex.min.css";
             doc.head.appendChild(link);
-            var script1 = doc.createElement("script");
+            script1 = doc.createElement("script");
             script1.type = "text/javascript";
             //script.src = "js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
             script1.src = "js/katex/katex.min.js";
-            // var script2 = doc.createElement("script");
-            // script2.type = "text/javascript";
-            // script2.src = "js/katex/contrib/mathtex-script-type.min.js";
-            var script3 = doc.createElement("script");
-            script3.type = "text/javascript";
-            script3.src = "js/katex/contrib/auto-render.min.js";
-            script3.onload = function() {
-                iframe.contentWindow.renderMathInElement(doc.body, { 
-                    delimiters: [{
-                        left: "$$",
-                        right: "$$",
-                        display: true
-                    },
-                    {
-                        left: "$",
-                        right: "$",
-                        display: false
-                    }]
-                });
-            };
-            // script2.innerHTML = 'renderMathInElement\(document.body, { delimiters: \[' +
-            //     '{left: "$$", right: "$$", display: true},' +
-            //     '{left: "\\(", right: "\\)", display: false},' +
-            //     '{left: "$", right: "$", display: false},' +
-            //     '{left: "\\[", right: "\\]", display: true}' +
-            // '\]}\);"';
+            if (params.containsMathTex) {
+                script2 = doc.createElement("script");
+                script2.type = "text/javascript";
+                script2.src = "js/katex/contrib/mathtex-script-type.min.js";
+            }
+            if (params.containsMathTexRaw) {
+                script3 = doc.createElement("script");
+                script3.type = "text/javascript";
+                script3.src = "js/katex/contrib/auto-render.min.js";
+                script3.onload = function() {
+                    iframe.contentWindow.renderMathInElement(doc.body, { 
+                        delimiters: [{
+                            left: "$$",
+                            right: "$$",
+                            display: true
+                        },
+                        {
+                            left: "$",
+                            right: "$",
+                            display: false
+                        }]
+                    });
+                };
+            }
             script1.onload = function () {
-                doc.body.appendChild(script3);
+                if (script2) doc.body.appendChild(script2);
+                if (script3) doc.body.appendChild(script3);
             };
             doc.body.appendChild(script1);
             // if (params.containsMathTex || params.containsMathTexRaw) script.innerHTML = 'MathJax.Hub.Queue(["Typeset", MathJax.Hub]); \
