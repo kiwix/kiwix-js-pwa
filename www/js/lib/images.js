@@ -290,9 +290,26 @@ define(['uiUtil'], function (uiUtil) {
             script1.type = "text/javascript";
             //script.src = "js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
             script1.src = "js/katex/katex.min.js";
-            var script2 = doc.createElement("script");
-            script2.type = "text/javascript";
-            script2.src = "js/katex/contrib/mathtex-script-type.min.js";
+            // var script2 = doc.createElement("script");
+            // script2.type = "text/javascript";
+            // script2.src = "js/katex/contrib/mathtex-script-type.min.js";
+            var script3 = doc.createElement("script");
+            script3.type = "text/javascript";
+            script3.src = "js/katex/contrib/auto-render.min.js";
+            script3.onload = function() {
+                iframe.contentWindow.renderMathInElement(doc.body, { 
+                    delimiters: [{
+                        left: "$$",
+                        right: "$$",
+                        display: true
+                    },
+                    {
+                        left: "$",
+                        right: "$",
+                        display: false
+                    }]
+                });
+            };
             // script2.innerHTML = 'renderMathInElement\(document.body, { delimiters: \[' +
             //     '{left: "$$", right: "$$", display: true},' +
             //     '{left: "\\(", right: "\\)", display: false},' +
@@ -300,9 +317,9 @@ define(['uiUtil'], function (uiUtil) {
             //     '{left: "\\[", right: "\\]", display: true}' +
             // '\]}\);"';
             script1.onload = function () {
-                doc.body.appendChild(script2);
+                doc.body.appendChild(script3);
             };
-            doc.head.appendChild(script1);
+            doc.body.appendChild(script1);
             // if (params.containsMathTex || params.containsMathTexRaw) script.innerHTML = 'MathJax.Hub.Queue(["Typeset", MathJax.Hub]); \
             //     console.log("Typesetting maths with MathJax");';
             params.containsMathTexRaw = false; //Prevents doing a second Typeset run on the same document
