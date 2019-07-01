@@ -2086,10 +2086,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 // Remove focus from search field to hide keyboard and to allow navigation keys to be used
                 document.getElementById('articleContent').contentWindow.focus();
                 $("#searchingArticles").show();
+                params.isLandingPage = false;
                 if (dirEntry.isRedirect()) {
                     state.selectedArchive.resolveRedirect(dirEntry, readArticle);
                 } else {
-                    params.isLandingPage = false;
                     readArticle(dirEntry);
                 }
             } else {
