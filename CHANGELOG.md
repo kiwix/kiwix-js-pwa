@@ -1,9 +1,7 @@
 ## Release 0.9.9.91 WikiMed (beta)
 * FIX: Remembered last page is now properly blanked on new archive load
-* FIX: Number of stylesheets retrieved from ZIM was not being counted properly, causing some pages to load twice
-* FIX: The article content div is now hidden until the HTML for the requested article is injected* FIX: Remembered last page is now properly blanked on new archive load
-* FIX: Number of stylesheets retrieved from ZIM was not being counted properly, causing some pages to load twice
 * FIX: The article content div is now hidden until the HTML for the requested article is injected
+* FIX: Number of stylesheets retrieved from ZIM was not being counted properly, causing some pages to load twice
 * FIX: New MediaWiki ZIMs with details-summary tags are now supported
 * FIX: Low-level ZIM reader now conforms to libzim logic in deriving title from url
 * FIX: Low-level ZIM reader now reads the MIME type list from the ZIM
