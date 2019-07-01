@@ -1,4 +1,28 @@
-## Release 0.9.9.89 WikiMed (beta)
+## Release 0.9.9.91 WikiMed (beta)
+* FIX: Remembered last page is now properly blanked on new archive load
+* FIX: Number of stylesheets retrieved from ZIM was not being counted properly, causing some pages to load twice
+* FIX: The article content div is now hidden until the HTML for the requested article is injected* FIX: Remembered last page is now properly blanked on new archive load
+* FIX: Number of stylesheets retrieved from ZIM was not being counted properly, causing some pages to load twice
+* FIX: The article content div is now hidden until the HTML for the requested article is injected
+* FIX: Support new details-summary ZIM style
+* FIX: Adopt libzim logic for getTitleOrUrl()
+* FIX: Support area tags for clickable maps
+* FIX: Bug causing localStorage to fill up
+* FIX: Various tweaks to cached and trasnformed styles
+* FIX: Many more equations now rendered correctly due to change of engine
+* FIX: Service Worker mode now works in browser context (not app context)
+* FIX: MathTex now rendered in Service Worker mode
+* ENHANCEMENT: Always open cached start page on ZIM load
+* ENHANCEMENT: Read the MIME type list from the ZIM archive
+* ENHANCEMENT: Enable drag and drop of ZIM files into the app
+* ENHANCEMENT: Enable opening a ZIM archive by double-clicking in File Explorer
+* ENHANCEMENT: Support keyboard selection of article search results
+* ENHANCEMENT: Better lazy image loading, and enable for Service Worker mode
+* ENHANCEMENT: Subtle fade-in effect for lazy-loaded images
+* ENHANCEMENT: Allow breakout link to work in Service Worker mode
+* ENHANCEMENT: Change MathTex rendering engine from MathJax to KaTeX (much faster)
+
+## Release 0.9.9.88 WikiMed (beta)
 * ENHANCEMENT: Article can now be sent to device's browser for reading, side-by-side viewing, printing
 * ENHANCEMENT: A breakout icon can optionally be shown on each page to enable sending page to browser (see Settings)
 * ENHANCEMENT: A new "auto" setting for dark mode and dark theme follows the system default for UWP apps
