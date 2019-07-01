@@ -3530,6 +3530,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 } else if (download) {
                     state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                         uiUtil.displayFileDownloadAlert(title, download, contentType, content);
+                        document.getElementById('searchingArticles').style.display = 'none';
                     });
                 } else {
                     params.isLandingPage = false;
