@@ -26,8 +26,8 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'transformStyles', 'kiwixServe'],
- function ($, zimArchiveLoader, uiUtil, images, cookies, q, transformStyles, kiwixServe) {
+define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cookies', 'q', 'transformStyles', 'kiwixServe'],
+ function ($, zimArchiveLoader, uiUtil, util, utf8, images, cookies, q, transformStyles, kiwixServe) {
 
         /**
          * Maximum number of articles to display in a search
@@ -2248,10 +2248,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
                                  var mimetype = fileDirEntry.getMimetype();
                                  // Let's send the content to the ServiceWorker
                                  var message = {
-                                     'action': 'giveContent', 'title': title, 'content': content.buffer,
-                                     'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode
+                                     'action': 'giveContent', 'title': title, 'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode
                                  };
-                                 messagePort.postMessage(message, [content.buffer]);
+                                 if (mimetype === 'text/html') {
+                                     content = utf8.parse(content);
+                                     // Add DOCTYPE to prevent quirks mode if missing (quirks mode prevents katex from running, and is incompatible with jQuery)
+                                     message.content = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(content) ? '<!DOCTYPE html>\n' + content : content;
+                                     messagePort.postMessage(message);
+                                 } else {
+                                     message.content = content.buffer;
+                                     messagePort.postMessage(message, [content.buffer]);
+                                 }
                              });
                          }
                      };
@@ -2443,13 +2450,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'images', 'cookies', 'q', 'trans
             //     });
             // }
             //Replace all TeX SVGs with MathJax scripts
-            // if (params.useMathJax) {
-            //     htmlArticle = htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*(['"])((?:[^"']|(?!\1)[\s\S])+)[^>]+>/ig, function (p0, p1, math) {
-            //         // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
-            //         math = math.replace(/&amp;/g, '&');
-            //         return '<script type="math/tex">' + math + '</script>';
-            //     });
-            // }
+             if (params.useMathJax) {
+                 htmlArticle = htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*(['"])((?:[^"']|(?!\1)[\s\S])+)[^>]+>/ig, function (p0, p1, math) {
+                     // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
+                     math = math.replace(/&amp;/g, '&');
+                     return '<script type="math/tex">' + math + '</script>';
+                 });
+             }
             params.containsMathTex = params.useMathJax ? /<script\s+type\s*=\s*['"]\s*math\/tex\s*['"]/i.test(htmlArticle) : false;
             params.containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
 
