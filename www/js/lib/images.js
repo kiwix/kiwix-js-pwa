@@ -44,6 +44,11 @@ define(['uiUtil'], function (uiUtil) {
     var abandon = false;
 
     /**
+     * A regular expression to find MathTex in an image
+     */
+    var transformMathTextRegexp = /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*(['"])((?:[^"']|(?!\1)[\s\S])+)[^>]+>/ig;
+
+    /**
      * Iterates over an array or collection of image nodes, extracting the image data from the ZIM
      * and inserting a BLOB URL to each image in the image's src attribute
      * 
@@ -59,21 +64,6 @@ define(['uiUtil'], function (uiUtil) {
             if (!imageUrl) { checkbatch(); return; }
             image.removeAttribute('data-kiwixurl');
             var title = decodeURIComponent(imageUrl);
-            // Code below enables MathJax display in SW mode for WikiMedia
-            var isMathFallback = false;
-            if (params.useMathJax && image.alt && image.classList.length > 0) {
-                for (var c = image.classList.length; c--;) {
-                    if (/math-fallback-image/.test(image.classList[c])) isMathFallback = true;
-                }
-                if (isMathFallback) {
-                    var mathTex = image.getAttribute('alt');
-                    if (mathTex && iframe.contentWindow.katex) {
-                        iframe.contentWindow.katex.render(mathTex, image.parentElement);
-                        extractorBusy--;
-                        return;
-                    }
-                }
-            }
             if (params.contentInjectionMode === 'serviceworker') {
                 image.addEventListener('load', function () {
                     image.style.opacity = '1';
@@ -209,11 +199,21 @@ define(['uiUtil'], function (uiUtil) {
      * Prepares an array or collection of image nodes that have been disabled in Service Worker for manual extraction
      */
     function prepareImagesServiceWorker () {
-        loadMathJax();
         var doc = iframe.contentDocument.documentElement;
-        documentImages = doc.getElementsByTagName('img');
+        documentImages = doc.querySelectorAll('img');
         if (!documentImages.length) return;
+        var imageHtml;
         for (var i = 0, l = documentImages.length; i < l; i++) {
+            // Process Wikimedia MathML
+            imageHtml = documentImages[i].outerHTML;
+            if (params.useMathJax && /math-fallback-image/i.test(imageHtml)) {
+                params.containsMathTex = true;
+                documentImages[i].outerHTML = imageHtml.replace(transformMathTextRegexp, function (p0, p1, math) {
+                    // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
+                    math = math.replace(/&amp;/g, '&');
+                    return '<script type="math/tex">' + math + '</script>';
+                });
+            }
             // DEV: make sure list of file types here is the same as the list in Service Worker code
             if (/(^|\/)[IJ]\/.*\.(jpe?g|png|svg|gif)($|[?#])/i.test(documentImages[i].src)) {
                 documentImages[i].dataset.kiwixurl = documentImages[i].getAttribute('src');
@@ -228,10 +228,10 @@ define(['uiUtil'], function (uiUtil) {
         } else {
             lazyLoad();
         }
+        setTimeout(loadMathJax, 1000);
     }
 
     function prepareImagesJQuery (forPrinting) {
-        loadMathJax();
         var doc = iframe.contentDocument.documentElement;
         documentImages = doc.querySelectorAll('img[data-kiwixurl]');
         if (!forPrinting && !documentImages.length) return;
@@ -252,7 +252,7 @@ define(['uiUtil'], function (uiUtil) {
             prepareManualExtraction();
         }
         //loadMathJax();
-        //setTimeout(loadMathJax, 3000);
+        setTimeout(loadMathJax, 1000);
 
     }
 
