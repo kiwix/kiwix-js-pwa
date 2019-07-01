@@ -4,20 +4,23 @@
 * FIX: The article content div is now hidden until the HTML for the requested article is injected* FIX: Remembered last page is now properly blanked on new archive load
 * FIX: Number of stylesheets retrieved from ZIM was not being counted properly, causing some pages to load twice
 * FIX: The article content div is now hidden until the HTML for the requested article is injected
-* FIX: Support new details-summary ZIM style
-* FIX: Adopt libzim logic for getTitleOrUrl()
-* FIX: Support area tags for clickable maps
-* FIX: Bug causing localStorage to fill up
+* FIX: New MediaWiki ZIMs with details-summary tags are now supported
+* FIX: Low-level ZIM reader now conforms to libzim logic in deriving title from url
+* FIX: Low-level ZIM reader now reads the MIME type list from the ZIM
+* FIX: A system alert utility is now provided, to avoid using synchronous alert()
+* FIX: Bug causing localStorage to fill up has been fixed
+* FIX: A workaround has been added for improperly coded hyperlinks in subdirectories in WikiMedia ZIM files
 * FIX: Various tweaks to cached and trasnformed styles
 * FIX: Many more equations now rendered correctly due to change of engine
 * FIX: Service Worker mode now works in browser context (not app context)
 * FIX: MathTex now rendered in Service Worker mode
-* ENHANCEMENT: Always open cached start page on ZIM load
-* ENHANCEMENT: Read the MIME type list from the ZIM archive
-* ENHANCEMENT: Enable drag and drop of ZIM files into the app
-* ENHANCEMENT: Enable opening a ZIM archive by double-clicking in File Explorer
-* ENHANCEMENT: Support keyboard selection of article search results
-* ENHANCEMENT: Better lazy image loading, and enable for Service Worker mode
+* UPDATE: Removed dependency on base tag, simplifying handling of hyperlinks
+* ENHANCEMENT: Links in clickable image maps (e.g. in Wikivoyage) are now supported
+* ENHANCEMENT: App code supports developer setting a custom start page for a packaged ZIM
+* ENHANCEMENT: A ZIM archive can be loaded through drag-and-drop of the file into the app
+* ENHANCEMENT: A ZIM archive can be loaded by double-clicking the file in Explorer
+* ENHANCEMENT: Article search results can now be selected with physical keyboard (down, up, enter keys)
+* ENHANCEMENT: Better lazy image loading, and enable lazy loading for Service Worker mode
 * ENHANCEMENT: Subtle fade-in effect for lazy-loaded images
 * ENHANCEMENT: Allow breakout link to work in Service Worker mode
 * ENHANCEMENT: Change MathTex rendering engine from MathJax to KaTeX (much faster)
