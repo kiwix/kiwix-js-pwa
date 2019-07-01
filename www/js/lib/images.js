@@ -59,6 +59,21 @@ define(['uiUtil'], function (uiUtil) {
             if (!imageUrl) { checkbatch(); return; }
             image.removeAttribute('data-kiwixurl');
             var title = decodeURIComponent(imageUrl);
+            // Code below enables MathJax display in SW mode for WikiMedia
+            var isMathFallback = false;
+            if (params.useMathJax && image.alt && image.classList.length > 0) {
+                for (var c = image.classList.length; c--;) {
+                    if (/math-fallback-image/.test(image.classList[c])) isMathFallback = true;
+                }
+                if (isMathFallback) {
+                    var mathTex = image.getAttribute('alt');
+                    if (mathTex && iframe.contentWindow.katex) {
+                        iframe.contentWindow.katex.render(mathTex, image.parentElement);
+                        extractorBusy--;
+                        return;
+                    }
+                }
+            }
             if (params.contentInjectionMode === 'serviceworker') {
                 image.addEventListener('load', function () {
                     image.style.opacity = '1';
@@ -194,6 +209,7 @@ define(['uiUtil'], function (uiUtil) {
      * Prepares an array or collection of image nodes that have been disabled in Service Worker for manual extraction
      */
     function prepareImagesServiceWorker () {
+        loadMathJax();
         var doc = iframe.contentDocument.documentElement;
         documentImages = doc.getElementsByTagName('img');
         if (!documentImages.length) return;
@@ -235,7 +251,7 @@ define(['uiUtil'], function (uiUtil) {
             // User wishes to extract images manually
             prepareManualExtraction();
         }
-        loadMathJax();
+        //loadMathJax();
         //setTimeout(loadMathJax, 3000);
 
     }
@@ -280,26 +296,32 @@ define(['uiUtil'], function (uiUtil) {
     }
 
     function loadMathJax() {
-        if (params.useMathJax && (params.containsMathTexRaw || params.containsMathTex || params.containsMathSVG)) {
-            var doc = iframe.contentDocument;
+        if (!params.useMathJax) return;
+        var doc = iframe.contentDocument;
+        var prefix = '';
+        if (params.contentInjectionMode === 'serviceworker') {
+            params.containsMathSVG = /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(doc.body.innerHTML);
+            prefix = window.location.href.replace(/^((?!.*\?).*\/|.*\/(?=[^\/]*\?)).*$/, '$1');
+        }
+        if (params.containsMathTexRaw || params.containsMathTex || params.containsMathSVG) {
             var script1, script2, script3;
             var link = doc.createElement("link");
             link.rel = "stylesheet";
-            link.href = "js/katex/katex.min.css";
+            link.href = prefix + "js/katex/katex.min.css";
             doc.head.appendChild(link);
             script1 = doc.createElement("script");
             script1.type = "text/javascript";
             //script.src = "js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
-            script1.src = "js/katex/katex.min.js";
+            script1.src = prefix + "js/katex/katex.min.js";
             if (params.containsMathTex) {
                 script2 = doc.createElement("script");
                 script2.type = "text/javascript";
-                script2.src = "js/katex/contrib/mathtex-script-type.min.js";
+                script2.src = prefix + "js/katex/contrib/mathtex-script-type.min.js";
             }
             if (params.containsMathTexRaw) {
                 script3 = doc.createElement("script");
                 script3.type = "text/javascript";
-                script3.src = "js/katex/contrib/auto-render.min.js";
+                script3.src = prefix + "js/katex/contrib/auto-render.min.js";
                 script3.onload = function() {
                     iframe.contentWindow.renderMathInElement(doc.body, { 
                         delimiters: [{
