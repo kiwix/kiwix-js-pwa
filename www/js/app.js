@@ -549,16 +549,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         // Top menu :
         document.getElementById('btnHome').addEventListener('click', function () {
             setTab('btnHome');
-            // Give the focus to the search field, and clean up the page contents
-            //if (!firstRun) {
-            //    $('#prefix').focus();
-            //}
             $('#articleContent').hide();
             $('#articleContent').contents().empty();
             $('#searchingArticles').hide();
             $('#welcomeText').show();
-            //$('#articleList').show();
-            //$('#articleListWithHeader').show();
             if (state.selectedArchive !== null && state.selectedArchive.isReady()) {
                 $('#welcomeText').hide();
                 goToMainArticle();
@@ -888,7 +882,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             if (value == 'auto') {
                 if (uiSettings) {
                     // We need to check the system theme
-                    // var uiSettings = new Windows.UI.ViewManagement.UISettings();
                     // Value 0 below is the 'background' constant in array Windows.UI.ViewManagement.UIColorType
                     var colour = uiSettings.getColorValue(0);
                     value = (colour.b + colour.g + colour.r) <= 382 ? 'dark' : 'light';
@@ -2288,13 +2281,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
     
         // This matches the data-kiwixurl of all <link> tags containing rel="stylesheet" in raw HTML unless commented out
         var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*data-kiwixurl\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
-        // This matches the title between <title  attrs> ... </title>
-        //var regexpArticleTitle = /<title\s*[^>]*>\s*([^<]+)\s*</i;
-        // This matches the title of a Type1 Wikimedia ZIM file or any ZIM file using simple <h1 attrs....> Title </h1>
-        //var regexpType1ZIMTitle = /<h1\s+[^>]*>\s*([^<]+)\s*</i;
-        // This matches the title of a mw-offliner (Type2) Wikimedia ZIM file, specifically 
-        //var regexpType2ZIMTitle = /id\s*=\s*['"][^'"]*title_0[^"']*["'][^>]*>\s*([^<]+)\s*</i;
-
+        
         params.containsMathTexRaw = false;
         params.containsMathTex = false;
         params.containsMathSVG = false;
@@ -2593,8 +2580,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     //Add dark mode CSS if required
                     var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
                     cssArray$ += (determinedTheme == "dark") ? '<link href="-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
-                    //Add required path in front of injected styles (i.e. those that have no ./ or ../../.. etc)
-                    //cssArray$ = cssArray$.replace(/(\bhref\s*=\s*["']\s*)(?![./]+|blob:)/ig, "$1" + treePath);
                     //Ensure all headings are open
                     //htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
                     htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
