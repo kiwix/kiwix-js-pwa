@@ -66,6 +66,7 @@ define(['uiUtil'], function (uiUtil) {
             var title = decodeURIComponent(imageUrl);
             if (params.contentInjectionMode === 'serviceworker') {
                 image.addEventListener('load', function () {
+                    image.style.transition = 'opacity 0.5s ease-in';
                     image.style.opacity = '1';
                 });
                 image.src = imageUrl + '?kiwix-display';
@@ -82,6 +83,7 @@ define(['uiUtil'], function (uiUtil) {
                     uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.allowHTMLExtraction, function () {
                         checkBatch();
                     });
+                    image.style.transition = 'opacity 0.5s ease-in';
                     image.style.opacity = '1';
                 });
             }).fail(function (e) {
@@ -124,15 +126,9 @@ define(['uiUtil'], function (uiUtil) {
                 var visibleImages = queueImages('poll', 0, function() { extractImages(visibleImages); }).visible;
                 visibleImages.forEach(function (image) { 
                     image.style.opacity = '0';
-                    image.style.transition = 'opacity 0.5s ease-in';
                     if (image.dataset.kiwixheight) image.height = image.dataset.kiwixheight;
                     else image.removeAttribute('height');
                 });
-                // var leftover = queueImages('extract').remaining;
-                // leftover.forEach(function (image) {
-                //     image.height = '36';
-                //     image.style.opacity = '1';
-                // });
             });
         }
     }
@@ -217,7 +213,6 @@ define(['uiUtil'], function (uiUtil) {
             // DEV: make sure list of file types here is the same as the list in Service Worker code
             if (/(^|\/)[IJ]\/.*\.(jpe?g|png|svg|gif)($|[?#])/i.test(documentImages[i].src)) {
                 documentImages[i].dataset.kiwixurl = documentImages[i].getAttribute('src');
-                documentImages[i].style.transition = 'opacity 0.5s ease-in';
                 if (params.imageDisplayMode === 'progressive') {
                     documentImages[i].style.opacity = '0';
                 }
@@ -244,7 +239,6 @@ define(['uiUtil'], function (uiUtil) {
             for (var i = documentImages.length; i--;) {
                 documentImages[i].src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
                 documentImages[i].style.opacity = '0';
-                documentImages[i].style.transition = 'opacity 0.5s ease-in';
             }
             lazyLoad();
         } else {
