@@ -2092,107 +2092,116 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
         /**
          * Read the article corresponding to the given dirEntry
-         * @param {DirEntry} dirEntry
+         * @param {DirEntry} dirEntry The directory entry of the article to read
          */
-         function readArticle(dirEntry) {
-             if (params.contentInjectionMode === 'serviceworker') {
-                 // In ServiceWorker mode, we simply set the iframe src.
-                 // (reading the backend is handled by the ServiceWorker itself)
-                 var iframeArticleContent = document.getElementById('articleContent');
-                 iframeArticleContent.onload = function () {
-                     // The iframe is empty, show spinner on load of landing page
-                     $("#searchingArticles").show();
-                     $("#articleList").empty();
-                     $('#articleListHeaderMessage').empty();
-                     $('#articleListWithHeader').hide();
-                     $("#prefix").val("");
-                     iframeArticleContent.onload = function () {
-                         // The content is fully loaded by the browser : we can hide the spinner
-                         $("#searchingArticles").hide();
-                         // Deflect drag-and-drop of ZIM file on the iframe to Config
-                         var doc = iframeArticleContent.contentDocument.documentElement;
-                         var docBody = doc ? doc.getElementsByTagName('body') : null;
-                         docBody = docBody ? docBody[0] : null;
-                         if (docBody) {
-                             docBody.addEventListener('dragover', handleIframeDragover);
-                             docBody.addEventListener('drop', handleIframeDrop);
-                         }
-                         if (/manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker();
-                         iframeArticleContent.contentWindow.onunload = function () {
-                             $("#searchingArticles").show();
-                         };
-                         if (params.allowHTMLExtraction) {
-                             var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
-                             uiUtil.insertBreakoutLink(determinedTheme);
-                         }
-                     };
-                     iframeArticleContent.src = '../' + dirEntry.namespace + "/" + encodeURIComponent(dirEntry.url);
-                     // Display the iframe content
-                     $("#articleContent").show();
-                 };
-                 iframeArticleContent.src = "article.html";
-             } else {
-                 if (dirEntry.isRedirect()) {
-                     state.selectedArchive.resolveRedirect(dirEntry, readArticle);
-                 } else {
-                     //TESTING//
-                     console.log("Initiating HTML load...");
-                     console.time("Time to HTML load");
-                     console.log("Initiating Document Ready timer...");
-                     console.time("Time to Document Ready");
+        function readArticle(dirEntry) {
+            if (params.contentInjectionMode === 'serviceworker') {
+                // In ServiceWorker mode, we simply set the iframe src.
+                // (reading the backend is handled by the ServiceWorker itself)
 
-                     //Set startup cookie to guard against boot loop
-                     //Cookie will signal failure until article is fully loaded
-                     document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
+                // We will need the encoded URL on article load so that we can set the iframe's src correctly,
+                // but we must not encode the '/' character or else relative links may fail [kiwix-js #498]
+                var encodedUrl = dirEntry.url.replace(/[^/]+/g, function (matchedSubstring) {
+                    return encodeURIComponent(matchedSubstring);
+                });
 
-                     //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
-                     localSearch = {};
+                var iframeArticleContent = document.getElementById('articleContent');
+                iframeArticleContent.onload = function () {
+                    // The iframe is empty, show spinner on load of landing page
+                    $("#searchingArticles").show();
+                    $("#articleList").empty();
+                    $('#articleListHeaderMessage').empty();
+                    $('#articleListWithHeader').hide();
+                    $("#prefix").val("");
+                    iframeArticleContent.onload = function () {
+                        // The content is fully loaded by the browser : we can hide the spinner
+                        $("#searchingArticles").hide();
+                        // Deflect drag-and-drop of ZIM file on the iframe to Config
+                        var doc = iframeArticleContent.contentDocument ? iframeArticleContent.contentDocument.documentElement : null;
+                        var docBody = doc ? doc.getElementsByTagName('body') : null;
+                        docBody = docBody ? docBody[0] : null;
+                        if (docBody) {
+                            docBody.addEventListener('dragover', handleIframeDragover);
+                            docBody.addEventListener('drop', handleIframeDrop);
+                        }
+                        if (/manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker();
+                        if (iframeArticleContent.contentWindow) iframeArticleContent.contentWindow.onunload = function () {
+                            $("#searchingArticles").show();
+                        };
+                        if (params.allowHTMLExtraction) {
+                            var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
+                            uiUtil.insertBreakoutLink(determinedTheme);
+                        }
+                    };
+                    // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
+                    iframeArticleContent.src = "../" + selectedArchive._file._files[0].name + "/" + dirEntry.namespace + "/" + encodedUrl;
+                    // Display the iframe content
+                    $("#articleContent").show();
+                };
+                iframeArticleContent.src = "article.html";
+            } else {
+                // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
+                if (dirEntry.isRedirect()) {
+                    state.selectedArchive.resolveRedirect(dirEntry, readArticle);
+                } else {
+                    //TESTING//
+                    console.log("Initiating HTML load...");
+                    console.time("Time to HTML load");
+                    console.log("Initiating Document Ready timer...");
+                    console.time("Time to Document Ready");
 
-                     //Load cached start page if it exists and we have loaded the packaged file
-                     var htmlContent = 0;
-                     if (params.cachedStartPage && ~state.selectedArchive._file._files[0].name.indexOf(params.packagedFile) && params.isLandingPage) {
-                         htmlContent = -1;
-                         // DEV: You should deal with the rare possibility that the cachedStartPage is not in the same namespace as the main page dirEntry...
-                         // Ideally include the namespace in params.cachedStartPage and adjust/test code (not hard)
-                         uiUtil.XHR(dirEntry.namespace + '/' + encodeURIComponent(params.cachedStartPage), 'text', function (responseTxt, status) {
-                             htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
-                             if (htmlContent) {
-                                 console.log('Article retrieved from storage cache...');
-                                 // Alter the dirEntry url and title parameters in case we are overriding the start page
-                                 dirEntry.url = params.cachedStartPage;
-                                 var title = htmlContent.match(/<title[^>]*>((?:[^<]|<(?!\/title))+)/);
-                                 dirEntry.title = title ? title[1] : dirEntry.title;
-                                 displayArticleInForm(dirEntry, htmlContent);
-                             } else {
-                                 document.getElementById('searchingArticles').style.display = 'block';
-                                 state.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
-                             }
-                         });
-                     }
+                    //Set startup cookie to guard against boot loop
+                    //Cookie will signal failure until article is fully loaded
+                    document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
 
-                     //Load lastPageVisit if it is the currently requested page
-                     if (!htmlContent) {
-                         if (params.rememberLastPage && typeof Storage !== "undefined" &&
-                             dirEntry.namespace + '/' + dirEntry.url == decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""))) {
-                             try {
-                                 htmlContent = localStorage.getItem('lastPageHTML');
-                             } catch (err) {
-                                 console.log("localStorage not supported: " + err);
-                             }
-                         }
-                         if (/<html[^>]*>/.test(htmlContent)) {
-                             console.log("Fast article retrieval from localStorage...");
-                             setTimeout(function () {
-                                 displayArticleInForm(dirEntry, htmlContent);
-                             }, 100);
-                         } else {
-                             state.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
-                         }
-                     }
+                    //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
+                    localSearch = {};
 
-                 }
-             }
-         }
+                    //Load cached start page if it exists and we have loaded the packaged file
+                    var htmlContent = 0;
+                    if (params.cachedStartPage && ~state.selectedArchive._file._files[0].name.indexOf(params.packagedFile) && params.isLandingPage) {
+                        htmlContent = -1;
+                        // DEV: You should deal with the rare possibility that the cachedStartPage is not in the same namespace as the main page dirEntry...
+                        // Ideally include the namespace in params.cachedStartPage and adjust/test code (not hard)
+                        uiUtil.XHR(dirEntry.namespace + '/' + encodeURIComponent(params.cachedStartPage), 'text', function (responseTxt, status) {
+                            htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
+                            if (htmlContent) {
+                                console.log('Article retrieved from storage cache...');
+                                // Alter the dirEntry url and title parameters in case we are overriding the start page
+                                dirEntry.url = params.cachedStartPage;
+                                var title = htmlContent.match(/<title[^>]*>((?:[^<]|<(?!\/title))+)/);
+                                dirEntry.title = title ? title[1] : dirEntry.title;
+                                displayArticleInForm(dirEntry, htmlContent);
+                            } else {
+                                document.getElementById('searchingArticles').style.display = 'block';
+                                state.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
+                            }
+                        });
+                    }
+
+                    //Load lastPageVisit if it is the currently requested page
+                    if (!htmlContent) {
+                        if (params.rememberLastPage && typeof Storage !== "undefined" &&
+                            dirEntry.namespace + '/' + dirEntry.url == decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""))) {
+                            try {
+                                htmlContent = localStorage.getItem('lastPageHTML');
+                            } catch (err) {
+                                console.log("localStorage not supported: " + err);
+                            }
+                        }
+                        if (/<html[^>]*>/.test(htmlContent)) {
+                            console.log("Fast article retrieval from localStorage...");
+                            setTimeout(function () {
+                                displayArticleInForm(dirEntry, htmlContent);
+                            }, 100);
+                        } else {
+                            state.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
+                        }
+                    }
+
+                }
+            }
+        }
 
         var messageChannel;
 
@@ -2637,19 +2646,38 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 iframeArticleContent.onload = function () {
                     //iframeArticleContent.onload = function () { };
 
+            var iframeContentDocument = iframeArticleContent.contentDocument;
+            if (!iframeContentDocument && window.location.protocol === 'file:') {
+                alert("You seem to be opening kiwix-js with the file:// protocol, which is blocked by your browser for security reasons."
+                        + "\nThe easiest way to run it is to download and run it as a browser extension (from the vendor store)."
+                        + "\nElse you can open it through a web server : either through a local one (http://localhost/...) or through a remote one (but you need SSL : https://webserver/...)"
+                        + "\nAnother option is to force your browser to accept that (but you'll open a security breach) : on Chrome, you can start it with --allow-file-access-from-files command-line argument; on Firefox, you can set privacy.file_unique_origin to false in about:config");
+                return;
+            }
                     // Set a global error handler for iframe
                     window.frames[0].onerror = function (msg, url) {
                         console.log('Error caught in ZIM contents [' + url + ']:\n' + msg);
                         return true;
                     };
 
-                    var articleContent = document.getElementById('articleContent').contentDocument;
-                    // Inject the new article's HTML into the iframe
-                    articleContent.documentElement.innerHTML = htmlArticle;
-                    // Make sure the article area is displayed
-                    setTab();
-                    // Add any missing classes stripped from the <html> tag
-                    if (htmlCSS) articleContent.getElementsByTagName('body')[0].classList.add(htmlCSS);
+            // Inject the new article's HTML into the iframe
+            var articleContent = iframeContentDocument.documentElement;
+            articleContent.innerHTML = htmlArticle;
+            // Make sure the article area is displayed
+            setTab();
+
+            var docBody = articleContent.getElementsByTagName('body');
+            docBody = docBody ? docBody[0] : null;
+            if (docBody) {
+                // Add any missing classes stripped from the <html> tag
+                if (htmlCSS) docBody.classList.add(htmlCSS);
+                // Deflect drag-and-drop of ZIM file on the iframe to Config
+                docBody.addEventListener('dragover', handleIframeDragover);
+                docBody.addEventListener('drop', handleIframeDrop);
+            }
+            
+                    
+
 
                     //Set relative font size + Stackexchange-family multiplier
                     articleContent.body.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
