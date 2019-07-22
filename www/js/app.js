@@ -2134,7 +2134,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         }
                     };
                     // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
-                    iframeArticleContent.src = "../" + selectedArchive._file._files[0].name + "/" + dirEntry.namespace + "/" + encodedUrl;
+                    iframeArticleContent.src = "../" + state.selectedArchive._file._files[0].name + "/" + dirEntry.namespace + "/" + encodedUrl;
                     // Display the iframe content
                     $("#articleContent").show();
                 };
@@ -2644,43 +2644,39 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 var iframeArticleContent = document.getElementById('articleContent');
 
                 iframeArticleContent.onload = function () {
-                    //iframeArticleContent.onload = function () { };
-
-            var iframeContentDocument = iframeArticleContent.contentDocument;
-            if (!iframeContentDocument && window.location.protocol === 'file:') {
-                alert("You seem to be opening kiwix-js with the file:// protocol, which is blocked by your browser for security reasons."
-                        + "\nThe easiest way to run it is to download and run it as a browser extension (from the vendor store)."
-                        + "\nElse you can open it through a web server : either through a local one (http://localhost/...) or through a remote one (but you need SSL : https://webserver/...)"
-                        + "\nAnother option is to force your browser to accept that (but you'll open a security breach) : on Chrome, you can start it with --allow-file-access-from-files command-line argument; on Firefox, you can set privacy.file_unique_origin to false in about:config");
-                return;
-            }
+                    var iframeArticleContent = document.getElementById('articleContent');
+                    var iframeContentDocument = iframeArticleContent.contentDocument;
+                    if (!iframeContentDocument && window.location.protocol === 'file:') {
+                        alert("You seem to be opening kiwix-js with the file:// protocol, which is blocked by your browser for security reasons."
+                                + "\nThe easiest way to run it is to download and run it as a browser extension (from the vendor store)."
+                                + "\nElse you can open it through a web server : either through a local one (http://localhost/...) or through a remote one (but you need SSL : https://webserver/...)"
+                                + "\nAnother option is to force your browser to accept that (but you'll open a security breach) : on Chrome, you can start it with --allow-file-access-from-files command-line argument; on Firefox, you can set privacy.file_unique_origin to false in about:config");
+                        return;
+                    }
                     // Set a global error handler for iframe
                     window.frames[0].onerror = function (msg, url) {
                         console.log('Error caught in ZIM contents [' + url + ']:\n' + msg);
                         return true;
                     };
 
-            // Inject the new article's HTML into the iframe
-            var articleContent = iframeContentDocument.documentElement;
-            articleContent.innerHTML = htmlArticle;
-            // Make sure the article area is displayed
-            setTab();
+                    // Inject the new article's HTML into the iframe
+                    var articleContent = iframeContentDocument.documentElement;
+                    articleContent.innerHTML = htmlArticle;
+                    // Make sure the article area is displayed
+                    setTab();
 
-            var docBody = articleContent.getElementsByTagName('body');
-            docBody = docBody ? docBody[0] : null;
-            if (docBody) {
-                // Add any missing classes stripped from the <html> tag
-                if (htmlCSS) docBody.classList.add(htmlCSS);
-                // Deflect drag-and-drop of ZIM file on the iframe to Config
-                docBody.addEventListener('dragover', handleIframeDragover);
-                docBody.addEventListener('drop', handleIframeDrop);
-            }
+                    var docBody = articleContent.getElementsByTagName('body');
+                    docBody = docBody ? docBody[0] : null;
+                    if (docBody) {
+                        // Add any missing classes stripped from the <html> tag
+                        if (htmlCSS) docBody.classList.add(htmlCSS);
+                        // Deflect drag-and-drop of ZIM file on the iframe to Config
+                        docBody.addEventListener('dragover', handleIframeDragover);
+                        docBody.addEventListener('drop', handleIframeDrop);
+                    }
             
-                    
-
-
                     //Set relative font size + Stackexchange-family multiplier
-                    articleContent.body.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
+                    docBody.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
                     //Set page width according to user preference
                     removePageMaxWidth();
 
@@ -2690,7 +2686,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     var eles = ["H2", "H3"];
                     for (var i = 0; i < eles.length; i++) {
                         // Process headers
-                        var collection = articleContent.getElementsByTagName(eles[i]);
+                        var collection = docBody.getElementsByTagName(eles[i]);
                         for (var j = 0; j < collection.length; j++) {
                             // Prevent heading from getting selected when clicking on it
                             collection[j].style.userSelect = 'none';
@@ -2727,7 +2723,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         }
                     }
                     // Process endnote references (so they open the reference block if closed)
-                    var refs = articleContent.getElementsByClassName("mw-reflink-text");
+                    var refs = docBody.getElementsByClassName("mw-reflink-text");
                     if (refs) {
                         for (var l = 0; l < refs.length; l++) {
                             var reference = refs[l].parentElement;
@@ -2736,7 +2732,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                     var refID = obj.target.hash || obj.target.parentNode.hash;
                                     if (!refID) return;
                                     refID = refID.replace(/#/, "");
-                                    var refLocation = articleContent.getElementById(refID);
+                                    var refLocation = docBody.getElementById(refID);
                                     var refNext = util.getClosestBack(refLocation, function (el) {
                                         return el.tagName == "H2";
                                     });
@@ -2785,11 +2781,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         }
                     }, true);
 
-                    // Deflect drag-and-drop of ZIM file on the iframe to Config
-                    var docBody = articleContent.getElementsByTagName('body')[0];
-                    docBody.addEventListener('dragover', handleIframeDragover);
-                    docBody.addEventListener('drop', handleIframeDrop);
-
                     var currentProtocol = location.protocol;
                     var currentHost = location.host;
                     // Percent-encode dirEntry.url and add regex escape character \ to the RegExp special characters - see https://www.regular-expressions.info/characters.html;
@@ -2798,16 +2789,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     // Pattern to match a local anchor in an href even if prefixed by escaped url; will also match # on its own
                     var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#]*$)');
 
-                    var iframeArticleContent = document.getElementById('articleContent').contentDocument;
                     // Set state of collapsible sections
                     if (params.openAllSections === true) {
-                        var collapsedBlocks = iframeArticleContent.querySelectorAll('.collapsible-block:not(.open-block), .collapsible-heading:not(.open-block)');
+                        var collapsedBlocks = iframeContentDocument.querySelectorAll('.collapsible-block:not(.open-block), .collapsible-heading:not(.open-block)');
                         for (var i = collapsedBlocks.length; i--;) {
                             collapsedBlocks[i].classList.add('open-block');
                         }
                     }
 
-                    Array.prototype.slice.call(iframeArticleContent.querySelectorAll('a, area')).forEach(function (anchor) {
+                    Array.prototype.slice.call(iframeContentDocument.querySelectorAll('a, area')).forEach(function (anchor) {
                         // Attempts to access any properties of 'this' with malformed URLs causes app crash in Edge/UWP [kiwix-js #430]
                         try {
                             var testHref = anchor.href;
@@ -2864,8 +2854,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     
                     // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
                     if (params.printIntercept) printIntercept();
-
-                     //End of injectHTML()
                 };
 
                 // Load the blank article to clear the iframe (NB iframe onload event runs *after* this)
