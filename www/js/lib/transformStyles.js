@@ -62,6 +62,9 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                     /-\/s\/css_modules\/ext.tmh.thumbnail.styles.css/i.test(zl) ||
                     /-\/s\/css_modules\/ext.math.styles.css/i.test(zl) ||
                     /-\/s\/css_modules\/ext.math.scripts.css/i.test(zl) ||
+                    /-\/s\/css_modules\/ext.inputBox.styles.css/i.test(zl) ||
+                    /-\/s\/css_modules\/mediawiki.ui.input.css/i.test(zl) ||
+                    /-\/s\/css_modules\/mediawiki.ui.checkbox.css/i.test(zl) ||
                     /-\/s\/css_modules\/content.parsoid.css/i.test(zl) ||
                     /-\/s\/css_modules\/inserted_style_mobile.css/i.test(zl) ||
                     /-\/s\/css_modules\/inserted_style.css/i.test(zl) ||
