@@ -124,6 +124,7 @@
     <Content Include="www\-\s\css_modules\content.parsoid.css" />
     <Content Include="www\-\s\css_modules\ext.cite.a11y.css" />
     <Content Include="www\-\s\css_modules\ext.cite.styles.css" />
+    <Content Include="www\-\s\css_modules\ext.inputBox.styles.css" />
     <Content Include="www\-\s\css_modules\ext.kartographer.frame.css" />
     <Content Include="www\-\s\css_modules\ext.kartographer.link.css" />
     <Content Include="www\-\s\css_modules\ext.kartographer.style.css" />
@@ -136,6 +137,8 @@
     <Content Include="www\-\s\css_modules\inserted_style_mobile.css" />
     <Content Include="www\-\s\css_modules\mediawiki.page.gallery.styles.css" />
     <Content Include="www\-\s\css_modules\mediawiki.toc.css" />
+    <Content Include="www\-\s\css_modules\mediawiki.ui.checkbox.css" />
+    <Content Include="www\-\s\css_modules\mediawiki.ui.input.css" />
     <Content Include="www\-\s\css_modules\mobile.css" />
     <Content Include="www\-\s\css_modules\mw.MediaWikiPlayer.loader.css" />
     <Content Include="www\-\s\css_modules\mw.PopUpMediaTransform.css" />
