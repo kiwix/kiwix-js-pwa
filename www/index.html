@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Kiwix JS for Windows</title>
+    <title>Kiwix JS Wikivoyage for Windows</title>
     <meta name="description" content="Offline Wikipedia reader">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!--
@@ -15,6 +15,7 @@
     Jaifroid - Adapted for UWP for Windows 10 and Windows Mobile 10 : Geoffrey Kantaris egk10@cam.ac.uk
 
         Copyright 2013-2018 Mossroy, Peter-x, Jaifroid, sharun-s and contributors
+
     License GPL v3:
 
     This file is part of Kiwix.
@@ -57,48 +58,66 @@
             <div id="modalTheme" class="modal-content dark">
                 <div id="largeModal" class="modal-body">
                     <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
-                    <img style="float:left; padding-right:1em;" alt="Kiwix icon" src="img/icons/kiwix-midnightblue-90.png">
-
-                    <h2 style="font-size:32px;margin-top:10px;">
-                        Welcome to Kiwix&nbsp;JS for Windows
+                    <img style="float:left; padding-right:1em;" alt="Wikivoyage icon" src="img/icons/wikivoyage-90-white.png">
+                    <h2 style="font-size: 32px; margin-top:10px;">
+                        Welcome&nbsp;to Wikivoyage by&nbsp;Kiwix
                     </h2>
-                    <h4>Version <span class="version">0.9 Beta</span></h4><br />
+                    <h4>Version <span class="version">0.9 Beta</span> (<a href="#update">changes</a>)</h4>
+                    <h3>Please read this important information</h3>
+                    <div class="disclaimer">
+                        <p>
+                            <b>DISCLAIMER:</b> The information in Wikivoyage is provided by volunteers and may not be up to date.
+                            <strong>Wikikvoyage and Kiwix give no guarantee as to the accuracy of information contained in this app.
+                            </strong> You should not rely on it as your only source of information regarding opening hours, bus and train
+                            timetables, the existence of specific accommodation, or the safety of countries or regions for tourists.
+                            These things can change rapidly, so you must always check government travel advice, consult local web sites, phone
+                            in advance for accommodation, etc.
+                        </p>
+                        <p>
+                            <em>Use Wikivoyage as a guide only, use common sense, and stay safe!</em>  
+                        </p>
+                        <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-Wikivoyage-dev/CHANGELOG.md" target="_blank">Full changelog...<img src="I/s/Icon_External_Link.png"></a></p>
+                    </div>
+                    <p>
+                        This application is packaged with the Wikivoyage offline ZIM archive in <b>English</b>.
+                    </p>
+                    <p>
+                        You may download and use Wikivoyage in other languages (see <b>About page <span class="glyphicon glyphicon-info-sign"></span></b>
+                        for instructions - tap Config <span class="glyphicon glyphicon-wrench"></span> to access About button).
+                    </p>
+                    <p>
+                        We aim to keep this Wikivoyage as up to date as possible, and you should receive automatic updates via the Microsoft
+                        Store. Please check the <b>About page <span class="glyphicon glyphicon-info-sign"></span></b> for information about
+                        the currently installed ZIM archive file.
+                    </p>
+                    <p>
+                        On some pages you will see a map location marker <img style="position:relative;top:-5px" src="../www/img/icons/map_marker-18px.png" />.
+                        Tap to open the <b>Maps app</b> at the location. This will work offline if you have downloaded the map for the
+                        relevant country in the Windows Settings for <b>Offline Maps</b>.
+                    </p>
+                    <p>
+                        Wikivoyage by Kiwix is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review.
+                        Constructive feedback and help with improving the app are very welcome: see About section.
+                    </p>
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in <span class="version">0.9 (beta)</span></h3>
                         <ul style="padding-left: 15px;">
-                            <li>Changed MathTex rendering engine from MathJax to KaTeX (much faster)</li>
-                            <li>Better lazy image loading, and subtle fade-in effect for lazy-loaded images</li>
-                            <li>Enable drag and drop of ZIM files into the app</li>
-                            <li>Enable opening a ZIM archive by double-clicking in File Explorer</li>
-                            <li>Support keyboard selection of article search results (PC app)</li>
-                            <li>Support area tags for clickable maps</li>
-                            <li>Support new details-summary article format in new ZIMs</li>
-                            <li>Various tweaks to cached and trasnforming styles</li>
+                            <li>Maps with clickable areas are now supported (NB not all maps in Wikivoyage are of the clickable type)</li>
+                            <li>A ZIM archive can be loaded through drag-and-drop of the file into the app</li>
+                            <li>Article search results can now be selected with physical keyboard (down, up, enter keys)</li>
+                            <li>Handling of hypelinks in the code has been simplified</li>
+                            <li>New MediaWiki ZIMs with details-summary tags are now supported</li>
+                            <li>Fixes and enhancements to low-level ZIM reader</li>
+                            <li>A workaround has been added for handling hyperlinks on some improperly coded pages in WikiMedia ZIM files</li>
                         </ul>
-                        <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md" target="_blank">Full changelog...<img src="I/s/Icon_External_Link.png"></a></p>
+                        <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-Wikivoyage-dev/CHANGELOG.md" target="_blank">And there's more! ...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>
-                    <h3>Please read this important information!</h3>
-                    <p>
-                        This application is packaged with only a basic ZIM archive (about a Jazz musician) so that you can get a feel
-                        for how offline Wikipedia browsing works.
-                    </p>
-                    <p>
-                        You will need to downloaded an offline ZIM archive and store it on your device. You can do this from the
-                        <b>Configuration page <span class="glyphicon glyphicon-wrench"></span></b>, or else see the
-                        <b>About page <span class="glyphicon glyphicon-info-sign"></span></b> for more information.
-                    </p>
-                    <p>
-                        For the full experience you <strong>must</strong> download a ZIM archive and store it on your device! Alternatively, if you only want Wikivoyage or WikiMed in English, look for "Wikivoyage by Kiwix" or "WikiMed" in the Store and install those apps instead.
-                    </p>
-                    <p>
-                        Kiwix JS is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
-                        improving the app are very welcome: see About section.
-                    </p>
                     <div id="features">
                         <h3>Features in Version 0.9 Beta</h3>
                         <ul style="padding-left:15px;">
                             <li>Compatible with Continuum!</li>
                             <li>Printing the article contents is supported on mobile and desktop</li>
+                            <li>Front page (of ZIM) cached for faster return to home page</li>
                             <li>Wikivoyage pages (English and German) display map location markers: tap to open Maps app</li>
                             <li>Last-visited page remembered between sessions (optional)</li>
                             <li>In-page search / highlighting (search button/Ctrl-F/Alt-F)</li>
@@ -199,7 +218,7 @@
                                 <span class="input-group">
                                     <span class="input-group-btn">
                                         <!-- button id="btnHome" type="button" class="btn btn-default" -->
-                                        <a id="btnHome" title="Home" class="btn btn-primary"><img id="kiwixIcon" style="margin-left:5px;" src="./img/icons/kiwix-blue-32.png" /></a>
+                                        <a id="btnHome" title="Home" class="btn btn-primary"><img id="kiwixIcon" style="margin-left:5px;" src="./img/icons/wikivoyage-black-32.png" /></a>
                                         <!--button -->
                                     </span>
                                     <input type="search" id="prefix" placeholder="Search..."
@@ -230,11 +249,11 @@
                 <div id="about" style="display: none;" class="category-padding">
                     <div class="returntoArticle" style="text-align:center;padding-top:20px;"></div>
                     <h2>
-                        <img src="img/icons/kiwix-60.png" alt="Kiwix icon" id="kiwixIconAbout" />
-                        Kiwix JS Windows
+                        <img id="kiwixIconAbout" src="img/icons/wikivoyage-90.png" alt="Wikivoyage icon" />
+                        Wikivoyage by Kiwix
                     </h2>
                     <h3 style="margin-top:0;">
-                        Offline Wikipedia Viewer <small>(Version <span class="version"></span>)</small>
+                        Offline Travel Guide <small>(Kiwix JS version <span class="version"></span>)</small>
                     </h3>
                     <p>Packaged ZIM archive: <b><span class="fileVersion"></span></b></p>
                     <ul style="padding-left:1em;">
@@ -245,46 +264,52 @@
                         <li><a href="#credits">Credits and Licence</a></li>
                         <li>Official site : <a href="http://www.kiwix.org/" target="_blank">http://www.kiwix.org/</a><img src="I/s/Icon_External_Link.png" /></li>
                     </ul>
+                    <div class="disclaimer">
+                        <p><b>DISCLAIMER:</b></p>
+                        <p>
+                            The information in Wikivoyage is provided by volunteers and may not be up to date.
+                            <em>Wikikvoyage and Kiwix give no guarantee as to the accuracy of information contained in this app.
+                            </em> You should not rely on it as your only source of information regarding opening hours, bus and train
+                            timetables, the existence of specific accommodation, or the safety of countries or regions for tourists.
+                            These things can change rapidly.
+                        </p>
+                        <p>
+                            <strong>
+                                <em>Always check official government advice before travelling.</em> Consult local web sites for
+                                timetables, book or phone in advance for accommodation, advice on opening hours, etc. Use Wikivoyage as a
+                                guide only, use common sense, and stay safe!
+                            </strong>
+                        </p>
+                    </div>
                     <p>
-                        If your Internet access is expensive / slow / unreliable / watched / censored, you can still gain offline access to a huge
-                        repository of knowledge and culture.
+                        Wikivoyage Offline Travel Guide by Kiwix is a complete resource for travellers and tourists, or anyone interested in
+                        the locality they are visiting. This app functions completely offline, so you are not limited in your ability to
+                        consult travel information by lack of access to the Internet, or by slow and unreliable access speeds.
                     </p>
                     <p>
-                        To use this app, you will need to download one or more archives (called ZIM archives) from the Kiwix website. You will then have
-                        offline access to Wikipedia, Wiktionary, Wikivoyage and many other sources even if you are undertaking a long plane journey, hiking,
-                        and travelling or living in areas with weak Internet access.
+                        As well as Wikivoyage English, you can download (in advance of your trip) one or more Wikivoyage archives (called ZIM archives) in other languages from the Kiwix
+                        website. If you would like to have an offline copy of Wikipedia, Wiki Medicine, Wiktionary and many other sources, we recommend you install our sister app <b>Kiwix JS</b> from the Store and keep this as a dedicated Wikivoyage app. While on the plane or train, you
+                        can consult in-depth historical information from an offline Wikipedia archive to supplement the practical information
+                        in Wikivoyage.
                     </p>
                     <p>
-                        You can search through article titles and read any of these articles completely offline.
-                    </p>
-                    <p>
-                        You can have the entire content of Wiktionary or Wikipedia in your language (including the images) in your pocket.
-                    </p>
-                    <p>
-                        Offline archives use the <a href="http://www.openzim.org//wiki/OpenZIM">OpenZIM format</a>, but note that this app has been only tested extensively on
-                        Wikipedia-related archives (e.g., Wikipedia, Wikivoyage, Wikimed, Wiktionary).
-                    </p>
-                    <p>
-                        On some Wikivoyage (English and German) pages
+                        Remember, you can search through article titles and read any of these articles <b>completely offline</b>. On some Wikivoyage (English and German) pages
                         you will see a map location marker: <img src="../www/img/icons/map_marker-18px.png" />. Tap this icon to open
                         the <b>Maps app</b> at the selected location. This will work offline if you have downloaded the map for the relevant country
                         in the Windows Settings for <b>Offline Maps</b>.
                     </p>
-
-                    <h3 id="addingArchives">Usage</h3>
+                    <p>
+                        Offline archives use the <a href="http://www.openzim.org//wiki/OpenZIM">OpenZIM format</a>, but note that this app has
+                        only been tested extensively on Wikimedia archives (e.g., Wikipedia, Wikivoyage, Wikimed, Wiktionary).
+                    </p>
+                    <h3 id="addingArchives">Adding Wikivoyage archives in other languages</h3>
                     <h4>Step 1: download some content</h4>
                     <p>
-                        You can browse the Kiwix repository on the <a href="#downloads" onclick="document.getElementById('btnConfigure').click();">Configuration</a> page, and it will provide instructions according to the type of file you download.
+                        In the Configuration <span class="glyphicon glyphicon-wrench"></span> menu, go to <a href="#packagedAppFileSelectors" onclick="document.getElementById('btnConfigure').click();"><b>Expert settings</b></a> and check the option to <b>Display selectors</b>. Then check <b>Allow Internet access</b> and tap the <b>Open library</b> button. Locate your Wikivoyage ZIM file, and instructions will be provided to download the file on your device.
                         Alternatively, visit <a href="http://download.kiwix.org/zim" target="_blank">http://download.kiwix.org/zim/</a> using a regular computer.
-                        <strong>Currently only Wikimedia contents (ZIM files in wiki* subdirectories) and Stackexchange have been tested fully</strong>.
-                        There are known bugs when reading some other content, and dynamic content is not supported in jQuery mode.
+                        <strong>This app is optimized for Wikivoyage archives only</strong>. If you wish to use regularly other archive types with this app, you should instead obtain our sister app, <b>Kiwix JS</b> from the Store and keep this as a dedicated Wikivoyage app.
                     </p>
-                    <p>
-                        Note that some of these ZIM archives are very large indeed (several gigabytes), especially if you want the archives with pictures. Archives without
-                        pictures (look out for "nopic" in the filename) are generally much smaller. <b>Important</b>: if the file is larger than 4 GB, it might not be supported by
-                        your device if your storage (e.g. microSD card) is formatted using a FAT filesystem. If so, it's possible to split the material into several 2GB files: see <a href="http://www.kiwix.org/wiki/FAQ">the Kiwix FAQ</a>.
-                    </p>
-                    <h4>Step 2: copy the content onto your device</h4>
+                    <h4>Step 2: download or copy the content onto your device</h4>
                     <p>
                         If you have enough space, you can put several archives on your device storage. If you download the content directly in the app, note the location
                         of the saved file when you get the notification that it has completed. If you downloaded via a PC, you will generally need to use a USB
@@ -293,7 +318,7 @@
                     </p>
                     <h4>Step 3: open this app, go to the "Configure" menu and select your ZIM file</h4>
                     <p>
-                        On the Configuration page, tap the "Select storage" button. If you have downloaded more than one archive, or you have a split ZIM archive
+                        On the Configuration page, tap the "Select storage" button (you may need to <b>Display selectors</b> under <b>Expert settings</b> if you didn't do this previously). If you have downloaded more than one archive, or you have a split ZIM archive
                         consisting of several 2GB files, then you will need to pick the <b>folder</b> that contains these files. If you have just one unsplit ZIM
                         archive, you can instead pick the <b>file</b> directly, using the respective buttons on the
                         <a href="#" onclick="$('#btnConfigure').click();">Configuration</a> page (note that these buttons only appear after you tap "Select Storage").
@@ -305,12 +330,12 @@
                     <h3 id="privacy">Privacy policy</h3>
                     <h4>Short answer:</h4>
                     <p>
-                        Kiwix JS Windows works entirely offline unless you specifically request otherwise on the Configuration page. We do not collect any of your personal data
+                        Wikivoyage by Kiwix works entirely offline unless you specifically request otherwise on the Configuration page. We do not collect any of your personal data
                         and don't even know what you are doing with this application.
                     </p>
                     <h4>Longer answer:</h4>
                     <p>
-                        Kiwix JS Windows will only access the Kiwix download server if you specifically request it to find and display download links for ZIM archives on the Configuration page.
+                        Wikivoyage by Kiwix will only access the Kiwix download server if you specifically request it to find and display download links for ZIM archives on the Configuration page.
                         You can disable even this Internet access with an option on the same page. If you nevertheless believe your Internet access can be watched and/or if you are
                         extremely cautious, you should shut down your 3G and WiFi access before using the application.
                     </p>
@@ -354,7 +379,7 @@
                     <p>Thanks are due to:</p>
                     <ul>
                         <li>Kelson and all the Kiwix community for welcoming peter-x, mossroy, jaifroid and sharun-s onto this project</li>
-                        <li>Wikipedia teams and contributors for helping to spread knowledge to everybody</li>
+                        <li>Wikivoyage teams and contributors for helping to provide travel information for everybody</li>
                         <li>All the developers of libraries and tools we use for releasing them as Free software (see Licence paragraph)</li>
                     </ul>
                     <h3>Licence information</h3>
@@ -375,7 +400,7 @@
                             <br />MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
                             <br />GNU General Public Licence for more details.
                             <br />
-                    <br />You should have received a copy of the GNU General Public Licence
+                            <br />You should have received a copy of the GNU General Public Licence
                     <br />along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <a href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>
                         </i>
                     </p>
@@ -403,15 +428,18 @@
                     <div id="returntoArticle" class="returntoArticle" style="text-align:center;padding-top:20px;"></div>
                     <div class="row">
                         <h2 style="margin-top:0;">Configuration</h2>
+                        <p>
+                            Packaged ZIM archive: <b><span class="fileVersion"></span></b>
+                            <button style="display:none;" id="reloadPackagedArchive" type="button" class="btn btn-primary btn-xs">Reload</button>
+                        </p>
                         <p id="currentArchive" style="display: none;"></p>
-                        <p id="downloadLinksText">This application needs a ZIM archive to work.<br />
-                        <a id="otherLangs" href="#btnRescanDeviceStorage"><i>Download one from the <b>Archive Library</b>.</i></a></p><p></p>
+                        <p id="downloadLinksText"><a id="otherLangs" href="#btnRescanDeviceStorage">Get more archives (in other languages)</a></p><p></p>
                         <p id="moreInfo">For more information see <a href="#" onclick="document.getElementById('btnAbout').click();">About tab <span class="glyphicon glyphicon-info-sign"></span></a> (top right)</p>
                     </div>
                     <div id="hideFileSelectors">
                         <div id="scanningForArchives" style="display: none;">
-                            <br /> Scanning for archives... Please wait <img src="img/spinner.gif" alt="Please wait..." />
-                        </div>
+                        <br /> Scanning for archives... Please wait <img src="img/spinner.gif" alt="Please wait..." />
+                    </div>
                         <div id="chooseArchiveFromLocalStorage" style="display: none;">
                             <div id="archivesFound" class="row">
                                 <p><span id="archiveNumber">Archives found on this device (tap "Select storage" to rescan)</span>:</p>
@@ -469,9 +497,9 @@
                             <div class="row">
                                 <h3>Download links</h3>
                                 <div id="libraryArea" class="col-xs-12">
-                                <p>
-                                    Files can be very large, <b>do not attempt to download using mobile data!</b>
-                                </p>
+                                    <p>
+                                        Files can be very large, <b>do not attempt to download using mobile data!</b>
+                                    </p>
                                     <table>
                                         <tr>
                                             <td><input id="downloadTrigger" type="button" class="btn btn-primary" value="Open library" style="float:left; margin-right:1em;" /></td>
@@ -583,9 +611,9 @@
                                         </label>
                                     </div> 
                                 </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
                     <div class="returntoArticle" style="text-align:center;"></div>
                     <div>
                         <div class="row">
@@ -682,21 +710,21 @@
             <!-- Bootstrap alert box -->
             <div id="alertBoxFooter"></div>
             <div id="navigationButtons" class="btn-group btn-group-justified">
-                <div class="row">
-                    <a class="btn btn-default col-xs-2" id="btnHomeBottom" title="Home"><span class="glyphicon glyphicon-home"></span></a>
-                    <a class="btn btn-default col-xs-1" id="btnBack" title="Back"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>
-                    <a class="btn btn-default col-xs-1" id="btnForward" title="Forward"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
-                    <div class="dropup">
-                        <a href="#" class="btn btn-default dropdown-toggle col-xs-4" role="button" id="dropup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <b>&nbsp;ToC&nbsp;</b>
-                            <span class="caret"></span>
-                        </a>
-                        <ul id="ToCList" class="dropdown-menu" style="overflow-y:auto;"></ul>
-                    </div>
-                    <a class="btn btn-default col-xs-1" id="btnZoomout" title="Zoom out"><span class="glyphicon glyphicon-zoom-out"></span></a>
-                    <a class="btn btn-default col-xs-1" id="btnZoomin" title="Zoom in"><span class="glyphicon glyphicon-zoom-in"></span></a>
-                    <span class="label label-default" id="lblZoom"></span>
-                    <a class="btn btn-default col-xs-2" id="btnTop" title="Top" href="#top"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                    <div class="row">
+                        <a class="btn btn-default col-xs-2" id="btnHomeBottom" title="Home"><span class="glyphicon glyphicon-home"></span></a>
+                        <a class="btn btn-default col-xs-1" id="btnBack" title="Back"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>
+                        <a class="btn btn-default col-xs-1" id="btnForward" title="Forward"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
+                        <div class="dropup">
+                            <a href="#" class="btn btn-default dropdown-toggle col-xs-4" role="button" id="dropup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <b>&nbsp;ToC&nbsp;</b>
+                                <span class="caret"></span>
+                            </a>
+                            <ul id="ToCList" class="dropdown-menu" style="overflow-y:auto;"></ul>
+                        </div>
+                        <a class="btn btn-default col-xs-1" id="btnZoomout" title="Zoom out"><span class="glyphicon glyphicon-zoom-out"></span></a>
+                        <a class="btn btn-default col-xs-1" id="btnZoomin" title="Zoom in"><span class="glyphicon glyphicon-zoom-in"></span></a>
+                        <span class="label label-default" id="lblZoom"></span>
+                        <a class="btn btn-default col-xs-2" id="btnTop" title="Top" href="#top"><span class="glyphicon glyphicon-arrow-up"></span></a>
                 </div>
             </div>
         </footer>

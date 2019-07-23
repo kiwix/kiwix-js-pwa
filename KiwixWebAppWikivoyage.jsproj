@@ -1,0 +1,304 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Uap.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Uap.props')" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|AnyCPU">
+      <Configuration>Debug</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x86">
+      <Configuration>Debug</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|AnyCPU">
+      <Configuration>Release</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+      <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+      <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x86">
+      <Configuration>Release</Configuration>
+      <Platform>x86</Platform>
+      <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>a1a5e0b9-13d4-41fb-810d-518949f03df4</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
+    <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0'">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).Default.props" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).props" />
+  <PropertyGroup>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>$(VersionNumberMajor).$(VersionNumberMinor)</MinimumVisualStudioVersion>
+    <DefaultLanguage>en-gb</DefaultLanguage>
+    <PackageCertificateKeyFile>KiwixWebApp_StoreKey.pfx</PackageCertificateKeyFile>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
+    <PackageCertificateThumbprint>95BFD8354C5B02AB76ED8D0DBCE7D830A871BA54</PackageCertificateThumbprint>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
+    <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="archives\wikivoyage_en.zim" />
+    <Content Include="images\BadgeLogo.scale-100.png" />
+    <Content Include="images\BadgeLogo.scale-125.png" />
+    <Content Include="images\BadgeLogo.scale-150.png" />
+    <Content Include="images\BadgeLogo.scale-200.png" />
+    <Content Include="images\BadgeLogo.scale-400.png" />
+    <Content Include="images\Kiwix_midnightblue_icon_transparent_530.png" />
+    <Content Include="images\LargeTile.scale-100.png" />
+    <Content Include="images\LargeTile.scale-125.png" />
+    <Content Include="images\LargeTile.scale-150.png" />
+    <Content Include="images\LargeTile.scale-200.png" />
+    <Content Include="images\LargeTile.scale-400.png" />
+    <Content Include="images\SmallTile.scale-100.png" />
+    <Content Include="images\SmallTile.scale-125.png" />
+    <Content Include="images\SmallTile.scale-150.png" />
+    <Content Include="images\SmallTile.scale-200.png" />
+    <Content Include="images\SmallTile.scale-400.png" />
+    <Content Include="images\splashscreen.scale-100.png" />
+    <Content Include="images\splashscreen.scale-125.png" />
+    <Content Include="images\splashscreen.scale-150.png" />
+    <Content Include="images\splashscreen.scale-200.png" />
+    <Content Include="images\splashscreen.scale-400.png" />
+    <Content Include="images\Square150x150Logo.scale-100.png" />
+    <Content Include="images\Square150x150Logo.scale-125.png" />
+    <Content Include="images\Square150x150Logo.scale-150.png" />
+    <Content Include="images\Square150x150Logo.scale-200.png" />
+    <Content Include="images\Square150x150Logo.scale-400.png" />
+    <Content Include="images\Square44x44Logo.altform-unplated_targetsize-16.png" />
+    <Content Include="images\Square44x44Logo.altform-unplated_targetsize-256.png" />
+    <Content Include="images\Square44x44Logo.altform-unplated_targetsize-32.png" />
+    <Content Include="images\Square44x44Logo.altform-unplated_targetsize-48.png" />
+    <Content Include="images\Square44x44Logo.scale-100.png" />
+    <Content Include="images\Square44x44Logo.scale-125.png" />
+    <Content Include="images\Square44x44Logo.scale-150.png" />
+    <Content Include="images\Square44x44Logo.scale-200.png" />
+    <Content Include="images\Square44x44Logo.scale-400.png" />
+    <Content Include="images\Square44x44Logo.targetsize-16.png" />
+    <Content Include="images\Square44x44Logo.targetsize-24.png" />
+    <Content Include="images\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="images\Square44x44Logo.targetsize-256.png" />
+    <Content Include="images\Square44x44Logo.targetsize-32.png" />
+    <Content Include="images\Square44x44Logo.targetsize-48.png" />
+    <Content Include="images\storelogo.scale-100.png" />
+    <Content Include="images\storelogo.scale-125.png" />
+    <Content Include="images\storelogo.scale-150.png" />
+    <Content Include="images\storelogo.scale-200.png" />
+    <Content Include="images\storelogo.scale-400.png" />
+    <Content Include="images\Wide310x150Logo.scale-100.png" />
+    <Content Include="images\Wide310x150Logo.scale-125.png" />
+    <Content Include="images\Wide310x150Logo.scale-150.png" />
+    <Content Include="images\Wide310x150Logo.scale-200.png" />
+    <Content Include="images\Wide310x150Logo.scale-400.png" />
+    <None Include="Package.StoreAssociation.xml" />
+    <Content Include="www\-\static\main.css" />
+    <Content Include="images\Wikivoyage.png" />
+    <Content Include="images\Wikivoyage_220x220.png" />
+    <Content Include="images\Wikivoyage_400x400.png" />
+    <Content Include="images\Wikivoyage_400x400_colour_pop.png" />
+    <Content Include="images\Wikivoyage_400x400_white.png" />
+    <Content Include="www\-\s\css_modules\content.parsoid.css" />
+    <Content Include="www\-\s\css_modules\ext.cite.a11y.css" />
+    <Content Include="www\-\s\css_modules\ext.cite.styles.css" />
+    <Content Include="www\-\s\css_modules\ext.kartographer.frame.css" />
+    <Content Include="www\-\s\css_modules\ext.kartographer.link.css" />
+    <Content Include="www\-\s\css_modules\ext.kartographer.style.css" />
+    <Content Include="www\-\s\css_modules\ext.math.scripts.css" />
+    <Content Include="www\-\s\css_modules\ext.math.styles.css" />
+    <Content Include="www\-\s\css_modules\ext.scribunto.logs.css" />
+    <Content Include="www\-\s\css_modules\ext.timeline.styles.css" />
+    <Content Include="www\-\s\css_modules\ext.tmh.thumbnail.styles.css" />
+    <Content Include="www\-\s\css_modules\inserted_style.css" />
+    <Content Include="www\-\s\css_modules\inserted_style_mobile.css" />
+    <Content Include="www\-\s\css_modules\mediawiki.page.gallery.styles.css" />
+    <Content Include="www\-\s\css_modules\mediawiki.toc.css" />
+    <Content Include="www\-\s\css_modules\mobile.css" />
+    <Content Include="www\-\s\css_modules\mw.MediaWikiPlayer.loader.css" />
+    <Content Include="www\-\s\css_modules\mw.PopUpMediaTransform.css" />
+    <Content Include="www\-\s\css_modules\mw.TMHGalleryHook.js.css" />
+    <Content Include="www\-\s\css_modules\style.css" />
+    <Content Include="www\-\s\style-dark-invert.css" />
+    <Content Include="www\-\s\style-dark.css" />
+    <Content Include="www\-\s\style-mobile.css" />
+    <Content Include="www\-\s\style.css" />
+    <Content Include="www\-\s\vector.css" />
+    <Content Include="www\article.html" />
+    <Content Include="www\A\Main_Page_New_Mobile" />
+    <Content Include="www\css\app.css" />
+    <Content Include="www\css\bootstrap-theme.min.css" />
+    <Content Include="www\css\bootstrap.min.css" />
+    <Content Include="www\favicon.ico" />
+    <Content Include="www\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="www\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="www\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="www\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="www\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="www\img\icons\kiwix-32.png" />
+    <Content Include="www\img\icons\kiwix-blue-32.png" />
+    <Content Include="www\img\icons\map_marker-18px.png" />
+    <Content Include="www\img\icons\new_window.svg" />
+    <Content Include="www\img\icons\new_window_lb.svg" />
+    <Content Include="www\img\icons\wikivoyage-90-white.png" />
+    <Content Include="www\img\icons\wikivoyage-90.png" />
+    <Content Include="www\img\icons\wikimed-blue-32.png" />
+    <Content Include="www\img\icons\wikimed-lightblue-32.png" />
+    <Content Include="www\img\icons\wikivoyage-black-32.png" />
+    <Content Include="www\img\icons\wikivoyage-white-32.png" />
+    <Content Include="www\img\lightBlue.png" />
+    <Content Include="www\img\spinner.gif" />
+    <Content Include="www\index.html" />
+    <Content Include="www\I\s\Checker-16x16.png" />
+    <Content Include="www\I\s\cog-sprite.png" />
+    <Content Include="www\I\s\Icons-mini-file_acrobat.gif" />
+    <Content Include="www\I\s\Icon_External_Link.png" />
+    <Content Include="www\I\s\magnify-clip-ltr.png" />
+    <Content Include="www\I\s\spinner.gif" />
+    <Content Include="www\js\app.js" />
+    <Content Include="www\js\init.js" />
+    <Content Include="www\js\katex\contrib\auto-render.min.js" />
+    <Content Include="www\js\katex\contrib\copy-tex.min.css" />
+    <Content Include="www\js\katex\contrib\copy-tex.min.js" />
+    <Content Include="www\js\katex\contrib\mathtex-script-type.min.js" />
+    <Content Include="www\js\katex\contrib\mhchem.min.js" />
+    <Content Include="www\js\katex\fonts\KaTeX_AMS-Regular.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_AMS-Regular.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_AMS-Regular.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_Caligraphic-Bold.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_Caligraphic-Bold.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_Caligraphic-Bold.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_Caligraphic-Regular.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_Caligraphic-Regular.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_Caligraphic-Regular.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_Fraktur-Bold.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_Fraktur-Bold.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_Fraktur-Bold.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_Fraktur-Regular.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_Fraktur-Regular.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_Fraktur-Regular.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_Main-Bold.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_Main-Bold.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_Main-Bold.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_Main-BoldItalic.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_Main-BoldItalic.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_Main-BoldItalic.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_Main-Italic.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_Main-Italic.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_Main-Italic.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_Main-Regular.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_Main-Regular.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_Main-Regular.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_Math-BoldItalic.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_Math-BoldItalic.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_Math-BoldItalic.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_Math-Italic.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_Math-Italic.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_Math-Italic.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_SansSerif-Bold.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_SansSerif-Bold.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_SansSerif-Bold.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_SansSerif-Italic.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_SansSerif-Italic.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_SansSerif-Italic.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_SansSerif-Regular.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_SansSerif-Regular.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_SansSerif-Regular.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_Script-Regular.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_Script-Regular.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_Script-Regular.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_Size1-Regular.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_Size1-Regular.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_Size1-Regular.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_Size2-Regular.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_Size2-Regular.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_Size2-Regular.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_Size3-Regular.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_Size3-Regular.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_Size3-Regular.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_Size4-Regular.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_Size4-Regular.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_Size4-Regular.woff2" />
+    <Content Include="www\js\katex\fonts\KaTeX_Typewriter-Regular.ttf" />
+    <Content Include="www\js\katex\fonts\KaTeX_Typewriter-Regular.woff" />
+    <Content Include="www\js\katex\fonts\KaTeX_Typewriter-Regular.woff2" />
+    <Content Include="www\js\katex\katex.min.css" />
+    <Content Include="www\js\katex\katex.min.js" />
+    <Content Include="www\js\katex\README.md" />
+    <Content Include="www\js\lib\bootstrap.min.js" />
+    <Content Include="www\js\lib\cookies.js" />
+    <Content Include="www\js\lib\images.js" />
+    <Content Include="www\js\lib\jquery-3.2.1.slim.js" />
+    <Content Include="www\js\lib\kiwixServe.js" />
+    <Content Include="www\js\lib\q.js" />
+    <Content Include="www\js\lib\require.js" />
+    <Content Include="www\js\lib\transformStyles.js" />
+    <Content Include="www\js\lib\uiUtil.js" />
+    <Content Include="www\js\lib\utf8.js" />
+    <Content Include="www\js\lib\util.js" />
+    <Content Include="www\js\lib\xzdec.js" />
+    <Content Include="www\js\lib\xzdec_wrapper.js" />
+    <Content Include="www\js\lib\zimArchive.js" />
+    <Content Include="www\js\lib\zimArchiveLoader.js" />
+    <Content Include="www\js\lib\zimDirEntry.js" />
+    <Content Include="www\js\lib\zimfile.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{4a0dddb5-7a95-4fbf-97cc-616d07737a77}" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="www\-\static\bootstrap\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Uap.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Uap.targets')" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.jsproj.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.jsproj.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below then uncomment
+       that target and the DisableFastUpToDateCheck PropertyGroup. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  <PropertyGroup>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+  </PropertyGroup>
+  -->
+</Project>

@@ -1,0 +1,81 @@
+﻿<html class="client-js">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Page New Mobile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        function importScript() { return 1 } // this is to avoid the error from site.js
+    </script>
+    <link href="../-/s/css_modules/skins.minerva.base.reset|skins.minerva.content.styles|ext.cite.style|mobile.app.pagestyles.android|mediawiki.page.gallery.styles|mediawiki.skinning.content.parsoid.css" rel="stylesheet" type="text/css" class="">
+    <link href="../-/s/css_modules/style.css" rel="stylesheet" type="text/css" class="">
+    <link href="../-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css" class="">
+    <link href="../-/s/css_modules/inserted_style.css" rel="stylesheet" type="text/css" class="">
+    <script src="../-/j/js_modules/script.js" class=""></script>
+    <script src="../-/j/js_modules/masonry.min.js" class=""></script>
+    <script src="../-/j/js_modules/article_list_home.js" class=""></script>
+    <script src="../-/j/js_modules/images_loaded.min.js" class=""></script>
+</head>
+
+<body class="mediawiki mw-hide-empty-elt ns-0 ns-subject stable skin-minerva action-view animations">
+    <div id="mw-mf-viewport" class="feature-header-v2">
+        <div id="mw-mf-page-center">
+            <div id="content" class="mw-body">
+                <a id="top"></a>
+                <div id="bodyContent" class="content">
+
+                    <div id="mw-content-text" style="direction: ltr;">
+                        <h1 class="section-heading in-block collapsible-heading open-block" tabindex="0" aria-haspopup="true" aria-controls="content-collapsible-block-0" data-section-id="0">
+                            <div class="mw-ui-icon mw-ui-icon-arrow mw-ui-icon-element  indicator" title=""></div>
+                        </h1>
+                        <div id="mf-section-0" class="mf-section-0 collapsible-block open-block" aria-pressed="true" aria-expanded="true">
+                            <div id="mf-home">
+                                <div style="text-align:center; font-size:300%; line-height: 1; padding: 10px;"><b><span style="color:#0B0080;">Welcome to Wikivoyage,</span></b></div>
+                                <div style="text-align:center; font-size:150%; line-height: 1; padding: 10px;"><span style="color:#0B0080;">the <b>free</b>, worldwide travel guide that <b>anyone can edit</b></span>.</div>
+
+                                <div id="mobileworld" style="width: 100%">
+                                    <div class="center"><div class="floatnone"><div class="noresize"><map name="ImageMap_1_633495914"><area href="Antarctica" shape="poly" coords="1,12,2,12,2,11,4,11,6,11,7,11,9,10,9,10,9,11,10,12,11,11,13,11,14,11,15,11,16,11,17,11,18,11,19,11,20,11,22,11,23,11,24,11,25,11,26,11,26,12,26,12" alt="Antarctica" title="Antarctica"><area href="Oceania" shape="poly" coords="24,6,24,7,23,7,23,7,23,7,22,7,21,8,22,9,22,9,23,8,23,9,24,9,24,9,26,10,27,10,27,7,25,6,25,6" alt="Oceania" title="Oceania"><area href="Asia" shape="poly" coords="16,4,16,4,17,5,17,5,18,4,18,4,19,6,19,6,20,5,20,5,20,5,20,6,21,7,22,7,22,7,23,7,23,7,23,7,24,6,23,6,23,5,23,4,24,3,24,3,25,2,26,2,27,1,27,1,25,0,23,0,22,0,21,0,19,0,18,1,17,3,17,3,16,3" alt="Asia" title="Asia"><area href="Africa" shape="poly" coords="13,3,13,3,14,3,14,3,14,3,15,3,16,4,16,4,16,5,17,5,17,5,17,5,17,6,17,6,16,6,17,7,17,7,17,8,16,8,16,8,15,9,15,9,14,7,14,7,14,6,13,6,12,5,12,4,12,4" alt="Africa" title="Africa"><area href="Europe" shape="poly" coords="13,3,13,3,14,3,14,3,15,3,15,3,16,3,16,3,16,3,17,3,17,2,18,1,17,1,16,1,16,1,15,0,14,1,14,1,14,1,13,1,13,1,12,1,12,1,11,1,12,2,13,2,13,3,12,3,12,3,13,3" alt="Europe" title="Europe"><area href="North_America" shape="poly" coords="1,2,2,2,2,2,3,2,4,2,4,3,5,4,5,4,6,5,6,5,7,5,7,6,8,5,8,5,9,5,9,5,7,4,9,3,10,3,10,1,12,1,12,0,6,0,4,0,4,1,2,1,2,1,1,1" alt="North America" title="North America"><area href="South_America" shape="poly" coords="8,5,8,5,8,6,7,6,7,6,7,7,8,7,8,9,7,10,8,10,8,10,9,10,9,10,9,10,9,9,9,9,10,8,11,7,11,6,9,6,9,5,8,5" alt="South America" title="South America"></map><img src="../I/m/Whole_world_-_land_and_oceans_12000.jpg" width="800" height="400" data-file-width="24000" data-file-height="12000" usemap="#ImageMap_1_633495914"></div></div></div><span>
+                                    </span>
+                                </div>
+
+                                <div style="text-align:center">
+                                    <a href="Itineraries" title="Itineraries">Itineraries</a> • <a href="Other_destinations" title="Other destinations">Other destinations</a> • <a href="Phrasebooks" title="Phrasebooks">Phrasebooks</a> • <a href="Travel_topics" title="Travel topics">Travel topics</a><br><br>
+                                    <a href="Asia" title="Asia">Asia</a> • <a href="Antarctica" title="Antarctica">Antarctica</a> • <a href="Africa" title="Africa">Africa</a> • <a href="Europe" title="Europe">Europe</a> • <a href="North_America" title="North America">North America</a> • <a href="Oceania" title="Oceania">Oceania</a> • <a href="South_America" title="South America">South America</a>
+                                </div>
+
+                            </div>
+
+                        </div><!--htdig_noindex--><div>
+                            <div style="clear:both; background-image:linear-gradient(180deg, #E8E8E8, white); border-top: dashed 2px #AAAAAA; padding: 0.5em 0.5em 0.5em 0.5em; margin-top: 1em; direction: ltr;">
+                                This article is issued from
+                                <a class="external text" title="Last edited on 2018-07-10" href="https://en.wikivoyage.org/wiki/Main_Page_New_Mobile?oldid=3552880">
+                                    Wikivoyage
+                                </a>.
+                                The text is licensed under <a class="external text" href="http://creativecommons.org/licenses/by-sa/4.0/">
+                                    Creative
+                                    Commons - Attribution - Sharealike
+                                </a>.
+                                Additional terms may apply for the media files.
+                            </div>
+                        </div><!--/htdig_noindex-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <noscript>
+        <style>
+            .collapsible-block {
+                display: block !important;
+            }
+        </style>
+    </noscript>
+    <script src="../-/j/js_modules/jsConfigVars.js" class=""></script>
+    <script src="../-/j/js_modules/startup.js" class=""></script>
+    <script src="../-/j/js_modules/jquery.js" class=""></script>
+    <script src="../-/j/js_modules/mediawiki.js" class=""></script>
+    <script src="../-/j/js_modules/site.js" class=""></script>
+
+
+</body>
+</html>
