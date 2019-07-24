@@ -2464,13 +2464,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             //Clean up remaining geo: links
             htmlArticle = htmlArticle.replace(/href\s*=\s*"\s*geo:([\d.-]+),([\d.-]+)/ig, 'href="bingmaps:?collection=point.$1_$2_' + encodeURIComponent(dirEntry.getTitleOrUrl()));
 
-            //Setup footnote backlinks if the ZIM doesn't have any
-            //htmlArticle = htmlArticle.replace(/<li\s+id\s*=\s*"cite_note-([^"]+)"\s*>(?![^/]+↑)/ig, function (match, p1) {
-            //    var fnSearchRegxp = new RegExp('id\\s*=\\s*"(cite[-_]ref[-_]' + p1.replace(/[-_()]/g, "[-_()]") + '[^"]*)', "i");
-            //    var fnReturnMatch = htmlArticle.match(fnSearchRegxp);
-            //    var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : "";
-            //    return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>';
-            //});
+            //Setup endnote backlinks if the ZIM doesn't have any
+            htmlArticle = htmlArticle.replace(/<li\b[^>]+id=["']cite[-_]note[-_]([^"']+)[^>]+>(?![^/]+?[↑^])/ig, function (match, id) {
+                var fnSearchRegxp = new RegExp('id=["' + "'](cite[-_]ref[-_]" + id.replace(/[-_()]/g, "[-_()]") + '[^"' + "']*)", 'i');
+                var fnReturnMatch = htmlArticle.match(fnSearchRegxp);
+                var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : "";
+                return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>';
+            });
 
             //Preload stylesheets [kiwix-js #149]
             //Set up blobArray of promises
