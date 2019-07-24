@@ -2465,12 +2465,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             htmlArticle = htmlArticle.replace(/href\s*=\s*"\s*geo:([\d.-]+),([\d.-]+)/ig, 'href="bingmaps:?collection=point.$1_$2_' + encodeURIComponent(dirEntry.getTitleOrUrl()));
 
             //Setup footnote backlinks if the ZIM doesn't have any
-            htmlArticle = htmlArticle.replace(/<li\s+id\s*=\s*"cite_note-([^"]+)"\s*>(?![^/]+↑)/ig, function (match, p1) {
-                var fnSearchRegxp = new RegExp('id\\s*=\\s*"(cite[-_]ref[-_]' + p1.replace(/[-_()]/g, "[-_()]") + '[^"]*)', "i");
-                var fnReturnMatch = htmlArticle.match(fnSearchRegxp);
-                var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : "";
-                return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>';
-            });
+            //htmlArticle = htmlArticle.replace(/<li\s+id\s*=\s*"cite_note-([^"]+)"\s*>(?![^/]+↑)/ig, function (match, p1) {
+            //    var fnSearchRegxp = new RegExp('id\\s*=\\s*"(cite[-_]ref[-_]' + p1.replace(/[-_()]/g, "[-_()]") + '[^"]*)', "i");
+            //    var fnReturnMatch = htmlArticle.match(fnSearchRegxp);
+            //    var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : "";
+            //    return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>';
+            //});
 
             //Preload stylesheets [kiwix-js #149]
             //Set up blobArray of promises
@@ -2665,7 +2665,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     // Make sure the article area is displayed
                     setTab();
 
-                    var docBody = articleContent.getElementsByTagName('body');
+                    var docBody = iframeContentDocument.getElementsByTagName('body');
                     docBody = docBody ? docBody[0] : null;
                     if (docBody) {
                         // Add any missing classes stripped from the <html> tag
@@ -2732,11 +2732,23 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                     var refID = obj.target.hash || obj.target.parentNode.hash;
                                     if (!refID) return;
                                     refID = refID.replace(/#/, "");
-                                    var refLocation = docBody.getElementById(refID);
+                                    var refLocation = iframeContentDocument.getElementById(refID);
+                                    var returnID = obj.target.id || obj.target.parentNode.id;
+                                    // Add backlink to refLocation if missing
+                                    if (returnID && !~refLocation.innerHTML.indexOf('#' + returnID)) {
+                                        var returnLink = document.createElement('a');
+                                        returnLink.href = '#' + returnID;
+                                        returnLink.innerHTML = '↑';
+                                        refLocation.insertBefore(returnLink, refLocation.firstChild);
+                                    }
                                     var refNext = util.getClosestBack(refLocation, function (el) {
-                                        return el.tagName == "H2";
+                                        return  /^(H2|DETAILS)$/.test(el.tagName);
                                     });
                                     if (refNext) {
+                                        if (/DETAILS/.test(refNext.tagName)) {
+                                            refNext.open = true;
+                                            return;
+                                        }
                                         refNext.classList.add("open-block");
                                         //refNext.innerHTML = refNext.innerHTML.replace(/<br\s*\/?>$/i, "");
                                         refNext = refNext.nextElementSibling;
