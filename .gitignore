@@ -8,4 +8,6 @@ _pkginfo.txt
 /BundleArtifacts/
 /archives/*.zim
 /AppPackages/*wikivoyage*
+/node_modules/
 
+package-lock.json
