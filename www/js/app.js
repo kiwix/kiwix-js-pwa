@@ -2733,7 +2733,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                     if (!refID) return;
                                     refID = refID.replace(/#/, "");
                                     var refLocation = iframeContentDocument.getElementById(refID);
-                                    var returnID = obj.target.id || obj.target.parentNode.id;
+                                    // In some ZIMs the id is in the parent node or in the parent of the parent
+                                    var returnID = obj.target.id || obj.target.parentNode.id || obj.target.parentNode.parentNode.id;
                                     // Add backlink to refLocation if missing
                                     if (returnID && !~refLocation.innerHTML.indexOf('#' + returnID)) {
                                         var returnLink = document.createElement('a');
