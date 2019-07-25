@@ -6,13 +6,13 @@
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/kiwix/kiwix-js-windows",
   "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "Kiwix",
+    "offline",
+    "Wikipedia",
+    "ZIM",
+    "reader"
   ],
   "author": "GitHub",
   "license": "CC0-1.0",
