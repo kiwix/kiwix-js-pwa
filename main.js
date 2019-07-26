@@ -57,10 +57,14 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
     protocol.registerFileProtocol('app', (request, callback) => {
+    //protocol.registerHttpProtocol('app', (request, callback) => {
         const url = request.url.substr(6);
         callback({
             path: path.normalize(`${__dirname}/${url}`)
+            // url: 'file://' + path.normalize(`${__dirname}/${url}`),
+            // method: 'GET'
         });
+        console.log(path.normalize(`${__dirname}/${url}` + ':' + url));
     }, (error) => {
         if (error) console.error('Failed to register protocol');
     });
