@@ -32,8 +32,9 @@ function createWindow() {
     });
 
     // and load the index.html of the app.
-    // mainWindow.loadURL('app://www/index.html');
-    mainWindow.loadFile('www/index.html');
+    mainWindow.loadURL('app://www/index.html');
+    // DEV: If you need Service Worker more than you need document.cookie, load app like this:
+    // mainWindow.loadFile('www/index.html');
     // DEV: Enable code below to check cookies saved by app in console log
     // mainWindow.webContents.on('did-finish-load', function() {
     //     mainWindow.webContents.session.cookies.get({}, (error, cookies) => {
