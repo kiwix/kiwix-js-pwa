@@ -1,9 +1,21 @@
 // Modules to control application life and create native browser window
 const {
     app,
+    protocol,
     BrowserWindow
 } = require('electron');
 const path = require('path');
+
+// This is used to set capabilities of the app: protocol in onready event below
+protocol.registerSchemesAsPrivileged([{
+    scheme: 'app',
+    privileges: {
+        standard: true,
+        secure: true,
+        allowServiceWorkers: true,
+        supportFetchAPI: true
+    }
+}]);
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -13,14 +25,20 @@ function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow({
         width: 800,
-        height: 600,
-        webPreferences: {
-            preload: path.join(__dirname, 'preload.js')
-        }
+        height: 600
+        //, webPreferences: {
+        //     preload: path.join(__dirname, 'preload.js')
+        // }
     });
 
     // and load the index.html of the app.
-    mainWindow.loadFile('www/index.html');
+    mainWindow.loadURL('app://www/index.html');
+    // DEV: Enable code below to check cookies saved by app in console log
+    // mainWindow.webContents.on('did-finish-load', function() {
+    //     mainWindow.webContents.session.cookies.get({}, (error, cookies) => {
+    //       console.log(cookies);
+    //     });
+    // });
 
     // Open the DevTools.
     // mainWindow.webContents.openDevTools()
@@ -37,7 +55,18 @@ function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', () => {
+    protocol.registerFileProtocol('app', (request, callback) => {
+        const url = request.url.substr(6);
+        callback({
+            path: path.normalize(`${__dirname}/${url}`)
+        });
+    }, (error) => {
+        if (error) console.error('Failed to register protocol');
+    });
+    // Create the new window
+    createWindow();
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
