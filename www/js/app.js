@@ -2804,9 +2804,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
                     // Set state of collapsible sections
                     if (params.openAllSections === true) {
-                        var collapsedBlocks = iframeContentDocument.querySelectorAll('.collapsible-block:not(.open-block), .collapsible-heading:not(.open-block)');
-                        for (var i = collapsedBlocks.length; i--;) {
-                            collapsedBlocks[i].classList.add('open-block');
+                        var collapsedBlocks = iframeContentDocument.querySelectorAll('details:not([open]), .collapsible-block:not(.open-block), .collapsible-heading:not(.open-block)');
+                        for (var x = collapsedBlocks.length; x--;) {
+                            if (/DETAILS/.test(collapsedBlocks[x].tagName)) {
+                                collapsedBlocks[x].open = true;
+                            } else {
+                                collapsedBlocks[x].classList.add('open-block');
+                            }
                         }
                     }
 
