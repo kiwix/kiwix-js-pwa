@@ -947,6 +947,35 @@ a.issues_button {
         counter-increment: mw-numbered-ext-link
     }
 
+.mw-body h3, .mw-body h2 {
+    clear: both;
+    width: 100%;
+    margin-bottom: 0.5em;
+    border-bottom: solid 1px #eaecf0;
+    font-family: 'Linux Libertine', 'Georgia', 'Times', serif;
+}
+.mw-body h3 {
+    border-bottom: 0px solid #eaecf0;
+    font-weight: bold;
+}
+
+.mw-body h4 {
+    border-bottom: 0px solid #eaecf0;
+}
+
+h1[tabindex="0"].collapsible-heading>.indicator {
+    display: none;
+    /* hide the "v" icone for the main title */
+}
+
+.section-heading>h1,
+.section-heading>h2,
+.section-heading>h3,
+.section-heading>h4 {
+    display: inline;
+    border: none;
+}
+
 .content figure img, .content figure video {
     margin: 0.6em auto 0.6em auto;
     display: block
