@@ -2391,6 +2391,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + noexcerpt);
             }
 
+            //Remove white background colour (causes flashes in dark mode)
+            htmlArticle = htmlArticle.replace(/(<body\b[^>]+style=["'][^"']*)background-color\s*:\s*[^;]+;\s*/i, '$1');
+            htmlArticle = htmlArticle.replace(/(<div\b(?=[^>]+class=\s*["'][^"']*mw-body)[^>]+style=["'][^"']*)background-color\s*:\s*[^;]+;\s*/i, '$1');
+
             //Display IPA pronunciation info erroneously hidden in some ZIMs
             htmlArticle = htmlArticle.replace(/(<span\b[^>]+?class\s*=\s*"[^"]+?mcs-ipa[^>]+?display:\s*)none/i, "$1inline");
 
@@ -2662,9 +2666,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     // Inject the new article's HTML into the iframe
                     var articleContent = iframeContentDocument.documentElement;
                     articleContent.innerHTML = htmlArticle;
-                    // Make sure the article area is displayed
-                    setTab();
-
+                    
                     var docBody = iframeContentDocument.getElementsByTagName('body');
                     docBody = docBody ? docBody[0] : null;
                     if (docBody) {
@@ -2813,7 +2815,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                             }
                         }
                     }
-
+                    // function insertAnchorsJQuery
                     Array.prototype.slice.call(iframeContentDocument.querySelectorAll('a, area')).forEach(function (anchor) {
                         // Attempts to access any properties of 'this' with malformed URLs causes app crash in Edge/UWP [kiwix-js #430]
                         try {
@@ -2871,10 +2873,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     
                     // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
                     if (params.printIntercept) printIntercept();
+
+                    // Make sure the article area is displayed
+                    setTab();
+
                 };
 
                 // Load the blank article to clear the iframe (NB iframe onload event runs *after* this)
                 iframeArticleContent.src = "article.html";
+
+                // Hide the articleContent to prevent flashes in dark mode in some browsers
+                document.getElementById('articleContent').style.display = 'none';
+
                 //var articleContent = iframeArticleContent.contentDocument;
                 //articleContent.open('text/html', 'replace');
                 //articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
