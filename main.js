@@ -11,7 +11,7 @@ protocol.registerSchemesAsPrivileged([{
     scheme: 'app',
     privileges: {
         standard: true,
-        secure: true,
+        //secure: true,
         allowServiceWorkers: true,
         supportFetchAPI: true
     }
@@ -25,16 +25,22 @@ function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow({
         width: 800,
-        height: 600
-        //, webPreferences: {
-        //     preload: path.join(__dirname, 'preload.js')
-        // }
+        height: 600, 
+        webPreferences: {
+            // nodeIntegration: false,
+            // contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js')
+            // preload: __dirname + '/www/preload.js'
+          , webSecurity: false
+            // preload: 'app://www/preload.js'
+        }
     });
 
     // and load the index.html of the app.
     mainWindow.loadURL('app://www/index.html');
     // DEV: If you need Service Worker more than you need document.cookie, load app like this:
-    // mainWindow.loadFile('www/index.html');
+    // mainWindow.loadFile('index.html');
+    
     // DEV: Enable code below to check cookies saved by app in console log
     // mainWindow.webContents.on('did-finish-load', function() {
     //     mainWindow.webContents.session.cookies.get({}, (error, cookies) => {
@@ -54,19 +60,29 @@ function createWindow() {
     });
 }
 
+// let dirnameParts = __dirname.match(/[^\/\\]+(?:[\/\\]|$)/g);
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
+
 app.on('ready', () => {
     protocol.registerFileProtocol('app', (request, callback) => {
     //protocol.registerHttpProtocol('app', (request, callback) => {
-        const url = request.url.substr(6);
+        let url = request.url.replace(/^app:\/\/([./]*)(.*)$/, function(_p0, relPath, linkUrl) {
+            // // @TODO: Complete routine to recognize relative links below (../)
+            // let i = 0;
+            // let parsedPath = relPath.replace(/\.\.\//g, function(p0) {
+            //     i++;
+            // });
+            return relPath + linkUrl;
+        });
         callback({
             path: path.normalize(`${__dirname}/${url}`)
             // url: 'file://' + path.normalize(`${__dirname}/${url}`),
             // method: 'GET'
         });
-        console.log(path.normalize(`${__dirname}/${url}` + ':' + url));
+        // console.log(path.normalize(`${__dirname}/${url}` + ':' + url));
     }, (error) => {
         if (error) console.error('Failed to register protocol');
     });
