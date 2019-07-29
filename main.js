@@ -24,14 +24,17 @@ let mainWindow;
 function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600, 
+        titleBarStyle: 'hidden',
+        width: 1281,
+        height: 800,
+        minWidth: 800,
+        minHeight: 600,
+        icon: path.join(__dirname, 'www/img/icons/kiwix-64.png'),
         webPreferences: {
             // nodeIntegration: false,
             // contextIsolation: true,
-            preload: path.join(__dirname, 'preload.js')
-            // preload: __dirname + '/www/preload.js'
-          , webSecurity: false
+            preload: path.join(__dirname, 'preload.js'),
+            // webSecurity: false
             // preload: 'app://www/preload.js'
         }
     });
