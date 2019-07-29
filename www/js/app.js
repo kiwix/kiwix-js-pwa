@@ -2902,16 +2902,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 };
 
                 // Load the blank article to clear the iframe (NB iframe onload event runs *after* this)
-                iframeArticleContent.src = "article.html";
+                // Electron cannot load this for now (CORS ???)
+                // iframeArticleContent.src = "article.html";
 
                 // Hide the articleContent to prevent flashes in dark mode in some browsers
                 document.getElementById('articleContent').style.display = 'none';
 
-                //var articleContent = iframeArticleContent.contentDocument;
-                //articleContent.open('text/html', 'replace');
-                //articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
-                //articleContent.write(htmlArticle);
-                //articleContent.close();
+                var articleContent = iframeArticleContent.contentDocument;
+                articleContent.open('text/html', 'replace');
+                articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
+                articleContent.write(htmlArticle);
+                articleContent.close();
 
             } // End of injectHtml
 
