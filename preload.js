@@ -7,6 +7,8 @@
 // var win = remote.getCurrentWebContents();
 const { open, read, close, stat } = require('fs');
 
+console.log("Inserting required Electron functions into DOM...");
+
 window.fs = {
     open: open, 
     read: read,
@@ -21,7 +23,6 @@ window.fs = {
 //     console.log('Cookies:' + cookies);
 // });
 
-console.log("Looks like preload launched...");
 
 // window.addEventListener('DOMContentLoaded', () => {
 //     const replaceText = (selector, text) => {
