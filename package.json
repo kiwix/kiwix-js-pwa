@@ -7,8 +7,8 @@
   "scripts": {
     "start": "electron .",
     "package-mac": "electron-packager . kiwix-js-windows --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
-    "package-win": "electron-packager . kiwix-js-windows --overwrite --asar --platform=win32 --arch=ia32 --icon=www/img/icons/kiwix-64.ico --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Kiwix JS for Windows Electron Edition'",
-    "package-linux": "electron-packager . kiwix-js-windows --overwrite --asar --platform=linux --arch=x64 --icon=www/img/icons/kiwix-64.png --prune=true --out=bld/electron"
+    "package-win": "electron-packager . kiwix-js-windows --overwrite --platform=win32 --arch=ia32 --icon=www/img/icons/kiwix-64.ico --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Kiwix JS for Windows Electron Edition'",
+    "package-linux": "electron-packager . kiwix-js-windows --overwrite --platform=linux --arch=x64 --icon=www/img/icons/kiwix-64.png --prune=true --out=bld/electron"
   },
   "repository": "https://github.com/kiwix/kiwix-js-windows",
   "keywords": [
