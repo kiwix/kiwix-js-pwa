@@ -11,7 +11,7 @@ protocol.registerSchemesAsPrivileged([{
     scheme: 'app',
     privileges: {
         standard: true,
-        //secure: true,
+        secure: true,
         allowServiceWorkers: true,
         supportFetchAPI: true
     }
