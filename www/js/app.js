@@ -1368,11 +1368,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 // Create a fake File object (this avoids extensive patching of later code)
                 var file = {};
                 file.name = params.packagedFile;
-                // @TODO: Use fs.stat to query the file size
-                file.size = 824209647;
                 // @TODO: Create a params.filePath in init.js
                 file.path = 'archives';
                 file.readMode = 'electron';
+                // Get file size
+                fs.stat(file.path + '/' + file.name, function(err, stats) {
+                    file.size = stats.size;
+                    console.log("Packaged file size is: " + file.size);
+                });
                 setLocalArchiveFromFileList([file]);
                 params.pickedFile = file;
                 document.getElementById('hideFileSelectors').style.display =  params.showFileSelectors ? 'inline' : 'none';
