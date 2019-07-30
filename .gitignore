@@ -7,4 +7,8 @@ _pkginfo.txt
 /bin/
 /BundleArtifacts/
 /archives/*.zim
-/AppPackages
+/node_modules/
+
+package-lock.json
+.vscode/launch.json
+/AppPackages/
