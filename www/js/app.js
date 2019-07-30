@@ -98,7 +98,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         }
         $(document).ready(resizeIFrame);
         $(window).resize(function() {
-            resizeIFrame;
+            resizeIFrame();
             // We need to load any images exposed by the resize
             var scrollFunc = document.getElementById('articleContent').contentWindow;
             scrollFunc = scrollFunc ? scrollFunc.onscroll : null;
@@ -1351,17 +1351,34 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 return new abstractFilesystemAccess.StorageFirefoxOS(s);
             });
         }
-
         if (storages !== null && storages.length > 0 ||
-            typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
+            typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined' ||
+            typeof window.fs !== 'undefined') {
             // Make a fake first access to device storage, in order to ask the user for confirmation if necessary.
             // This way, it is only done once at this moment, instead of being done several times in callbacks
             // After that, we can start looking for archives
             //storages[0].get("fake-file-to-read").then(searchForArchivesInPreferencesOrStorage,
             if (!params.pickedFile) {
                 searchForArchivesInPreferencesOrStorage();
-            } else {
+            } else if (typeof window.fs === 'undefined') {
                 processPickedFileUWP(params.pickedFile);
+            } else {
+                // We're in an Electron app with a packaged file that we need to read from the node File System
+                console.log("Loading packaged ZIM for Electron...");
+                // Create a fake File object (this avoids extensive patching of later code)
+                var file = {};
+                file.name = params.packagedFile;
+                // @TODO: Create a params.filePath in init.js
+                file.path = 'archives';
+                file.readMode = 'electron';
+                // Get file size
+                fs.stat(file.path + '/' + file.name, function(err, stats) {
+                    file.size = stats.size;
+                    console.log("Packaged file size is: " + file.size);
+                });
+                setLocalArchiveFromFileList([file]);
+                params.pickedFile = file;
+                document.getElementById('hideFileSelectors').style.display =  params.showFileSelectors ? 'inline' : 'none';
             }
         } else {
             // If DeviceStorage is not available, we display the file select components
@@ -1799,7 +1816,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 params.pickedFolder = params.localStorage;
                 scanUWPFolderforArchives(params.localStorage);
                 if (!params.rescan) setLocalArchiveFromArchiveList(params.storedFile);
+            } else if (typeof window.fs !== 'undefined') {
+                // We're in an Electron packaged app
+                params.storedFile = params.packagedFile || '';
+                if (!params.rescan) {
+                    if (params.showFileSelectors) $('input:checkbox[name=displayFileSelectors]').click();
             }
+                setLocalArchiveFromFileList([params.pickedFile]);
+        }
         }
 
         /**
@@ -1807,6 +1831,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          */
         function setLocalArchiveFromFileSelect() {
             setLocalArchiveFromFileList(document.getElementById('archiveFilesLegacy').files);
+            params.rescan = false;
         }
 
         /**
@@ -2880,16 +2905,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 };
 
                 // Load the blank article to clear the iframe (NB iframe onload event runs *after* this)
-                iframeArticleContent.src = "article.html";
+                // Electron cannot load this for now (CORS ???)
+                // iframeArticleContent.src = "article.html";
 
                 // Hide the articleContent to prevent flashes in dark mode in some browsers
                 document.getElementById('articleContent').style.display = 'none';
 
-                //var articleContent = iframeArticleContent.contentDocument;
-                //articleContent.open('text/html', 'replace');
-                //articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
-                //articleContent.write(htmlArticle);
-                //articleContent.close();
+                var articleContent = iframeArticleContent.contentDocument;
+                articleContent.open('text/html', 'replace');
+                articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
+                articleContent.write(htmlArticle);
+                articleContent.close();
 
             } // End of injectHtml
 

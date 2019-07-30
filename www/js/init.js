@@ -119,6 +119,10 @@ for (i = 0; i < fileVersionDivs.length; i++) {
 document.getElementById('logUpdate').innerHTML = document.getElementById('update').innerHTML.match(/<ul[^>]*>[\s\S]+/i);
 document.getElementById('logFeatures').innerHTML = document.getElementById('features').innerHTML;
 
+//Set up packaged Electron app
+if (!params.pickedFile && params.storedFile && typeof window.fs !== 'undefined') {
+    params.pickedFile = params.packagedFile;
+}
 //Set up storage types
 if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') { //UWP
     //DEV change "archives" below if you wish to store local archives in a different location in the installation package

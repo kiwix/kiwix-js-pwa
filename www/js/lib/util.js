@@ -20,6 +20,7 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
+
 define(['q'], function (q) {
 
     /**
@@ -204,13 +205,31 @@ define(['q'], function (q) {
     /**
      * Reads a Uint8Array from the given file starting at byte offset begin and
      * for given size.
-     * @param {File} file
-     * @param {Integer} begin
-     * @param {Integer} size
+     * @param {File} file The file to read
+     * @param {Integer} begin The first byte in the file to read
+     * @param {Integer} size The number of bytes to read
      * @returns {Promise} Promise
      */
     function readFileSlice(file, begin, size) {
         var deferred = q.defer();
+        if (file.readMode === 'electron') {
+            // We are reading a packaged file and have to use Electron fs.read (so we don't have to pick the file)
+            var buffer = new Uint8Array(size);
+            fs.open(file.path + '/' + file.name, 'r', function (err, fd) {
+                if (err) { 
+                    console.error('Could not find file!', err);
+                } else {
+                    fs.read(fd, buffer, 0, size, begin, function (err, bytesRead, data) {
+                        if (err) deferred.reject(err);
+                        else deferred.resolve(data);
+                        fs.close(fd, function (err) {
+                            if (err) console.log('Could not close file...', err);
+                        });
+                    });
+                }
+            });
+        } else {
+            // We are reading a picked file, so use vanilla JS methods
         var reader = new FileReader();
         reader.onload = function (e) {
             deferred.resolve(new Uint8Array(e.target.result));
@@ -219,6 +238,7 @@ define(['q'], function (q) {
             deferred.reject(e);
         };
         reader.readAsArrayBuffer(file.slice(begin, begin + size));
+        }
         return deferred.promise;
     }
 
