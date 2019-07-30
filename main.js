@@ -2,7 +2,8 @@
 const {
     app,
     protocol,
-    BrowserWindow
+    BrowserWindow,
+    shell
 } = require('electron');
 const path = require('path');
 
@@ -43,6 +44,16 @@ function createWindow() {
     mainWindow.loadURL('app://www/index.html');
     // DEV: If you need Service Worker more than you need document.cookie, load app like this:
     // mainWindow.loadFile('index.html');
+
+    mainWindow.webContents.on('new-window', function(e, url) {
+        // make sure local urls stay in electron perimeter
+        // if('file://' === url.substr(0, 'file://'.length)) {
+        //   return;
+        // }
+        // and open every other protocols on the browser      
+        e.preventDefault();
+        shell.openExternal(url);
+      });
     
     // DEV: Enable code below to check cookies saved by app in console log
     // mainWindow.webContents.on('did-finish-load', function() {
