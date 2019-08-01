@@ -1364,19 +1364,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 processPickedFileUWP(params.pickedFile);
             } else {
                 // We're in an Electron app with a packaged file that we need to read from the node File System
-                console.log("Loading packaged ZIM for Electron...");
+                console.log("Loading packaged ZIM or last selected archive for Electron...");
                 // Create a fake File object (this avoids extensive patching of later code)
-                var file = {};
-                file.name = params.packagedFile;
-                file.path = params.archivePath + '/' + file.name;
-                file.readMode = 'electron';
-                // Get file size
-                fs.stat(file.path, function(err, stats) {
-                    file.size = stats.size;
-                    console.log("Packaged file size is: " + file.size);
-                });
-                setLocalArchiveFromFileList([file]);
-                params.pickedFile = file;
+                params.pickedFile = createFakeFileObjectElectron(params.storedFile, params.storedFilePath);
+                setLocalArchiveFromFileList([params.pickedFile]);
                 document.getElementById('hideFileSelectors').style.display =  params.showFileSelectors ? 'inline' : 'none';
             }
         } else {
@@ -1779,6 +1770,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 // The archive is set : go back to home page to start searching
                 params.storedFile = archive._file._files[0].name;
                 cookies.setItem("lastSelectedArchive", params.storedFile, Infinity);
+                cookies.setItem("lastSelectedArchivePath", archive._file._files[0].path, Infinity);
                 var reloadLink = document.getElementById("reloadPackagedArchive");
                 if (reloadLink) {
                     if (params.packagedFile != params.storedFile) {
@@ -1822,7 +1814,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 if (!params.rescan) setLocalArchiveFromArchiveList(params.storedFile);
             } else if (typeof window.fs !== 'undefined') {
                 // We're in an Electron packaged app
-                params.storedFile = params.packagedFile || '';
+                params.storedFile = params.packagedFile;
+                params.storedFilePath = params.archivePath + '/' + params.packagedFile;
+                params.pickedFile = createFakeFileObjectElectron(params.storedFile, params.storedFilePath);
                 if (!params.rescan) {
                     if (params.showFileSelectors) $('input:checkbox[name=displayFileSelectors]').click();
             }
@@ -1836,6 +1830,27 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         function setLocalArchiveFromFileSelect() {
             setLocalArchiveFromFileList(document.getElementById('archiveFilesLegacy').files);
             params.rescan = false;
+        }
+
+        /**
+         * Creates a fake file object from the given filename and filepath. This can only be used if the app is running
+         * in the Electron framework.
+         * 
+         * @param {String} filename The name of the file to be represented
+         * @param {String} filepath The path of the file to be represented
+         * @returns {Object} The constructed file object
+         */
+        function createFakeFileObjectElectron(filename, filepath) {
+            var file = {};
+            file.name = filename;
+            file.path = filepath;
+            file.readMode = 'electron';
+            // Get file size
+            fs.stat(file.path, function(err, stats) {
+                file.size = stats.size;
+                console.log("Stored file size is: " + file.size);
+            });
+            return file;
         }
 
         /**
