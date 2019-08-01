@@ -1368,11 +1368,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 // Create a fake File object (this avoids extensive patching of later code)
                 var file = {};
                 file.name = params.packagedFile;
-                // @TODO: Create a params.filePath in init.js
-                file.path = 'archives';
+                file.path = params.archivePath + '/' + file.name;
                 file.readMode = 'electron';
                 // Get file size
-                fs.stat(file.path + '/' + file.name, function(err, stats) {
+                fs.stat(file.path, function(err, stats) {
                     file.size = stats.size;
                     console.log("Packaged file size is: " + file.size);
                 });
@@ -1747,6 +1746,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 if (!/\.(?:zim\w{0,2})$/i.test(files[i].name)) {
                     uiUtil.systemAlert("One or more files does not appear to be a ZIM file!");
                     return;
+                }
+                // Allow reading with electron if we have the path info
+                if (typeof window.fs !== 'undefined' && files[i].path) {
+                    files[i].readMode = 'electron';
+                    console.log("File path is: " + files[i].path);
                 }
             }
             // Check that user hasn't picked just part of split ZIM

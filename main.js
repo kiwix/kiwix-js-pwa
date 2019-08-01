@@ -32,9 +32,9 @@ function createWindow() {
         minHeight: 600,
         icon: path.join(__dirname, 'www/img/icons/kiwix-64.png'),
         webPreferences: {
-            // nodeIntegration: false,
+            nodeIntegration: false,
             // contextIsolation: true,
-            preload: path.join(__dirname, 'preload.js'),
+            preload: path.join(__dirname, 'preload.js')
             // webSecurity: false
             // preload: 'app://www/preload.js'
         }
@@ -89,6 +89,7 @@ app.on('ready', () => {
             // let parsedPath = relPath.replace(/\.\.\//g, function(p0) {
             //     i++;
             // });
+            console.log(relPath + '+' + linkUrl);
             return relPath + linkUrl;
         });
         callback({
