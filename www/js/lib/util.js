@@ -215,7 +215,7 @@ define(['q'], function (q) {
         if (file.readMode === 'electron') {
             // We are reading a packaged file and have to use Electron fs.read (so we don't have to pick the file)
             var buffer = new Uint8Array(size);
-            fs.open(file.path + '/' + file.name, 'r', function (err, fd) {
+            fs.open(file.path, 'r', function (err, fd) {
                 if (err) { 
                     console.error('Could not find file!', err);
                 } else {
