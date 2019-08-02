@@ -34,7 +34,8 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                     "\nbut your display options require a " + cs + " style");
                 uiUtil.poll("Matched [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] from cache" + " because your display options require a " + cs + " style...");
             }
-            if (cs == "desktop" && /minerva|mobile|parsoid|css_modules\/style\.css/.test(zl)) { //If user selected desktop style and style is one of the mobile styles
+            if (cs == "desktop" && /minerva|mobile|parsoid|css_modules\/style\.css/.test(zl) && !/css_modules\/mobile_main_page\.css/.test(zl)) {
+                //If user selected desktop style and style is one of the mobile styles, but not mobile_main_page for newstyle all image homepages
                 console.log("Voiding #" + i + " [" + zl + "] from document header \nbecause your display options require a desktop style");
                 uiUtil.poll("Voiding [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] because your display options require a " + cs + " style...");
                 zl = "#"; //Void these mobile styles
@@ -63,6 +64,8 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                     /-\/s\/css_modules\/ext.math.styles.css/i.test(zl) ||
                     /-\/s\/css_modules\/ext.math.scripts.css/i.test(zl) ||
                     /-\/s\/css_modules\/ext.inputBox.styles.css/i.test(zl) ||
+                    /-\/s\/css_modules\/ext.cite.ux-enhancements.css/i.test(zl) ||
+                    /-\/s\/css_modules\/mobile_main_page.css/i.test(zl) ||
                     /-\/s\/css_modules\/mediawiki.ui.input.css/i.test(zl) ||
                     /-\/s\/css_modules\/mediawiki.ui.checkbox.css/i.test(zl) ||
                     /-\/s\/css_modules\/content.parsoid.css/i.test(zl) ||
