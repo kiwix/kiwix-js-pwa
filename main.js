@@ -83,17 +83,21 @@ function createWindow() {
 app.on('ready', () => {
     protocol.registerFileProtocol('app', (request, callback) => {
     //protocol.registerHttpProtocol('app', (request, callback) => {
-        const url = request.url.replace(/^app:\/\/([^?#]*?)([^?#\/\\]+)(?:[#?].*$|$)/, function(_p0, relPath, linkUrl) {
+        const url = request.url.replace(/^app:\/\/([^?#]*?)([^?#\/\\]+)([#?].*$|$)/, function(_p0, relPath, linkUrl, hash) {
             // // @TODO: Complete routine to recognize relative links below (../)
             // let i = 0;
             // let parsedPath = relPath.replace(/\.\.\//g, function(p0) {
             //     i++;
             // });
-            console.log(relPath + '+' + linkUrl + '=>');
-            return relPath + linkUrl;
+            // console.log(relPath + '+' + linkUrl + '=>');
+            let replaceLink = relPath + linkUrl;
+            // This prevents the querystring from being passed to Electron on main app reload
+            if (/www\/index\.html/.test(replaceLink)) return replaceLink;
+            return replaceLink + hash;
         });
         //let returnPath = path.normalize(`${__dirname}/${url}`);
         let returnPath = __dirname + '/' + url;
+        returnPath = path.normalize(returnPath);
         console.log(returnPath);
         callback({
             path: returnPath
