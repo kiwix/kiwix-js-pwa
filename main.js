@@ -83,17 +83,20 @@ function createWindow() {
 app.on('ready', () => {
     protocol.registerFileProtocol('app', (request, callback) => {
     //protocol.registerHttpProtocol('app', (request, callback) => {
-        let url = request.url.replace(/^app:\/\/([./]*)(.*)$/, function(_p0, relPath, linkUrl) {
+        const url = request.url.replace(/^app:\/\/([^?#]*?)([^?#\/\\]+)(?:[#?].*$|$)/, function(_p0, relPath, linkUrl) {
             // // @TODO: Complete routine to recognize relative links below (../)
             // let i = 0;
             // let parsedPath = relPath.replace(/\.\.\//g, function(p0) {
             //     i++;
             // });
-            console.log(relPath + '+' + linkUrl);
+            console.log(relPath + '+' + linkUrl + '=>');
             return relPath + linkUrl;
         });
+        //let returnPath = path.normalize(`${__dirname}/${url}`);
+        let returnPath = __dirname + '/' + url;
+        console.log(returnPath);
         callback({
-            path: path.normalize(`${__dirname}/${url}`)
+            path: returnPath
             // url: 'file://' + path.normalize(`${__dirname}/${url}`),
             // method: 'GET'
         });
