@@ -35,7 +35,7 @@ params['version'] = "0.9.9.92 Beta-dev"; //DEV: do not set this dynamically -- i
 params['packagedFile'] = "wikipedia_en_100.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to www/index.html)  
 params['fileVersion'] = "wikipedia_en_100_2019-01 (Jan-2019)"; //Use generic name for actual file, and give version here
-params['cachedStartPage'] = false; //If you have cached the start page for quick start, give its URI here
+params['cachedStartPage'] = "index.htm"; //If you have cached the start page for quick start, give its URI here
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
 
 params['results'] = params['results'] || 50; //Number of search results to display
