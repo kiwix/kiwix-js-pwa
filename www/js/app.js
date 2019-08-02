@@ -2397,6 +2397,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             console.time("Time to First Paint");
             //return;
 
+            // App appears to have successfully launched
+            params.appIsLaunching = 'false';
+
             // Calculate the current article's ZIM baseUrl to use when processing relative links
             var baseUrl = dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, '');
 
@@ -3215,6 +3218,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 }
             }).fail(function () {
                 console.error("Error reading article with title " + title);
+                if (params.appIsLaunching) goToMainArticle();
+                // Line below prevents bootloop
+                params.appIsLaunching = false;
             });
         }
 
