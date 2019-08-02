@@ -1366,9 +1366,29 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 // We're in an Electron app with a packaged file that we need to read from the node File System
                 console.log("Loading packaged ZIM or last selected archive for Electron...");
                 // Create a fake File object (this avoids extensive patching of later code)
-                params.pickedFile = createFakeFileObjectElectron(params.storedFile, params.storedFilePath);
+                createFakeFileObjectElectron(params.storedFile, params.storedFilePath, function(fakeFile) {
+                    if (fakeFile.size) {
+                        params.pickedFile = fakeFile;
                 setLocalArchiveFromFileList([params.pickedFile]);
+                    } else {
+                        // Attempts to load the file seem to have failed: maybe it has moved or been deleted
+                        // Let's see if we can open the packaged ZIM instead (if this isn't the packaged ZIM)
+                        if (params.storedFile !== params.packagedFile) {
+                            createFakeFileObjectElectron(params.packagedFile, params.archivePath + '/' + params.packagedFile, function(fakeFile) {
+                                if (fakeFile.size) {
+                                    params.pickedFile = fakeFile;
+                                    setLocalArchiveFromFileList([params.pickedFile]);            
+                                } else { 
+                                    // This shouldn't happen!
+                                    uiUtil.systemAlert('The packaged file cannot be loaded!\nPlease check that it is in the "' + params.archivePath + '" folder\nor pick a new ZIM file.');
+                                    params.showFileSelectors = true; 
+                                    document.getElementById('hideFileSelectors').style.display =  'inline';
+                                } 
+                            });
+                        }
+                    }
                 document.getElementById('hideFileSelectors').style.display =  params.showFileSelectors ? 'inline' : 'none';
+                });
             }
         } else {
             // If DeviceStorage is not available, we display the file select components
@@ -1816,11 +1836,20 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 // We're in an Electron packaged app
                 params.storedFile = params.packagedFile;
                 params.storedFilePath = params.archivePath + '/' + params.packagedFile;
-                params.pickedFile = createFakeFileObjectElectron(params.storedFile, params.storedFilePath);
+                params.pickedFile = createFakeFileObjectElectron(params.storedFile, params.storedFilePath, function(fakeFile) {
+                    if (fakeFile.size) {
+                        params.pickedFile = fakeFile;
+                        setLocalArchiveFromFileList([params.pickedFile]);
                 if (!params.rescan) {
                     if (params.showFileSelectors) $('input:checkbox[name=displayFileSelectors]').click();
-            }
-                setLocalArchiveFromFileList([params.pickedFile]);
+                        }
+                    } else {
+                        // This shouldn't happen!
+                        uiUtil.systemAlert('The packaged file cannot be loaded!\nPlease check that it is in the "' + params.archivePath + '" folder\nor pick a new ZIM file.');
+                        params.showFileSelectors = true;
+                        document.getElementById('hideFileSelectors').style.display =  'inline';
+                    }
+                });
         }
         }
 
@@ -1838,19 +1867,24 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          * 
          * @param {String} filename The name of the file to be represented
          * @param {String} filepath The path of the file to be represented
-         * @returns {Object} The constructed file object
+         * @param {Function} callback The function to call back with the constructed file
          */
-        function createFakeFileObjectElectron(filename, filepath) {
+        function createFakeFileObjectElectron(filename, filepath, callback) {
             var file = {};
             file.name = filename;
             file.path = filepath;
             file.readMode = 'electron';
             // Get file size
             fs.stat(file.path, function(err, stats) {
+                if (err) {
+                    file.size = null;
+                    console.error('File cannot be found!', err);
+                } else {
                 file.size = stats.size;
                 console.log("Stored file size is: " + file.size);
+                }
+                callback(file);
             });
-            return file;
         }
 
         /**
