@@ -2724,7 +2724,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 $('#articleContent').contents().remove();
 
                 // Remove from DOM any download alert box that was activated in uiUtil.displayFileDownloadAlert function
-                $('#downloadAlert').alert('close');
+                $('.alert').hide();
         
                 var iframeArticleContent = document.getElementById('articleContent');
 
@@ -3213,7 +3213,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     });
                 } else {
                     params.isLandingPage = false;
-                    $('#activeContent').alert('close');
+                    $('.alert').hide();
                     readArticle(dirEntry);
                 }
             }).fail(function () {
