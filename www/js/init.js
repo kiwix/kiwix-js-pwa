@@ -77,6 +77,7 @@ params['themeChanged'] = params['themeChanged'] || false;
 params['allowInternetAccess'] = params['allowInternetAccess'] || false; //Do not get value from cookie, should be explicitly set by user on a per-session basis
 params['printIntercept'] = false;
 params['printInterception'] = false;
+params['appIsLaunching'] = true; //Allows some routines to tell if the app has just been launched
 
 //Prevent app boot loop with problematic pages that cause an app crash
 if (getCookie('lastPageLoad') == 'failed') {
