@@ -20,7 +20,7 @@ window.fs = {
 // console.log(win.session.cookies);
 
 // win.session.cookies.get({}, (error, cookies) => {
-//     console.log('Cookies:' + cookies);
+//     console.log(cookies);
 // });
 
 

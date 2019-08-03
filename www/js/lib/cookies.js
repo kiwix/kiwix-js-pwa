@@ -21,32 +21,57 @@ define([], function() {
 |*|
 \*/
 
+// Test for the environment
+var environment = typeof window.fs === 'undefined' ? 'browser' : 'electron';
+// Test for localStorage support
+if (environment === 'electron') {
+  var result = false;
+  try {
+    result = 'localStorage' in window && window['localStorage'] !== null;
+  } catch(e) {
+    console.log('LocalStorage is not supported!');
+  }
+  if (!result) environment = 'browser';
+}
+
 var docCookies = {
   getItem: function (sKey) {
-    return unescape(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + escape(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
+    if (environment === 'browser') {
+      return unescape(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + escape(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
+    } else {
+      return localStorage.getItem(sKey);
+    }
   },
   setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
-    if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
-    var sExpires = "";
-    if (vEnd) {
-      switch (vEnd.constructor) {
-        case Number:
-          sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
-          break;
-        case String:
-          sExpires = "; expires=" + vEnd;
-          break;
-        case Date:
-          sExpires = "; expires=" + vEnd.toGMTString();
-          break;
+    if (environment === 'browser') {
+      if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
+      var sExpires = "";
+      if (vEnd) {
+        switch (vEnd.constructor) {
+          case Number:
+            sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
+            break;
+          case String:
+            sExpires = "; expires=" + vEnd;
+            break;
+          case Date:
+            sExpires = "; expires=" + vEnd.toGMTString();
+            break;
+        }
       }
+      document.cookie = escape(sKey) + "=" + escape(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
+    } else {
+      localStorage.setItem(sKey, sValue);
     }
-    document.cookie = escape(sKey) + "=" + escape(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
     return true;
   },
   removeItem: function (sKey, sPath) {
-    if (!sKey || !this.hasItem(sKey)) { return false; }
-    document.cookie = escape(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (sPath ? "; path=" + sPath : "");
+    if (environment === 'browser') {
+      if (!sKey || !this.hasItem(sKey)) { return false; }
+      document.cookie = escape(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (sPath ? "; path=" + sPath : "");
+    } else {
+      localStorage.removeItem(sKey);
+    } 
     return true;
   },
   hasItem: function (sKey) {

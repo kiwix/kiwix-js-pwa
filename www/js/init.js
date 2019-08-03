@@ -84,7 +84,13 @@ if (getCookie('lastPageLoad') == 'failed') {
     params.lastPageVisit = "";
 } else {
     //Cookie will signal failure until article is fully loaded
-    document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
+    if (typeof window.fs === 'undefined') {
+        document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
+    } else {
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('lastPageLoad', 'failed');
+        }
+    }
 }
 
 //Initialize checkbox, radio and other values
@@ -162,9 +168,22 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
 }
 
 function getCookie(name) {
-    var regexp = new RegExp('(?:^|;)\\s*' + name + '=([^;]+)(?:;|$)');
-    var result = document.cookie.match(regexp);
-    return result === null || result[1] == "undefined" ? null : result[1] == "true" ? true : result[1] == "false" ? false : result[1];
+    var result;
+    if (typeof window.fs === 'undefined') {
+        var regexp = new RegExp('(?:^|;)\\s*' + name + '=([^;]+)(?:;|$)');
+        result = document.cookie.match(regexp);
+        result = result && result.length > 1 ? result[1] : null;
+    } else {
+        // We're in an electron app that may not be able to access cookies, so use localStorage instead
+        if (typeof Storage !== 'undefined') {
+            try {
+                result = localStorage.getItem(name);
+            } catch (err) {
+                console.log("localStorage not supported: " + err);
+            }
+        }
+    }
+    return result === null || result == "undefined" ? null : result == "true" ? true : result == "false" ? false : result;
 }
 
 require.config({
