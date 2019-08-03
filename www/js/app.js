@@ -2212,6 +2212,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     $('#articleListHeaderMessage').empty();
                     $('#articleListWithHeader').hide();
                     $("#prefix").val("");
+                    cookies.setItem('lastPageLoad', 'failed', Infinity);
                     iframeArticleContent.onload = function () {
                         // The content is fully loaded by the browser : we can hide the spinner
                         //$("#searchingArticles").hide();
@@ -2232,18 +2233,26 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                             var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
                             uiUtil.insertBreakoutLink(determinedTheme);
                         }
+                        cookies.removeItem('lastPageLoad');
+                        if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
+                            params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
+                                "@kiwixKey@" + state.selectedArchive._file._files[0].name;
+                            if (params.rememberLastPage) {
+                                cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
+                            }
+                        }
                     };
                     // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
                     iframeArticleContent.src = "../" + state.selectedArchive._file._files[0].name + "/" + dirEntry.namespace + "/" + encodedUrl;
                     // Display the iframe content
-                    $("#articleContent").show();
+                    // $("#articleContent").show();
                 };
-                // iframeArticleContent.src = "article.html";
-                var articleContent = iframeArticleContent.contentDocument;
-                articleContent.open('text/html', 'replace');
-                articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
-                articleContent.write("<html><body></body></html>");
-                articleContent.close();
+                iframeArticleContent.src = "article.html";
+                // var articleContent = iframeArticleContent.contentDocument;
+                // articleContent.open('text/html', 'replace');
+                // articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
+                // articleContent.write("<html><body></body></html>");
+                // articleContent.close();
             } else {
                 // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
                 if (dirEntry.isRedirect()) {
@@ -2257,7 +2266,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
                     //Set startup cookie to guard against boot loop
                     //Cookie will signal failure until article is fully loaded
-                    document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
+                    //document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
+                    cookies.setItem('lastPageLoad', 'failed', Infinity);
 
                     //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
                     localSearch = {};
@@ -2303,70 +2313,110 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                             state.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
                         }
                     }
-
                 }
             }
         }
 
         var messageChannel;
 
-         /**
-          * Function that handles a message of the messageChannel.
-          * It tries to read the content in the backend, and sends it back to the ServiceWorker
-          * 
-          * @param {Event} event The event object of the message channel
-          */
-         function handleMessageChannelMessage(event) {
-             if (event.data.error) {
-                 console.error("Error in MessageChannel", event.data.error);
-                 reject(event.data.error);
-             } else {
-                 // We received a message from the ServiceWorker
-                 if (event.data.action === "askForContent") {
-                     // The ServiceWorker asks for some content
-                     var title = event.data.title;
-                     var messagePort = event.ports[0];
-                     var readFile = function (dirEntry) {
-                         if (dirEntry === null) {
-                             console.error("Title " + title + " not found in archive.");
-                             messagePort.postMessage({ 'action': 'giveContent', 'title': title, 'content': '' });
-                         } else if (dirEntry.isRedirect()) {
-                             state.selectedArchive.resolveRedirect(dirEntry, function (resolvedDirEntry) {
-                                 var redirectURL = resolvedDirEntry.namespace + "/" + resolvedDirEntry.url;
-                                 // Ask the ServiceWork to send an HTTP redirect to the browser.
-                                 // We could send the final content directly, but it is necessary to let the browser know in which directory it ends up.
-                                 // Else, if the redirect URL is in a different directory than the original URL,
-                                 // the relative links in the HTML content would fail. See #312
-                                 messagePort.postMessage({ 'action': 'sendRedirect', 'title': title, 'redirectUrl': redirectURL });
-                             });
-                         } else {
-                             // Let's read the content in the ZIM file
-                             state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                                 var mimetype = fileDirEntry.getMimetype();
-                                 // Let's send the content to the ServiceWorker
-                                 var message = {
-                                     'action': 'giveContent', 'title': title, 'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode
-                                 };
-                                 if (mimetype === 'text/html') {
-                                     content = utf8.parse(content);
-                                     // Add DOCTYPE to prevent quirks mode if missing (quirks mode prevents katex from running, and is incompatible with jQuery)
-                                     message.content = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(content) ? '<!DOCTYPE html>\n' + content : content;
-                                     messagePort.postMessage(message);
-                                 } else {
-                                     message.content = content.buffer;
-                                     messagePort.postMessage(message, [content.buffer]);
-                                 }
-                             });
-                         }
-                     };
-                     state.selectedArchive.getDirEntryByTitle(title).then(readFile).fail(function () {
-                         messagePort.postMessage({ 'action': 'giveContent', 'title': title, 'content': new UInt8Array() });
-                     });
-                 } else {
-                     console.error("Invalid message received", event.data);
-                 }
-             }
-         }
+        /**
+         * Function that handles a message of the messageChannel.
+         * It tries to read the content in the backend, and sends it back to the ServiceWorker
+         * 
+         * @param {Event} event The event object of the message channel
+         */
+        function handleMessageChannelMessage(event) {
+            if (event.data.error) {
+                console.error("Error in MessageChannel", event.data.error);
+                reject(event.data.error);
+            } else {
+                // We received a message from the ServiceWorker
+                if (event.data.action === "askForContent") {
+                    // The ServiceWorker asks for some content
+                    var title = event.data.title;
+                    var messagePort = event.ports[0];
+                    var readFile = function (dirEntry) {
+                        if (dirEntry === null) {
+                            console.error("Title " + title + " not found in archive.");
+                            messagePort.postMessage({ 'action': 'giveContent', 'title': title, 'content': '' });
+                        } else if (dirEntry.isRedirect()) {
+                            state.selectedArchive.resolveRedirect(dirEntry, function (resolvedDirEntry) {
+                                var redirectURL = resolvedDirEntry.namespace + "/" + resolvedDirEntry.url;
+                                // Ask the ServiceWork to send an HTTP redirect to the browser.
+                                // We could send the final content directly, but it is necessary to let the browser know in which directory it ends up.
+                                // Else, if the redirect URL is in a different directory than the original URL,
+                                // the relative links in the HTML content would fail. See #312
+                                messagePort.postMessage({ 'action': 'sendRedirect', 'title': title, 'redirectUrl': redirectURL });
+                            });
+                        } else {
+                            var mimetype = dirEntry.getMimetype();
+                            if (/(?:^|\/)html/i.test(mimetype)) {   
+                                //Load lastPageVisit if it is the currently requested page
+                                var htmlContent = '';
+                                if (params.rememberLastPage && typeof Storage !== 'undefined' &&
+                                    dirEntry.namespace + '/' + dirEntry.url == decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""))) {
+                                    try {
+                                        htmlContent = localStorage.getItem('lastPageHTML');
+                                    } catch (err) {
+                                        console.log("localStorage not supported: " + err);
+                                    }
+                                }
+                                if (/<html[^>]*>/.test(htmlContent)) {
+                                    console.log("Fast article retrieval from localStorage...");
+                                    // Let's send the content to the ServiceWorker
+                                    var message = {
+                                        'action': 'giveContent', 'title': title, 'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode, 'content': htmlContent
+                                    };
+                                    messagePort.postMessage(message);
+                                    return;
+                                }
+                            }
+                            
+                            // Let's read the content in the ZIM file
+                            state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                                var mimetype = fileDirEntry.getMimetype();
+                                // Let's send the content to the ServiceWorker
+                                var message = {
+                                    'action': 'giveContent', 'title': title, 'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode
+                                };
+                                if (mimetype === 'text/html') {
+                                    content = utf8.parse(content);
+                                    // Add DOCTYPE to prevent quirks mode if missing (quirks mode prevents katex from running, and is incompatible with jQuery)
+                                    message.content = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(content) ? '<!DOCTYPE html>\n' + content : content;
+                                    messagePort.postMessage(message);
+                                    // Save last page visited so we can go back to it
+                                    if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
+                                        params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
+                                            "@kiwixKey@" + state.selectedArchive._file._files[0].name;
+                                        if (params.rememberLastPage) {
+                                            cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
+                                            //Store current document's raw HTML in localStorage for fast restart
+                                            if (typeof Storage !== "undefined") {
+                                                try {
+                                                    // Ensure we don't go over quota
+                                                    localStorage.removeItem('lastPageHTML');
+                                                    localStorage.setItem('lastPageHTML', message.content);
+                                                } catch (err) {
+                                                    console.log("localStorage not supported: " + err);
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    message.content = content.buffer;
+                                    messagePort.postMessage(message, [content.buffer]);
+                                }
+                            });
+                        }
+                    };
+                    state.selectedArchive.getDirEntryByTitle(title).then(readFile).fail(function () {
+                        messagePort.postMessage({ 'action': 'giveContent', 'title': title, 'content': new UInt8Array() });
+                    });
+                } else {
+                    console.error("Invalid message received", event.data);
+                }
+            }
+        }
 
         // Compile some regular expressions needed to modify links
         // Pattern to find the path in a url
@@ -2445,7 +2495,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     if (typeof Storage !== "undefined") {
                         try {
                             // Ensure we don't go over quota
-                            localStorage.clear();
+                            localStorage.removeItem('lastPageHTML');
                             localStorage.setItem('lastPageHTML', htmlArticle);
                         } catch (err) {
                             console.log("localStorage not supported: " + err);
@@ -2977,7 +3027,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     if (params.allowHTMLExtraction) uiUtil.insertBreakoutLink(determinedTheme);
 
                     // Document has loaded except for images, so we can now change the startup cookie (and delete) [see init.js]
-                    document.cookie = 'lastPageLoad=success;expires=Thu, 21 Sep 1979 00:00:01 UTC';
+                    // document.cookie = 'lastPageLoad=success;expires=Thu, 21 Sep 1979 00:00:01 UTC';
+                    cookies.removeItem('lastPageLoad');
                     
                     // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
                     if (params.printIntercept) printIntercept();
