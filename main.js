@@ -32,25 +32,27 @@ function createWindow() {
         minHeight: 600,
         icon: path.join(__dirname, 'www/img/icons/kiwix-64.png'),
         webPreferences: {
-            nodeIntegration: false,
+            nodeIntegration: false
             // contextIsolation: true,
-            preload: path.join(__dirname, 'preload.js')
-            // webSecurity: false
-            // preload: 'app://www/preload.js'
+            , preload: path.join(__dirname, 'preload.js')
+            //, nativeWindowOpen: true
+            // , webSecurity: false
+            // , session: ses
+            // , partition: 'persist:kiwixjs'
         }
     });
 
     // and load the index.html of the app.
-    mainWindow.loadURL('app://www/index.html');
+    // mainWindow.loadURL('app://www/index.html');
     // DEV: If you need Service Worker more than you need document.cookie, load app like this:
-    // mainWindow.loadFile('index.html');
+    mainWindow.loadFile('www/index.html');
 
     mainWindow.webContents.on('new-window', function(e, url) {
-        // make sure local urls stay in electron perimeter
-        // if('file://' === url.substr(0, 'file://'.length)) {
-        //   return;
-        // }
-        // and open every other protocols on the browser      
+        // Make sure blob urls stay in electron perimeter
+        if(/^blob:/i.test(url)) {
+          return;
+        }
+        // And open every other protocol in the OS browser      
         e.preventDefault();
         shell.openExternal(url);
       });
@@ -81,33 +83,27 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 
 app.on('ready', () => {
-    protocol.registerFileProtocol('app', (request, callback) => {
-    //protocol.registerHttpProtocol('app', (request, callback) => {
-        const url = request.url.replace(/^app:\/\/([^?#]*?)([^?#\/\\]+)([#?].*$|$)/, function(_p0, relPath, linkUrl, hash) {
-            // // @TODO: Complete routine to recognize relative links below (../)
-            // let i = 0;
-            // let parsedPath = relPath.replace(/\.\.\//g, function(p0) {
-            //     i++;
-            // });
-            // console.log(relPath + '+' + linkUrl + '=>');
-            let replaceLink = relPath + linkUrl;
-            // This prevents the querystring from being passed to Electron on main app reload
-            if (/www\/index\.html/.test(replaceLink)) return replaceLink;
-            return replaceLink + hash;
-        });
-        //let returnPath = path.normalize(`${__dirname}/${url}`);
-        let returnPath = __dirname + '/' + url;
-        returnPath = path.normalize(returnPath);
-        console.log(returnPath);
-        callback({
-            path: returnPath
-            // url: 'file://' + path.normalize(`${__dirname}/${url}`),
-            // method: 'GET'
-        });
-        // console.log(path.normalize(`${__dirname}/${url}` + ':' + url));
-    }, (error) => {
-        if (error) console.error('Failed to register protocol');
-    });
+    // protocol.registerFileProtocol('app', (request, callback) => {
+    // //protocol.registerHttpProtocol('app', (request, callback) => {
+    //     const url = request.url.replace(/^app:\/\/([^?#]*?)([^?#\/\\]+)([#?].*$|$)/, function(_p0, relPath, linkUrl, hash) {
+    //         let replaceLink = relPath + linkUrl;
+    //         // This prevents the querystring from being passed to Electron on main app reload
+    //         if (/www\/index\.html/.test(replaceLink)) return replaceLink;
+    //         return replaceLink + hash;
+    //     });
+    //     //let returnPath = path.normalize(`${__dirname}/${url}`);
+    //     let returnPath = __dirname + '/' + url;
+    //     returnPath = path.normalize(returnPath);
+    //     console.log(returnPath);
+    //     callback({
+    //         path: returnPath
+    //         // url: 'file://' + path.normalize(`${__dirname}/${url}`),
+    //         // method: 'GET'
+    //     });
+    //     // console.log(path.normalize(`${__dirname}/${url}` + ':' + url));
+    // }, (error) => {
+    //     if (error) console.error('Failed to register protocol');
+    // });
     // Create the new window
     createWindow();
 });
