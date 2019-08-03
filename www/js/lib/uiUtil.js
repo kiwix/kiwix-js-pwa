@@ -287,13 +287,22 @@ define(['util'], function(util) {
         a.href = window.URL.createObjectURL(blob);
         a.target = '_blank';
         a.type = contentType;
-        a.download = filename;
+        // if (typeof window.fs === 'undefined') a.download = filename;
         a.classList.add('alert-link');
         a.innerHTML = filename;
         var alertMessage = document.getElementById('alertMessage');
-            alertMessage.innerHTML = '<strong>Download</strong> If the download does not start, please tap the following link: ';
-            // We have to add the anchor to a UI element for Firefox to be able to click it programmatically: see https://stackoverflow.com/a/27280611/9727685
-            alertMessage.appendChild(a);
+        alertMessage.innerHTML = '<strong>Download</strong> If the download does not start, please tap the following link: ';
+        // We have to add the anchor to a UI element for Firefox to be able to click it programmatically: see https://stackoverflow.com/a/27280611/9727685
+        alertMessage.appendChild(a);
+        try {
+            a.click();
+            // Following line should run only if there was no error, leaving the alert showing in case of error
+            if (autoDismiss) $('#downloadAlert').alert('close');
+        }
+        catch (err) {
+            // Edge will error out unless there is a download added but Chrome works better without the attribute
+            a.download = filename;
+        }
         try {
             a.click();
             // Following line should run only if there was no error, leaving the alert showing in case of error
