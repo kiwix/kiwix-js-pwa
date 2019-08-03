@@ -83,6 +83,9 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 if (/(-\/s\/style\.css)|minerva|inserted_style_mobile/i.test(zl)) { //If it matches one of the required styles...
                     zl = (cs == "mobile") ? "-/s/style-mobile.css" : "-/s/style.css";
                 }
+                // Rename this required mobile style so that we don't trigger reading ZIM as mobile in print intercept
+                zl = /css_modules\/mobile_main_page\.css/.test(zl) ? "-/s/css_modules/newstyle_main_page.css" : zl;
+                // Replace bootstrap with own: DEV: when upgrading to Bootstrap 4, stop doing this!
                 zl = zl.replace(/.+(bootstrap[^\/]*?\.css)/i, "css/$1");
                 //Make link href relative to root
                 //zl = zl.replace(/[\s\S]+?\/-\//i, "-/");
