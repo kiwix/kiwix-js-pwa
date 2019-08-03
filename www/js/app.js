@@ -264,13 +264,29 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             btnContinue.innerHTML = "Please wait";
             goToArticle(decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, "")));
         });
+        document.getElementById('printImageCheck').addEventListener('click', function (e) {
+            //Reload article if user wants to print images
+            if (e.target.checked && !params.allowHTMLExtraction) {
+                params.printIntercept = true;
+                params.printInterception = false;
+                params.allowHTMLExtraction = true;
+                var btnContinue = document.getElementById('confirm-print-continue');
+                var btnCancel = document.getElementById('confirm-print-cancel');
+                btnCancel.disabled = true;
+                btnContinue.disabled = true;
+                btnContinue.innerHTML = "Please wait";
+                goToArticle(decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, "")));
+            }
+        });
 
         function printCleanup() {
             params.printIntercept = false;
             params.printInterception = false;
+            // Immediately restore temporarily changed values
+            params.allowHTMLExtraction = cookies.getItem('allowHTMLExtraction') == "true";
             goToArticle(decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, "")));
             setTimeout(function () { //Restore temporarily changed value after page has reloaded
-                params.rememberLastPage = cookies.getItem('rememberLastPage') == "false" ? false : true;
+                params.rememberLastPage = cookies.getItem('rememberLastPage') == "true";
                 if (!params.rememberLastPage) {
                     cookies.setItem('lastPageVisit', "", Infinity);
                     if (typeof Storage !== "undefined") {
@@ -301,13 +317,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             if (determinedTheme != "light") {
                 printModalContent.classList.add('dark');
             }
-            //If document is in wrong style, reload it
+            //If document is in wrong style, or images are one-time BLOBs, reload it
             var innerDoc = window.frames[0].frameElement.contentDocument;
+            var printDesktopCheck = document.getElementById("printDesktopCheck").checked;
+            var printImageCheck = document.getElementById("printImageCheck").checked;
             var styleIsDesktop = !/\bhref\s*=\s*["'][^"']*?(?:minerva|mobile)/i.test(innerDoc.head.innerHTML);
-            if (styleIsDesktop != document.getElementById("printDesktopCheck").checked) {
-                //We need to reload the document because it doesn't match the requested style
-                params.cssSource = styleIsDesktop ? "mobile" : "desktop";
+            if (styleIsDesktop != printDesktopCheck || printImageCheck && !params.allowHTMLExtraction) {
+                //We need to reload the document because it doesn't match the requested style or images are one-time BLOBs
+                params.cssSource = printDesktopCheck ? "desktop" : "mobile";
                 params.rememberLastPage = true; //Re-enable caching to speed up reloading of page
+                params.allowHTMLExtraction = true;
                 params.printIntercept = true;
                 params.printInterception = false;
                 btnCancel.disabled = true;
@@ -323,17 +342,19 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             //Pre-load all images in case user wants to print them
             if (params.imageDisplay) {
                 document.getElementById("printImageCheck").disabled = false;
-                btnCancel.disabled = true;
-                btnContinue.disabled = true;
-                btnContinue.innerHTML = "Loading images...";
-                //Callback for when all images are loaded
-                params.printImagesLoaded = function() {
-                    // Images have finished loading, so enable buttons
-                    btnCancel.disabled = false;
-                    btnContinue.disabled = false;
-                    btnContinue.innerHTML = "Continue";
-                };
-                images.prepareImagesJQuery(printIntercept);
+                if (printImageCheck) {
+                    btnCancel.disabled = true;
+                    btnContinue.disabled = true;
+                    btnContinue.innerHTML = "Loading images...";
+                    //Callback for when all images are loaded
+                    params.printImagesLoaded = function() {
+                        // Images have finished loading, so enable buttons
+                        btnCancel.disabled = false;
+                        btnContinue.disabled = false;
+                        btnContinue.innerHTML = "Continue";
+                    };
+                    images.prepareImagesJQuery(printIntercept);
+                }
             } else {
                 document.getElementById("printImageCheck").checked = false;
                 document.getElementById("printImageCheck").disabled = true;
@@ -2193,7 +2214,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     $("#prefix").val("");
                     iframeArticleContent.onload = function () {
                         // The content is fully loaded by the browser : we can hide the spinner
-                        $("#searchingArticles").hide();
+                        //$("#searchingArticles").hide();
+                        setTab();
                         // Deflect drag-and-drop of ZIM file on the iframe to Config
                         var doc = iframeArticleContent.contentDocument ? iframeArticleContent.contentDocument.documentElement : null;
                         var docBody = doc ? doc.getElementsByTagName('body') : null;
@@ -2216,7 +2238,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     // Display the iframe content
                     $("#articleContent").show();
                 };
-                iframeArticleContent.src = "article.html";
+                // iframeArticleContent.src = "article.html";
+                var articleContent = iframeArticleContent.contentDocument;
+                articleContent.open('text/html', 'replace');
+                articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
+                articleContent.write("<html><body></body></html>");
+                articleContent.close();
             } else {
                 // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
                 if (dirEntry.isRedirect()) {
