@@ -55,10 +55,9 @@ define(['util'], function(util) {
             myReader.readAsDataURL(blob);
         } else {
             url = URL.createObjectURL(blob);
-            // We cannot revoke images if we wish to print
-            // node.addEventListener('load', function () {
-            //     URL.revokeObjectURL(url);
-            // });
+            node.addEventListener('load', function () {
+                URL.revokeObjectURL(url);
+            });
             node.setAttribute(nodeAttribute, url);
             if (callback) callback();
         }
@@ -134,6 +133,9 @@ define(['util'], function(util) {
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<h2\b[^<]+external_links(?:[^<]|<\/)+<ul\s+(?!class="externalLinks"))/i, '$1class="externalLinks" ');
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<h2\b[^<]+see_also(?:[^<]|<\/)+<ul\s+(?!class="seeAlso"))/i, '$1class="seeAlso" ');
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<div\s+)([^>]+>\s+This article is issued from)/i, '$1class="copyLeft" $2');
+        // Using @media print on images doesn't get rid of them all, so use brute force
+        if (!document.getElementById("printImageCheck").checked) 
+            innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<img\b[^>]*>\s*/ig, '');
         var printOptions = innerDocument.getElementById("printOptions");
         //If there is no printOptions style block in the iframe, create it
         if (!printOptions) {
@@ -144,11 +146,11 @@ define(['util'], function(util) {
         }
         var printStyleInnerHTML = "@media print { ";
         printStyleInnerHTML += document.getElementById("printNavBoxCheck").checked ? "" : ".navbox, .vertical-navbox { display: none; } ";
-        printStyleInnerHTML += document.getElementById("printEndNoteCheck").checked ? "" : ".reflist { display: none; } ";
+        printStyleInnerHTML += document.getElementById("printEndNoteCheck").checked ? "" : ".reflist, div[class*=references] { display: none; } ";
         printStyleInnerHTML += document.getElementById("externalLinkCheck").checked ? "" : ".externalLinks { display: none; } ";
         printStyleInnerHTML += document.getElementById("seeAlsoLinkCheck").checked ? "" : ".seeAlso { display: none; } ";
         printStyleInnerHTML += document.getElementById("printInfoboxCheck").checked ? "" : ".mw-stack, .infobox, .infobox_v2, .infobox_v3, .qbRight, .qbRightDiv, .wv-quickbar, .wikitable { display: none; } ";
-        printStyleInnerHTML += document.getElementById("printImageCheck").checked ? "" : "img { display: none; } ";
+        // printStyleInnerHTML += document.getElementById("printImageCheck").checked ? "" : "img, .gallery { display: none; } ";
         printStyleInnerHTML += ".copyLeft { display: none } ";
         printStyleInnerHTML += ".map-pin { display: none } ";
         printStyleInnerHTML += ".external { padding-right: 0 !important } ";
@@ -158,6 +160,7 @@ define(['util'], function(util) {
         printStyleInnerHTML += "body { font-size: " + sliderVal + "% !important; } ";
         printStyleInnerHTML += "}";
         printOptions.innerHTML = printStyleInnerHTML;
+        
     }
 
     function downloadBlobUWP(blob, filename, message) {
