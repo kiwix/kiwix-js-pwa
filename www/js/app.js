@@ -966,7 +966,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 var link = doc.createElement("link");
                 link.setAttribute("rel", "stylesheet");
                 link.setAttribute("type", "text/css");
-                link.setAttribute("href", determinedWikiTheme == "dark" ? "-/s/style-dark.css" : "-/s/style-dark-invert.css");
+                // Construct an absolute reference becuase Service Worker needs this
+                var prefix = document.location.href.replace(/index\.html(?:$|[#?].*$)/, '');
+                link.setAttribute("href", prefix + (determinedWikiTheme == "dark" ? '-/s/style-dark.css' : '-/s/style-dark-invert.css'));
                 doc.head.appendChild(link);
                 if (breakoutLink) breakoutLink.src = 'img/icons/new_window_lb.svg';
             } else {
@@ -2381,6 +2383,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                 };
                                 if (mimetype === 'text/html') {
                                     content = utf8.parse(content);
+                                    // Add dark style if required
+                                    var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
+                                    if (determinedTheme !== 'light') {
+                                        var prefix = document.location.href.replace(/index\.html(?:$|[#?].*$)/, '');
+                                        content = content.replace(/(<\/head>)/i, determinedTheme == 'dark' ? 
+                                            '<link href="' + prefix + '-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n$1' : 
+                                            '<link href="' + prefix + '-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n$1');
+                                    }
                                     // Add DOCTYPE to prevent quirks mode if missing (quirks mode prevents katex from running, and is incompatible with jQuery)
                                     message.content = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(content) ? '<!DOCTYPE html>\n' + content : content;
                                     messagePort.postMessage(message);
