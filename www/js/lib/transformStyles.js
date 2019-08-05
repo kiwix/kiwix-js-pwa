@@ -41,8 +41,6 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 uiUtil.poll("Voiding [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] because your display options require a " + cs + " style...");
                 zl = "#"; //Void these mobile styles
             }
-            // Make link absolute
-            zl = prefix != '#' ? prefix + zl : zl;
             //injectCSS();
             return {zl : zl, rtnFunction : rtnFunction};
         } else {
@@ -94,8 +92,6 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 //zl = zl.replace(/[\s\S]+?\/-\//i, "-/");
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem");
                 uiUtil.poll("Matched #" + i + " [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] from filesystem");
-                // Make link absolute
-                zl = prefix + zl;
                 //injectCSS();
             } else if (params.contentInjectionMode == 'jquery') { //Try to get the stylesheet from the ZIM file unless it's the wrong ZIM type
                 zl = zl.replace(/^[./]+/, ""); //Remove the directory path

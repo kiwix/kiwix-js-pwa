@@ -2215,10 +2215,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
                 //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
                 localSearch = {};
+                
+                var iframeArticleContent = document.getElementById('articleContent');
+                // iframeArticleContent.onload = function(){};
+                // iframeArticleContent.src = 'article.html';
 
                 //Load cached start page if it exists and we have loaded the packaged file
                 var htmlContent = 0;
-                if (params.cachedStartPage && ~state.selectedArchive._file._files[0].name.indexOf(params.packagedFile) && params.isLandingPage) {
+                if (params.isLandingPage && params.cachedStartPage && ~state.selectedArchive._file._files[0].name.indexOf(params.packagedFile)) {
                     htmlContent = -1;
                     // DEV: You should deal with the rare possibility that the cachedStartPage is not in the same namespace as the main page dirEntry...
                     // Ideally include the namespace in params.cachedStartPage and adjust/test code (not hard)
@@ -2275,7 +2279,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     return encodeURIComponent(matchedSubstring);
                 });
 
-                var iframeArticleContent = document.getElementById('articleContent');
                 iframeArticleContent.onload = function () {
                     // The iframe is empty, show spinner on load of landing page
                     $("#searchingArticles").show();
@@ -2285,16 +2288,24 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     $("#prefix").val("");
                     cookies.setItem('lastPageLoad', 'failed', Infinity);
                     iframeArticleContent.onload = function () {
-                        // The content is fully loaded by the browser : we can hide the spinner
-                        setTab();
                         // Deflect drag-and-drop of ZIM file on the iframe to Config
-                        var doc = iframeArticleContent.contentDocument ? iframeArticleContent.contentDocument.documentElement : null;
-                        var docBody = doc ? doc.getElementsByTagName('body') : null;
-                        docBody = docBody ? docBody[0] : null;
+                        var doc = iframeArticleContent ? iframeArticleContent.contentDocument : null;
+                        var docBody = doc ? doc.body : null;
                         if (docBody) {
                             docBody.addEventListener('dragover', handleIframeDragover);
                             docBody.addEventListener('drop', handleIframeDrop);
+                            //Set relative font size + Stackexchange-family multiplier
+                            var zimType = /-\/s\/style\.css/i.test(doc.head.innerHTML) ? "desktop" : "mobile";
+                            zimType = /-\/static\/main\.css/i.test(doc.head.innerHTML) ? "desktop-stx" : zimType; //Support stackexchange
+                            zimType = /minerva|mobile[^"']*\.css/i.test(doc.head.innerHTML) ? "mobile" : zimType;
+                            docBody.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
+                            //Set page width according to user preference
+                            removePageMaxWidth();
+                            // The content is ready : we can hide the spinner
+                            setTab();
+                            setupTableOfContents();
                         }
+                        
                         if (/manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker();
                         if (iframeArticleContent.contentWindow) iframeArticleContent.contentWindow.onunload = function () {
                             $("#searchingArticles").show();
@@ -2317,7 +2328,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     // Display the iframe content
                     // $("#articleContent").show();
                 };
-                if (!htmlContent) iframeArticleContent.src = "article.html";
+                // if (htmlContent) iframeArticleContent.src = "article.html";
                 // var articleContent = iframeArticleContent.contentDocument;
                 // articleContent.open('text/html', 'replace');
                 // articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
@@ -2672,6 +2683,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
             //Extract CSS URLs from given array of links
             function getBLOB(arr) {
+                var prefix = document.location.href.replace(/index\.html(?:$|[#?].*$)/, '');
                 var testCSS = arr.join();
                 zimType = /-\/s\/style\.css/i.test(testCSS) ? "desktop" : zimType;
                 zimType = /-\/static\/main\.css/i.test(testCSS) ? "desktop-stx" : zimType; //Support stackexchange
@@ -2736,6 +2748,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             }
 
             function injectCSS() {
+                var prefix = document.location.href.replace(/index\.html(?:$|[#?].*$)/, '');
                 // We have to count the blobArray elements because some may have been spliced out
                 // See https://stackoverflow.com/questions/28811911/find-array-length-in-javascript
                 var blobArrayLength = blobArray.filter(function () { return true; }).length;
@@ -2752,7 +2765,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                 break;
                             }
                         }
-                        testBlob = match && /blob:/i.test(blobArray[j][1]) ? blobArray[j][1] : blobArray[i]; //Whoa!!! Steady on!
+                        testBlob = match && /blob:/i.test(blobArray[j][1]) ? blobArray[j][1] : prefix + blobArray[i]; //Whoa!!! Steady on!
                         resultsArray[i] = cssArray[i].replace(/(?:data-kiwixurl|href)\s*=\s*["']([^"']+)/i, 'href="' +
                             testBlob + '" data-kiwixhref="$1'); //Store the original URL for later use
                         //DEV note: do not attempt to add onload="URL.revokeObjectURL...)": see [kiwix.js #284]
@@ -2774,7 +2787,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     }
                     //Add dark mode CSS if required
                     var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-                    cssArray$ += (determinedTheme == "dark") ? '<link href="-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
+                    cssArray$ += (determinedTheme == "dark") ? '<link href="' + prefix + '-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
                     //Ensure all headings are open
                     //htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
                     htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
@@ -2785,35 +2798,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 }
             }
             //End of preload stylesheets code
-
-            function setupTableOfContents() {
-                var iframe = window.frames[0].frameElement;
-                var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-                var tableOfContents = new uiUtil.toc(innerDoc);
-                var headings = tableOfContents.getHeadingObjects();
-                document.getElementById('dropup').style.fontSize = ~~(params.relativeUIFontSize * 0.14) + "px";
-                var dropup = "";
-                headings.forEach(function (heading) {
-                    if (/^h1$/i.test(heading.tagName))
-                        dropup += '<li style="font-size:' + params.relativeFontSize + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
-                    else if (/^h2$/i.test(heading.tagName))
-                        dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.9) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
-                    else if (/^h3$/i.test(heading.tagName))
-                        dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.75) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
-                    //Skip smaller headings (if there are any) to avoid making list too long
-                });
-                var ToCList = document.getElementById('ToCList');
-                ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
-                ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
-                ToCList.innerHTML = dropup;
-                Array.prototype.slice.call(ToCList.getElementsByTagName('a')).forEach(function (listElement) {
-                    listElement.addEventListener('click', function () {
-                        var iframeWin = document.getElementById('articleContent').contentWindow;
-                        iframeWin.location.hash = this.dataset.headingId;
-                        iframeWin.onscroll();
-                    });
-                });
-            }
 
             function injectHTML() {
                 //Inject htmlArticle into iframe
@@ -3225,6 +3209,35 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             }
 
         } //End of displayArticleInForm()
+
+        function setupTableOfContents() {
+            var iframe = window.frames[0].frameElement;
+            var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+            var tableOfContents = new uiUtil.toc(innerDoc);
+            var headings = tableOfContents.getHeadingObjects();
+            document.getElementById('dropup').style.fontSize = ~~(params.relativeUIFontSize * 0.14) + "px";
+            var dropup = "";
+            headings.forEach(function (heading) {
+                if (/^h1$/i.test(heading.tagName))
+                    dropup += '<li style="font-size:' + params.relativeFontSize + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                else if (/^h2$/i.test(heading.tagName))
+                    dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.9) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                else if (/^h3$/i.test(heading.tagName))
+                    dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.75) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                //Skip smaller headings (if there are any) to avoid making list too long
+            });
+            var ToCList = document.getElementById('ToCList');
+            ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
+            ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
+            ToCList.innerHTML = dropup;
+            Array.prototype.slice.call(ToCList.getElementsByTagName('a')).forEach(function (listElement) {
+                listElement.addEventListener('click', function () {
+                    var iframeWin = document.getElementById('articleContent').contentWindow;
+                    iframeWin.location.hash = this.dataset.headingId;
+                    iframeWin.onscroll();
+                });
+            });
+        }
 
         params.preloadAllImages = function () {
             if (params.preloadingAllImages !== true) {
