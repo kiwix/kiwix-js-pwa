@@ -289,6 +289,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 params.rememberLastPage = cookies.getItem('rememberLastPage') == "true";
                 if (!params.rememberLastPage) {
                     cookies.setItem('lastPageVisit', "", Infinity);
+                    params.lastPageHTML = "";
                     if (typeof Storage !== "undefined") {
                         try {
                             localStorage.setItem('lastPageHTML', "");
@@ -991,6 +992,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         console.log("localStorage not supported: " + err);
                     }
                 }
+                params.lastPageHTML = "";
             }
         });
         $('input:radio[name=cssInjectionMode]').on('click', function (e) {
@@ -2196,6 +2198,73 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          * @param {DirEntry} dirEntry The directory entry of the article to read
          */
         function readArticle(dirEntry) {
+            
+            if (dirEntry.isRedirect()) {
+                state.selectedArchive.resolveRedirect(dirEntry, readArticle);
+            } else {
+                //TESTING//
+                console.log("Initiating HTML load...");
+                console.time("Time to HTML load");
+                console.log("Initiating Document Ready timer...");
+                console.time("Time to Document Ready");
+
+                //Set startup cookie to guard against boot loop
+                //Cookie will signal failure until article is fully loaded
+                //document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
+                cookies.setItem('lastPageLoad', 'failed', Infinity);
+
+                //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
+                localSearch = {};
+
+                //Load cached start page if it exists and we have loaded the packaged file
+                var htmlContent = 0;
+                if (params.cachedStartPage && ~state.selectedArchive._file._files[0].name.indexOf(params.packagedFile) && params.isLandingPage) {
+                    htmlContent = -1;
+                    // DEV: You should deal with the rare possibility that the cachedStartPage is not in the same namespace as the main page dirEntry...
+                    // Ideally include the namespace in params.cachedStartPage and adjust/test code (not hard)
+                    uiUtil.XHR(dirEntry.namespace + '/' + encodeURIComponent(params.cachedStartPage), 'text', function (responseTxt, status) {
+                        htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
+                        if (htmlContent) {
+                            console.log('Article retrieved from storage cache...');
+                            // Alter the dirEntry url and title parameters in case we are overriding the start page
+                            dirEntry.url = params.cachedStartPage;
+                            var title = htmlContent.match(/<title[^>]*>((?:[^<]|<(?!\/title))+)/);
+                            dirEntry.title = title ? title[1] : dirEntry.title;
+                            displayArticleInForm(dirEntry, htmlContent);
+                        } else {
+                            document.getElementById('searchingArticles').style.display = 'block';
+                            state.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
+                        }
+                    });
+                }
+
+                //Load lastPageVisit if it is the currently requested page
+                if (!htmlContent) {
+                    if (params.rememberLastPage && typeof Storage !== "undefined" &&
+                        dirEntry.namespace + '/' + dirEntry.url == decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""))) {
+                        if (!params.lastPageHTML) {
+                            try {
+                                params.lastPageHTML = localStorage.getItem('lastPageHTML');
+                            } catch (err) {
+                                console.log("localStorage not supported: " + err);
+                            }
+                        }
+                        htmlContent = params.lastPageHTML || htmlContent;
+                    }
+                    if (/<html[^>]*>/.test(htmlContent)) {
+                        console.log("Fast article retrieval from localStorage...");
+                        setTimeout(function () {
+                            displayArticleInForm(dirEntry, htmlContent);
+                        }, 100);
+                    } else {
+                        //if (params.contentInjectionMode === 'jquery') {
+                            // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
+                            state.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
+                        //}
+                    }
+                }
+            }
+
             if (params.contentInjectionMode === 'serviceworker') {
                 // In ServiceWorker mode, we simply set the iframe src.
                 // (reading the backend is handled by the ServiceWorker itself)
@@ -2217,7 +2286,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     cookies.setItem('lastPageLoad', 'failed', Infinity);
                     iframeArticleContent.onload = function () {
                         // The content is fully loaded by the browser : we can hide the spinner
-                        //$("#searchingArticles").hide();
                         setTab();
                         // Deflect drag-and-drop of ZIM file on the iframe to Config
                         var doc = iframeArticleContent.contentDocument ? iframeArticleContent.contentDocument.documentElement : null;
@@ -2249,73 +2317,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     // Display the iframe content
                     // $("#articleContent").show();
                 };
-                iframeArticleContent.src = "article.html";
+                if (!htmlContent) iframeArticleContent.src = "article.html";
                 // var articleContent = iframeArticleContent.contentDocument;
                 // articleContent.open('text/html', 'replace');
                 // articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
                 // articleContent.write("<html><body></body></html>");
                 // articleContent.close();
-            } else {
-                // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
-                if (dirEntry.isRedirect()) {
-                    state.selectedArchive.resolveRedirect(dirEntry, readArticle);
-                } else {
-                    //TESTING//
-                    console.log("Initiating HTML load...");
-                    console.time("Time to HTML load");
-                    console.log("Initiating Document Ready timer...");
-                    console.time("Time to Document Ready");
-
-                    //Set startup cookie to guard against boot loop
-                    //Cookie will signal failure until article is fully loaded
-                    //document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
-                    cookies.setItem('lastPageLoad', 'failed', Infinity);
-
-                    //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
-                    localSearch = {};
-
-                    //Load cached start page if it exists and we have loaded the packaged file
-                    var htmlContent = 0;
-                    if (params.cachedStartPage && ~state.selectedArchive._file._files[0].name.indexOf(params.packagedFile) && params.isLandingPage) {
-                        htmlContent = -1;
-                        // DEV: You should deal with the rare possibility that the cachedStartPage is not in the same namespace as the main page dirEntry...
-                        // Ideally include the namespace in params.cachedStartPage and adjust/test code (not hard)
-                        uiUtil.XHR(dirEntry.namespace + '/' + encodeURIComponent(params.cachedStartPage), 'text', function (responseTxt, status) {
-                            htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
-                            if (htmlContent) {
-                                console.log('Article retrieved from storage cache...');
-                                // Alter the dirEntry url and title parameters in case we are overriding the start page
-                                dirEntry.url = params.cachedStartPage;
-                                var title = htmlContent.match(/<title[^>]*>((?:[^<]|<(?!\/title))+)/);
-                                dirEntry.title = title ? title[1] : dirEntry.title;
-                                displayArticleInForm(dirEntry, htmlContent);
-                            } else {
-                                document.getElementById('searchingArticles').style.display = 'block';
-                                state.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
-                            }
-                        });
-                    }
-
-                    //Load lastPageVisit if it is the currently requested page
-                    if (!htmlContent) {
-                        if (params.rememberLastPage && typeof Storage !== "undefined" &&
-                            dirEntry.namespace + '/' + dirEntry.url == decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""))) {
-                            try {
-                                htmlContent = localStorage.getItem('lastPageHTML');
-                            } catch (err) {
-                                console.log("localStorage not supported: " + err);
-                            }
-                        }
-                        if (/<html[^>]*>/.test(htmlContent)) {
-                            console.log("Fast article retrieval from localStorage...");
-                            setTimeout(function () {
-                                displayArticleInForm(dirEntry, htmlContent);
-                            }, 100);
-                        } else {
-                            state.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
-                        }
-                    }
-                }
             }
         }
 
@@ -2352,24 +2359,26 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                             });
                         } else {
                             var mimetype = dirEntry.getMimetype();
-                            if (/(?:^|\/)html/i.test(mimetype)) {   
+                            if (/\bhtml\b/i.test(mimetype)) {   
                                 //Load lastPageVisit if it is the currently requested page
-                                var htmlContent = '';
-                                if (params.rememberLastPage && typeof Storage !== 'undefined' &&
-                                    dirEntry.namespace + '/' + dirEntry.url == decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""))) {
-                                    try {
-                                        htmlContent = localStorage.getItem('lastPageHTML');
-                                    } catch (err) {
-                                        console.log("localStorage not supported: " + err);
-                                    }
-                                }
-                                if (/<html[^>]*>/.test(htmlContent)) {
-                                    console.log("Fast article retrieval from localStorage...");
+                                // if (params.rememberLastPage &&
+                                //     dirEntry.namespace + '/' + dirEntry.url == decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""))) {
+                                //     if (!params.lastPageHTML) {
+                                //         try {
+                                //             params.lastPageHTML = localStorage.getItem('lastPageHTML');
+                                //         } catch (err) {
+                                //             console.log("localStorage not supported: " + err);
+                                //         }
+                                //     }
+                                // }
+                                if (params.transformedHTML && /<html[^>]*>/.test(params.transformedHTML)) {
+                                    console.log("Fast article retrieval...");
                                     // Let's send the content to the ServiceWorker
                                     var message = {
-                                        'action': 'giveContent', 'title': title, 'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode, 'content': htmlContent
+                                        'action': 'giveContent', 'title': title, 'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode, 'content': params.transformedHTML
                                     };
                                     messagePort.postMessage(message);
+                                    params.transformedHTML = '';
                                     return;
                                 }
                             }
@@ -2381,7 +2390,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                 var message = {
                                     'action': 'giveContent', 'title': title, 'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode
                                 };
-                                if (mimetype === 'text/html') {
+                                if (/\bhtml$/i.test(mimetype)) {
                                     content = utf8.parse(content);
                                     // Add dark style if required
                                     var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
@@ -2410,6 +2419,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                                     console.log("localStorage not supported: " + err);
                                                 }
                                             }
+                                            params.lastPageHTML = message.content;
                                         }
                                     }
                                 } else {
@@ -2454,7 +2464,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         var regexpDownloadLinks = /^.*?\.epub($|\?)|^.*?\.pdf($|\?)|^.*?\.zip($|\?)/i;
     
         // This matches the data-kiwixurl of all <link> tags containing rel="stylesheet" in raw HTML unless commented out
-        var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*data-kiwixurl\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
+        var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*(?:href|data-kiwixurl)\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
         
         params.containsMathTexRaw = false;
         params.containsMathTex = false;
@@ -2511,6 +2521,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                             console.log("localStorage not supported: " + err);
                         }
                     }
+                    params.lastPageHTML = htmlArticle;
                 }
             }
 
@@ -2521,7 +2532,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
             // Replaces ZIM-style URLs of img, script, link and media tags with a data-kiwixurl to prevent 404 errors [kiwix-js #272 #376]
             // This replacement also processes the URL to remove the path so that the URL is ready for subsequent jQuery functions
-            htmlArticle = htmlArticle.replace(regexpTagsWithZimUrl, '$1data-kiwixurl$2');
+            if (params.contentInjectionMode == 'jquery') htmlArticle = htmlArticle.replace(regexpTagsWithZimUrl, '$1data-kiwixurl$2');
             // Remove any empty media containers on page
             htmlArticle = htmlArticle.replace(/(<(audio|video)\b(?:[^<]|<(?!\/\2))+<\/\2>)/ig, function (p0) {
                 return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
@@ -2577,16 +2588,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             //    inlineJavaScripts.push(inlineScript);
             //    return "";
             //});
-            // Neutralize all inline scripts for now (later use above), excluding math blocks or react templates
-            htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig, function (p0, p1) {
-                return '<!-- ' + p1 + ' --!>';
-            });
-            //Neutralize onload events, as they cause a crash in ZIMs with proprietary UIs
-            htmlArticle = htmlArticle.replace(/(<[^>]+?)onload\s*=\s*["'][^"']+["']\s*/ig, '$1');
-            //Neutralize onclick events
-            htmlArticle = htmlArticle.replace(/(<[^>]+?)onclick\s*=\s*["'][^"']+["']\s*/ig, '$1');
-            //Neutralize href="javascript:" links
-            htmlArticle = htmlArticle.replace(/href\s*=\s*["']javascript:[^"']+["']/gi, 'href=""');
+            if (params.contentInjectionMode == 'jquery') {
+                // Neutralize all inline scripts for now (later use above), excluding math blocks or react templates
+                htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig, function (p0, p1) {
+                    return '<!-- ' + p1 + ' --!>';
+                });
+                //Neutralize onload events, as they cause a crash in ZIMs with proprietary UIs
+                htmlArticle = htmlArticle.replace(/(<[^>]+?)onload\s*=\s*["'][^"']+["']\s*/ig, '$1');
+                //Neutralize onclick events
+                htmlArticle = htmlArticle.replace(/(<[^>]+?)onclick\s*=\s*["'][^"']+["']\s*/ig, '$1');
+                //Neutralize href="javascript:" links
+                htmlArticle = htmlArticle.replace(/href\s*=\s*["']javascript:[^"']+["']/gi, 'href=""');
+            }
 
             //MathJax detection:
             params.containsMathTexRaw = params.useMathJax &&
@@ -2667,7 +2680,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 if (/minerva|inserted.style.mobile/i.test(testCSS) && (cssCache || zimType != cssSource)) {
                     //Substitute ridiculously long style name TODO: move this code to transformStyles
                     for (var i = arr.length; i--;) { //TODO: move to transfromStyles
-                        arr[i] = /minerva/i.test(arr[i]) ? '<link data-kiwixurl="-/s/style-mobile.css" rel="stylesheet" type="text/css">' : arr[i];
+                        arr[i] = /minerva/i.test(arr[i]) ? '<link ' + (params.contentInjectionMode == 'jquery' ? 'data-kiwixurl' : 'href') + 
+                            '="-/s/style-mobile.css" rel="stylesheet" type="text/css">' : arr[i];
                         // Delete stylesheet if will be inserted via minerva anyway (avoid linking it twice)
                         if (/inserted.style.mobile/i.test(arr[i]) && /minerva/i.test(testCSS)) {
                             arr.splice(i, 1);
@@ -2675,7 +2689,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     }
                 }
                 for (var i = 0; i < arr.length; i++) {
-                    var zimLink = arr[i].match(/data-kiwixurl\s*=\s*['"]([^'"]+)/i);
+                    var zimLink = arr[i].match(/(?:href|data-kiwixurl)\s*=\s*['"]([^'"]+)/i);
                     zimLink = zimLink ? decodeURIComponent(zimLink[1]) : '';
                     //Remove path
                     zimLink = zimLink.replace(/^[.\/]*([\S\s]+)$/, '$1');
@@ -2739,7 +2753,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                             }
                         }
                         testBlob = match && /blob:/i.test(blobArray[j][1]) ? blobArray[j][1] : blobArray[i]; //Whoa!!! Steady on!
-                        resultsArray[i] = cssArray[i].replace(/data-kiwixurl\s*=\s*["']([^"']+)/i, 'href="' +
+                        resultsArray[i] = cssArray[i].replace(/(?:data-kiwixurl|href)\s*=\s*["']([^"']+)/i, 'href="' +
                             testBlob + '" data-kiwixhref="$1'); //Store the original URL for later use
                         //DEV note: do not attempt to add onload="URL.revokeObjectURL...)": see [kiwix.js #284]
                         //DEBUG:
@@ -2805,7 +2819,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 //Inject htmlArticle into iframe
                 uiUtil.clear(); //Void progress messages
                 // Extract any css classes from the html tag (they will be stripped when injected in iframe with .innerHTML)
-                var htmlCSS = htmlArticle.match(/<html[^>]*class\s*=\s*["']\s*([^"']+)/i);
+                if (params.contentInjectionMode ==='jquery') var htmlCSS = htmlArticle.match(/<html[^>]*class\s*=\s*["']\s*([^"']+)/i);
                 htmlCSS = htmlCSS ? htmlCSS[1] : '';
                 // Tell jQuery we're removing the iframe document: clears jQuery cache and prevents memory leaks [kiwix-js #361]
                 $('#articleContent').contents().remove();
@@ -2814,6 +2828,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 $('.alert').hide();
         
                 var iframeArticleContent = document.getElementById('articleContent');
+
+                if (params.contentInjectionMode === 'serviceworker') {
+                    params.transformedHTML = htmlArticle;
+                    iframeArticleContent.src = article.html;
+                    return;
+                }
 
                 iframeArticleContent.onload = function () {
                     var iframeArticleContent = document.getElementById('articleContent');

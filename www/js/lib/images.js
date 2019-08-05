@@ -202,7 +202,7 @@ define(['uiUtil'], function (uiUtil) {
         for (var i = 0, l = documentImages.length; i < l; i++) {
             // Process Wikimedia MathML
             imageHtml = documentImages[i].outerHTML;
-            if (params.useMathJax && /math-fallback-image/i.test(imageHtml)) {
+            if (params.useMathJax && /\bmath\/tex\b/i.test(imageHtml)) {
                 params.containsMathTex = true;
                 documentImages[i].outerHTML = imageHtml.replace(transformMathTextRegexp, function (p0, p1, math) {
                     // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
@@ -295,7 +295,7 @@ define(['uiUtil'], function (uiUtil) {
         var prefix = '';
         if (params.contentInjectionMode === 'serviceworker') {
             params.containsMathSVG = /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(doc.body.innerHTML);
-            prefix = window.location.href.replace(/^((?!.*\?).*\/|.*\/(?=[^\/]*\?)).*$/, '$1');
+            prefix = document.location.href.replace(/index\.html(?:$|[#?].*$)/, '');
         }
         if (params.containsMathTexRaw || params.containsMathTex || params.containsMathSVG) {
             var script1, script2, script3;
