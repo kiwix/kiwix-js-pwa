@@ -24,6 +24,7 @@
 'use strict';
 
 define(['util', 'uiUtil'], function (util, uiUtil) {
+    var prefix = document.location.href.replace(/index\.html(?:$|[#?].*$)/, '');
     /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i]  */
     function filterCSS(zl, zim, cc, cs, i) {
         var rtnFunction = "injectCSS";
@@ -40,6 +41,8 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 uiUtil.poll("Voiding [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] because your display options require a " + cs + " style...");
                 zl = "#"; //Void these mobile styles
             }
+            // Make link absolute
+            zl = prefix != '#' ? prefix + zl : zl;
             //injectCSS();
             return {zl : zl, rtnFunction : rtnFunction};
         } else {
@@ -91,8 +94,10 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 //zl = zl.replace(/[\s\S]+?\/-\//i, "-/");
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem");
                 uiUtil.poll("Matched #" + i + " [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] from filesystem");
+                // Make link absolute
+                zl = prefix + zl;
                 //injectCSS();
-            } else { //Try to get the stylesheet from the ZIM file unless it's the wrong ZIM type
+            } else if (params.contentInjectionMode == 'jquery') { //Try to get the stylesheet from the ZIM file unless it's the wrong ZIM type
                 zl = zl.replace(/^[./]+/, ""); //Remove the directory path
                 console.log("Attempting to resolve CSS link #" + i + " [" + zl + "] from ZIM file..." +
                     (cc ? "\n(Consider adding file #" + i + " to the local filesystem)" : ""));
@@ -106,9 +111,9 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
         //DEV: Careful not to add styles twice...
         //NB Can't relocate to filterCSS function above because it filters styles serially and code would be called for every style...
         if (zim == "desktop" && zim != cs) { //If ZIM doesn't match user-requested style, add in stylesheets if they're missing
-            css += /-\/s\/css_modules\/content\.parsoid\.css/i.test(css) ? "" : '<link href="-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css">\r\n';
-            css += /-\/s\/css_modules\/inserted_style_mobile\.css/i.test(css) ? "" : '<link href="-/s/css_modules/inserted_style_mobile.css" rel="stylesheet" type="text/css">\r\n';
-            css += /-\/s\/css_modules\/mobile\.css/i.test(css) ? "" : '<link href="-/s/css_modules/mobile.css" rel="stylesheet" type="text/css">\r\n';
+            css += /-\/s\/css_modules\/content\.parsoid\.css/i.test(css) ? "" : '<link href="' + prefix + '-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css">\r\n';
+            css += /-\/s\/css_modules\/inserted_style_mobile\.css/i.test(css) ? "" : '<link href="' + prefix + '-/s/style-mobile.css" rel="stylesheet" type="text/css">\r\n';
+            css += /-\/s\/css_modules\/mobile\.css/i.test(css) ? "" : '<link href="' + prefix + '-/s/css_modules/mobile.css" rel="stylesheet" type="text/css">\r\n';
         }
         if (cc || (zim == "desktop")) { //If user requested cached styles OR the ZIM does not contain mobile styles
             console.log(zim == "desktop" ? "Transforming display style to mobile..." : "Optimizing cached styles for mobile display...");
@@ -176,7 +181,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             if (/class\s*=\s*["']gallery/i.test(html) && !/gallery/i.test(css)) {
                 console.log("Inserting missing css required for gallery display [mediawiki.page.gallery.styles.css]...");
                 uiUtil.poll("Inserting missing css [mediawiki.page.gallery.styles.css]...");
-                css += /-\/s\/css_modules\/mediawiki\.page\.gallery\.styles\.css/i.test(css) ? "" : '<link href="-/s/css_modules/mediawiki.page.gallery.styles.css" rel="stylesheet" type="text/css">\r\n';
+                css += /-\/s\/css_modules\/mediawiki\.page\.gallery\.styles\.css/i.test(css) ? "" : '<link href="' + prefix + '-/s/css_modules/mediawiki.page.gallery.styles.css" rel="stylesheet" type="text/css">\r\n';
             }
         }
         if (cc || (zim == "mobile")) { //If user requested cached styles OR the ZIM does not contain desktop styles
