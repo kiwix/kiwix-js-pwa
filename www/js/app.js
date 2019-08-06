@@ -1872,22 +1872,21 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 // We're in an Electron packaged app
                 cookies.removeItem('lastSelectedArchive');
                 cookies.removeItem('lastSelectedArchivePath');
-                params.storedFile = params.packagedFile;
-                params.storedFilePath = params.archivePath + '/' + params.packagedFile;
-                params.pickedFile = createFakeFileObjectElectron(params.storedFile, params.storedFilePath, function(fakeFile) {
+                if (params.packagedFile && params.storedFile !== params.packagedFile) {
+                    createFakeFileObjectElectron(params.packagedFile, params.archivePath + '/' + params.packagedFile, function(fakeFile) {
                     if (fakeFile.size) {
                         params.pickedFile = fakeFile;
-                        setLocalArchiveFromFileList([params.pickedFile]);
-                if (!params.rescan) {
-                    if (params.showFileSelectors) $('input:checkbox[name=displayFileSelectors]').click();
-                        }
-                    } else {
+                            setLocalArchiveFromFileList([params.pickedFile]);            
+                        } else { 
                         // This shouldn't happen!
+                            params.showFileSelectors = true; 
+                            document.getElementById('hideFileSelectors').style.display =  'inline';
+                            document.getElementById('btnConfigure').click();
+                            setTimeout(function() { 
                         uiUtil.systemAlert('The packaged file cannot be loaded!\nPlease check that it is in the "' + params.archivePath + '" folder\nor pick a new ZIM file.');
-                        params.showFileSelectors = true;
-                        document.getElementById('hideFileSelectors').style.display =  'inline';
-                    }
+                            }, 10);                                } 
                 });
+                }
         }
         }
 
