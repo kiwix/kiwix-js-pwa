@@ -1398,6 +1398,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     } else {
                         // Attempts to load the file seem to have failed: maybe it has moved or been deleted
                         // Let's see if we can open the packaged ZIM instead (if this isn't the packaged ZIM)
+                        cookies.removeItem('lastSelectedArchive');
+                        cookies.removeItem('lastSelectedArchivePath');
                         if (params.storedFile !== params.packagedFile) {
                             createFakeFileObjectElectron(params.packagedFile, params.archivePath + '/' + params.packagedFile, function(fakeFile) {
                                 if (fakeFile.size) {
@@ -1859,6 +1861,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 if (!params.rescan) setLocalArchiveFromArchiveList(params.storedFile);
             } else if (typeof window.fs !== 'undefined') {
                 // We're in an Electron packaged app
+                cookies.removeItem('lastSelectedArchive');
+                cookies.removeItem('lastSelectedArchivePath');
                 params.storedFile = params.packagedFile;
                 params.storedFilePath = params.archivePath + '/' + params.packagedFile;
                 params.pickedFile = createFakeFileObjectElectron(params.storedFile, params.storedFilePath, function(fakeFile) {
