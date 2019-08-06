@@ -1400,18 +1400,27 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         // Let's see if we can open the packaged ZIM instead (if this isn't the packaged ZIM)
                         cookies.removeItem('lastSelectedArchive');
                         cookies.removeItem('lastSelectedArchivePath');
-                        if (params.storedFile !== params.packagedFile) {
+                        if (params.packagedFile && params.storedFile !== params.packagedFile) {
                             createFakeFileObjectElectron(params.packagedFile, params.archivePath + '/' + params.packagedFile, function(fakeFile) {
                                 if (fakeFile.size) {
                                     params.pickedFile = fakeFile;
                                     setLocalArchiveFromFileList([params.pickedFile]);            
                                 } else { 
                                     // This shouldn't happen!
-                                    uiUtil.systemAlert('The packaged file cannot be loaded!\nPlease check that it is in the "' + params.archivePath + '" folder\nor pick a new ZIM file.');
                                     params.showFileSelectors = true; 
                                     document.getElementById('hideFileSelectors').style.display =  'inline';
-                                } 
+                                    document.getElementById('btnConfigure').click();
+                                    setTimeout(function() { 
+                                        uiUtil.systemAlert('The packaged file cannot be loaded!\nPlease check that it is in the "' + params.archivePath + '" folder\nor pick a new ZIM file.');
+                                    }, 10);                                } 
                             });
+                        } else {
+                            params.showFileSelectors = true; 
+                            document.getElementById('hideFileSelectors').style.display =  'inline';
+                            document.getElementById('btnConfigure').click();
+                            setTimeout(function() { 
+                                uiUtil.systemAlert('The previously picked file cannot be found!\nPlease pick a new ZIM file.');
+                            }, 10);
                         }
                     }
                 document.getElementById('hideFileSelectors').style.display =  params.showFileSelectors ? 'inline' : 'none';
