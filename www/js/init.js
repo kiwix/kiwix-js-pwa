@@ -132,7 +132,7 @@ document.getElementById('logFeatures').innerHTML = document.getElementById('feat
 
 //Set up packaged Electron app
 if (!params.pickedFile && params.storedFile && typeof window.fs !== 'undefined') {
-    params.pickedFile = params.packagedFile;
+    params.pickedFile = params.storedFile;
 }
 //Set up storage types
 if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') { //UWP
