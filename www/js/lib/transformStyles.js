@@ -41,6 +41,8 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 uiUtil.poll("Voiding [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] because your display options require a " + cs + " style...");
                 zl = "#"; //Void these mobile styles
             }
+            // Rename this required mobile style so that we don't trigger reading ZIM as mobile in print intercept
+            zl = /css_modules\/mobile_main_page\.css/.test(zl) && cs == 'desktop' ? "-/s/css_modules/newstyle_main_page.css" : zl;
             //injectCSS();
             return {zl : zl, rtnFunction : rtnFunction};
         } else {
