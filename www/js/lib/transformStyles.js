@@ -42,7 +42,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 zl = "#"; //Void these mobile styles
             }
             // Rename this required mobile style so that we don't trigger reading ZIM as mobile in print intercept
-            zl = /css_modules\/mobile_main_page\.css/.test(zl) && cs == 'desktop' ? "-/s/css_modules/newstyle_main_page.css" : zl;
+            zl = /css_modules\/mobile_main_page\.css/.test(zl) && cs == 'desktop' ? prefix + "-/s/css_modules/newstyle_main_page.css" : zl;
             //injectCSS();
             return {zl : zl, rtnFunction : rtnFunction};
         } else {
@@ -87,7 +87,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                     zl = (cs == "mobile") ? "-/s/style-mobile.css" : "-/s/style.css";
                 }
                 // Rename this required mobile style so that we don't trigger reading ZIM as mobile in print intercept
-                zl = /css_modules\/mobile_main_page\.css/.test(zl) ? "-/s/css_modules/newstyle_main_page.css" : zl;
+                zl = /css_modules\/mobile_main_page\.css/.test(zl) ? prefix + "-/s/css_modules/newstyle_main_page.css" : zl;
                 // Replace bootstrap with own: DEV: when upgrading to Bootstrap 4, stop doing this!
                 zl = zl.replace(/.+(bootstrap[^\/]*?\.css)/i, "css/$1");
                 //Make link href relative to root
