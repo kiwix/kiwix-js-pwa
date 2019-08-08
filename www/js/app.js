@@ -571,7 +571,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         // Top menu :
         document.getElementById('btnHome').addEventListener('click', function () {
             setTab('btnHome');
-            $('#articleContent').hide();
+            //$('#articleContent').hide();
             $('#articleContent').contents().empty();
             $('#searchingArticles').hide();
             $('#welcomeText').show();
@@ -642,7 +642,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             $('#about').hide();
             $('#configuration').hide();
             $('#formArticleSearch').show();
-            $('#articleContent').show();
+            if (!activeBtn || activeBtn == 'btnHome') $('#articleContent').show();
             $("#articleList").empty();
             $('#articleListHeaderMessage').empty();
             $('#articleListWithHeader').hide();
@@ -2229,12 +2229,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 localSearch = {};
                 
                 var iframeArticleContent = document.getElementById('articleContent');
+                // Hide the display while loading
+                iframeArticleContent.style.display = 'none';
                 // iframeArticleContent.onload = function(){};
                 // iframeArticleContent.src = 'article.html';
 
                 //Load cached start page if it exists and we have loaded the packaged file
                 var htmlContent = 0;
-                if (params.isLandingPage && params.cachedStartPage && ~state.selectedArchive._file._files[0].name.indexOf(params.packagedFile)) {
+                if (params.isLandingPage && params.cachedStartPage && state.selectedArchive._file._files[0].name == params.packagedFile) {
                     htmlContent = -1;
                     // DEV: You should deal with the rare possibility that the cachedStartPage is not in the same namespace as the main page dirEntry...
                     // Ideally include the namespace in params.cachedStartPage and adjust/test code (not hard)
@@ -2284,68 +2286,47 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             if (params.contentInjectionMode === 'serviceworker') {
                 // In ServiceWorker mode, we simply set the iframe src.
                 // (reading the backend is handled by the ServiceWorker itself)
-
-                // We will need the encoded URL on article load so that we can set the iframe's src correctly,
-                // but we must not encode the '/' character or else relative links may fail [kiwix-js #498]
-                var encodedUrl = dirEntry.url.replace(/[^/]+/g, function (matchedSubstring) {
-                    return encodeURIComponent(matchedSubstring);
-                });
-
+                
                 iframeArticleContent.onload = function () {
-                    // The iframe is empty, show spinner on load of landing page
-                    $("#searchingArticles").show();
-                    $("#articleList").empty();
-                    $('#articleListHeaderMessage').empty();
-                    $('#articleListWithHeader').hide();
-                    $("#prefix").val("");
-                    cookies.setItem('lastPageLoad', 'failed', Infinity);
-                    iframeArticleContent.onload = function () {
-                        // Deflect drag-and-drop of ZIM file on the iframe to Config
-                        var doc = iframeArticleContent ? iframeArticleContent.contentDocument : null;
-                        var docBody = doc ? doc.body : null;
-                        if (docBody) {
-                            docBody.addEventListener('dragover', handleIframeDragover);
-                            docBody.addEventListener('drop', handleIframeDrop);
-                            //Set relative font size + Stackexchange-family multiplier
-                            var zimType = /-\/s\/style\.css/i.test(doc.head.innerHTML) ? "desktop" : "mobile";
-                            zimType = /-\/static\/main\.css/i.test(doc.head.innerHTML) ? "desktop-stx" : zimType; //Support stackexchange
-                            zimType = /minerva|mobile[^"']*\.css/i.test(doc.head.innerHTML) ? "mobile" : zimType;
-                            docBody.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
-                            //Set page width according to user preference
-                            removePageMaxWidth();
-                            // The content is ready : we can hide the spinner
-                            setTab();
-                            setupTableOfContents();
+                    // Deflect drag-and-drop of ZIM file on the iframe to Config
+                    var doc = iframeArticleContent ? iframeArticleContent.contentDocument : null;
+                    var docBody = doc ? doc.body : null;
+                    if (docBody) {
+                        docBody.addEventListener('dragover', handleIframeDragover);
+                        docBody.addEventListener('drop', handleIframeDrop);
+                        //Set relative font size + Stackexchange-family multiplier
+                        var zimType = /-\/s\/style\.css/i.test(doc.head.innerHTML) ? "desktop" : "mobile";
+                        zimType = /-\/static\/main\.css/i.test(doc.head.innerHTML) ? "desktop-stx" : zimType; //Support stackexchange
+                        zimType = /minerva|mobile[^"']*\.css/i.test(doc.head.innerHTML) ? "mobile" : zimType;
+                        docBody.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
+                        //Set page width according to user preference
+                        removePageMaxWidth();
+                        // The content is ready : we can hide the spinner
+                        setTab();
+                        setupTableOfContents();
+                    }
+                    
+                    if (/manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker();
+                    
+                    if (params.allowHTMLExtraction) {
+                        var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
+                        uiUtil.insertBreakoutLink(determinedTheme);
+                    }
+                    cookies.removeItem('lastPageLoad');
+                    if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
+                        params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
+                            "@kiwixKey@" + state.selectedArchive._file._files[0].name;
+                        if (params.rememberLastPage) {
+                            cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
                         }
-                        
-                        if (/manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker();
-                        if (iframeArticleContent.contentWindow) iframeArticleContent.contentWindow.onunload = function () {
-                            $("#searchingArticles").show();
-                        };
-                        if (params.allowHTMLExtraction) {
-                            var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
-                            uiUtil.insertBreakoutLink(determinedTheme);
-                        }
-                        cookies.removeItem('lastPageLoad');
-                        if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
-                            params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
-                                "@kiwixKey@" + state.selectedArchive._file._files[0].name;
-                            if (params.rememberLastPage) {
-                                cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
-                            }
-                        }
+                    }
+
+                    // Show spinner when the article unloads
+                    if (iframeArticleContent.contentWindow) iframeArticleContent.contentWindow.onunload = function () {
+                        $("#searchingArticles").show();
                     };
-                    // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
-                    iframeArticleContent.src = "../" + state.selectedArchive._file._files[0].name + "/" + dirEntry.namespace + "/" + encodedUrl;
-                    // Display the iframe content
-                    // $("#articleContent").show();
+
                 };
-                // if (htmlContent) iframeArticleContent.src = "article.html";
-                // var articleContent = iframeArticleContent.contentDocument;
-                // articleContent.open('text/html', 'replace');
-                // articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
-                // articleContent.write("<html><body></body></html>");
-                // articleContent.close();
             }
         }
 
@@ -2381,70 +2362,66 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                 messagePort.postMessage({ 'action': 'sendRedirect', 'title': title, 'redirectUrl': redirectURL });
                             });
                         } else {
+                            console.log('SW read dirEntry for: ' + dirEntry.url);
                             var mimetype = dirEntry.getMimetype();
-                            if (/\bhtml\b/i.test(mimetype)) {   
-                                //Load lastPageVisit if it is the currently requested page
-                                // if (params.rememberLastPage &&
-                                //     dirEntry.namespace + '/' + dirEntry.url == decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""))) {
-                                //     if (!params.lastPageHTML) {
-                                //         try {
-                                //             params.lastPageHTML = localStorage.getItem('lastPageHTML');
-                                //         } catch (err) {
-                                //             console.log("localStorage not supported: " + err);
-                                //         }
-                                //     }
-                                // }
+                            if (/\bhtml\b/i.test(mimetype)) {
+                                // Intercept files of type html and apply transformations   
                                 if (params.transformedHTML && /<html[^>]*>/.test(params.transformedHTML)) {
-                                    console.log("Fast article retrieval...");
                                     // Let's send the content to the ServiceWorker
                                     var message = {
                                         'action': 'giveContent', 'title': title, 'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode, 'content': params.transformedHTML
                                     };
                                     messagePort.postMessage(message);
                                     params.transformedHTML = '';
-                                    return;
+                                } else {
+                                    // It's an unstransformed html file, so we need to do some content transforms
+                                    if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) params.lastPageVisit = '';
+                                    readArticle(dirEntry);
                                 }
+                                return;
                             }
                             
                             // Let's read the content in the ZIM file
                             state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                                console.log('SW read binary file for: ' + dirEntry.url);
                                 var mimetype = fileDirEntry.getMimetype();
                                 // Let's send the content to the ServiceWorker
                                 var message = {
                                     'action': 'giveContent', 'title': title, 'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode
                                 };
                                 if (/\bhtml$/i.test(mimetype)) {
-                                    content = utf8.parse(content);
-                                    // Add dark style if required
-                                    var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-                                    if (determinedTheme !== 'light') {
-                                        var prefix = document.location.href.replace(/index\.html(?:$|[#?].*$)/, '');
-                                        content = content.replace(/(<\/head>)/i, determinedTheme == 'dark' ? 
-                                            '<link href="' + prefix + '-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n$1' : 
-                                            '<link href="' + prefix + '-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n$1');
-                                    }
-                                    // Add DOCTYPE to prevent quirks mode if missing (quirks mode prevents katex from running, and is incompatible with jQuery)
-                                    message.content = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(content) ? '<!DOCTYPE html>\n' + content : content;
-                                    messagePort.postMessage(message);
-                                    // Save last page visited so we can go back to it
-                                    if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
-                                        params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
-                                            "@kiwixKey@" + state.selectedArchive._file._files[0].name;
-                                        if (params.rememberLastPage) {
-                                            cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
-                                            //Store current document's raw HTML in localStorage for fast restart
-                                            if (typeof Storage !== "undefined") {
-                                                try {
-                                                    // Ensure we don't go over quota
-                                                    localStorage.removeItem('lastPageHTML');
-                                                    localStorage.setItem('lastPageHTML', message.content);
-                                                } catch (err) {
-                                                    console.log("localStorage not supported: " + err);
-                                                }
-                                            }
-                                            params.lastPageHTML = message.content;
-                                        }
-                                    }
+                                    console.log('We should never get here!!');
+                                    // content = utf8.parse(content);
+                                    // // Add dark style if required
+                                    // var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
+                                    // if (determinedTheme !== 'light') {
+                                    //     var prefix = document.location.href.replace(/index\.html(?:$|[#?].*$)/, '');
+                                    //     content = content.replace(/(<\/head>)/i, determinedTheme == 'dark' ? 
+                                    //         '<link href="' + prefix + '-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n$1' : 
+                                    //         '<link href="' + prefix + '-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n$1');
+                                    // }
+                                    // // Add DOCTYPE to prevent quirks mode if missing (quirks mode prevents katex from running, and is incompatible with jQuery)
+                                    // message.content = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(content) ? '<!DOCTYPE html>\n' + content : content;
+                                    // messagePort.postMessage(message);
+                                    // // Save last page visited so we can go back to it
+                                    // if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
+                                    //     params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
+                                    //         "@kiwixKey@" + state.selectedArchive._file._files[0].name;
+                                    //     if (params.rememberLastPage) {
+                                    //         cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
+                                    //         //Store current document's raw HTML in localStorage for fast restart
+                                    //         if (typeof Storage !== "undefined") {
+                                    //             try {
+                                    //                 // Ensure we don't go over quota
+                                    //                 localStorage.removeItem('lastPageHTML');
+                                    //                 localStorage.setItem('lastPageHTML', message.content);
+                                    //             } catch (err) {
+                                    //                 console.log("localStorage not supported: " + err);
+                                    //             }
+                                    //         }
+                                    //         params.lastPageHTML = message.content;
+                                    //     }
+                                    // }
                                 } else {
                                     message.content = content.buffer;
                                     messagePort.postMessage(message, [content.buffer]);
@@ -2517,8 +2494,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             console.time("Time to First Paint");
             //return;
 
+            // Display Bootstrap warning alert if the landing page contains active content
+            if (!params.hideActiveContentWarning && params.isLandingPage && params.contentInjectionMode === 'jquery') {
+                if (regexpActiveContent.test(htmlArticle)) uiUtil.displayActiveContentWarning();
+            }
+
+
             // App appears to have successfully launched
-            params.appIsLaunching = 'false';
+            params.appIsLaunching = false;
+            params.isLandingPage = false;
 
             // Calculate the current article's ZIM baseUrl to use when processing relative links
             var baseUrl = dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, '');
@@ -2546,11 +2530,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     }
                     params.lastPageHTML = htmlArticle;
                 }
-            }
-
-            // Display Bootstrap warning alert if the landing page contains active content
-            if (!params.hideActiveContentWarning && params.isLandingPage) {
-                if (regexpActiveContent.test(htmlArticle)) uiUtil.displayActiveContentWarning();
             }
 
             // Replaces ZIM-style URLs of img, script, link and media tags with a data-kiwixurl to prevent 404 errors [kiwix-js #272 #376]
@@ -2827,7 +2806,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
                 if (params.contentInjectionMode === 'serviceworker') {
                     params.transformedHTML = htmlArticle;
-                    iframeArticleContent.src = article.html;
+
+                    // We will need the encoded URL on article load so that we can set the iframe's src correctly,
+                    // but we must not encode the '/' character or else relative links may fail [kiwix-js #498]
+                    var encodedUrl = dirEntry.url.replace(/[^/]+/g, function (matchedSubstring) {
+                        return encodeURIComponent(matchedSubstring);
+                    });
+                    // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
+                    iframeArticleContent.src = "../" + state.selectedArchive._file._files[0].name + "/" + dirEntry.namespace + "/" + encodedUrl;
+                
+                    // iframeArticleContent.src = article.html;
                     return;
                 }
 
@@ -2848,8 +2836,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     };
 
                     // Inject the new article's HTML into the iframe
-                    var articleContent = iframeContentDocument.documentElement;
-                    articleContent.innerHTML = htmlArticle;
+                    // var articleContent = iframeContentDocument.documentElement;
+                    // articleContent.innerHTML = htmlArticle;
                     
                     var docBody = iframeContentDocument.getElementsByTagName('body');
                     docBody = docBody ? docBody[0] : null;
@@ -3069,7 +3057,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 // iframeArticleContent.src = "article.html";
 
                 // Hide the articleContent to prevent flashes in dark mode in some browsers
-                document.getElementById('articleContent').style.display = 'none';
+                // document.getElementById('articleContent').style.display = 'none';
 
                 var articleContent = iframeArticleContent.contentDocument;
                 articleContent.open('text/html', 'replace');
