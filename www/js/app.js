@@ -1284,6 +1284,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             $('input:radio[name=contentInjectionMode]').prop('checked', false);
             $('input:radio[name=contentInjectionMode]').filter('[value="' + value + '"]').prop('checked', true);
             params.contentInjectionMode = value;
+            params.themeChanged = true; // This will reload the page
             // Save the value in a cookie, so that to be able to keep it after a reload/restart
             cookies.setItem('lastContentInjectionMode', value, Infinity);
         }
@@ -2230,7 +2231,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 
                 var iframeArticleContent = document.getElementById('articleContent');
                 // Hide the display while loading
-                iframeArticleContent.style.display = 'none';
+                // iframeArticleContent.style.display = 'none';
                 // iframeArticleContent.onload = function(){};
                 // iframeArticleContent.src = 'article.html';
 
@@ -2273,7 +2274,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         console.log("Fast article retrieval from localStorage...");
                         setTimeout(function () {
                             displayArticleInForm(dirEntry, htmlContent);
-                        }, 100);
+                        });
                     } else {
                         //if (params.contentInjectionMode === 'jquery') {
                             // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
@@ -2362,7 +2363,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                 messagePort.postMessage({ 'action': 'sendRedirect', 'title': title, 'redirectUrl': redirectURL });
                             });
                         } else {
-                            console.log('SW read dirEntry for: ' + dirEntry.url);
                             var mimetype = dirEntry.getMimetype();
                             if (/\bhtml\b/i.test(mimetype)) {
                                 // Intercept files of type html and apply transformations   
@@ -2371,6 +2371,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                     var message = {
                                         'action': 'giveContent', 'title': title, 'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode, 'content': params.transformedHTML
                                     };
+                                    document.getElementById('articleContent').style.display = 'none';
                                     messagePort.postMessage(message);
                                     params.transformedHTML = '';
                                 } else {
@@ -2800,7 +2801,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 $('#articleContent').contents().remove();
 
                 // Remove from DOM any download alert box that was activated in uiUtil.displayFileDownloadAlert function
-                $('.alert').hide();
+                $('#downloadAlert').hide();
         
                 var iframeArticleContent = document.getElementById('articleContent');
 
@@ -3064,6 +3065,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
                 articleContent.write(htmlArticle);
                 articleContent.close();
+
+                // Hide the iframe while loading
+                iframeArticleContent.style.display = 'none';
 
             } // End of injectHtml
 
