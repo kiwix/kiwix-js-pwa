@@ -226,11 +226,12 @@ define(['util'], function(util) {
         var alertHTML =
             '<div id="activeContent" class="alert alert-warning alert-dismissible fade in">' +
                 '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
-                '<strong>Unable to display active content:</strong> To use Archive Index <b><i>type a space</b></i> in the box above. ' +
-                '&nbsp;[<a id="stop" href="#displaySettingsDiv" class="alert-link">Permanently hide</a>]' +
+                '<strong>Unable to display active content:</strong> To use Archive Index <b><i>type a space</b></i> in the box above, or else ' +
+'<a id="swModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to Service Worker mode</a> ' +
+                'if your platform supports it. &nbsp;[<a id="stop" href="#displaySettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
         document.getElementById('alertBoxHeader').innerHTML = alertHTML;
-        ['stop'].forEach(function (id) {
+        ['swModeLink', 'stop'].forEach(function(id) {
             // Define event listeners for both hyperlinks in alert box: these take the user to the Config tab and highlight
             // the options that the user needs to select
             document.getElementById(id).addEventListener('click', function () {
