@@ -81,8 +81,12 @@ var regexpZIMUrlWithNamespace = /(?:^|\/)([^\/]+\/)([-ABIJMUVWX])\/(.+)/;
 
 function fetchEventListener(event) {
     if (fetchCaptureEnabled) {
-        // if (/-\/s\/style-dark.*css/.test(event.request.url)) return;
-        if (!/\.zim\//i.test(event.request.url)) return;
+        
+        if (!/\.zim\//i.test(event.request.url)) { 
+            console.log('SW is getting file from network: ' + event.request.url);
+            return; 
+        }
+        
         if (regexpZIMUrlWithNamespace.test(event.request.url)) {
             // The ServiceWorker will handle this request
 
