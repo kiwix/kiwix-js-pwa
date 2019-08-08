@@ -30,7 +30,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
         var rtnFunction = "injectCSS";
         if ((zim != cs) && zl.match(/(-\/s\/style\.css)|minerva|mobile|parsoid/i)) { //If it's the wrong ZIM type and style matches main styles...
             if (zl.match(/-\/s\/style\.css|minerva|style-mobile\.css/i)) { //If it matches one of the required styles...
-                zl = (cs == "mobile") ? "-/s/style-mobile.css" : "-/s/style.css"; //Take it from cache, because not in the ZIM
+                zl = (cs == "mobile") ? prefix + "-/s/style-mobile.css" : prefix + "-/s/style.css"; //Take it from cache, because not in the ZIM
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem because style is not in ZIM" +
                     "\nbut your display options require a " + cs + " style");
                 uiUtil.poll("Matched [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] from cache" + " because your display options require a " + cs + " style...");
@@ -42,7 +42,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 zl = "#"; //Void these mobile styles
             }
             // Rename this required mobile style so that we don't trigger reading ZIM as mobile in print intercept
-            zl = /css_modules\/mobile_main_page\.css/.test(zl) && cs == 'desktop' ? "-/s/css_modules/newstyle_main_page.css" : zl;
+            zl = /css_modules\/mobile_main_page\.css/.test(zl) && cs == 'desktop' ? prefix + "-/s/css_modules/newstyle_main_page.css" : zl;
         } else {
             //If this is a standard Wikipedia css use stylesheet cached in the filesystem...
             //DEV: Although "." matches any character in regex, there is enough specificity in the patterns below
@@ -90,6 +90,8 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 zl = zl.replace(/.+(bootstrap[^\/]*?\.css)/i, "css/$1");
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem");
                 uiUtil.poll("Matched #" + i + " [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] from filesystem");
+                //Make link absolute
+                zl = zl.replace(/^[/.]*/, prefix);
                 //injectCSS();
             } else if (params.contentInjectionMode == 'jquery') { //Try to get the stylesheet from the ZIM file unless it's the wrong ZIM type
                 zl = zl.replace(/^[./]+/, ""); //Remove the directory path
@@ -98,8 +100,6 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 rtnFunction = "resolveCSS";
             }
         }
-        //Make link absolute
-        zl = zl.replace(/^[/.]*/, prefix);
         return { zl: zl, rtnFunction: rtnFunction };
     }
 
