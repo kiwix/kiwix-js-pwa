@@ -649,7 +649,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             $("#prefix").val("");
             $("#searchingArticles").hide();
             $("#welcomeText").hide();
-            checkToolbar();
         }
 
         function setActiveBtn(activeBtn) {
@@ -801,6 +800,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             }
             // Do the necessary to enable or disable the Service Worker
             setContentInjectionMode(this.value);
+            params.themeChanged = true; // This will reload the page
         });
         $('input:checkbox[name=allowInternetAccess]').on('change', function (e) {
             params.allowInternetAccess = this.checked ? true : false;
@@ -972,9 +972,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 var prefix = document.location.href.replace(/index\.html(?:$|[#?].*$)/, '');
                 link.setAttribute("href", prefix + (determinedWikiTheme == "dark" ? '-/s/style-dark.css' : '-/s/style-dark-invert.css'));
                 doc.head.appendChild(link);
-                if (breakoutLink) breakoutLink.src = 'img/icons/new_window_lb.svg';
+                if (breakoutLink) breakoutLink.src = prefix + 'img/icons/new_window_lb.svg';
             } else {
-                if (breakoutLink) breakoutLink.src = 'img/icons/new_window.svg';
+                if (breakoutLink) breakoutLink.src = prefix + 'img/icons/new_window.svg';
             }
             document.getElementById('darkInvert').style.display = determinedWikiTheme == 'light' ? 'none' : 'inline';
         }
@@ -1285,7 +1285,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             $('input:radio[name=contentInjectionMode]').prop('checked', false);
             $('input:radio[name=contentInjectionMode]').filter('[value="' + value + '"]').prop('checked', true);
             params.contentInjectionMode = value;
-            params.themeChanged = true; // This will reload the page
             // Save the value in a cookie, so that to be able to keep it after a reload/restart
             cookies.setItem('lastContentInjectionMode', value, Infinity);
         }
@@ -2296,7 +2295,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         //if (~lastPage.indexOf(params.cachedStartPage)) params.isLandingPage = true;
                         setTimeout(function () {
                             displayArticleInForm(dirEntry, htmlContent);
-                        });
+                        }, 10);
                     } else {
                         //if (params.contentInjectionMode === 'jquery') {
                             // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
@@ -2324,10 +2323,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         docBody.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
                         //Set page width according to user preference
                         removePageMaxWidth();
-                        // The content is ready : we can hide the spinner
-                        setTab();
                         setupTableOfContents();
                         listenForSearchKeys();
+                        // The content is ready : we can hide the spinner
+                        setTab();
+                        resizeIFrame();
                     }
                     
                     if (/manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker();
