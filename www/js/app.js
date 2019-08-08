@@ -1988,6 +1988,25 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             }, 500);
         }
 
+        function listenForSearchKeys() {
+            //Listen to iframe key presses for in-page search
+            document.getElementById('articleContent').contentWindow.addEventListener('keyup', function (e) {
+                //Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
+                if ((e.ctrlKey || e.altKey) && e.which == 70) {
+                    document.getElementById('findText').click();
+                }
+            });
+
+            document.getElementById('articleContent').contentWindow.addEventListener('keydown', function (e) {
+                //Ctrl-P to patch printing support, so iframe gets printed
+                if (e.ctrlKey && e.which == 80) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    printIntercept();
+                }
+            }, true);
+        }
+
 
         /**
          * Search the index for DirEntries with title that start with the given prefix (implemented
@@ -2259,8 +2278,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
                 //Load lastPageVisit if it is the currently requested page
                 if (!htmlContent) {
-                    if (params.rememberLastPage && typeof Storage !== "undefined" &&
-                        dirEntry.namespace + '/' + dirEntry.url == decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""))) {
+                    var lastPage = '';
+                    if (params.rememberLastPage && params.lastPageVisit) lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
+                    if (params.rememberLastPage && typeof Storage !== "undefined" && dirEntry.namespace + '/' + dirEntry.url == lastPage) {
                         if (!params.lastPageHTML) {
                             try {
                                 params.lastPageHTML = localStorage.getItem('lastPageHTML');
@@ -2272,6 +2292,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     }
                     if (/<html[^>]*>/.test(htmlContent)) {
                         console.log("Fast article retrieval from localStorage...");
+                        //if (~lastPage.indexOf(params.cachedStartPage)) params.isLandingPage = true;
                         setTimeout(function () {
                             displayArticleInForm(dirEntry, htmlContent);
                         });
@@ -2305,6 +2326,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         // The content is ready : we can hide the spinner
                         setTab();
                         setupTableOfContents();
+                        listenForSearchKeys();
+                        //checkToolbar();
                     }
                     
                     if (/manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker();
@@ -2662,6 +2685,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
             //Preload stylesheets [kiwix-js #149]
             //Set up blobArray of promises
+            var prefix = document.location.href.replace(/index\.html(?:$|[#?].*$)/, '');
             var cssArray = htmlArticle.match(regexpSheetHref);
             var blobArray = [];
             var cssSource = params.cssSource;
@@ -2675,10 +2699,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
             //Extract CSS URLs from given array of links
             function getBLOB(arr) {
-                var prefix = document.location.href.replace(/index\.html(?:$|[#?].*$)/, '');
                 var testCSS = arr.join();
                 zimType = /-\/s\/style\.css/i.test(testCSS) ? "desktop" : zimType;
                 zimType = /-\/static\/main\.css/i.test(testCSS) ? "desktop-stx" : zimType; //Support stackexchange
+                zimType = /gutenberg\.css/i.test(testCSS) ? "desktop-gtb" : zimType; //Support Gutenberg
                 zimType = /minerva|mobile/i.test(testCSS) ? "mobile" : zimType;
                 cssSource = cssSource == "auto" ? zimType : cssSource; //Default to in-built zimType if user has selected automatic detection of styles
                 if (/minerva|inserted.style.mobile/i.test(testCSS) && (cssCache || zimType != cssSource)) {
@@ -2740,7 +2764,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             }
 
             function injectCSS() {
-                var prefix = document.location.href.replace(/index\.html(?:$|[#?].*$)/, '');
                 // We have to count the blobArray elements because some may have been spliced out
                 // See https://stackoverflow.com/questions/28811911/find-array-length-in-javascript
                 var blobArrayLength = blobArray.filter(function () { return true; }).length;
@@ -2757,7 +2780,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                 break;
                             }
                         }
-                        testBlob = match && /blob:/i.test(blobArray[j][1]) ? blobArray[j][1] : prefix + blobArray[i]; //Whoa!!! Steady on!
+                        testBlob = match && /blob:/i.test(blobArray[j][1]) ? blobArray[j][1] : blobArray[i]; //Whoa!!! Steady on!
                         resultsArray[i] = cssArray[i].replace(/(?:data-kiwixurl|href)\s*=\s*["']([^"']+)/i, 'href="' +
                             testBlob + '" data-kiwixhref="$1'); //Store the original URL for later use
                         //DEV note: do not attempt to add onload="URL.revokeObjectURL...)": see [kiwix.js #284]
@@ -2952,23 +2975,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     }
                     checkToolbar();
 
-                    //Listen to iframe key presses for in-page search
-                    document.getElementById('articleContent').contentWindow.addEventListener('keyup', function (e) {
-                        //Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
-                        if ((e.ctrlKey || e.altKey) && e.which == 70) {
-                            document.getElementById('findText').click();
-                        }
-                    });
-
-                    document.getElementById('articleContent').contentWindow.addEventListener('keydown', function (e) {
-                        //Ctrl-P to patch printing support, so iframe gets printed
-                        if (e.ctrlKey && e.which == 80) {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            printIntercept();
-                        }
-                    }, true);
-
+                    listenForSearchKeys();
+                    
                     var currentProtocol = location.protocol;
                     var currentHost = location.host;
                     // Percent-encode dirEntry.url and add regex escape character \ to the RegExp special characters - see https://www.regular-expressions.info/characters.html;
