@@ -649,6 +649,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             $("#prefix").val("");
             $("#searchingArticles").hide();
             $("#welcomeText").hide();
+            checkToolbar();
         }
 
         function setActiveBtn(activeBtn) {
@@ -2327,7 +2328,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         setTab();
                         setupTableOfContents();
                         listenForSearchKeys();
-                        //checkToolbar();
                     }
                     
                     if (/manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker();
@@ -2719,8 +2719,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 for (var i = 0; i < arr.length; i++) {
                     var zimLink = arr[i].match(/(?:href|data-kiwixurl)\s*=\s*['"]([^'"]+)/i);
                     zimLink = zimLink ? decodeURIComponent(zimLink[1]) : '';
-                    //Remove path
-                    zimLink = zimLink.replace(/^[.\/]*([\S\s]+)$/, '$1');
+                    //Remove path DON'T DO THIS! SW mode fails if you do...
+                    //zimLink = zimLink.replace(/^[.\/]*([\S\s]+)$/, '$1');
                     /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
                     var filteredLink = transformStyles.filterCSS(zimLink, zimType, cssCache, cssSource, i);
                     if (filteredLink.rtnFunction == "injectCSS") {
@@ -2973,8 +2973,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         returnDivs[i].removeEventListener('click', linkListener);
                         returnDivs[i].addEventListener('click', linkListener);
                     }
-                    checkToolbar();
-
+                    
                     listenForSearchKeys();
                     
                     var currentProtocol = location.protocol;
