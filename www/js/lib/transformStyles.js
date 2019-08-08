@@ -42,9 +42,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 zl = "#"; //Void these mobile styles
             }
             // Rename this required mobile style so that we don't trigger reading ZIM as mobile in print intercept
-            zl = /css_modules\/mobile_main_page\.css/.test(zl) && cs == 'desktop' ? prefix + "-/s/css_modules/newstyle_main_page.css" : zl;
-            //injectCSS();
-            return {zl : zl, rtnFunction : rtnFunction};
+            zl = /css_modules\/mobile_main_page\.css/.test(zl) && cs == 'desktop' ? "-/s/css_modules/newstyle_main_page.css" : zl;
         } else {
             //If this is a standard Wikipedia css use stylesheet cached in the filesystem...
             //DEV: Although "." matches any character in regex, there is enough specificity in the patterns below
@@ -84,14 +82,12 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 )) {
                 zl = zl.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename - but next line renders this redundant in current implementation)
                 if (/(-\/s\/style\.css)|minerva|inserted_style_mobile/i.test(zl)) { //If it matches one of the required styles...
-                    zl = (cs == "mobile") ? "-/s/style-mobile.css" : "-/s/style.css";
+                    zl = cs == "mobile" ? "-/s/style-mobile.css" : "-/s/style.css";
                 }
                 // Rename this required mobile style so that we don't trigger reading ZIM as mobile in print intercept
-                zl = /css_modules\/mobile_main_page\.css/.test(zl) ? prefix + "-/s/css_modules/newstyle_main_page.css" : zl;
+                zl = /css_modules\/mobile_main_page\.css/.test(zl) ? "-/s/css_modules/newstyle_main_page.css" : zl;
                 // Replace bootstrap with own: DEV: when upgrading to Bootstrap 4, stop doing this!
                 zl = zl.replace(/.+(bootstrap[^\/]*?\.css)/i, "css/$1");
-                //Make link href relative to root
-                //zl = zl.replace(/[\s\S]+?\/-\//i, "-/");
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem");
                 uiUtil.poll("Matched #" + i + " [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] from filesystem");
                 //injectCSS();
@@ -101,8 +97,10 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                     (cc ? "\n(Consider adding file #" + i + " to the local filesystem)" : ""));
                 rtnFunction = "resolveCSS";
             }
-            return { zl: zl, rtnFunction: rtnFunction };
         }
+        //Make link absolute
+        zl = zl.replace(/^[/.]*/, prefix);
+        return { zl: zl, rtnFunction: rtnFunction };
     }
 
     function toMobileCSS(html, zim, cc, cs, css) {
