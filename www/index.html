@@ -48,6 +48,11 @@
                 }
             }, false);
         }
+        if (typeof window.nw !== 'undefined') {
+            window.requireNode = window.require;
+            window.require = undefined;
+            window.fs = requireNode('fs');
+        }
     </script>
 </head>
 <body role="application" class="dark">

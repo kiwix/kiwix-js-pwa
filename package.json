@@ -2,34 +2,11 @@
   "name": "kiwix_js_windows",
   "productName": "Kiwix JS for Windows Electron Edition",
   "version": "1.0.0",
-  "description": "Kiwix JS Windows Electron",
-  "main": "main.js",
-  "build": {
-    "appId": "kiwix.js.windows",
-    "productName": "Kiwix JS Windows Electron Edition",
-    "directories": {
-      "output": "bld/Electron"
-    },
-    "win": {
-      "target": [
-        {
-          "target": "portable",
-          "arch": "ia32"
-        }
-      ]
-    },
-    "asar": true,
-    "files": [
-      "!**/archives/*",
-      "!**/AppPackages/*",
-      "!**/BundleArtifacts/*",
-      "!**/images/*",
-      "!**/bin/*",
-      "!**/bld/*",
-      "!**/{ KiwixWebApp.*, [pP]ackage.[aSl] }"
-    ]
-  },
+  "description": "Kiwix JS Windows for NWJS",
+  "main": "www/index.html",
+  "domain": "kiwix.js.windows",
   "scripts": {
+    "start-nwjs": "C:\\UTILS\\nwjs-sdk-v0.14.7-win-ia32\\nw.exe .",
     "start": "electron .",
     "dist": "electron-builder",
     "package-mac": "electron-packager . kiwix-js-windows --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
@@ -46,10 +23,5 @@
     "reader"
   ],
   "author": "GitHub",
-  "license": "CC0-1.0",
-  "devDependencies": {
-    "electron": "^5.0.8",
-    "electron-builder": "^21.2.0",
-    "electron-packager": "^14.0.3"
-  }
+  "license": "CC0-1.0"  
 }
