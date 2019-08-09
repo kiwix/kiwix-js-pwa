@@ -578,7 +578,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         // Top menu :
         document.getElementById('btnHome').addEventListener('click', function () {
             setTab('btnHome');
-            //$('#articleContent').hide();
             $('#articleContent').contents().empty();
             $('#searchingArticles').hide();
             $('#welcomeText').show();
@@ -649,7 +648,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             $('#about').hide();
             $('#configuration').hide();
             $('#formArticleSearch').show();
-            if (!activeBtn || activeBtn == 'btnHome') $('#articleContent').show();
+            if (!activeBtn || activeBtn == 'btnHome') {
+                document.getElementById('articleContent').style.display = 'block';
+            }
             $("#articleList").empty();
             $('#articleListHeaderMessage').empty();
             $('#articleListWithHeader').hide();
@@ -2834,6 +2835,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 $('#downloadAlert').hide();
         
                 var iframeArticleContent = document.getElementById('articleContent');
+                
+                // Hide the iframe while loading
+                iframeArticleContent.style.display = 'none';
 
                 if (params.contentInjectionMode === 'serviceworker') {
                     params.transformedHTML = htmlArticle;
@@ -3078,9 +3082,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
                 articleContent.write(htmlArticle);
                 articleContent.close();
-
-                // Hide the iframe while loading
-                iframeArticleContent.style.display = 'none';
 
             } // End of injectHtml
 
