@@ -50,27 +50,28 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
         // Define globalDropZone (universal drop area) and configDropZone (highlighting area on Config page)
         var globalDropZone = document.getElementById('search-article');
-        var scrollBoxDropZone = document.getElementById('scrollbox');
+        var scrollbox = document.getElementById('scrollbox');
         var configDropZone = document.getElementById('configuration');
 
         /**
          * Resize the IFrame height, so that it fills the whole available height in the window
          */
         function resizeIFrame() {
-            var height = $(window).outerHeight()
-                //- $("#top").outerHeight(true)
-                // TODO : this 5 should be dynamically computed, and not hard-coded
-                //- 5;
-                // +
-                // 10; //Try adding extra space to get pesky x-scrollbar out of way
-            $(".articleIFrame").css("height", height + "px");
-            scrollBoxDropZone.style.height = 0;
-            if (params.hideToolbar && document.getElementById('articleContent').style.display == "none") {
-                scrollBoxDropZone.style.height = height + "px";
-            } else if (!params.hideToolbar) {
-                scrollBoxDropZone.style.height = ~~document.getElementById('top').getBoundingClientRect().height + "px"; //Cannot be larger or else on Windows Mobile (at least) and probably other mobile, the top bar gets covered by iframe
+            $(".articleIFrame").css("height", window.innerHeight + "px");
+            //Re-enable top-level scrolling
+            document.getElementById('top').style.position = "relative";
+            scrollbox.style.position = "fixed";
+            scrollbox.style.height = window.innerHeight + "px";
+            document.getElementById('articleContent').style.position = "fixed";
+            
+            if (document.getElementById('articleContent').style.display !== "none") {
+                scrollbox.style.position = "relative";
+                scrollbox.style.height = 0;
+                if (params.hideToolbar) {
+                    scrollbox.style.height = ~~document.getElementById('top').getBoundingClientRect().height + "px"; //Cannot be larger or else on Windows Mobile (at least) and probably other mobile, the top bar gets covered by iframe
+                }
             }
-            checkToolbar();
+            //checkToolbar();
             var ToCList = document.getElementById('ToCList');
             if (typeof ToCList !== "undefined") {
                 ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
@@ -608,10 +609,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             //Re-enable bottom toolbar display
             document.getElementById('footer').style.display = "block";
             //Re-enable top-level scrolling
-            document.getElementById('top').style.position = "relative";
-            document.getElementById('scrollbox').style.position = "fixed";
-            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
-            document.getElementById('articleContent').style.position = "fixed";
+            // document.getElementById('top').style.position = "relative";
+            // document.getElementById('scrollbox').style.position = "fixed";
+            // document.getElementById('scrollbox').style.height = window.innerHeight + "px";
+            // document.getElementById('articleContent').style.position = "fixed";
             //Use the "light" navbar if the content is "light" (otherwise it looks shite....)
             var determinedTheme = cssUIThemeGetOrSet(params.cssUITheme);
             var determinedWikiTheme = params.cssTheme == 'auto' ? determinedTheme : params.cssTheme == 'inverted' ? 'dark' : params.cssTheme;
@@ -1669,8 +1670,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         function displayFileSelect() {
             document.getElementById('openLocalFiles').style.display = 'block';
             // Set the main drop zone
-            scrollBoxDropZone.addEventListener('dragover', handleGlobalDragover);
-            scrollBoxDropZone.addEventListener('dragleave', function(e) {
+            scrollbox.addEventListener('dragover', handleGlobalDragover);
+            scrollbox.addEventListener('dragleave', function(e) {
                 configDropZone.style.border = '';
             });
             // Also set a global drop zone (allows us to ensure Config is always displayed for the file drop)
