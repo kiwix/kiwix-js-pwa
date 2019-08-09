@@ -61,10 +61,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 //- $("#top").outerHeight(true)
                 // TODO : this 5 should be dynamically computed, and not hard-coded
                 //- 5;
-                +
-                10; //Try adding extra space to get pesky x-scrollbar out of way
+                // +
+                // 10; //Try adding extra space to get pesky x-scrollbar out of way
             $(".articleIFrame").css("height", height + "px");
-            if (params.hideToolbar && document.getElementById('articleContent').style.display == "none") document.getElementById('scrollbox').style.height = height + "px";
+            scrollBoxDropZone.style.height = 0;
+            if (params.hideToolbar && document.getElementById('articleContent').style.display == "none") {
+                scrollBoxDropZone.style.height = height + "px";
+            } else if (!params.hideToolbar) {
+                scrollBoxDropZone.style.height = ~~document.getElementById('top').getBoundingClientRect().height + "px"; //Cannot be larger or else on Windows Mobile (at least) and probably other mobile, the top bar gets covered by iframe
+            }
+            checkToolbar();
             var ToCList = document.getElementById('ToCList');
             if (typeof ToCList !== "undefined") {
                 ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
@@ -649,6 +655,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             $("#prefix").val("");
             $("#searchingArticles").hide();
             $("#welcomeText").hide();
+            resizeIFrame();
         }
 
         function setActiveBtn(activeBtn) {
@@ -1076,19 +1083,19 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 thisdoc.style.position = "fixed";
                 thisdoc.style.zIndex = "1";
                 scrollbox.style.position = "relative";
-                scrollbox.style.height = ~~document.getElementById('top').getBoundingClientRect().height + "px"; //Cannot be larger or else on Windows Mobile (at least) and probably other mobile, the top bar gets covered by iframe
-                resizeIFrame();
+                //scrollbox.style.height = ~~document.getElementById('top').getBoundingClientRect().height + "px"; //Cannot be larger or else on Windows Mobile (at least) and probably other mobile, the top bar gets covered by iframe
+                // resizeIFrame();
                 return;
             }
             thisdoc.style.position = "relative";
             thisdoc.style.zIndex = "0";
             scrollbox.style.position = "fixed";
-            resizeIFrame();
+            // resizeIFrame();
             if (typeof tryHideToolber !== "undefined") window.frames[0].removeEventListener('scroll', tryHideToolbar);
             var tryHideToolbar = function () {
                 hideToolbar();
             };
-            window.frames[0].addEventListener('scroll', tryHideToolbar, true);
+            if (params.hideToolbar) window.frames[0].addEventListener('scroll', tryHideToolbar, true);
 
             function hideToolbar(lastypos) {
                 if (!params.hideToolbar) return;
@@ -2327,7 +2334,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         listenForSearchKeys();
                         // The content is ready : we can hide the spinner
                         setTab();
-                        resizeIFrame();
                     }
                     
                     if (/manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker();
@@ -3057,7 +3063,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
                     // Make sure the article area is displayed
                     setTab();
-
                 };
 
                 // Load the blank article to clear the iframe (NB iframe onload event runs *after* this)
