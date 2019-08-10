@@ -1,7 +1,7 @@
 {
   "name": "kiwix_js_windows",
   "productName": "Kiwix JS for Windows Electron Edition",
-  "version": "1.0.0",
+  "version": "0.9.93E",
   "description": "Kiwix JS Windows Electron",
   "main": "main.js",
   "build": {
@@ -20,13 +20,15 @@
     },
     "asar": true,
     "files": [
-      "!**/archives/*",
-      "!**/AppPackages/*",
-      "!**/BundleArtifacts/*",
-      "!**/images/*",
-      "!**/bin/*",
-      "!**/bld/*",
-      "!**/{ KiwixWebApp.*, [pP]ackage.[aSl] }"
+      "service-worker.js",
+      "index.html",
+      "CHANGELOG.md",
+      "LICENCE",
+      "www/**",
+      "archives/README.md",
+      "archives/wikip*.*",
+      "preload.js",
+      "main.js"
     ]
   },
   "scripts": {
@@ -45,11 +47,11 @@
     "ZIM",
     "reader"
   ],
-  "author": "GitHub",
+  "author": "Kiwix",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^5.0.8",
+    "electron": "^5.0.9",
     "electron-builder": "^21.2.0",
-    "electron-packager": "^14.0.3"
+    "electron-packager": "^14.0.4"
   }
 }
