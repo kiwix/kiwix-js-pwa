@@ -456,10 +456,15 @@
                     <div id="returntoArticle" class="returntoArticle" style="text-align:center;padding-top:50px;"></div>
                     <div class="row" style="padding-bottom:1em;">
                         <h2 style="margin-top:0;">Configuration</h2>
+                        <p>
+                            Packaged ZIM archive: <b><span class="fileVersion"></span></b>
+                            <button style="display:none;" id="reloadPackagedArchive" type="button" class="btn btn-primary btn-xs">Reload</button>
+                        </p>
                         <p id="currentArchive" style="display: none;"></p>
-                        <p id="downloadLinksText">This application needs a ZIM archive to work.<br />
-                        <a id="otherLangs" href="#btnRescanDeviceStorage"><i>Download one from the <b>Archive Library</b>.</i></a></p><p></p>
-                        <p id="moreInfo">For more information see <a href="#" onclick="document.getElementById('btnAbout').click();">About tab <span class="glyphicon glyphicon-info-sign"></span></a> (top right)</p>
+                        <p id="downloadLinksText">
+                            <a id="otherLangs" href="#btnRescanDeviceStorage"><i>Download more archives from the <b>Archive Library</b>.</i></a>
+                        </p><p></p>
+                        <p id="moreInfo">For more information see <a href="#" onclick="document.getElementById('btnAbout').click();">About tab <span class="glyphicon glyphicon-info-sign"></span></a> (top right)<br><br></p>
                     </div>
                     <div id="hideFileSelectors">
                         <div id="scanningForArchives" style="display: none;">
