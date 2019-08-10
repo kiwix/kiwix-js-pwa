@@ -640,7 +640,7 @@
                                         <label class="checkbox">
                                             <input type="checkbox" name="displayFileSelectors" id="displayFileSelectorsCheck">
                                             <span class="checkmark"></span>
-                                            <b>Display selectors</b> for files and folders : <i>This is for downloading <b>Wikivoyage</b> in other languages</i>. If you wish to open different ZIM files (e.g. Wikipedia), you should instead download Kiwix JS from the Store
+                                            <b>Display selectors</b> for files and folders : <i>This is for downloading other ZIM archives</i>.
                                         </label>
                                     </div>
                                 </div>
@@ -702,7 +702,8 @@
             </div>
             <!-- Bootstrap alert box -->
             <div id="alertBoxHeader" style="text-align: center"></div>
-            <iframe id="articleContent" class="articleIFrame"></iframe>
+            <!-- Attribute nwdisable prevents scripts in iframe accessing the nwjs node APIs -->
+            <iframe id="articleContent" class="articleIFrame" nwdisable></iframe>
         </article>
         <footer id="footer">
             <!-- Bootstrap alert box -->
