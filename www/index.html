@@ -49,6 +49,12 @@
                 }
             }, false);
         }
+        if (typeof window.nw !== 'undefined') {
+            window.requireNode = window.require;
+            window.require = undefined;
+            window.fs = requireNode('fs');
+            window.Buffer = requireNode('Buffer');
+        }
     </script>
 </head>
 <body role="application" class="dark">
