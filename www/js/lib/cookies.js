@@ -21,29 +21,31 @@ define([], function() {
 |*|
 \*/
 
-// Test for the environment
-var environment = typeof window.fs === 'undefined' ? 'browser' : 'electron';
-// Test for localStorage support
-if (environment === 'electron') {
-  var result = false;
-  try {
-    result = 'localStorage' in window && window['localStorage'] !== null;
-  } catch(e) {
-    console.log('LocalStorage is not supported!');
-  }
-  if (!result) environment = 'browser';
+// Test for cookie support
+var storeType = 'cookie';
+document.cookie = "kiwixCookie=working";
+var kiwixCookie = /kiwixCookie=working;/i.test(document.cookie);
+if (!kiwixCookie) {
+    // Cookies appear to be blocked, so test for localStorage support
+    var result = false;
+    try {
+        result = 'localStorage' in window && window['localStorage'] !== null;
+    } catch (e) {
+        console.log('LocalStorage is not supported!');
+    }
+    if (result) storeType = 'local_storage';
 }
 
 var docCookies = {
   getItem: function (sKey) {
-    if (environment === 'browser') {
+    if (storeType === 'cookie') {
       return unescape(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + escape(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
     } else {
       return localStorage.getItem(sKey);
     }
   },
   setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
-    if (environment === 'browser') {
+    if (storeType === 'cookie') {
       if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
       var sExpires = "";
       if (vEnd) {
@@ -66,7 +68,7 @@ var docCookies = {
     return true;
   },
   removeItem: function (sKey, sPath) {
-    if (environment === 'browser') {
+    if (storeType === 'cookie') {
       if (!sKey || !this.hasItem(sKey)) { return false; }
       document.cookie = escape(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (sPath ? "; path=" + sPath : "");
     } else {
