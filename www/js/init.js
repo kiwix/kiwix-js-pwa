@@ -38,6 +38,7 @@ params['fileVersion'] = "wikipedia_en_medicine_novid_2019-08 (6-Aug-2019)"; //Us
 params['cachedStartPage'] = "Wikipedia%3AWikiProject_Medicine%2FOpen_Textbook_of_Medicine.html" || false; //If you have cached the start page for quick start, give its URI here
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/wikipedia/"; //Include final slash
 
+params['cookieSupport'] = checkCookies();
 params['results'] = params['results'] || 50; //Number of search results to display
 params['relativeFontSize'] = ~~(getCookie('relativeFontSize') || 100); //Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
 params['relativeUIFontSize'] = ~~(getCookie('relativeUIFontSize') || 100); //Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
@@ -169,7 +170,7 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
 
 function getCookie(name) {
     var result;
-    if (typeof window.fs === 'undefined') {
+    if (params.cookieSupport == 'cookie') {
         var regexp = new RegExp('(?:^|;)\\s*' + name + '=([^;]+)(?:;|$)');
         result = document.cookie.match(regexp);
         result = result && result.length > 1 ? result[1] : null;
@@ -185,6 +186,25 @@ function getCookie(name) {
     }
     return result === null || result == "undefined" ? null : result == "true" ? true : result == "false" ? false : result;
 }
+
+function checkCookies() {
+    // Test for cookie support
+    var storeType = 'cookie';
+    document.cookie = "kiwixCookie=working";
+    var kiwixCookie = /kiwixCookie=working;/i.test(document.cookie);
+    if (!kiwixCookie) {
+        // Cookies appear to be blocked, so test for localStorage support
+        var result = false;
+        try {
+            result = 'localStorage' in window && window['localStorage'] !== null;
+        } catch (e) {
+            console.log('LocalStorage is not supported!');
+        }
+        if (result) storeType = 'local_storage';
+    }
+    return storeType;
+}
+
 
 require.config({
     //enforceDefine: true, //This is for debugging IE errors
