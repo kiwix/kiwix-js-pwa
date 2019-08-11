@@ -3,9 +3,10 @@
 * ENHANCEMENT: Provide an alert if a packaged or picked file cannot be found
 * ENHANCEMENT: App can now be compiled with Electron or NWJS to support Win XP/7/8.1 (see [releases](https://github.com/kiwix/kiwix-js-windows/releases))
 * ENHANCEMENT: CORS errors are now detected and a message provided to the user to help resolve
+* ENHANCEMENT: Fallback to localStorage if cookies are not supported (e.g. running Chromium from file:///)
 * FIX: Bug with equations containing apostrophes
 * FIX: ZIMs running in quirks mode are now patched to run in standards mode
-* FIX: Better algorithm for adding missing notes backliniks
+* FIX: Better algorithm for adding missing notes backlinks
 * FIX: All blocks are now opened for details-summary tags
 * FIX: Bugs with the timing of display blanking between page loads
 * FIX: Missing target attribute for hyperlinks to some external files
