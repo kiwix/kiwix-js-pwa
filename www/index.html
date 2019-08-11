@@ -100,14 +100,16 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in <span class="version">0.9 (beta)</span></h3>
                         <ul style="padding-left: 15px;">
-                            <li>Changed MathTex rendering engine from MathJax to KaTeX (much faster)</li>
-                            <li>Better lazy image loading, and subtle fade-in effect for lazy-loaded images</li>
-                            <li>Enable drag and drop of ZIM files into the app</li>
-                            <li>Enable opening a ZIM archive by double-clicking in File Explorer</li>
-                            <li>Support keyboard selection of article search results (PC app)</li>
-                            <li>Support area tags for clickable maps</li>
-                            <li>Support new details-summary article format in new ZIMs</li>
-                            <li>Various tweaks to cached and trasnforming styles</li>
+                            <li>Provide an alert if a packaged or picked file cannot be found</li>
+                            <li>App can now be compiled with Electron or NWJS to support Win XP/7/8.1 (see <a href="https://github.com/kiwix/kiwix-js-windows/releases" target="_blank">releases</a>)</li>
+                            <li>CORS errors are now detected and a message provided to the user to help resolve</li>
+                            <li>Fixed bug with equations containing apostrophes</li>
+                            <li>Better algorithm for adding missing notes backliniks</li>
+                            <li>All blocks are now opened for details-summary tags</li>
+                            <li>Fixed bugs with the timing of display blanking between page loads</li>
+                            <li>Fixed missing target attribute for hyperlinks to some external files</li>
+                            <li>Fixed race condition causing blank article on startup</li>
+                            <li>Fixed rare condition where a missing ZIM causes the app to crash on load</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md" target="_blank">Full changelog...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>
@@ -307,11 +309,11 @@
                         There are known bugs when reading some other content, and dynamic content is not supported in jQuery mode.
                     </p>
                     <p>
-                        Note that some of these ZIM archives are very large indeed (several gigabytes), especially if you want the archives with pictures. Archives without
-                        pictures (look out for "nopic" in the filename) are generally much smaller. <b>Important</b>: if the file is larger than 4 GB, it might not be supported by
-                        your device if your storage (e.g. microSD card) is formatted using a FAT filesystem. Although the app still supports "split" files, this format is being deprecated,
-                        and you are encouraged to format your storage using a modern file system such as exFAT (the standard for microSD / thumb drive) or NTFS (for hard drives).
-                        For further information, please see the <a href="https://www.kiwix.org/en/documentation/" targe="_blank">Kiwix documentation / FAQs</a>.
+                        If you have enough space, you can put several archives on your device storage. If you download the content
+                        directly in the app, note the location of the saved file when you get the notification that it has
+                        completed. If you downloaded via a PC, you will generally need to use a USB cable to copy the ZIM
+                        archive(s) to an accessible location on your device, such as the SD card or the main storage area if
+                        there is enough space there.
                     </p>
                     <h4>Step 2: copy the content onto your device</h4>
                     <p>
@@ -332,39 +334,68 @@
                     <div id="logUpdate" class="update"></div>
                     <div id="logFeatures"></div>
                     <h3 id="privacy">Privacy policy</h3>
-                    <h4>Short answer:</h4>
                     <p>
-                        Kiwix JS Windows works entirely offline unless you specifically request otherwise on the Configuration page. We do not collect any of your personal data
-                        and don't even know what you are doing with this application.
+                        Kiwix JS Windows works offline, and does not collect or record any of your personal data. It
+                        only remembers your browsing history for the duration of a session (for the purpose of returning to previously
+                        viewed pages). This history is lost on exiting the app and is not recorded in any way.
                     </p>
-                    <h4>Longer answer:</h4>
-                    <p>
-                        Kiwix JS Windows will only access the Kiwix download server if you specifically request it to find and display download links for ZIM archives on the Configuration page.
-                        You can disable even this Internet access with an option on the same page. If you nevertheless believe your Internet access can be watched and/or if you are
-                        extremely cautious, you should shut down your 3G and WiFi access before using the application.
-                    </p>
-                    <p>This application only reads the archive files of your device: it is not capable of reading any other files.</p>
                     <p>
                         By default, this application will remember your last-visited page between sessions using a local cookie that is accessible
                         only by this app on this device. If you are accessing sensitive information that you do not wish to be displayed next time
                         you open this app, we recommend that you <a href="#privacy" onclick="$('#btnConfigure').click();">turn this option off</a>
                         in the Configuration options.
                     </p>
+                    <p>
+                        This application only reads the archive files that you explicitly select on your device and files included in
+                        its own package: it is not capable of reading any other files. It will only access the Kiwix download server if
+                        you specifically request it to find and display download links for ZIM archives on the Configuration page.
+                        However, some ZIM archives contain active content (scripts) which may, in rare circumstances, attempt to
+                        contact external servers for incidental files such as fonts. These scripts will only run if you enable Service
+                        Worker mode in Configuration. Nevertheless, if you believe your Internet access is insecure, or is being
+                        observed or censored, we recommend that you completely shut down your Internet (Data or WiFi) access before
+                        using the application.
+                    </p>
+                    <p>
+                        Additionally, if you obtained this app from a Vendor Store (including extensions), then the Store operator may
+                        track your usage of the app (e.g. download, install, uninstall, date and number of sessions) for the purpose of
+                        providing anonymous, aggregate usage statistics to developers. If this concerns you, you should check the
+                        relevant Store Privacy Policy for further information. <b>Builds of this app are available that do not use a
+                        Store. Please see <a href="https://github.com/kiwix/kiwix-js-windows/releases" target="_blank">Releases</a></b>.
+                    </p>
                     <h3 id="feedback">Feedback / helping / contributing</h3>
-                    <p>This application is still a work in progress. There are many bugs that need fixing and improvements that need to be implemented. In particular:</p>
+                    <p>
+                        This application is still a work in progress. There are bugs that still need fixing and improvements that
+                        need to be implemented. In particular:
+                    </p>
                     <ul>
-                        <li><a href="https://github.com/kiwix/kiwix-js/issues/13" target="_blank">Issue #13</a>: All the user interface is in English : we plan to translate it at least into French and Spanish. If you feel able to translate it in your language, please contact us</li>
-                        <li><a href="https://github.com/kiwix/kiwix-js/issues/172" target="_blank">Issue #172</a> and <a href="https://github.com/kiwix/kiwix-js/issues/152" target="_blank">#152</a>: Handle video and javascript content</li>
-                        <li><a href="https://github.com/kiwix/kiwix-js/issues/117" target="_blank">Issue #117</a> : Better handle upper/lowercase and accents/diacritics in title search</li>
+                        <li>
+                            <a href="https://github.com/kiwix/kiwix-js/issues/13" target="_blank">Issue #13</a>: All the user
+                            interface is in English : we plan to translate it at least into French and Spanish. If you feel able to
+                            translate it in your language, please contact us
+                        </li>
+                        <li>
+                            <a href="https://github.com/kiwix/kiwix-js/issues/172" target="_blank">Issue #172</a> and
+                            <a href="https://github.com/kiwix/kiwix-js/issues/152" target="_blank">#152</a>: Handle video and
+                            javascript content
+                        </li>
+                        <li>
+                            <a href="https://github.com/kiwix/kiwix-js/issues/117" target="_blank">Issue #117</a> : Better handle
+                            upper/lowercase and accents/diacritics in title search
+                        </li>
                         <li>Performance improvements etc.</li>
                     </ul>
                     <p>
-                        Suggestions and patches/pull requests are welcome: the source code is on <a href="https://github.com/kiwix/kiwix-js-windows" target="_blank">github</a>.
-                        The <a href="https://github.com/kiwix/kiwix-js-windows/issues" target="_blank">Kiwix JS Windows issue tracker</a> is on GitHub too, though also check the <a href="https://github.com/kiwix/kiwix-js/issues" target="_blank">tracker for Kiwix JS</a> as a lot
-                        of the development is done for both apps.
+                        Suggestions and patches/pull requests are welcome: the source code is on
+                        <a href="https://github.com/kiwix/kiwix-js-windows" target="_blank">github</a>.
+                        The <a href="https://github.com/kiwix/kiwix-js-windows/issues" target="_blank">
+                            Kiwix JS Windows issue tracker
+                        </a> is on GitHub too, though also check the <a href="https://github.com/kiwix/kiwix-js/issues"
+                                                                        target="_blank">tracker for Kiwix JS</a> as a lot of the development is done for both apps.
                     </p>
                     <p>
-                        Alternatively, you can send your feedback <a href="mailto:egk10@cam.ac.uk?subject=%5BKiwix%5D%20Feedback%20about%20Kiwix%20JS">by email</a>.
+                        Alternatively, you can send your feedback <a href="mailto:egk10@cam.ac.uk?subject=%5BKiwix%5D%20Feedback%20about%20WikiMed">
+                            by email
+                        </a>.
                     </p>
                     <p>
                         In all cases, please give as much detail as you can: which device you are using, which version of Kiwix, which archive, which articles etc.
