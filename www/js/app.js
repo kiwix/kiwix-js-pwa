@@ -772,6 +772,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             if (!~this.selectedIndex) return;
             selectFired = true;
             $('#openLocalFiles').hide();
+            document.getElementById('moreInfo').style.display = 'none';
             // Void any previous picked file to prevent it launching
             if (params.pickedFile && params.pickedFile.name !== this.options[this.selectedIndex].value) {
                 params.pickedFile = '';
@@ -1658,6 +1659,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         params.rescan = false;
                     } else {
                         $('#openLocalFiles').hide();
+                        document.getElementById('moreInfo').style.display = 'none';
                         document.getElementById('btnHome').click();
                     }
                 });
@@ -1710,6 +1712,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             configDropZone.style.border = '';
             var files = packet.dataTransfer.files;
             document.getElementById('openLocalFiles').style.display = 'none';
+            document.getElementById('moreInfo').style.display = 'none';
+
             setLocalArchiveFromFileList(files);
             // This clears the display of any previously picked archive in the file selector
             document.getElementById('archiveFiles').value = null;
@@ -1836,7 +1840,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 // The archive is set : go back to home page to start searching
                 params.storedFile = archive._file._files[0].name;
                 cookies.setItem("lastSelectedArchive", params.storedFile, Infinity);
-                cookies.setItem("lastSelectedArchivePath", archive._file._files[0].path, Infinity);
+                cookies.setItem("lastSelectedArchivePath", archive._file._files[0].path ? archive._file._files[0].path : '', Infinity);
                 var reloadLink = document.getElementById("reloadPackagedArchive");
                 if (reloadLink) {
                     if (params.packagedFile != params.storedFile) {
@@ -1858,6 +1862,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     params.rescan = false;
                 } else {
                     $('#openLocalFiles').hide();
+                    document.getElementById('moreInfo').style.display = 'none';
                     if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile)) {
                         var lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
                         goToArticle(lastPage);
