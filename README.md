@@ -18,28 +18,31 @@ The easiest way to install WikiMed is from the Microsoft Store:
 
 https://www.microsoft.com/en-gb/store/p/wikimed/9phjsnp1cz8j
 
-However, if you prefer not to use the Store, or want to test a specific release, available packages are located under Releases: https://github.com/kiwix/kiwix-js-windows/releases. Installation instructions for the standalone app (Kiwix JS) are provided on the Master branch: https://github.com/kiwix/kiwix-js-windows/tree/master. 
+However, if you prefer not to use the Store, or want to test a specific release, available packages are located under 
+Releases: https://github.com/kiwix/kiwix-js-windows/releases. Installation instructions for the standalone app (Kiwix JS) 
+are provided on the Master branch: https://github.com/kiwix/kiwix-js-windows/tree/master. 
 
 # Privacy Policy
-Short answer:
 
-	WikiMed Offline Medical Wikipedia UWP works entirely offline unless you specifically request otherwise on the 
-	Configuration page. We do not collect any of your personal data and don't even know what you are doing with this 
-	application.
+WikiMed Offline Medical Wikipedia works offline, and does not collect or record any of your personal data. It
+only remembers your browsing history for the duration of a session (for the purpose of returning to previously
+viewed pages). This history is lost on exiting the app and is not recorded in any way.                     
 
-Longer answer:
+By default, this application will remember your last-visited page between sessions using a local cookie
+that is accessible only by this app on this device. If you are accessing sensitive information that you do
+not wish to be displayed next time you open this app, we recommend that you [turn this option off](file:///C:/Users/geoff/Source/Repos/kiwix-js-windows-wikimed/www/index.html#privacy) in the Configuration options.            
 
-	WikiMed Offline Medical Wikipedia UWP will only access the Kiwix download server if you specifically request it to 
-	find and display download links for ZIM archives on the Configuration page.
-    
-	You can disable even this Internet access with an option on the same page. If you nevertheless believe your
-	Internet access can be watched and/or if you are extremely cautious, you should shut down your 3G and WiFi
-	access before using the application.
-    
-	This application only reads the archive files contained in the app or those that you download and select: it is not
-	capable of reading any other files.
+This application only reads the archive files that you explicitly select on your device and files included in
+its own package: it is not capable of reading any other files. It will only access the Kiwix download server if
+you specifically request it to find and display download links for ZIM archives on the Configuration page.
+However, some ZIM archives contain active content (scripts) which may, in rare circumstances, attempt to
+contact external servers for incidental files such as fonts. These scripts will only run if you enable Service
+Worker mode in Configuration. Nevertheless, if you believe your Internet access is insecure, or is being
+observed or censored, we recommend that you completely shut down your Internet (Data or WiFi) access before
+using the application.                     
 
-	By default, this application will remember your last-visited page between sessions using a local cookie that
-	is accessible only by this app on this device. If you are accessing sensitive information that you do not wish
-	to be displayed next time you open this app, we recommend that you turn this option off in the Configuration page.
-                    
+Additionally, if you obtained this app from a Vendor Store (including extensions), then the Store operator may
+track your usage of the app (e.g. download, install, uninstall, date and number of sessions) for the purpose of
+providing anonymous, aggregate usage statistics to developers. If this concerns you, you should check the
+relevant Store Privacy Policy for further information. **Builds of this app are available that do not use a
+Store. Please see [Releases](https://github.com/kiwix/kiwix-js-windows/releases)**. 
