@@ -22,8 +22,9 @@ The UWP app is currently installable from the Microsoft Store at:
 
 [https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j](https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j)
 
-However, if you would like to test a newer or different build, please see the instructions provided
-under the [AppPackages directory](https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages).
+However, if you prefer not to use the Store, or want to test a specific release, available packages are located under 
+Releases: https://github.com/kiwix/kiwix-js-windows/releases. Installation instructions for the standalone app (Kiwix JS) 
+are provided on the Master branch: https://github.com/kiwix/kiwix-js-windows/tree/master. 
 
 You will need a ZIM file to work with this app. For testing, it comes packaged with the Ray Charles ZIM.
 You can download other ZIM archives from the setup page in the app (the download completes in the browser).
@@ -45,23 +46,26 @@ the UWP platform, which is testament to how well written their app is. This port
 for Windows 10 (Mobile) is by Geoffrey Kantaris. I can be contacted by email: egk10 at cam ac uk.
 
 # Privacy Policy
-Short answer:
 
-	Kiwix JS Windows works entirely offline unless you specifically request otherwise on the Configuration page.
-	We do not collect any of your personal data and don't even know what you are doing with this application.
+Kiwix JS Windows works offline, and does not collect or record any of your personal data. It
+only remembers your browsing history for the duration of a session (for the purpose of returning to previously
+viewed pages). This history is lost on exiting the app and is not recorded in any way.                     
 
-Longer answer:
+By default, this application will remember your last-visited page between sessions using a local cookie
+that is accessible only by this app on this device. If you are accessing sensitive information that you do
+not wish to be displayed next time you open this app, we recommend that you [turn this option off](file:///C:/Users/geoff/Source/Repos/kiwix-js-windows-wikimed/www/index.html#privacy) in the Configuration options.            
 
-	Kiwix JS Windows will only access the Kiwix download server if you specifically request it to find and display
-	download links for ZIM archives on the Configuration page.
-	
-	You can disable even this Internet access with an option on the same page. If you nevertheless believe your
-	Internet access can be watched and/or if you are extremely cautious, you should shut down your 3G and WiFi
-	access before using the application.
-	
-	This application only reads the archive files of your device: it is not capable of reading any other files.
-	
-	By default, this application will remember your last-visited page between sessions using a local cookie that
-	is accessible only by this app on this device. If you are accessing sensitive information that you do not wish
-	to be displayed next time you open this app, we recommend that you turn this option off in the Configuration page.
+This application only reads the archive files that you explicitly select on your device and files included in
+its own package: it is not capable of reading any other files. It will only access the Kiwix download server if
+you specifically request it to find and display download links for ZIM archives on the Configuration page.
+However, some ZIM archives contain active content (scripts) which may, in rare circumstances, attempt to
+contact external servers for incidental files such as fonts. These scripts will only run if you enable Service
+Worker mode in Configuration. Nevertheless, if you believe your Internet access is insecure, or is being
+observed or censored, we recommend that you completely shut down your Internet (Data or WiFi) access before
+using the application.                     
 
+Additionally, if you obtained this app from a Vendor Store (including extensions), then the Store operator may
+track your usage of the app (e.g. download, install, uninstall, date and number of sessions) for the purpose of
+providing anonymous, aggregate usage statistics to developers. If this concerns you, you should check the
+relevant Store Privacy Policy for further information. **Builds of this app are available that do not use a
+Store. Please see [Releases](https://github.com/kiwix/kiwix-js-windows/releases)**. 
