@@ -103,15 +103,12 @@
                             <li>Update to August 2019 release of WikiMed ZIM archive</li>
                             <li>Provide an alert if a packaged or picked file cannot be found</li>
                             <li>App can now be compiled with Electron or NWJS to support Win XP/7/8.1 (see <a href="https://github.com/kiwix/kiwix-js-windows/releases" target="_blank">releases</a>)</li>
-                            <li>CORS errors are now detected and a message provided to the user to help resolve</li>
+                            <li>More robust hiding of navbar</li>
                             <li>Settings are now remembered in Chromium-based browsers running from file:/// </li>
-                            <li>Fixed bug with equations containing apostrophes</li>
-                            <li>Better algorithm for adding missing notes backlinks</li>
                             <li>All blocks are now opened for details-summary tags</li>
                             <li>Fixed bugs with the timing of display blanking between page loads</li>
                             <li>Fixed missing target attribute for hyperlinks to some external files</li>
                             <li>Fixed race condition causing blank article on startup</li>
-                            <li>Fixed rare condition where a missing ZIM causes the app to crash on load</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-WikiMed-dev/CHANGELOG.md" target="_blank">And there's more...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>
@@ -212,8 +209,8 @@
             <div id="progressMessage" style="display: none;" class="message"></div>
         </div>
     <section id="search-article" role="region">
-        <header id="top" style="width:100%; transition: top 0.5s;">
-            <nav id="navbar" class="navbar navbar-inverse" role="navigation">
+        <header id="top" style="width:100%;">
+            <nav id="navbar" class="navbar navbar-inverse navbar-fixed-top" style="transition: top 0.3s;" role="navigation">
                 <div class="container-fluid">
                     <div class="navbar-header" id="container">
                         <form id="formArticleSearch">
@@ -250,7 +247,7 @@
         <article class="view-content" id="article">
             <div id="scrollbox" class="container" style="position:fixed;overflow:auto;width:100%;">
                 <div id="about" style="display: none;" class="category-padding">
-                    <div class="returntoArticle" style="text-align:center;padding-top:20px;"></div>
+                    <div class="returntoArticle" style="text-align:center;padding-top:50px;"></div>
                     <h2>
                         <img id="kiwixIconAbout" src="img/icons/wikimed-90.png" alt="WikiMed icon" />
                         WikiMed by Kiwix
@@ -456,7 +453,7 @@
                     <p>&nbsp;</p>
                 </div>
                 <div id="configuration" style="display: none;" class="container category-padding">
-                    <div id="returntoArticle" class="returntoArticle" style="text-align:center;padding-top:20px;"></div>
+                    <div id="returntoArticle" class="returntoArticle" style="text-align:center;padding-top:50px;"></div>
                     <div class="row" style="padding-bottom:1em;">
                         <h2 style="margin-top:0;">Configuration</h2>
                         <p>
@@ -736,7 +733,7 @@
             <!-- Bootstrap alert box -->
             <div id="alertBoxHeader" style="text-align: center"></div>
             <!-- Attribute nwdisable prevents scripts in iframe accessing the nwjs node APIs -->
-            <iframe id="articleContent" class="articleIFrame" style="transition: top 0.5s;" nwdisable></iframe>
+            <iframe id="articleContent" class="articleIFrame" style="transition: top 0.3s;" nwdisable></iframe>
         </article>
         <footer id="footer">
             <!-- Bootstrap alert box -->

@@ -570,11 +570,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         });
         document.getElementById('btnTop').addEventListener('click', function () {
             //Ensures toolbar is shown after hidden
-            var navbar = document.getElementById('top');
+            var navbar = document.getElementById('navbar');
             if (params.hideToolbar && navbar.style.top == "-50px") {
                 var iframe = document.getElementById('articleContent');
                 navbar.style.top = 0;
-                iframe.style.top = navbar.offsetHeight + 'px';
+                iframe.style.top = navbar.getBoundingClientRect().height + 'px';
                 return;
             }
             document.getElementById('articleContent').contentWindow.scrollTo({ top: 0, behavior: 'smooth' });
@@ -858,11 +858,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         $('input:checkbox[name=hideToolbar]').on('change', function (e) {
             params.hideToolbar = this.checked ? true : false;
             cookies.setItem('hideToolbar', params.hideToolbar, Infinity);
+            if (!params.hideToolbar) uiUtil.systemAlert('Do not hide toolbar:\n\nPlease note that on small screens, Bootstrap may ignore this setting...');
             checkToolbar();
         });
 
         // This is the scrollFunction to be attached in checkToolbar()
-        var navbar = document.getElementById('top');
+        var navbar = document.getElementById('navbar');
         var iframe = document.getElementById('articleContent');
         var scrollFunction = function () {
             if (iframe.contentDocument.body.scrollTop > 20) {
@@ -871,7 +872,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
              } else {
                  navbar.style.top = 0;
                  setTimeout(function () {
-                     iframe.style.top = navbar.offsetHeight + 'px';
+                     iframe.style.top = navbar.getBoundingClientRect().height + 'px';
                  }, 50);
              }
          };
@@ -884,7 +885,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             } else {
                 // Ensure toolbar is restored
                 navbar.style.top = 0;
-                iframe.style.top = navbar.offsetHeight + 'px';
+                iframe.style.top = navbar.getBoundingClientRect().height + 'px';
             }
         }
 
