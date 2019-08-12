@@ -2186,6 +2186,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 return false;
             });
             $('#searchingArticles').hide();
+            document.getElementById('articleListWithHeader').style.top = document.getElementById('navbar').getBoundingClientRect().height + 'px';
             $('#articleListWithHeader').show();
         }
 
