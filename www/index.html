@@ -212,7 +212,7 @@
             <div id="progressMessage" style="display: none;" class="message"></div>
         </div>
     <section id="search-article" role="region">
-        <header id="top" style="width:100%;">
+        <header id="top" style="width:100%; transition: top 0.5s;">
             <nav id="navbar" class="navbar navbar-inverse" role="navigation">
                 <div class="container-fluid">
                     <div class="navbar-header" id="container">
@@ -736,7 +736,7 @@
             <!-- Bootstrap alert box -->
             <div id="alertBoxHeader" style="text-align: center"></div>
             <!-- Attribute nwdisable prevents scripts in iframe accessing the nwjs node APIs -->
-            <iframe id="articleContent" class="articleIFrame" nwdisable></iframe>
+            <iframe id="articleContent" class="articleIFrame" style="transition: top 0.5s;" nwdisable></iframe>
         </article>
         <footer id="footer">
             <!-- Bootstrap alert box -->

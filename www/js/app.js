@@ -67,11 +67,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             if (document.getElementById('articleContent').style.display !== "none") {
                 scrollbox.style.position = "relative";
                 scrollbox.style.height = 0;
-                if (params.hideToolbar) {
-                    scrollbox.style.height = ~~document.getElementById('top').getBoundingClientRect().height + "px"; //Cannot be larger or else on Windows Mobile (at least) and probably other mobile, the top bar gets covered by iframe
-                }
+                //if (params.hideToolbar) {
+                //    scrollbox.style.height = ~~document.getElementById('top').getBoundingClientRect().height + "px"; //Cannot be larger or else on Windows Mobile (at least) and probably other mobile, the top bar gets covered by iframe
+                //}
             }
-            //checkToolbar();
             var ToCList = document.getElementById('ToCList');
             if (typeof ToCList !== "undefined") {
                 ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
@@ -401,6 +400,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             var searchDiv = document.getElementById('row2');
             if (searchDiv.style.display != "none") {
                 setTab();
+                // Return params.hideToolbar to its original state
+                params.hideToolbar = cookies.getItem('hideToolbar') == 'true';
+                checkToolbar();
                 return;
             }
             var findInArticle = null;
@@ -410,6 +412,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             setTab('findText');
             findInArticle = document.getElementById('findInArticle');
             searchDiv.style.display = "block";
+            // Show the toolbar
+            params.hideToolbar = false;
+            checkToolbar();
             findInArticle.focus();
             localSearch = new util.Hilitor(innerDocument);
             //TODO: MatchType should be language specific
@@ -565,11 +570,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         });
         document.getElementById('btnTop').addEventListener('click', function () {
             //Ensures toolbar is shown after hidden
-            var thisdoc = document.getElementById('top');
-            if (params.hideToolbar && thisdoc.style.zIndex == "0") {
-                params.hideToolbar = false;
-                checkToolbar();
-                params.hideToolbar = true;
+            var navbar = document.getElementById('top');
+            if (params.hideToolbar && navbar.style.top == "-50px") {
+                var iframe = document.getElementById('articleContent');
+                navbar.style.top = 0;
+                iframe.style.top = navbar.offsetHeight + 'px';
                 return;
             }
             document.getElementById('articleContent').contentWindow.scrollTo({ top: 0, behavior: 'smooth' });
@@ -838,6 +843,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         $('input:checkbox[name=allowHTMLExtraction]').on('change', function (e) {
             params.allowHTMLExtraction = this.checked ? true : false;
             cookies.setItem('allowHTMLExtraction', params.allowHTMLExtraction, Infinity);
+            params.themeChanged = true;
         });
         $('input:text[name=alphaChar]').on('change', function (e) {
             params.alphaChar = this.value.length == 1 ? this.value : params.alphaChar;
@@ -852,8 +858,36 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         $('input:checkbox[name=hideToolbar]').on('change', function (e) {
             params.hideToolbar = this.checked ? true : false;
             cookies.setItem('hideToolbar', params.hideToolbar, Infinity);
-            //checkToolbar();
+            checkToolbar();
         });
+
+        // This is the scrollFunction to be attached in checkToolbar()
+        var navbar = document.getElementById('top');
+        var iframe = document.getElementById('articleContent');
+        var scrollFunction = function () {
+            if (iframe.contentDocument.body.scrollTop > 20) {
+                 iframe.style.top = '0';
+                 navbar.style.top = '-50px';
+             } else {
+                 navbar.style.top = 0;
+                 setTimeout(function () {
+                     iframe.style.top = navbar.offsetHeight + 'px';
+                 }, 50);
+             }
+         };
+
+         function checkToolbar() {
+            iframe.contentDocument.removeEventListener('scroll', scrollFunction);
+            if (params.hideToolbar) {
+                iframe.contentDocument.addEventListener('scroll', scrollFunction);
+                scrollFunction();
+            } else {
+                // Ensure toolbar is restored
+                navbar.style.top = 0;
+                iframe.style.top = navbar.offsetHeight + 'px';
+            }
+        }
+
         // Set up hook into Windows ViewManagement uiSettings if needed
         var uiSettings = null;
         initializeUISettings();
@@ -1077,57 +1111,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             cookies.setItem('showFileSelectors', params.showFileSelectors, Infinity);
             if (params.showFileSelectors) document.getElementById('configuration').scrollIntoView();
         });
-
-        function checkToolbar() {
-            var thisdoc = document.getElementById('top');
-            var scrollbox = document.getElementById('scrollbox');
-            if (!params.hideToolbar) {
-                thisdoc.style.display = "block";
-                thisdoc.style.position = "fixed";
-                thisdoc.style.zIndex = "1";
-                scrollbox.style.position = "relative";
-                //scrollbox.style.height = ~~document.getElementById('top').getBoundingClientRect().height + "px"; //Cannot be larger or else on Windows Mobile (at least) and probably other mobile, the top bar gets covered by iframe
-                // resizeIFrame();
-                return;
-            }
-            thisdoc.style.position = "relative";
-            thisdoc.style.zIndex = "0";
-            scrollbox.style.position = "fixed";
-            // resizeIFrame();
-            if (typeof tryHideToolber !== "undefined") window.frames[0].removeEventListener('scroll', tryHideToolbar);
-            var tryHideToolbar = function () {
-                hideToolbar();
-            };
-            if (params.hideToolbar) window.frames[0].addEventListener('scroll', tryHideToolbar, true);
-
-            function hideToolbar(lastypos) {
-                if (!params.hideToolbar) return;
-                //Don't hide toolbar if search is open
-                if (document.getElementById('row2').style.display != "none") return;
-                var ypos = window.frames[0].frameElement.contentDocument.body.scrollTop;
-                var thisdoc = document.getElementById('top');
-                //Immediately hide toolbar if not at top
-                if (params.hideToolbar && ypos) {
-                    thisdoc.style.display = "none";
-                    scrollbox.style.position = "fixed";
-                    thisdoc.style.zIndex = "0";
-                }
-                //As function runs on start of scroll, give 0.25s to find out if user has stopped scrolling
-                if (typeof lastypos !== "undefined" && lastypos == ypos) {
-                    //We've stropped scrolling, do we need to re-enable?
-                    if (!ypos) {
-                        params.hideToolbar = false;
-                        checkToolbar();
-                        params.hideToolbar = true;
-                    }
-                } else {
-                    var wait = setTimeout(function () {
-                        clearTimeout(wait);
-                        hideToolbar(ypos);
-                    }, 250, ypos);
-                }
-            }
-        }
 
         $(document).ready(function (e) {
             // Set initial behaviour (see also init.js)
@@ -2270,7 +2253,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
                 //Load cached start page if it exists and we have loaded the packaged file
                 var htmlContent = 0;
-                if (params.isLandingPage && params.cachedStartPage && state.selectedArchive._file._files[0].name == params.packagedFile) {
+                var zimName = state.selectedArchive._file._files[0].name.replace(/\.[^.]+$/, '');
+                if (params.isLandingPage && params.cachedStartPage && (~params.packagedFile.indexOf(zimName) || ~params.fileVersion.indexOf(zimName))) {
                     htmlContent = -1;
                     // DEV: You should deal with the rare possibility that the cachedStartPage is not in the same namespace as the main page dirEntry...
                     // Ideally include the namespace in params.cachedStartPage and adjust/test code (not hard)
@@ -2341,6 +2325,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         listenForSearchKeys();
                         // The content is ready : we can hide the spinner
                         setTab();
+                        checkToolbar();
                     }
                     
                     if (/manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker();
@@ -2615,6 +2600,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
             //Display IPA pronunciation info erroneously hidden in some ZIMs
             htmlArticle = htmlArticle.replace(/(<span\b[^>]+?class\s*=\s*"[^"]+?mcs-ipa[^>]+?display:\s*)none/i, "$1inline");
+
+            //Remove any background:url statements in style blocks as they cause the system to attempt to load them
+            htmlArticle = htmlArticle.replace(/background:url\([^)]+\)[^;}]*/ig, '');
 
             //For all cases, neutralize the toggleOpenSection javascript that causes a crash
             //htmlArticle = htmlArticle.replace(/(onclick\s*=\s*["'])toggleOpenSection[^"']*(['"]\s*)/ig, "$1$2");
@@ -3073,6 +3061,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
                     // Make sure the article area is displayed
                     setTab();
+                    checkToolbar();
                 };
 
                 // Load the blank article to clear the iframe (NB iframe onload event runs *after* this)
