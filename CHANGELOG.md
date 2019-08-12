@@ -7,6 +7,7 @@
 * FIX: Bug with equations containing apostrophes
 * FIX: ZIMs running in quirks mode are now patched to run in standards mode
 * FIX: Better algorithm for adding missing notes backlinks
+* FIX: Better process for hiding navbar (though Bootstrap still ignores on mobile)
 * FIX: All blocks are now opened for details-summary tags
 * FIX: Bugs with the timing of display blanking between page loads
 * FIX: Missing target attribute for hyperlinks to some external files
