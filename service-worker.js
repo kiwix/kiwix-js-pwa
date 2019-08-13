@@ -83,7 +83,7 @@ function fetchEventListener(event) {
     if (fetchCaptureEnabled) {
         
         if (!/\.zim\//i.test(event.request.url)) { 
-            console.log('SW is getting file from network: ' + event.request.url);
+            console.log('SW is getting file from cache: ' + event.request.url);
             return; 
         }
         
@@ -119,7 +119,7 @@ function fetchEventListener(event) {
 
                 titleWithNameSpace = nameSpace + '/' + title;
 
-                // Let's instanciate a new messageChannel, to allow app.s to give us the content
+                // Let's instantiate a new messageChannel, to allow app.js to give us the content
                 var messageChannel = new MessageChannel();
                 messageChannel.port1.onmessage = function(event) {
                     if (event.data.action === 'giveContent') {

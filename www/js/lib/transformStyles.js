@@ -182,7 +182,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
         }
         if (cc || (zim == "mobile")) { //If user requested cached styles OR the ZIM does not contain desktop styles
             console.log(zim == "mobile" ? "Transforming display style to desktop..." : "Optimizing cached styles for desktop display...");
-            uiUtil.poll("mobile" ? "Transforming display style to desktop..." : "Optimizing cached styles for desktop display...");
+            uiUtil.poll(zim == "mobile" ? "Transforming display style to desktop..." : "Optimizing cached styles for desktop display...");
             //If it's in mobile position, move info-box above lead paragraph like on Wikipedia desktop
             if (zim == "mobile") {
                 //Attempt to match div-style infobox first
