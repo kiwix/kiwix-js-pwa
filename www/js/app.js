@@ -2389,19 +2389,22 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                             var mimetype = dirEntry.getMimetype();
                             if (/\bhtml\b/i.test(mimetype)) {
                                 // Intercept files of type html and apply transformations   
+                                var message = {
+                                    'action': 'giveContent', 'title': title, 'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode
+                                };
                                 if (params.transformedHTML && /<html[^>]*>/.test(params.transformedHTML)) {
                                     // Let's send the content to the ServiceWorker
-                                    var message = {
-                                        'action': 'giveContent', 'title': title, 'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode, 'content': params.transformedHTML
-                                    };
-                                    document.getElementById('articleContent').style.display = 'none';
-                                    messagePort.postMessage(message);
+                                    message.content = params.transformedHTML;
+                                    // document.getElementById('articleContent').style.display = 'none';
                                     params.transformedHTML = '';
                                 } else {
                                     // It's an unstransformed html file, so we need to do some content transforms
                                     if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) params.lastPageVisit = '';
                                     readArticle(dirEntry);
+                                    // Send a blank response to the initial request
+                                    message.content = new Uint8Array();
                                 }
+                                messagePort.postMessage(message);
                                 return;
                             }
                             
@@ -2453,8 +2456,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                             });
                         }
                     };
-                    state.selectedArchive.getDirEntryByTitle(title).then(readFile).fail(function () {
-                        messagePort.postMessage({ 'action': 'giveContent', 'title': title, 'content': new UInt8Array() });
+                    state.selectedArchive.getDirEntryByTitle(title).then(readFile).fail(function (err) {
+                        console.error('Failed to read ' + title, err);
+                        messagePort.postMessage({ 'action': 'giveContent', 'title': title, 'content': new Uint8Array });
                     });
                 } else {
                     console.error("Invalid message received", event.data);
@@ -2803,9 +2807,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         htmlArticle = desktopCSS.html;
                         cssArray$ = desktopCSS.css;
                     }
+                    //Remove any voided styles
+                    cssArray$ = cssArray$.replace(/<link\shref="#"[^>]+>\s*/g, '');
                     //Add dark mode CSS if required
                     var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-                    cssArray$ += (determinedTheme == "dark") ? '<link href="' + prefix + '-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' : (params.cssTheme == "invert") ? '<link href="-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
+                    cssArray$ += (determinedTheme == "dark") ? '<link href="' + prefix + '-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' :
+                        params.cssTheme == "invert" ? '<link href="' + prefix + '-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
                     //Ensure all headings are open
                     //htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
                     htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
@@ -2844,8 +2851,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     });
                     // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
                     iframeArticleContent.src = "../" + state.selectedArchive._file._files[0].name + "/" + dirEntry.namespace + "/" + encodedUrl;
-                
-                    // iframeArticleContent.src = article.html;
                     return;
                 }
 
