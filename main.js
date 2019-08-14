@@ -28,8 +28,8 @@ function createWindow() {
         titleBarStyle: 'hidden',
         width: 1281,
         height: 800,
-        minWidth: 800,
-        minHeight: 600,
+        minWidth: 640,
+        minHeight: 480,
         icon: path.join(__dirname, 'www/img/icons/kiwix-64.png'),
         webPreferences: {
             nodeIntegration: false
