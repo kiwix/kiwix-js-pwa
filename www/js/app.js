@@ -266,8 +266,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 document.getElementById('articleContent').contentDocument.head.innerHTML += 
                     '\n<script type="text/javascript">window.onload=function() {\n' +
                     '    alert("You may print, but after you press Print, the app will crash\\n" +\n' +
-                    '        "and will need to be re-started.\\n" +\n' +
-                    '        "This bug will be fixed in the next version of Electron.");\n' + 
+                    '        "and will need to be re-started. This bug will be fixed\\n" +\n' +
+                    '        "in the next version of Electron.");\n' + 
                     '    window.print();\n' + 
                     '};<\/script>'; 
                 //html = html.replace(/(<\/head>\s*)/i, '<script type="text/javascript">window.onload=window.print();<\/script>\n$1');
