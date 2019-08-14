@@ -2291,7 +2291,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         htmlContent = params.lastPageHTML || htmlContent;
                     }
                     if (/<html[^>]*>/.test(htmlContent)) {
-                        console.log("Fast article retrieval from localStorage...");
+                        console.log("Fast article retrieval from localStorage: " + lastPage);
                         //if (~lastPage.indexOf(params.cachedStartPage)) params.isLandingPage = true;
                         setTimeout(function () {
                             displayArticleInForm(dirEntry, htmlContent);
@@ -2355,6 +2355,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         }
 
         var messageChannel;
+        var maxPageWidthProcessed;
 
         /**
          * Function that handles a message of the messageChannel.
@@ -2395,8 +2396,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                 if (params.transformedHTML && /<html[^>]*>/.test(params.transformedHTML)) {
                                     // Let's send the content to the ServiceWorker
                                     message.content = params.transformedHTML;
-                                    // document.getElementById('articleContent').style.display = 'none';
                                     params.transformedHTML = '';
+                                    maxPageWidthProcessed = false;
                                 } else {
                                     // It's an unstransformed html file, so we need to do some content transforms
                                     if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) params.lastPageVisit = '';
@@ -2414,45 +2415,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                 var mimetype = fileDirEntry.getMimetype();
                                 // Let's send the content to the ServiceWorker
                                 var message = {
-                                    'action': 'giveContent', 'title': title, 'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode
+                                    'action': 'giveContent', 'title': title, 'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode, 'content': content.buffer
                                 };
-                                if (/\bhtml$/i.test(mimetype)) {
-                                    console.log('We should never get here!!');
-                                    // content = utf8.parse(content);
-                                    // // Add dark style if required
-                                    // var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-                                    // if (determinedTheme !== 'light') {
-                                    //     var prefix = document.location.href.replace(/index\.html(?:$|[#?].*$)/, '');
-                                    //     content = content.replace(/(<\/head>)/i, determinedTheme == 'dark' ? 
-                                    //         '<link href="' + prefix + '-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n$1' : 
-                                    //         '<link href="' + prefix + '-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n$1');
-                                    // }
-                                    // // Add DOCTYPE to prevent quirks mode if missing (quirks mode prevents katex from running, and is incompatible with jQuery)
-                                    // message.content = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(content) ? '<!DOCTYPE html>\n' + content : content;
-                                    // messagePort.postMessage(message);
-                                    // // Save last page visited so we can go back to it
-                                    // if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
-                                    //     params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
-                                    //         "@kiwixKey@" + state.selectedArchive._file._files[0].name;
-                                    //     if (params.rememberLastPage) {
-                                    //         cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
-                                    //         //Store current document's raw HTML in localStorage for fast restart
-                                    //         if (typeof Storage !== "undefined") {
-                                    //             try {
-                                    //                 // Ensure we don't go over quota
-                                    //                 localStorage.removeItem('lastPageHTML');
-                                    //                 localStorage.setItem('lastPageHTML', message.content);
-                                    //             } catch (err) {
-                                    //                 console.log("localStorage not supported: " + err);
-                                    //             }
-                                    //         }
-                                    //         params.lastPageHTML = message.content;
-                                    //     }
-                                    // }
-                                } else {
-                                    message.content = content.buffer;
-                                    messagePort.postMessage(message, [content.buffer]);
+                                if (/\bjavascript$/i.test(mimetype)) {
+                                    // Soome scripts need the doucment to be visible, but we must remove max page width first
+                                    // if user has requested this, or we get ugly page redraws
+                                    if (!maxPageWidthProcessed) removePageMaxWidth();
+                                    document.getElementById('articleContent').style.display = 'block';
                                 }
+                                messagePort.postMessage(message, [content.buffer]);
                             });
                         }
                     };
