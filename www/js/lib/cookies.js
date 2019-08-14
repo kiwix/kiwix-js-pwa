@@ -24,7 +24,7 @@ define([], function() {
 // Test for cookie support
 var storeType = 'cookie';
 document.cookie = "kiwixCookie=working";
-var kiwixCookie = /kiwixCookie=working;/i.test(document.cookie);
+var kiwixCookie = /kiwixCookie=working/i.test(document.cookie);
 if (!kiwixCookie) {
     // Cookies appear to be blocked, so test for localStorage support
     var result = false;
