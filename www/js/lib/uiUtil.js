@@ -299,6 +299,7 @@ define(['util'], function(util) {
             a.click();
             // Following line should run only if there was no error, leaving the alert showing in case of error
             if (autoDismiss) $('#downloadAlert').alert('close');
+            return;
         }
         catch (err) {
             // Edge will error out unless there is a download added but Chrome works better without the attribute

@@ -76,6 +76,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
                 ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
             }
+            removePageMaxWidth();
             if (window.outerWidth <= 470) {
                 document.getElementById('dropup').classList.remove('col-xs-4');
                 document.getElementById('dropup').classList.add('col-xs-3');
@@ -231,7 +232,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         }, true);
 
         //Set up listeners for print dialogues
-        //$("#printModal").off('hide.bs.modal');
+        $("#printModal").off('hide.bs.modal');
         $("#printModal").on('hide.bs.modal', function () {
             //Restore temporarily changed values
             params.cssSource = cookies.getItem('cssSource') || "auto";
@@ -256,7 +257,22 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 keyboard: true
             });
             //innerDocument.execCommand("print", false, null);
-            window.frames[0].frameElement.contentWindow.print();
+            if (typeof window.fs === 'undefined') {
+                window.frames[0].frameElement.contentWindow.print();
+            } else {
+                // We are in an Electron/NWJS app and need to use export to browser to print
+                params.preloadingAllImages = false;
+                // Add a window.print() script to the html
+                document.getElementById('articleContent').contentDocument.head.innerHTML += 
+                    '\n<script type="text/javascript">window.onload=function() {\n' +
+                    '    alert("You may print, but after you press Print, the app will crash\\n" +\n' +
+                    '        "and will need to be re-started.\\n" +\n' +
+                    '        "This bug will be fixed in the next version of Electron.");\n' + 
+                    '    window.print();\n' + 
+                    '};<\/script>'; 
+                //html = html.replace(/(<\/head>\s*)/i, '<script type="text/javascript">window.onload=window.print();<\/script>\n$1');
+                uiUtil.extractHTML();
+            }
         });
         document.getElementById('printDesktopCheck').addEventListener('click', function (e) {
             //Reload article if user wants to print a different style
@@ -1057,8 +1073,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         });
 
         function removePageMaxWidth() {
-            var doc = window.frames[0].frameElement.contentDocument;
-            var zimType = /\bhref\s*=\s*["'][^"']*?(?:minerva|mobile)/i.test(doc.head.innerHTML) ? "mobile" : "desktop";
+            var doc = document.getElementById('articleContent').contentDocument;
+            if (!doc) return;
+            var zimType = /<link\b[^>]+(?:minerva|mobile)/i.test(doc.head.innerHTML) ? "mobile" : "desktop";
+            var cssSource = params.cssSource == "auto" ? zimType : params.cssSource;
             var idArray = ["content", "bodyContent"];
             for (var i = 0; i < idArray.length; i++) {
                 var contentElement = doc.getElementById(idArray[i]);
@@ -1070,7 +1088,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     docStyle.border = "1px solid #a7d7f9";
                 }
                 if (params.removePageMaxWidth == "auto") {
-                    docStyle.maxWidth = zimType == "desktop" ? "100%" : "55.8em";
+                    docStyle.maxWidth = cssSource == "desktop" ? "100%" : window.innerWidth > 1024 ? "90%" : "55.8em";
                     docStyle.cssText = docStyle.cssText.replace(/(max-width[^;]+)/i, "$1 !important");
                     docStyle.border = "0";
                 } else {
@@ -2280,7 +2298,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 if (!htmlContent) {
                     var lastPage = '';
                     if (params.rememberLastPage && params.lastPageVisit) lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
-                    if (params.rememberLastPage && typeof Storage !== "undefined" && dirEntry.namespace + '/' + dirEntry.url == lastPage) {
+                    if (params.rememberLastPage && (typeof Storage !== "undefined") && dirEntry.namespace + '/' + dirEntry.url == lastPage) {
                         if (!params.lastPageHTML) {
                             try {
                                 params.lastPageHTML = localStorage.getItem('lastPageHTML');
@@ -2300,6 +2318,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         //if (params.contentInjectionMode === 'jquery') {
                             // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
                             state.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
+                            // This is needed so that the html is cached in displayArticleInForm
+                            params.lastPageVisit = '';
                         //}
                     }
                 }
@@ -2417,12 +2437,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                 var message = {
                                     'action': 'giveContent', 'title': title, 'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode, 'content': content.buffer
                                 };
-                                if (/\bjavascript$/i.test(mimetype)) {
-                                    // Soome scripts need the doucment to be visible, but we must remove max page width first
-                                    // if user has requested this, or we get ugly page redraws
-                                    if (!maxPageWidthProcessed) removePageMaxWidth();
-                                    document.getElementById('articleContent').style.display = 'block';
-                                }
+                                // if (/\bjavascript$/i.test(mimetype)) {
+                                //     // Soome scripts need the doucment to be visible, but we must remove max page width first
+                                //     // if user has requested this, or we get ugly page redraws
+                                //     if (!maxPageWidthProcessed) removePageMaxWidth();
+                                //     document.getElementById('articleContent').style.display = 'block';
+                                // }
                                 messagePort.postMessage(message, [content.buffer]);
                             });
                         }
@@ -2580,6 +2600,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
             //Remove any background:url statements in style blocks as they cause the system to attempt to load them
             htmlArticle = htmlArticle.replace(/background:url\([^)]+\)[^;}]*/ig, '');
+
+            //Remove the stupid details polyfill if we're in Electron/NWJS (if we've compiled for XP, it won't use SW mode anyway)
+            if (typeof window.fs !== 'undefined') htmlArticle = htmlArticle.replace(/<script\b[^<]+details_polyfill\.js[^<]+<\/script>\s*/i, '');
+            //And make sure all sections are open
+            htmlArticle = htmlArticle.replace(/(<details\b(?![^>]+\sopen)[^>]+)>/ig, '$1 open>');
 
             //For all cases, neutralize the toggleOpenSection javascript that causes a crash
             //htmlArticle = htmlArticle.replace(/(onclick\s*=\s*["'])toggleOpenSection[^"']*(['"]\s*)/ig, "$1$2");
