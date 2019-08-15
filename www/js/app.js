@@ -388,9 +388,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         btnContinue.innerHTML = "Continue";
                     };
                     if (params.contentInjectionMode == 'jquery') {
-                        images.prepareImagesJQuery(printIntercept);
+                        images.prepareImagesJQuery(true);
                     } else {
-                        images.prepareImagesServiceWorker(printIntercept);
+                        images.prepareImagesServiceWorker(true);
                     }
                 }
             } else {
@@ -3283,7 +3283,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 $('#searchingArticles').show();
                 params.preloadingAllImages = true;
                 if (params.imageDisplay) params.contentInjectionMode == 'jquery' ?
-                    images.prepareImagesJQuery(printIntercept) : images.prepareImagesServiceWorker(printIntercept);
+                    images.prepareImagesJQuery(true) : images.prepareImagesServiceWorker(true);
                 return;
             }
             // All images should now be loaded, or else user did not request loading images
