@@ -15,7 +15,9 @@
   "xp-build": {
     "nwVersion": "0.14.7",
     "output": "bld/nwjs/win-x86-xp",
-    "targets": [ "zip" ],
+    "targets": [
+      "zip"
+    ],
     "files": [
       "service-worker.js",
       "index.html",
@@ -25,12 +27,16 @@
       "archives/README.md",
       "archives/wikip*.*"
     ],
-    "win": { "icon": "www/img/icons/kiwix-64.ico" }  
+    "win": {
+      "icon": "www/img/icons/kiwix-64.ico"
+    }
   },
   "build": {
     "nwVersion": "0.40.1",
     "output": "bld/nwjs/win-any-latest",
-    "targets": [ "zip" ],
+    "targets": [
+      "zip"
+    ],
     "files": [
       "service-worker.js",
       "index.html",
@@ -40,9 +46,13 @@
       "archives/README.md",
       "archives/wikip*.*"
     ],
-    "win": { "icon": "www/img/icons/kiwix-64.ico" }
+    "win": {
+      "icon": "www/img/icons/kiwix-64.ico"
+    }
   },
-  "window": { "icon": "www/img/icons/kiwix-256.png" },
+  "window": {
+    "icon": "www/img/icons/kiwix-256.png"
+  },
   "repository": "https://github.com/kiwix/kiwix-js-windows",
   "keywords": [
     "Kiwix",
