@@ -151,7 +151,7 @@ define(['uiUtil'], function (uiUtil) {
             for (var q = imageStore.length; q--;) {
                 imageStore[q].queued = false;
             }
-            console.log('User scrolled: abandoning image queue...')
+            //console.log('User scrolled: abandoning image queue...')
             imageStore = [];
         }
         if (imageStore.length && !extractorBusy) {
@@ -162,7 +162,7 @@ define(['uiUtil'], function (uiUtil) {
         var visible = [];
         var remaining = [];
         var batchCount = 0;
-        console.log('Images requested...');
+        //console.log('Images requested...');
         for (var i = 0, l = documentImages.length; i < l; i++) {
             if (documentImages[i].queued || !documentImages[i].dataset.kiwixurl) continue;
             if (uiUtil.isElementInView(documentImages[i], null, margin)) {
@@ -278,7 +278,7 @@ define(['uiUtil'], function (uiUtil) {
             var velo = iframeWindow.pageYOffset - scrollPos;
             timeout = setTimeout(function() {
                 // We have stopped scrolling
-                console.log("Stopped scrolling; velo=" + velo);
+                //console.log("Stopped scrolling; velo=" + velo);
                 queueImages();
                 abandon = false;
                 queueImages('extract', 0, function() {

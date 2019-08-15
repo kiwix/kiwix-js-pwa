@@ -948,8 +948,8 @@ a.issues_button {
     }
 
 .mw-body h3, .mw-body h2 {
-    clear: both;
-    width: 100%;
+    /*clear: both;
+    width: 100%;*/
     margin-bottom: 0.5em;
     border-bottom: solid 1px #eaecf0;
     font-family: 'Linux Libertine', 'Georgia', 'Times', serif;
