@@ -4,7 +4,7 @@
   "version": "0.9.93E",
   "description": "Kiwix JS Windows Electron",
   "main": "main.js",
-  "build": {
+  "build-packaged": {
     "appId": "kiwix.js.windows",
     "productName": "Kiwix JS Windows Electron Edition",
     "directories": {
@@ -31,7 +31,7 @@
       "main.js"
     ]
   },
-  "build-standalone": {
+  "build": {
     "appId": "kiwix.js.windows",
     "productName": "Kiwix JS Windows Electron Edition",
     "directories": {
