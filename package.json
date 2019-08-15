@@ -5,6 +5,13 @@
   "description": "Kiwix JS Windows for NWJS",
   "main": "www/index.html",
   "domain": "kiwix.js.windows",
+  "window": {
+    "width": 1024,
+    "height": 768,
+    "min_width": 640,
+    "min_height": 480,
+    "icon": "www/img/icons/kiwix-256.png"
+  },
   "scripts": {
     "start-nwjs": "C:\\UTILS\\nwjs-sdk-v0.40.1-win-x64\\nw.exe .",
     "start-nwjs-xp": "C:\\UTILS\\nwjs-sdk-v0.14.7-win-ia32\\nw.exe .",
@@ -32,6 +39,24 @@
     }
   },
   "build": {
+    "nwVersion": "0.39.3",
+    "output": "bld/nwjs/win-x86-nwjsv0393",
+    "targets": [
+      "zip"
+    ],
+    "files": [
+      "service-worker.js",
+      "index.html",
+      "CHANGELOG.md",
+      "LICENCE",
+      "www/**",
+      "archives/README.md",
+      "archives/wikip*.*"
+    ],
+    "win": {
+      "icon": "www/img/icons/kiwix-64.ico"
+    }
+  },"build-latest": {
     "nwVersion": "0.40.1",
     "output": "bld/nwjs/win-any-latest",
     "targets": [
@@ -49,9 +74,6 @@
     "win": {
       "icon": "www/img/icons/kiwix-64.ico"
     }
-  },
-  "window": {
-    "icon": "www/img/icons/kiwix-256.png"
   },
   "repository": "https://github.com/kiwix/kiwix-js-windows",
   "keywords": [
