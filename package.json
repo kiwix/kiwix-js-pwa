@@ -31,6 +31,31 @@
       "main.js"
     ]
   },
+  "build-standalone": {
+    "appId": "kiwix.js.windows",
+    "productName": "Kiwix JS Windows Electron Edition",
+    "directories": {
+      "output": "bld/Electron"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": "ia32"
+        }
+      ]
+    },
+    "asar": true,
+    "files": [
+      "service-worker.js",
+      "index.html",
+      "CHANGELOG.md",
+      "LICENCE",
+      "www/**",
+      "preload.js",
+      "main.js"
+    ]
+  },
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder",
