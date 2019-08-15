@@ -58,10 +58,16 @@ define(['uiUtil'], function (uiUtil) {
     function extractImages(images, callback) {
         var remaining = images.length;
         if (!remaining && callback) callback();
+        var checkBatch = function () {
+            extractorBusy--;
+            remaining--;
+            if (!remaining && callback) callback();
+            if (!remaining) queueImages();
+        };
         Array.prototype.slice.call(images).forEach(function (image) {
             var imageUrl = image.getAttribute('data-kiwixurl');
             extractorBusy++;
-            if (!imageUrl) { checkbatch(); return; }
+            if (!imageUrl) { extractorBusy--; remaining--; return; }
             image.removeAttribute('data-kiwixurl');
             var title = decodeURIComponent(imageUrl);
             if (params.contentInjectionMode === 'serviceworker') {
@@ -91,12 +97,6 @@ define(['uiUtil'], function (uiUtil) {
                 checkBatch();
             });
         });
-        var checkBatch = function () {
-            extractorBusy--;
-            remaining--;
-            if (!remaining) queueImages();
-            if (!remaining && callback) callback();
-        };
     }
 
     /**
