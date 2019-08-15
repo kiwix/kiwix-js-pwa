@@ -193,11 +193,12 @@ define(['uiUtil'], function (uiUtil) {
 
     /**
      * Prepares an array or collection of image nodes that have been disabled in Service Worker for manual extraction
+     * @param {Boolean} forPrinting If true, extracts all images
      */
-    function prepareImagesServiceWorker () {
+    function prepareImagesServiceWorker (forPrinting) {
         var doc = iframe.contentDocument.documentElement;
         documentImages = doc.querySelectorAll('img');
-        if (!documentImages.length) return;
+        if (!forPrinting && !documentImages.length) return;
         var imageHtml;
         for (var i = 0, l = documentImages.length; i < l; i++) {
             // Process Wikimedia MathML
@@ -218,10 +219,14 @@ define(['uiUtil'], function (uiUtil) {
                 }
             }
         }
-        if (params.imageDisplayMode === 'manual') {
-            prepareManualExtraction();
+        if (forPrinting) {
+            extractImages(documentImages, params.preloadingAllImages ? params.preloadAllImages : params.printImagesLoaded);
         } else {
-            lazyLoad();
+            if (params.imageDisplayMode === 'manual') {
+                prepareManualExtraction();
+            } else {
+                lazyLoad();
+            }
         }
         setTimeout(loadMathJax, 1000);
     }
@@ -232,7 +237,6 @@ define(['uiUtil'], function (uiUtil) {
         if (!forPrinting && !documentImages.length) return;
         if (forPrinting) {
             extractImages(documentImages, params.preloadingAllImages ? params.preloadAllImages : params.printImagesLoaded);
-            return;
         } else if (params.imageDisplayMode === 'progressive') {
             // Firefox squashes empty images, but we don't want to alter the vertical heights constantly as we scroll
             // so substitute empty images with a plain svg
