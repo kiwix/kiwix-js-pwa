@@ -13,13 +13,13 @@
     "icon": "www/img/icons/kiwix-256.png"
   },
   "scripts": {
+    "start": "run --x86 --mirror https://dl.nwjs.io/ .",
     "start-nwjs": "C:\\UTILS\\nwjs-sdk-v0.40.1-win-x64\\nw.exe .",
     "start-nwjs-xp": "C:\\UTILS\\nwjs-sdk-v0.14.7-win-ia32\\nw.exe .",
-    "dist-win-x64": "build --tasks win-x64 --mirror https://dl.nwjs.io/ .",
     "dist-win-x86": "build --tasks win-x86 --mirror https://dl.nwjs.io/ .",
-    "start": "run --x86 --mirror https://dl.nwjs.io/ ."
+    "dist-win-x64": "build --tasks win-x64 --mirror https://dl.nwjs.io/ ."
   },
-  "xp-build": {
+  "build": {
     "nwVersion": "0.14.7",
     "output": "bld/nwjs/win-x86-xp",
     "targets": [
@@ -38,7 +38,7 @@
       "icon": "www/img/icons/kiwix-64.ico"
     }
   },
-  "build": {
+  "build-lts": {
     "nwVersion": "0.39.3",
     "output": "bld/nwjs/win-x86-nwjsv0393",
     "targets": [
@@ -58,7 +58,7 @@
     }
   },"build-latest": {
     "nwVersion": "0.40.1",
-    "output": "bld/nwjs/win-any-latest",
+    "output": "bld/nwjs/win-x86-nwjs0401",
     "targets": [
       "zip"
     ],
