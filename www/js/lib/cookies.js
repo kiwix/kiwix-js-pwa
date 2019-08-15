@@ -23,8 +23,13 @@ define([], function() {
 
 // Test for cookie support
 var storeType = 'cookie';
-document.cookie = "kiwixCookie=working";
+document.cookie = 'kiwixCookie=working;expires=Fri, 31 Dec 9999 23:59:59 GMT';
 var kiwixCookie = /kiwixCookie=working/i.test(document.cookie);
+if (kiwixCookie) {
+    document.cookie = 'kiwixCookie=broken;expires=Fri, 31 Dec 9999 23:59:59 GMT';
+    kiwixCookie = !/kiwixCookie=working/i.test(document.cookie);
+}
+document.cookie = 'kiwixCookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
 if (!kiwixCookie) {
     // Cookies appear to be blocked, so test for localStorage support
     var result = false;
@@ -35,6 +40,7 @@ if (!kiwixCookie) {
     }
     if (result) storeType = 'local_storage';
 }
+console.log('Test2: storeType: ' + storeType);
 
 var docCookies = {
   getItem: function (sKey) {
