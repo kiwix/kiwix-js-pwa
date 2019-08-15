@@ -127,12 +127,16 @@ define(['util'], function(util) {
     }
 
      function printCustomElements() {
-        var innerDocument = window.frames[0].frameElement.contentDocument;
+        //var innerDocument = window.frames[0].frameElement.contentDocument;
+        var innerDocument = document.getElementById('articleContent').contentDocument;
         //Add any missing classes
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(class\s*=\s*["'][^"']*vcard\b[^>]+>\s*<span)>/ig, '$1 class="map-pin">');
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<h2\b[^<]+external_links(?:[^<]|<\/)+<ul\s+(?!class="externalLinks"))/i, '$1class="externalLinks" ');
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<h2\b[^<]+see_also(?:[^<]|<\/)+<ul\s+(?!class="seeAlso"))/i, '$1class="seeAlso" ');
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<div\s+)([^>]+>\s+This article is issued from)/i, '$1class="copyLeft" $2');
+        // Remove openInTab div (we can't do this using DOM methods because it aborts code spawned from onclick event)
+        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<div\s(?=[^<]+?openInTab)(?:[^<]|<(?!\/div>))+<\/div>\s*/, '');
+        
         // Using @media print on images doesn't get rid of them all, so use brute force
         if (!document.getElementById("printImageCheck").checked) 
             innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<img\b[^>]*>\s*/ig, '');

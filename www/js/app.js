@@ -236,6 +236,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         $("#printModal").on('hide.bs.modal', function () {
             //Restore temporarily changed values
             params.cssSource = cookies.getItem('cssSource') || "auto";
+            params.cssTheme = cookies.getItem('cssTheme') || "light";
+            //params.contentInjectionMode = cookies.getItem('contentInjectionMode');
             if (document.activeElement.id != "confirm-print-continue") { //User cancelled
                 if (params.printInterception) {
                     printCleanup();
@@ -244,6 +246,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 //We don't need a radical cleanup because there was no printIntercept
                 removePageMaxWidth();
                 setTab();
+                switchCSSTheme();
                 return;
             }
             uiUtil.printCustomElements();
@@ -257,10 +260,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 keyboard: true
             });
             //innerDocument.execCommand("print", false, null);
-            if (typeof window.fs === 'undefined') {
+            if (typeof window.nw !== 'undefined' || typeof window.fs === 'undefined') {
                 window.frames[0].frameElement.contentWindow.print();
             } else {
-                // We are in an Electron/NWJS app and need to use export to browser to print
+                // We are in an Electron app and need to use export to browser to print
                 params.preloadingAllImages = false;
                 // Add a window.print() script to the html
                 document.getElementById('articleContent').contentDocument.head.innerHTML += 
@@ -306,7 +309,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             params.printInterception = false;
             // Immediately restore temporarily changed values
             params.allowHTMLExtraction = cookies.getItem('allowHTMLExtraction') == "true";
-            goToArticle(decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, "")));
+            //params.contentInjectionMode = cookies.getItem('contentInjectionMode');
+            //goToArticle(decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, "")));
+            if (history.state !== null) {
+                var thisURL = decodeURIComponent(history.state.title);
+                goToArticle(thisURL);
+            }
             setTimeout(function () { //Restore temporarily changed value after page has reloaded
                 params.rememberLastPage = cookies.getItem('rememberLastPage') == "true";
                 if (!params.rememberLastPage) {
@@ -341,14 +349,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 printModalContent.classList.add('dark');
             }
             //If document is in wrong style, or images are one-time BLOBs, reload it
-            var innerDoc = window.frames[0].frameElement.contentDocument;
+            //var innerDoc = window.frames[0].frameElement.contentDocument;
+            var innerDoc = document.getElementById('articleContent').contentDocument;
             var printDesktopCheck = document.getElementById("printDesktopCheck").checked;
             var printImageCheck = document.getElementById("printImageCheck").checked;
             var styleIsDesktop = !/\bhref\s*=\s*["'][^"']*?(?:minerva|mobile)/i.test(innerDoc.head.innerHTML);
+            //if (styleIsDesktop != printDesktopCheck || printImageCheck && !params.allowHTMLExtraction || params.contentInjectionMode == 'serviceworker') {
             if (styleIsDesktop != printDesktopCheck || printImageCheck && !params.allowHTMLExtraction) {
                 //We need to reload the document because it doesn't match the requested style or images are one-time BLOBs
                 params.cssSource = printDesktopCheck ? "desktop" : "mobile";
                 params.rememberLastPage = true; //Re-enable caching to speed up reloading of page
+                //params.contentInjectionMode = 'jquery'; //Much easier to count images in jquery mode 
                 params.allowHTMLExtraction = true;
                 params.printIntercept = true;
                 params.printInterception = false;
@@ -389,6 +400,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 removePageMaxWidth();
                 params.removePageMaxWidth = tempPageMaxWidth;
             }
+            //Put doc into light mode
+            params.cssTheme = 'light';
+            switchCSSTheme();
             $("#printModal").modal({
                 backdrop: "static",
                 keyboard: true
@@ -1149,10 +1163,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
             if (cookies.getItem('version') != params.version) {
                 firstRun = true;
-                $('#myModal').modal({
-                    backdrop: "static"
-                });
-                cookies.setItem('version', params.version, Infinity);
+                // On some platforms, bootstrap's jQuery functions have not been injected yet, so we have to run in a timeout
+                setTimeout(function() {
+                    $('#myModal').modal({
+                        backdrop: "static"
+                    });
+                    cookies.setItem('version', params.version, Infinity);
+                }, 1000);
             }
         });
 
@@ -2348,6 +2365,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         // The content is ready : we can hide the spinner
                         setTab();
                         checkToolbar();
+                        // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
+                        if (params.printIntercept) printIntercept();
                     }
                     
                     if (/manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker();
@@ -2357,13 +2376,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         uiUtil.insertBreakoutLink(determinedTheme);
                     }
                     cookies.removeItem('lastPageLoad');
-                    if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
-                        params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
-                            "@kiwixKey@" + state.selectedArchive._file._files[0].name;
-                        if (params.rememberLastPage) {
-                            cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
-                        }
-                    }
+                    // if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
+                    //     params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
+                    //         "@kiwixKey@" + state.selectedArchive._file._files[0].name;
+                    //     if (params.rememberLastPage) {
+                    //         cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
+                    //     }
+                    // }
 
                     // Show spinner when the article unloads
                     if (iframeArticleContent.contentWindow) iframeArticleContent.contentWindow.onunload = function () {
@@ -3226,8 +3245,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         } //End of displayArticleInForm()
 
         function setupTableOfContents() {
-            var iframe = window.frames[0].frameElement;
-            var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+            //var iframe = window.frames[0].frameElement;
+            var iframe = document.getElementById('articleContent');
+            var innerDoc = iframe.contentDocument;
             var tableOfContents = new uiUtil.toc(innerDoc);
             var headings = tableOfContents.getHeadingObjects();
             document.getElementById('dropup').style.fontSize = ~~(params.relativeUIFontSize * 0.14) + "px";
