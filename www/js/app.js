@@ -353,7 +353,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             var innerDoc = document.getElementById('articleContent').contentDocument;
             var printDesktopCheck = document.getElementById("printDesktopCheck").checked;
             var printImageCheck = document.getElementById("printImageCheck").checked;
-            var styleIsDesktop = !/\bhref\s*=\s*["'][^"']*?(?:minerva|mobile)/i.test(innerDoc.head.innerHTML);
+            var styleIsDesktop = !/href\s*=\s*["'][^"']*?(?:minerva|mobile)/i.test(innerDoc.head.innerHTML);
             //if (styleIsDesktop != printDesktopCheck || printImageCheck && !params.allowHTMLExtraction || params.contentInjectionMode == 'serviceworker') {
             if (styleIsDesktop != printDesktopCheck || printImageCheck && !params.allowHTMLExtraction) {
                 //We need to reload the document because it doesn't match the requested style or images are one-time BLOBs

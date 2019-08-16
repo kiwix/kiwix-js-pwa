@@ -376,7 +376,7 @@ define(['util'], function(util) {
         var desc = "Open article in new tab or window";
         var iframe = document.getElementById('articleContent').contentDocument;
         // This code provides an absolute link, removing the file and any query string from href (we need this because of SW mode)
-        var prefix = window.location.href.replace(/^((?!.*\?).*\/|.*\/(?=[^\/]*\?)).*$/, '$1');
+        var prefix = document.location.href.replace(/index\.html(?:$|[#?].*$)/, '');
         var div = document.createElement('div');
         div.style.cssText = 'top: 10px; right: 25px; position: relative; z-index: 2; float: right;';
         div.id = "openInTab";
