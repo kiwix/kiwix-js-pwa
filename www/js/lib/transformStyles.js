@@ -203,7 +203,8 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
         html = html.replace(/(<h1\b[^>]+)background-color\s*:\s*white;\s*/i, '$1');
         //Remove hard-coded style on infobox
         html = html.replace(/(<table\s+(?=[^>]*?\bclass=['"][^'"]*infobox)[^>]*\bstyle=['"][^'"]*\b)(?:float:\s*none\s*;?\s*)(?:clear:\s*none\s*;?\s*)?/gi, '$1');
-        
+        //Remove any residual references to mobile styles (e.g. in data-kiwixhref) because they trigger page reload when printing
+        css = css.replace(/(<link\b[^>]+)(minerva|mobile)/ig, '$1');
         return { html : html, css : css };
     }
 
