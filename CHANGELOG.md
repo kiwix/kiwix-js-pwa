@@ -1,5 +1,4 @@
-## Release 0.9.9.93 WikiMed (beta)
-* UPDATE: August 2019 update of WikiMed ZIM archive to wikipedia_en_medicine_novid_2019-08.zim
+## Release 0.9.9.94 (beta)
 * ENHANCEMENT: Provide an alert if a packaged or picked file cannot be found
 * ENHANCEMENT: App can now be compiled with Electron or NWJS to support Win XP/7/8.1 (see [releases](https://github.com/kiwix/kiwix-js-windows/releases))
 * ENHANCEMENT: CORS errors are now detected and a message provided to the user to help resolve
@@ -13,9 +12,12 @@
 * FIX: Missing target attribute for hyperlinks to some external files
 * FIX: Race condition preventing jQuery `alert.hide()` statements from running
 * FIX: Enable dark theme and style transformations in Service Worker mode
+* FIX: Enable printing in Service Worker mode
+* FIX: Update printing filters to support deatils-summary ZIMs
 * FIX: Rare condition where a missing ZIM causes the app to crash on load
 * FIX: Article is now re-loaded on change of content injection mode
-
+* FIX: Scripts no longer run in Quirks mode (for clients supporting Service Worker)
+* UPDATE: August 2019 update of Ray Charles ZIM
 
 ## Release 0.9.9.91 WikiMed (beta)
 * FIX: Remembered last page is now properly blanked on new archive load
