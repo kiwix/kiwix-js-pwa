@@ -23,6 +23,10 @@ h2 {
     padding: 0;
 }
 
+a {
+    text-decoration: none;
+}
+
 #content {
     width: 100%;
     overflow: hidden;
