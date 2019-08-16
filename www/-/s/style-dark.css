@@ -267,7 +267,7 @@ div[style*="background-color: #cee0f2"], div[style*="background-color: #cedff2"]
   }
 
   div:not([style*="-color"]), div[style*="background-color"], span:not([class*="color"]),
-  table, tr:not([style*="border-bottom"]), th, td:not([style*="border-bottom"]),
+  summary:not([style*="-color"]), table, tr:not([style*="border-bottom"]), th, td:not([style*="border-bottom"]),
   h1, h2, h3, h4, h5, h6, ul, li, input, select, #bodyContent code {
     border-color: #555 !important;
   }
@@ -353,6 +353,7 @@ span[style*="color:#555"], span[style*="background-color:#EE"] {
 
   ul, .portlet li {
     list-style-image: none !important;
+    background-color: black !important;
   }
 
   table[style*="border:4px ridge"], .jfk-bubble-closebtn {
