@@ -24,7 +24,7 @@
 
 // Set a global error handler to prevent app crashes
 window.onerror = function (msg, url) {
-    console.error('Error caught in app [' + url + ']:\n', msg);
+    console.error('Error caught in app [' + url + ']:\n' + msg, msg);
     return true;
 };
 // State variables that are needed across different modules
