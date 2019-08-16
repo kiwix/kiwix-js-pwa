@@ -126,19 +126,19 @@ define(['util'], function(util) {
         document.getElementById('progressMessage').style.display = 'none';
     }
 
-     function printCustomElements() {
+    function printCustomElements() {
         //var innerDocument = window.frames[0].frameElement.contentDocument;
         var innerDocument = document.getElementById('articleContent').contentDocument;
         //Add any missing classes
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(class\s*=\s*["'][^"']*vcard\b[^>]+>\s*<span)>/ig, '$1 class="map-pin">');
-        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<h2\b[^<]+external_links(?:[^<]|<\/)+<ul\s+(?!class="externalLinks"))/i, '$1class="externalLinks" ');
-        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<h2\b[^<]+see_also(?:[^<]|<\/)+<ul\s+(?!class="seeAlso"))/i, '$1class="seeAlso" ');
+        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<h2\b[^<]+external_links(?:[^<]|<(?!\/div>|\/details>))+<ul\s*(?!class="externalLinks"))/i, '$1 class="externalLinks" ');
+        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<h2\b[^<]+see_also(?:[^<]|<(?!\/div>|\/details>))+<ul\s*(?!class="seeAlso"))/i, '$1 class="seeAlso" ');
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<div\s+)([^>]+>\s+This article is issued from)/i, '$1class="copyLeft" $2');
         // Remove openInTab div (we can't do this using DOM methods because it aborts code spawned from onclick event)
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<div\s(?=[^<]+?openInTab)(?:[^<]|<(?!\/div>))+<\/div>\s*/, '');
-        
+
         // Using @media print on images doesn't get rid of them all, so use brute force
-        if (!document.getElementById("printImageCheck").checked) 
+        if (!document.getElementById("printImageCheck").checked)
             innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<img\b[^>]*>\s*/ig, '');
         var printOptions = innerDocument.getElementById("printOptions");
         //If there is no printOptions style block in the iframe, create it
@@ -160,11 +160,11 @@ define(['util'], function(util) {
         printStyleInnerHTML += ".external { padding-right: 0 !important } ";
         var sliderVal = document.getElementById("documentZoomSlider").value;
         sliderVal = ~~sliderVal;
-        sliderVal = Math.floor(sliderVal * (Math.max(window.screen.width, window.screen.height) / 1440)); 
+        sliderVal = Math.floor(sliderVal * (Math.max(window.screen.width, window.screen.height) / 1440));
         printStyleInnerHTML += "body { font-size: " + sliderVal + "% !important; } ";
         printStyleInnerHTML += "}";
         printOptions.innerHTML = printStyleInnerHTML;
-        
+
     }
 
     function downloadBlobUWP(blob, filename, message) {
