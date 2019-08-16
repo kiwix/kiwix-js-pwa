@@ -1043,12 +1043,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             }
             var determinedWikiTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
             var breakoutLink = doc.getElementById('breakoutLink');
+            // Construct an absolute reference becuase Service Worker needs this
+            var prefix = document.location.href.replace(/index\.html(?:$|[#?].*$)/, '');
             if (determinedWikiTheme != "light") {
                 var link = doc.createElement("link");
                 link.setAttribute("rel", "stylesheet");
                 link.setAttribute("type", "text/css");
-                // Construct an absolute reference becuase Service Worker needs this
-                var prefix = document.location.href.replace(/index\.html(?:$|[#?].*$)/, '');
                 link.setAttribute("href", prefix + (determinedWikiTheme == "dark" ? '-/s/style-dark.css' : '-/s/style-dark-invert.css'));
                 doc.head.appendChild(link);
                 if (breakoutLink) breakoutLink.src = prefix + 'img/icons/new_window_lb.svg';
@@ -2625,7 +2625,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             htmlArticle = htmlArticle.replace(/background:url\([^)]+\)[^;}]*/ig, '');
 
             //Remove the stupid details polyfill if we're in Electron/NWJS (if we've compiled for XP, it won't use SW mode anyway)
-            if (typeof window.fs !== 'undefined') htmlArticle = htmlArticle.replace(/<script\b[^<]+details_polyfill\.js[^<]+<\/script>\s*/i, '');
+            //if (typeof window.fs !== 'undefined') // Actually delete everywhere, it's crap and doesn't recognize Edgium
+            htmlArticle = htmlArticle.replace(/<script\b[^<]+details_polyfill\.js[^<]+<\/script>\s*/i, '');
             //And make sure all sections are open
             htmlArticle = htmlArticle.replace(/(<details\b(?![^>]+\sopen)[^>]+)>/ig, '$1 open>');
 
@@ -2731,13 +2732,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 zimType = /gutenberg\.css/i.test(testCSS) ? "desktop-gtb" : zimType; //Support Gutenberg
                 zimType = /minerva|mobile/i.test(testCSS) ? "mobile" : zimType;
                 cssSource = cssSource == "auto" ? zimType : cssSource; //Default to in-built zimType if user has selected automatic detection of styles
-                if (/minerva|inserted.style.mobile/i.test(testCSS) && (cssCache || zimType != cssSource)) {
+                if (/minerva|inserted.style/i.test(testCSS) && (cssCache || zimType != cssSource)) {
                     //Substitute ridiculously long style name TODO: move this code to transformStyles
                     for (var i = arr.length; i--;) { //TODO: move to transfromStyles
                         arr[i] = /minerva/i.test(arr[i]) ? '<link ' + (params.contentInjectionMode == 'jquery' ? 'data-kiwixurl' : 'href') + 
                             '="-/s/style-mobile.css" rel="stylesheet" type="text/css">' : arr[i];
                         // Delete stylesheet if will be inserted via minerva anyway (avoid linking it twice)
-                        if (/inserted.style.mobile/i.test(arr[i]) && /minerva/i.test(testCSS)) {
+                        if (/inserted.style/i.test(arr[i]) && /minerva/i.test(testCSS)) {
                             arr.splice(i, 1);
                         }
                     }
