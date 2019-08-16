@@ -2861,8 +2861,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 iframeArticleContent.style.display = 'none';
 
                 if (params.contentInjectionMode === 'serviceworker') {
-                    params.transformedHTML = htmlArticle;
-
+                    // Add doctype if missing so that scripts run in standards mode 
+                    // (quirks mode prevents katex from running, and is incompatible with jQuery)
+                    params.transformedHTML = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(htmlArticle) ? '<!DOCTYPE html>\n' + htmlArticle : htmlArticle;
                     // We will need the encoded URL on article load so that we can set the iframe's src correctly,
                     // but we must not encode the '/' character or else relative links may fail [kiwix-js #498]
                     var encodedUrl = dirEntry.url.replace(/[^/]+/g, function (matchedSubstring) {
