@@ -13,6 +13,7 @@
 * FIX: Race condition preventing jQuery `alert.hide()` statements from running
 * FIX: Enable dark theme and style transformations in Service Worker mode
 * FIX: Enable printing in Service Worker mode
+* FIX: Critical page reload loop when switching styles in print dialogue
 * FIX: Update printing filters to support deatils-summary ZIMs
 * FIX: Rare condition where a missing ZIM causes the app to crash on load
 * FIX: Article is now re-loaded on change of content injection mode
