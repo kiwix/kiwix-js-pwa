@@ -131,7 +131,7 @@ define(['util'], function(util) {
         var innerDocument = document.getElementById('articleContent').contentDocument;
         //Add any missing classes
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(class\s*=\s*["'][^"']*vcard\b[^>]+>\s*<span)>/ig, '$1 class="map-pin">');
-        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<h2\b[^<]+external_links(?:[^<]|<(?!\/div>|\/details>))+<ul\s*(?!class="externalLinks"))/i, '$1 class="externalLinks" ');
+        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<(?:h2|span)\b[^<]+external_links(?:[^<]|<(?!\/div>|\/details>))+?<ul\s*(?!class="externalLinks"))/i, '$1 class="externalLinks" ');
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<h2\b[^<]+see_also(?:[^<]|<(?!\/div>|\/details>))+<ul\s*(?!class="seeAlso"))/i, '$1 class="seeAlso" ');
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<div\s+)([^>]+>\s+This article is issued from)/i, '$1class="copyLeft" $2');
         // Remove openInTab div (we can't do this using DOM methods because it aborts code spawned from onclick event)
