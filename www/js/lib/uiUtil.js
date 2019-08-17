@@ -131,8 +131,20 @@ define(['util'], function(util) {
         var innerDocument = document.getElementById('articleContent').contentDocument;
         //Add any missing classes
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(class\s*=\s*["'][^"']*vcard\b[^>]+>\s*<span)>/ig, '$1 class="map-pin">');
+        // Remove encapsulated External Links
+        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<details\b(?![^>]"externalLinks"))((?:[^<]|<(?!\/details>))+?['"]external_links['"])/i, '$1 class="externalLinks" $2');
+        // This is the best we can do for removing External Links if its not encapsulated
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<(?:h2|span)\b[^<]+external_links(?:[^<]|<(?!\/div>|\/details>))+?<ul\s*(?!class="externalLinks"))/i, '$1 class="externalLinks" ');
-        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<h2\b[^<]+see_also(?:[^<]|<(?!\/div>|\/details>))+<ul\s*(?!class="seeAlso"))/i, '$1 class="seeAlso" ');
+        // Further Reading
+        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<details\b(?![^>]"furtherReading"))((?:[^<]|<(?!\/details>))+?['"]further_reading['"])/i, '$1 class="furtherReading" $2');
+        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<(?:h2|span)\b[^<]+further_reading(?:[^<]|<(?!\/div>|\/details>))+?<ul\s*(?!class="furtherReading"))/i, '$1 class="furtherReading" ');
+        // See Also
+        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<details\b(?![^>]"seeAlso"))((?:[^<]|<(?!\/details>))+?['"]see_also['"])/i, '$1 class="seeAlso" $2');
+        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<(?:h2|span)\b[^<]+see_also(?:[^<]|<(?!\/div>|\/details>))+?<ul\s*(?!class="seeAlso"))/i, '$1 class="seeAlso" ');
+        // References (this is for details-summary ZIMs only: it gets rid of the title)
+        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<details\b(?![^>]"zimReferences"))((?:[^<]|<(?!\/details>))+?['"]references['"])/i, '$1 class="zimReferences" $2');
+        // Sources (this is for details-summary ZIMs only: it gets rid of the title)
+        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<details\b(?![^>]"zimSources"))((?:[^<]|<(?!\/details>))+?['"]sources['"])/i, '$1 class="zimSources" $2');
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<div\s+)([^>]+>\s+This article is issued from)/i, '$1class="copyLeft" $2');
         // Remove openInTab div (we can't do this using DOM methods because it aborts code spawned from onclick event)
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<div\s(?=[^<]+?openInTab)(?:[^<]|<(?!\/div>))+<\/div>\s*/, '');
@@ -150,8 +162,8 @@ define(['util'], function(util) {
         }
         var printStyleInnerHTML = "@media print { ";
         printStyleInnerHTML += document.getElementById("printNavBoxCheck").checked ? "" : ".navbox, .vertical-navbox { display: none; } ";
-        printStyleInnerHTML += document.getElementById("printEndNoteCheck").checked ? "" : ".reflist, div[class*=references] { display: none; } ";
-        printStyleInnerHTML += document.getElementById("externalLinkCheck").checked ? "" : ".externalLinks { display: none; } ";
+        printStyleInnerHTML += document.getElementById("printEndNoteCheck").checked ? "" : ".reflist, div[class*=references], .zimReferences, .zimSources { display: none; } ";
+        printStyleInnerHTML += document.getElementById("externalLinkCheck").checked ? "" : ".externalLinks, .furtherReading { display: none; } ";
         printStyleInnerHTML += document.getElementById("seeAlsoLinkCheck").checked ? "" : ".seeAlso { display: none; } ";
         printStyleInnerHTML += document.getElementById("printInfoboxCheck").checked ? "" : ".mw-stack, .infobox, .infobox_v2, .infobox_v3, .qbRight, .qbRightDiv, .wv-quickbar, .wikitable { display: none; } ";
         // printStyleInnerHTML += document.getElementById("printImageCheck").checked ? "" : "img, .gallery { display: none; } ";
