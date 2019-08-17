@@ -173,10 +173,6 @@ h3, h4, h5, h6 {
     word-break: break-word
 }
 
-.content h2, .content h3, .content h4, .content h5, .content h6 {
-    padding: 0.5em 0
-}
-
 blockquote {
     border-left: 3px solid #c8ccd1;
     font-family: 'Linux Libertine','Georgia','Times',serif;
@@ -954,6 +950,7 @@ a.issues_button {
     border-bottom: solid 1px #eaecf0;
     font-family: 'Linux Libertine', 'Georgia', 'Times', serif;
 }
+
 .mw-body h3 {
     border-bottom: 0px solid #eaecf0;
     font-weight: bold;
@@ -963,15 +960,15 @@ a.issues_button {
     border-bottom: 0px solid #eaecf0;
 }
 
-h1[tabindex="0"].collapsible-heading>.indicator {
+h1[tabindex="0"].collapsible-heading > .indicator {
     display: none;
     /* hide the "v" icone for the main title */
 }
 
-.section-heading>h1,
-.section-heading>h2,
-.section-heading>h3,
-.section-heading>h4 {
+.section-heading > h1,
+.section-heading > h2,
+.section-heading > h3,
+.section-heading > h4 {
     display: inline;
     border: none;
 }
@@ -1977,17 +1974,6 @@ a.mw-ui-button {
         background-size: 66.67% auto
     }
 
-html, body, div, span, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, ins, em, img, small, strike, strong, sub, sup, tt, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, input, textarea, button, select, audio, video {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    font: inherit;
-    font-size: 100%;
-    line-height: 1.6;
-    vertical-align: baseline;
-    background: none
-}
-
 table, caption, tbody, tfoot, thead, tr, th, td {
     font-size: 100%
 }
@@ -2199,9 +2185,9 @@ input.search::-webkit-search-decoration, input.search::-webkit-search-cancel-but
     clear: both
 }*/
 
-    .content h2 .edit-page {
-        font-size: 0.66666667em
-    }
+.content h2 .edit-page {
+    font-size: 0.66666667em
+}
 
 .content h3 .edit-page {
     font-size: 0.83333333em
@@ -2219,12 +2205,8 @@ input.search::-webkit-search-decoration, input.search::-webkit-search-cancel-but
 .content .section-heading {
     /* width: 100%; */
     border-bottom: solid 1px #eaecf0;
-    margin-bottom: 0.5em
-}
-
-summary.section-heading > h2 {
-    border-bottom: none;
-    margin-bottom: 0;
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
 }
 
     .content .section-heading .indicator {
@@ -2847,10 +2829,6 @@ h4 {
     line-height: 1.3;
     word-wrap: break-word;
     word-break: break-word
-}
-
-.content h2, .content h3, .content h4, .content h5, .content h6 {
-    padding: 0.5em 0
 }
 
 blockquote {
@@ -5395,7 +5373,9 @@ nav ul {
                 }
 
 /*GK Added styles for other languages*/
-h3 .mw-headline {padding-top:1em;}
+h3 .mw-headline {
+    padding-top: 1em;
+}
 
 .qbDiv, .qbRightDiv {
     box-sizing: border-box;
@@ -5432,16 +5412,23 @@ h3 .mw-headline {padding-top:1em;}
     margin-right: auto;
 }
 
-.qbImage div.tright, .qbImage .thumb.tright {
-    float: none;
-    margin: 0;
-    padding: 0;
-}
+    .qbImage div.tright, .qbImage .thumb.tright {
+        float: none;
+        margin: 0;
+        padding: 0;
+    }
 
 .content figure .thumbinner, .content .thumbinner {
     margin: 0 1.4em 0 0;
     max-width: 100% !important;
 }
+
+.content h2, .content h3, .content h4, .content h5, .content h6 {
+    padding: 0.5em 0;
+    margin-bottom: 0.5em;
+    font-family: "Linux Libertine","Georgia","Times",serif;
+}
+
 
 @media all and (min-width:640px) {
     .thumb.tright {
@@ -5500,8 +5487,4 @@ h3 .mw-headline {padding-top:1em;}
         margin-left: auto;
         margin-right: auto;
     }
-
 }
-
-
-
