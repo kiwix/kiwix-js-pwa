@@ -1,0 +1,33 @@
+{	
+	"dir": "ltr",
+	"lang": "en",
+	"name": "Kiwix JS for Windows",
+	"scope": "/kiwix-js-windows/www/index.html",
+	"display": "browser",
+	"start_url": "www/index.html",
+	"short_name": "Kiwix JS Windows",
+	"theme_color": "transparent",
+	"description": "Offline Wikipedia reader",
+	"orientation": "any",
+	"background_color": "transparent",
+	"relatedapplications": "",
+	"preferrelated_applications": "false",
+	"generated": "true",
+  "icons": [
+    {
+      "src": "www/img/icons/kiwix-48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "www/img/icons/kiwix-64.ico",
+      "sizes": "64x64 96x96 128x128",
+      "type": "image/ico"
+    },
+    {
+      "src": "www/img/icons/kiwix-256.png",
+      "sizes": "256x256 512x512",
+      "type": "image/png"
+    }
+  ]
+}
