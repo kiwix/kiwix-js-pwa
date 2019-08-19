@@ -50,4 +50,4 @@ display buttons that let you pick the file or the file's folder.
 Alternatively, you can download files from http://wiki.kiwix.org/wiki/Content_in_all_languages on a regular
 PC. The single non-indexed ZIM files work best. However, if you plan to store your ZIM file on an SD card 
 formatted as FAT32, you will only be able to use the split files (.zimaa, .zimab, etc.) in the pre-indexed
-archives. If your SD card is formatted as exFAT or NTFS, you can use either, but single file is easiest.                    
+archives. If your SD card is formatted as exFAT or NTFS, you can use either, but single file is easiest.
