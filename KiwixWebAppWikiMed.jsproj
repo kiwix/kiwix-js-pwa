@@ -57,7 +57,7 @@
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).props" />
   <PropertyGroup>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
+    <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>$(VersionNumberMajor).$(VersionNumberMinor)</MinimumVisualStudioVersion>
     <DefaultLanguage>en-gb</DefaultLanguage>
@@ -126,6 +126,9 @@
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="images\Wide310x150Logo.scale-400.png" />
     <None Include="Package.StoreAssociation.xml" />
+    <Content Include="manifest.json" />
+    <Content Include="pwabuilder-sw.js" />
+    <Content Include="service-worker.js" />
     <Content Include="www\-\static\main.css" />
     <Content Include="www\-\s\css_modules\content.parsoid.css" />
     <Content Include="www\-\s\css_modules\ext.cite.a11y.css" />
