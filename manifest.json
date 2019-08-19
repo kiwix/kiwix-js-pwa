@@ -2,7 +2,7 @@
 	"dir": "ltr",
 	"lang": "en",
 	"name": "Kiwix JS for Windows",
-	"scope": "/kiwix-js-windows/www/index.html",
+	"scope": "./",
 	"display": "browser",
 	"start_url": "www/index.html",
 	"short_name": "Kiwix JS Windows",
