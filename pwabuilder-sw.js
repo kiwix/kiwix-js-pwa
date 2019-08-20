@@ -2,14 +2,40 @@
 
 const CACHE = "sw-precache";
 const precacheFiles = [
-    "www/index.html",
-    "www/js/init.js",
-    "www/js/app.js",
-    "www/js/lib/jquery-3.2.1.slim.js",
-    "www/js/lib/require.js",
-    "www/js/lib/bootstrap.js",
-    "www/js/lib/q.js",
-    "www/js/lib/xzdec.js"
+  "manifest.json",
+  "www/I/s/Icon_External_Link.png",
+  "www/css/app.css",
+  "www/css/bootstrap.min.css",
+  "www/fonts/glyphicons-halflings-regular.woff2",
+  "www/img/icons/kiwix-256.png",
+  "www/img/icons/kiwix-32.png",
+  "www/img/icons/kiwix-60.png",
+  "www/img/icons/kiwix-blue-32.png",
+  "www/img/icons/kiwix-midnightblue-90.png",
+  "www/img/icons/map_marker-18px.png",
+  "www/img/icons/wikimed-blue-32.png",
+  "www/img/spinner.gif",
+  "www/index.html",
+  "www/js/app.js",
+  "www/js/init.js",
+  "www/js/lib/bootstrap.js",
+  "www/js/lib/bootstrap.min.js",
+  "www/js/lib/cookies.js",
+  "www/js/lib/images.js",
+  "www/js/lib/jquery-3.2.1.slim.js",
+  "www/js/lib/kiwixServe.js",
+  "www/js/lib/q.js",
+  "www/js/lib/require.js",
+  "www/js/lib/transformStyles.js",
+  "www/js/lib/uiUtil.js",
+  "www/js/lib/utf8.js",
+  "www/js/lib/util.js",
+  "www/js/lib/xzdec.js",
+  "www/js/lib/xzdec_wrapper.js",
+  "www/js/lib/zimArchive.js",
+  "www/js/lib/zimArchiveLoader.js",
+  "www/js/lib/zimDirEntry.js",
+  "www/js/lib/zimfile.js"
 ];
 
 self.addEventListener("install", function (event) {
@@ -34,7 +60,7 @@ self.addEventListener("activate", function (event) {
 
 // If any fetch fails, it will look for the request in the cache and serve it from there first
 self.addEventListener("fetch", function (event) { 
-  console.log('[SW] Service Worker ' + (event.request.method === "GET" ? 'noted ' : 'intercepted ') + event.request.url, event.request.method);
+  console.log('[SW] Service Worker ' + (event.request.method === "GET" ? 'intercepted ' : 'noted ') + event.request.url, event.request.method);
   if (event.request.method !== "GET") return;
   event.respondWith(
     fromCache(event.request).then(
@@ -62,7 +88,7 @@ self.addEventListener("fetch", function (event) {
             return response;
           })
           .catch(function (error) {
-            console.log("[PWA Builder] Network request failed and no cache.", error);
+            console.log("[SW] Network request failed and no cache.", error);
           });
       }
     )

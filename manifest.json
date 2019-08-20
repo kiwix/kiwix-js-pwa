@@ -3,7 +3,7 @@
 	"lang": "en",
 	"name": "Kiwix JS for Windows",
 	"scope": "../",
-	"display": "browser",
+	"display": "standalone",
 	"start_url": "index.html",
 	"short_name": "Kiwix JS Windows",
 	"theme_color": "transparent",
