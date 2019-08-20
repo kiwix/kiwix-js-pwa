@@ -15,17 +15,17 @@
 	"generated": "true",
   "icons": [
     {
-      "src": "img/icons/kiwix-48.png",
-      "sizes": "48x48",
+      "src": "www/img/icons/kiwix-48.png",
+      "sizes": "48x48 96x96",
       "type": "image/png"
     },
     {
-      "src": "img/icons/kiwix-64.ico",
-      "sizes": "64x64 96x96 128x128",
+      "src": "www/img/icons/kiwix-64.ico",
+      "sizes": "64x64 128x128",
       "type": "image/ico"
     },
     {
-      "src": "img/icons/kiwix-256.png",
+      "src": "www/img/icons/kiwix-256.png",
       "sizes": "256x256 512x512",
       "type": "image/png"
     }
