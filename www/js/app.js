@@ -1221,6 +1221,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         }
 
         var keepAliveServiceWorkerHandle;
+        var serviceWorkerRegistration = null;
 
         /**
          * Send an 'init' message to the ServiceWorker with a new MessageChannel
@@ -1350,8 +1351,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         } else {
             setContentInjectionMode('jquery');
         }
-
-        var serviceWorkerRegistration = null;
 
         /**
          * Tells if the ServiceWorker API is available
