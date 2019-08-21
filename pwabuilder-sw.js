@@ -1,4 +1,5 @@
 ﻿// Service Worker with Cache-first network, with some code from pwabuilder.com 
+'use strict';
 
 const CACHE = "sw-precache";
 const precacheFiles = [
@@ -52,47 +53,157 @@ self.addEventListener("install", function (event) {
   );
 });
 
-// Allow sw to control of current page
+// Allow sw to control current page
 self.addEventListener("activate", function (event) {
   console.log("[SW] Claiming clients for current page");
   event.waitUntil(self.clients.claim());
 });
 
+/**
+ * A Boolean that governs whether images are displayed
+ * app.js can alter this variable via messaging
+ */
+let imageDisplay;
+
+let outgoingMessagePort = null;
+let fetchCaptureEnabled = false;
+
+/**
+ * Handle custom commands 'init' and 'disable' from app.js
+ */
+self.addEventListener('message', function (event) {
+  if (event.data.action === 'init') {
+    // On 'init' message, we initialize the outgoingMessagePort and enable the fetchEventListener
+    outgoingMessagePort = event.ports[0];
+    fetchCaptureEnabled = true;
+  }
+  if (event.data.action === 'disable') {
+    // On 'disable' message, we delete the outgoingMessagePort and disable the fetchEventListener
+    outgoingMessagePort = null;
+    fetchCaptureEnabled = false;
+  }
+});
+
+// Pattern for ZIM file namespace - see https://wiki.openzim.org/wiki/ZIM_file_format#Namespaces
+// In our case, there is also the ZIM file name, used as a prefix in the URL
+const regexpZIMUrlWithNamespace = /(?:^|\/)([^\/]+\/)([-ABIJMUVWX])\/(.+)/;
+
+
 // If any fetch fails, it will look for the request in the cache and serve it from there first
-self.addEventListener("fetch", function (event) { 
+self.addEventListener("fetch", function (event) {
   console.log('[SW] Service Worker ' + (event.request.method === "GET" ? 'intercepted ' : 'noted ') + event.request.url, event.request.method);
   if (event.request.method !== "GET") return;
-  event.respondWith(
-    fromCache(event.request).then(
-      function (response) {
-        // The response was found in the cache so we responde with it and update the entry
+  if (/\.zim\w{0,2}\//i.test(event.request.url) && regexpZIMUrlWithNamespace.test(event.request.url)) {
+    // If the user has disabled the display of images, and the browser wants an image, respond with empty SVG
+    // A URL with "?kiwix-display" query string acts as a passthrough so that the regex will not match and
+    // the image will be fetched by app.js  
+    // DEV: If you need to hide more image types, add them to regex below and also edit equivalent regex in app.js
+    if (imageDisplay !== 'all' && /(^|\/)[IJ]\/.*\.(jpe?g|png|svg|gif)($|[?#])(?!kiwix-display)/i.test(event.request.url)) {
+      var svgResponse;
+      if (imageDisplay === 'manual')
+        svgResponse = "<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1'><rect width='1' height='1' style='fill:lightblue'/></svg>";
+      else
+        svgResponse = "<svg xmlns='http://www.w3.org/2000/svg'/>";
+      event.respondWith(new Response(svgResponse, {
+        headers: {
+          'Content-Type': 'image/svg+xml'
+        }
+      }));
+      return;
+    }
 
-        // This is where we call the server to get the newest version of the
-        // file to use the next time we show view
-        event.waitUntil(
-          fetch(event.request).then(function (response) {
-            console.log('[SW] Refreshing CACHE from server...');
-            return updateCache(event.request, response);
-          })
-        );
-        console.log('[SW] Supplying ' + event.request.url + ' from CACHE...');
-        return response;
-      },
-      function () {
-        // The response was not found in the cache so we look for it on the server
-        return fetch(event.request)
-          .then(function (response) {
-            // If request was success, add or update it in the cache
-            event.waitUntil(updateCache(event.request, response.clone()));
+    // Let's ask app.js for that content
+    event.respondWith(new Promise(function (resolve, reject) {
+      var nameSpace;
+      var title;
+      var titleWithNameSpace;
+      var regexpResult = regexpZIMUrlWithNamespace.exec(event.request.url);
+      var prefix = regexpResult[1];
+      nameSpace = regexpResult[2];
+      title = regexpResult[3];
 
-            return response;
-          })
-          .catch(function (error) {
-            console.log("[SW] Network request failed and no cache.", error);
-          });
-      }
-    )
-  );
+      // We need to remove the potential parameters in the URL
+      title = removeUrlParameters(decodeURIComponent(title));
+
+      titleWithNameSpace = nameSpace + '/' + title;
+
+      // Let's instantiate a new messageChannel, to allow app.js to give us the content
+      var messageChannel = new MessageChannel();
+      messageChannel.port1.onmessage = function (event) {
+        if (event.data.action === 'giveContent') {
+          // Content received from app.js
+          var contentLength = event.data.content ? event.data.content.byteLength : null;
+          var contentType = event.data.mimetype;
+          // Set the imageDisplay variable if it has been sent in the event data
+          imageDisplay = typeof event.data.imageDisplay !== 'undefined' ?
+            event.data.imageDisplay : imageDisplay;
+          var headers = new Headers();
+          if (contentLength) headers.set('Content-Length', contentLength);
+          if (contentType) headers.set('Content-Type', contentType);
+          // Test if the content is a video or audio file
+          // See kiwix-js #519 and openzim/zimwriterfs #113 for why we test for invalid types like "mp4" or "webm" (without "video/")
+          // The full list of types produced by zimwriterfs is in https://github.com/openzim/zimwriterfs/blob/master/src/tools.cpp
+          if (contentLength >= 1 && /^(video|audio)|(^|\/)(mp4|webm|og[gmv]|mpeg)$/i.test(contentType)) {
+            // In case of a video (at least), Chrome and Edge need these HTTP headers else seeking doesn't work
+            // (even if we always send all the video content, not the requested range, until the backend supports it)
+            headers.set('Accept-Ranges', 'bytes');
+            headers.set('Content-Range', 'bytes 0-' + (contentLength - 1) + '/' + contentLength);
+          }
+          var responseInit = {
+            status: 200,
+            statusText: 'OK',
+            headers: headers
+          };
+
+          var httpResponse = new Response(event.data.content, responseInit);
+
+          // Let's send the content back from the ServiceWorker
+          resolve(httpResponse);
+        } else if (event.data.action === 'sendRedirect') {
+          resolve(Response.redirect(prefix + event.data.redirectUrl));
+        } else {
+          console.error('Invalid message received from app.js for ' + titleWithNameSpace, event.data);
+          reject(event.data);
+        }
+      };
+      outgoingMessagePort.postMessage({
+        'action': 'askForContent',
+        'title': titleWithNameSpace
+      }, [messageChannel.port2]);
+    }));
+  } else {
+    event.respondWith(
+      fromCache(event.request).then(
+        function (response) {
+          // The response was found in the cache so we responde with it and update the entry
+
+          // This is where we call the server to get the newest version of the
+          // file to use the next time we show view
+          event.waitUntil(
+            fetch(event.request).then(function (response) {
+              console.log('[SW] Refreshing CACHE from server...');
+              return updateCache(event.request, response);
+            })
+          );
+          console.log('[SW] Supplying ' + event.request.url + ' from CACHE...');
+          return response;
+        },
+        function () {
+          // The response was not found in the cache so we look for it on the server
+          return fetch(event.request)
+            .then(function (response) {
+              // If request was success, add or update it in the cache
+              event.waitUntil(updateCache(event.request, response.clone()));
+
+              return response;
+            })
+            .catch(function (error) {
+              console.log("[SW] Network request failed and no cache.", error);
+            });
+        }
+      )
+    );
+  }
 });
 
 function fromCache(request) {
@@ -114,4 +225,9 @@ function updateCache(request, response) {
   return caches.open(CACHE).then(function (cache) {
     return cache.put(request, response);
   });
+}
+
+// Removes parameters and anchors from a URL
+function removeUrlParameters(url) {
+  return url.replace(/([^?#]+)[?#].*$/, "$1");
 }
