@@ -27,7 +27,7 @@
 // http://requirejs.org/docs/api.html#define
 
 define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cookies', 'q', 'transformStyles', 'kiwixServe'],
- function ($, zimArchiveLoader, uiUtil, util, utf8, images, cookies, q, transformStyles, kiwixServe) {
+    function ($, zimArchiveLoader, uiUtil, util, utf8, images, cookies, q, transformStyles, kiwixServe) {
 
         /**
          * Maximum number of articles to display in a search
@@ -63,7 +63,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             scrollbox.style.position = "fixed";
             scrollbox.style.height = window.innerHeight + "px";
             document.getElementById('articleContent').style.position = "fixed";
-            
+
             if (document.getElementById('articleContent').style.display !== "none") {
                 scrollbox.style.position = "relative";
                 scrollbox.style.height = 0;
@@ -104,7 +104,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             }
         }
         $(document).ready(resizeIFrame);
-        $(window).resize(function() {
+        $(window).resize(function () {
             resizeIFrame();
             // We need to load any images exposed by the resize
             var scrollFunc = document.getElementById('articleContent').contentWindow;
@@ -208,7 +208,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             }
         });
         // Hide the search resutls if user moves out of prefix field
-        $('#prefix').on('blur', function() {
+        $('#prefix').on('blur', function () {
             $('#articleListWithHeader').hide();
             document.getElementById('articleContent').style.position = 'fixed';
         });
@@ -266,13 +266,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 // We are in an Electron app and need to use export to browser to print
                 params.preloadingAllImages = false;
                 // Add a window.print() script to the html
-                document.getElementById('articleContent').contentDocument.head.innerHTML += 
+                document.getElementById('articleContent').contentDocument.head.innerHTML +=
                     '\n<script type="text/javascript">window.onload=function() {\n' +
                     '    alert("You may print, but after you press Print, the app will crash\\n" +\n' +
                     '        "and will need to be re-started. This bug will be fixed\\n" +\n' +
-                    '        "in the next version of Electron.");\n' + 
-                    '    window.print();\n' + 
-                    '};<\/script>'; 
+                    '        "in the next version of Electron.");\n' +
+                    '    window.print();\n' +
+                    '};<\/script>';
                 //html = html.replace(/(<\/head>\s*)/i, '<script type="text/javascript">window.onload=window.print();<\/script>\n$1');
                 uiUtil.extractHTML();
             }
@@ -381,7 +381,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     btnContinue.disabled = true;
                     btnContinue.innerHTML = "Loading images...";
                     //Callback for when all images are loaded
-                    params.printImagesLoaded = function() {
+                    params.printImagesLoaded = function () {
                         // Images have finished loading, so enable buttons
                         btnCancel.disabled = false;
                         btnContinue.disabled = false;
@@ -611,7 +611,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 iframe.style.top = navbar.getBoundingClientRect().height + 'px';
                 return;
             }
-            document.getElementById('articleContent').contentWindow.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('articleContent').contentWindow.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
             document.getElementById('search-article').scrollTop = 0;
         });
         // Top menu :
@@ -901,17 +904,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         var iframe = document.getElementById('articleContent');
         var scrollFunction = function () {
             if (iframe.contentDocument.body.scrollTop > 20) {
-                 iframe.style.top = '0';
-                 navbar.style.top = '-50px';
-             } else {
-                 navbar.style.top = 0;
-                 setTimeout(function () {
-                     iframe.style.top = navbar.getBoundingClientRect().height + 'px';
-                 }, 50);
-             }
-         };
+                iframe.style.top = '0';
+                navbar.style.top = '-50px';
+            } else {
+                navbar.style.top = 0;
+                setTimeout(function () {
+                    iframe.style.top = navbar.getBoundingClientRect().height + 'px';
+                }, 50);
+            }
+        };
 
-         function checkToolbar() {
+        function checkToolbar() {
             iframe.contentDocument.removeEventListener('scroll', scrollFunction);
             if (params.hideToolbar) {
                 iframe.contentDocument.addEventListener('scroll', scrollFunction);
@@ -926,6 +929,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         // Set up hook into Windows ViewManagement uiSettings if needed
         var uiSettings = null;
         initializeUISettings();
+
         function initializeUISettings() {
             var checkAuto = params.cssUITheme == 'auto' || params.cssTheme == 'auto';
             if (checkAuto && typeof Windows !== 'undefined' && Windows.UI && Windows.UI.ViewManagement) {
@@ -980,6 +984,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             cookies.setItem('cssTheme', params.cssTheme, Infinity);
             switchCSSTheme();
         });
+
         function cssUIThemeGetOrSet(value, getOnly) {
             if (value == 'auto') {
                 if (uiSettings) {
@@ -1025,6 +1030,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             }
             return value;
         }
+
         function switchCSSTheme() {
             var doc = window.frames[0].frameElement.contentDocument;
             var treePath = decodeURIComponent(params.lastPageVisit).replace(/[^/]+\/(?:[^/]+$)?/g, "../");
@@ -1168,7 +1174,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             if (cookies.getItem('version') != params.version) {
                 firstRun = true;
                 // On some platforms, bootstrap's jQuery functions have not been injected yet, so we have to run in a timeout
-                setTimeout(function() {
+                setTimeout(function () {
                     $('#myModal').modal({
                         backdrop: "static"
                     });
@@ -1215,7 +1221,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         }
 
         var keepAliveServiceWorkerHandle;
-    
+
         /**
          * Send an 'init' message to the ServiceWorker with a new MessageChannel
          * to initialize it, or to keep it alive.
@@ -1228,7 +1234,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 var tmpMessageChannel = new MessageChannel();
                 tmpMessageChannel.port1.onmessage = handleMessageChannelMessage;
                 // Send the init message to the ServiceWorker, with this MessageChannel as a parameter
-                navigator.serviceWorker.controller.postMessage({'action': 'init'}, [tmpMessageChannel.port2]);
+                navigator.serviceWorker.controller.postMessage({
+                    'action': 'init'
+                }, [tmpMessageChannel.port2]);
                 messageChannel = tmpMessageChannel;
                 // Schedule to do it again regularly to keep the 2-way communication alive.
                 // See https://github.com/kiwix/kiwix-js/issues/145 to understand why
@@ -1245,13 +1253,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          * @param {String} value The chosen content injection mode : 'jquery' or 'serviceworker'
          */
         function setContentInjectionMode(value) {
+            params.contentInjectionMode = value;
             if (value === 'jquery') {
                 if (isServiceWorkerReady()) {
                     // We need to disable the ServiceWorker
                     // Unregistering it does not seem to work as expected : the ServiceWorker
                     // is indeed unregistered but still active...
                     // So we have to disable it manually (even if it's still registered and active)
-                navigator.serviceWorker.controller.postMessage({'action': 'disable'});
+                    navigator.serviceWorker.controller.postMessage({
+                        'action': 'disable'
+                    });
                     messageChannel = null;
                 }
                 refreshAPIStatus();
@@ -1269,50 +1280,60 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
                 if (!isServiceWorkerReady()) {
                     $('#serviceWorkerStatus').html("ServiceWorker API available : trying to register it...");
-                    navigator.serviceWorker.register('../service-worker.js').then(function (reg) {
-                        // The ServiceWorker is registered
-                        serviceWorkerRegistration = reg;
+                    if (navigator.serviceWorker.controller) {
+                        console.log("Active service worker found, no need to register");
+                        serviceWorkerRegistration = true;
                         refreshAPIStatus();
-
-                        // We need to wait for the ServiceWorker to be activated
-                        // before sending the first init message
-                        var serviceWorker = reg.installing || reg.waiting || reg.active;
-                        serviceWorker.addEventListener('statechange', function (statechangeevent) {
-                            if (statechangeevent.target.state === 'activated') {
-                            // Remove any jQuery hooks from a previous jQuery session
-                            $('#articleContent').contents().remove();
-                            // Create the MessageChannel
-                            // and send the 'init' message to the ServiceWorker
-                            initOrKeepAliveServiceWorker();
-                            }
-                        });
-                    if (serviceWorker.state === 'activated') {
-                        // Even if the ServiceWorker is already activated,
-                        // We need to re-create the MessageChannel
-                        // and send the 'init' message to the ServiceWorker
-                        // in case it has been stopped and lost its context
+                        // Remove any jQuery hooks from a previous jQuery session
+                        $('#articleContent').contents().remove();
+                        // Create the MessageChannel and send 'init'
                         initOrKeepAliveServiceWorker();
+                    } else {
+                        navigator.serviceWorker.register('../pwqbuilder-sw.js').then(function (reg) {
+                            // The ServiceWorker is registered
+                            console.log('Service-worker.js is registered with a scope of ' + reg.scope);
+                            serviceWorkerRegistration = reg;
+                            refreshAPIStatus();
+
+                            // We need to wait for the ServiceWorker to be activated
+                            // before sending the first init message
+                            var serviceWorker = reg.installing || reg.waiting || reg.active;
+                            serviceWorker.addEventListener('statechange', function (statechangeevent) {
+                                if (statechangeevent.target.state === 'activated') {
+                                    // Remove any jQuery hooks from a previous jQuery session
+                                    $('#articleContent').contents().remove();
+                                    // Create the MessageChannel
+                                    // and send the 'init' message to the ServiceWorker
+                                    initOrKeepAliveServiceWorker();
+                                }
+                            });
+                            if (serviceWorker.state === 'activated') {
+                                // Even if the ServiceWorker is already activated,
+                                // We need to re-create the MessageChannel
+                                // and send the 'init' message to the ServiceWorker
+                                // in case it has been stopped and lost its context
+                                initOrKeepAliveServiceWorker();
+                            }
+                        }, function (err) {
+                            console.error('error while registering serviceWorker', err);
+                            refreshAPIStatus();
+                            var message = "The ServiceWorker could not be properly registered. Switching back to jQuery mode. Error message : " + err;
+                            var protocol = window.location.protocol;
+                            if (protocol === 'moz-extension:') {
+                                message += "\n\nYou seem to be using kiwix-js through a Firefox extension : ServiceWorkers are disabled by Mozilla in extensions.";
+                                message += "\nPlease vote for https://bugzilla.mozilla.org/show_bug.cgi?id=1344561 so that some future Firefox versions support it";
+                            } else if (protocol === 'file:') {
+                                message += "\n\nYou seem to be opening kiwix-js with the file:// protocol. You should open it through a web server : either through a local one (http://localhost/...) or through a remote one (but you need SSL : https://webserver/...)";
+                            }
+                            uiUtil.systemAlert(message);
+                            setContentInjectionMode("jquery");
+                            return;
+                        });
                     }
-                    }, function (err) {
-                        console.error('error while registering serviceWorker', err);
-                        refreshAPIStatus();
-                        var message = "The ServiceWorker could not be properly registered. Switching back to jQuery mode. Error message : " + err;
-                        var protocol = window.location.protocol;
-                        if (protocol === 'moz-extension:') {
-                            message += "\n\nYou seem to be using kiwix-js through a Firefox extension : ServiceWorkers are disabled by Mozilla in extensions.";
-                            message += "\nPlease vote for https://bugzilla.mozilla.org/show_bug.cgi?id=1344561 so that some future Firefox versions support it";
-                        }
-                        else if (protocol === 'file:') {
-                            message += "\n\nYou seem to be opening kiwix-js with the file:// protocol. You should open it through a web server : either through a local one (http://localhost/...) or through a remote one (but you need SSL : https://webserver/...)";
-                        }
-                        uiUtil.systemAlert(message);                        
-                        setContentInjectionMode("jquery");
-                        return;
-                    });
                 } else {
-                // We need to set this variable earlier else the ServiceWorker does not get reactivated
-                params.contentInjectionMode = value;
-                initOrKeepAliveServiceWorker();
+                    // We need to set this variable earlier else the ServiceWorker does not get reactivated
+                    params.contentInjectionMode = value;
+                    initOrKeepAliveServiceWorker();
                 }
             }
             $('input:radio[name=contentInjectionMode]').prop('checked', false);
@@ -1371,6 +1392,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          * @type Array.<StorageFirefoxOS>
          */
         var storages = [];
+
         function searchForArchivesInPreferencesOrStorage() {
             // First see if the list of archives is stored in the cookie
             var listOfArchivesFromCookie = cookies.getItem("listOfArchives");
@@ -1425,7 +1447,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 // We're in an Electron app with a packaged file that we need to read from the node File System
                 console.log("Loading packaged ZIM or last selected archive for Electron...");
                 // Create a fake File object (this avoids extensive patching of later code)
-                createFakeFileObjectElectron(params.storedFile, params.storedFilePath, function(fakeFile) {
+                createFakeFileObjectElectron(params.storedFile, params.storedFilePath, function (fakeFile) {
                     if (fakeFile.size) {
                         params.pickedFile = fakeFile;
                 setLocalArchiveFromFileList([params.pickedFile]);
@@ -1435,29 +1457,30 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         cookies.removeItem('lastSelectedArchive');
                         cookies.removeItem('lastSelectedArchivePath');
                         if (params.packagedFile && params.storedFile !== params.packagedFile) {
-                            createFakeFileObjectElectron(params.packagedFile, params.archivePath + '/' + params.packagedFile, function(fakeFile) {
+                            createFakeFileObjectElectron(params.packagedFile, params.archivePath + '/' + params.packagedFile, function (fakeFile) {
                                 if (fakeFile.size) {
                                     params.pickedFile = fakeFile;
-                                    setLocalArchiveFromFileList([params.pickedFile]);            
-                                } else { 
+                                    setLocalArchiveFromFileList([params.pickedFile]);
+                                } else {
                                     // This shouldn't happen!
-                                    params.showFileSelectors = true; 
-                                    document.getElementById('hideFileSelectors').style.display =  'inline';
+                                    params.showFileSelectors = true;
+                                    document.getElementById('hideFileSelectors').style.display = 'inline';
                                     document.getElementById('btnConfigure').click();
-                                    setTimeout(function() { 
+                                    setTimeout(function () {
                                         uiUtil.systemAlert('The packaged file cannot be loaded!\nPlease check that it is in the "' + params.archivePath + '" folder\nor pick a new ZIM file.');
-                                    }, 10);                                } 
+                                    }, 10);
+                                }
                             });
                         } else {
-                            params.showFileSelectors = true; 
-                            document.getElementById('hideFileSelectors').style.display =  'inline';
+                            params.showFileSelectors = true;
+                            document.getElementById('hideFileSelectors').style.display = 'inline';
                             document.getElementById('btnConfigure').click();
-                            setTimeout(function() { 
+                            setTimeout(function () {
                                 uiUtil.systemAlert('The previously picked file cannot be found!\nPlease pick a new ZIM file.');
                             }, 10);
                         }
                     }
-                document.getElementById('hideFileSelectors').style.display =  params.showFileSelectors ? 'inline' : 'none';
+                    document.getElementById('hideFileSelectors').style.display = params.showFileSelectors ? 'inline' : 'none';
                 });
             }
         } else {
@@ -1648,7 +1671,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                     selectedStorage = MSApp.createFileFromStorageFile(params.pickedFile);
                                     setLocalArchiveFromFileList([selectedStorage]);
                                     return;
-                                } catch (err){
+                                } catch (err) {
                                     // Probably user has moved or deleted the previously selected file
                                     uiUtil.systemAlert("The previously picked archive can no longer be found!");
                                     console.error("Picked archive not found: " + err);
@@ -1657,15 +1680,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         }
                         //There was no picked file or folder, so we'll try setting the default localStorage
                         //if (!params.pickedFolder) {
-                            //This gets called, for example, if the picked folder or picked file are in FutureAccessList but now are
-                            //no longer accessible. There will be a (handled) error in cosole log, and params.pickedFolder and params.pickedFile will be blank
-                            params.rescan = true;
-                            if (params.localStorage) {
-                                scanUWPFolderforArchives(params.localStorage);
-                            } else {
-                                document.getElementById('btnConfigure').click();
-                            }
-                            return;
+                        //This gets called, for example, if the picked folder or picked file are in FutureAccessList but now are
+                        //no longer accessible. There will be a (handled) error in cosole log, and params.pickedFolder and params.pickedFile will be blank
+                        params.rescan = true;
+                        if (params.localStorage) {
+                            scanUWPFolderforArchives(params.localStorage);
+                        } else {
+                            document.getElementById('btnConfigure').click();
+                        }
+                        return;
                         //}
                     }
                 }
@@ -1697,7 +1720,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             document.getElementById('openLocalFiles').style.display = 'block';
             // Set the main drop zone
             scrollbox.addEventListener('dragover', handleGlobalDragover);
-            scrollbox.addEventListener('dragleave', function(e) {
+            scrollbox.addEventListener('dragleave', function (e) {
                 configDropZone.style.border = '';
             });
             // Also set a global drop zone (allows us to ensure Config is always displayed for the file drop)
@@ -1911,18 +1934,19 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 cookies.removeItem('lastSelectedArchive');
                 cookies.removeItem('lastSelectedArchivePath');
                 if (params.packagedFile && params.storedFile !== params.packagedFile) {
-                    createFakeFileObjectElectron(params.packagedFile, params.archivePath + '/' + params.packagedFile, function(fakeFile) {
+                    createFakeFileObjectElectron(params.packagedFile, params.archivePath + '/' + params.packagedFile, function (fakeFile) {
                     if (fakeFile.size) {
                         params.pickedFile = fakeFile;
-                            setLocalArchiveFromFileList([params.pickedFile]);            
-                        } else { 
+                            setLocalArchiveFromFileList([params.pickedFile]);
+                        } else {
                         // This shouldn't happen!
-                            params.showFileSelectors = true; 
-                            document.getElementById('hideFileSelectors').style.display =  'inline';
+                            params.showFileSelectors = true;
+                            document.getElementById('hideFileSelectors').style.display = 'inline';
                             document.getElementById('btnConfigure').click();
-                            setTimeout(function() { 
+                            setTimeout(function () {
                         uiUtil.systemAlert('The packaged file cannot be loaded!\nPlease check that it is in the "' + params.archivePath + '" folder\nor pick a new ZIM file.');
-                            }, 10);                                } 
+                            }, 10);
+                        }
                 });
                 }
         }
@@ -1950,7 +1974,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             file.path = filepath;
             file.readMode = 'electron';
             // Get file size
-            fs.stat(file.path, function(err, stats) {
+            fs.stat(file.path, function (err, stats) {
                 if (err) {
                     file.size = null;
                     console.error('File cannot be found!', err);
@@ -1980,8 +2004,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         // Hack to make this look similar to a file
                         request.response.name = url;
                         deferred.resolve(request.response);
-                }
-                else {
+                    } else {
                         deferred.reject("HTTP status " + request.status + " when reading " + url);
                     }
                 }
@@ -2056,7 +2079,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 if (!prefix || /^\s/.test(prefix)) {
                     var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
                     if (sel.length) {
-                        sel = sel.replace(/^(.)(.*)/, function(p0, p1, p2) {
+                        sel = sel.replace(/^(.)(.*)/, function (p0, p1, p2) {
                             return p1.toUpperCase() + p2;
                         });
                     }
@@ -2071,119 +2094,119 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 $('#searchArticles').focus();
                 uiUtil.systemAlert("Archive not set : please select an archive");
                 document.getElementById('btnConfigure').click();
+            }
         }
-    }
 
-    /**
-     * Extracts and displays in htmlArticle the first MAX_SEARCH_RESULT_SIZE articles beginning with start
-     * @param {String} start Optional index number to begin the list with
-     * @param {String} prefix Optional search prefix from which to start an alphabetical search
-     */
-    function showZIMIndex(start, prefix) {
-        // If we're searching by title index number (other than 0 or null), we should ignore any prefix
-        if (isNaN(start)) { 
-            prefix = prefix || '';
-        } else {
-            prefix = start > 0 ? '' : prefix;
-        }
-        if (state.selectedArchive !== null && state.selectedArchive.isReady()) {
-            state.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, MAX_SEARCH_RESULT_SIZE, function(dirEntryArray, nextStart) {
-                var docBody = document.getElementById('largeModal');
-                var newHtml = "";
-                for (var i = 0; i < dirEntryArray.length; i++) {
-                    var dirEntry = dirEntryArray[i];
-                    newHtml += "\n<a  class='list-group-item' href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g, "&apos;")
-                        + "'>" + (dirEntry.getTitleOrUrl()) + "</a>";
-                }
-                start = start ? start : 0;
-                var back = start ? '<a href="#" data-start="' + (start - MAX_SEARCH_RESULT_SIZE) +
-                    '" class="continueAnchor">&lt;&lt; Previous ' + MAX_SEARCH_RESULT_SIZE + '</a>' : '';
-                var next = dirEntryArray.length === MAX_SEARCH_RESULT_SIZE ? '<a href="#" data-start="' + nextStart +
-                    '" class="continueAnchor">Next ' + MAX_SEARCH_RESULT_SIZE + ' &gt;&gt;</a>' : '';
-                var backNext = back ? next ? back + ' | ' + next : back : next;
-                backNext = '<div style="float:right;">' + backNext + '</div>\n';
-                var alphaSelector = [];
-                // Set up the alphabetic selector
-                var lower = params.alphaChar.charCodeAt();
-                var upper = params.omegaChar.charCodeAt();
-                if (upper <= lower) {
-                    alphaSelector.push('<a href="#" class="alphaSelector" data-sel="A">PLEASE SELECT VALID START AND END ALPHABET CHARACTERS IN CONFIGURATION</a>');
-                } else {
-                    for (i = lower; i <= upper; i++) {
-                        var char = String.fromCharCode(i);
-                        alphaSelector.push('<a href="#" class="alphaSelector" data-sel="' + char + '">' + char + '</a>');
+        /**
+         * Extracts and displays in htmlArticle the first MAX_SEARCH_RESULT_SIZE articles beginning with start
+         * @param {String} start Optional index number to begin the list with
+         * @param {String} prefix Optional search prefix from which to start an alphabetical search
+         */
+        function showZIMIndex(start, prefix) {
+            // If we're searching by title index number (other than 0 or null), we should ignore any prefix
+            if (isNaN(start)) {
+                prefix = prefix || '';
+            } else {
+                prefix = start > 0 ? '' : prefix;
+            }
+            if (state.selectedArchive !== null && state.selectedArchive.isReady()) {
+                state.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, MAX_SEARCH_RESULT_SIZE, function (dirEntryArray, nextStart) {
+                    var docBody = document.getElementById('largeModal');
+                    var newHtml = "";
+                    for (var i = 0; i < dirEntryArray.length; i++) {
+                        var dirEntry = dirEntryArray[i];
+                        newHtml += "\n<a  class='list-group-item' href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g, "&apos;") +
+                            "'>" + (dirEntry.getTitleOrUrl()) + "</a>";
                     }
-                }
-                // Add selectors for diacritics, etc. for Roman alphabet
-                if (params.alphaChar === 'A' && params.omegaChar == 'Z') {
-                    alphaSelector.push('<a href="#" class="alphaSelector" data-sel="¡">¡¿ÀÑ</a>');
-                    alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="!">!#123</a>');
-                    // Add way of selecting a non-Roman alphabet
-                    var switchAlphaButton = document.getElementById('extraModalFooterContent');
-                    // Don't re-add button and event listeners if they already exist
-                    if (!/button/.test(switchAlphaButton.innerHTML)) {
-                        switchAlphaButton.innerHTML = '<button class="btn btn-primary" style="float:left;" type="button">Switch to non-Roman alphabet</button>';
-                        switchAlphaButton.addEventListener('click', function () {
-                            var alphaLabel = document.getElementById('alphaCharTxt').parentNode;
-                            alphaLabel.style.borderColor = 'red';
-                            alphaLabel.style.borderStyle = 'solid';
-                            alphaLabel.addEventListener('mousedown', function () {
-                                this.style.borderColor = '';
-                                this.style.borderStyle = '';
+                    start = start ? start : 0;
+                    var back = start ? '<a href="#" data-start="' + (start - MAX_SEARCH_RESULT_SIZE) +
+                        '" class="continueAnchor">&lt;&lt; Previous ' + MAX_SEARCH_RESULT_SIZE + '</a>' : '';
+                    var next = dirEntryArray.length === MAX_SEARCH_RESULT_SIZE ? '<a href="#" data-start="' + nextStart +
+                        '" class="continueAnchor">Next ' + MAX_SEARCH_RESULT_SIZE + ' &gt;&gt;</a>' : '';
+                    var backNext = back ? next ? back + ' | ' + next : back : next;
+                    backNext = '<div style="float:right;">' + backNext + '</div>\n';
+                    var alphaSelector = [];
+                    // Set up the alphabetic selector
+                    var lower = params.alphaChar.charCodeAt();
+                    var upper = params.omegaChar.charCodeAt();
+                    if (upper <= lower) {
+                        alphaSelector.push('<a href="#" class="alphaSelector" data-sel="A">PLEASE SELECT VALID START AND END ALPHABET CHARACTERS IN CONFIGURATION</a>');
+                    } else {
+                        for (i = lower; i <= upper; i++) {
+                            var char = String.fromCharCode(i);
+                            alphaSelector.push('<a href="#" class="alphaSelector" data-sel="' + char + '">' + char + '</a>');
+                        }
+                    }
+                    // Add selectors for diacritics, etc. for Roman alphabet
+                    if (params.alphaChar === 'A' && params.omegaChar == 'Z') {
+                        alphaSelector.push('<a href="#" class="alphaSelector" data-sel="¡">¡¿ÀÑ</a>');
+                        alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="!">!#123</a>');
+                        // Add way of selecting a non-Roman alphabet
+                        var switchAlphaButton = document.getElementById('extraModalFooterContent');
+                        // Don't re-add button and event listeners if they already exist
+                        if (!/button/.test(switchAlphaButton.innerHTML)) {
+                            switchAlphaButton.innerHTML = '<button class="btn btn-primary" style="float:left;" type="button">Switch to non-Roman alphabet</button>';
+                            switchAlphaButton.addEventListener('click', function () {
+                                var alphaLabel = document.getElementById('alphaCharTxt').parentNode;
+                                alphaLabel.style.borderColor = 'red';
+                                alphaLabel.style.borderStyle = 'solid';
+                                alphaLabel.addEventListener('mousedown', function () {
+                                    this.style.borderColor = '';
+                                    this.style.borderStyle = '';
+                                });
+                                $('#myModal').modal('hide');
+                                document.getElementById('btnConfigure').click();
+                                window.location.href = "#displaySettingsDiv";
                             });
-                            $('#myModal').modal('hide');
-                            document.getElementById('btnConfigure').click();
-                            window.location.href = "#displaySettingsDiv";
-                        });
+                        }
                     }
-                }
-                // Add diacritics for Greek alphabet
-                if (params.alphaChar === 'Α' && params.omegaChar == 'Ω') {
-                    alphaSelector.push('<a href="#" class="alphaSelector" data-sel="Ϊ">ΪΫά</a>');
-                    alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="΄">ΆΈΉ</a>');
-                }
-                
-                var alphaString = '<div style="text-align:center">[ ' + alphaSelector.join(' | \n') + ' ]</div>\n';
-                var closeButton = '<button class="close" aria-hidden="true" type="button" data-dismiss="modal">&nbsp;&times;&nbsp;</button>';
-                docBody.innerHTML = closeButton + '<br />\n<div style="font-size:120%;"><br />\n' + alphaString + '<br />' + backNext + '</div>\n' + 
-                    '<h2>ZIM Archive Index</h2>\n' +
-                    '<div id="zimIndex" class="list-group">' + newHtml + '\n</div>\n' +
-                    '<div style="font-size:120%">\n' + backNext + '<br /><br />' + alphaString + '</div>\n';
-                var indexEntries = docBody.querySelectorAll('.list-group-item');
-                $(indexEntries).on('click', function (event) {
-                    $("#myModal").modal('hide');
-                    handleTitleClick(event);
-                    return false;
-                });
-                var continueAnchors = docBody.querySelectorAll('.continueAnchor');
-                $(continueAnchors).on('click', function(e) {
-                    document.getElementById('prefix').value = '';
-                    var start = ~~this.dataset.start;
-                    showZIMIndex(start);
-                    return false;
-                });
-                alphaSelector = docBody.querySelectorAll('.alphaSelector');
-                $(alphaSelector).on('click', function(e) {
-                    var char = this.dataset.sel;
-                    document.getElementById('prefix').value = ' ' + char;
-                    showZIMIndex(null, char);
-                    return false;
-                });
-                $('#searchingArticles').hide();
-                $('#articleListWithHeader').hide();
-                var modalTheme = document.getElementById('modalTheme');
-                modalTheme.classList.remove('dark');
-                var determinedTheme = params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme;
-                if (determinedTheme === 'dark') modalTheme.classList.add('dark');
-                $('#myModal').modal({
-                    backdrop: "static"
-                });
-                //if ($('#prefix').is(":focus")) {
-                //    // This removes the focus from prefix
-                //    document.getElementById('findText').click();
-                //    document.getElementById('findText').click();
-                //}
-            }, start);
+                    // Add diacritics for Greek alphabet
+                    if (params.alphaChar === 'Α' && params.omegaChar == 'Ω') {
+                        alphaSelector.push('<a href="#" class="alphaSelector" data-sel="Ϊ">ΪΫά</a>');
+                        alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="΄">ΆΈΉ</a>');
+                    }
+
+                    var alphaString = '<div style="text-align:center">[ ' + alphaSelector.join(' | \n') + ' ]</div>\n';
+                    var closeButton = '<button class="close" aria-hidden="true" type="button" data-dismiss="modal">&nbsp;&times;&nbsp;</button>';
+                    docBody.innerHTML = closeButton + '<br />\n<div style="font-size:120%;"><br />\n' + alphaString + '<br />' + backNext + '</div>\n' +
+                        '<h2>ZIM Archive Index</h2>\n' +
+                        '<div id="zimIndex" class="list-group">' + newHtml + '\n</div>\n' +
+                        '<div style="font-size:120%">\n' + backNext + '<br /><br />' + alphaString + '</div>\n';
+                    var indexEntries = docBody.querySelectorAll('.list-group-item');
+                    $(indexEntries).on('click', function (event) {
+                        $("#myModal").modal('hide');
+                        handleTitleClick(event);
+                        return false;
+                    });
+                    var continueAnchors = docBody.querySelectorAll('.continueAnchor');
+                    $(continueAnchors).on('click', function (e) {
+                        document.getElementById('prefix').value = '';
+                        var start = ~~this.dataset.start;
+                        showZIMIndex(start);
+                        return false;
+                    });
+                    alphaSelector = docBody.querySelectorAll('.alphaSelector');
+                    $(alphaSelector).on('click', function (e) {
+                        var char = this.dataset.sel;
+                        document.getElementById('prefix').value = ' ' + char;
+                        showZIMIndex(null, char);
+                        return false;
+                    });
+                    $('#searchingArticles').hide();
+                    $('#articleListWithHeader').hide();
+                    var modalTheme = document.getElementById('modalTheme');
+                    modalTheme.classList.remove('dark');
+                    var determinedTheme = params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme;
+                    if (determinedTheme === 'dark') modalTheme.classList.add('dark');
+                    $('#myModal').modal({
+                        backdrop: "static"
+                    });
+                    //if ($('#prefix').is(":focus")) {
+                    //    // This removes the focus from prefix
+                    //    document.getElementById('findText').click();
+                    //    document.getElementById('findText').click();
+                    //}
+                }, start);
             }
         }
 
@@ -2197,12 +2220,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             var nbDirEntry = dirEntryArray ? dirEntryArray.length : 0;
             var message;
             if (nbDirEntry >= MAX_SEARCH_RESULT_SIZE) {
-            message = 'First ' + MAX_SEARCH_RESULT_SIZE + ' articles below (refine your search).';
+                message = 'First ' + MAX_SEARCH_RESULT_SIZE + ' articles below (refine your search).';
             } else {
-            message = nbDirEntry + ' articles found.';
+                message = nbDirEntry + ' articles found.';
             }
             if (nbDirEntry === 0) {
-            message = 'No articles found.';
+                message = 'No articles found.';
             }
 
             articleListHeaderMessageDiv.html(message);
@@ -2212,8 +2235,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             var listLength = dirEntryArray.length < MAX_SEARCH_RESULT_SIZE ? dirEntryArray.length : MAX_SEARCH_RESULT_SIZE;
             for (var i = 0; i < listLength; i++) {
                 var dirEntry = dirEntryArray[i];
-            articleListDivHtml += '<a href="#" dirEntryId="' + dirEntry.toStringId().replace(/'/g, '&apos;') +
-                '" class="list-group-item">' + dirEntry.getTitleOrUrl() + '</a>';
+                articleListDivHtml += '<a href="#" dirEntryId="' + dirEntry.toStringId().replace(/'/g, '&apos;') +
+                    '" class="list-group-item">' + dirEntry.getTitleOrUrl() + '</a>';
             }
             articleListDiv.innerHTML = articleListDivHtml;
             // Needed so that results show on top of article
@@ -2234,7 +2257,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          * @param {Event} event
          * @returns {Boolean}
          */
-        function handleTitleClick(event) {       
+        function handleTitleClick(event) {
             var dirEntryId = event.target.getAttribute("dirEntryId");
             findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId);
             return false;
@@ -2268,7 +2291,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          * @param {DirEntry} dirEntry The directory entry of the article to read
          */
         function readArticle(dirEntry) {
-            
+
             if (dirEntry.isRedirect()) {
                 state.selectedArchive.resolveRedirect(dirEntry, readArticle);
             } else {
@@ -2285,7 +2308,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
                 //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
                 localSearch = {};
-                
+
                 var iframeArticleContent = document.getElementById('articleContent');
                 // Hide the display while loading
                 // iframeArticleContent.style.display = 'none';
@@ -2337,10 +2360,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         }, 10);
                     } else {
                         //if (params.contentInjectionMode === 'jquery') {
-                            // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
-                            state.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
-                            // This is needed so that the html is cached in displayArticleInForm
-                            params.lastPageVisit = '';
+                        // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
+                        state.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
+                        // This is needed so that the html is cached in displayArticleInForm
+                        params.lastPageVisit = '';
                         //}
                     }
                 }
@@ -2349,7 +2372,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             if (params.contentInjectionMode === 'serviceworker') {
                 // In ServiceWorker mode, we simply set the iframe src.
                 // (reading the backend is handled by the ServiceWorker itself)
-                
+
                 iframeArticleContent.onload = function () {
                     // Deflect drag-and-drop of ZIM file on the iframe to Config
                     var doc = iframeArticleContent ? iframeArticleContent.contentDocument : null;
@@ -2372,9 +2395,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
                         if (params.printIntercept) printIntercept();
                     }
-                    
+
                     if (/manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker();
-                    
+
                     if (params.allowHTMLExtraction) {
                         var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
                         uiUtil.insertBreakoutLink(determinedTheme);
@@ -2419,7 +2442,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     var readFile = function (dirEntry) {
                         if (dirEntry === null) {
                             console.error("Title " + title + " not found in archive.");
-                            messagePort.postMessage({ 'action': 'giveContent', 'title': title, 'content': '' });
+                            messagePort.postMessage({
+                                'action': 'giveContent',
+                                'title': title,
+                                'content': ''
+                            });
                         } else if (dirEntry.isRedirect()) {
                             state.selectedArchive.resolveRedirect(dirEntry, function (resolvedDirEntry) {
                                 var redirectURL = resolvedDirEntry.namespace + "/" + resolvedDirEntry.url;
@@ -2427,14 +2454,21 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                 // We could send the final content directly, but it is necessary to let the browser know in which directory it ends up.
                                 // Else, if the redirect URL is in a different directory than the original URL,
                                 // the relative links in the HTML content would fail. See #312
-                                messagePort.postMessage({ 'action': 'sendRedirect', 'title': title, 'redirectUrl': redirectURL });
+                                messagePort.postMessage({
+                                    'action': 'sendRedirect',
+                                    'title': title,
+                                    'redirectUrl': redirectURL
+                                });
                             });
                         } else {
                             var mimetype = dirEntry.getMimetype();
                             if (/\bhtml\b/i.test(mimetype)) {
                                 // Intercept files of type html and apply transformations   
                                 var message = {
-                                    'action': 'giveContent', 'title': title, 'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode
+                                    'action': 'giveContent',
+                                    'title': title,
+                                    'mimetype': mimetype,
+                                    'imageDisplay': params.imageDisplayMode
                                 };
                                 if (params.transformedHTML && /<html[^>]*>/.test(params.transformedHTML)) {
                                     // Let's send the content to the ServiceWorker
@@ -2451,14 +2485,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                 messagePort.postMessage(message);
                                 return;
                             }
-                            
+
                             // Let's read the content in the ZIM file
                             state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                                 console.log('SW read binary file for: ' + dirEntry.url);
                                 var mimetype = fileDirEntry.getMimetype();
                                 // Let's send the content to the ServiceWorker
                                 var message = {
-                                    'action': 'giveContent', 'title': title, 'mimetype': mimetype, 'imageDisplay': params.imageDisplayMode, 'content': content.buffer
+                                    'action': 'giveContent',
+                                    'title': title,
+                                    'mimetype': mimetype,
+                                    'imageDisplay': params.imageDisplayMode,
+                                    'content': content.buffer
                                 };
                                 // if (/\bjavascript$/i.test(mimetype)) {
                                 //     // Soome scripts need the doucment to be visible, but we must remove max page width first
@@ -2472,7 +2510,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     };
                     state.selectedArchive.getDirEntryByTitle(title).then(readFile).fail(function (err) {
                         console.error('Failed to read ' + title, err);
-                        messagePort.postMessage({ 'action': 'giveContent', 'title': title, 'content': new Uint8Array });
+                        messagePort.postMessage({
+                            'action': 'giveContent',
+                            'title': title,
+                            'content': new Uint8Array
+                        });
                     });
                 } else {
                     console.error("Invalid message received", event.data);
@@ -2499,15 +2541,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         // scripts used extensively in Stackexchange ZIMs). Note that the regex will match ReactJS <script type="text/html"> markup, which is
         // common in unsupported packaged UIs, e.g. PhET ZIMs.
         var regexpActiveContent = /<script\b(?:(?![^>]+src\b)|(?=[^>]+src\b=["'][^"']+?app\.js))(?!>[^<]+(?:importScript\(\)|toggleOpenSection))(?![^>]+type\s*=\s*["'](?:math\/|[^"']*?math))/i;
-    
+
         // DEV: The regex below matches ZIM links (anchor hrefs) that should have the html5 "donwnload" attribute added to 
         // the link. This is currently the case for epub and pdf files in Project Gutenberg ZIMs -- add any further types you need
         // to support to this regex. The "zip" has been added here as an example of how to support further filetypes
         var regexpDownloadLinks = /^.*?\.epub($|\?)|^.*?\.pdf($|\?)|^.*?\.zip($|\?)/i;
-    
+
         // This matches the data-kiwixurl of all <link> tags containing rel="stylesheet" in raw HTML unless commented out
         var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*(?:href|data-kiwixurl)\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
-        
+
         params.containsMathTexRaw = false;
         params.containsMathTex = false;
         params.containsMathSVG = false;
@@ -2670,8 +2712,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             params.containsMathTexRaw = params.useMathJax &&
                 /stackexchange|askubuntu|superuser|stackoverflow|mathoverflow|serverfault|stackapps/i.test(params.storedFile) ?
                 /[^\\](\$\$?)((?:\\\$|(?!\1)[\s\S])+)\1/.test(htmlArticle) : false;
-                // Below regex is a more complex version, probably erroneous
-                // /(\$\$?)((?:\\(?!\\\$)[\s\S]|(?!\1)[\s\S])+)\1(?:[\s<.,;:?!'")([{\]-])/.test(htmlArticle) : false;
+            // Below regex is a more complex version, probably erroneous
+            // /(\$\$?)((?:\\(?!\\\$)[\s\S]|(?!\1)[\s\S])+)\1(?:[\s<.,;:?!'")([{\]-])/.test(htmlArticle) : false;
             //Simplify any configuration script
             //if (params.containsMathTexRaw) htmlArticle = htmlArticle.replace(/(<script\s+[^>]*?type\s*=\s*['"]\s*text\/x-mathjax-config[^>]+>[^<]+?Hub\.Config\s*\(\s*{\s*)[^<]*?(tex2jax\s*:[^}]+?})\s*,[^<]+(<\/script>)/i, "$1$2});$3");
             // Remove MathJax config script and convert $ delimiters
@@ -2686,13 +2728,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             //     });
             // }
             //Replace all TeX SVGs with MathJax scripts
-             if (params.useMathJax) {
-                 htmlArticle = htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*(['"])((?:[^"']|(?!\1)[\s\S])+)[^>]+>/ig, function (p0, p1, math) {
-                     // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
-                     math = math.replace(/&amp;/g, '&');
-                     return '<script type="math/tex">' + math + '</script>';
-                 });
-             }
+            if (params.useMathJax) {
+                htmlArticle = htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*(['"])((?:[^"']|(?!\1)[\s\S])+)[^>]+>/ig, function (p0, p1, math) {
+                    // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
+                    math = math.replace(/&amp;/g, '&');
+                    return '<script type="math/tex">' + math + '</script>';
+                });
+            }
             params.containsMathTex = params.useMathJax ? /<script\s+type\s*=\s*['"]\s*math\/tex\s*['"]/i.test(htmlArticle) : false;
             params.containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
 
@@ -2747,7 +2789,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 if (/minerva|inserted.style/i.test(testCSS) && (cssCache || zimType != cssSource)) {
                     //Substitute ridiculously long style name TODO: move this code to transformStyles
                     for (var i = arr.length; i--;) { //TODO: move to transfromStyles
-                        arr[i] = /minerva/i.test(arr[i]) ? '<link ' + (params.contentInjectionMode == 'jquery' ? 'data-kiwixurl' : 'href') + 
+                        arr[i] = /minerva/i.test(arr[i]) ? '<link ' + (params.contentInjectionMode == 'jquery' ? 'data-kiwixurl' : 'href') +
                             '="-/s/style-mobile.css" rel="stylesheet" type="text/css">' : arr[i];
                         // Delete stylesheet if will be inserted via minerva anyway (avoid linking it twice)
                         if (/inserted.style/i.test(arr[i]) && /minerva/i.test(testCSS)) {
@@ -2805,7 +2847,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             function injectCSS() {
                 // We have to count the blobArray elements because some may have been spliced out
                 // See https://stackoverflow.com/questions/28811911/find-array-length-in-javascript
-                var blobArrayLength = blobArray.filter(function () { return true; }).length;
+                var blobArrayLength = blobArray.filter(function () {
+                    return true;
+                }).length;
                 if (blobArrayLength >= cssArray.length) { //If all promised values have been obtained
                     var resultsArray = [];
                     var testBlob;
@@ -2860,16 +2904,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 //Inject htmlArticle into iframe
                 uiUtil.clear(); //Void progress messages
                 // Extract any css classes from the html tag (they will be stripped when injected in iframe with .innerHTML)
-                if (params.contentInjectionMode ==='jquery') var htmlCSS = htmlArticle.match(/<html[^>]*class\s*=\s*["']\s*([^"']+)/i);
+                if (params.contentInjectionMode === 'jquery') var htmlCSS = htmlArticle.match(/<html[^>]*class\s*=\s*["']\s*([^"']+)/i);
                 htmlCSS = htmlCSS ? htmlCSS[1] : '';
                 // Tell jQuery we're removing the iframe document: clears jQuery cache and prevents memory leaks [kiwix-js #361]
                 $('#articleContent').contents().remove();
 
                 // Remove from DOM any download alert box that was activated in uiUtil.displayFileDownloadAlert function
                 $('#downloadAlert').hide();
-        
+
                 var iframeArticleContent = document.getElementById('articleContent');
-                
+
                 // Hide the iframe while loading
                 iframeArticleContent.style.display = 'none';
 
@@ -2891,10 +2935,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     var iframeArticleContent = document.getElementById('articleContent');
                     var iframeContentDocument = iframeArticleContent.contentDocument;
                     if (!iframeContentDocument && window.location.protocol === 'file:') {
-                        alert("You seem to be opening kiwix-js with the file:// protocol, which is blocked by your browser for security reasons."
-                                + "\nThe easiest way to run it is to download and run it as a browser extension (from the vendor store)."
-                                + "\nElse you can open it through a web server : either through a local one (http://localhost/...) or through a remote one (but you need SSL : https://webserver/...)"
-                                + "\nAnother option is to force your browser to accept that (but you'll open a security breach) : on Chrome, you can start it with --allow-file-access-from-files command-line argument; on Firefox, you can set privacy.file_unique_origin to false in about:config");
+                        alert("You seem to be opening kiwix-js with the file:// protocol, which is blocked by your browser for security reasons." +
+                            "\nThe easiest way to run it is to download and run it as a browser extension (from the vendor store)." +
+                            "\nElse you can open it through a web server : either through a local one (http://localhost/...) or through a remote one (but you need SSL : https://webserver/...)" +
+                            "\nAnother option is to force your browser to accept that (but you'll open a security breach) : on Chrome, you can start it with --allow-file-access-from-files command-line argument; on Firefox, you can set privacy.file_unique_origin to false in about:config");
                         return;
                     }
                     // Set a global error handler for iframe
@@ -2904,9 +2948,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     };
 
                     // Inject the new article's HTML into the iframe
-                    // var articleContent = iframeContentDocument.documentElement;
-                    // articleContent.innerHTML = htmlArticle;
-                    
+                    var articleContent = iframeContentDocument.documentElement;
+                    articleContent.innerHTML = htmlArticle;
+
                     var docBody = iframeContentDocument.getElementsByTagName('body');
                     docBody = docBody ? docBody[0] : null;
                     if (docBody) {
@@ -2916,7 +2960,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         docBody.addEventListener('dragover', handleIframeDragover);
                         docBody.addEventListener('drop', handleIframeDrop);
                     }
-            
+
                     //Set relative font size + Stackexchange-family multiplier
                     docBody.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
                     //Set page width according to user preference
@@ -2985,7 +3029,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                         refLocation.insertBefore(returnLink, refLocation.firstChild);
                                     }
                                     var refNext = util.getClosestBack(refLocation, function (el) {
-                                        return  /^(H2|DETAILS)$/.test(el.tagName);
+                                        return /^(H2|DETAILS)$/.test(el.tagName);
                                     });
                                     if (refNext) {
                                         if (/DETAILS/.test(refNext.tagName)) {
@@ -3017,9 +3061,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         returnDivs[i].removeEventListener('click', linkListener);
                         returnDivs[i].addEventListener('click', linkListener);
                     }
-                    
+
                     listenForSearchKeys();
-                    
+
                     var currentProtocol = location.protocol;
                     var currentHost = location.host;
                     // Percent-encode dirEntry.url and add regex escape character \ to the RegExp special characters - see https://www.regular-expressions.info/characters.html;
@@ -3095,7 +3139,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     // Document has loaded except for images, so we can now change the startup cookie (and delete) [see init.js]
                     // document.cookie = 'lastPageLoad=success;expires=Thu, 21 Sep 1979 00:00:01 UTC';
                     cookies.removeItem('lastPageLoad');
-                    
+
                     // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
                     if (params.printIntercept) printIntercept();
 
@@ -3106,16 +3150,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
                 // Load the blank article to clear the iframe (NB iframe onload event runs *after* this)
                 // Electron cannot load this for now (CORS ???)
-                // iframeArticleContent.src = "article.html";
+                iframeArticleContent.src = "article.html";
 
                 // Hide the articleContent to prevent flashes in dark mode in some browsers
                 // document.getElementById('articleContent').style.display = 'none';
 
-                var articleContent = iframeArticleContent.contentDocument;
-                articleContent.open('text/html', 'replace');
-                articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
-                articleContent.write(htmlArticle);
-                articleContent.close();
+                // var articleContent = iframeArticleContent.contentDocument;
+                // articleContent.open('text/html', 'replace');
+                // articleContent.write("<!DOCTYPE html>"); // Ensures browsers parse iframe in Standards mode
+                // articleContent.write(htmlArticle);
+                // articleContent.close();
 
             } // End of injectHtml
 
@@ -3138,7 +3182,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     state.selectedArchive.getDirEntryByTitle(decodeURIComponent(source)).then(function (dirEntry) {
                         return state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, mediaArray) {
                             var mimeType = mediaSource.type ? mediaSource.type : dirEntry.getMimetype();
-                            var blob = new Blob([mediaArray], { type: mimeType });
+                            var blob = new Blob([mediaArray], {
+                                type: mimeType
+                            });
                             mediaSource.src = URL.createObjectURL(blob);
                             // In Firefox and Chromium it is necessary to re-register the inserted media source
                             // but do not reload for text tracks (closed captions / subtitles)
@@ -3184,8 +3230,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                         a.type = mimeType;
                                         a.download = downloadFiles[j].filename;
                                         alertMessage.appendChild(a); // NB we have to add the anchor to the document for Firefox to be able to click it
-                                        try { a.click(); }
-                                        catch (err) {
+                                        try {
+                                            a.click();
+                                        } catch (err) {
                                             // If the click fails, use an alternative download method
                                             if (window.navigator && window.navigator.msSaveBlob) {
                                                 // This works for IE11
@@ -3244,7 +3291,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     if (!sel.value) return; // User selected "none"
                     state.selectedArchive.getDirEntryByTitle(sel.dataset.kiwixsrc).then(function (dirEntry) {
                         return state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, trackContents) {
-                            var blob = new Blob([trackContents], { type: 'text/vtt' });
+                            var blob = new Blob([trackContents], {
+                                type: 'text/vtt'
+                            });
                             var t = doc.createElement('track');
                             t.id = 'kiwixSelCC';
                             t.kind = sel.dataset.kiwixkind;
@@ -3307,23 +3356,23 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
         // Load Javascript content
         function loadJavaScriptJQuery() {
-            $('#articleContent').contents().find('script[data-kiwixurl]').each(function() {
+            $('#articleContent').contents().find('script[data-kiwixurl]').each(function () {
                 var script = $(this);
                 var scriptUrl = script.attr("data-kiwixurl");
                 // TODO check that the type of the script is text/javascript or application/javascript
                 var title = uiUtil.removeUrlParameters(decodeURIComponent(scriptUrl));
-                    state.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+                state.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
                     if (dirEntry === null) {
-                            console.log("Error: js file not found: " + title);
+                        console.log("Error: js file not found: " + title);
                     } else {
-                            state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                        state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                             // TODO : JavaScript support not yet functional [kiwix-js #152]
-                                uiUtil.feedNodeWithBlob(script, 'src', content, 'text/javascript', params.allowHTMLExtraction);
-                            });
+                            uiUtil.feedNodeWithBlob(script, 'src', content, 'text/javascript', params.allowHTMLExtraction);
+                        });
                     }
-                    }).fail(function (e) {
-                        console.error("could not find DirEntry for javascript : " + title, e);
-                    });
+                }).fail(function (e) {
+                    console.error("could not find DirEntry for javascript : " + title, e);
+                });
             });
         }
 
@@ -3338,8 +3387,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             var urlParameters;
             var stateLabel;
             if (title && !("" === title)) {
-            // Prevents creating a double history for the same page
-            if (history.state && history.state.title === title) return;
+                // Prevents creating a double history for the same page
+                if (history.state && history.state.title === title) return;
                 stateObj.title = title;
                 urlParameters = "?title=" + title;
                 stateLabel = "Wikipedia Article : " + title;
@@ -3354,14 +3403,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         }
 
 
-       /**
-        * Extracts the content of the given article title, or a downloadable file, from the ZIM
-        * 
-        * @param {String} title The path and filename to the article or file to be extracted
-        * @param {Boolean|String} download A Bolean value that will trigger download of title, or the filename that should
-        *     be used to save the file in local FS (in HTML5 spec, a string value for the download attribute is optional)
-        * @param {String} contentType The mimetype of the downloadable file, if known 
-        */
+        /**
+         * Extracts the content of the given article title, or a downloadable file, from the ZIM
+         * 
+         * @param {String} title The path and filename to the article or file to be extracted
+         * @param {Boolean|String} download A Bolean value that will trigger download of title, or the filename that should
+         *     be used to save the file in local FS (in HTML5 spec, a string value for the download attribute is optional)
+         * @param {String} contentType The mimetype of the downloadable file, if known 
+         */
         function goToArticle(title, download, contentType) {
             //This removes any search highlighting
             clearFindInArticle();
