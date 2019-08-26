@@ -103,7 +103,7 @@ a span {
 
   /*** Background ***/
 html, body {
-    background-color: #00091a !important;
+    background-color: #000010 !important;
     /*background-image: [[bg-choice]] !important;*/
     background-clip: border-box !important;
     background-origin: padding-box !important;
@@ -351,10 +351,10 @@ span[style*="color:#555"], span[style*="background-color:#EE"] {
     padding: 0 1em 0.1em !important;
   }
 
-  ul, .portlet li {
+ul, .portlet li {x
     list-style-image: none !important;
-    background-color: black !important;
-  }
+    background-color: #000010 !important;
+}
 
   table[style*="border:4px ridge"], .jfk-bubble-closebtn {
     border: none !important;
