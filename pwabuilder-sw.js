@@ -109,12 +109,12 @@ self.addEventListener("fetch", function (event) {
 
         // This is where we call the server to get the newest version of the
         // file to use the next time we show view
-        // event.waitUntil(
-        //   fetch(event.request).then(function (response) {
-        //     console.log('[SW] Refreshing CACHE from server...');
-        //     return updateCache(event.request, response);
-        //   })
-        // );
+         event.waitUntil(
+           fetch(event.request).then(function (response) {
+             console.log('[SW] Refreshing CACHE from server...');
+             return updateCache(event.request, response);
+           })
+         );
 
         console.log('[SW] Supplying ' + event.request.url + ' from CACHE...');
         return response;
