@@ -280,7 +280,13 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
             if (index === null) return null;
             return that._file.dirEntryByUrlIndex(index);
         }).then(function(dirEntry) {
-            return dirEntry;
+            if ((dirEntry === null || dirEntry === undefined) && /^A\/[^/]+\/.+/i.test(title)) {
+                console.log("Article " + title + " not available, but moving up one directory to compensate for ZIM coding error...");
+                title = title.replace(/^(A\/)[^/]+\/(.+)$/, '$1$2');
+                return that.getDirEntryByTitle(title);
+            } else {
+                return dirEntry;
+            }
         });
     };
 
