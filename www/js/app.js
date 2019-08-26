@@ -3422,13 +3422,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 if (dirEntry === null || dirEntry === undefined) {
                     document.getElementById('searchingArticles').style.display = 'none';
                     console.error("Article with title " + title + " not found in the archive");
-                    if (/^A\/[^/]+\/.+/i.test(title)) {
-                        console.log("Trying to move up one directory to compensate for possible ZIM coding error...");
-                        title = title.replace(/^(A\/)[^/]+\/(.+)$/, '$1$2');
-                        goToArticle(title, download, contentType);
-                    } else {
-                        goToMainArticle();
-                    }
+                    goToMainArticle();
                 } else if (download) {
                     state.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                         uiUtil.displayFileDownloadAlert(title, download, contentType, content);
