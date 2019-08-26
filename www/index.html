@@ -59,16 +59,12 @@
         // Try to activate Service Worker
         console.log('Trying to activate Service Worker...');
         if ("serviceWorker" in navigator) {
-            if (navigator.serviceWorker.controller) {
-                console.log("Active service worker found, no need to register");
-            } else {
-                // Register the service worker
-                navigator.serviceWorker.register("../pwabuilder-sw.js", {
-                    scope: "../"
-                }).then(function (reg) {
-                    console.log("Service worker has been registered for scope: " + reg.scope);
-                });
-            }
+            // Register the service worker
+            navigator.serviceWorker.register("../pwabuilder-sw.js", {
+                scope: "../"
+            }).then(function (reg) {
+                console.log("Service worker has been registered for scope: " + reg.scope);
+            });
         } else {
             console.log('Service Worker is not available on this platform...');
         }
