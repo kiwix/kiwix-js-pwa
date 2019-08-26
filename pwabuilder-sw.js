@@ -4,6 +4,10 @@
 const CACHE = "sw-precache";
 const precacheFiles = [
   "manifest.json",
+  "www/-/s/style.css",
+  "www/-/s/style-dark.css",
+  "www/-/s/style-dark-invert.css",
+  "www/-/s/style-mobile.css",
   "www/I/s/Icon_External_Link.png",
   "www/css/app.css",
   "www/css/bootstrap.min.css",
@@ -89,7 +93,7 @@ self.addEventListener('message', function (event) {
 const regexpZIMUrlWithNamespace = /(?:^|\/)([^\/]+\/)([-ABIJMUVWX])\/(.+)/;
 
 
-// If any fetch fails, it will look for the request in the cache and serve it from there first
+// Look up fetch in cache, and if it does not exist, try to get it from the network
 self.addEventListener("fetch", function (event) {
   console.log('[SW] Service Worker ' + (event.request.method === "GET" ? 'intercepted ' : 'noted ') + event.request.url, event.request.method);
   if (event.request.method !== "GET") return;
@@ -114,11 +118,11 @@ self.addEventListener("fetch", function (event) {
       function () {
         // The response was not found in the cache so we look for it on the server
         if (/\.zim\w{0,2}\//i.test(event.request.url) && regexpZIMUrlWithNamespace.test(event.request.url)) {
-          // If the user has disabled the display of images, and the browser wants an image, respond with empty SVG
-          // A URL with "?kiwix-display" query string acts as a passthrough so that the regex will not match and
-          // the image will be fetched by app.js  
-          // DEV: If you need to hide more image types, add them to regex below and also edit equivalent regex in app.js
           if (imageDisplay !== 'all' && /(^|\/)[IJ]\/.*\.(jpe?g|png|svg|gif)($|[?#])(?!kiwix-display)/i.test(event.request.url)) {
+            // If the user has disabled the display of images, and the browser wants an image, respond with empty SVG
+            // A URL with "?kiwix-display" query string acts as a passthrough so that the regex will not match and
+            // the image will be fetched by app.js  
+            // DEV: If you need to hide more image types, add them to regex below and also edit equivalent regex in app.js
             var svgResponse;
             if (imageDisplay === 'manual')
               svgResponse = "<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1'><rect width='1' height='1' style='fill:lightblue'/></svg>";
