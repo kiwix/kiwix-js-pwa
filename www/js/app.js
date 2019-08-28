@@ -2296,10 +2296,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             } else {
                 //TESTING//
                 console.log("Initiating HTML load...");
-                console.time("Time to HTML load");
-                console.log("Initiating Document Ready timer...");
-                console.time("Time to Document Ready");
-
+                
                 //Set startup cookie to guard against boot loop
                 //Cookie will signal failure until article is fully loaded
                 //document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
@@ -2572,11 +2569,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
             //TESTING
             console.log("** HTML received **");
-            console.timeEnd("Time to HTML load");
             console.log("Loading stylesheets...");
-            console.time("Time to First Paint");
-            //return;
-
+            
             // Display Bootstrap warning alert if the landing page contains active content
             if (!params.hideActiveContentWarning && params.isLandingPage && params.contentInjectionMode === 'jquery') {
                 if (regexpActiveContent.test(htmlArticle)) uiUtil.displayActiveContentWarning();
