@@ -47,11 +47,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          * @type ZIMArchive
          */
         state.selectedArchive = null;
-
-        // Define globalDropZone (universal drop area) and configDropZone (highlighting area on Config page)
-        var globalDropZone = document.getElementById('search-article');
+        
         var scrollbox = document.getElementById('scrollbox');
-        var configDropZone = document.getElementById('configuration');
 
         /**
          * Resize the IFrame height, so that it fills the whole available height in the window
@@ -1566,7 +1563,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     } else {
                         // We can't find lastSelectedArchive in the archive list, so let's ask the user to pick it
                         //uiUtil.systemAlert(lastSelectedArchive + ' could not be found in the known list of archives!');
-                        document.getElementById('alert-content').innerHTML = '<p>We could not find the archive <b>' + lastSelectedArchive + '</b>!</p><p>Please select its location...</p>';
+                        var message = '<p>We could not find the archive <b>' + lastSelectedArchive + '</b>!</p><p>Please select its location...</p>';
+                        if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined')
+                            message += '<p><i>Note:</i> If you drag-drop an archive into this UWP app, then it will have to be dragged again each time you launch the app. Try double-clicking on the archive instead, or select it using the controls on this page.</p>';
+                        document.getElementById('alert-content').innerHTML = message;
                         $('#alertModal').off('hide.bs.modal');
                         $('#alertModal').on('hide.bs.modal', function () {
                             displayFileSelect();
@@ -1712,23 +1712,22 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             }
         }
 
+        // Define globalDropZone (universal drop area) and configDropZone (highlighting area on Config page)
+        var globalDropZone = document.getElementById('search-article');
+        var configDropZone = document.getElementById('configuration');
+
+        // Set the main drop zone
+        globalDropZone.addEventListener('dragover', handleGlobalDragover);
+        globalDropZone.addEventListener('drop', handleFileDrop);
+        configDropZone.addEventListener('dragleave', function (e) {
+            configDropZone.style.border = '';
+        });
+        
         /**
          * Displays the zone to select files from the archive
          */
         function displayFileSelect() {
             document.getElementById('openLocalFiles').style.display = 'block';
-            // Set the main drop zone
-            scrollbox.addEventListener('dragover', handleGlobalDragover);
-            scrollbox.addEventListener('dragleave', function (e) {
-                configDropZone.style.border = '';
-            });
-            // Also set a global drop zone (allows us to ensure Config is always displayed for the file drop)
-            globalDropZone.addEventListener('dragover', function (e) {
-                e.preventDefault();
-                if (configDropZone.style.display === 'none') document.getElementById('btnConfigure').click();
-                e.dataTransfer.dropEffect = 'link';
-            });
-            globalDropZone.addEventListener('drop', handleFileDrop);
             // This handles use of the file picker
             document.getElementById('archiveFiles').addEventListener('change', setLocalArchiveFromFileSelect);
         }
@@ -1736,6 +1735,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         function handleGlobalDragover(e) {
             e.preventDefault();
             e.dataTransfer.dropEffect = 'link';
+            if (configDropZone.style.display === 'none') document.getElementById('btnConfigure').click();
             configDropZone.style.border = '3px dotted red';
         }
 
