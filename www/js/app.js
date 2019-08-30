@@ -2671,8 +2671,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             //Remove any background:url statements in style blocks as they cause the system to attempt to load them
             htmlArticle = htmlArticle.replace(/background:url\([^)]+\)[^;}]*/ig, '');
 
-            //Remove the stupid details polyfill if we're in Electron/NWJS (if we've compiled for XP, it won't use SW mode anyway)
-            //if (typeof window.fs !== 'undefined') // Actually delete everywhere, it's crap and doesn't recognize Edgium
+            //Remove the details polyfill: it's poor and doesn't recognize Edgium
             htmlArticle = htmlArticle.replace(/<script\b[^<]+details_polyfill\.js[^<]+<\/script>\s*/i, '');
             //And make sure all sections are open
             htmlArticle = htmlArticle.replace(/(<details\b(?![^>]+\sopen)[^>]+)>/ig, '$1 open>');
@@ -2705,29 +2704,23 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             params.containsMathTexRaw = params.useMathJax &&
                 /stackexchange|askubuntu|superuser|stackoverflow|mathoverflow|serverfault|stackapps/i.test(params.storedFile) ?
                 /[^\\](\$\$?)((?:\\\$|(?!\1)[\s\S])+)\1/.test(htmlArticle) : false;
-            // Below regex is a more complex version, probably erroneous
-            // /(\$\$?)((?:\\(?!\\\$)[\s\S]|(?!\1)[\s\S])+)\1(?:[\s<.,;:?!'")([{\]-])/.test(htmlArticle) : false;
-            //Simplify any configuration script
-            //if (params.containsMathTexRaw) htmlArticle = htmlArticle.replace(/(<script\s+[^>]*?type\s*=\s*['"]\s*text\/x-mathjax-config[^>]+>[^<]+?Hub\.Config\s*\(\s*{\s*)[^<]*?(tex2jax\s*:[^}]+?})\s*,[^<]+(<\/script>)/i, "$1$2});$3");
-            // Remove MathJax config script and convert $ delimiters
-            // if (params.containsMathTexRaw) {
-            //     htmlArticle = htmlArticle.replace(/<script\b[^>]+?type=['"]text\/x-mathjax-config['"][^>]*?>MathJax\.Hub\.Config(?:[^<]|<(?!\/script>))+<\/script>/i, '');
-            //     htmlArticle = htmlArticle.replace(/(\$\$?)((?:\\(?!\\\$)[\s\S]|(?!\1)[\s\S])+)\1/g, function(p0, delim, math) {
-            //         var display = /\$\$/.test(delim);
-            //         math = math.replace(/&lt;/gi, '<');
-            //         math = math.replace(/&gt;/gi, '>');
-            //         math = math.replace(/&amp;/gi, '&');
-            //         return '<script type="math/tex' + (display ? '; mode=display' : '') + '">' + math + '</script>';
-            //     });
-            // }
             //Replace all TeX SVGs with MathJax scripts
             if (params.useMathJax) {
-                htmlArticle = htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*(['"])((?:[^"']|(?!\1)[\s\S])+)[^>]+>/ig, function (p0, p1, math) {
-                    // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
-                    math = math.replace(/&amp;/g, '&');
-                    return '<script type="math/tex">' + math + '</script>';
-                });
+                htmlArticle = htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*(['"])((?:[^"']|(?!\1)[\s\S])+)[^>]+>/ig,
+                    function (p0, p1, math) {
+                        // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
+                        math = math.replace(/&amp;/g, '&');
+                        return '<script type="math/tex">' + math + '</script>';
+                    });
+                // Deal with any newer MathML blocks
+                htmlArticle = htmlArticle.replace(/(<math\b[^>]+alttext=(["']))((?:[^"']|[\s\S](?!\2))+?)(\2(?:[^<]|<(?!\/math))+(?:[^<]|<(?!img))+)<img\b[^>]+?class=["'][^"']*?mwe-math-fallback-image[^>]+>/ig,
+                    function (_p0, p1, _p2, math, p4) {
+                        // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
+                        math = math.replace(/&amp;/g, '&');
+                        return p1 + math + p4 + '<script type="math/tex">' + math + '</script>';
+                    });
             }
+
             params.containsMathTex = params.useMathJax ? /<script\s+type\s*=\s*['"]\s*math\/tex\s*['"]/i.test(htmlArticle) : false;
             params.containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
 
