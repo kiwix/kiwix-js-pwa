@@ -2596,25 +2596,23 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 if (params.rememberLastPage) {
                     cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
                     //Store current document's raw HTML in localStorage for fast restart
-                    if ('localStorage' in window && window['localStorage'] !== null) {
-                        try {
-                            // Ensure we don't go over quota
-                            localStorage.removeItem('lastPageHTML');
-                            localStorage.setItem('lastPageHTML', htmlArticle);
-                        } catch (err) {
-                            if (/quota\s*exceeded/i.test(err.message)) {
-                                // Note that Edge gives a quotaExceeded message when running from localhost even if the quota isn't exceeded
-                                // Basically, it means localStorage is not supported in Edge running from localhost...
-                                if (params.cookieSupport == 'local_storage') {
-                                    uiUtil.systemAlert('Your localStorage has exceeded its quota, so we are forced to clear it.\n' +
-                                        'Because your browser is using localStorage for remembering your settings, these may\n' +
-                                        'have been reset. Next time the app launches, please go to Config and set them again.');
-                                }
-                                console.log('Clearing localStorage because quota was exceeded...');
-                                localStorage.clear();
-                            } else {
-                                console.error("Something went wrong with localStorage: ", err);
+                    try {
+                        // Ensure we don't go over quota
+                        localStorage.removeItem('lastPageHTML');
+                        localStorage.setItem('lastPageHTML', htmlArticle);
+                    } catch (err) {
+                        if (/quota\s*exceeded/i.test(err.message)) {
+                            // Note that Edge gives a quotaExceeded message when running from localhost even if the quota isn't exceeded
+                            // Basically, it means localStorage is not supported in Edge running from localhost...
+                            if (params.cookieSupport == 'local_storage') {
+                                uiUtil.systemAlert('Your localStorage has exceeded its quota, so we are forced to clear it.\n' +
+                                    'Because your browser is using localStorage for remembering your settings, these may\n' +
+                                    'have been reset. Next time the app launches, please go to Config and set them again.');
                             }
+                            console.log('Clearing localStorage because quota was exceeded...');
+                            localStorage.clear();
+                        } else {
+                            console.error("Something went wrong with localStorage: ", err);
                         }
                     }
                     params.lastPageHTML = htmlArticle;
