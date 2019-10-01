@@ -337,9 +337,8 @@ define([], function () {
     };
 
     // DEV: If you support more packaged files, add to this list
-    // Disable in Electron app during testing
     var regexpFilter = /_medicine/.test(params.packagedFile) ? /^(?!.+_medicine_)[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$\s+/mig : null;
-    // regexpFilter = /wikivoyage/.test(params.packagedFile) ? /^(?!.+wikivoyage_)[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$\s+/mig : regexpFilter;
+    regexpFilter = /wikivoyage/.test(params.packagedFile) ? /^(?!.+wikivoyage_)[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$\s+/mig : regexpFilter;
     
     function requestXhttpData(URL, lang, kiwixDate) {
         if (!params.allowInternetAccess) {

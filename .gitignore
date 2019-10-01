@@ -8,7 +8,7 @@ _pkginfo.txt
 /BundleArtifacts/
 /archives/*.zim
 /AppPackages/*wikivoyage*
+/AppPackages/*wikimed*
 /node_modules/
-
 package-lock.json
 .vscode/launch.json
