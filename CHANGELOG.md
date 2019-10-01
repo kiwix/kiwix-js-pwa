@@ -1,6 +1,7 @@
 ## Release 0.9.9.95 WikiMed (beta)
 * UPDATE: September 2019 update of WikiMed ZIM archive to wikipedia_en_medicine_maxi_2019-09.zim
 * UPDATE: Improved support for stylesheets in latest Wikipedia ZIMs
+* UPDATE: Updated the Privacy Policy
 * ENHANCEMENT: The base app (not UWP) can now be installed as a PWA (visit https://kiwix.github.io/kiwix-js-windows/www/index.html to try)
 * ENHANCEMENT: Assets are now cached in Service Worker mode
 * ENHANCEMENT: Support MathML in latest Wikimedia ZIMs
