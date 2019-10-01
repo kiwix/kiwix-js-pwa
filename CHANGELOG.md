@@ -1,3 +1,13 @@
+## WIP Release 0.9.9.95 (beta)
+* UPDATE: Improved support for stylesheets in latest Wikipedia ZIMs
+* UPDATE: Updated the Privacy Policy
+* ENHANCEMENT: The base app (not UWP) can now be installed as a PWA (visit https://kiwix.github.io/kiwix-js-windows/www/index.html to try)
+* ENHANCEMENT: Assets are now cached in Service Worker mode
+* ENHANCEMENT: Support MathML in latest Wikimedia ZIMs
+* FIX: Fixed broken drag-and-drop
+* FIX: Enable page extraction in Service Worker mode
+* FIX: Rare condition where a missing ZIM causes the app to crash on load
+
 ## Release 0.9.9.94 (beta)
 * ENHANCEMENT: Provide an alert if a packaged or picked file cannot be found
 * ENHANCEMENT: App can now be compiled with Electron or NWJS to support Win XP/7/8.1 (see [releases](https://github.com/kiwix/kiwix-js-windows/releases))
