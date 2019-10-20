@@ -31,12 +31,14 @@ for Windows 10 (Mobile) is by Geoffrey Kantaris. I can be contacted by email: eg
 
 # Privacy Policy
 
-Kiwix JS Wikivoyage UWP works entirely offline unless you specifically request otherwise on the Configuration page.
-We do not collect any of your personal data and don't even know what you are doing with this application.
+Kiwix JS Wikivoyage works offline, and does not collect or record any of your personal data. It
+only remembers your browsing history for the duration of a session (for the purpose of returning to previously
+viewed pages). This history is lost on exiting the app and is not recorded in any way.                     
 
 By default, this application will remember your last-visited page between sessions using a local cookie
 that is accessible only by this app on this device. If you are accessing sensitive information that you do
-not wish to be displayed next time you open this app, we recommend that you [turn this option off](file:///C:/Users/geoff/Source/Repos/kiwix-js-windows-wikimed/www/index.html#privacy) in the Configuration options.            
+not wish to be displayed next time you open this app, we recommend that you turn this option off in the
+Configuration options.
 
 This application only reads the archive files that you explicitly select on your device and files included in
 its own package: it is not capable of reading any other files. It will only access the Kiwix download server if

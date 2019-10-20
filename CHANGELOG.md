@@ -1,20 +1,17 @@
-## WIP Release 0.9.9.95 (beta)
-* UPDATE: Improved support for stylesheets in latest Wikipedia ZIMs
-* UPDATE: Updated the Privacy Policy
+## Release 0.9.9.95 Wikivoyage (beta)
+* UPDATE: October 2019 update of Wikvoyage ZIM archive to wikivoyage_en_all_maxi_2019-10.zim
+* UPDATE: Improved support for stylesheets in latest Wikimedia ZIMs
+* UPDATE: Updated the [Privacy Policy](https://github.com/kiwix/kiwix-js-windows/tree/Kiwix-JS-Wikivoyage-dev#privacy-policy)
 * ENHANCEMENT: The base app (not UWP) can now be installed as a PWA (visit https://kiwix.github.io/kiwix-js-windows/www/index.html to try)
 * ENHANCEMENT: Assets are now cached in Service Worker mode
 * ENHANCEMENT: Support MathML in latest Wikimedia ZIMs
+* ENHANCEMENT: Provide an alert if a packaged or picked file cannot be found
+* ENHANCEMENT: App can now be compiled with Electron or NWJS to support Win XP/7/8.1 (see [releases](https://github.com/kiwix/kiwix-js-windows/releases))
+* ENHANCEMENT: Fallback to localStorage if cookies are not supported (e.g. running Chromium from file:///)
+* FIX: Bug causing localStorage to fill up has been fixed
 * FIX: Fixed broken drag-and-drop
 * FIX: Enable page extraction in Service Worker mode
 * FIX: Rare condition where a missing ZIM causes the app to crash on load
-
-## Release 0.9.9.94 (beta)
-* ENHANCEMENT: Provide an alert if a packaged or picked file cannot be found
-* ENHANCEMENT: App can now be compiled with Electron or NWJS to support Win XP/7/8.1 (see [releases](https://github.com/kiwix/kiwix-js-windows/releases))
-* ENHANCEMENT: CORS errors are now detected and a message provided to the user to help resolve
-* ENHANCEMENT: Fallback to localStorage if cookies are not supported (e.g. running Chromium from file:///)
-* FIX: Bug with equations containing apostrophes
-* FIX: ZIMs running in quirks mode are now patched to run in standards mode
 * FIX: Better algorithm for adding missing notes backlinks
 * FIX: Better process for hiding navbar (though Bootstrap still ignores on mobile)
 * FIX: All blocks are now opened for details-summary tags
@@ -27,18 +24,9 @@
 * FIX: Update printing filters to support deatils-summary ZIMs
 * FIX: Rare condition where a missing ZIM causes the app to crash on load
 * FIX: Article is now re-loaded on change of content injection mode
-* FIX: Scripts no longer run in Quirks mode (for clients supporting Service Worker)
-* UPDATE: August 2019 update of Ray Charles ZIM
 
-## Release 0.9.9.91 (beta)
-* FIX: Remembered last page is now properly blanked on new archive load
-* FIX: The article content div is now hidden until the HTML for the requested article is injected
-* FIX: Number of stylesheets retrieved from ZIM was not being counted properly, causing some pages to load twice
-* FIX: New MediaWiki ZIMs with details-summary tags are now supported
-* FIX: Low-level ZIM reader now conforms to libzim logic in deriving title from url
-* FIX: Low-level ZIM reader now reads the MIME type list from the ZIM
-* FIX: A system alert utility is now provided, to avoid using synchronous alert()
-* FIX: Bug causing localStorage to fill up has been fixed
+## Release 0.9.9.92 Wikivoyage (beta)
+* UPDATE: July 2019 update of Wikvoyage ZIM archive to wikivoyage_en_all_novid_2019-07.zim* FIX: Bug causing localStorage to fill up has been fixed
 * FIX: Various tweaks to cached and transformed styles
 * FIX: Many more equations now rendered correctly due to change of engine
 * FIX: Service Worker mode now works in browser context (not app context)
