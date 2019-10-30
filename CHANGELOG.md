@@ -7,6 +7,7 @@
 * FIX: Fixed broken drag-and-drop
 * FIX: Enable page extraction in Service Worker mode
 * FIX: Rare condition where a missing ZIM causes the app to crash on load
+* FIX: Fixed broken display of active content warning
 
 ## Release 0.9.9.94 (beta)
 * ENHANCEMENT: Provide an alert if a packaged or picked file cannot be found
