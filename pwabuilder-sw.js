@@ -47,6 +47,11 @@ const precacheFiles = [
   "www/js/lib/zimfile.js"
 ];
 
+// DEV: add any URL schemata that should be excluded from caching with the Cache API to the regex below
+// As of 08-2019 the chrome-extension: schema is incompatible with the Cache API
+// 'example-extension' is included to show how to add another schema if necessary
+var excludedURLSchema = /^(?:chrome-extension|example-extension):/i;
+
 self.addEventListener("install", function (event) {
   console.log("[SW] Install Event processing");
 
@@ -56,7 +61,9 @@ self.addEventListener("install", function (event) {
   event.waitUntil(
     caches.open(CACHE).then(function (cache) {
       console.log("[SW] Caching pages during install");
-      return cache.addAll(precacheFiles);
+      return cache.addAll(precacheFiles).then().catch(function(err) {
+          console.error('There was an error precaching the app because', err);
+      });
     })
   );
 });
@@ -109,7 +116,7 @@ self.addEventListener("fetch", function (event) {
 
         // This is where we call the server to get the newest version of the
         // file to use the next time we show view
-         event.waitUntil(
+        if (!excludedURLSchema.test(event.request.url)) event.waitUntil(
            fetch(event.request).then(function (response) {
              console.log('[SW] Refreshing CACHE from server...');
              return updateCache(event.request, response);
@@ -185,7 +192,7 @@ self.addEventListener("fetch", function (event) {
                 var httpResponse = new Response(msgEvent.data.content, responseInit);
 
                 // Add or update css or javascript assets to the cache
-                if (/(text|application)\/(css|javascript)/i.test(contentType)) {
+                if (!excludedURLSchema.test(event.request.url) && /(text|application)\/(css|javascript)/i.test(contentType)) {
                   updateCache(event.request, httpResponse.clone());
                 }
 
@@ -206,7 +213,7 @@ self.addEventListener("fetch", function (event) {
         } else {
           return fetch(event.request).then(function (response) {
             // If request was success, add or update it in the cache
-            event.waitUntil(updateCache(event.request, response.clone()));
+            if (!excludedURLSchema.test(event.request.url)) event.waitUntil(updateCache(event.request, response.clone()));
             return response;
           }).catch(function (error) {
             console.log("[SW] Network request failed and no cache.", error);

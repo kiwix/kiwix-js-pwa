@@ -218,7 +218,7 @@ define(['q'], function (q) {
                 if (err) { 
                     console.error('Could not find file!', err);
                 } else {
-                    fs.read(fd, new Uint8Array(size), 0, size, begin, function (err, bytesRead, data) {
+                    fs.read(fd, Buffer.alloc(size), 0, size, begin, function (err, bytesRead, data) {
                         if (err) deferred.reject(err);
                         else deferred.resolve(data);
                         fs.close(fd, function (err) {
