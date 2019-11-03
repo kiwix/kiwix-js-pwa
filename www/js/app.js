@@ -2710,6 +2710,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     function (p0, p1, math) {
                         // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
                         math = math.replace(/&amp;/g, '&');
+                        // Change any mbox commands to fbox (because KaTeX doesn't support mbox)
+                        math = math.replace(/mbox{/g, 'fbox{');
                         return '<script type="math/tex">' + math + '</script>';
                     });
                 // Deal with any newer MathML blocks
@@ -2717,6 +2719,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     function (_p0, p1, _p2, math, p4) {
                         // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
                         math = math.replace(/&amp;/g, '&');
+                        // Change any mbox commands to fbox (because KaTeX doesn't support mbox)
+                        math = math.replace(/mbox{/g, 'fbox{');
                         return p1 + math + p4 + '<script type="math/tex">' + math + '</script>';
                     });
             }
