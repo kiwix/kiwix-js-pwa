@@ -688,7 +688,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             $('#configuration').hide();
             $('#formArticleSearch').show();
             if (!activeBtn || activeBtn == 'btnHome') {
-                document.getElementById('articleContent').style.display = 'block';
+                setTimeout(function() {
+                    document.getElementById('articleContent').style.display = 'block';
+                }, 50);
             }
             $("#articleList").empty();
             $('#articleListHeaderMessage').empty();
