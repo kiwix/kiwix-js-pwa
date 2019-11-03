@@ -225,7 +225,8 @@ define(['uiUtil'], function (uiUtil) {
             if (params.imageDisplayMode === 'manual') {
                 prepareManualExtraction();
             } else {
-                lazyLoad();
+                // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
+                setTimeout(lazyLoad, 100);
             }
         }
         setTimeout(loadMathJax, 1000);
@@ -244,7 +245,8 @@ define(['uiUtil'], function (uiUtil) {
                 documentImages[i].src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
                 documentImages[i].style.opacity = '0';
             }
-            lazyLoad();
+            // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
+            setTimeout(lazyLoad, 100);
         } else {
             // User wishes to extract images manually
             prepareManualExtraction();
