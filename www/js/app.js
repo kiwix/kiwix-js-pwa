@@ -1170,7 +1170,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 }
             }
             //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
-            if (cookies.getItem('version') != params.version) {
+            if (cookies.getItem('version') !== params.version) {
                 firstRun = true;
                 // On some platforms, bootstrap's jQuery functions have not been injected yet, so we have to run in a timeout
                 setTimeout(function () {
