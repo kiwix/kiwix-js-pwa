@@ -44,7 +44,17 @@ const precacheFiles = [
   "www/js/lib/zimArchive.js",
   "www/js/lib/zimArchiveLoader.js",
   "www/js/lib/zimDirEntry.js",
-  "www/js/lib/zimfile.js"
+  "www/js/lib/zimfile.js",
+  "www/js/katex/katex.min.js",
+  "www/js/katex/katex.min.css",
+  "www/js/katex/contrib/mathtex-script-type.min.js",
+  "www/js/katex/fonts/KaTeX_AMS-Regular.woff2",
+  "www/js/katex/fonts/KaTeX_Main-Bold.woff2",
+  "www/js/katex/fonts/KaTeX_Main-Regular.woff2",
+  "www/js/katex/fonts/KaTeX_Math-Italic.woff2",
+  "www/js/katex/fonts/KaTeX_Size2-Regular.woff2",
+  "www/js/katex/fonts/KaTeX_Size3-Regular.woff2",
+  "www/js/katex/fonts/KaTeX_Size4-Regular.woff2"
 ];
 
 self.addEventListener("install", function (event) {
