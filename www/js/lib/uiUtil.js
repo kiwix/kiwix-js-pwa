@@ -240,13 +240,15 @@ define(['util'], function(util) {
     function displayActiveContentWarning() {
         // We have to add the alert box in code, because Bootstrap removes it completely from the DOM when the user dismisses it
         var alertHTML =
-            '<div id="activeContent" class="alert alert-warning alert-dismissible fade in">' +
+            '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
                 '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
                 '<strong>Unable to display active content:</strong> To use Archive Index <b><i>type a space</b></i> in the box above, or else ' +
 '<a id="swModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to Service Worker mode</a> ' +
                 'if your platform supports it. &nbsp;[<a id="stop" href="#displaySettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
-        document.getElementById('alertBoxHeader').innerHTML = alertHTML;
+        var alertBoxHeader = document.getElementById('alertBoxHeader');
+        alertBoxHeader.innerHTML = alertHTML;
+        alertBoxHeader.style.display = 'block';
         ['swModeLink', 'stop'].forEach(function(id) {
             // Define event listeners for both hyperlinks in alert box: these take the user to the Config tab and highlight
             // the options that the user needs to select
@@ -263,6 +265,7 @@ define(['util'], function(util) {
                         thisLabel.style.borderStyle = '';
                     });
                 });
+                alertBoxHeader.style.display = 'none';
                 document.getElementById('btnConfigure').click();
             });
         });
