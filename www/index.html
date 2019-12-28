@@ -107,14 +107,13 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in <span class="version">0.9 (beta)</span></h3>
                         <ul style="padding-left: 15px;">
-                            <li>Read the updated <a href="https://github.com/kiwix/kiwix-js-windows#privacy-policy" target="_blank">Privacy Policy&nbsp;<img src="I/s/Icon_External_Link.png"></a> (you can also read it in <b>About</b>&nbsp;<span class="glyphicon glyphicon-info-sign"></span>)</li>
-                            <li>App can now be installed as Progressive Web App (PWA) - see GitHub repo</li>
-                            <li>Assets are now cached in Service Worker mode (PWA)</li>
-                            <li>Support for new MathML in latest Wikimedia ZIMs</li>
-                            <li>Improved support for stylesheets in latest Wikimedia ZIMs</li>
-                            <li>Fixed broken drag-and-drop</li>
-                            <li>Fixed rare condition where missing ZIM caused app to crash on startup</li>
-                            <li>Fixed broken display of active content warning</li>
+                            <li>Fixed broken display of Kiwix download library</li>
+                            <li>Top toolbar no longer disappears when scrolling in mobile app</li>
+                            <li>All images above the fold are now loaded (async timing of image scanning was premature)</li>
+                            <li>Math typeset by KaTeX is rendered better when there are mbox statements (fbox is used instead)</li>
+                            <li>Updated KaTeX library to v0.11.1</li>
+                            <li>Include more files in PWA payload to allow better offline functionality if using app as PWA</li>
+                            <li>Appxbundle is now signed with Kiwix certificate for a better sideloading experience</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md" target="_blank">Full changelog...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>
@@ -216,8 +215,8 @@
             <div id="progressMessage" style="display: none;" class="message"></div>
         </div>
     <section id="search-article" role="region">
-        <header id="top" style="width:100%;">
-            <nav id="navbar" class="navbar navbar-inverse navbar-fixed-top" style="transition: top 0.3s;" role="navigation">
+        <header id="top" style="width:100%; transition: top 0.3s;">
+            <nav id="navbar" class="navbar navbar-inverse" style="" role="navigation">
                 <div class="container-fluid">
                     <div class="navbar-header" id="container">
                         <form id="formArticleSearch">
@@ -229,7 +228,7 @@
                                         <!--button -->
                                     </span>
                                     <input type="search" id="prefix" placeholder="Search or type a space..."
-                                           class="form-control" />
+                                           class="form-control" style="z-index: 0;" />
                                     <span class="input-group-btn">
                                         <a class="btn btn-primary" title="Article Search" id="searchArticles" style="display:none;"><span class="glyphicon glyphicon-book"></span></a>
                                         <a class="btn btn-primary" title="Alt-F: Find and highlight text in article..." id="findText"><span class="glyphicon glyphicon-search"></span></a>
@@ -252,7 +251,7 @@
             </nav>
         </header>
         <article class="view-content" id="article">
-            <div id="scrollbox" class="container" style="position:fixed;overflow:auto;width:100%;">
+            <div id="scrollbox" class="container" style="position:relative;z-index:-2;overflow:auto;width:100%;">
                 <div id="about" style="display: none;" class="category-padding">
                     <div class="returntoArticle" style="text-align:center;padding-top:50px;"></div>
                     <h2>
@@ -740,16 +739,16 @@
                     <br />It will suggest articles starting with the letters you type.
                 </div>
                 <!-- List of articles matching the typed prefix -->
-                <div id="articleListWithHeader" style="display: none; top:42px;" class="container">
+                <div id="articleListWithHeader" style="display: none;" class="container">
                     <span id="articleListHeaderMessage"></span>
                     <div id="articleList" class="list-group">
                     </div>
                 </div>
             </div>
             <!-- Bootstrap alert box -->
-            <div id="alertBoxHeader" style="text-align: center; position: relative; z-index: 1; margin-top: 40px;"></div>
+            <div id="alertBoxHeader" style="text-align: center; position: relative; z-index: 1; display: none;"></div>
             <!-- Attribute nwdisable prevents scripts in iframe accessing the nwjs node APIs -->
-            <iframe id="articleContent" class="articleIFrame" style="transition: top 0.3s;" nwdisable></iframe>
+            <iframe id="articleContent" class="articleIFrame" nwdisable></iframe>
         </article>
         <footer id="footer">
             <!-- Bootstrap alert box -->
