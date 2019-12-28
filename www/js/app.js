@@ -59,7 +59,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             document.getElementById('top').style.position = "relative";
             scrollbox.style.position = "fixed";
             scrollbox.style.height = window.innerHeight + "px";
-            document.getElementById('articleContent').style.position = "fixed";
+            document.getElementById('articleContent').style.position = "relative";
 
             if (document.getElementById('articleContent').style.display !== "none") {
                 scrollbox.style.position = "relative";
@@ -203,11 +203,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 $('#articleListWithHeader').show();
                 document.getElementById('articleContent').style.position = 'static';
             }
+            document.getElementById('scrollbox').style.zIndex = 0;
         });
         // Hide the search resutls if user moves out of prefix field
         $('#prefix').on('blur', function () {
             $('#articleListWithHeader').hide();
             document.getElementById('articleContent').style.position = 'fixed';
+            document.getElementById('scrollbox').style.zIndex = -2;
         });
 
         //Add keyboard shortcuts
@@ -599,20 +601,24 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         document.getElementById('btnHomeBottom').addEventListener('click', function () {
             document.getElementById('btnHome').click();
         });
+
         document.getElementById('btnTop').addEventListener('click', function () {
-            //Ensures toolbar is shown after hidden
-            var navbar = document.getElementById('navbar');
-            if (params.hideToolbar && navbar.style.top == "-50px") {
-                var iframe = document.getElementById('articleContent');
-                navbar.style.top = 0;
-                iframe.style.top = navbar.getBoundingClientRect().height + 'px';
-                return;
+            var header = document.getElementById('top');
+            var article = document.getElementById('article');
+            var iframe = document.getElementById('articleContent');
+            header.style.zIndex = 0;
+            // If the toolbar is hidden, show it instead of jumping to top
+            if (/-[\d.]+px/.test(article.style.top)) {
+                article.style.top = '0';
+                iframe.style.zIndex = -1;
+            } else {
+                iframe.contentWindow.scrollTo({
+                    top: '0',
+                    behavior: 'smooth'
+                });
+                document.getElementById('search-article').scrollTop = 0;
+                iframe.style.zIndex = 0;
             }
-            document.getElementById('articleContent').contentWindow.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-            document.getElementById('search-article').scrollTop = 0;
         });
         // Top menu :
         document.getElementById('btnHome').addEventListener('click', function () {
@@ -898,18 +904,25 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             checkToolbar();
         });
 
-        // This is the scrollFunction to be attached in checkToolbar()
-        var navbar = document.getElementById('navbar');
+        var header = document.getElementById('top');
+        var navbarHeight = document.getElementById('navbar').getBoundingClientRect().height + 'px';
+        var article = document.getElementById('article');
         var iframe = document.getElementById('articleContent');
+        var prefix = document.getElementById('prefix');
+        var findInArticle = document.getElementById('findInArticle');
+
+        // This is the scrollFunction to be attached in checkToolbar()
         var scrollFunction = function () {
-            if (iframe.contentDocument.body.scrollTop > 20) {
-                iframe.style.top = '0';
-                navbar.style.top = '-50px';
+            iframe.style.zIndex = 0;
+            // Hide the search bar if user has scrolled and search elements are not selected
+            if (document.getElementById('articleContent').contentWindow.scrollY > 20 && document.activeElement != prefix && document.activeElement != findInArticle) {
+                article.style.top = '-' + navbarHeight;
+                header.style.zIndex = -1;
+                //document.getElementById('scrollbox').style.zIndex = 0;
             } else {
-                navbar.style.top = 0;
-                setTimeout(function () {
-                    iframe.style.top = navbar.getBoundingClientRect().height + 'px';
-                }, 50);
+                //header.style.top = '0';
+                article.style.top = '0';
+                header.style.zIndex = 1;
             }
         };
 
@@ -920,8 +933,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 scrollFunction();
             } else {
                 // Ensure toolbar is restored
-                navbar.style.top = 0;
-                iframe.style.top = navbar.getBoundingClientRect().height + 'px';
+                article.style.top = '-' + navbarHeight;
+                header.style.zIndex = 0;
+                iframe.style.zIndex = -1;
+                setTimeout(function () {
+                    iframe.style.zIndex = 0;
+                    article.style.top = '0';
+                    header.style.zIndex = 1;
+                }, 500);
             }
         }
 
@@ -2046,7 +2065,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 if (prefix && prefix.length > 0) {
                     document.getElementById('searchArticles').click();
                 }
-            }, 500);
+            }, 1000);
         }
 
         function listenForSearchKeys() {
@@ -2249,7 +2268,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 return false;
             });
             $('#searchingArticles').hide();
-            document.getElementById('articleListWithHeader').style.top = document.getElementById('navbar').getBoundingClientRect().height + 'px';
+            //document.getElementById('articleListWithHeader').style.top = document.getElementById('navbar').getBoundingClientRect().height + 'px';
             $('#articleListWithHeader').show();
         }
 

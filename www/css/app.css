@@ -42,6 +42,7 @@
 [role=region] > .view-content {
     margin: 0;
     position: relative; /*Fixes #250 Random button display bug in W10M */
+    height: 0;
 }
 
 [role=region] > footer {
@@ -139,6 +140,8 @@ div:not(.panel-success, .alert-message) {
     position: fixed;
     width: 100%;
     border: 0;
+    transition: top 0.3s;
+    z-index: 0;
 }
 
 .category-padding {
@@ -525,10 +528,10 @@ pre {
         }
 
         /* Pour réduire la taille du menu en haut */
-        .navbar {
+        /*.navbar {
             min-height: 20px !important;
             margin-bottom: 1px !important;
-        }
+        }*/
         /*.navbar-brand, .navbar-nav a { /* GK added navbar-nav a*/
         /*padding-top: 2px !important;
         padding-bottom: 1px !important;
@@ -539,13 +542,13 @@ pre {
         padding-bottom: 15px !important;
     }*/
 
-        .navbar-toggle {
+        /*.navbar-toggle {
             padding-top: 2px !important;
             padding-bottom: 2px !important;
             margin-top: 2px !important;
             margin-bottom: 0px !important;
             background-color: lightgray !important;
-        }
+        }*/
         /* Pour réduire la taille des éléments et boutons dans l'aréa de navégation - GK
     .navbar-nav, .navbar-nav > li {
         padding-top: 2px !important;
