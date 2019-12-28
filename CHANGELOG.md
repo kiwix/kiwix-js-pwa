@@ -1,4 +1,18 @@
-## WIP Release 0.9.9.95 (beta)
+# Changelog
+
+## Release 0.9.9.96 (beta)
+
+* FIX: Broken display of Kiwix download library
+* FIX: Search bar always remains on-screen if selected (in non-mobile contexts)
+* FIX: All images above the fold are now loaded (async timing of image scanning was premature)
+* FIX: Math typeset by KaTeX is rendered better when there are mbox statements (fbox is used instead)
+* UPDATE: Updated KaTeX library to v0.11.1
+* ENHANCEMENT: Include more files in PWA payload to allow better offline functionality in PWA scenarios
+* ENHANCEMENT: Appxbundle is now signed with Kiwix certificate for a better sideloading experience
+* KNOWN ISSUE: In mobile contexts, top bar always gets hidden by Bootstrap on scroll
+
+## Release 0.9.9.95 (beta)
+
 * UPDATE: Improved support for stylesheets in latest Wikipedia ZIMs
 * UPDATE: Updated the Privacy Policy
 * ENHANCEMENT: The base app (not UWP) can now be installed as a PWA (visit https://kiwix.github.io/kiwix-js-windows/www/index.html to try)
@@ -10,6 +24,7 @@
 * FIX: Fixed broken display of active content warning
 
 ## Release 0.9.9.94 (beta)
+
 * ENHANCEMENT: Provide an alert if a packaged or picked file cannot be found
 * ENHANCEMENT: App can now be compiled with Electron or NWJS to support Win XP/7/8.1 (see [releases](https://github.com/kiwix/kiwix-js-windows/releases))
 * ENHANCEMENT: CORS errors are now detected and a message provided to the user to help resolve
@@ -32,6 +47,7 @@
 * UPDATE: August 2019 update of Ray Charles ZIM
 
 ## Release 0.9.9.91 (beta)
+
 * FIX: Remembered last page is now properly blanked on new archive load
 * FIX: The article content div is now hidden until the HTML for the requested article is injected
 * FIX: Number of stylesheets retrieved from ZIM was not being counted properly, causing some pages to load twice
@@ -57,17 +73,20 @@
 * ENHANCEMENT: Change MathTex rendering engine from MathJax to KaTeX (much faster)
 
 ## Release 0.9.9.90 (beta)
+
 * FIX: Remembered last page is now properly blanked on new archive load
 * FIX: Number of stylesheets retrieved from ZIM was not being counted properly, causing some pages to load twice
 * FIX: The article content div is now hidden until the HTML for the requested article is injected 
 
 ## Release 0.9.9.89 (beta)
+
 * FIX: Fixed regression preventing use of download library
 * FIX: Fixed problems searching for dirEntries with empty titles in new ZIMs
 * FIX: Correctly handle anchor links with a single #
 * ENHANCEMENT: Improved styling of checkboxes in light and dark modes 
 
 ## Release 0.9.9.88 (beta)
+
 * ENHANCEMENT: Article can now be sent to device's browser for reading, side-by-side viewing, printing
 * ENHANCEMENT: A breakout icon can optionally be shown on each page to enable sending page to browser (see Settings)
 * ENHANCEMENT: A new "auto" setting for dark mode and dark theme follows the system default for UWP apps
@@ -84,10 +103,12 @@
 * FIX: Prevent unusable app state after clicking non-Roman alphabet button in Archive Index
 
 ## Release 0.9.9.87 (beta)
+
 * FIX: Removed timeout preventing fast typing for find in article function (Ctrl-F / Alt-F)
 * FIX: Allow searching in article for languages that do not use spaces (such as Chinese)
 
 ## Release 0.9.9.85 (beta)
+
 * ENHANCEMENT: Support for playing media (video/audio) in the ZIM if the device has the required codec
 * ENHANCEMENT: Support for "downloading" media (e.g. videos+subtitles) from the ZIM
 * ENHANCEMENT: Media are launched via appropriate app selection menu after download (mobile)
@@ -108,6 +129,7 @@
 * FIX: Individual extraction of images when images are disabled in Configuration
 
 ## Release 0.9.9.8 (beta)
+
 * UPDATE: Ray Charles ZIM to October 2018 version
 * ENHANCEMENT: Add a modern CSS spinner and rework status messages
 * ENHANCEMENT: Neater presentation of article search results
@@ -117,11 +139,13 @@
 * FIX: Incorrect utf8 characters in mobile styles 
 
 ## Release 0.9.9.7 (beta)
+
 * ENHANCEMENT: Optimization of decompression process
 * WORKAROUND: Prevent periodic hang in Service Worker mode
 * FIX: Crash in RegExp engine caused by malformed backreferences in some articles
 
 ## Release 0.9.9.6 (beta)
+
 * UPDATE: Mobile styles
 * ENHANCEMENT: New compile of decoding engine provides significant performance improvement
 * ENHANCEMENT: Better memory management to prevent app crashes
@@ -134,6 +158,7 @@
 * FIX: Tapping headers now only opens and closes sections on narrow screens as intended by WikiMedia
 
 ## Release 0.9.9.5 (beta)
+
 * ENHANCEMENT: Headings in article can be toggled open or closed with tap or click
 * ENHANCEMENT: Current page is cached in localStorage for very fast restart and reloading
 * ENHANCEMENT: Automatically switch to desktop style for better printing result
@@ -141,6 +166,7 @@
 * FIX: Bug in download links preventing display of language codes that are substrings of other language codes
 
 ## Release 0.9.9.4 (beta)
+
 * ENHANCEMENT: Experimental support for printing articles
 * ENHANCEMENT: Print zoom capability
 * ENHANCEMENT: Prevent printing of location pins
@@ -149,6 +175,7 @@
 * WORKAROUND: MW-Offliner bug which places extraneous tags in some HTML id attributes
 
 ## Release 0.9.9.3 (beta)
+
 * FIX: Article now reloads correctly when switching styles
 * FIX: Unhandled exception after using in-article word search
 * FIX: Browser history now remembered for first page load
@@ -159,6 +186,7 @@
 * ENHANCEMENT: Better algorithm for moving first paragraph when there are stacked infoboxes
 
 ## Release 0.9.9.2 (beta)
+
 * FIX: Added more padding for content hidden under the bottom bar
 * FIX: New mode of injecting HTML into iframe fixes baseUrl issues
 * ENHANCEMENT: Some code redundancy removed
@@ -168,6 +196,7 @@
 * ENHANCEMENT: Uncluttered the UI for file selection
 
 ## Release 0.9.9 (beta)
+
 * FIX: Reduced memory usage for decompressing multiple SVG images/equations to prevent crash on devices with 1GB RAM
 * FIX: Display bug causing Settings tab to remain selected after article load
 * FIX: Corrected dark-style backgrounds in some infoboxes on WikiMed
@@ -181,6 +210,7 @@
 * ENHANCEMENT: Dedicated icon for WikiMed archives
 
 ## Release 0.9.7 (beta)
+
 * UPDATE: January 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-01.zim
 * ENHANCEMENT: The Wikivoyage app now hides the file selectors by default in the Config menu to avoid confusion and to encourage use of Kiwix JS for anything not related to Wikivoyage
 * FIX: Added icon indicating that a link is to an external web site
@@ -194,6 +224,7 @@
 * FIX: Issue with toolbar icons being misaligned on small screens
 
 ## Release 0.9.6 (beta)
+
 * FIX: Prevent bottom toolbar from wrapping across two lines on small screens
 * ENHANCEMENT: Enabled autoloading of last-read page on app start (and privacy option to turn this off)
 * ENHANCEMENT: Geo-location co-ordinates in English and German Wikivoyage are represented with a location marker that links to the Maps app (opens map to show the precise location)
@@ -203,11 +234,13 @@
 * ENHANCEMENT: The toolbar icon now switches to a Wikivoyage logo if a Wikivoyage ZIM is loaded
 
 ## Release 0.9.3 (beta)
+
 * WORKAROUND: Mis-aligned toolbar icons on smaller screens
 * FIX: Rogue HTML showing in some pages from recent ZIM archives
 * ENHANCEMENT: Better experience when scanning local storage for archives
 
 ## Release 0.9.0 (beta)
+
 * ENHANCEMENT: Auto-loading of ZIM archives on device storage
 * ENHANCEMENT: In-page search / highlighting with Ctrl-F / Alt-F or tap on search button
 * ENHANCEMENT: Uses UWP APIs for sotrage: Future Access List so that users do not need to pick their ZIM file every time
