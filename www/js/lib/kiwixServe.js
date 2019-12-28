@@ -497,8 +497,8 @@ define([], function () {
             doc = doc.replace(/\$\#\$\#([\s\S]+?)(<a\s+href[^>]+>name<[\s\S]+?last\s+modified<[\s\S]+?)<hr>\s*/i, "$2$1");
             if (/\dK|\dM|\dG/.test(doc)) {
                 //Swap size and date fields to make file size more prominent on narrow screens
-                doc = doc.replace(/(<a\b[^>]*>last\s+modified<\/a>\s*)(<a\b[^>]*>size<\/a>\s*)/ig, "$2$1");
-                doc = doc.replace(/(\d\d-\w{3}-\d{4}\s\d\d\:\d\d\s+)(\d[\d.\w]+\s+)$/img, "$2$1");
+                doc = doc.replace(/(<a\b[^>]*>last\s+modified<\/a>\s*)(<a\b[^>]*>size<\/a>)\s*/ig, " $2    $1");
+                doc = doc.replace(/(\d{4}-\d\d-\d\d\s\d\d\:\d\d)\s\s([\s\d.\w-]{7})$/img, " $2 $1");
             }
             if (/^[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$/m.test(doc)) {
                 //Delete lines that do not match regexpFilter (this ensures packaged apps only show ZIMs appropriate to the package)
@@ -536,8 +536,8 @@ define([], function () {
                 var selectEntries = document.querySelectorAll(".wikiLang");
                 //Hide all entries except specified language or date
                 for (i = 0; i < selectEntries.length; i++) {
-                    if (lang && selectEntries[i].lang != lang) selectEntries[i].style.display = "none";
-                    if (kiwixDate && selectEntries[i].dataset.kiwixdate != kiwixDate) selectEntries[i].style.display = "none";
+                    if (lang && lang !== "All" && selectEntries[i].lang !== lang) selectEntries[i].style.display = "none";
+                    if (kiwixDate && kiwixDate !== "All" && selectEntries[i].dataset.kiwixdate !== kiwixDate) selectEntries[i].style.display = "none";
                 }
                 langSel = document.getElementById("langs");
                 if (langSel) {
