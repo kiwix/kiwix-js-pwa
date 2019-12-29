@@ -8,6 +8,7 @@
 * FIX: All images above the fold are now loaded (async timing of image scanning was premature)
 * FIX: Math typeset by KaTeX is rendered better when there are mbox statements (fbox is used instead)
 * FIX: Display-style maths SVGs are now correctly inverted in dark mode
+* FIX: Standard dark-mode SVGs in infoboxes and elsewhere are now displayed correctly without inversion
 * UPDATE: Updated KaTeX library to v0.11.1
 * ENHANCEMENT: Include more files in PWA payload to allow better offline functionality in PWA scenarios
 * ENHANCEMENT: Appxbundle is now signed with Kiwix certificate for a better sideloading experience
