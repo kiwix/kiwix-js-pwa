@@ -68,6 +68,8 @@ define(['uiUtil'], function (uiUtil) {
             var imageUrl = image.getAttribute('data-kiwixurl');
             extractorBusy++;
             if (!imageUrl) { extractorBusy--; remaining--; return; }
+            // Create data-kiwixsrc needed for stylesheets
+            else { image.setAttribute('data-kiwixsrc', imageUrl); } 
             image.removeAttribute('data-kiwixurl');
             var title = decodeURIComponent(imageUrl);
             if (params.contentInjectionMode === 'serviceworker') {
