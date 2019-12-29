@@ -3,6 +3,7 @@
 ## Release 0.9.9.96 (beta)
 
 * FIX: Broken display of Kiwix download library
+* FIX: Broken display of MathML when there are no images in the document
 * FIX: Search bar always remains on-screen if selected (in non-mobile contexts)
 * FIX: All images above the fold are now loaded (async timing of image scanning was premature)
 * FIX: Math typeset by KaTeX is rendered better when there are mbox statements (fbox is used instead)

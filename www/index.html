@@ -108,12 +108,13 @@
                         <h3 style="margin-top:0;">Changes in <span class="version">0.9 (beta)</span></h3>
                         <ul style="padding-left: 15px;">
                             <li>Fixed broken display of Kiwix download library</li>
-                            <li>Top toolbar no longer disappears when scrolling in mobile app</li>
+                            <li>Search bar always remains on-screen if selected</li>
                             <li>All images above the fold are now loaded (async timing of image scanning was premature)</li>
                             <li>Math typeset by KaTeX is rendered better when there are mbox statements (fbox is used instead)</li>
                             <li>Updated KaTeX library to v0.11.1</li>
                             <li>Include more files in PWA payload to allow better offline functionality if using app as PWA</li>
                             <li>Appxbundle is now signed with Kiwix certificate for a better sideloading experience</li>
+                            <li>Known issue: In mobile contexts, top bar always gets hidden by Bootstrap on scroll</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md" target="_blank">Full changelog...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>

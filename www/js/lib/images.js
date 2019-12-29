@@ -198,6 +198,8 @@ define(['uiUtil'], function (uiUtil) {
     function prepareImagesServiceWorker (forPrinting) {
         var doc = iframe.contentDocument.documentElement;
         documentImages = doc.querySelectorAll('img');
+        // Schedule loadMathJax here in case next line aborts this function
+        setTimeout(loadMathJax, 1000);
         if (!forPrinting && !documentImages.length) return;
         var imageHtml;
         for (var i = 0, l = documentImages.length; i < l; i++) {
@@ -229,12 +231,13 @@ define(['uiUtil'], function (uiUtil) {
                 setTimeout(lazyLoad, 100);
             }
         }
-        setTimeout(loadMathJax, 1000);
     }
 
     function prepareImagesJQuery (forPrinting) {
         var doc = iframe.contentDocument.documentElement;
         documentImages = doc.querySelectorAll('img[data-kiwixurl]');
+        // In case there are no images in the doc, we need to schedule the loadMathJax function here
+        setTimeout(loadMathJax, 1000);
         if (!forPrinting && !documentImages.length) return;
         if (forPrinting) {
             extractImages(documentImages, params.preloadingAllImages ? params.preloadAllImages : params.printImagesLoaded);
@@ -251,9 +254,6 @@ define(['uiUtil'], function (uiUtil) {
             // User wishes to extract images manually
             prepareManualExtraction();
         }
-        //loadMathJax();
-        setTimeout(loadMathJax, 1000);
-
     }
 
     /**
