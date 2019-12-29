@@ -1,8 +1,11 @@
 ﻿html, img, video {
-    /*-webkit-filter: invert(1) hue-rotate(180deg);*/
     filter: invert(1) hue-rotate(180deg);
 }
 
+img.mwe-math-fallback-image-inline, img.mwe-math-fallback-image-display {
+    filter: hue-rotate(180deg);
+}
+
 body {
-  background: black !important;
+    background: black !important;
 }
