@@ -114,6 +114,7 @@
                             <li>Math typeset by KaTeX is rendered better when there are mbox statements (fbox is used instead)</li>
                             <li>Display-style maths SVGs are now correctly inverted in dark mode</li>
                             <li>Standard dark-mode SVGs are now displayed correctly without inversion</li>
+                            <li>Fixed truncated display of search box</li>
                             <li>Updated KaTeX library to v0.11.1</li>
                             <li>Include more files in PWA payload to allow better offline functionality if using app as PWA</li>
                             <li>Appxbundle is now signed with Kiwix certificate for a better sideloading experience</li>
@@ -232,7 +233,7 @@
                                         <!--button -->
                                     </span>
                                     <input type="search" id="prefix" placeholder="Search or type a space..."
-                                           class="form-control" style="z-index: 0;" />
+                                           class="form-control" style="z-index: 0; width: 99.5%" />
                                     <span class="input-group-btn">
                                         <a class="btn btn-primary" title="Article Search" id="searchArticles" style="display:none;"><span class="glyphicon glyphicon-book"></span></a>
                                         <a class="btn btn-primary" title="Alt-F: Find and highlight text in article..." id="findText"><span class="glyphicon glyphicon-search"></span></a>
