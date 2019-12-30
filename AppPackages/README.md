@@ -19,8 +19,9 @@ it can take a minute or so for the Kiwix icon to appear in the All Apps list. Yo
 a ZIM file to use with the app (see below).
 
 ## Windows 10 Tablet / PC
-You must first put your PC in Developer mode: Settings / Update and security / For developers. It is not enough
-to select "Sideload", as these packages require "Developer mode". Your device may need to download a developer
+If the package is signed (recent ones are) you can simply download the .appxbundle under AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/ and launch it. You may be prompted to allow sideloading (Settings / Update and security / For developers). If this procedure fails, the package may not be correctly signed. In this case, follow the more complex procedure below. 
+
+To install unsigned packages, you must first put your PC in Developer mode: Settings / Update and security / For developers. It is not enough to select "Sideload", as these packages require "Developer mode". Your device may need to download a developer
 package, install it, and restart.
 
 Then, launch a PowerShell command window: press Windows key and type PowerShell, right-click and "Run as Administrator".
