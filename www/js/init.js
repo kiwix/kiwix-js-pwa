@@ -31,7 +31,7 @@ window.onerror = function (msg, url) {
 var state = {};
 // Parameters that define overall operation of app
 var params = {};
-params['version'] = "0.9.9.96-dev WikiMed Beta"; //DEV: Manually update this version when there is a new release: it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "0.9.9.96 WikiMed Beta"; //DEV: Manually update this version when there is a new release: it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 params['packagedFile'] = "wikipedia_en_medicine.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
 params['fileVersion'] = "wikipedia_en_medicine_maxi_2019-12 (18-Dec-2019)"; //Use generic name for actual file, and give version here
