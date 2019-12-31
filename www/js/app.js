@@ -910,6 +910,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         var iframe = document.getElementById('articleContent');
         var prefix = document.getElementById('prefix');
         var findInArticle = document.getElementById('findInArticle');
+        article.style.transition = "top 300ms";
 
         // This is the scrollFunction to be attached in checkToolbar()
         var scrollFunction = function () {
@@ -933,9 +934,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 scrollFunction();
             } else {
                 // Ensure toolbar is restored
-                article.style.top = '-' + navbarHeight;
-                header.style.zIndex = 0;
-                iframe.style.zIndex = -1;
+                //article.style.top = '-' + navbarHeight;
+                //header.style.zIndex = 0;
+                //iframe.style.zIndex = -1;
                 setTimeout(function () {
                     iframe.style.zIndex = 0;
                     article.style.top = '0';
