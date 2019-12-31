@@ -140,7 +140,7 @@ div:not(.panel-success, .alert-message) {
     position: fixed;
     width: 100%;
     border: 0;
-    transition: top 0.3s;
+    transition: top 300ms;
     z-index: 0;
 }
 
