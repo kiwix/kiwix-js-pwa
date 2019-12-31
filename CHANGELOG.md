@@ -69,10 +69,10 @@
 * FIX: A workaround has been added for improperly coded hyperlinks in subdirectories in WikiMedia ZIM files
 
 ## Release 0.9.9.90 Wikivoyage (beta)
+
 * CRITICAL FIX: Remembered last page is now properly blanked on new archive load
 * CRITICAL FIX: Fixed regression preventing use of download library
 * UPDATE: April 2019 update of Wikvoyage ZIM archive to wikivoyage_en_all_novid_2019-04.zim 
-
 * ENHANCEMENT: Article can now be sent to device's browser for reading, side-by-side viewing, printing
 * ENHANCEMENT: A breakout icon can optionally be shown on each page to enable sending page to browser (see Settings)
 * ENHANCEMENT: A new "auto" setting for dark mode and dark theme follows the system default for UWP apps
@@ -112,6 +112,7 @@
 * FIX: Allow searching in article for languages that do not use spaces (such as Chinese)
 
 ## Release 0.9.9.81 Wikivoyage (beta)
+
 * UPDATE: October 2018 update of Wikvoyage ZIM archive to wikivoyage_en_all_2018-10.zim
 * ENHANCEMENT: Add a modern CSS spinner and rework status messages
 * ENHANCEMENT: Neater presentation of article search results
@@ -125,11 +126,12 @@
 * FIX: Incorrect utf8 characters in mobile styles 
 
 ## Release 0.9.9.7 Wikivoyage (beta)
-* UPDATE: July 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-07.zim
 
+* UPDATE: July 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-07.zim
 * ENHANCEMENT: Optimization of decompression process
 
 ## Release 0.9.9.6 Wikivoyage (beta)
+
 * UPDATE: June 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-06.zim
 * UPDATE: Mobile styles and cached home page
 * ENHANCEMENT: New compile of decoding engine provides significant performance improvement
@@ -152,14 +154,14 @@
 There was no 0.9.9.5 release due to unusable Wikivoyage ZIM files in May
 
 ## Release 0.9.9.4 Wikivoyage (beta)
-* UPDATE: March 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-03.zim
 
+* UPDATE: March 2018 update of Wikivoyage ZIM archive to wikivoyage_en_all_novid_2018-03.zim
 * ENHANCEMENT: Experimental support for printing articles
 * ENHANCEMENT: Better presentation of About and Changelog information
 
 ## Release 0.9.9.3 Wikivoyage (beta)
-* FIX: Unhandled exception after using in-article word search
 
+* FIX: Unhandled exception after using in-article word search
 * FIX: Article now reloads correctly when switching styles
 * FIX: Browser history now remembered for first page load
 * FIX: Added more padding for content hidden under the bottom bar
