@@ -1,6 +1,6 @@
 # Changelog
 
-## Release 0.9.9.96 (beta)
+## Release 0.9.9.96 Wikivoyage (beta)
 
 * FIX: Broken display of Kiwix download library
 * FIX: Broken display of MathML when there are no images in the document
