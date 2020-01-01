@@ -501,6 +501,29 @@ define(['util'], function(util) {
     }
 
     /**
+     * Encodes the html escape characters in the string before using it as html class name,id etc.
+     * 
+     * @param {String} string The string in which html characters are to be escaped
+     * 
+     */
+    function htmlEscapeChars(string) {
+        var escapechars = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+            '/': '&#x2F;',
+            '`': '&#x60;',
+            '=': '&#x3D;'
+        };
+        string = String(string).replace(/[&<>"'`=/]/g, function (s) {
+            return escapechars[s];
+        });
+        return string;
+    }
+
+    /**
      * Functions and classes exposed by this module
      */
     return {
@@ -519,6 +542,7 @@ define(['util'], function(util) {
         displayFileDownloadAlert: displayFileDownloadAlert,
         insertBreakoutLink: insertBreakoutLink,
         extractHTML: extractHTML,
-        systemAlert: systemAlert
+        systemAlert: systemAlert,
+        htmlEscapeChars: htmlEscapeChars
     };
 });
