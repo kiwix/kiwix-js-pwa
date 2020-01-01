@@ -30,11 +30,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
     function ($, zimArchiveLoader, uiUtil, util, utf8, images, cookies, q, transformStyles, kiwixServe) {
 
         /**
-         * Maximum number of articles to display in a search
-         * @type Integer
-         */
-        var MAX_SEARCH_RESULT_SIZE = params.results; //This value is controlled in init.js, as are all parameters
-        /**
          * The delay (in milliseconds) between two "keepalive" messages
          * sent to the ServiceWorker (so that it is not stopped by
          * the browser, and keeps the MessageChannel to communicate
@@ -896,6 +891,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             params.omegaChar = this.value.length == 1 ? this.value : params.omegaChar;
             this.value = params.omegaChar;
             cookies.setItem('omegaChar', params.omegaChar, Infinity);
+        });
+        $('input:text[name=maxResults]').on('change', function (e) {
+            params.maxResults = this.value > 5 ? this.value : 5;
+            params.maxResults = params.maxResults < 50 ? params.maxResults : 50;
+            this.value = params.maxResults;
+            cookies.setItem('maxResults', params.maxResults, Infinity);
         });
         $('input:checkbox[name=hideToolbar]').on('change', function (e) {
             params.hideToolbar = this.checked ? true : false;
@@ -2106,7 +2107,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     }
                     showZIMIndex(null, sel);
                 } else {
-                    state.selectedArchive.findDirEntriesWithPrefix(prefix.trim(), MAX_SEARCH_RESULT_SIZE, populateListOfArticles);
+                    state.selectedArchive.findDirEntriesWithPrefix(prefix.trim(), params.maxResults, populateListOfArticles);
                 }
             } else {
                 $('#searchingArticles').hide();
@@ -2119,7 +2120,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         }
 
         /**
-         * Extracts and displays in htmlArticle the first MAX_SEARCH_RESULT_SIZE articles beginning with start
+         * Extracts and displays in htmlArticle the first params.maxResults articles beginning with start
          * @param {String} start Optional index number to begin the list with
          * @param {String} prefix Optional search prefix from which to start an alphabetical search
          */
@@ -2131,7 +2132,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 prefix = start > 0 ? '' : prefix;
             }
             if (state.selectedArchive !== null && state.selectedArchive.isReady()) {
-                state.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, MAX_SEARCH_RESULT_SIZE, function (dirEntryArray, nextStart) {
+                state.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, params.maxResults, function (dirEntryArray, nextStart) {
                     var docBody = document.getElementById('largeModal');
                     var newHtml = "";
                     for (var i = 0; i < dirEntryArray.length; i++) {
@@ -2140,10 +2141,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                             "'>" + (dirEntry.getTitleOrUrl()) + "</a>";
                     }
                     start = start ? start : 0;
-                    var back = start ? '<a href="#" data-start="' + (start - MAX_SEARCH_RESULT_SIZE) +
-                        '" class="continueAnchor">&lt;&lt; Previous ' + MAX_SEARCH_RESULT_SIZE + '</a>' : '';
-                    var next = dirEntryArray.length === MAX_SEARCH_RESULT_SIZE ? '<a href="#" data-start="' + nextStart +
-                        '" class="continueAnchor">Next ' + MAX_SEARCH_RESULT_SIZE + ' &gt;&gt;</a>' : '';
+                    var back = start ? '<a href="#" data-start="' + (start - params.maxResults) +
+                        '" class="continueAnchor">&lt;&lt; Previous ' + params.maxResults + '</a>' : '';
+                    var next = dirEntryArray.length === params.maxResults ? '<a href="#" data-start="' + nextStart +
+                        '" class="continueAnchor">Next ' + params.maxResults + ' &gt;&gt;</a>' : '';
                     var backNext = back ? next ? back + ' | ' + next : back : next;
                     backNext = '<div style="float:right;">' + backNext + '</div>\n';
                     var alphaSelector = [];
@@ -2240,8 +2241,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             var articleListHeaderMessageDiv = $('#articleListHeaderMessage');
             var nbDirEntry = dirEntryArray ? dirEntryArray.length : 0;
             var message;
-            if (nbDirEntry >= MAX_SEARCH_RESULT_SIZE) {
-                message = 'First ' + MAX_SEARCH_RESULT_SIZE + ' articles below (refine your search).';
+            if (nbDirEntry >= params.maxResults) {
+                message = 'First ' + params.maxResults + ' articles below (refine your search).';
             } else {
                 message = nbDirEntry + ' articles found.';
             }
@@ -2253,7 +2254,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
             var articleListDiv = document.getElementById('articleList');
             var articleListDivHtml = '';
-            var listLength = dirEntryArray.length < MAX_SEARCH_RESULT_SIZE ? dirEntryArray.length : MAX_SEARCH_RESULT_SIZE;
+            var listLength = dirEntryArray.length < params.maxResults ? dirEntryArray.length : params.maxResults;
             for (var i = 0; i < listLength; i++) {
                 var dirEntry = dirEntryArray[i];
                 var dirEntryStringId = uiUtil.htmlEscapeChars(dirEntry.toStringId());
