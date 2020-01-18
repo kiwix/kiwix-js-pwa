@@ -48,7 +48,7 @@ params['cssCache'] = getCookie('cssCache') != null ? getCookie('cssCache') : tru
 params['cssTheme'] = getCookie('cssTheme') || 'light'; //Set default to 'auto', 'light', 'dark' or 'invert' to use respective themes for articles
 params['cssUITheme'] = getCookie('cssUITheme') || 'light'; //Set default to 'auto', 'light' or 'dark' to use respective themes for UI
 params['imageDisplay'] = getCookie('imageDisplay') != null ? getCookie('imageDisplay') : true; //Set default to display images from Zim
-params['hideToolbar'] = getCookie('hideToolbar') != null ? getCookie('hideToolbar') : false; //Set default to hide the top toolbar on scroll
+params['hideToolbars'] = getCookie('hideToolbars') != null ? getCookie('hideToolbars') : true; //Set default to true (hides both), 'top' (hides top only), or false (no hiding)
 params['rememberLastPage'] = getCookie('rememberLastPage') != null ? getCookie('rememberLastPage') : true; //Set default option to remember the last visited page between sessions
 params['useMathJax'] = getCookie('useMathJax') != null ? getCookie('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
 //params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
@@ -100,7 +100,6 @@ document.getElementById('removePageMaxWidthCheck').checked = params.removePageMa
 document.getElementById('removePageMaxWidthCheck').indeterminate = params.removePageMaxWidth == "auto";
 document.getElementById('removePageMaxWidthCheck').readOnly = params.removePageMaxWidth == "auto";
 document.getElementById('pageMaxWidthState').innerHTML = (params.removePageMaxWidth == "auto" ? "auto" : params.removePageMaxWidth ? "always" : "never");
-document.getElementById('hideToolbarCheck').checked = params.hideToolbar;
 document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme == "dark"; // Will be true, or false if light or auto
 document.getElementById('cssUIDarkThemeCheck').indeterminate = params.cssUITheme == "auto";
 document.getElementById('cssUIDarkThemeCheck').readOnly = params.cssUITheme == "auto";
@@ -119,6 +118,10 @@ document.getElementById('allowHTMLExtractionCheck').checked = params.allowHTMLEx
 document.getElementById('alphaCharTxt').value = params.alphaChar;
 document.getElementById('omegaCharTxt').value = params.omegaChar;
 document.getElementById('maxResults').value = params.maxResults;
+document.getElementById('hideToolbarsCheck').checked = params.hideToolbars === true; // Will be false if false or 'top'
+document.getElementById('hideToolbarsCheck').indeterminate = params.hideToolbars === "top";
+document.getElementById('hideToolbarsCheck').readOnly = params.hideToolbars === "top";
+document.getElementById('hideToolbarsState').innerHTML = (params.hideToolbars === "top" ? "top" : params.hideToolbars ? "both" : "never");
 
 var versionSpans = document.getElementsByClassName('version');
 for (var i = 0; i < versionSpans.length; i++) {

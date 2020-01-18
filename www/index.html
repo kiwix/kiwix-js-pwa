@@ -271,7 +271,7 @@
         <article class="view-content" id="article">
             <div id="scrollbox" class="container" style="position:relative;z-index:-2;overflow:auto;width:100%;">
                 <div id="about" style="display: none;" class="category-padding">
-                    <div class="returntoArticle" style="text-align:center;padding-top:50px;"></div>
+                    <div class="returntoArticle" style="text-align:center;padding-top:30px;"></div>
                     <h2>
                         <img id="kiwixIconAbout" src="img/icons/wikivoyage-90.png" alt="Wikivoyage icon" />
                         Wikivoyage by Kiwix
@@ -488,7 +488,7 @@
                     <p>&nbsp;</p>
                 </div>
                 <div id="configuration" style="display: none;" class="container category-padding">
-                    <div id="returntoArticle" class="returntoArticle" style="text-align:center;padding-top:50px;"></div>
+                    <div id="returntoArticle" class="returntoArticle" style="text-align:center;padding-top:30px;"></div>
                     <div class="row" style="padding-bottom:1em;">
                         <h2 style="margin-top:0;">Configuration</h2>
                         <p>
@@ -636,9 +636,9 @@
                                     <div class="panel-heading">Display options:</div>
                                     <div class="panel-body">
                                         <label class="checkbox">
-                                            <input type="checkbox" name="hideToolbar" id="hideToolbarCheck">
+                                            <input type="checkbox" name="hideToolbars" id="hideToolbarsCheck" title="Tap three times for both | top | never">
                                             <span class="checkmark"></span>
-                                            <b>Hide top toolbar while scrolling</b> (tap <span class="glyphicon glyphicon-arrow-up"></span> once to reveal)
+                                            <b>Hide toolbars while scrolling:</b> [ <b><span id="hideToolbarsState"></span></b> ] (scroll slightly up to reveal)
                                         </label>
                                         <label oninput="document.getElementById('spinnerVal').innerHTML = relativeUIFontSizeSlider.value + '%';" style="width: 80%;">
                                             <b>Change font size for the User Interface:</b>
