@@ -937,13 +937,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             
         var scrollFunction = function () {
             damper--;
-            newScrollY = iframe.contentWindow.scrollY;
+            if (damper > 0) return;
+            newScrollY = iframe.contentWindow.pageYOffset;
             var prefix = document.getElementById('prefix');
             var findInArticle = document.getElementById('findInArticle');
             // Hide the toolbars if user has scrolled and search elements are not selected
             if (newScrollY - oldScrollY > 0 && document.activeElement !== prefix 
                 && document.activeElement !== findInArticle) {
-                if (damper > 0) return;
                 // If the header and/or footer have not already been hidden
                 if (/\(0p?x?\)/.test(header.style.transform)) {
                     setTimeout(function() {
@@ -965,16 +965,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         }
                     }, 200);
                 }
-            } else {
+            } else if (newScrollY - oldScrollY < 0) {
                 header.style.zIndex = 1;
                 header.style.transform = 'translateY(0)';
                 footer.style.transform = 'translateY(0)';
             }
             oldScrollY = newScrollY;
+            damper = 10;
         };
 
         function checkToolbar() {
-            oldScrollY = iframe.contentWindow.scrollY;
+            oldScrollY = iframe.contentWindow.pageYOffset;
             navbarDim = document.getElementById('navbar').getBoundingClientRect();
             footerDim = footer.getBoundingClientRect();
             header.style.transition = "transform 500ms";
