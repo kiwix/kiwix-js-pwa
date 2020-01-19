@@ -1130,7 +1130,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             var determinedWikiTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
             var breakoutLink = doc.getElementById('breakoutLink');
             // Construct an absolute reference becuase Service Worker needs this
-            var prefix = document.location.origin + document.location.pathname.replace(/\/[^/]*$/, '');
+            var prefix = (window.location.protocol + '//' + window.location.host + window.location.pathname).replace(/\/[^/]*$/, '');
             if (determinedWikiTheme != "light") {
                 var link = doc.createElement("link");
                 link.setAttribute("rel", "stylesheet");
@@ -2838,7 +2838,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
             //Preload stylesheets [kiwix-js #149]
             //Set up blobArray of promises
-            var prefix = document.location.origin + document.location.pathname.replace(/\/[^/]*$/, '');
+            var prefix = (window.location.protocol + '//' + window.location.host + window.location.pathname).replace(/\/[^/]*$/, '');
             var cssArray = htmlArticle.match(regexpSheetHref);
             var blobArray = [];
             var cssSource = params.cssSource;

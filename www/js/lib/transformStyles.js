@@ -24,7 +24,7 @@
 'use strict';
 
 define(['util', 'uiUtil'], function (util, uiUtil) {
-    var prefix = document.location.origin + document.location.pathname.replace(/\/[^/]*$/, '/');
+    var prefix = (window.location.protocol + '//' + window.location.host + window.location.pathname).replace(/\/[^/]*$/, '/');
     /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i]  */
     function filterCSS(zl, zim, cc, cs, i) {
         var rtnFunction = "injectCSS";
