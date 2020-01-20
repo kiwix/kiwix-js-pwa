@@ -927,27 +927,26 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         var iframe = document.getElementById('articleContent');
         var header = document.getElementById('top');
         var footer = document.getElementById('footer');
+        var prefix = document.getElementById('prefix');
+        var findInArticle = document.getElementById('findInArticle');
         var navbarDim;
         var footerDim;
         var oldScrollY;
         var newScrollY;
-        var damper = 10;
+        var throttle = 0;
         // If user hasn't stored a hideToolbars cookie choice, inform them of the new functionality
         var hideToolbarsCookie = cookies.getItem('hideToolbars');
-            
         var scrollFunction = function () {
-            damper--;
-            if (damper > 0) return;
+            if (throttle) return;
+            throttle = 1;
             newScrollY = iframe.contentWindow.pageYOffset;
-            var prefix = document.getElementById('prefix');
-            var findInArticle = document.getElementById('findInArticle');
             // Hide the toolbars if user has scrolled and search elements are not selected
             if (newScrollY - oldScrollY > 0 && document.activeElement !== prefix 
                 && document.activeElement !== findInArticle) {
                 // If the header and/or footer have not already been hidden
                 if (/\(0p?x?\)/.test(header.style.transform)) {
+                    throttle = 2;
                     setTimeout(function() {
-                        damper = 10;
                         if (newScrollY > navbarDim.height) {
                             header.style.transform = 'translateY(-' + (navbarDim.height - 2) + 'px)';
                             if (params.hideToolbars === true) // Only hide footer if requested
@@ -963,6 +962,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                 cookies.setItem('hideToolbars', params.hideToolbars, Infinity);
                             }
                         }
+                        throttle = 0;
                     }, 200);
                 }
             } else if (newScrollY - oldScrollY < 0) {
@@ -971,7 +971,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 footer.style.transform = 'translateY(0)';
             }
             oldScrollY = newScrollY;
-            damper = 10;
+            throttle = throttle < 2 ? 0 : throttle;
         };
 
         function checkToolbar() {
