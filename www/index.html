@@ -34,7 +34,7 @@
         along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <https://www.gnu.org/licenses/>
 
     -->
-    <link rel='manifest' href='../manifest.json'>
+    <link rel="manifest" href="../manifest.json" />
     <link rel="stylesheet" href="css/app.css" />
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen" />
@@ -256,6 +256,11 @@
                                 </span>
                             </div>
                         </form>
+                        <div id="installDiv" style="display:none">
+                            Would you like to install Kiwix JS PWA on this device?
+                            <button id="btnInstall">Install</button>
+                            <button id="btnLater">Later</button>
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -759,11 +764,6 @@
         <footer id="footer">
             <!-- Bootstrap alert box -->
             <div id="alertBoxFooter"></div>
-            <div id="installDiv" style="display:none">
-                Would you like to install Kiwix JS PWA on this device?
-                <button id="btnInstall">Install</button>
-                <button id="btnLater">Later</button>
-            </div>
             <div id="navigationButtons" class="btn-group btn-group-justified">
                 <div class="row">
                     <a class="btn btn-default col-xs-2" id="btnHomeBottom" title="Home"><span class="glyphicon glyphicon-home"></span></a>
