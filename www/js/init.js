@@ -172,6 +172,45 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
     }
 }
 
+// Routine for installing the app adapted from https://pwa-workshop.js.org/
+
+var deferredPrompt;
+var installDiv = document.getElementById('installDiv');
+var btnInstall = document.getElementById('btnInstall');
+var btnLater = document.getElementById('btnLater');
+
+window.addEventListener('beforeinstallprompt', function(e) {
+    console.log('beforeinstallprompt fired');
+    // Prevent Chrome 76 and earlier from automatically showing a prompt
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    deferredPrompt = e;
+    // Show the install button
+    installDiv.style.display = 'block';
+    btnInstall.addEventListener('click', installApp);
+    btnLater.addEventListener('click', function () {
+        installDiv.style.display = 'none';
+    });
+});
+
+function installApp() {
+    // Show the prompt
+    deferredPrompt.prompt();
+    btnInstall.disabled = true;
+
+    // Wait for the user to respond to the prompt
+    deferredPrompt.userChoice.then(function(choiceResult) {
+        if (choiceResult.outcome === 'accepted') {
+            console.log('PWA installation accepted');
+            installDiv.style.display = 'none';
+        } else {
+            console.log('PWA installation rejected');
+        }
+        btnInstall.disabled = false;
+        deferredPrompt = null;
+    });
+}
+
 function getCookie(name) {
     var result;
     if (params.cookieSupport == 'cookie') {

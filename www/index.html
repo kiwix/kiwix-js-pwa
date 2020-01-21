@@ -5,6 +5,7 @@
     <title>Kiwix JS WikiMed for Windows</title>
     <meta name="description" content="Offline Wikipedia reader">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="black">
     <!--
     Kiwix (offline Wikipedia reader) - HTML5/Javascript version
     Home page : https://www.kiwix.org
@@ -758,6 +759,11 @@
         <footer id="footer">
             <!-- Bootstrap alert box -->
             <div id="alertBoxFooter"></div>
+            <div id="installDiv" style="display:none">
+                Would you like to install Kiwix JS PWA on this device?
+                <button id="btnInstall">Install</button>
+                <button id="btnLater">Later</button>
+            </div>
             <div id="navigationButtons" class="btn-group btn-group-justified">
                 <div class="row">
                     <a class="btn btn-default col-xs-2" id="btnHomeBottom" title="Home"><span class="glyphicon glyphicon-home"></span></a>
