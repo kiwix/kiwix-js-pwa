@@ -1,5 +1,15 @@
 # Changelog
 
+## Release 0.9.9.97 (beta)
+
+* ENHANCEMENT: Intuitive toolbar hiding/showing on scroll down/up
+* ENHANCEMENT: Provide option to set number of results to find when searching
+* ENHANCEMENT: Provide dismissable PWA app install buttons
+* FIX: Prevent ugly jumping of iframe on new article load
+* FIX: Allow use of special characters in article search
+* UPDATE: Added missing stylesheets for cache
+* UPDATE: Added some more initial files to load for PWA
+
 ## Release 0.9.9.96 Wikivoyage (beta)
 
 * FIX: Broken display of Kiwix download library
