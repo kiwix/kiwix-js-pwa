@@ -6,10 +6,10 @@
 	"display": "standalone",
 	"start_url": "index.html",
 	"short_name": "Kiwix JS Windows",
-	"theme_color": "transparent",
+	"theme_color": "black",
 	"description": "Offline Wikipedia reader",
 	"orientation": "any",
-	"background_color": "transparent",
+  "background_color": "transparent",
 	"relatedapplications": "",
 	"preferrelated_applications": "false",
 	"generated": "true",
@@ -23,6 +23,11 @@
       "src": "www/img/icons/kiwix-64.ico",
       "sizes": "64x64 128x128",
       "type": "image/ico"
+    },
+    {
+      "src": "www/img/icons/kiwix-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
     },
     {
       "src": "www/img/icons/kiwix-256.png",
