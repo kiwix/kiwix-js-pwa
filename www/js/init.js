@@ -188,12 +188,16 @@ window.addEventListener('beforeinstallprompt', function(e) {
     // Show the install button
     installDiv.style.display = 'block';
     btnInstall.addEventListener('click', installApp);
-    btnLater.addEventListener('click', function () {
+    btnLater.addEventListener('click', function (e) {
+        e.preventDefault();
         installDiv.style.display = 'none';
+        var message = 'If you change your mind, you can install this app later\nfrom browser menu -> Apps -> Install Kiwix JS PWA Edition';
+        alert(message);
     });
 });
 
-function installApp() {
+function installApp(e) {
+    e.preventDefault();
     // Show the prompt
     deferredPrompt.prompt();
     btnInstall.disabled = true;
