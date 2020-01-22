@@ -191,20 +191,22 @@ window.addEventListener('beforeinstallprompt', function(e) {
     // Show the install buttons
     // Don't display prompt if the PWA for this version is already installed
     if (params.PWAInstalled !== params.version) {
-        divInstall1.style.display = 'block';
+        params.beforeinstallpromptFired = true;
+        var config = document.getElementById('configuration');
+        if (config.style.display === 'none') {
+            divInstall1.style.display = 'block';
+        }
         btnInstall1.addEventListener('click', installApp);
         btnLater.addEventListener('click', function (e) {
             e.preventDefault();
             divInstall1.style.display = 'none';
-            if (document.getElementById('configuration').style.display === 'none') {
+            if (config.style.display === 'none') {
                 alert('You can install this app later from Configuration');
             }
-            divInstall2.style.display = 'block';
         });
-    } else {
         divInstall2.style.display = 'block';
+        btnInstall2.addEventListener('click', installApp);
     }
-    btnInstall2.addEventListener('click', installApp);
 });
 
 function installApp(e) {
@@ -225,6 +227,7 @@ function installApp(e) {
         btnInstall1.disabled = false;
         btnInstall2.disabled = false;
         deferredPrompt = null;
+        params.beforeinstallpromptFired = false;
     });
 }
 
