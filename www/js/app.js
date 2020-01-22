@@ -712,7 +712,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             $("#searchingArticles").hide();
             $("#welcomeText").hide();
             if (params.beforeinstallpromptFired) {
-                if (activeBtn !== 'btnConfigure')
+                if (activeBtn !== 'btnConfigure' && !params.installLater)
                     document.getElementById('divInstall1').style.display = 'block';
                 else
                     document.getElementById('divInstall1').style.display = 'none';

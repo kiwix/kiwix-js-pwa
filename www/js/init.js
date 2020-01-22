@@ -190,7 +190,7 @@ window.addEventListener('beforeinstallprompt', function(e) {
     deferredPrompt = e;
     // Show the install buttons
     // Don't display prompt if the PWA for this version is already installed
-    if (params.PWAInstalled !== params.version) {
+    if (!params.beforeinstallpromptFired && params.PWAInstalled !== params.version) {
         params.beforeinstallpromptFired = true;
         var config = document.getElementById('configuration');
         if (config.style.display === 'none') {
@@ -203,6 +203,7 @@ window.addEventListener('beforeinstallprompt', function(e) {
             if (config.style.display === 'none') {
                 alert('You can install this app later from Configuration');
             }
+            params.installLater = true;
         });
         divInstall2.style.display = 'block';
         btnInstall2.addEventListener('click', installApp);
