@@ -4,9 +4,10 @@
 
 * ENHANCEMENT: Intuitive toolbar hiding/showing on scroll down/up
 * ENHANCEMENT: Provide option to set number of results to find when searching
-* ENHANCEMENT: Provide dismissable PWA app install buttons
+* ENHANCEMENT: Provide app install experience for PWA
 * FIX: Prevent ugly jumping of iframe on new article load
 * FIX: Allow use of special characters in article search
+* FIX: Remove broken links to deprecated portable versions of archives
 * UPDATE: Added missing stylesheets for cache
 * UPDATE: Added some more initial files to load for PWA
 
