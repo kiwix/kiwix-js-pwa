@@ -429,10 +429,10 @@ define([], function () {
                     '<p><b>BitTorrent link</b>: <a href="' + URL.replace(/\.meta4$/, ".torrent") + '" target="_blank">' +
                     URL.replace(/\.meta4$/, ".torrent") + '</a></p>';
                 if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
-                    bodyDoc += '<p style="color:red;">This archive is larger than the maximum file size permitted on an SD card formatted as FAT32 (max size is approx. 4GB). On Windows, this is not normally a problem. However, if your card or other storage area is formatted in this way, you will need to download a split version of this file: see <a href="http://wiki.kiwix.org/wiki/FAQ/en">Frequently Asked Questions</a>.</p>\r\n';
-                    bodyDoc += '<p><b>To browse for a split version of this archive click here: <a id="portable" href="#" data-kiwix-dl="' +
-                        URL.replace(/\/zim\/([^/]+\/).*$/m, "/portable/$1") + '">' + URL.replace(/\/zim\/([^/]+\/).*$/m, "/portable/$1") +
-                        '</a>.</b></p>\r\n';
+                    bodyDoc += '<p style="color:red;">This archive is larger than the maximum file size permitted on an SD card formatted as FAT32 (max size is approx. 4GB). On Windows, this is not normally a problem. However, if your card or other storage area is formatted in this way, you will need to download a split version of this file: see <a href="http://wiki.kiwix.org/wiki/FAQ/en" target="_blank">Frequently Asked Questions</a>.</p>\r\n';
+                    // bodyDoc += '<p><b>To browse for a split version of this archive click here: <a id="portable" href="#" data-kiwix-dl="' +
+                    //    URL.replace(/\/zim\/([^/]+\/).*$/m, "/portable/$1") + '">' + URL.replace(/\/zim\/([^/]+\/).*$/m, "/portable/$1") +
+                    //    '</a>.</b></p>\r\n';
                 }
                 if (/\.zip\.meta4$/i.test(URL)) {
                     if (megabytes > 4000) bodyDoc += '<p style="color:red;">This ZIP file contains a split version of the archive, but the ZIP itself is larger than the maximum file size permitted on an SD card formatted as FAT32. Be sure to save it in a non-FAT32 location (e.g. a PC hard drive).</p>\r\n';
