@@ -79,6 +79,7 @@ params['allowInternetAccess'] = params['allowInternetAccess'] || false; //Do not
 params['printIntercept'] = false;
 params['printInterception'] = false;
 params['appIsLaunching'] = true; //Allows some routines to tell if the app has just been launched
+params['PWAInstalled'] = getCookie('PWAInstalled');
 
 //Prevent app boot loop with problematic pages that cause an app crash
 if (getCookie('lastPageLoad') == 'failed') {
@@ -183,6 +184,8 @@ window.addEventListener('beforeinstallprompt', function(e) {
     console.log('beforeinstallprompt fired');
     // Prevent Chrome 76 and earlier from automatically showing a prompt
     e.preventDefault();
+    // Don't display prompt if the PWA for this version is already installed
+    if (params.PWAInstalled === params.version) return;
     // Stash the event so it can be triggered later.
     deferredPrompt = e;
     // Show the install button
@@ -214,6 +217,11 @@ function installApp(e) {
         deferredPrompt = null;
     });
 }
+
+window.addEventListener('appinstalled', function(e) {
+    params.PWAInstalled = params.version;
+    document.cookie = 'PWAInstalled=' + params.PWAInstalled + ';expires=Fri, 31 Dec 9999 23:59:59 GMT';
+});
 
 function getCookie(name) {
     var result;
