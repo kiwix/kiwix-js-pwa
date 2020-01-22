@@ -79,7 +79,7 @@ params['allowInternetAccess'] = params['allowInternetAccess'] || false; //Do not
 params['printIntercept'] = false;
 params['printInterception'] = false;
 params['appIsLaunching'] = true; //Allows some routines to tell if the app has just been launched
-params['PWAInstalled'] = getCookie('PWAInstalled');
+params['PWAInstalled'] = decodeURIComponent(getCookie('PWAInstalled'));
 
 //Prevent app boot loop with problematic pages that cause an app crash
 if (getCookie('lastPageLoad') == 'failed') {
@@ -176,51 +176,61 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
 // Routine for installing the app adapted from https://pwa-workshop.js.org/
 
 var deferredPrompt;
-var installDiv = document.getElementById('installDiv');
-var btnInstall = document.getElementById('btnInstall');
+var divInstall1 = document.getElementById('divInstall1');
+var btnInstall1 = document.getElementById('btnInstall1');
+var divInstall2 = document.getElementById('divInstall2');
+var btnInstall2 = document.getElementById('btnInstall2');
 var btnLater = document.getElementById('btnLater');
 
 window.addEventListener('beforeinstallprompt', function(e) {
     console.log('beforeinstallprompt fired');
     // Prevent Chrome 76 and earlier from automatically showing a prompt
     e.preventDefault();
-    // Don't display prompt if the PWA for this version is already installed
-    if (params.PWAInstalled === params.version) return;
     // Stash the event so it can be triggered later.
     deferredPrompt = e;
-    // Show the install button
-    installDiv.style.display = 'block';
-    btnInstall.addEventListener('click', installApp);
-    btnLater.addEventListener('click', function (e) {
-        e.preventDefault();
-        installDiv.style.display = 'none';
-        var message = 'If you change your mind, you can install this app later\nfrom browser menu -> Apps -> Install Kiwix JS PWA Edition';
-        alert(message);
-    });
+    // Show the install buttons
+    // Don't display prompt if the PWA for this version is already installed
+    if (params.PWAInstalled !== params.version) {
+        divInstall1.style.display = 'block';
+        btnInstall1.addEventListener('click', installApp);
+        btnLater.addEventListener('click', function (e) {
+            e.preventDefault();
+            divInstall1.style.display = 'none';
+            if (document.getElementById('configuration').style.display === 'none') {
+                alert('You can install this app later from Configuration');
+            }
+            divInstall2.style.display = 'block';
+        });
+    } else {
+        divInstall2.style.display = 'block';
+    }
+    btnInstall2.addEventListener('click', installApp);
 });
 
 function installApp(e) {
     e.preventDefault();
     // Show the prompt
     deferredPrompt.prompt();
-    btnInstall.disabled = true;
-
+    btnInstall1.disabled = true;
+    btnInstall2.disabled = true;
     // Wait for the user to respond to the prompt
     deferredPrompt.userChoice.then(function(choiceResult) {
         if (choiceResult.outcome === 'accepted') {
             console.log('PWA installation accepted');
-            installDiv.style.display = 'none';
+            divInstall1.style.display = 'none';
+            divInstall2.style.display = 'none';
         } else {
             console.log('PWA installation rejected');
         }
-        btnInstall.disabled = false;
+        btnInstall1.disabled = false;
+        btnInstall2.disabled = false;
         deferredPrompt = null;
     });
 }
 
 window.addEventListener('appinstalled', function(e) {
     params.PWAInstalled = params.version;
-    document.cookie = 'PWAInstalled=' + params.PWAInstalled + ';expires=Fri, 31 Dec 9999 23:59:59 GMT';
+    document.cookie = 'PWAInstalled=' + encodeURIComponent(params.PWAInstalled) + ';expires=Fri, 31 Dec 9999 23:59:59 GMT';
 });
 
 function getCookie(name) {

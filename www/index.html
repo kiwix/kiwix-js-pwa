@@ -265,10 +265,10 @@
                                 </span>
                             </div>
                         </form>
-                        <div id="installDiv" style="display:none">
+                        <div id="divInstall1" style="display:none">
                             Would you like to install Kiwix JS PWA on this device?
-                            <button id="btnInstall">Install</button>
-                            <button id="btnLater">Later</button>
+                            <button id="btnInstall1" class="btn btn-xs btn-primary">Install</button>
+                            <button id="btnLater" class="btn btn-xs btn-primary">Later</button>
                         </div>
                     </div>
                 </div>
@@ -497,6 +497,9 @@
                     <div id="returntoArticle" class="returntoArticle" style="text-align:center;padding-top:30px;"></div>
                     <div class="row" style="padding-bottom:1em;">
                         <h2 style="margin-top:0;">Configuration</h2>
+                        <div id="divInstall2" style="display:none; float:right;">
+                            <button id="btnInstall2" class="btn btn-xs btn-primary">Install PWA</button>
+                        </div>
                         <p>
                             Packaged ZIM archive: <b><span class="fileVersion"></span></b>
                             <button style="display:none;" id="reloadPackagedArchive" type="button" class="btn btn-primary btn-xs">Reload</button>
