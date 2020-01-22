@@ -227,14 +227,14 @@ div:not(.panel-success, .alert-message) {
     min-height: 0px !important;
 }
 
-nav .btn-primary, .input-group-addon {
+nav a.btn-primary, .input-group-addon {
     background: #d9edf7 !important;
     border-color: #d9edf7 !important;
     margin-top: 3px;
     padding: 5px 1em !important;
 }
 
-.dark nav .btn-primary, .dark .navbar-inverse {
+.dark nav a.btn-primary, .dark .navbar-inverse {
     background: #222 !important;
     border-color: #222 !important;
 }
