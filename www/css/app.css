@@ -239,11 +239,9 @@ nav a.btn-primary, .input-group-addon {
     border-color: #222 !important;
 }
 
-nav .btn-xs {
+footer .btn-xs {
     margin: 5px 5px 10px;
 }
-
-
 
 .glyphicon {
     color: darkblue;
