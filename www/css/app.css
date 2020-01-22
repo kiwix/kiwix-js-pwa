@@ -239,6 +239,12 @@ nav a.btn-primary, .input-group-addon {
     border-color: #222 !important;
 }
 
+nav .btn-xs {
+    margin: 5px 5px 10px;
+}
+
+
+
 .glyphicon {
     color: darkblue;
 }
@@ -587,10 +593,6 @@ pre {
 
         /*.dropdown-menu {
         font-size: 20px !important;
-    }
-
-    .btn-xs {
-        font-size: 10px !important;
     }
 
      Pour réduire la taille des boutons en haut de l'écran 
