@@ -711,6 +711,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             $("#prefix").val("");
             $("#searchingArticles").hide();
             $("#welcomeText").hide();
+            if (params.beforeinstallpromptFired) {
+                if (activeBtn !== 'btnConfigure')
+                    document.getElementById('divInstall1').style.display = 'block';
+                else
+                    document.getElementById('divInstall1').style.display = 'none';
+            }
             resizeIFrame();
         }
 
