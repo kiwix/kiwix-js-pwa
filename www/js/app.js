@@ -3414,7 +3414,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 listElement.addEventListener('click', function () {
                     var iframeWin = document.getElementById('articleContent').contentWindow;
                     iframeWin.location.hash = this.dataset.headingId;
-                    iframeWin.onscroll();
+                    iframeWin.scrollBy(0, -5);
+                    setTimeout(function () {
+                        iframeWin.scrollBy(0, 5);
+                    }, 250);
                 });
             });
         }
