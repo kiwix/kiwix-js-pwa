@@ -681,7 +681,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             document.getElementById('libraryArea').style.borderColor = '';
             document.getElementById('libraryArea').style.borderStyle = '';
             var currentArchive = document.getElementById('currentArchive');
-            if (params.packagedFile && params.storedFile && params.storedFile != params.packagedFile) {
+            if (params.packagedFile && params.storedFile && params.storedFile !== params.packagedFile) {
                 currentArchive.innerHTML = "Currently loaded archive: <b>" + params.storedFile.replace(/\.zim$/i, "") + "</b>";
                 currentArchive.style.display = "block";
                 document.getElementById('downloadLinksText').style.display = "none";
@@ -691,9 +691,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 document.getElementById('downloadLinksText').style.display = "block";
                 currentArchive.style.display = "none";
             }
-            //else {
-            //    document.getElementById('rescanStorage').style.display = "none";
-            //}
+            // Populate version info
+            var versionSpans = document.getElementsByClassName('version');
+            for (var i = 0; i < versionSpans.length; i++) {
+                versionSpans[i].innerHTML = i ? params.version : params.version.replace(/\s+.*$/, "");
+            }
+            var fileVersionDivs = document.getElementsByClassName('fileVersion');
+            for (i = 0; i < fileVersionDivs.length; i++) {
+                fileVersionDivs[i].innerHTML = i ? params.fileVersion.replace(/\s+.+$/, "") : params.fileVersion;
+            }
+            document.getElementById('logUpdate').innerHTML = document.getElementById('update').innerHTML.match(/<ul[^>]*>[\s\S]+/i);
+            document.getElementById('logFeatures').innerHTML = document.getElementById('features').innerHTML;
             // Show the selected content in the page
             $('#about').hide();
             $('#configuration').hide();
@@ -1646,26 +1654,35 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         cookies.setItem("lastSelectedArchive", lastSelectedArchive, Infinity);
                     }
                     // Set the localArchive as the last selected (if none has been selected previously, wait for user input)
-                    //if (success || comboArchiveList.options.length == 1) {
                     if (success) {
                         setLocalArchiveFromArchiveList();
                     } else {
-                        // We can't find lastSelectedArchive in the archive list, so let's ask the user to pick it
-                        //uiUtil.systemAlert(lastSelectedArchive + ' could not be found in the known list of archives!');
-                        var message = '<p>We could not find the archive <b>' + lastSelectedArchive + '</b>!</p><p>Please select its location...</p>';
-                        if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined')
-                            message += '<p><i>Note:</i> If you drag-drop an archive into this UWP app, then it will have to be dragged again each time you launch the app. Try double-clicking on the archive instead, or select it using the controls on this page.</p>';
-                        document.getElementById('alert-content').innerHTML = message;
-                        $('#alertModal').off('hide.bs.modal');
-                        $('#alertModal').on('hide.bs.modal', function () {
-                            displayFileSelect();
-                        });
-                        $('#alertModal').modal({
-                            backdrop: 'static',
-                            keyboard: true
-                        });
-                        if (document.getElementById('configuration').style.display == 'none')
-                            document.getElementById('btnConfigure').click();
+                        // We can't find lastSelectedArchive in the archive list
+                        // Let's first check if this is a Store UWP/PWA that has a different archive package from that indicated in init.js
+                        if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined' && 
+                            params.storedFile === params.packagedFile && cookies.getItem('lastSelectedArchive') !== params.storedFile) {
+                            // We didn't pick this file previously, so select first one in list
+                            params.fileVersion = archiveDirectories[0];
+                            params.packagedFile = params.fileVersion;
+                            params.storedFile = params.fileVersion;
+                            setLocalArchiveFromArchiveList(params.fileVersion);
+                        } else {
+                            // It's genuinely no longer available, so let's ask the user to pick it
+                            var message = '<p>We could not find the archive <b>' + lastSelectedArchive + '</b>!</p><p>Please select its location...</p>';
+                            if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined')
+                                message += '<p><i>Note:</i> If you drag-drop an archive into this UWP app, then it will have to be dragged again each time you launch the app. Try double-clicking on the archive instead, or select it using the controls on this page.</p>';
+                            document.getElementById('alert-content').innerHTML = message;
+                            $('#alertModal').off('hide.bs.modal');
+                            $('#alertModal').on('hide.bs.modal', function () {
+                                displayFileSelect();
+                            });
+                            $('#alertModal').modal({
+                                backdrop: 'static',
+                                keyboard: true
+                            });
+                            if (document.getElementById('configuration').style.display == 'none')
+                                document.getElementById('btnConfigure').click();
+                        }
                     }
                 }
             } else {
@@ -2013,6 +2030,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         function loadPackagedArchive() {
             // Reload any ZIM files in local storage (whcih the user can't otherwise select with the filepicker)
             if (params.localStorage) {
+                // Reset params.packagedFile to its original value, in case we manipulated it previously
+                params.packagedFile = params.originalPackagedFile;
+                params.pickedFile = '';
                 params.storedFile = params.packagedFile || '';
                 params.pickedFolder = params.localStorage;
                 scanUWPFolderforArchives(params.localStorage);
