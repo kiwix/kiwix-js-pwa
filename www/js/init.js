@@ -33,7 +33,7 @@ var state = {};
 var params = {};
 params['version'] = "0.9.9.97 Beta"; //DEV: This value is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 params['packagedFile'] = "wikipedia_en_ray_charles.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
-params['archivePath'] = "archive"; //The directory containing the packaged archive(s) (relative to app's root directory)  
+params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
 params['fileVersion'] = "wikipedia_en_ray_charles_maxi_2019-08.zim (14-Aug-2019)"; //Use generic name for actual file, and give version here
 params['cachedStartPage'] = false; //If you have cached the start page for quick start, give its URI here
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
@@ -66,7 +66,8 @@ params['storedFile'] = getCookie('lastSelectedArchive') || params['packagedFile'
 params.storedFile = launchArguments ? launchArguments.files[0].name : params.storedFile;
 params['storedFilePath'] = getCookie('lastSelectedArchivePath');
 params.storedFilePath = params.storedFilePath ? decodeURIComponent(params.storedFilePath) : params.archivePath + '/' + params.packagedFile;
-params.storedFilePath = launchArguments ? launchArguments.files[0].path || '' :  params.storedFilePath;
+params.storedFilePath = launchArguments ? launchArguments.files[0].path || '' : params.storedFilePath;
+params.originalPackagedFile = params.packagedFile;
 params['falFileToken'] = params['falFileToken'] || "zimfile"; //UWP support
 params['falFolderToken'] = params['falFolderToken'] || "zimfilestore"; //UWP support
 params['localStorage'] = params['localStorage'] || "";
@@ -125,33 +126,21 @@ document.getElementById('hideToolbarsCheck').indeterminate = params.hideToolbars
 document.getElementById('hideToolbarsCheck').readOnly = params.hideToolbars === "top";
 document.getElementById('hideToolbarsState').innerHTML = (params.hideToolbars === "top" ? "top" : params.hideToolbars ? "both" : "never");
 
-var versionSpans = document.getElementsByClassName('version');
-for (var i = 0; i < versionSpans.length; i++) {
-    versionSpans[i].innerHTML = i ? params.version : params.version.replace(/\s+.*$/, "");
-}
-var fileVersionDivs = document.getElementsByClassName('fileVersion');
-for (i = 0; i < fileVersionDivs.length; i++) {
-    fileVersionDivs[i].innerHTML = i ? params.fileVersion.replace(/\s+.+$/, "") : params.fileVersion;
-}
-document.getElementById('logUpdate').innerHTML = document.getElementById('update').innerHTML.match(/<ul[^>]*>[\s\S]+/i);
-document.getElementById('logFeatures').innerHTML = document.getElementById('features').innerHTML;
-
 //Set up packaged Electron app
 if (!params.pickedFile && params.storedFile && typeof window.fs !== 'undefined') {
     params.pickedFile = params.storedFile;
 }
 //Set up storage types
 if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') { //UWP
-    //DEV change "archives" below if you wish to store local archives in a different location in the installation package
-    Windows.ApplicationModel.Package.current.installedLocation.getFolderAsync("archives").done(function (folder) {
-        if (folder) params.localStorage = folder;
+    Windows.ApplicationModel.Package.current.installedLocation.getFolderAsync(params.archivePath).done(function (folder) {
+        params.localStorage = folder;
     }, function (err) {
         console.error("This app doesn't appear to have access to local storage!");
     });
     var futureAccessList = Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList;
     if (futureAccessList.containsItem(params.falFolderToken)) {
-        futureAccessList.getFolderAsync(params.falFolderToken).then(function (folder) {
-            if (folder) params.pickedFolder = folder;
+        futureAccessList.getFolderAsync(params.falFolderToken).done(function (folder) {
+            params.pickedFolder = folder;
         }, function (err) {
             console.error("The previously picked folder is no longer accessible: " + err.message);
         });
@@ -165,7 +154,7 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
         if (!params.pickedFile && futureAccessList.containsItem(params.falFileToken)) {
             params.pickedFile = '';
             futureAccessList.getFileAsync(params.falFileToken).done(function (file) {
-                if (file && file.name === params.storedFile) params.pickedFile = file;
+                if (file.name === params.storedFile) params.pickedFile = file;
             }, function (err) {
                 console.error("The previously picked file is no longer accessible: " + err.message);
             });
