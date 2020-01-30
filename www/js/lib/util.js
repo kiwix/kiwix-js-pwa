@@ -21,7 +21,7 @@
  */
 'use strict';
 
-define(['q'], function (q) {
+define(['q', 'filecache'], function(q, FileCache) {
 
     /**
      * Utility function : return true if the given string ends with the suffix
@@ -211,7 +211,7 @@ define(['q'], function (q) {
      * @returns {Promise} Promise
      */
     function readFileSlice(file, begin, size) {
-        var deferred = q.defer();
+        // var deferred = q.defer();
         if (file.readMode === 'electron') {
             // We are reading a packaged file and have to use Electron fs.read (so we don't have to pick the file)
             fs.open(file.path, 'r', function (err, fd) {
@@ -229,16 +229,18 @@ define(['q'], function (q) {
             });
         } else {
             // We are reading a picked file, so use vanilla JS methods
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                deferred.resolve(new Uint8Array(e.target.result));
-            };
-            reader.onerror = reader.onabort = function (e) {
-                deferred.reject(e);
-            };
-            reader.readAsArrayBuffer(file.slice(begin, begin + size));
+        //     var reader = new FileReader();
+        //     reader.onload = function (e) {
+        //         deferred.resolve(new Uint8Array(e.target.result));
+        //     };
+        //     reader.onerror = reader.onabort = function (e) {
+        //         deferred.reject(e);
+        //     };
+        //     reader.readAsArrayBuffer(file.slice(begin, begin + size));
+        // }
+        // return deferred.promise;
+            return FileCache.read(file, begin, begin + size);
         }
-        return deferred.promise;
     }
 
     /**
