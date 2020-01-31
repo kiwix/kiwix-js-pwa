@@ -700,8 +700,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             for (i = 0; i < fileVersionDivs.length; i++) {
                 fileVersionDivs[i].innerHTML = i ? params.fileVersion.replace(/\s+.+$/, "") : params.fileVersion;
             }
-            document.getElementById('logUpdate').innerHTML = document.getElementById('update').innerHTML.match(/<ul[^>]*>[\s\S]+/i);
-            document.getElementById('logFeatures').innerHTML = document.getElementById('features').innerHTML;
+            var update = document.getElementById('update');
+            if (update) document.getElementById('logUpdate').innerHTML = update.innerHTML.match(/<ul[^>]*>[\s\S]+/i);
+            var features = document.getElementById('features');
+            if (features) document.getElementById('logFeatures').innerHTML = features.innerHTML;
             // Show the selected content in the page
             $('#about').hide();
             $('#configuration').hide();
