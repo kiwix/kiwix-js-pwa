@@ -127,7 +127,7 @@ define(['q'], function(Q) {
             }
         }
         if (misses + hits > 1000) {
-            console.log("hits: " + hits + " misses: " + misses + " Perc: " + (hits / (hits + misses)));
+            console.log("Cache hits: " + hits + " misses: " + misses + " = " + hits / (hits + misses) * 100 + "%");
             hits = 0;
             misses = 0;
         }
