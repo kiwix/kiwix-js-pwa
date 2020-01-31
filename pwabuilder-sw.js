@@ -43,6 +43,7 @@ const precacheFiles = [
   "www/js/lib/bootstrap.js",
   "www/js/lib/bootstrap.min.js",
   "www/js/lib/cookies.js",
+  "www/js/lib/filecache.js",
   "www/js/lib/images.js",
   "www/js/lib/jquery-3.2.1.slim.js",
   "www/js/lib/kiwixServe.js",
