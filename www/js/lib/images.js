@@ -94,7 +94,7 @@ define(['uiUtil'], function (uiUtil) {
                     image.style.transition = 'opacity 0.5s ease-in';
                     image.style.opacity = '1';
                 });
-            }).fail(function (e) {
+            }).catch(function (e) {
                 console.error('Could not find DirEntry for image: ' + title, e);
                 checkBatch();
             });
