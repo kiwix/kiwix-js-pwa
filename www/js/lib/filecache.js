@@ -144,16 +144,16 @@ define(['q'], function(Q) {
         });
     };
     var readInternal = function(file, begin, end) {
-        var deferred = Q.defer();
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            deferred.resolve(new Uint8Array(e.target.result));
-        };
-        reader.onerror = reader.onabort = function(e) {
-            deferred.reject(e);
-        };
-        reader.readAsArrayBuffer(file.slice(begin, end));
-        return deferred.promise;
+        return Q.Promise(function(resolve, reject) {
+            var reader = new FileReader();
+            reader.readAsArrayBuffer(file.slice(begin, end));
+            reader.onload = function(e) {
+                resolve(new Uint8Array(e.target.result));
+            };
+            reader.onerror = reader.onabort = function(e) {
+                reject(e);
+            };
+        });
     };
 
     return {

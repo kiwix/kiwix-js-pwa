@@ -241,7 +241,7 @@ define(['xzdec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry'], function(xz, util,
                 }
             }
             return typeMap;
-        }).fail(function(err) {
+        }).catch(function(err) {
             console.error('Unable to read MIME type list', err);
             return new Map;
         });
