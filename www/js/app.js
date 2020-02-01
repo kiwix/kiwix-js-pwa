@@ -2616,7 +2616,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                             });
                         }
                     };
-                    state.selectedArchive.getDirEntryByTitle(title).then(readFile).fail(function (err) {
+                    state.selectedArchive.getDirEntryByTitle(title).then(readFile).catch(function (err) {
                         console.error('Failed to read ' + title, err);
                         messagePort.postMessage({
                             'action': 'giveContent',
@@ -2935,7 +2935,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                         cssBlobCache.set(newURL[0], newURL[1]);
                                     injectCSS(); //DO NOT move this: it must run within .then function to pass correct values
                                 });
-                        }).fail(function (e) {
+                        }).catch(function (e) {
                             console.error("could not find DirEntry for CSS : " + title, e);
                             //@TODO Change this to push an array of [title, title] afters simplified code in injectCSS()
                             blobArray.push(title);
@@ -3473,7 +3473,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                             uiUtil.feedNodeWithBlob(script, 'src', content, 'text/javascript', params.allowHTMLExtraction);
                         });
                     }
-                }).fail(function (e) {
+                }).catch(function (e) {
                     console.error("could not find DirEntry for javascript : " + title, e);
                 });
             });
@@ -3537,7 +3537,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     $('.alert').hide();
                     readArticle(dirEntry);
                 }
-            }).fail(function () {
+            }).catch(function () {
                 console.error("Error reading article with title " + title);
                 if (params.appIsLaunching) goToMainArticle();
                 // Line below prevents bootloop
