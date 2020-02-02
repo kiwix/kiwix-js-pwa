@@ -61,17 +61,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             iframe.style.height = window.innerHeight + 'px';
 
             //Re-enable top-level scrolling
-            header.style.position = "relative";
-            scrollbox.style.position = "fixed";
-            scrollbox.style.height = window.innerHeight + "px";
-            iframe.style.position = "relative";
+            scrollbox.style.height = window.innerHeight - navbarHeight + 'px';
 
-            if (iframe.style.display !== "none") {
-                scrollbox.style.position = "relative";
+            if (iframe.style.display !== "none" && document.getElementById("prefix") !== document.activeElement) {
                 scrollbox.style.height = 0;
-                //if (params.hideToolbars) {
-                //    scrollbox.style.height = ~~document.getElementById('top').getBoundingClientRect().height + "px"; //Cannot be larger or else on Windows Mobile (at least) and probably other mobile, the top bar gets covered by iframe
-                //}
             }
             var ToCList = document.getElementById('ToCList');
             if (typeof ToCList !== "undefined") {
@@ -124,10 +117,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             searchDirEntriesFromPrefix($('#prefix').val());
             clearFindInArticle();
             //Re-enable top-level scrolling
-            document.getElementById('top').style.position = "relative";
-            document.getElementById('scrollbox').style.position = "fixed";
-            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
-            //document.getElementById('search-article').style.overflow = "auto";
+            document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
             if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
                 $('#navbarToggle').click();
             }
@@ -142,7 +132,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 e.preventDefault();
                 e.stopPropagation();
                 $('#articleListWithHeader').hide();
-                document.getElementById('articleContent').style.position = 'fixed';
                 $('#articleContent').focus();
                 $("#myModal").modal('hide'); // This is in case the modal box is showing with an index search
                 keyPressHandled = true;
@@ -207,15 +196,19 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 document.getElementById('prefix').value = '';
             } else if (prefixVal !== '') {
                 $('#articleListWithHeader').show();
-                document.getElementById('articleContent').style.position = 'static';
             }
-            document.getElementById('scrollbox').style.zIndex = 2;
+            document.getElementById('scrollbox').style.position = 'absolute';
+            document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
         });
         // Hide the search resutls if user moves out of prefix field
-        $('#prefix').on('blur', function () {
-            $('#articleListWithHeader').hide();
-            document.getElementById('articleContent').style.position = 'fixed';
-            document.getElementById('scrollbox').style.zIndex = -2;
+        document.getElementById('prefix').addEventListener('blur', function () {
+            // We need to wait one tick for the activeElement to receive focus
+            setTimeout(function () {
+                if (!(/^articleList/.test(document.activeElement.id) || /^list-group/.test(document.activeElement.className))) {
+                    document.getElementById('scrollbox').style.height = 0;
+                    document.getElementById('articleListWithHeader').style.display = 'none';
+                }
+            }, 1);
         });
 
         //Add keyboard shortcuts
@@ -513,9 +506,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         document.getElementById('btnRandomArticle').addEventListener('click', function () {
             setTab('btnRandomArticle');
             //Re-enable top-level scrolling
-            document.getElementById('top').style.position = "relative";
-            document.getElementById('scrollbox').style.position = "fixed";
-            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
+            document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
             goToRandomArticle();
         });
 
@@ -658,10 +649,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             //Re-enable bottom toolbar display
             document.getElementById('footer').style.display = "block";
             //Re-enable top-level scrolling
-            // document.getElementById('top').style.position = "relative";
-            // document.getElementById('scrollbox').style.position = "fixed";
-            // document.getElementById('scrollbox').style.height = window.innerHeight + "px";
-            // document.getElementById('articleContent').style.position = "fixed";
+            document.getElementById('top').style.position = "relative";
             //Use the "light" navbar if the content is "light" (otherwise it looks shite....)
             var determinedTheme = cssUIThemeGetOrSet(params.cssUITheme);
             var determinedWikiTheme = params.cssTheme == 'auto' ? determinedTheme : params.cssTheme == 'inverted' ? 'dark' : params.cssTheme;
@@ -710,6 +698,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             $('#formArticleSearch').show();
             if (!activeBtn || activeBtn == 'btnHome') {
                 // document.getElementById('search-article').scrollTop = 0;
+                document.getElementById('scrollbox').style.height = 0;
                 document.getElementById('search-article').style.overflowY = 'hidden';
                 setTimeout(function() {
                     document.getElementById('articleContent').style.display = 'block';
@@ -727,7 +716,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 else
                     document.getElementById('divInstall1').style.display = 'none';
             }
-            resizeIFrame();
+            setTimeout(resizeIFrame, 100);
         }
 
         function setActiveBtn(activeBtn) {
@@ -773,9 +762,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             $('#myModal').hide();
             refreshAPIStatus();
             //Re-enable top-level scrolling
-            document.getElementById('top').style.position = "relative";
-            document.getElementById('scrollbox').style.position = "fixed";
-            document.getElementById('scrollbox').style.height = document.documentElement.clientHeight + "px";
+            document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
             document.getElementById('search-article').style.overflowY = "auto";
             if (document.getElementById('openLocalFiles').style.display == "none") {
                 document.getElementById('rescanStorage').style.display = "block";
@@ -824,9 +811,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             $('#articleContent').hide();
             $('.alert').hide();
             //Re-enable top-level scrolling
-            document.getElementById('top').style.position = "relative";
-            document.getElementById('scrollbox').style.position = "fixed";
-            document.getElementById('scrollbox').style.height = document.documentElement.clientHeight + "px";
+            document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
             document.getElementById('search-article').style.overflowY = "auto";
         });
         // Two event listeners are needed because the archive list doesn't "change" if there is only one element in it
@@ -2311,11 +2296,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     $('#myModal').modal({
                         backdrop: "static"
                     });
-                    //if ($('#prefix').is(":focus")) {
-                    //    // This removes the focus from prefix
-                    //    document.getElementById('findText').click();
-                    //    document.getElementById('findText').click();
-                    //}
                 }, start);
             }
         }
@@ -2350,16 +2330,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     '" class="list-group-item">' + dirEntry.getTitleOrUrl() + '</a>';
             }
             articleListDiv.innerHTML = articleListDivHtml;
-            // Needed so that results show on top of article
-            document.getElementById('articleContent').style.position = 'static';
-            // We have to use mousedown below instead of click as otherwise the prefix blur event fires first 
-            // and prevents this event from firing; note that touch also triggers mousedown
-            $('#articleList a').on('mousedown', function (e) {
+            $('#articleList a').on('click', function (e) {
                 handleTitleClick(e);
+                document.getElementById('scrollbox').style.height = 0;
+                document.getElementById('articleListWithHeader').style.display = 'none';
                 return false;
             });
             $('#searchingArticles').hide();
-            //document.getElementById('articleListWithHeader').style.top = document.getElementById('navbar').getBoundingClientRect().height + 'px';
             $('#articleListWithHeader').show();
         }
 
@@ -3518,9 +3495,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             //This removes any search highlighting
             clearFindInArticle();
             //Re-enable top-level scrolling
-            document.getElementById('top').style.position = "relative";
-            document.getElementById('scrollbox').style.position = "fixed";
-            document.getElementById('scrollbox').style.height = window.innerHeight + "px";
+            document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
             document.getElementById('searchingArticles').style.display = 'block';
             state.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
