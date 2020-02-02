@@ -119,8 +119,7 @@ define(['q'], function(Q) {
     var read = function(file, begin, end) {
         // Read large chunks bypassing the block cache because we would have to
         // stitch together too many blocks and would clog the cache
-        if (end - begin > BLOCK_SIZE)
-            return readInternal(file, begin, end);
+        if (end - begin > 2048) return readInternal(file, begin, end);
         var readRequests = [];
         var blocks = {};
         for (var i = Math.floor(begin / BLOCK_SIZE) * BLOCK_SIZE; i < end; i += BLOCK_SIZE) {
