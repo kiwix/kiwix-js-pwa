@@ -506,7 +506,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         document.getElementById('btnRandomArticle').addEventListener('click', function () {
             setTab('btnRandomArticle');
             //Re-enable top-level scrolling
-            document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
             goToRandomArticle();
         });
 
