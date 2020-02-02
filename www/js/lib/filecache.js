@@ -1,29 +1,36 @@
 /**
  * filecache.js: Generic least-recently-used-cache used for reading file chunks.
  *
- * Copyright 2016 Mossroy and contributors
+ * Copyright 2020 Mossroy, peter-x, jaifroid and contributors
  * License GPL v3:
  *
- * This file is part of Evopedia.
+ * This file is part of Kiwix.
  *
- * Evopedia is free software: you can redistribute it and/or modify
+ * Kiwix JS is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Evopedia is distributed in the hope that it will be useful,
+ * Kiwix JS is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Evopedia (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
+ * along with Evopedia (file LICENSE).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
 define(['q'], function(Q) {
     /**
+     * Set maximum number of cache entries of 2048 bytes each
+     * 100 entries = 200 KiB
+     * @type {Integer}
+    */
+    var MAX_CACHE_SIZE = 1000;
+
+    /**
      * Creates a new cache with max size limit
-     * @param {Integer} limit
+     * @param {Integer} limit The maximum number of 2048-byte blocks to be cached
      */
     function LRUCache(limit) {
         console.log("Creating cache of size " + limit);
@@ -35,6 +42,7 @@ define(['q'], function(Q) {
         this._first = null;
         this._last = null;
     }
+
     /**
      * Tries to retrieve an element by its namespace and id. If it is not present in the cache,
      * returns undefined.
@@ -42,7 +50,6 @@ define(['q'], function(Q) {
     LRUCache.prototype.get = function(id) {
         var entry = this._entries[id]; 
         if (entry === undefined) {
-            this._misses++;
             return entry;
         }
         this.moveToTop(entry);
@@ -91,23 +98,23 @@ define(['q'], function(Q) {
         this.insertAtTop(entry);
     };
 
-    // Create a 200k cache.
-    var cache = new LRUCache(1000);
+    // Create a new cache
+    var cache = new LRUCache(MAX_CACHE_SIZE);
+    var blockSize = 2048;
 
+    // Counters for reporting only
     var hits = 0;
     var misses = 0;
 
     /**
-     * Read a certain byte range in the given file, breaking the range into chunks
-     * that go through the cache.
-     * If a read of more than 2048 bytes is requested, do not use the cache.
+     * Read a certain byte range in the given file, breaking the range into chunks that go through the cache
+     * If a read of more than blocksize (bytes) is requested, do not use the cache
      * @return {Promise} promise that resolves to the correctly concatenated data.
      */
     var read = function(file, begin, end) {
-        var blockSize = 2048;
         // Read large chunks bypassing the block cache because we would have to
-        // stitch together too many blocks and would clog the cach.
-        if (end - begin > 2048)
+        // stitch together too many blocks and would clog the cache
+        if (end - begin > blockSize * 4)
             return readInternal(file, begin, end);
         var readRequests = [];
         var blocks = {};
@@ -127,7 +134,7 @@ define(['q'], function(Q) {
             }
         }
         if (misses + hits > 1000) {
-            console.log("Cache hits: " + hits + " misses: " + misses + " = " + hits / (hits + misses) * 100 + "%");
+            console.log("** Block cache hit rate: " + Math.round(hits / (hits + misses) * 1000) / 10 + "% [ hits:" + hits + " / misses:" + misses + " ]");
             hits = 0;
             misses = 0;
         }
