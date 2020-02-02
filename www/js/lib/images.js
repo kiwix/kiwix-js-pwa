@@ -179,7 +179,7 @@ define(['uiUtil'], function (uiUtil) {
                         if (callback && !batchCount) callback();
                     });
                 } else {
-                    console.log('Queueing image #' + i);
+                    // console.log('Queueing image #' + i);
                     imageStore.push(documentImages[i]);
                 }
             } else {
