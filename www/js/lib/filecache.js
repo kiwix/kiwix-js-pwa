@@ -22,11 +22,17 @@
 'use strict';
 define(['q'], function(Q) {
     /**
-     * Set maximum number of cache entries of 2048 bytes each
-     * 100 entries = 200 KiB
+     * Set maximum number of cache blocks of BLOCK_SIZE bytes each
+     * Maximum size of cache in bytes = MAX_CACHE_SIZE * BLOCK_SIZE
+     * @type {Integer}
+     */
+    var MAX_CACHE_SIZE = 500;
+
+    /**
+     * The maximum blocksize to read or store via the block cache (bytes)
      * @type {Integer}
     */
-    var MAX_CACHE_SIZE = 1000;
+    var BLOCK_SIZE = 4096;
 
     /**
      * Creates a new cache with max size limit
@@ -100,8 +106,7 @@ define(['q'], function(Q) {
 
     // Create a new cache
     var cache = new LRUCache(MAX_CACHE_SIZE);
-    var blockSize = 2048;
-
+    
     // Counters for reporting only
     var hits = 0;
     var misses = 0;
@@ -114,16 +119,16 @@ define(['q'], function(Q) {
     var read = function(file, begin, end) {
         // Read large chunks bypassing the block cache because we would have to
         // stitch together too many blocks and would clog the cache
-        if (end - begin > blockSize * 4)
+        if (end - begin > BLOCK_SIZE)
             return readInternal(file, begin, end);
         var readRequests = [];
         var blocks = {};
-        for (var i = Math.floor(begin / blockSize) * blockSize; i < end; i += blockSize) {
+        for (var i = Math.floor(begin / BLOCK_SIZE) * BLOCK_SIZE; i < end; i += BLOCK_SIZE) {
             var block = cache.get(file.name + i);
             if (block === undefined) {
                 misses++;
                 readRequests.push(function(offset) {
-                    return readInternal(file, offset, offset + blockSize).then(function(result) {
+                    return readInternal(file, offset, offset + BLOCK_SIZE).then(function(result) {
                         cache.store(file.name + offset, result);
                         blocks[offset] = result;
                     });
@@ -141,9 +146,9 @@ define(['q'], function(Q) {
         return Q.all(readRequests).then(function() {
             var result = new Uint8Array(end - begin);
             var pos = 0;
-            for (var i = Math.floor(begin / blockSize) * blockSize; i < end; i += blockSize) {
+            for (var i = Math.floor(begin / BLOCK_SIZE) * BLOCK_SIZE; i < end; i += BLOCK_SIZE) {
                 var b = Math.max(i, begin) - i;
-                var e = Math.min(end, i + blockSize) - i;
+                var e = Math.min(end, i + BLOCK_SIZE) - i;
                 result.set(blocks[i].subarray(b, e), pos);
                 pos += e - b;
             }
