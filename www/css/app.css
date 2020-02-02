@@ -89,6 +89,10 @@ div:not(.panel-success, .alert-message) {
     margin-bottom: 12px !important;
 }
 
+#scrollbox {
+    position: absolute;
+}
+
 #articleListWithHeader {
     position: absolute; 
     top: 0; 
