@@ -3493,8 +3493,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         function goToArticle(title, download, contentType) {
             //This removes any search highlighting
             clearFindInArticle();
-            //Re-enable top-level scrolling
-            document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
             document.getElementById('searchingArticles').style.display = 'block';
             state.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
