@@ -26,13 +26,13 @@ define(['q'], function(Q) {
      * Maximum size of cache in bytes = MAX_CACHE_SIZE * BLOCK_SIZE
      * @type {Integer}
      */
-    var MAX_CACHE_SIZE = 500;
+    var MAX_CACHE_SIZE = 1000;
 
     /**
      * The maximum blocksize to read or store via the block cache (bytes)
      * @type {Integer}
     */
-    var BLOCK_SIZE = 4096;
+    var BLOCK_SIZE = 2048;
 
     /**
      * Creates a new cache with max size limit
@@ -119,7 +119,7 @@ define(['q'], function(Q) {
     var read = function(file, begin, end) {
         // Read large chunks bypassing the block cache because we would have to
         // stitch together too many blocks and would clog the cache
-        if (end - begin > 2048) return readInternal(file, begin, end);
+        if (end - begin > BLOCK_SIZE) return readInternal(file, begin, end);
         var readRequests = [];
         var blocks = {};
         for (var i = Math.floor(begin / BLOCK_SIZE) * BLOCK_SIZE; i < end; i += BLOCK_SIZE) {
@@ -137,7 +137,7 @@ define(['q'], function(Q) {
                 blocks[i] = block;
             }
         }
-        if (misses + hits > 1000) {
+        if (misses + hits > 2000) {
             console.log("** Block cache hit rate: " + Math.round(hits / (hits + misses) * 1000) / 10 + "% [ hits:" + hits + " / misses:" + misses + " ]");
             hits = 0;
             misses = 0;
