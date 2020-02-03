@@ -1,4 +1,4 @@
-/**
+﻿/**
  * filecache.js: Generic least-recently-used-cache used for reading file chunks.
  *
  * Copyright 2020 Mossroy, peter-x, jaifroid and contributors
@@ -17,7 +17,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Evopedia (file LICENSE).  If not, see <http://www.gnu.org/licenses/>
+ * along with Kiwix JS (file LICENSE).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
 define(['q'], function(Q) {
