@@ -1,18 +1,16 @@
 # Changelog
 
-## Release 0.9.9.97 (beta)
+## Release 0.9.9.97 WikiMed (beta)
 
+* UPDATE: WikiMed ZIM archive to wikipedia_en_medicine_maxi_2020-02
+* UPDATE: Added missing stylesheets for cache
 * ENHANCEMENT: Intuitive toolbar hiding/showing on scroll down/up
 * ENHANCEMENT: Added block cache to speed up search considerably
 * ENHANCEMENT: Provide option to set number of results to find when searching
-* ENHANCEMENT: Provide app install experience for PWA
 * FIX: Search results can now be scrolled by touch on Windows 10 tablets
 * FIX: Corrected height of search results window so content is not hidden under footer
-* FIX: Prevent ugly jumping of iframe on new article load
 * FIX: Allow use of special characters in article search
 * FIX: Remove broken links to deprecated portable versions of archives
-* UPDATE: Added missing stylesheets for cache
-* UPDATE: Added some more initial files to load for PWA
 
 ## Release 0.9.9.96 WikiMed (beta)
 
