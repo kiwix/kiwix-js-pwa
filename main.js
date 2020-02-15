@@ -43,9 +43,9 @@ function createWindow() {
     });
 
     // and load the index.html of the app.
-    // mainWindow.loadURL('app://www/index.html');
+    mainWindow.loadURL('https://kiwix.github.io/kiwix-js-windows');
     // DEV: If you need Service Worker more than you need document.cookie, load app like this:
-    mainWindow.loadFile('www/index.html');
+    // mainWindow.loadFile('www/index.html');
 
     mainWindow.webContents.on('new-window', function(e, url) {
         // Make sure blob urls stay in electron perimeter
