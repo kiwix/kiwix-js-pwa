@@ -212,22 +212,22 @@ define(['q', 'filecache'], function(q, FileCache) {
      */
     function readFileSlice(file, begin, size) {
         // var deferred = q.defer();
-        if (file.readMode === 'electron') {
-            // We are reading a packaged file and have to use Electron fs.read (so we don't have to pick the file)
-            fs.open(file.path, 'r', function (err, fd) {
-                if (err) { 
-                    console.error('Could not find file!', err);
-                } else {
-                    fs.read(fd, new Uint8Array(size), 0, size, begin, function (err, bytesRead, data) {
-                        if (err) deferred.reject(err);
-                        else deferred.resolve(data);
-                        fs.close(fd, function (err) {
-                            if (err) console.log('Could not close file...', err);
-                        });
-                    });
-                }
-            });
-        } else {
+        // if (file.readMode === 'electron') {
+        //     // We are reading a packaged file and have to use Electron fs.read (so we don't have to pick the file)
+        //     fs.open(file.path, 'r', function (err, fd) {
+        //         if (err) { 
+        //             console.error('Could not find file!', err);
+        //         } else {
+        //             fs.read(fd, Buffer.alloc(size), 0, size, begin, function (err, bytesRead, data) {
+        //                 if (err) deferred.reject(err);
+        //                 else deferred.resolve(data);
+        //                 fs.close(fd, function (err) {
+        //                     if (err) console.log('Could not close file...', err);
+        //                 });
+        //             });
+        //         }
+        //     });
+        // } else {
             // We are reading a picked file, so use vanilla JS methods
         //     var reader = new FileReader();
         //     reader.onload = function (e) {
@@ -240,7 +240,7 @@ define(['q', 'filecache'], function(q, FileCache) {
         // }
         // return deferred.promise;
             return FileCache.read(file, begin, begin + size);
-        }
+        // }
     }
 
     /**
