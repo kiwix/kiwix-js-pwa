@@ -156,14 +156,33 @@ define(['q'], function(Q) {
     };
     var readInternal = function(file, begin, end) {
         return Q.Promise(function(resolve, reject) {
-            var reader = new FileReader();
-            reader.readAsArrayBuffer(file.slice(begin, end));
-            reader.onload = function(e) {
-                resolve(new Uint8Array(e.target.result));
-            };
-            reader.onerror = reader.onabort = function(e) {
-                reject(e);
-            };
+            if (file.readMode === 'electron') {
+                // We are reading a packaged file and have to use Electron fs.read (so we don't have to pick the file)
+                fs.open(file.path, 'r', function (err, fd) {
+                    if (err) { 
+                        console.error('Could not find file!', err);
+                        reject(err);
+                    } else {
+                        var size = end - begin;
+                        fs.read(fd, Buffer.alloc(size), 0, size, begin, function (err, bytesRead, data) {
+                            if (err) reject(err);
+                            else resolve(data);
+                            fs.close(fd, function (err) {
+                                if (err) console.log('Could not close file...', err);
+                            });
+                        });
+                    }
+                });
+            } else {
+                var reader = new FileReader();
+                reader.readAsArrayBuffer(file.slice(begin, end));
+                reader.onload = function(e) {
+                    resolve(new Uint8Array(e.target.result));
+                };
+                reader.onerror = reader.onabort = function(e) {
+                    reject(e);
+                };
+            }
         });
     };
 

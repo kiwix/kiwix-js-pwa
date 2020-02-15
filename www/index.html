@@ -55,10 +55,9 @@
             window.requireNode = window.require;
             window.require = undefined;
             window.fs = requireNode('fs');
-        }
-        // Try to activate Service Worker
-        console.log('Trying to activate Service Worker...');
-        if ("serviceWorker" in navigator) {
+        } else if ("serviceWorker" in navigator) {
+            // Try to activate Service Worker
+            console.log('Trying to activate Service Worker...');
             // Register the service worker
             navigator.serviceWorker.register("../pwabuilder-sw.js", {
                 scope: "../"
