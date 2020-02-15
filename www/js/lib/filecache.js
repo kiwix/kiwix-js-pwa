@@ -164,7 +164,7 @@ define(['q'], function(Q) {
                         reject(err);
                     } else {
                         var size = end - begin;
-                        fs.read(fd, Buffer.alloc(size), 0, size, begin, function (err, bytesRead, data) {
+                        fs.read(fd, new Uint8Array(size), 0, size, begin, function (err, bytesRead, data) {
                             if (err) reject(err);
                             else resolve(data);
                             fs.close(fd, function (err) {
