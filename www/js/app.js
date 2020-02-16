@@ -2177,7 +2177,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          */
         function searchDirEntriesFromPrefix(prefix) {
             if (state.selectedArchive !== null && state.selectedArchive.isReady()) {
-                $('#activeContent').alert('close');
+                $('#activeContent').hide();
                 if (!prefix || /^\s/.test(prefix)) {
                     var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
                     if (sel.length) {
@@ -3538,7 +3538,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     //Test below supports Stackexchange-family ZIMs, so we don't call up user profiles
                     if (dirEntry.namespace === 'A' && !/user\//.test(dirEntry.url)) {
                         params.isLandingPage = false;
-                        $('#activeContent').alert('close');
+                        $('#activeContent').hide();
                         readArticle(dirEntry);
                     } else {
                         // If the random title search did not end up on an article,
