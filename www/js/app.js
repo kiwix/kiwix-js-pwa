@@ -1345,8 +1345,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         'action': 'disable'
                     });
                     messageChannel = null;
-                    // If we're in electron or nwjs, completely remove the SW (but we need to keep it active if we're in a PWA)
-                    if (typeof window.fs !== 'undefined') {
+                    // If we're not in a PWA context
+                    if (!/^https|\/localhost/i.test(window.location.href)) {
                         navigator.serviceWorker.getRegistrations().then(function(registrations) {
                             for (var registration of registrations) {
                                 registration.unregister();
