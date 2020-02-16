@@ -268,7 +268,7 @@ function fromCache(request) {
 }
 
 function updateCache(request, response) {
-  if (!excludedURLSchema.test(event.request.url)) {
+  if (!excludedURLSchema.test(request.url)) {
     return caches.open(CACHE).then(function (cache) {
       return cache.put(request, response);
     });
