@@ -8,7 +8,7 @@
   "node-remote": "https://kiwix.github.io/kiwix-js-windows/*",
   "window": {
     "width": 1280,
-    "height": 960,
+    "height": 840,
     "min_width": 640,
     "min_height": 480,
     "icon": "www/img/icons/kiwix-256.png"
