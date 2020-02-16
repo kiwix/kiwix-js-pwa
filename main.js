@@ -35,7 +35,7 @@ function createWindow() {
             nodeIntegration: false
             // contextIsolation: true,
             , preload: path.join(__dirname, 'preload.js')
-            //, nativeWindowOpen: true
+            // , nativeWindowOpen: true
             // , webSecurity: false
             // , session: ses
             // , partition: 'persist:kiwixjs'
@@ -43,9 +43,9 @@ function createWindow() {
     });
 
     // and load the index.html of the app.
-    mainWindow.loadURL('https://kiwix.github.io/kiwix-js-windows');
+    // mainWindow.loadURL(`https://${__dirname}/www/index.html`);
     // DEV: If you need Service Worker more than you need document.cookie, load app like this:
-    // mainWindow.loadFile('www/index.html');
+    mainWindow.loadFile('www/index.html');
 
     mainWindow.webContents.on('new-window', function(e, url) {
         // Make sure blob urls stay in electron perimeter
@@ -83,8 +83,8 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 
 app.on('ready', () => {
-    // protocol.registerFileProtocol('app', (request, callback) => {
-    // //protocol.registerHttpProtocol('app', (request, callback) => {
+    // //protocol.registerFileProtocol('app', (request, callback) => {
+    // protocol.registerHttpProtocol('app', (request, callback) => {
     //     const url = request.url.replace(/^app:\/\/([^?#]*?)([^?#\/\\]+)([#?].*$|$)/, function(_p0, relPath, linkUrl, hash) {
     //         let replaceLink = relPath + linkUrl;
     //         // This prevents the querystring from being passed to Electron on main app reload
