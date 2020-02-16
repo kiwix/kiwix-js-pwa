@@ -1345,7 +1345,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         'action': 'disable'
                     });
                     messageChannel = null;
-                    // If we're not in a PWA context
+                    // If we're not in a PWA context, completely unregister the SW
                     if (!/^https|\/localhost/i.test(window.location.href)) {
                         navigator.serviceWorker.getRegistrations().then(function(registrations) {
                             for (var registration of registrations) {
