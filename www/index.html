@@ -57,18 +57,17 @@
             window.fs = requireNode('fs');
         } 
         if ('serviceWorker' in navigator && /^http/.test(window.location.protocol)) {
-            // Try to activate Service Worker
             console.log('Trying to activate Service Worker...');
             if (navigator.serviceWorker.controller) {
                 console.log('Service Worker is already active');
-                return;
+            } else {
+                // Register the service worker
+                navigator.serviceWorker.register("../pwabuilder-sw.js", {
+                    scope: "../"
+                }).then(function (reg) {
+                    console.log("Service worker has been registered for scope: " + reg.scope);
+                });
             }
-            // Register the service worker
-            navigator.serviceWorker.register("../pwabuilder-sw.js", {
-                scope: "../"
-            }).then(function (reg) {
-                console.log("Service worker has been registered for scope: " + reg.scope);
-            });
         } else {
             console.log('Service Worker not (re-)registered in this context...');
         }
