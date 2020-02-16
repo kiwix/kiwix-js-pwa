@@ -1178,7 +1178,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
         function removePageMaxWidth() {
             var doc = document.getElementById('articleContent').contentDocument;
-            if (!doc) return;
+            if (!doc || !doc.head) return;
             var zimType = /<link\b[^>]+(?:minerva|mobile)/i.test(doc.head.innerHTML) ? "mobile" : "desktop";
             var cssSource = params.cssSource == "auto" ? zimType : params.cssSource;
             var idArray = ["content", "bodyContent"];
@@ -1345,6 +1345,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         'action': 'disable'
                     });
                     messageChannel = null;
+                    // If we're in electron or nwjs, completely remove the SW (but we need to keep it active if we're in a PWA)
+                    if (typeof window.fs !== 'undefined') {
+                        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                            for (var registration of registrations) {
+                                registration.unregister();
+                            } 
+                        });
+                    }
                 }
                 refreshAPIStatus();
             } else if (value === 'serviceworker') {

@@ -71,16 +71,25 @@ const precacheFiles = [
   "www/js/katex/fonts/KaTeX_Size4-Regular.woff2"
 ];
 
+// DEV: add any URL schemata that should be excluded from caching with the Cache API to the regex below
+// As of 08-2019 the chrome-extension: schema is incompatible with the Cache API
+// 'example-extension' is included to show how to add another schema if necessary
+var excludedURLSchema = /^(?:chrome-extension|file|example-extension):/i;
+
 self.addEventListener("install", function (event) {
   console.log("[SW] Install Event processing");
 
   console.log("[SW] Skip waiting on install");
   self.skipWaiting();
-
-  event.waitUntil(
+  var requests = precacheFiles.map(function(url) {
+    return new Request(url);
+  });
+  if (!excludedURLSchema.test(requests[0].url)) event.waitUntil(
     caches.open(CACHE).then(function (cache) {
       console.log("[SW] Caching pages during install");
-      return cache.addAll(precacheFiles);
+      return cache.addAll(requests).then().catch(function(err) {
+          console.error('There was an error precaching the app because', err);
+      });
     })
   );
 });
@@ -113,6 +122,7 @@ self.addEventListener('message', function (event) {
     // On 'disable' message, we delete the outgoingMessagePort and disable the fetchEventListener
     outgoingMessagePort = null;
     fetchCaptureEnabled = false;
+    self.removeEventListener('fetch', intercept);
   }
 });
 
@@ -120,12 +130,13 @@ self.addEventListener('message', function (event) {
 // In our case, there is also the ZIM file name, used as a prefix in the URL
 const regexpZIMUrlWithNamespace = /(?:^|\/)([^\/]+\/)([-ABIJMUVWX])\/(.+)/;
 
+self.addEventListener('fetch', intercept);
 
 // Look up fetch in cache, and if it does not exist, try to get it from the network
-self.addEventListener("fetch", function (event) {
+function intercept(event) {
+  if (excludedURLSchema.test(event.request.url) && !(/\.zim\w{0,2}\//i.test(event.request.url) || regexpZIMUrlWithNamespace.test(event.request.url))) return;
   console.log('[SW] Service Worker ' + (event.request.method === "GET" ? 'intercepted ' : 'noted ') + event.request.url, event.request.method);
   if (event.request.method !== "GET") return;
-
   event.respondWith(
     fromCache(event.request).then(
       function (response) {
@@ -133,7 +144,7 @@ self.addEventListener("fetch", function (event) {
 
         // This is where we call the server to get the newest version of the
         // file to use the next time we show view
-         event.waitUntil(
+        if (!excludedURLSchema.test(event.request.url)) event.waitUntil(
            fetch(event.request).then(function (response) {
              console.log('[SW] Refreshing CACHE from server...');
              return updateCache(event.request, response);
@@ -209,7 +220,7 @@ self.addEventListener("fetch", function (event) {
                 var httpResponse = new Response(msgEvent.data.content, responseInit);
 
                 // Add or update css or javascript assets to the cache
-                if (/(text|application)\/(css|javascript)/i.test(contentType)) {
+                if (!excludedURLSchema.test(event.request.url) && /(text|application)\/(css|javascript)/i.test(contentType)) {
                   updateCache(event.request, httpResponse.clone());
                 }
 
@@ -228,7 +239,7 @@ self.addEventListener("fetch", function (event) {
             }, [messageChannel.port2]);
           });
         } else {
-          return fetch(event.request).then(function (response) {
+          if (!excludedURLSchema.test(event.request.url)) return fetch(event.request).then(function (response) {
             // If request was success, add or update it in the cache
             event.waitUntil(updateCache(event.request, response.clone()));
             return response;
@@ -239,7 +250,7 @@ self.addEventListener("fetch", function (event) {
       }
     )
   );
-});
+}
 
 function fromCache(request) {
   // Check to see if you have it in the cache
@@ -257,9 +268,11 @@ function fromCache(request) {
 }
 
 function updateCache(request, response) {
-  return caches.open(CACHE).then(function (cache) {
-    return cache.put(request, response);
-  });
+  if (!excludedURLSchema.test(event.request.url)) {
+    return caches.open(CACHE).then(function (cache) {
+      return cache.put(request, response);
+    });
+  }
 }
 
 // Removes parameters and anchors from a URL
