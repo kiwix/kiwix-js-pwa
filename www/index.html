@@ -56,7 +56,7 @@
             window.require = undefined;
             window.fs = requireNode('fs');
         } 
-        if ("serviceWorker" in navigator && typeof window.fs === 'undefined') {
+        if ('serviceWorker' in navigator && /^http/.test(window.location.protocol)) {
             // Try to activate Service Worker
             console.log('Trying to activate Service Worker...');
             // Register the service worker
@@ -66,7 +66,7 @@
                 console.log("Service worker has been registered for scope: " + reg.scope);
             });
         } else {
-            console.log('Service Worker is not available on this platform...');
+            console.log('Service Worker not (re-)registered in this context...');
         }
     </script>
 </head>
