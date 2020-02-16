@@ -56,7 +56,8 @@
             window.requireNode = window.require;
             window.require = undefined;
             window.fs = requireNode('fs');
-        } else if ("serviceWorker" in navigator) {
+        } 
+        if ("serviceWorker" in navigator && typeof window.fs === 'undefined') {
             // Try to activate Service Worker
             console.log('Trying to activate Service Worker...');
             // Register the service worker
