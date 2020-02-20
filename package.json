@@ -3,9 +3,8 @@
   "productName": "Kiwix JS for Windows NWJS Edition",
   "version": "0.9.97N",
   "description": "Kiwix JS Windows for NWJS",
-  "main": "https://kiwix.github.io/kiwix-js-windows/",
+  "main": "index.html",
   "domain": "kiwix.js.windows",
-  "node-remote": "https://kiwix.github.io/kiwix-js-windows/*",
   "window": {
     "width": 1280,
     "height": 840,
@@ -65,11 +64,8 @@
       "zip"
     ],
     "files": [
-      "pwabuilder-sw.js",
-      "index.html",
       "CHANGELOG.md",
       "LICENCE",
-      "www/**",
       "archives/README.md",
       "archives/wikip*.*"
     ],
