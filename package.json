@@ -14,8 +14,6 @@
   },
   "scripts": {
     "start": "run --x86 --mirror https://dl.nwjs.io/ .",
-    "start-nwjs": "C:\\UTILS\\nwjs-sdk-v0.40.1-win-x64\\nw.exe .",
-    "start-nwjs-xp": "C:\\UTILS\\nwjs-sdk-v0.14.7-win-ia32\\nw.exe .",
     "dist-win-x86": "build --tasks win-x86 --mirror https://dl.nwjs.io/ .",
     "dist-win-x64": "build --tasks win-x64 --mirror https://dl.nwjs.io/ ."
   },
@@ -64,8 +62,11 @@
       "zip"
     ],
     "files": [
+      "pwabuilder-sw.js",
+      "index.html",
       "CHANGELOG.md",
       "LICENCE",
+      "www/**",
       "archives/README.md",
       "archives/wikip*.*"
     ],
