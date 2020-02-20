@@ -31,7 +31,7 @@ window.onerror = function (msg, url) {
 var state = {};
 // Parameters that define overall operation of app
 var params = {};
-params['version'] = "0.9.9.97N Beta-dev"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "0.9.9.97N Beta"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 params['packagedFile'] = "wikipedia_en_100.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
 params['fileVersion'] = "wikipedia_en_100_2019-01 (Jan-2019)"; //Use generic name for actual file, and give version here
