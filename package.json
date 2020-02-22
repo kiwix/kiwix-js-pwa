@@ -36,9 +36,9 @@
       "icon": "www/img/icons/kiwix-64.ico"
     }
   },
-  "build-lts": {
-    "nwVersion": "0.39.3",
-    "output": "bld/nwjs/win-x86-nwjsv0393",
+  "build-x64": {
+    "nwVersion": "0.44.1",
+    "output": "bld/nwjs/win-x64",
     "targets": [
       "zip"
     ],
@@ -57,7 +57,7 @@
   },
   "build": {
     "nwVersion": "0.44.1",
-    "output": "bld/nwjs/win-x86-nwjs0441",
+    "output": "bld/nwjs/win-x86",
     "targets": [
       "zip"
     ],
