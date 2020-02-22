@@ -21,7 +21,7 @@
  */
 'use strict';
 
-define(['q', 'filecache'], function(q, FileCache) {
+define(['q', 'filecache'], function(Q, FileCache) {
 
     /**
      * Utility function : return true if the given string ends with the suffix
@@ -211,36 +211,27 @@ define(['q', 'filecache'], function(q, FileCache) {
      * @returns {Promise} Promise
      */
     function readFileSlice(file, begin, size) {
-        var deferred = q.defer();
-        if (file.readMode === 'electron') {
-            // We are reading a packaged file and have to use Electron fs.read (so we don't have to pick the file)
-            fs.open(file.path, 'r', function (err, fd) {
-                if (err) { 
-                    console.error('Could not find file!', err);
-                } else {
-                    fs.read(fd, Buffer.alloc(size), 0, size, begin, function (err, bytesRead, data) {
-                        fs.close(fd, function (err) {
-                            if (err) deferred.reject(err);
-                            deferred.resolve(data);
+        if (file.readMode === 'electron' && typeof window.nw !== 'undefined' && 
+        window.nw.process.versions['node-webkit'] === '0.14.7') {
+            // We are reading a packaged file and an old nwjs version
+            return Q.Promise(function(resolve, reject) {
+                fs.open(file.path, 'r', function (err, fd) {
+                    if (err) { 
+                        reject(err);
+                    } else {
+                        fs.read(fd, Buffer.alloc(size), 0, size, begin, function (err, bytesRead, data) {
+                            if (err) reject(err);
+                            else return resolve(data);
                         });
-                        if (err) deferred.reject(err);
+                    }
+                    fs.close(fd, function (err) {
+                        if (err) reject(err);
                     });
-                }
+                });
             });
         } else {
-            // We are reading a picked file, so use vanilla JS methods
-        //     var reader = new FileReader();
-        //     reader.onload = function (e) {
-        //         deferred.resolve(new Uint8Array(e.target.result));
-        //     };
-        //     reader.onerror = reader.onabort = function (e) {
-        //         deferred.reject(e);
-        //     };
-        //     reader.readAsArrayBuffer(file.slice(begin, begin + size));
-            FileCache.read(file, begin, begin + size);
+            return FileCache.read(file, begin, begin + size);
         }
-        return deferred.promise;
-        // }
     }
 
     /**

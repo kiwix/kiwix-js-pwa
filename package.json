@@ -17,7 +17,7 @@
     "dist-win-x86": "build --tasks win-x86 --mirror https://dl.nwjs.io/ .",
     "dist-win-x64": "build --tasks win-x64 --mirror https://dl.nwjs.io/ ."
   },
-  "build-xp": {
+  "build": {
     "nwVersion": "0.14.7",
     "output": "bld/nwjs/win-x86-xp",
     "targets": [
@@ -55,7 +55,7 @@
       "icon": "www/img/icons/kiwix-64.ico"
     }
   },
-  "build": {
+  "build-latest": {
     "nwVersion": "0.44.1",
     "output": "bld/nwjs/win-x86-nwjs0441",
     "targets": [
