@@ -1346,13 +1346,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     });
                     messageChannel = null;
                     // If we're in electron or nwjs, completely remove the SW (but we need to keep it active if we're in a PWA)
-                    if (typeof window.fs !== 'undefined') {
-                        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                            for (var registration of registrations) {
-                                registration.unregister();
-                            } 
-                        });
-                    }
+                    // NOTE: We can't do this, because IE11 crashes just seeing "of", even though it will never run the code!
+                    // if (typeof window.fs !== 'undefined') {
+                    //     navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    //         for (var registration of registrations) {
+                    //             registration.unregister();
+                    //         } 
+                    //     });
+                    // }
                 }
                 refreshAPIStatus();
             } else if (value === 'serviceworker') {

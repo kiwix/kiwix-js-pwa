@@ -160,15 +160,15 @@ define(['q'], function(Q) {
                 // We are reading a packaged file and have to use Electron fs.read (so we don't have to pick the file)
                 fs.open(file.path, 'r', function (err, fd) {
                     if (err) { 
-                        console.error('Could not find file!', err);
                         reject(err);
                     } else {
                         var size = end - begin;
-                        fs.read(fd, new Uint8Array(size), 0, size, begin, function (err, bytesRead, data) {
+                        var arr = Buffer.alloc(size) || new Uint8Array(size);
+                        fs.read(fd, arr, 0, size, begin, function (err, bytesRead, data) {
                             if (err) reject(err);
-                            else resolve(data);
                             fs.close(fd, function (err) {
-                                if (err) console.log('Could not close file...', err);
+                                if (err) reject(err);
+                                else return resolve(data);
                             });
                         });
                     }
@@ -176,12 +176,11 @@ define(['q'], function(Q) {
             } else {
                 var reader = new FileReader();
                 reader.readAsArrayBuffer(file.slice(begin, end));
-                reader.onload = function(e) {
-                    resolve(new Uint8Array(e.target.result));
-                };
-                reader.onerror = reader.onabort = function(e) {
-                    reject(e);
-                };
+                reader.addEventListener('load', function(e) {
+                    return resolve(new Uint8Array(e.target.result));
+                });
+                reader.addEventListener('error', reject);
+                reader.addEventListener('abort', reject);
             }
         });
     };

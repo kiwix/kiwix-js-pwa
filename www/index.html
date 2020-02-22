@@ -56,7 +56,7 @@
             window.require = undefined;
             window.fs = requireNode('fs');
         } 
-        if ('serviceWorker' in navigator && /^http|chrome-extension/.test(window.location.protocol)) {
+        if ('serviceWorker' in navigator && /^http/.test(window.location.protocol)) {
             console.log('Trying to activate Service Worker...');
             if (navigator.serviceWorker.controller) {
                 console.log('Service Worker is already active');

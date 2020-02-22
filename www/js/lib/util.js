@@ -211,27 +211,7 @@ define(['q', 'filecache'], function(Q, FileCache) {
      * @returns {Promise} Promise
      */
     function readFileSlice(file, begin, size) {
-        if (file.readMode === 'electron' && typeof window.nw !== 'undefined' && 
-        window.nw.process.versions['node-webkit'] === '0.14.7') {
-            // We are reading a packaged file and an old nwjs version
-            return Q.Promise(function(resolve, reject) {
-                fs.open(file.path, 'r', function (err, fd) {
-                    if (err) { 
-                        reject(err);
-                    } else {
-                        fs.read(fd, Buffer.alloc(size), 0, size, begin, function (err, bytesRead, data) {
-                            if (err) reject(err);
-                            else return resolve(data);
-                        });
-                    }
-                    fs.close(fd, function (err) {
-                        if (err) reject(err);
-                    });
-                });
-            });
-        } else {
-            return FileCache.read(file, begin, begin + size);
-        }
+        return FileCache.read(file, begin, begin + size);
     }
 
     /**
