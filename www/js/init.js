@@ -36,7 +36,7 @@ params['packagedFile'] = "wikipedia_en_medicine.zim"; //For packaged Kiwix JS (e
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
 params['fileVersion'] = "wikipedia_en_medicine_maxi_2020-02 (5-Feb-2020)"; //Use generic name for actual file, and give version here
 params['cachedStartPage'] = "Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine"; //If you have cached the start page for quick start, give its URI here
-params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
+params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/wikipedia/"; //Include final slash
 
 params['cookieSupport'] = checkCookies();
 params['maxResults'] = ~~(getCookie('maxResults') || 25); //Number of search results to display
