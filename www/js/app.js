@@ -2415,7 +2415,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     htmlContent = -1;
                     // DEV: You should deal with the rare possibility that the cachedStartPage is not in the same namespace as the main page dirEntry...
                     // Ideally include the namespace in params.cachedStartPage and adjust/test code (not hard)
-                    uiUtil.XHR(dirEntry.namespace + '/' + encodeURIComponent(params.cachedStartPage), 'text', function (responseTxt, status) {
+                    uiUtil.XHR(dirEntry.namespace + '/' + encodeURIComponent(encodeURIComponent(params.cachedStartPage).replace(/%2F/, '/')).replace(/%2F/, '/'), 'text', function (responseTxt, status) {
                         htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
                         if (htmlContent) {
                             console.log('Article retrieved from storage cache...');
