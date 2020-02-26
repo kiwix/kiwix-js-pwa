@@ -130,7 +130,7 @@
     <None Include="kiwix.pfx" />
     <None Include="KiwixWebApp_StoreKey.pfx" />
     <Content Include="manifest.json" />
-    <Content Include="service-worker.js" />
+    <Content Include="pwabuilder-sw.js" />
     <Content Include="www\-\static\main.css" />
     <Content Include="www\-\s\css_modules\content.parsoid.css" />
     <Content Include="www\-\s\css_modules\ext.cite.a11y.css" />
