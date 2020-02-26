@@ -126,7 +126,7 @@
     <Content Include="images\Wide310x150Logo.scale-400.png" />
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="manifest.json" />
-    <Content Include="service-worker.js" />
+    <Content Include="pwabuilder-sw.js" />
     <Content Include="www\-\static\main.css" />
     <Content Include="images\Wikivoyage.png" />
     <Content Include="images\Wikivoyage_220x220.png" />

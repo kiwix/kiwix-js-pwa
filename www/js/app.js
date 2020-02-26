@@ -1345,14 +1345,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         'action': 'disable'
                     });
                     messageChannel = null;
-                    // If we're not in a PWA context, completely unregister the SW
-                    if (!/^https|\/localhost/i.test(window.location.href)) {
-                        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                            for (var registration of registrations) {
-                                registration.unregister();
-                            } 
-                        });
-                    }
+                    // If we're in electron or nwjs, completely remove the SW (but we need to keep it active if we're in a PWA)
+                    // NOTE: We can't do this, because IE11 crashes just seeing "of", even though it will never run the code!
+                    // if (typeof window.fs !== 'undefined') {
+                    //     navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    //         for (var registration of registrations) {
+                    //             registration.unregister();
+                    //         } 
+                    //     });
+                    // }
                 }
                 refreshAPIStatus();
             } else if (value === 'serviceworker') {
@@ -2414,7 +2415,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     htmlContent = -1;
                     // DEV: You should deal with the rare possibility that the cachedStartPage is not in the same namespace as the main page dirEntry...
                     // Ideally include the namespace in params.cachedStartPage and adjust/test code (not hard)
-                    uiUtil.XHR(dirEntry.namespace + '/' + encodeURIComponent(params.cachedStartPage), 'text', function (responseTxt, status) {
+                    uiUtil.XHR(dirEntry.namespace + '/' + encodeURIComponent(encodeURIComponent(params.cachedStartPage).replace(/%2F/, '/')).replace(/%2F/, '/'), 'text', function (responseTxt, status) {
                         htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
                         if (htmlContent) {
                             console.log('Article retrieved from storage cache...');
