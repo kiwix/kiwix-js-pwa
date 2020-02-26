@@ -75,7 +75,7 @@ const precacheFiles = [
 // DEV: add any URL schemata that should be excluded from caching with the Cache API to the regex below
 // As of 08-2019 the chrome-extension: schema is incompatible with the Cache API
 // 'example-extension' is included to show how to add another schema if necessary
-var excludedURLSchema = /^(?:chrome-extension|file|example-extension):/i;
+var excludedURLSchema = /^(?:file|chrome-extension|example-extension):/i;
 
 self.addEventListener("install", function (event) {
   console.log("[SW] Install Event processing");
@@ -240,9 +240,9 @@ function intercept(event) {
             }, [messageChannel.port2]);
           });
         } else {
-          if (!excludedURLSchema.test(event.request.url)) return fetch(event.request).then(function (response) {
+          return fetch(event.request).then(function (response) {
             // If request was success, add or update it in the cache
-            event.waitUntil(updateCache(event.request, response.clone()));
+            if (!excludedURLSchema.test(event.request.url)) event.waitUntil(updateCache(event.request, response.clone()));
             return response;
           }).catch(function (error) {
             console.log("[SW] Network request failed and no cache.", error);
