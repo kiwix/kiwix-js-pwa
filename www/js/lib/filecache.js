@@ -154,35 +154,41 @@ define(['q'], function(Q) {
             return result;
         });
     };
-    var readInternal = function(file, begin, end) {
-        return Q.Promise(function(resolve, reject) {
-            if (file.readMode === 'electron') {
-                // We are reading a packaged file and have to use Electron fs.read (so we don't have to pick the file)
-                fs.open(file.path, 'r', function (err, fd) {
-                    if (err) { 
-                        reject(err);
-                    } else {
-                        var size = end - begin;
-                        var arr = typeof Buffer !== 'undefined' && Buffer.alloc(size) || new Uint8Array(size);
-                        fs.read(fd, arr, 0, size, begin, function (err, bytesRead, data) {
-                            if (err) reject(err);
-                            fs.close(fd, function (err) {
+    var readInternal = function (file, begin, end) {
+        if ('arrayBuffer' in Blob.prototype && file.readMode !== 'electron') {
+            return file.slice(begin, end).arrayBuffer().then(function (buffer) {
+                return new Uint8Array(buffer);
+            });
+        } else {
+            return Q.Promise(function (resolve, reject) {
+                if (file.readMode === 'electron') {
+                    // We are reading a packaged file and have to use Electron fs.read (so we don't have to pick the file)
+                    fs.open(file.path, 'r', function (err, fd) {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            var size = end - begin;
+                            var arr = typeof Buffer !== 'undefined' && Buffer.alloc(size) || new Uint8Array(size);
+                            fs.read(fd, arr, 0, size, begin, function (err, bytesRead, data) {
                                 if (err) reject(err);
-                                else return resolve(data);
+                                fs.close(fd, function (err) {
+                                    if (err) reject(err);
+                                    else return resolve(data);
+                                });
                             });
-                        });
-                    }
-                });
-            } else {
-                var reader = new FileReader();
-                reader.readAsArrayBuffer(file.slice(begin, end));
-                reader.addEventListener('load', function(e) {
-                    resolve(new Uint8Array(e.target.result));
-                });
-                reader.addEventListener('error', reject);
-                reader.addEventListener('abort', reject);
-            }
-        });
+                        }
+                    });
+                } else {
+                    var reader = new FileReader();
+                    reader.readAsArrayBuffer(file.slice(begin, end));
+                    reader.addEventListener('load', function (e) {
+                        resolve(new Uint8Array(e.target.result));
+                    });
+                    reader.addEventListener('error', reject);
+                    reader.addEventListener('abort', reject);
+                }
+            });
+        }
     };
 
     return {
