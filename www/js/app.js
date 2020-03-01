@@ -710,10 +710,19 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             $("#searchingArticles").hide();
             $("#welcomeText").hide();
             if (params.beforeinstallpromptFired) {
-                if (activeBtn !== 'btnConfigure' && !params.installLater)
-                    document.getElementById('divInstall1').style.display = 'block';
-                else
-                    document.getElementById('divInstall1').style.display = 'none';
+                var divInstall1 = document.getElementById('divInstall1');
+                if (activeBtn !== 'btnConfigure' && !params.installLater && (params.pagesLoaded === 3 || params.pagesLoaded === 9)) {
+                    divInstall1.style.display = 'block';
+                    setTimeout(function() {
+                        // If installLater is now true, then the user clicked the Later button and the timeout in init.js will hide the display
+                        if (!params.installLater) {
+                            divInstall1.style.display = 'none';
+                            resizeIFrame();
+                        }
+                    }, 9000);
+                } else {
+                    divInstall1.style.display = 'none';
+                }
             }
             setTimeout(resizeIFrame, 100);
         }
@@ -2389,7 +2398,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          * @param {DirEntry} dirEntry The directory entry of the article to read
          */
         function readArticle(dirEntry) {
-
+            params.pagesLoaded++;
             if (dirEntry.isRedirect()) {
                 state.selectedArchive.resolveRedirect(dirEntry, readArticle);
             } else {
