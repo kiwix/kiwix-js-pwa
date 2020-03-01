@@ -81,6 +81,7 @@ params['printIntercept'] = false;
 params['printInterception'] = false;
 params['appIsLaunching'] = true; //Allows some routines to tell if the app has just been launched
 params['PWAInstalled'] = decodeURIComponent(getCookie('PWAInstalled'));
+params.pagesLoaded = 0; // Page counter used to show PWA Install Prompt only after user has played with the app for a while
 
 //Prevent app boot loop with problematic pages that cause an app crash
 if (getCookie('lastPageLoad') == 'failed') {
@@ -182,16 +183,13 @@ window.addEventListener('beforeinstallprompt', function(e) {
     if (!params.beforeinstallpromptFired && params.PWAInstalled !== params.version) {
         params.beforeinstallpromptFired = true;
         var config = document.getElementById('configuration');
-        if (config.style.display === 'none') {
-            divInstall1.style.display = 'block';
-        }
         btnInstall1.addEventListener('click', installApp);
         btnLater.addEventListener('click', function (e) {
             e.preventDefault();
-            divInstall1.style.display = 'none';
-            if (config.style.display === 'none') {
-                alert('You can install this app later from Configuration');
-            }
+            divInstall1.innerHTML = '<b>You can install this app later from Configuration</b>';
+            setTimeout(function() {
+                divInstall1.style.display = 'none';
+            }, 4000);
             params.installLater = true;
         });
         divInstall2.style.display = 'block';
