@@ -27,7 +27,7 @@
 // http://requirejs.org/docs/api.html#define
 
 define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cookies', 'q', 'transformStyles', 'kiwixServe'],
-    function ($, zimArchiveLoader, uiUtil, util, utf8, images, cookies, q, transformStyles, kiwixServe) {
+    function ($, zimArchiveLoader, uiUtil, util, utf8, images, cookies, Q, transformStyles, kiwixServe) {
 
         /**
          * The delay (in milliseconds) between two "keepalive" messages
@@ -2093,17 +2093,19 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          * Reads a remote archive with given URL, and returns the response in a Promise.
          * This function is used by setRemoteArchives below, for UI tests
          * 
-         * @param url The URL of the archive to read
-         * @returns {Promise}
+         * @param {String} url The URL of the archive to read
+         * @returns {Promise<Blob>} A promise for the requested file (blob)
          */
         function readRemoteArchive(url) {
-            var deferred = q.defer();
+            // DEV: This deferred can't be standardized to a Promise/A+ pattern (using Q) because
+            // IE11 is unable to scope the callbacks inside the Promise correctly. See [kiwix.js #589]
+            var deferred = Q.defer();
             var request = new XMLHttpRequest();
-            request.open("GET", url, true);
+            request.open("GET", url);
             request.responseType = "blob";
             request.onreadystatechange = function () {
                 if (request.readyState === XMLHttpRequest.DONE) {
-                    if ((request.status >= 200 && request.status < 300) || request.status === 0) {
+                    if (request.status >= 200 && request.status < 300 || request.status === 0) {
                         // Hack to make this look similar to a file
                         request.response.name = url;
                         deferred.resolve(request.response);
@@ -2112,24 +2114,24 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     }
                 }
             };
-            request.onabort = function (e) {
-                deferred.reject(e);
-            };
-            request.send(null);
+            request.onabort = request.onerror = deferred.reject;
+            request.send();
             return deferred.promise;
         }
 
         /**
          * This is used in the testing interface to inject remote archives
+         * @returns {Promise<Array>} A Promise for an array of archives  
          */
         window.setRemoteArchives = function () {
             var readRequests = [];
-            var i;
-            for (i = 0; i < arguments.length; i++) {
-                readRequests[i] = readRemoteArchive(arguments[i]);
-            }
-            return q.all(readRequests).then(function (arrayOfArchives) {
+            Array.prototype.slice.call(arguments).forEach(function (arg) {
+                readRequests.push(readRemoteArchive(arg));
+            });
+            return Q.all(readRequests).then(function (arrayOfArchives) {
                 setLocalArchiveFromFileList(arrayOfArchives);
+            }).catch(function (e) {
+                console.error('Unable to load remote archive(s)', e);
             });
         };
 
