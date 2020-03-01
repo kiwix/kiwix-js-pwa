@@ -249,21 +249,16 @@ define(['xzdec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry'], function(xz, util,
     
     return {
         /**
-         * 
-         * @param {Array.<File>} fileArray
-         * @returns {Promise}
+         * @param {Array.<File>} fileArray An array of picked archive files
+         * @returns {Promise<Object>} A Promise for the ZimFile Object
          */
         fromFileArray: function(fileArray) {
             // Array of blob objects should be sorted by their name property
             fileArray.sort(function(a, b) {
                   var nameA = a.name.toUpperCase(); 
                   var nameB = b.name.toUpperCase(); 
-                  if (nameA < nameB) {
-                    return -1;
-                  }
-                  if (nameA > nameB) {
-                    return 1;
-                  }
+                if (nameA < nameB) return -1;
+                if (nameA > nameB) return 1;
                   return 0;
             });
             return util.readFileSlice(fileArray[0], 0, 80).then(function(header) {
