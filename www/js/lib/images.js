@@ -137,7 +137,7 @@ define(['uiUtil'], function (uiUtil) {
 
     // Image store is a buffer for images that are waiting for the extractor to finish
     var imageStore = [];
-    var maxImageBatch = 20;
+    var maxImageBatch = 1;
 
     /**
      * Sorts an array or collection of image nodes, returning a list of those that are inside the visible viewport 
@@ -179,7 +179,7 @@ define(['uiUtil'], function (uiUtil) {
                         if (callback && !batchCount) callback();
                     });
                 } else {
-                    // console.log('Queueing image #' + i);
+                    console.log('Queueing image #' + i);
                     imageStore.push(documentImages[i]);
                 }
             } else {
@@ -266,7 +266,7 @@ define(['uiUtil'], function (uiUtil) {
      */
     function lazyLoad() {
         // The amount by which to offset the second reading of the viewport
-        var offset = window.innerHeight * 4;
+        var offset = window.innerHeight * 2;
         // Perform an immediate extraction of visible images so as not to disconcert the user
         // We request images twice because frequently the position of all of them is not known at this stage in rendering
         queueImages('extract', 0, function () {
