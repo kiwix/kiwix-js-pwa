@@ -155,8 +155,8 @@ define(['q'], function(Q) {
         });
     };
     var readInternal = function (file, begin, end) {
-        if ('Response' in window && file.readMode !== 'electron') {
-            return new Response(file.slice(begin, end)).arrayBuffer().then(function (buffer) {
+        if ('arrayBuffer' in Blob.prototype && file.readMode !== 'electron') {
+            return file.slice(begin, end).arrayBuffer().then(function (buffer) {
                 return new Uint8Array(buffer);
             });
         } else {
