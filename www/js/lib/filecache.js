@@ -32,7 +32,7 @@ define(['q'], function(Q) {
      * The maximum blocksize to read or store via the block cache (bytes)
      * @type {Integer}
     */
-    var BLOCK_SIZE = 8192;
+    var BLOCK_SIZE = 4096;
 
     /**
      * Creates a new cache with max size limit
