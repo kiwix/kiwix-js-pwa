@@ -156,7 +156,7 @@
     <Content Include="www\-\s\style.css" />
     <Content Include="www\-\s\vector.css" />
     <Content Include="www\article.html" />
-    <Content Include="www\A\Wikipedia%253AWikiProject_Medicine%252FOpen_Textbook_of_Medicine.html" />
+    <Content Include="www\A\Wikipedia%253AWikiProject_Medicine\Open_Textbook_of_Medicine" />
     <Content Include="www\css\app.css" />
     <Content Include="www\css\bootstrap-theme.min.css" />
     <Content Include="www\css\bootstrap.min.css" />
