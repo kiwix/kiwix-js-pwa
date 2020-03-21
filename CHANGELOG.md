@@ -2,7 +2,7 @@
 
 ## Release 0.9.9.98 WikiMed (beta)
 
-* NEW: Coronavirus information panel at top of WikiMed Home Page
+* NEW: COVID-19 information panel at top of WikiMed Home Page
 * UPDATE: WikiMed ZIM archive to wikipedia_en_medicine_maxi_2020-03
 * UPDATE: Update Q Promise support to v1.5.1
 * ENHANCEMENT: Make app compatible with Electron / NWJS as a packaged app
