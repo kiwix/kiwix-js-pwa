@@ -31,10 +31,10 @@ window.onerror = function (msg, url) {
 var state = {};
 // Parameters that define overall operation of app
 var params = {};
-params['version'] = "0.9.9.97 WikiMed Beta"; //DEV: Manually update this version when there is a new release: it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "0.9.9.98 WikiMed Beta-dev"; //DEV: Manually update this version when there is a new release: it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 params['packagedFile'] = "wikipedia_en_medicine.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
-params['fileVersion'] = "wikipedia_en_medicine_maxi_2020-02 (5-Feb-2020)"; //Use generic name for actual file, and give version here
+params['fileVersion'] = "wikipedia_en_medicine_maxi_2020-03 (17-Mar-2020)"; //Use generic name for actual file, and give version here
 params['cachedStartPage'] = "Wikipedia%3AWikiProject_Medicine%2FOpen_Textbook_of_Medicine.html" || false; //If you have cached the start page for quick start, give its URI here
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/wikipedia/"; //Include final slash
 
