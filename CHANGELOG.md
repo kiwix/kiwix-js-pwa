@@ -1,5 +1,13 @@
 # Changelog
 
+## Release 0.9.9.98 WikiMed (beta)
+
+* UPDATE: WikiMed ZIM archive to wikipedia_en_medicine_maxi_2020-03
+* UPDATE: Update Q Promise support to v1.5.1
+* ENHANCEMENT: Make app compatible with Electron / NWJS as a packaged app
+* ENHANCEMENT: Better user experience for PWA version
+* ENHANCEMENT: Attempt to make app a little more usable on Android browsers
+
 ## Release 0.9.9.97 WikiMed (beta)
 
 * UPDATE: WikiMed ZIM archive to wikipedia_en_medicine_maxi_2020-02
