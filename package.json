@@ -1,7 +1,7 @@
 {
   "name": "kiwix_js_wikimed",
   "productName": "Kiwix JS WikiMed NWJS Edition",
-  "version": "0.9.97N",
+  "version": "0.9.98N",
   "description": "Kiwix JS WikiMed for NWJS",
   "main": "index.html",
   "domain": "kiwix.js.windows",
@@ -10,7 +10,7 @@
     "height": 840,
     "min_width": 640,
     "min_height": 480,
-    "icon": "www/img/icons/kiwix-256.png"
+    "icon": "www/img/icons/Med_logo_simpleicon_lightblue_256.png"
   },
   "scripts": {
     "start": "run --x86 --mirror https://dl.nwjs.io/ .",
@@ -68,7 +68,7 @@
       "archives/wikip*.*"
     ],
     "win": {
-      "icon": "www/img/icons/kiwix-64.ico"
+      "icon": "www/img/icons/kiwix-wikimed-64.ico"
     }
   },
   "repository": "https://github.com/kiwix/kiwix-js-windows",
