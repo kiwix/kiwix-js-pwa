@@ -2782,6 +2782,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             //And make sure all sections are open
             htmlArticle = htmlArticle.replace(/(<details\b(?![^>]+\sopen)[^>]+)>/ig, '$1 open>');
 
+            //Remove empty div that causes layout issues in desktop style
+            htmlArticle = htmlArticle.replace(/<div\b[^>]*?>\s*<\/div>\s*/, '');
+
             //For all cases, neutralize the toggleOpenSection javascript that causes a crash
             //htmlArticle = htmlArticle.replace(/(onclick\s*=\s*["'])toggleOpenSection[^"']*(['"]\s*)/ig, "$1$2");
             // Remove and save inline javascript contents only (does not remove scripts with src)
