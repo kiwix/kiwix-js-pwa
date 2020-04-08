@@ -1,5 +1,12 @@
 # Changelog
 
+## Release 0.9.9.985 WikiMed (beta)
+
+* UPDATE: WikiMed ZIM archive to wikipedia_en_medicine_maxi_2020-04
+* FIX: Incorrect layout when transforming WikiMed articles to desktop style
+* FIX: Failure to load landing page when backing into it from history.back
+* FIX: Incorrect hiding of toolbars after using in-page search
+
 ## Release 0.9.9.98 WikiMed (beta)
 
 * NEW: COVID-19 information panel at top of WikiMed Home Page
