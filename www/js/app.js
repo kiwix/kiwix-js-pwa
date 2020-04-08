@@ -3517,6 +3517,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             //This removes any search highlighting
             clearFindInArticle();
             document.getElementById('searchingArticles').style.display = 'block';
+            if (~title.indexOf(params.cachedStartPage)) {
+                goToMainArticle();
+                return;
+            }
             state.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
                     document.getElementById('searchingArticles').style.display = 'none';
