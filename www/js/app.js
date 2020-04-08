@@ -434,7 +434,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 setTab();
                 // Return params.hideToolbars to its original state
                 params.hideToolbars = cookies.getItem('hideToolbars');
-                params.hideToolbars == 'top' ? 'top' : params.hideToolbars == 'true';
+                params.hideToolbars = params.hideToolbars === 'true' ? true : params.hideToolbars === 'false' ? false : params.hideToolbars;
                 checkToolbar();
                 return;
             }
