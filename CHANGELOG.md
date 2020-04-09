@@ -1,7 +1,16 @@
 # Changelog
 
-## Release 0.9.9.97 Wikivoyage (beta)
+## Release 0.9.9.98 (beta)
 
+* ENHANCEMENT: Make app compatible with Electron / NWJS as a packaged app
+* ENHANCEMENT: Better user experience for PWA version
+* ENHANCEMENT: Attempt to make app a little more usable on Android browsers
+* FIX: Incorrect layout when transforming WikiMed articles to desktop style
+* FIX: Failure to load landing page when backing into it from history.back
+* FIX: Incorrect hiding of toolbars after using in-page search
+* UPDATE: Update Q Promise support to v1.5.1
+
+## Release 0.9.9.97 Wikivoyage (beta)
 * UPDATE: February 2020 update of Wikivoyage ZIM archive to wikivoyage_en_all_maxi_2020-02.zim
 * UPDATE: Added missing stylesheets for cache
 * ENHANCEMENT: Intuitive toolbar hiding/showing on scroll down/up
