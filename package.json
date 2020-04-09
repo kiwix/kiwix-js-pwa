@@ -1,7 +1,7 @@
 {
   "name": "kiwix_js_wikimed",
   "productName": "Kiwix JS WikiMed NWJS Edition",
-  "version": "0.9.98N",
+  "version": "0.9.985N",
   "description": "Kiwix JS WikiMed for NWJS",
   "main": "index.html",
   "domain": "kiwix.js.windows",
