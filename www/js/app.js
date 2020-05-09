@@ -42,7 +42,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          * @type ZIMArchive
          */
         state.selectedArchive = null;
+    // An array to hold searches and their state (allows modules to tell which search is current and cancel old searches)
+    state['searches'] = [{
+        'prefix': '', // A field to hold the original search string
+        'state': '',  // The state of the search: ''|'init'|'interim'|'cancelled'|'complete'
+        'type': ''    // The type of the search: 'basic'|'full' (set automatically in search algorithm)
+    }];
         
+    // Unique identifier of the article expected to be displayed
+    var expectedArticleURLToBeDisplayed = "";
+    
         /**
          * Resize the IFrame height, so that it fills the whole available height in the window
          */
@@ -109,11 +118,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         });
 
         // Define behavior of HTML elements
+    var searchArticlesFocused = false;
         document.getElementById('searchArticles').addEventListener('click', function () {
             $("#welcomeText").hide();
             $('.alert').hide();
             document.getElementById('searchingArticles').style.display = 'block';
             pushBrowserHistoryState(null, $('#prefix').val());
+        // Initiate the search
             searchDirEntriesFromPrefix($('#prefix').val());
             clearFindInArticle();
             //Re-enable top-level scrolling
@@ -121,12 +132,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
                 $('#navbarToggle').click();
             }
+        // This flag is set to true in the mousedown event below
+        searchArticlesFocused = false;
         });
         document.getElementById('formArticleSearch').addEventListener('submit', function () {
-            document.getElementById("searchArticles").click();
+            document.getElementById('searchArticles').click();
         });
+    // Handle keyboard events in the prefix (article search) field
         var keyPressHandled = false;
         $('#prefix').on('keydown', function (e) {
+        // If user presses Escape...
+        // IE11 returns "Esc" and the other browsers "Escape"; regex below matches both
             if (/^Esc/.test(e.key)) {
                 // Hide the article list
                 e.preventDefault();
@@ -200,9 +216,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             document.getElementById('scrollbox').style.position = 'absolute';
             document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
         });
-        // Hide the search resutls if user moves out of prefix field
+        // Hide the search results if user moves out of prefix field
         document.getElementById('prefix').addEventListener('blur', function () {
-            // We need to wait one tick for the activeElement to receive focus
+        if (!searchArticlesFocused) {
+            state.searches[0].state = 'cancelled';
+            // Prune the searches array (most recent must be kept as comparator)
+            while (state.searches.length > 1) {
+                state.searches.pop();
+            }
+        }
+        // We need to wait one tick for the activeElement to receive focus
             setTimeout(function () {
                 if (!(/^articleList/.test(document.activeElement.id) || /^list-group/.test(document.activeElement.className))) {
                     document.getElementById('scrollbox').style.height = 0;
@@ -1610,9 +1633,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
                 if (title && !("" === title)) {
                     goToArticle(title);
-                } else if (titleSearch && !("" === titleSearch)) {
+            }
+            else if (titleSearch && titleSearch !== '') {
                     $('#prefix').val(titleSearch);
-                    searchDirEntriesFromPrefix($('#prefix').val());
+                if (titleSearch !== state.searches[0].prefix) {
+                    searchDirEntriesFromPrefix(titleSearch);
+                } else {
+                    $('#prefix').focus();
+                }
                 }
             }
         };
@@ -2146,7 +2174,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
         /**
          * Handle key input in the prefix input zone
-         * @param {Event} evt
+     * @param {Event} evt The event data to handle
          */
         function onKeyUpPrefix(evt) {
             // Use a timeout, so that very quick typing does not cause a lot of overhead
@@ -2156,8 +2184,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             }
             window.timeoutKeyUpPrefix = window.setTimeout(function () {
                 var prefix = $("#prefix").val();
-                if (prefix && prefix.length > 0) {
-                    document.getElementById('searchArticles').click();
+            if (prefix && prefix.length > 0 && prefix !== state.searches[0].prefix) {
+                document.getElementById('searchArticles').click();
                 }
             }, 1000);
         }
@@ -2185,10 +2213,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         /**
          * Search the index for DirEntries with title that start with the given prefix (implemented
          * with a binary search inside the index file)
-         * @param {String} prefix
+         * @param {String} prefix The string that must appear at the start of any title searched for
          */
         function searchDirEntriesFromPrefix(prefix) {
             if (state.selectedArchive !== null && state.selectedArchive.isReady()) {
+                // Cancel any previous search that may still be running before creating new search
+                state.searches[0].state = 'cancelled';
+                // Store the new search term at the top of the state.searches array and initialize
+                state.searches.unshift({'prefix': prefix, 'state': 'init', 'type': ''});
                 $('#activeContent').hide();
                 if (!prefix || /^\s/.test(prefix)) {
                     var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
@@ -2199,7 +2231,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     }
                     showZIMIndex(null, sel);
                 } else {
-                    state.selectedArchive.findDirEntriesWithPrefix(prefix.trim(), params.maxResults, populateListOfArticles);
+                    state.selectedArchive.findDirEntriesWithPrefix(state.searches[0], params.maxResults, populateListOfArticles);
                 }
             } else {
                 $('#searchingArticles').hide();
@@ -2210,7 +2242,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 document.getElementById('btnConfigure').click();
             }
         }
-
         /**
          * Extracts and displays in htmlArticle the first params.maxResults articles beginning with start
          * @param {String} start Optional index number to begin the list with
@@ -2223,8 +2254,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             } else {
                 prefix = start > 0 ? '' : prefix;
             }
+            var search = {'prefix': prefix, 'state': ''}; // Dummy search object because expected by callee
             if (state.selectedArchive !== null && state.selectedArchive.isReady()) {
-                state.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, params.maxResults, function (dirEntryArray, nextStart) {
+                state.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, params.maxResults, search, function (dirEntryArray, nextStart) {
                     var docBody = document.getElementById('largeModal');
                     var newHtml = "";
                     for (var i = 0; i < dirEntryArray.length; i++) {
@@ -2322,19 +2354,27 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
         /**
          * Display the list of articles with the given array of DirEntry
-         * @param {Array} dirEntryArray The array of dirEntries returned from the binary search
+         * @param {Array} dirEntryArray The array of dirEntries returned from the binary 
+         * @param {Object} search The original search object
          */
-        function populateListOfArticles(dirEntryArray) {
+        function populateListOfArticles(dirEntryArray, search) {
+            // Do not allow cancelled searches to report
+            if (search.state === 'cancelled') {
+                console.log("Search was cancelled in populateListofArticles");
+                return;
+            }
+            var stillSearching = search.state === 'interim';
             var articleListHeaderMessageDiv = $('#articleListHeaderMessage');
             var nbDirEntry = dirEntryArray ? dirEntryArray.length : 0;
             var message;
-            if (nbDirEntry >= params.maxResults) {
-                message = 'First ' + params.maxResults + ' articles below (refine your search).';
+            if (stillSearching) {
+                message = 'Searching [' + search.type + ']... found: ' + nbDirEntry;
+            } else if (nbDirEntry >= params.maxResults) {
+                message = 'First ' + params.maxResults + ' articles found (refine your search).';
             } else {
-                message = nbDirEntry + ' articles found.';
-            }
-            if (nbDirEntry === 0) {
-                message = 'No articles found.';
+                message = 'Finished. ' + (nbDirEntry ? nbDirEntry : 'No') + ' articles found' + (
+                    search.type === 'basic' ? ': try fewer words for full search.' : '.'
+                );
             }
 
             articleListHeaderMessageDiv.html(message);
@@ -2349,16 +2389,19 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     '" class="list-group-item">' + dirEntry.getTitleOrUrl() + '</a>';
             }
             articleListDiv.innerHTML = articleListDivHtml;
+            // We have to use mousedown below instead of click as otherwise the prefix blur event fires first 
+            // and prevents this event from firing; note that touch also triggers mousedown
             $('#articleList a').on('click', function (e) {
+                // Cancel search immediately (we'll prune in the blur event)
+                state.searches[0].state = 'cancelled';
                 handleTitleClick(e);
                 document.getElementById('scrollbox').style.height = 0;
                 document.getElementById('articleListWithHeader').style.display = 'none';
                 return false;
             });
-            $('#searchingArticles').hide();
+            if (!stillSearching) $('#searchingArticles').hide();
             $('#articleListWithHeader').show();
         }
-
         /**
          * Handles the click on the title of an article in search results
          * @param {Event} event
@@ -2390,7 +2433,22 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 }
             } else {
                 uiUtil.systemAlert('Data files not set');
+        }
+    }
+
+    /**
+     * Check whether the given URL from given dirEntry equals the expectedArticleURLToBeDisplayed
+     * @param {DirEntry} dirEntry The directory entry of the article to read
+     */
+    function isDirEntryExpectedToBeDisplayed(dirEntry) {
+        var curArticleURL = dirEntry.namespace + "/" + dirEntry.url;
+
+        if (expectedArticleURLToBeDisplayed !== curArticleURL) {
+            console.debug("url of current article :" + curArticleURL + ", does not match the expected url :" + 
+            expectedArticleURLToBeDisplayed);
+            return false;
             }
+        return true;
         }
 
         /**
@@ -2398,6 +2456,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          * @param {DirEntry} dirEntry The directory entry of the article to read
          */
         function readArticle(dirEntry) {
+            // Reset search prefix to allow users to search the same string again if they want to
+            state.searches[0].prefix = '';
+        // Only update for expectedArticleURLToBeDisplayed.
+        expectedArticleURLToBeDisplayed = dirEntry.namespace + "/" + dirEntry.url;
             params.pagesLoaded++;
             if (dirEntry.isRedirect()) {
                 state.selectedArchive.resolveRedirect(dirEntry, readArticle);
@@ -2521,6 +2583,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     };
 
                 };
+
+            if(! isDirEntryExpectedToBeDisplayed(dirEntry)){
+                return;
+            } 
             }
         }
 
@@ -2674,6 +2740,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          * @param {String} htmlArticle
          */
         function displayArticleInForm(dirEntry, htmlArticle) {
+        if(! isDirEntryExpectedToBeDisplayed(dirEntry)){
+            return;
+        }		
 
             //TESTING
             console.log("** HTML received **");
