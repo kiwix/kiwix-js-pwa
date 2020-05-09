@@ -142,31 +142,73 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
      */
 
     /**
-     * Look for DirEntries with title starting with the given prefix.
+     * Look for DirEntries with title starting with the prefix of the current search object.
      * For now, ZIM titles are case sensitive.
      * So, as workaround, we try several variants of the prefix to find more results.
      * This should be enhanced when the ZIM format will be modified to store normalized titles
      * See https://phabricator.wikimedia.org/T108536
      * 
-     * @param {String} prefix
-     * @param {Integer} resultSize
-     * @param {callbackDirEntryList} callback
+     * @param {Object} search The current state.searches object
+     * @param {Integer} resultSize The number of dirEntries to find
+     * @param {callbackDirEntryList} callback The function to call with the result
+     * @param {Boolean} noInterim A flag to prevent callback until all results are ready (used in testing)
      */
-    ZIMArchive.prototype.findDirEntriesWithPrefix = function(prefix, resultSize, callback) {
+    ZIMArchive.prototype.findDirEntriesWithPrefix = function (search, resultSize, callback, noInterim) {
+        var prefix = search.prefix;
         var that = this;
-        var prefixVariants = util.removeDuplicateStringsInSmallArray([prefix, util.ucFirstLetter(prefix), util.lcFirstLetter(prefix), util.ucEveryFirstLetter(prefix)]);
+        // Establish array of initial values that must be searched first
+        var startArray = [];
+        // Ensure a search is done on the string exactly as typed
+        startArray.push(prefix);
+        // Normalize any spacing and make string all lowercase
+        prefix = prefix.replace(/\s+/g, ' ').toLocaleLowerCase();
+        // Add lowercase string with initial uppercase (this is a very common pattern)
+        startArray.push(prefix.replace(/^./, function (m) {
+            return m.toLocaleUpperCase();
+        }));
+        // Get the full array of combinations to check number of combinations
+        var fullCombos = util.removeDuplicateStringsInSmallArray(util.allCaseFirstLetters(prefix, 'full'));
+        // Put cap on exponential number of combinations (five words = 3^5 = 243 combinations)
+        search.type = fullCombos.length < 200 ? 'full' : 'basic';
+        // We have to remove duplicate string combinations because util.allCaseFirstLetters() can return some combinations
+        // where uppercase and lowercase combinations are exactly the same, e.g. where prefix begins with punctuation
+        // or currency signs, for languages without case, or where user-entered case duplicates calculated case
+        var prefixVariants = util.removeDuplicateStringsInSmallArray(
+            startArray.concat(
+                // Get basic combinations first for speed of returning results
+                util.allCaseFirstLetters(prefix).concat(
+                    search.type === 'full' ? fullCombos : []
+                )
+            )
+        );
         var dirEntries = [];
+        var inProgressResults = [];
+
         function searchNextVariant() {
+            // If user has initiated a new search, cancel this one
+            if (search.state === 'cancelled') return callback([], search);
             if (prefixVariants.length === 0 || dirEntries.length >= resultSize) {
-                callback(dirEntries);
-                return;
+                search.state = 'complete';
+                return callback(dirEntries, search);
             }
+            // Dynamically populate list of articles
+            search.state = 'interim';
+            if (!noInterim) callback(dirEntries, search);
             var prefix = prefixVariants[0];
             prefixVariants = prefixVariants.slice(1);
-            that.findDirEntriesWithPrefixCaseSensitive(prefix, resultSize - dirEntries.length, function (newDirEntries) {
-                dirEntries.push.apply(dirEntries, newDirEntries);
-                searchNextVariant();
-            });
+            that.findDirEntriesWithPrefixCaseSensitive(prefix, resultSize - dirEntries.length, search,
+                function (newDirEntries, idx, interim) {
+                    if (search.state === 'cancelled') return callback([], search);
+                    if (interim) {
+                        inProgressResults = inProgressResults.concat(newDirEntries);
+                    } else {
+                        [].push.apply(dirEntries, newDirEntries);
+                        inProgressResults = dirEntries;
+                        searchNextVariant();
+                    }
+                    if (!noInterim) callback(inProgressResults, search);
+                }
+            );
         }
         searchNextVariant();
     };
@@ -176,9 +218,11 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
      * 
      * @param {String} prefix The case-sensitive value against which dirEntry titles (or url) will be compared
      * @param {Integer} resultSize The maximum number of results to return
+     * @param {Object} search The original state.searches search object (so that we can cancel long binary searches)
      * @param {Function} callback The function to call with the array of dirEntries with titles that begin with prefix
+     * @param {Integer} startIndex The index number with which to commence the search, or null
      */
-    ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function(prefix, resultSize, callback, startIndex) {
+    ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function(prefix, resultSize, search, callback, startIndex) {
         // Save the value of startIndex because value of null has a special meaning in combination with prefix: 
         // produces a list of matches starting with first match and then next x dirEntries thereafter
         var saveStartIndex = startIndex;
@@ -195,15 +239,19 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
         }, true).then(function(firstIndex) {
             var dirEntries = [];
             var addDirEntries = function(index) {
-                if (index >= firstIndex + resultSize || index >= that._file.articleCount)
+                if (search.state === 'cancelled' || index >= firstIndex + resultSize || index >= that._file.articleCount) {
                     return {
                         'dirEntries': dirEntries,
                         'nextStart': index
                     };
+                }
                 return that._file.dirEntryByTitleIndex(index).then(function(dirEntry) {
                     var title = dirEntry.getTitleOrUrl();
-                    if ((saveStartIndex === null || !title.indexOf(prefix)) && dirEntry.namespace === "A")
+                    if ((saveStartIndex === null || ~title.indexOf(prefix)) && dirEntry.namespace === "A") {
                         dirEntries.push(dirEntry);
+                        // Report interim result
+                        if (typeof saveStartIndex === 'undefined') callback([dirEntry], index, true);
+                    }
                     return addDirEntries(index + 1);
                 });
             };

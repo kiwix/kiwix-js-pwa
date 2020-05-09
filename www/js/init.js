@@ -27,10 +27,22 @@ window.onerror = function (msg, url) {
     console.error('Error caught in app [' + url + ']:\n' + msg, msg);
     return true;
 };
-// State variables that are needed across different modules
-var state = {};
-// Parameters that define overall operation of app
+
+/**
+ * A global parameter object for storing variables that need to be remembered between page loads,
+ * or across different functions and modules
+ * 
+ * @type Object
+ */
 var params = {};
+
+/**
+ * A global state object
+ * 
+ * @type Object
+ */
+var state = {};
+
 params['version'] = "0.9.9.97 Wikivoyage Beta"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 params['packagedFile'] = "wikivoyage_en.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)
