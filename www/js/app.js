@@ -2433,19 +2433,19 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         }
     }
 
-    /**
-     * Check whether the given URL from given dirEntry equals the expectedArticleURLToBeDisplayed
-     * @param {DirEntry} dirEntry The directory entry of the article to read
-     */
-    function isDirEntryExpectedToBeDisplayed(dirEntry) {
-        var curArticleURL = dirEntry.namespace + "/" + dirEntry.url;
-
-        if (expectedArticleURLToBeDisplayed !== curArticleURL) {
-            console.debug("url of current article :" + curArticleURL + ", does not match the expected url :" + 
-            expectedArticleURLToBeDisplayed);
-            return false;
+        /**
+         * Check whether the given URL from given dirEntry equals the expectedArticleURLToBeDisplayed
+         * @param {DirEntry} dirEntry The directory entry of the article to read
+         * @returns {Boolean} Returns false if the current article does not match the expected article
+         */
+        function isDirEntryExpectedToBeDisplayed(dirEntry) {
+            var curArticleURL = dirEntry.namespace + "/" + dirEntry.url;
+            if (expectedArticleURLToBeDisplayed !== curArticleURL) {
+                console.debug("url of current article :" + curArticleURL + ", does not match the expected url :" + 
+                expectedArticleURLToBeDisplayed);
+                return false;
             }
-        return true;
+            return true;
         }
 
         /**
@@ -2581,9 +2581,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
                 };
 
-            if(! isDirEntryExpectedToBeDisplayed(dirEntry)){
-                return;
-            } 
+                //if (! isDirEntryExpectedToBeDisplayed(dirEntry)) {
+                //    return;
+                //} 
             }
         }
 
@@ -2737,9 +2737,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          * @param {String} htmlArticle
          */
         function displayArticleInForm(dirEntry, htmlArticle) {
-        if(! isDirEntryExpectedToBeDisplayed(dirEntry)){
-            return;
-        }		
+            //if (! isDirEntryExpectedToBeDisplayed(dirEntry)) {
+            //    return;
+            //}		
 
             //TESTING
             console.log("** HTML received **");
