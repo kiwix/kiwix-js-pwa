@@ -1,5 +1,9 @@
 # Changelog
 
+## Release 0.9.9.99 WikiMed (beta)
+* Update of WikiMed ZIM archive to 25th April release of wikipedia_en_medicine_maxi_2020-04
+* Major upgrade to the title-search algorithm: search is now near-case-insensitive
+
 ## Release 0.9.9.985 WikiMed (beta)
 
 * UPDATE: WikiMed ZIM archive to wikipedia_en_medicine_maxi_2020-04
