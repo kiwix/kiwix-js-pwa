@@ -197,11 +197,11 @@ define(['q', 'filecache'], function(Q, FileCache) {
 
     /**
      * Reads a Uint8Array from the given file starting at byte offset begin and
-     * for given size.
-     * @param {File} file The file to read
-     * @param {Integer} begin The first byte in the file to read
+     * for given size
+     * @param {File} file The file object to be read
+     * @param {Integer} begin The offset in <File> at which to begin reading
      * @param {Integer} size The number of bytes to read
-     * @returns {Promise} Promise
+     * @returns {Promise<Uint8Array>} A Promise for an array buffer with the read data 
      */
     function readFileSlice(file, begin, size) {
         return FileCache.read(file, begin, begin + size);
