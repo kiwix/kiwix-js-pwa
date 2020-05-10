@@ -1,10 +1,17 @@
 # Changelog
 
+## Release 0.9.9.99 WikiMed (beta)
+* Update of WikiMed ZIM archive to 25th April release of wikipedia_en_medicine_maxi_2020-04
+* Major upgrade to the title-search algorithm: search is now near-case-insensitive
+
+## Release 0.9.9.985 WikiMed (beta)
 ## Release 0.9.9.98 (beta)
 
 * ENHANCEMENT: Make app compatible with Electron / NWJS as a packaged app
 * ENHANCEMENT: Better user experience for PWA version
 * ENHANCEMENT: Attempt to make app a little more usable on Android browsers
+
+
 * FIX: Incorrect layout when transforming WikiMed articles to desktop style
 * FIX: Failure to load landing page when backing into it from history.back
 * FIX: Incorrect hiding of toolbars after using in-page search
