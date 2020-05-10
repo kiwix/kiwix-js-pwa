@@ -2359,10 +2359,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          */
         function populateListOfArticles(dirEntryArray, search) {
             // Do not allow cancelled searches to report
-            if (search.state === 'cancelled') {
-                console.log("Search was cancelled in populateListofArticles");
-                return;
-            }
+            if (search.state === 'cancelled') return;
             var stillSearching = search.state === 'interim';
             var articleListHeaderMessageDiv = $('#articleListHeaderMessage');
             var nbDirEntry = dirEntryArray ? dirEntryArray.length : 0;
