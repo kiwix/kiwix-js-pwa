@@ -199,15 +199,11 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
             that.findDirEntriesWithPrefixCaseSensitive(prefix, resultSize - dirEntries.length, search,
                 function (newDirEntries, idx, interim) {
                     if (search.state === 'cancelled') return callback([], search);
-                    if (interim) {
-                        inProgressResults = inProgressResults.concat(newDirEntries);
-                    } else {
+                    if (interim) {// Only push interim results (else results will be pushed again at end of variant loop)                    
                         [].push.apply(dirEntries, newDirEntries);
-                        inProgressResults = dirEntries;
-                        searchNextVariant();
+                        if (!noInterim && newDirEntries.length) callback(dirEntries, search);
+                    } else searchNextVariant();
                     }
-                    if (!noInterim) callback(inProgressResults, search);
-                }
             );
         }
         searchNextVariant();
