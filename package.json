@@ -1,7 +1,7 @@
 {
   "name": "kiwix_js_wikimed",
   "productName": "Kiwix JS WikiMed NWJS Edition",
-  "version": "0.9.985N",
+  "version": "0.9.99N",
   "description": "Kiwix JS WikiMed for NWJS",
   "main": "index.html",
   "domain": "kiwix.js.windows",
@@ -37,7 +37,7 @@
     }
   },
   "build-x64": {
-    "nwVersion": "0.44.1",
+    "nwVersion": "0.45.6",
     "output": "bld/nwjs/win-x64",
     "targets": [
       "zip"
@@ -56,7 +56,7 @@
     }
   },
   "build": {
-    "nwVersion": "0.44.1",
+    "nwVersion": "0.45.6",
     "output": "bld/nwjs/win-x86",
     "files": [
       "pwabuilder-sw.js",
