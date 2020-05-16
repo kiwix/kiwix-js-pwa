@@ -46,7 +46,7 @@ var state = {};
 params['version'] = "0.9.9.99 Beta-dev"; //DEV: This value is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 params['packagedFile'] = "wikipedia_en_ray_charles.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
-params['fileVersion'] = "wikipedia_en_ray_charles_maxi_2019-08.zim (14-Aug-2019)"; //Use generic name for actual file, and give version here
+params['fileVersion'] = "wikipedia_en_ray_charles_maxi_2020-05.zim (1-May-2020)"; //Use generic name for actual file, and give version here
 params['cachedStartPage'] = false; //If you have cached the start page for quick start, give its URI here
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
 
