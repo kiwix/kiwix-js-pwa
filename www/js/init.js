@@ -23,10 +23,10 @@
 'use strict';
 
 // Set a global error handler to prevent app crashes
-window.onerror = function (msg, url) {
-    console.error('Error caught in app [' + url + ']:\n' + msg, msg);
-    return true;
-};
+// window.onerror = function (msg, url) {
+//     console.error('Error caught in app [' + url + ']:\n' + msg, msg);
+//     return true;
+// };
 
 /**
  * A global parameter object for storing variables that need to be remembered between page loads,
@@ -43,11 +43,11 @@ var params = {};
  */
 var state = {};
 
-params['version'] = "0.9.9.99N WikiMed Beta"; //DEV: Manually update this version when there is a new release: it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
-params['packagedFile'] = "wikipedia_en_medicine.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
+params['version'] = "0.9.9.99N Kiwix JS Windows Español"; //DEV: Manually update this version when there is a new release: it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
+params['packagedFile'] = "wikipedia_es_all.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
-params['fileVersion'] = "wikipedia_en_medicine_maxi_2020-04 (25-Apr-2020)"; //Use generic name for actual file, and give version here
-params['cachedStartPage'] = "Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine"; //If you have cached the start page for quick start, give its URI here
+params['fileVersion'] = "wikipedia_es_all_mini_2020-06 (7-junio-2020)"; //Use generic name for actual file, and give version here
+params['cachedStartPage'] = false; //If you have cached the start page for quick start, give its URI here
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/wikipedia/"; //Include final slash
 
 params['cookieSupport'] = checkCookies();
