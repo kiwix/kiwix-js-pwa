@@ -3107,10 +3107,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         return;
                     }
                     // Set a global error handler for iframe
-                    // window.frames[0].onerror = function (msg, url) {
-                    //     console.log('Error caught in ZIM contents [' + url + ']:\n' + msg, msg);
-                    //     return true;
-                    // };
+                    window.frames[0].onerror = function (msg, url) {
+                        console.log('Error caught in ZIM contents [' + url + ']:\n' + msg, msg);
+                        return true;
+                    };
 
                     // Inject the new article's HTML into the iframe
                     var articleContent = iframeContentDocument.documentElement;
