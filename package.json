@@ -20,9 +20,6 @@
   "build-xp": {
     "nwVersion": "0.14.7",
     "output": "bld/nwjs/win-x86-xp",
-    "targets": [
-      "zip"
-    ],
     "files": [
       "pwabuilder-sw.js",
       "index.html",
@@ -37,7 +34,7 @@
     }
   },
   "build-x64": {
-    "nwVersion": "0.45.6",
+    "nwVersion": "0.46.3",
     "output": "bld/nwjs/win-x64",
     "targets": [
       "zip"
