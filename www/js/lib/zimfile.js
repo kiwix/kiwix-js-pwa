@@ -216,12 +216,12 @@ define(['xzdec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry'], function(xz, util,
      * @param {File} file The ZIM file (or first file in array of files) from which the MIME type list 
 *                      is to be extracted
      * @param {Integer} mimeListPos The offset in <file> at which the MIME type list is found
-     * @param {Integer} urlPtrPos The offset of the byte after the end of the MIME type list in <file>
+     * @param {Integer} endReadPos The offset of the end of the slice to read
      * @returns {Promise} A promise for the MIME Type list as a Map
      */
-    function readMimetypeMap(file, mimeListPos, urlPtrPos) {
+    function readMimetypeMap(file, mimeListPos, endReadPos) {
         var typeMap = new Map;
-        var size = urlPtrPos - mimeListPos;
+        var size = endReadPos - mimeListPos;
         return util.readFileSlice(file, mimeListPos, size).then(function(data) {
             if (data.subarray) {
                 var i = 0;
@@ -264,7 +264,8 @@ define(['xzdec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry'], function(xz, util,
             return util.readFileSlice(fileArray[0], 0, 80).then(function(header) {
                 var mimeListPos = readInt(header, 56, 8);
                 var urlPtrPos = readInt(header, 32, 8);
-                return readMimetypeMap(fileArray[0], mimeListPos, urlPtrPos).then(function(data) {
+                var endReadPos = urlPtrPos >= 1104 ? 1104 : urlPtrPos; 
+                return readMimetypeMap(fileArray[0], mimeListPos, endReadPos).then(function(data) {
                     var zf = new ZIMFile(fileArray);
                     zf.articleCount = readInt(header, 24, 4);
                     zf.clusterCount = readInt(header, 28, 4);
