@@ -15,7 +15,8 @@
   "scripts": {
     "start": "run --x86 --mirror https://dl.nwjs.io/ .",
     "dist-win-x86": "build --tasks win-x86 --mirror https://dl.nwjs.io/ .",
-    "dist-win-x64": "build --tasks win-x64 --mirror https://dl.nwjs.io/ ."
+    "dist-win-x64": "build --tasks win-x64 --mirror https://dl.nwjs.io/ .",
+    "dist": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./build_nwjs.ps1" 
   },
   "build-xp": {
     "nwVersion": "0.14.7",
