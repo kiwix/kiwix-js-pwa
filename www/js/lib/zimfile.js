@@ -271,7 +271,7 @@ define(['xzdec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry'], function(xz, util,
                     "Attempted to read an arrayBuffer of **" + Math.floor((urlPtrPos - mimeListPos) / 10485.76) / 100 + " MB** while extracting MIME type table!\n" +
                     "We limited the buffer size to " + (endReadPos - mimeListPos) + " bytes.");
                 } else {
-                    console.log("MIME type table is of expected size " + (endReadPos - mimeListPos) + " bytes.");
+                    console.log("MIME type table of " + fileArray[0].name + " is of expected size " + (endReadPos - mimeListPos) + " bytes.");
                 }
                 return readMimetypeMap(fileArray[0], mimeListPos, endReadPos).then(function(data) {
                     var zf = new ZIMFile(fileArray);
