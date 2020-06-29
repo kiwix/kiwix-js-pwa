@@ -1,5 +1,10 @@
 # Changelog
 
+## Release 0.9.9.991 (beta)
+
+* FIX: Bug preventing all Kiwix apps accessing latest ZIMs (incorrect method of reading MIME type list)
+* ENHANCEMENT: Included ZIM changed to wikipedia_en_100_maxi_2020-06.zim
+
 ## Release 0.9.9.99 (beta)
 
 * ENHANCEMENT: Major upgrade to the title-search algorithm: search is now near-case-insensitive
