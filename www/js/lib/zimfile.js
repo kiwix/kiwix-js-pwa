@@ -265,10 +265,13 @@ define(['xzdec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry'], function(xz, util,
                 var mimeListPos = readInt(header, 56, 8);
                 var urlPtrPos = readInt(header, 32, 8);
                 var endReadPos = urlPtrPos >= 1104 ? 1104 : urlPtrPos;
+                // DIAGNOSTICS FOR Kiwix JS Windows #89
                 if (endReadPos !== urlPtrPos) {
-                    console.warn("WARNING: archive " + fileArray[0].name + " has urlPtrPos at offset " + urlPtrPos + 
-                    ", and attempted to read an arrayBuffer of " + (urlPtrPos - mimeListPos) + " bytes while extracting the MIME type table.\n" +
-                    "We limited the buffer size to " + (endReadPos - mimeListPos) + ".");
+                    console.warn("WARNING: " + fileArray[0].name + " has urlPtrPos at offset " + urlPtrPos + ".\n" + 
+                    "Attempted to read an arrayBuffer of **" + Math.floor((urlPtrPos - mimeListPos) / 10485.76) / 100 + " MB** while extracting MIME type table!\n" +
+                    "We limited the buffer size to " + (endReadPos - mimeListPos) + " bytes.");
+                } else {
+                    console.log("MIME type table is of expected size " + (endReadPos - mimeListPos) + " bytes.");
                 }
                 return readMimetypeMap(fileArray[0], mimeListPos, endReadPos).then(function(data) {
                     var zf = new ZIMFile(fileArray);
