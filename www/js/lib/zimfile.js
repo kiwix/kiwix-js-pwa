@@ -264,7 +264,12 @@ define(['xzdec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry'], function(xz, util,
             return util.readFileSlice(fileArray[0], 0, 80).then(function(header) {
                 var mimeListPos = readInt(header, 56, 8);
                 var urlPtrPos = readInt(header, 32, 8);
-                var endReadPos = urlPtrPos >= 1104 ? 1104 : urlPtrPos; 
+                var endReadPos = urlPtrPos >= 1104 ? 1104 : urlPtrPos;
+                if (endReadPos !== urlPtrPos) {
+                    console.warn("WARNING: archive " + fileArray[0].name + " has urlPtrPos at offset " + urlPtrPos + 
+                    ", and attempted to read an arrayBuffer of " + (urlPtrPos - mimeListPos) + " bytes while extracting the MIME type table.\n" +
+                    "We limited the buffer size to " + (endReadPos - mimeListPos) + ".");
+                }
                 return readMimetypeMap(fileArray[0], mimeListPos, endReadPos).then(function(data) {
                     var zf = new ZIMFile(fileArray);
                     zf.articleCount = readInt(header, 24, 4);
