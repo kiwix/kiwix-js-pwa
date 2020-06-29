@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" IgnorableNamespaces="uap mp uap3">
-  <Identity Name="Kiwix.WikiMed" Version="0.9.9990.0" Publisher="CN=Association Kiwix, O=Association Kiwix, L=Lausanne, C=CH" />
-  <mp:PhoneIdentity PhoneProductId="cb0f426b-1361-4832-9351-223fb6d2dce6" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="Kiwix.KiwixJS" Version="0.9.9991.0" Publisher="CN=Association Kiwix, O=Association Kiwix, L=Lausanne, C=CH" />
+  <mp:PhoneIdentity PhoneProductId="9850377b-0966-437e-ab30-a076c125f472" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>WikiMed</DisplayName>
     <PublisherDisplayName>Kiwix</PublisherDisplayName>
