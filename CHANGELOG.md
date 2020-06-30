@@ -1,24 +1,15 @@
 # Changelog
 
-## Release 0.9.9.991 (beta)
+## Release 0.9.9.991 Wikivoyage (beta)
 
-* FIX: Bug preventing all Kiwix apps accessing latest ZIMs (incorrect method of reading MIME type list)
-* ENHANCEMENT: Included ZIM changed to wikipedia_en_100_maxi_2020-06.zim
-
-## Release 0.9.9.99 (beta)
-
+* UPDATE: June 2020 update of Wikivoyage ZIM archive to wikivoyage_en_all_maxi_2020-06.zim
+* UPDATE: Update Q Promise support to v1.5.1
 * ENHANCEMENT: Major upgrade to the title-search algorithm: search is now near-case-insensitive
-* UPDATE: Included sample ZIM updated to wikipedia_en_ray_charles_maxi_2020-05.zim
-
-## Release 0.9.9.98 (beta)
-
 * ENHANCEMENT: Make app compatible with Electron / NWJS as a packaged app
-* ENHANCEMENT: Better user experience for PWA version
 * ENHANCEMENT: Attempt to make app a little more usable on Android browsers
-* FIX: Incorrect layout when transforming WikiMed articles to desktop style
+* FIX: Bug preventing all Kiwix apps accessing latest ZIMs (incorrect method of reading MIME type list)
 * FIX: Failure to load landing page when backing into it from history.back
 * FIX: Incorrect hiding of toolbars after using in-page search
-* UPDATE: Update Q Promise support to v1.5.1
 
 ## Release 0.9.9.97 Wikivoyage (beta)
 * UPDATE: February 2020 update of Wikivoyage ZIM archive to wikivoyage_en_all_maxi_2020-02.zim
