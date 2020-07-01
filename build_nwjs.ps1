@@ -1,7 +1,10 @@
 # $build = "win-x64"
 $build = "win-ia32"
-$target = "bld\nwjs\" + $build + "\kiwix_js_windows-0.9.99N"
-$buildLocation = "node_modules\nwjs-builder-phoenix\caches\nwjs-v0.46.3-" + $build + ".zip-extracted\nwjs-v0.46.3-" + $build + "\"
+$version = "0.46.3"
+$appBuild = "0.9.9.991N"
+$ZIMbase = "wikipedia_en_100"
+$target = "bld\nwjs\" + $build + "\kiwix_js_windows-" + $appBuild
+$buildLocation = "node_modules\nwjs-builder-phoenix\caches\nwjs-v0.46.3-" + $build + ".zip-extracted\nwjs-v" + $version + "-" + $build + "\"
 $fullTarget = $target + "-" + $build
 # $fullTarget
 $archiveFolder = $fullTarget + "\archives"
@@ -12,4 +15,4 @@ md $fullTarget
 cp $buildLocation\* $fullTarget -Recurse
 cp .\package.json, .\pwabuilder-sw.js, .\index.html, .\CHANGELOG.md, .\LICENSE, .\www $fullTarget -Recurse
 md $archiveFolder
-cp .\archives\wikip*.*, .\archives\README.md $archiveFolder
+cp ".\archives\$ZIMbase*.*", .\archives\README.md $archiveFolder
