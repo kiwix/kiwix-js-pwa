@@ -1,9 +1,10 @@
 # Changelog
 
-## Release 0.9.9.991 (beta)
+## Release 0.9.9.991 WikiMed (beta)
 
+* UPDATE: WikiMed ZIM archive to wikipedia_en_medicine_maxi_2020-07
 * FIX: Bug preventing all Kiwix apps accessing latest ZIMs (incorrect method of reading MIME type list)
-* ENHANCEMENT: Included ZIM changed to wikipedia_en_100_maxi_2020-06.zim
+* FIX: Bug displaying extraneous titles in case-insensitive search
 
 ## Release 0.9.9.99 WikiMed (beta)
 * Update of WikiMed ZIM archive to 25th April release of wikipedia_en_medicine_maxi_2020-04
