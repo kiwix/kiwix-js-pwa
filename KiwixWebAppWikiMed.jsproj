@@ -65,10 +65,11 @@
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>5A76EAF3DF52F0B9A1A933C0A1C0DA78D207FDA6</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>8AEFAC31D8EFEB7747C6ADB9240A264BDE587030</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
+    <PackageCertificateKeyFile>KiwixWebAppWikiMed_StoreKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="archives\wikipedia_en_medicine.zim" />
@@ -121,6 +122,7 @@
     <None Include="Package.StoreAssociation.xml" />
     <None Include="kiwix.pfx" />
     <None Include="KiwixWebApp_StoreKey.pfx" />
+    <None Include="KiwixWebAppWikiMed_StoreKey.pfx" />
     <Content Include="manifest.json" />
     <Content Include="pwabuilder-sw.js" />
     <Content Include="www\-\static\main.css" />
