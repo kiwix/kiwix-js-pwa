@@ -1,0 +1,656 @@
+﻿<!DOCTYPE html>
+<html class="client-js">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Wikipedia:WikiProject Medicine/Open Textbook of Medicine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        function importScript() {
+            return 1
+        } // this is to avoid the error from site.js
+    </script>
+    <link
+        href="../../-/s/css_modules/skins.minerva.base.reset|skins.minerva.content.styles|ext.cite.style|mobile.app.pagestyles.android|mediawiki.page.gallery.styles|mediawiki.skinning.content.parsoid.css"
+        rel="stylesheet" type="text/css" class="">
+    <link href="../../-/s/css_modules/style.css" rel="stylesheet" type="text/css" class="">
+    <link href="../../-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css" class="">
+    <link href="../../-/s/css_modules/inserted_style.css" rel="stylesheet" type="text/css" class="">
+    <script src="../../-/j/js_modules/script.js" class=""></script>
+    <script src="../../-/j/js_modules/masonry.min.js" class=""></script>
+    <script src="../../-/j/js_modules/article_list_home.js" class=""></script>
+    <script src="../../-/j/js_modules/images_loaded.min.js" class=""></script>
+    <script src="../../-/j/js_modules/details_polyfill.js" class=""></script>
+</head>
+
+<body class="mediawiki mw-hide-empty-elt ns-0 ns-subject stable skin-minerva action-view animations">
+    <style data-mw-deduplicate="TemplateStyles:r886046994">
+        .mw-parser-output div.columns-2 div.column {
+            float: left;
+            width: 50%;
+            min-width: 300px
+        }
+
+        .mw-parser-output div.columns-3 div.column {
+            float: left;
+            width: 33.3%;
+            min-width: 200px
+        }
+
+        .mw-parser-output div.columns-4 div.column {
+            float: left;
+            width: 25%;
+            min-width: 150px
+        }
+
+        .mw-parser-output div.columns-5 div.column {
+            float: left;
+            width: 20%;
+            min-width: 120px
+        }
+    </style>
+    <div id="mw-mf-viewport" class="feature-header-v2">
+        <div id="mw-mf-page-center">
+            <div id="content" class="mw-body">
+                <a id="top"></a>
+                <div id="bodyContent" class="content mw-parser-output">
+                    <div id="mw-content-text" style="direction: ltr;">
+                        <div class="thumb tright">
+                            <div class="thumbinner" style="width:202px"><img src="../../I/m/MedLogoNoWiFi.png"
+                                    data-file-width="806" data-file-height="835" data-file-type="bitmap" height="150"
+                                    width="150"></div>
+                        </div>
+                        <h1 class="section-heading in-block collapsible-heading open-block" tabindex="0"
+                            aria-haspopup="true" aria-controls="content-collapsible-block-0" data-section-id="0"
+                            style="display:inline;">
+                            <span class="mw-headline" id="title_0">Open Textbook of Medicine</span>
+                        </h1>
+                        <div id="mf-section-0" class="mf-section-0 collapsible-block open-block" aria-pressed="true"
+                            aria-expanded="true" style="display:inline;">
+                            <p>Welcome to the <b>Offline Medical Encyclopedia</b> by Wikipedia’s WikiProject Medicine.
+                                Please bear in mind that this is volunteer generated content. While we try our best to
+                                make it as accurate as possible, it is not perfect. Thus we request that you use common
+                                sense when consulting this app.</p>
+                            <table class="multicol" style="border-spacing:0;background:#d8d8ff;;clear:right;"
+                                role="presentation">
+                                <tbody>
+                                    <tr style="vertical-align:middle;">
+                                        <td style="min-width:135px;display:table-cell !important;">
+                                            <figure-inline><a href="../../A/Coronavirus_disease_2019" class="image"><img
+                                                        src="../../I/m/SARS-CoV-2_without_background.png"
+                                                        data-file-width="1958" data-file-height="1966"
+                                                        data-file-type="bitmap" width="125" height="125"></a>
+                                            </figure-inline>
+                                        </td>
+                                        <td style="width:0.5em;"></td>
+                                        <td style="width:auto;">
+                                            <div style="height: 0.5em;"></div><b><a href="../../A/Coronavirus_disease_2019" title="COVID-19">Coronavirus disease 2019</a></b><br>
+                                                  <a href="../../A/Coronavirus_disease_2019" title="Coronavirus disease 2019">COVID-19 (diesease)</a> 
+                                                • <a href="../../A/Severe_acute_respiratory_syndrome_coronavirus_2" title="Severe acute respiratory syndrome coronavirus 2">SARS-CoV-2 (virus strain)</a> 
+                                                • <a href="../../A/2019–20_coronavirus_pandemic" title="2019–20 coronavirus pandemic">2019–20 coronavirus pandemic</a> 
+                                                • <a href="../../A/Coronavirus" title="Coronavirus">Coronavirus (family of viruses)</a> 
+                                                • <a href="../../A/COVID-19_testing" title="COVID-19 testing">COVID-19 testing</a> 
+                                                • <a href="../../A/COVID-19_vaccine" title="COVIID-19 Vaccine">COVID-19 vaccine</a> 
+                                                • <a href="../../A/COVID-19_drug_development" title="COVIID-19 drug development">COVID-19 drug development</a> 
+                                                • <a href="../../A/COVID-19_in_pregnancy" title="COVID-19 in pregnancy">COVID-19 in pregnancy</a> 
+                                                • <a href="../../A/Social_distancing" title="Social distancing">Social distancing (control measure)</a> 
+                                                • <a href="../../A/Contact_tracing" title="Contact tracing">Contact tracing (control measure)</a> 
+                                                • <a href="../../A/Coronavirus_app" title="COVID-19 apps">COVID-19 apps (control measure)</a> 
+                                                • <a href="../../A/Coronavirus_and_education" title="Impact of the 2019–20 coronavirus pandemic on education">Coronavirus impact on edcucation</a> 
+                                                • <a href="../../A/Coronavirus_and_politics" title="Impact of the 2019–20 coronavirus pandemic on politics">Coronavirus impact on politics</a> 
+                                                • <a href="../../A/Coronavirus_misinformation" title="Coronavirus misinformation">Coronavirus misinformation</a>
+                                                • <a href="../../A/Coronavirus_party" title="Coronavirus party">Coronavirus party</a>
+                                                • <a href="../../A/2020_coronavirus_pandemic_in_Belgium" title="COVID-19 in Belgium">COVID-19 in Belgium</a> 
+                                                • <a href="../../A/2020_coronavirus_pandemic_in_Spain" title="COVID-19 in Spain">COVID-19 in Spain</a>
+                                                • <a href="../../A/2020_coronavirus_pandemic_in_Italy" title="COVID-19 in Italy">COVID-19 in Italy</a> 
+                                                • <a href="../../A/2020_coronavirus_pandemic_in_the_United_Kingdom" title="COVID-19 in the UK">COVID-19 in the UK</a>
+												• <a href="../../A/2020_coronavirus_pandemic_in_France" title="COVID-19 in France">COVID-19 in France</a> 
+                                                • <a href="../../A/2020_coronavirus_pandemic_in_the_Netherlands" title="COVID-19 in the Netherlands">COVID-19 in the Netherlands</a> 
+												• <a href="../../A/2020_coronavirus_pandemic_in_the_United_States" title="COVID-19 in USA">COVID-19 in USA</a> 
+                                                • <a href="../../A/2020_coronavirus_pandemic_in_Germany" title="COVID-19 in Germany">COVID-19 in Germany</a> 
+                                                • <a href="../../A/2020_coronavirus_pandemic_in_Iran" title="COVID-19 in Iran">COVID-19 in Iran</a>
+                                                • <a href="../../A/2020_coronavirus_pandemic_in_Brazil" title="COVID-19 in Brazil">COVID-19 in Brazil</a>
+												• <a href="../../A/2019–20_coronavirus_pandemic_in_mainland_China" title="COVID-19 in China">COVID-19 in China</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="multicol" style="border-spacing:0;background:#ebebff;clear:right;"
+                                role="presentation">
+                                <tbody>
+                                    <tr style="vertical-align:middle;">
+                                        <td style="min-width:135px;display:table-cell !important;">
+                                            <figure-inline><a href="../../A/Book%3ACardiology" class="image"><img
+                                                        src="../../I/m/CardiologyApp.jpg" data-file-width="402"
+                                                        data-file-height="402" data-file-type="bitmap" height="125"
+                                                        width="125"></a></figure-inline>
+                                        </td>
+                                        <td style="width:0.5em;"></td>
+                                        <td style="width:auto;">
+                                            <div style="height: 0.5em;"></div><b><a href="../../A/Book%3ACardiology"
+                                                    title="Book:Cardiology">Heart diseases</a></b><br><a
+                                                href="../../A/Abdominal_aortic_aneurysm"
+                                                title="Abdominal aortic aneurysm">Abdominal aortic aneurysm</a> • <a
+                                                href="../../A/Aortic_stenosis" title="Aortic stenosis">Aortic
+                                                stenosis</a> • <a href="../../A/Atrial_fibrillation"
+                                                title="Atrial fibrillation">Atrial fibrillation</a> • <a
+                                                href="../../A/Cardiac_arrhythmia" title="Cardiac arrhythmia"
+                                                class="mw-redirect">Cardiac arrhythmia</a> • <a
+                                                href="../../A/Cardiovascular_disease"
+                                                title="Cardiovascular disease">Cardiovascular disease</a> • <a
+                                                href="../../A/Coronary_artery_disease"
+                                                title="Coronary artery disease">Coronary artery disease</a> • <a
+                                                href="../../A/Heart_failure" title="Heart failure">Heart failure</a> •
+                                            <a href="../../A/Myocardial_infarction"
+                                                title="Myocardial infarction">Myocardial infarction</a> • <a
+                                                href="../../A/Peripheral_artery_disease"
+                                                title="Peripheral artery disease">Peripheral artery disease</a> • <a
+                                                href="../../A/Pulmonary_embolism" title="Pulmonary embolism">Pulmonary
+                                                embolism</a> • <a href="../../A/Rheumatic_fever"
+                                                title="Rheumatic fever">Rheumatic fever</a> • <a
+                                                href="../../A/Syncope_(medicine)" title="Syncope (medicine)">Syncope</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="multicol" style="border-spacing:0;background:#d8d8ff;" role="presentation">
+                                <tbody>
+                                    <tr style="vertical-align:middle;">
+                                        <td style="min-width:135px;display:table-cell !important;">
+                                            <figure-inline><a href="../../A/Book%3APediatrics" class="image"><img
+                                                        src="../../I/m/PedsApp.jpg" data-file-width="592"
+                                                        data-file-height="592" data-file-type="bitmap" height="125"
+                                                        width="125"></a></figure-inline>
+                                        </td>
+                                        <td style="width:0.5em;"></td>
+                                        <td style="width:auto;">
+                                            <div style="height: 0.5em;"></div><b><a href="../../A/Book%3APediatrics"
+                                                    title="Book:Pediatrics" class="mw-redirect">Children's
+                                                    health</a></b><br><a href="../../A/Circumcision"
+                                                title="Circumcision">Circumcision</a> • <a
+                                                href="../../A/Cleft_lip_and_palate" title="Cleft lip and palate"
+                                                class="mw-redirect">Cleft lip and palate</a> • <a
+                                                href="../../A/Congenital_heart_defect"
+                                                title="Congenital heart defect">Congenital heart defect</a> • <a
+                                                href="../../A/Down_syndrome" title="Down syndrome">Down syndrome</a> •
+                                            <a href="../../A/Epilepsy" title="Epilepsy">Epilepsy</a> • <a
+                                                href="../../A/Female_genital_mutilation"
+                                                title="Female genital mutilation">Female genital mutilation</a> • <a
+                                                href="../../A/Fetal_alcohol_spectrum_disorder"
+                                                title="Fetal alcohol spectrum disorder">Fetal alcohol spectrum
+                                                disorder</a> • <a href="../../A/Klinefelter_syndrome"
+                                                title="Klinefelter syndrome">Klinefelter syndrome</a> • <a
+                                                href="../../A/Sickle-cell_disease" title="Sickle-cell disease"
+                                                class="mw-redirect">Sickle-cell disease</a> • <a
+                                                href="../../A/Spina_bifida" title="Spina bifida">Spina bifida</a> • <a
+                                                href="../../A/Sudden_infant_death_syndrome"
+                                                title="Sudden infant death syndrome">Sudden infant death syndrome</a> •
+                                            <a href="../../A/Turner_syndrome" title="Turner syndrome">Turner
+                                                syndrome</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="multicol" style="border-spacing:0;background:#ebebff;" role="presentation">
+                                <tbody>
+                                    <tr style="vertical-align:middle;">
+                                        <td style="min-width:135px;display:table-cell !important;">
+                                            <figure-inline><a href="../../A/Book%3ADermatology" class="image"><img
+                                                        src="../../I/m/DermApp.jpg" data-file-width="2304"
+                                                        data-file-height="2304" data-file-type="bitmap" height="125"
+                                                        width="125"></a></figure-inline>
+                                        </td>
+                                        <td style="width:0.5em;"></td>
+                                        <td style="width:auto;">
+                                            <div style="height: 0.5em;"></div><b><a href="../../A/Book%3ADermatology"
+                                                    title="Book:Dermatology" class="mw-redirect">Skin
+                                                    diseases</a></b><br><a href="../../A/Abscess"
+                                                title="Abscess">Abscess</a> • <a href="../../A/Acne_vulgaris"
+                                                title="Acne vulgaris" class="mw-redirect">Acne vulgaris</a> • <a
+                                                href="../../A/Allergy" title="Allergy">Allergy</a> • <a
+                                                href="../../A/Angular_cheilitis" title="Angular cheilitis">Angular
+                                                cheilitis</a> • <a href="../../A/Atopic_dermatitis"
+                                                title="Atopic dermatitis">Atopic dermatitis</a> • <a
+                                                href="../../A/Candidiasis" title="Candidiasis">Candidiasis</a> • <a
+                                                href="../../A/Cellulitis" title="Cellulitis">Cellulitis</a> • <a
+                                                href="../../A/Chickenpox" title="Chickenpox">Chickenpox</a> • <a
+                                                href="../../A/Dermatitis" title="Dermatitis">Dermatitis</a> • <a
+                                                href="../../A/Hair_loss" title="Hair loss">Hair loss</a> • <a
+                                                href="../../A/Head_lice_infestation" title="Head lice infestation">Head
+                                                lice infestation</a> • <a href="../../A/Herpes_simplex"
+                                                title="Herpes simplex">Herpes simplex</a> • <a
+                                                href="../../A/Herpes_zoster" title="Herpes zoster"
+                                                class="mw-redirect">Herpes zoster</a> • <a href="../../A/Measles"
+                                                title="Measles">Measles</a> • <a href="../../A/Psoriasis"
+                                                title="Psoriasis">Psoriasis</a> • <a href="../../A/Scabies"
+                                                title="Scabies">Scabies</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="multicol" style="border-spacing:0;background:#d8d8ff;" role="presentation">
+                                <tbody>
+                                    <tr style="vertical-align:middle;">
+                                        <td style="min-width:135px;display:table-cell !important;">
+                                            <figure-inline><a href="../../A/Book%3AEars_nose_throat" class="image"><img
+                                                        src="../../I/m/ENTApp.jpg" data-file-width="951"
+                                                        data-file-height="951" data-file-type="bitmap" height="125"
+                                                        width="125"></a></figure-inline>
+                                        </td>
+                                        <td style="width:0.5em;"></td>
+                                        <td style="width:auto;">
+                                            <div style="height: 0.5em;"></div><b><a
+                                                    href="../../A/Book%3AEars_nose_throat"
+                                                    title="Book:Ears nose throat">Ears nose throat</a></b><br><a
+                                                href="../../A/Benign_paroxysmal_positional_vertigo"
+                                                title="Benign paroxysmal positional vertigo">Benign paroxysmal
+                                                positional vertigo</a> • <a href="../../A/Hearing_loss"
+                                                title="Hearing loss">Hearing loss</a> • <a
+                                                href="../../A/Mandibular_fracture"
+                                                title="Mandibular fracture">Mandibular fracture</a> • <a
+                                                href="../../A/Nasal_polyp" title="Nasal polyp">Nasal polyp</a> • <a
+                                                href="../../A/Nose_bleed" title="Nose bleed" class="mw-redirect">Nose
+                                                bleed</a> • <a href="../../A/Otitis_externa"
+                                                title="Otitis externa">Otitis externa</a> • <a
+                                                href="../../A/Otitis_media" title="Otitis media">Otitis media</a> • <a
+                                                href="../../A/Pharyngitis" title="Pharyngitis">Pharyngitis</a> • <a
+                                                href="../../A/Strep_throat" title="Strep throat"
+                                                class="mw-redirect">Strep throat</a> • <a href="../../A/Tinnitus"
+                                                title="Tinnitus">Tinnitus</a> • <a href="../../A/Vertigo"
+                                                title="Vertigo">Vertigo</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="multicol" style="border-spacing:0;background:#ebebff;" role="presentation">
+                                <tbody>
+                                    <tr style="vertical-align:middle;">
+                                        <td style="min-width:135px;display:table-cell !important;">
+                                            <figure-inline><a href="../../A/Book%3AEndocrinology" class="image"><img
+                                                        src="../../I/m/EndoApp.png" data-file-width="244"
+                                                        data-file-height="244" data-file-type="bitmap" height="125"
+                                                        width="125"></a></figure-inline>
+                                        </td>
+                                        <td style="width:0.5em;"></td>
+                                        <td style="width:auto;">
+                                            <div style="height: 0.5em;"></div><b><a href="../../A/Book%3AEndocrinology"
+                                                    title="Book:Endocrinology">Endocrine diseases</a></b><br><a
+                                                href="../../A/Addison's_disease" title="Addison's disease">Addison's
+                                                disease</a> • <a href="../../A/Cushing's_syndrome"
+                                                title="Cushing's syndrome">Cushing's syndrome</a> • <a
+                                                href="../../A/Delirium_tremens" title="Delirium tremens">Delirium
+                                                tremens</a> • <a href="../../A/Diabetes" title="Diabetes">Diabetes</a> •
+                                            <a href="../../A/DM_type_1" title="DM type 1" class="mw-redirect">DM type
+                                                1</a> • <a href="../../A/DM_type_2" title="DM type 2"
+                                                class="mw-redirect">DM type 2</a> • <a
+                                                href="../../A/Gestational_diabetes"
+                                                title="Gestational diabetes">Gestational diabetes</a> • <a
+                                                href="../../A/Graves'_disease" title="Graves' disease">Graves'
+                                                disease</a> • <a href="../../A/Hypernatremia"
+                                                title="Hypernatremia">Hypernatremia</a> • <a
+                                                href="../../A/Hyperthyroidism"
+                                                title="Hyperthyroidism">Hyperthyroidism</a> • <a
+                                                href="../../A/Hypoglycemia" title="Hypoglycemia">Hypoglycemia</a> • <a
+                                                href="../../A/Hyponatremia" title="Hyponatremia">Hyponatremia</a> • <a
+                                                href="../../A/Hypothyroidism" title="Hypothyroidism">Hypothyroidism</a>
+                                            • <a href="../../A/Obesity" title="Obesity">Obesity</a> • <a
+                                                href="../../A/Primary_hyperaldosteronism"
+                                                title="Primary hyperaldosteronism" class="mw-redirect">Primary
+                                                hyperaldosteronism</a> • <a href="../../A/Vitamin_B12_deficiency"
+                                                title="Vitamin B12 deficiency">Vitamin B12 deficiency</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="multicol" style="border-spacing:0;background:#d8d8ff;" role="presentation">
+                                <tbody>
+                                    <tr style="vertical-align:middle;">
+                                        <td style="min-width:135px;display:table-cell !important;">
+                                            <figure-inline><a href="../../A/Book%3AGeneral_surgery" class="image"><img
+                                                        src="../../I/m/GenSurgApp.jpg" data-file-width="1575"
+                                                        data-file-height="1574" data-file-type="bitmap" height="125"
+                                                        width="125"></a></figure-inline>
+                                        </td>
+                                        <td style="width:0.5em;"></td>
+                                        <td style="width:auto;">
+                                            <div style="height: 0.5em;"></div><b><a
+                                                    href="../../A/Book%3AGeneral_surgery"
+                                                    title="Book:General surgery">General surgery</a></b><br><a
+                                                href="../../A/Appendicitis" title="Appendicitis">Appendicitis</a> • <a
+                                                href="../../A/Bowel_obstruction" title="Bowel obstruction">Bowel
+                                                obstruction</a> • <a href="../../A/Celiac_disease"
+                                                title="Celiac disease" class="mw-redirect">Celiac disease</a> • <a
+                                                href="../../A/Crohn's_disease" title="Crohn's disease">Crohn's
+                                                disease</a> • <a href="../../A/Diarrhea" title="Diarrhea">Diarrhea</a> •
+                                            <a href="../../A/Gallstone" title="Gallstone">Gallstone</a> • <a
+                                                href="../../A/Gastritis" title="Gastritis">Gastritis</a> • <a
+                                                href="../../A/Gastrointestinal_bleeding"
+                                                title="Gastrointestinal bleeding">Gastrointestinal bleeding</a> • <a
+                                                href="../../A/Gastrointestinal_perforation"
+                                                title="Gastrointestinal perforation">Gastrointestinal perforation</a> •
+                                            <a href="../../A/Hemorrhoid" title="Hemorrhoid">Hemorrhoid</a> • <a
+                                                href="../../A/Hernia" title="Hernia">Hernia</a> • <a
+                                                href="../../A/Irritable_bowel_syndrome"
+                                                title="Irritable bowel syndrome">Irritable bowel syndrome</a> • <a
+                                                href="../../A/Pancreatitis" title="Pancreatitis">Pancreatitis</a> • <a
+                                                href="../../A/Peptic_ulcer_disease" title="Peptic ulcer disease">Peptic
+                                                ulcer disease</a> • <a href="../../A/Pernicious_anemia"
+                                                title="Pernicious anemia" class="mw-redirect">Pernicious anemia</a> • <a
+                                                href="../../A/Ulcerative_colitis" title="Ulcerative colitis">Ulcerative
+                                                colitis</a> • <a href="../../A/Volvulus" title="Volvulus">Volvulus</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="multicol" style="border-spacing:0;background:#ebebff;" role="presentation">
+                                <tbody>
+                                    <tr style="vertical-align:middle;">
+                                        <td style="min-width:135px;display:table-cell !important;">
+                                            <figure-inline><a href="../../A/Book%3AInfectious_disease"
+                                                    class="image"><img src="../../I/m/IDApp.JPG" data-file-width="1634"
+                                                        data-file-height="1634" data-file-type="bitmap" height="125"
+                                                        width="125"></a></figure-inline>
+                                        </td>
+                                        <td style="width:0.5em;"></td>
+                                        <td style="width:auto;">
+                                            <div style="height: 0.5em;"></div><b><a
+                                                    href="../../A/Book%3AInfectious_disease"
+                                                    title="Book:Infectious disease">Infectious diseases</a></b><br><a
+                                                href="../../A/African_trypanosomiasis"
+                                                title="African trypanosomiasis">African trypanosomiasis</a> • <a
+                                                href="../../A/Ascariasis" title="Ascariasis">Ascariasis</a> • <a
+                                                href="../../A/Buruli_ulcer" title="Buruli ulcer">Buruli ulcer</a> • <a
+                                                href="../../A/Cellulitis" title="Cellulitis">Cellulitis</a> • <a
+                                                href="../../A/Chagas_disease" title="Chagas disease">Chagas disease</a>
+                                            • <a href="../../A/Common_cold" title="Common cold">Common cold</a>
+                                            • <a href="../../A/Coronavirus_disease_2019"
+                                                title="Coronavius disease 2019">COVID-19</a>
+                                            • <a href="../../A/Cysticercosis" title="Cysticercosis">Cysticercosis</a> •
+                                            <a href="../../A/Drancunculiasis" title="Drancunculiasis"
+                                                class="mw-redirect">Drancunculiasis</a> • <a
+                                                href="../../A/Ebola_virus_disease" title="Ebola virus disease">Ebola
+                                                virus disease</a> • <a href="../../A/Hepatitis_A"
+                                                title="Hepatitis A">Hepatitis A</a> • <a href="../../A/Hepatitis_B"
+                                                title="Hepatitis B">Hepatitis B</a> • <a href="../../A/Hepatitis_C"
+                                                title="Hepatitis C">Hepatitis C</a> • <a href="../../A/HIV%2FAIDS"
+                                                title="HIV/AIDS">HIV/AIDS</a> • <a href="../../A/Leprosy"
+                                                title="Leprosy">Leprosy</a> • <a href="../../A/Lyme_disease"
+                                                title="Lyme disease">Lyme disease</a> • <a href="../../A/Malaria"
+                                                title="Malaria">Malaria</a> • <a href="../../A/Meningitis"
+                                                title="Meningitis">Meningitis</a> • <a href="../../A/Rabies"
+                                                title="Rabies">Rabies</a> • <a href="../../A/Syphilis"
+                                                title="Syphilis">Syphilis</a> • <a href="../../A/Tuberculosis"
+                                                title="Tuberculosis">Tuberculosis</a> • <a href="../../A/Yellow_fever"
+                                                title="Yellow fever">Yellow fever</a> • <a href="../../A/Zika_fever"
+                                                title="Zika fever">Zika fever</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="multicol" style="border-spacing:0;background:#d8d8ff;" role="presentation">
+                                <tbody>
+                                    <tr style="vertical-align:middle;">
+                                        <td style="min-width:135px;display:table-cell !important;">
+                                            <figure-inline><a href="../../A/Book%3AMedications" class="image"><img
+                                                        src="../../I/m/Rx_symbol_border.svg.png" data-file-width="250"
+                                                        data-file-height="250" data-file-type="drawing" height="125"
+                                                        width="125"></a></figure-inline>
+                                        </td>
+                                        <td style="width:0.5em;"></td>
+                                        <td style="width:auto;">
+                                            <div style="height: 0.5em;"></div><b><a href="../../A/Book%3AMedications"
+                                                    title="Book:Medications">Medications</a></b><br><a
+                                                href="../../A/Birth_control" title="Birth control">Birth control</a> •
+                                            <a href="../../A/Carbamazapine" title="Carbamazapine"
+                                                class="mw-redirect">Carbamazapine</a> • <a href="../../A/Cephalexin"
+                                                title="Cephalexin" class="mw-redirect">Cephalexin</a> • <a
+                                                href="../../A/Cholera_vaccine" title="Cholera vaccine">Cholera
+                                                vaccine</a> • <a href="../../A/Cocaine" title="Cocaine">Cocaine</a> • <a
+                                                href="../../A/Dapsone" title="Dapsone">Dapsone</a> • <a
+                                                href="../../A/Diazepam" title="Diazepam">Diazepam</a> • <a
+                                                href="../../A/Hydrochlorothiazide" title="Hydrochlorothiazide">HCTZ</a>
+                                            • <a href="../../A/Ibuprofen" title="Ibuprofen">Ibuprofen</a> • <a
+                                                href="../../A/Influenza_vaccine" title="Influenza vaccine">Influenza
+                                                vaccine</a> • <a href="../../A/Ipratropium_bromide"
+                                                title="Ipratropium bromide">Ipratropium bromide</a> • <a
+                                                href="../../A/Ketamine" title="Ketamine">Ketamine</a> • <a
+                                                href="../../A/Levofloxacin" title="Levofloxacin">Levofloxacin</a> • <a
+                                                href="../../A/Measles_vaccine" title="Measles vaccine">Measles
+                                                vaccine</a> • <a href="../../A/Metoprolol"
+                                                title="Metoprolol">Metoprolol</a> • <a href="../../A/Mifepristone"
+                                                title="Mifepristone">Mifepristone</a> • <a href="../../A/Morphine"
+                                                title="Morphine">Morphine</a> • <a href="../../A/Nystatin"
+                                                title="Nystatin">Nystatin</a> • <a href="../../A/Paracetamol"
+                                                title="Paracetamol">Paracetamol</a> (acetaminophen) • <a
+                                                href="../../A/Propofol" title="Propofol">Propofol</a> • <a
+                                                href="../../A/Salbutamol" title="Salbutamol">Salbutamol</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="multicol" style="border-spacing:0;background:#ebebff;" role="presentation">
+                                <tbody>
+                                    <tr style="vertical-align:middle;">
+                                        <td style="min-width:135px;display:table-cell !important;">
+                                            <figure-inline><a href="../../A/Book%3ACancer" class="image"><img
+                                                        src="../../I/m/CancerApp.jpg" data-file-width="496"
+                                                        data-file-height="496" data-file-type="bitmap" height="125"
+                                                        width="125"></a></figure-inline>
+                                        </td>
+                                        <td style="width:0.5em;"></td>
+                                        <td style="width:auto;">
+                                            <div style="height: 0.5em;"></div><b><a href="../../A/Book%3ACancer"
+                                                    title="Book:Cancer">Cancer care</a></b><br><a
+                                                href="../../A/Brain_tumor" title="Brain tumor">Brain tumor</a> • <a
+                                                href="../../A/Breast_cancer" title="Breast cancer">Breast cancer</a> •
+                                            <a href="../../A/Cancer" title="Cancer">Cancer</a> • <a
+                                                href="../../A/Cervical_cancer" title="Cervical cancer">Cervical
+                                                cancer</a> • <a href="../../A/Colon_cancer" title="Colon cancer"
+                                                class="mw-redirect">Colon cancer</a> • <a
+                                                href="../../A/Endometrial_cancer" title="Endometrial cancer">Endometrial
+                                                cancer</a> • <a href="../../A/Esophageal_cancer"
+                                                title="Esophageal cancer">Esophageal cancer</a> • <a
+                                                href="../../A/Glioblastoma_multiforme" title="Glioblastoma multiforme"
+                                                class="mw-redirect">Glioblastoma multiforme</a> • <a
+                                                href="../../A/Leukemia" title="Leukemia">Leukemia</a> • <a
+                                                href="../../A/Lung_cancer" title="Lung cancer">Lung cancer</a> • <a
+                                                href="../../A/Lymphoma" title="Lymphoma">Lymphoma</a> • <a
+                                                href="../../A/Melanoma" title="Melanoma">Melanoma</a> • <a
+                                                href="../../A/Mesothelioma" title="Mesothelioma">Mesothelioma</a> • <a
+                                                href="../../A/Ovarian_cancer" title="Ovarian cancer">Ovarian cancer</a>
+                                            • <a href="../../A/Pancreatic_cancer" title="Pancreatic cancer">Pancreatic
+                                                cancer</a> • <a href="../../A/Prostate_cancer"
+                                                title="Prostate cancer">Prostate cancer</a> • <a
+                                                href="../../A/Skin_cancer" title="Skin cancer">Skin cancer</a> • <a
+                                                href="../../A/Stomach_cancer" title="Stomach cancer">Stomach cancer</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="multicol" style="border-spacing:0;background:#d8d8ff;" role="presentation">
+                                <tbody>
+                                    <tr style="vertical-align:middle;">
+                                        <td style="min-width:135px;display:table-cell !important;">
+                                            <figure-inline><a href="../../A/Book%3AOphthalmology" class="image"><img
+                                                        src="../../I/m/OpthoApp.png" data-file-width="1120"
+                                                        data-file-height="1120" data-file-type="bitmap" height="125"
+                                                        width="125"></a></figure-inline>
+                                        </td>
+                                        <td style="width:0.5em;"></td>
+                                        <td style="width:auto;">
+                                            <div style="height: 0.5em;"></div><b><a href="../../A/Book%3AOphthalmology"
+                                                    title="Book:Ophthalmology" class="mw-redirect">Eye
+                                                    diseases</a></b><br><a href="../../A/Amblyopia"
+                                                title="Amblyopia">Amblyopia</a> • <a href="../../A/Cataracts"
+                                                title="Cataracts" class="mw-redirect">Cataracts</a> • <a
+                                                href="../../A/Color_blind" title="Color blind" class="mw-redirect">Color
+                                                blind</a> • <a href="../../A/Conjunctivitis"
+                                                title="Conjunctivitis">Conjunctivitis</a> • <a
+                                                href="../../A/Detached_retina" title="Detached retina"
+                                                class="mw-redirect">Detached retina</a> • <a
+                                                href="../../A/Sj%C3%B6gren's_syndrome" title="Sjögren's syndrome"
+                                                class="mw-redirect">Sjögren's syndrome</a> • <a href="../../A/Glaucoma"
+                                                title="Glaucoma">Glaucoma</a> • <a href="../../A/Macular_degeneration"
+                                                title="Macular degeneration">Macular degeneration</a> • <a
+                                                href="../../A/Refractive_error" title="Refractive error">Refractive
+                                                error</a> • <a href="../../A/Trachoma" title="Trachoma">Trachoma</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="multicol" style="border-spacing:0;background:#ebebff;" role="presentation">
+                                <tbody>
+                                    <tr style="vertical-align:middle;">
+                                        <td style="min-width:135px;display:table-cell !important;">
+                                            <figure-inline><a href="../../A/Book%3APsychiatry" class="image"><img
+                                                        src="../../I/m/PsycApp.JPG" data-file-width="624"
+                                                        data-file-height="624" data-file-type="bitmap" height="125"
+                                                        width="125"></a></figure-inline>
+                                        </td>
+                                        <td style="width:0.5em;"></td>
+                                        <td style="width:auto;">
+                                            <div style="height: 0.5em;"></div><b><a href="../../A/Book%3APsychiatry"
+                                                    title="Book:Psychiatry" class="mw-redirect">Mental
+                                                    health</a></b><br><a href="../../A/ADHD" title="ADHD"
+                                                class="mw-redirect">ADHD</a> • <a href="../../A/Alcoholism"
+                                                title="Alcoholism">Alcoholism</a> • <a href="../../A/Anorexia_nervosa"
+                                                title="Anorexia nervosa">Anorexia nervosa</a> • <a
+                                                href="../../A/Anxiety_disorder" title="Anxiety disorder">Anxiety</a> •
+                                            <a href="../../A/Asperger_syndrome" title="Asperger syndrome">Asperger
+                                                syndrome</a> • <a href="../../A/Autism" title="Autism">Autism</a> • <a
+                                                href="../../A/Bipolar_disorder" title="Bipolar disorder">Bipolar
+                                                disorder</a> • <a href="../../A/Borderline_personality_disorder"
+                                                title="Borderline personality disorder">Borderline personality
+                                                disorder</a> • <a href="../../A/Bulimia_nervosa"
+                                                title="Bulimia nervosa">Bulimia nervosa</a> • <a
+                                                href="../../A/Eating_disorder" title="Eating disorder">Eating
+                                                disorder</a> • Depression • <a
+                                                href="../../A/Obsessive-compulsive_disorder"
+                                                title="Obsessive-compulsive disorder"
+                                                class="mw-redirect">Obsessive-compulsive disorder</a> • <a
+                                                href="../../A/Phobia" title="Phobia">Phobia</a> • <a
+                                                href="../../A/Post_traumatic_stress_disorder"
+                                                title="Post traumatic stress disorder" class="mw-redirect">Post
+                                                traumatic stress disorder</a> • <a href="../../A/Schizophrenia"
+                                                title="Schizophrenia">Schizophrenia</a> • <a href="../../A/Suicide"
+                                                title="Suicide">Suicide</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="multicol" style="border-spacing:0;background:#d8d8ff;" role="presentation">
+                                <tbody>
+                                    <tr style="vertical-align:middle;">
+                                        <td style="min-width:135px;display:table-cell !important;">
+                                            <figure-inline><a href="../../A/Book%3ARheumatology" class="image"><img
+                                                        src="../../I/m/RheumApp.JPG" data-file-width="3240"
+                                                        data-file-height="3240" data-file-type="bitmap" height="125"
+                                                        width="125"></a></figure-inline>
+                                        </td>
+                                        <td style="width:0.5em;"></td>
+                                        <td style="width:auto;">
+                                            <div style="height: 0.5em;"></div><b><a href="../../A/Book%3ARheumatology"
+                                                    title="Book:Rheumatology">Bone and joint diseases</a></b><br><a
+                                                href="../../A/Carpal_tunnel_syndrome"
+                                                title="Carpal tunnel syndrome">Carpal tunnel syndrome</a> • <a
+                                                href="../../A/Fibromyalgia" title="Fibromyalgia">Fibromyalgia</a> • <a
+                                                href="../../A/Gout" title="Gout">Gout</a> • <a
+                                                href="../../A/Low_back_pain" title="Low back pain">Low back pain</a> •
+                                            <a href="../../A/Osteoarthritis" title="Osteoarthritis">Osteoarthritis</a> •
+                                            <a href="../../A/Osteoporosis" title="Osteoporosis">Osteoporosis</a> • <a
+                                                href="../../A/Plantar_fasciitis" title="Plantar fasciitis">Plantar
+                                                fasciitis</a> • <a href="../../A/Psoriasis"
+                                                title="Psoriasis">Psoriasis</a> • <a href="../../A/Rheumatoid_arthritis"
+                                                title="Rheumatoid arthritis">Rheumatoid arthritis</a> • <a
+                                                href="../../A/Sarcoidosis" title="Sarcoidosis">Sarcoidosis</a> • <a
+                                                href="../../A/Sciatica" title="Sciatica">Sciatica</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="multicol" style="border-spacing:0;background:#ebebff;" role="presentation">
+                                <tbody>
+                                    <tr style="vertical-align:middle;">
+                                        <td style="min-width:135px;display:table-cell !important;">
+                                            <figure-inline><a href="../../A/Book%3AWomen's_health" class="image"><img
+                                                        src="../../I/m/OBGYNApp.jpg" data-file-width="400"
+                                                        data-file-height="400" data-file-type="bitmap" height="125"
+                                                        width="125"></a></figure-inline>
+                                        </td>
+                                        <td style="width:0.5em;"></td>
+                                        <td style="width:auto;">
+                                            <div style="height: 0.5em;"></div><b><a href="../../A/Book%3AWomen's_health"
+                                                    title="Book:Women's health">Women's health</a></b><br><a
+                                                href="../../A/Abortion" title="Abortion">Abortion</a> • <a
+                                                href="../../A/Breastfeeding" title="Breastfeeding">Breastfeeding</a> •
+                                            <a href="../../A/Childbirth" title="Childbirth">Childbirth</a> • <a
+                                                href="../../A/Dysmenorrhea" title="Dysmenorrhea">Dysmenorrhea</a> • <a
+                                                href="../../A/Eclampsia" title="Eclampsia">Eclampsia</a> • <a
+                                                href="../../A/Ectopic_pregnancy" title="Ectopic pregnancy">Ectopic
+                                                pregnancy</a> • <a href="../../A/Endometriosis"
+                                                title="Endometriosis">Endometriosis</a> • <a
+                                                href="../../A/Hyperemesis_gravidarum"
+                                                title="Hyperemesis gravidarum">Hyperemesis gravidarum</a> • <a
+                                                href="../../A/Menopause" title="Menopause">Menopause</a> • <a
+                                                href="../../A/Menstruation" title="Menstruation">Menstruation</a> • <a
+                                                href="../../A/Morning_sickness" title="Morning sickness">Morning
+                                                sickness</a> • <a href="../../A/Obstructed_labor"
+                                                title="Obstructed labor" class="mw-redirect">Obstructed labor</a> • <a
+                                                href="../../A/Ovarian_cyst" title="Ovarian cyst">Ovarian cyst</a> • <a
+                                                href="../../A/Polycystic_ovarian_syndrome"
+                                                title="Polycystic ovarian syndrome" class="mw-redirect">Polycystic
+                                                ovarian syndrome</a> • <a href="../../A/Pre_eclampsia"
+                                                title="Pre eclampsia" class="mw-redirect">Pre eclampsia</a> • <a
+                                                href="../../A/Pregnancy" title="Pregnancy">Pregnancy</a> • <a
+                                                href="../../A/Premenstrual_syndrome"
+                                                title="Premenstrual syndrome">Premenstrual syndrome</a> • <a
+                                                href="../../A/Preterm_birth" title="Preterm birth">Preterm birth</a> •
+                                            <a href="../../A/Trichomoniasis" title="Trichomoniasis">Trichomoniasis</a> •
+                                            <a href="../../A/Uterine_fibroid" title="Uterine fibroid">Uterine
+                                                fibroid</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!--htdig_noindex-->
+                        <div>
+                            <div
+                                style="clear:both; background-image:linear-gradient(180deg, #E8E8E8, white); border-top: dashed 2px #AAAAAA; padding: 0.5em 0.5em 0.5em 0.5em; margin-top: 1em; direction: ltr;">
+                                This article is issued from
+                                <a class="external text" title="Last edited on 2017-05-26"
+                                    href="https://en.wikipedia.org/wiki/Wikipedia%3AWikiProject_Medicine%2FOpen_Textbook_of_Medicine?oldid=782353640">
+                                    Wikipedia
+                                </a>.
+                                The text is licensed under <a class="external text"
+                                    href="https://creativecommons.org/licenses/by-sa/4.0/">
+                                    Creative
+                                    Commons - Attribution - Sharealike
+                                </a>.
+                                Additional terms may apply for the media files.
+                            </div>
+                        </div>
+                        <!--/htdig_noindex-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <noscript>
+        <style>
+            .collapsible-block {
+                display: block !important;
+            }
+        </style>
+    </noscript>
+    <script src="../../-/j/js_modules/jsConfigVars.js" class=""></script>
+    <script src="../../-/j/js_modules/startup.js" class=""></script>
+    <script src="../../-/j/js_modules/jquery.js" class=""></script>
+    <script src="../../-/j/js_modules/mediawiki.js" class=""></script>
+    <script src="../../-/j/js_modules/site.js" class=""></script>
+
+
+</body>
+
+</html>

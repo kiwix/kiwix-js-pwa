@@ -43,12 +43,12 @@ var params = {};
  */
 var state = {};
 
-params['version'] = "0.9.9.991 Beta"; //DEV: This value is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
-params['packagedFile'] = "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
+params['version'] = "0.9.9.99 WikiMed Beta"; //DEV: Manually update this version when there is a new release: it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
+params['packagedFile'] = "wikipedia_en_medicine.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
-params['fileVersion'] = "wikipedia_en_100_maxi_2020-06.zim (4-Jun-2020)"; //Use generic name for actual file, and give version here
-params['cachedStartPage'] = false; //If you have cached the start page for quick start, give its URI here
-params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
+params['fileVersion'] = "wikipedia_en_medicine_maxi_2020-04 (25-Apr-2020)"; //Use generic name for actual file, and give version here
+params['cachedStartPage'] = "Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine"; //If you have cached the start page for quick start, give its URI here
+params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/wikipedia/"; //Include final slash
 
 params['cookieSupport'] = checkCookies();
 params['maxResults'] = ~~(getCookie('maxResults') || 25); //Number of search results to display
