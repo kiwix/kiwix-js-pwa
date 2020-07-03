@@ -223,8 +223,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         document.getElementById('prefix').addEventListener('blur', function () {
         if (!searchArticlesFocused) {
             global.search.state = 'cancelled';
-            $("#searchingArticles").hide();
-            $('#articleListWithHeader').hide();
         }
         // We need to wait one tick for the activeElement to receive focus
             setTimeout(function () {
@@ -2220,7 +2218,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             if (global.selectedArchive !== null && global.selectedArchive.isReady()) {
                 // Cancel any previous search that may still be running before creating new search
             global.search.state = 'cancelled';
-            // Store the new search term in the state.search global object and initialize
+            // Store the new search term in the global.search object and initialize
             global.search = {'prefix': prefix, 'state': 'init', 'type': ''};
                 $('#activeContent').hide();
                 if (!prefix || /^\s/.test(prefix)) {
@@ -2570,7 +2568,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     cookies.removeItem('lastPageLoad');
                     // if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
                     //     params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
-                    //         "@kiwixKey@" + state.selectedArchive._file._files[0].name;
+                    //         "@kiwixKey@" + global.selectedArchive._file._files[0].name;
                     //     if (params.rememberLastPage) {
                     //         cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
                     //     }
