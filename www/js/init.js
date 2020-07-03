@@ -41,7 +41,7 @@ var params = {};
  * 
  * @type Object
  */
-var state = {};
+var global = {};
 
 params['version'] = "0.9.9.991 Beta"; //DEV: This value is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 params['packagedFile'] = "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
