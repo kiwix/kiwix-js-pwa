@@ -2109,6 +2109,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          */
         function createFakeFileObjectElectron(filename, filepath, callback) {
             var file = {};
+            // For Electron, we need to set an absolute filepath in case the file was launched from a shortcut (and if it's not already absolute)
+            // DEV: Periodically check Electron hasn't changed its resources folder; NB the ! in indexOf below indicates position at start of string
+            if (!filepath.indexOf(params.archivePath) && /^file:/.test(window.location.protocol)) {
+                filepath = window.location.pathname.replace(/^\//, '').replace(/resources\/app\/www\/[^/]+$/, '') + filepath;
+            }
             file.name = filename;
             file.path = filepath;
             file.readMode = 'electron';
