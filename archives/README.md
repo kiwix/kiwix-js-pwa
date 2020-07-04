@@ -8,7 +8,8 @@ If you have a distribution of this app and want to delete the packaged archive t
 
 ``params['packagedFile'] = "name_of_your_file.zim";
 params['fileVersion'] = "descriptive_name_of_your_file (Jan-2020)"; // These values will show in the app, but they are not important
-params['cachedStartPage'] = false;``
+params['cachedStartPage'] = false;
+params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash``
 
 You can have more than one ZIM archive in `archives`, but only one weill launch on app startup as the packaged file. If you do have more than one, then be sure to set `params['showFileSelectors'] = true;` to aid in discoverability of the other archive, otherwise your users will not eaeily realize it is there. That setting dedicates the app to the packaged archive, but users can still override and pick a different ZIM by changing the value in Expert Settings (Config).
 
@@ -16,4 +17,4 @@ You can have more than one ZIM archive in `archives`, but only one weill launch 
 
 If you are building a custom packaged version of the app, then remember that ZIMs will not appear in your online GitHub repo, so add a text file to `archives` to show the intended filename, like the `*.zim.txt` file in this directory, e.g. `wikivoyage_en_all_novid_2019-07.zim.txt`. The text file can be empty (0 bytes). You should also set the fields listed above in `www/js/init.js` to match, and additionally decide whether to set `params['showFileSelectors'] = false;` (if you want to simplify the interface in Config).
 
-Advanced: If you wish to restrict the files that users can search for on the server, e.g. to ensure your app remains dedicated to WikiMed archives, and to aid discoverability of only those archives, then look in `kiwixServe.js` and search for `DEV:` (first comment labelled `DEV:`) for more info.
+Advanced: If you wish to restrict the files that users can search for on the server, e.g. to ensure your app remains dedicated to WikiMed archives, and to aid discoverability of only those archives, then look in `kiwixServe.js` and search for `DEV:` (first comment labelled `DEV:`) for more info. Also, ensure `params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/";` is set appropriately so that the download library opens in the directory where multilingual or updated versions of your packaged ZIM can be found.
