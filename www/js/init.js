@@ -65,7 +65,7 @@ params['hideToolbars'] = getCookie('hideToolbars') != null ? getCookie('hideTool
 params['rememberLastPage'] = getCookie('rememberLastPage') != null ? getCookie('rememberLastPage') : true; //Set default option to remember the last visited page between sessions
 params['useMathJax'] = getCookie('useMathJax') != null ? getCookie('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
 //params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
-params['showFileSelectors'] = true; //False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
+params['showFileSelectors'] = false; //False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
 params['hideActiveContentWarning'] = getCookie('hideActiveContentWarning') != null ? getCookie('hideActiveContentWarning') : false;
 params['allowHTMLExtraction'] = getCookie('allowHTMLExtraction') == true;
 params['alphaChar'] = getCookie('alphaChar') || 'A'; //Set default start of alphabet string (used by the Archive Index)
