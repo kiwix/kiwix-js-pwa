@@ -30,6 +30,7 @@ function createWindow() {
         height: 800,
         minWidth: 640,
         minHeight: 480,
+        autoHideMenuBar: true,
         icon: path.join(__dirname, 'www/img/icons/kiwix-64.png'),
         webPreferences: {
             nodeIntegration: false
@@ -46,6 +47,8 @@ function createWindow() {
     // mainWindow.loadURL(`https://${__dirname}/www/index.html`);
     // DEV: If you need Service Worker more than you need document.cookie, load app like this:
     mainWindow.loadFile('www/index.html');
+
+    //mainWindow.autoHideMenuBar = true;
 
     mainWindow.webContents.on('new-window', function(e, url) {
         // Make sure blob urls stay in electron perimeter
