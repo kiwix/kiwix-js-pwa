@@ -8,15 +8,15 @@ const {
 const path = require('path');
 
 // This is used to set capabilities of the app: protocol in onready event below
-protocol.registerSchemesAsPrivileged([{
-    scheme: 'app',
-    privileges: {
-        standard: true,
-        secure: true,
-        allowServiceWorkers: true,
-        supportFetchAPI: true
-    }
-}]);
+// protocol.registerSchemesAsPrivileged([{
+//     scheme: 'app',
+//     privileges: {
+//         standard: true,
+//         secure: true,
+//         allowServiceWorkers: true,
+//         supportFetchAPI: true
+//     }
+// }]);
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -45,6 +45,7 @@ function createWindow() {
 
     // and load the index.html of the app.
     // mainWindow.loadURL(`https://${__dirname}/www/index.html`);
+    // mainWindow.loadURL(`https://kiwix.github.io/kiwix-js-windows/`);
     // DEV: If you need Service Worker more than you need document.cookie, load app like this:
     mainWindow.loadFile('www/index.html');
 
