@@ -288,9 +288,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 // Add a window.print() script to the html
                 document.getElementById('articleContent').contentDocument.head.innerHTML +=
                     '\n<script type="text/javascript">window.onload=function() {\n' +
-                    '    alert("You may print, but after you press Print, the app will crash\\n" +\n' +
-                    '        "and will need to be re-started. This bug will be fixed\\n" +\n' +
-                    '        "in the next version of Electron.");\n' +
+                    '    alert("After you press OK, you will be asked to choose a printer.\\n" +\n' +
+                    '        "If you want to test the formatting, we suggest you print to\\n" +\n' +
+                    '        "PDF or XPS. You could then open the PDF and select specific pages.");\n' +
                     '    window.print();\n' +
                     '};<\/script>';
                 //html = html.replace(/(<\/head>\s*)/i, '<script type="text/javascript">window.onload=window.print();<\/script>\n$1');
