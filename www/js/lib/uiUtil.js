@@ -423,7 +423,7 @@ define(['util'], function(util) {
         if (itemsCount === false) {
             // Establish the source items that need to be extracted to self-contained URIs
             // DEV: Add any further sources to the querySelector below
-            var items = iframe.querySelectorAll('img[src],link[href]');
+            var items = iframe.querySelectorAll('img[src],link[href][rel="stylesheet"]');
             itemsCount = items.length;
             Array.prototype.slice.call(items).forEach(function (item) {
                 // Extract the BLOB itself from the URL (even if it's a blob: URL)                    
