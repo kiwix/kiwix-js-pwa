@@ -280,22 +280,22 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 keyboard: true
             });
             //innerDocument.execCommand("print", false, null);
-            if (typeof window.nw !== 'undefined' || typeof window.fs === 'undefined') {
+            // if (typeof window.nw !== 'undefined' || typeof window.fs === 'undefined') {
                 window.frames[0].frameElement.contentWindow.print();
-            } else {
-                // We are in an Electron app and need to use export to browser to print
-                params.preloadingAllImages = false;
-                // Add a window.print() script to the html
-                document.getElementById('articleContent').contentDocument.head.innerHTML +=
-                    '\n<script type="text/javascript">window.onload=function() {\n' +
-                    '    alert("After you press OK, you will be asked to choose a printer.\\n" +\n' +
-                    '        "If you want to test the formatting, we suggest you print to\\n" +\n' +
-                    '        "PDF or XPS. You could then open the PDF and select specific pages.");\n' +
-                    '    window.print();\n' +
-                    '};<\/script>';
-                //html = html.replace(/(<\/head>\s*)/i, '<script type="text/javascript">window.onload=window.print();<\/script>\n$1');
-                uiUtil.extractHTML();
-            }
+            // } else {
+            //     // We are in an Electron app and need to use export to browser to print
+            //     params.preloadingAllImages = false;
+            //     // Add a window.print() script to the html
+            //     document.getElementById('articleContent').contentDocument.head.innerHTML +=
+            //         '\n<script type="text/javascript">window.onload=function() {\n' +
+            //         '    alert("After you press OK, you will be asked to choose a printer.\\n" +\n' +
+            //         '        "If you want to test the formatting, we suggest you print to\\n" +\n' +
+            //         '        "PDF or XPS. You could then open the PDF and select specific pages.");\n' +
+            //         '    window.print();\n' +
+            //         '};<\/script>';
+            //     //html = html.replace(/(<\/head>\s*)/i, '<script type="text/javascript">window.onload=window.print();<\/script>\n$1');
+            //     uiUtil.extractHTML();
+            // }
         });
         document.getElementById('printDesktopCheck').addEventListener('click', function (e) {
             //Reload article if user wants to print a different style
