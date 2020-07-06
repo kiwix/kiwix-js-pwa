@@ -6,10 +6,12 @@ Due to GitHub filesize restrictions, it is not possible to upload ZIMs that are 
 
 If you have a distribution of this app and want to delete the packaged archive to save space, or change the default archive, simply delete the ZIM file here or add your own file and change some values in the `www/js/init.js`. The values to change are these:
 
-``params['packagedFile'] = "name_of_your_file.zim";
-params['fileVersion'] = "descriptive_name_of_your_file (Jan-2020)"; // These values will show in the app, but they are not important
+```
+params['packagedFile'] = "name_of_your_file.zim";
+params['fileVersion'] = "descriptive_name_of_your_file (Jan-2020)"; // These values will show in the app
 params['cachedStartPage'] = false;
-params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash``
+params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
+```
 
 You can have more than one ZIM archive in `archives`, but only one weill launch on app startup as the packaged file. If you do have more than one, then be sure to set `params['showFileSelectors'] = true;` to aid in discoverability of the other archive, otherwise your users will not eaeily realize it is there. That setting dedicates the app to the packaged archive, but users can still override and pick a different ZIM by changing the value in Expert Settings (Config).
 
