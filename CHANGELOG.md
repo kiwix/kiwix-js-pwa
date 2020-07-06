@@ -4,6 +4,7 @@
 
 * FIX: Bug preventing all Kiwix apps accessing latest ZIMs (incorrect method of reading MIME type list)
 * ENHANCEMENT: Included ZIM changed to wikipedia_en_100_maxi_2020-06.zim
+* FIX: Several bugfixes to allow better running of Electron app in SW mode
 
 ## Release 0.9.9.99 (beta)
 
