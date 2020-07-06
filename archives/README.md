@@ -13,7 +13,7 @@ params['cachedStartPage'] = false;
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
 ```
 
-You can have more than one ZIM archive in `archives`, but only one weill launch on app startup as the packaged file. If you do have more than one, then be sure to set `params['showFileSelectors'] = true;` to aid in discoverability of the other archive, otherwise your users will not eaeily realize it is there. That setting dedicates the app to the packaged archive, but users can still override and pick a different ZIM by changing the value in Expert Settings (Config).
+You can have more than one ZIM archive in `archives`, but only one weill launch on app startup as the packaged file. If you do have more than one, then be sure to set `params['showFileSelectors'] = true;` to aid in discoverability of the other archive, otherwise your users will not eaeily realize it is there. Keeping that parameter as `false` dedicates the app to the packaged archive, but users can still override and pick a different ZIM by changing the value in Expert Settings (Config).
 
 ## Building the app
 
