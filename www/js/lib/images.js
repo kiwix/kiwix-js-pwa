@@ -84,8 +84,8 @@ define(['uiUtil'], function (uiUtil) {
                 });
                 return;
             }
-            global.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
-                return global.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+            appstate.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+                return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                     image.style.background = '';
                     var mimetype = dirEntry.getMimetype();
                     uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.allowHTMLExtraction, function () {
