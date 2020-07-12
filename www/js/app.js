@@ -43,13 +43,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         /**
          * @type ZIMArchive
          */
-        global.selectedArchive = null;
+        appstate.selectedArchive = null;
 
-        // An object to hold the current search and its state (allows cacncellation of search across modules)
-        global['search'] = {
+        // An object to hold the current search and its state (allows cancellation of search across modules)
+        appstate['search'] = {
             'prefix': '', // A field to hold the original search string
-            'state': '',  // The state of the search: ''|'init'|'interim'|'cancelled'|'complete'
-            'type': ''    // The type of the search: 'basic'|'full' (set automatically in search algorithm)
+            'status': '', // The status of the search: ''|'init'|'interim'|'cancelled'|'complete'
+            'type': '' // The type of the search: 'basic'|'full' (set automatically in search algorithm)
         };
             
         // Unique identifier of the article expected to be displayed
@@ -123,6 +123,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         // Define behavior of HTML elements
     var searchArticlesFocused = false;
         document.getElementById('searchArticles').addEventListener('click', function () {
+            var prefix = document.getElementById('prefix').value;                    // Do not initiate the same search if it is already in progress
+            if (appstate.search.prefix === prefix && !/^(cancelled|complete)$/.test(appstate.search.status)) return;
             $("#welcomeText").hide();
             $('.alert').hide();
             document.getElementById('searchingArticles').style.display = 'block';
@@ -199,7 +201,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         });
         // Search for titles as user types characters
         $('#prefix').on('keyup', function (e) {
-            if (global.selectedArchive !== null && global.selectedArchive.isReady()) {
+            if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
                 // Prevent processing by keyup event if we already handled the keypress in keydown event
                 if (keyPressHandled)
                     keyPressHandled = false;
@@ -222,7 +224,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         // Hide the search results if user moves out of prefix field
         document.getElementById('prefix').addEventListener('blur', function () {
         if (!searchArticlesFocused) {
-            global.search.state = 'cancelled';
+            appstate.search.state = 'cancelled';
         }
         // We need to wait one tick for the activeElement to receive focus
             setTimeout(function () {
@@ -643,7 +645,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             $('#articleContent').contents().empty();
             $('#searchingArticles').hide();
             $('#welcomeText').show();
-            if (global.selectedArchive !== null && global.selectedArchive.isReady()) {
+            if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
                 $('#welcomeText').hide();
                 goToMainArticle();
             }
@@ -1632,14 +1634,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
                 if (title && !("" === title)) {
                     goToArticle(title);
-            }
-            else if (titleSearch && titleSearch !== '') {
-                    $('#prefix').val(titleSearch);
-                if (titleSearch !== global.search.prefix) {
-                    searchDirEntriesFromPrefix(titleSearch);
-                } else {
-                    $('#prefix').focus();
                 }
+                else if (titleSearch && titleSearch !== '') {
+                    $('#prefix').val(titleSearch);
+                    if (titleSearch !== appstate.search.prefix) {
+                        searchDirEntriesFromPrefix(titleSearch);
+                    } else {
+                        $('#prefix').focus();
+                    }
                 }
             }
         };
@@ -1833,7 +1835,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     cssBlobCache = new Map();
                 //if (cssDirEntryCache)
                 //    cssDirEntryCache = new Map();
-                global.selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
+                appstate.selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
                     cookies.setItem("lastSelectedArchive", archiveDirectory, Infinity);
                     // The archive is set : go back to home page to start searching
                     if (params.rescan) {
@@ -2018,7 +2020,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 cssBlobCache = new Map();
             //if (cssDirEntryCache)
             //    cssDirEntryCache = new Map();
-            global.selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
+            appstate.selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
                 // The archive is set : go back to home page to start searching
                 params.storedFile = archive._file._files[0].name;
                 cookies.setItem("lastSelectedArchive", params.storedFile, Infinity);
@@ -2188,7 +2190,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             }
             window.timeoutKeyUpPrefix = window.setTimeout(function () {
                 var prefix = $("#prefix").val();
-            if (prefix && prefix.length > 0 && prefix !== global.search.prefix) {
+            if (prefix && prefix.length > 0 && prefix !== appstate.search.prefix) {
                 document.getElementById('searchArticles').click();
                 }
             }, 1000);
@@ -2220,11 +2222,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          * @param {String} prefix The string that must appear at the start of any title searched for
          */
         function searchDirEntriesFromPrefix(prefix) {
-            if (global.selectedArchive !== null && global.selectedArchive.isReady()) {
-                // Cancel any previous search that may still be running before creating new search
-            global.search.state = 'cancelled';
-            // Store the new search term in the global.search object and initialize
-            global.search = {'prefix': prefix, 'state': 'init', 'type': ''};
+            if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
+                // Cancel the old search (zimArchive search object will receive this change)
+                appstate.search.status = 'cancelled';
+                // Initiate a new search object and point appstate.search to it (the zimAcrhive search object will continue to point to the old object)
+                appstate.search = {'prefix': prefix, 'status': 'init', 'type': ''};
                 $('#activeContent').hide();
                 if (!prefix || /^\s/.test(prefix)) {
                     var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
@@ -2235,7 +2237,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     }
                     showZIMIndex(null, sel);
                 } else {
-                    global.selectedArchive.findDirEntriesWithPrefix(global.search, params.maxResults, populateListOfArticles);
+                    appstate.selectedArchive.findDirEntriesWithPrefix(appstate.search, params.maxResults, populateListOfArticles);
                 }
             } else {
                 $('#searchingArticles').hide();
@@ -2259,8 +2261,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 prefix = start > 0 ? '' : prefix;
             }
             var search = {'prefix': prefix, 'state': ''}; // Dummy search object because expected by callee
-            if (global.selectedArchive !== null && global.selectedArchive.isReady()) {
-                global.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, params.maxResults, search, function (dirEntryArray, nextStart) {
+            if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
+                appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, params.maxResults, search, function (dirEntryArray, nextStart) {
                     var docBody = document.getElementById('largeModal');
                     var newHtml = "";
                     for (var i = 0; i < dirEntryArray.length; i++) {
@@ -2358,24 +2360,24 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
         /**
          * Display the list of articles with the given array of DirEntry
-     * @param {Array} dirEntryArray The array of dirEntries returned from the binary search
-         * @param {Object} search The original search object
+         * @param {Array} dirEntryArray The array of dirEntries returned from the binary search
+         * @param {Object} reportingSearchStatus The status of the reporting search
          */
-        function populateListOfArticles(dirEntryArray, search) {
+        function populateListOfArticles(dirEntryArray, reportingSearchStatus) {
             // Do not allow cancelled searches to report
-            if (search.state === 'cancelled') return;
-            var stillSearching = search.state === 'interim';
+            if (reportingSearchStatus === 'cancelled') return;
+            var stillSearching = appstate.search.status === 'interim';
             var articleListHeaderMessageDiv = $('#articleListHeaderMessage');
             var nbDirEntry = dirEntryArray ? dirEntryArray.length : 0;
 
             var message;
             if (stillSearching) {
-                message = 'Searching [' + search.type + ']... found: ' + nbDirEntry;
+                message = 'Searching [' + appstate.search.type + ']... found: ' + nbDirEntry;
             } else if (nbDirEntry >= params.maxResults) {
                 message = 'First ' + params.maxResults + ' articles found (refine your search).';
             } else {
                 message = 'Finished. ' + (nbDirEntry ? nbDirEntry : 'No') + ' articles found' + (
-                    search.type === 'basic' ? ': try fewer words for full search.' : '.'
+                appstate.search.type === 'basic' ? ': try fewer words for full search.' : '.'
                 );
             }
 
@@ -2393,9 +2395,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             articleListDiv.innerHTML = articleListDivHtml;
             // We have to use mousedown below instead of click as otherwise the prefix blur event fires first 
             // and prevents this event from firing; note that touch also triggers mousedown
-            $('#articleList a').on('click', function (e) {
-                // Cancel search immediately (we'll prune in the blur event)
-                global.search.state = 'cancelled';
+            $('#articleList a').on('mousedown', function (e) {
+                // Cancel search immediately
+                appstate.search.status = 'cancelled';
                 handleTitleClick(e);
                 document.getElementById('scrollbox').style.height = 0;
                 document.getElementById('articleListWithHeader').style.display = 'none';
@@ -2422,13 +2424,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          * @param {String} dirEntryId
          */
         function findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId) {
-            if (global.selectedArchive.isReady()) {
-                var dirEntry = global.selectedArchive.parseDirEntryId(dirEntryId);
+            if (appstate.selectedArchive.isReady()) {
+                var dirEntry = appstate.selectedArchive.parseDirEntryId(dirEntryId);
                 // Remove focus from search field to hide keyboard and to allow navigation keys to be used
                 document.getElementById('articleContent').contentWindow.focus();
                 $("#searchingArticles").show();
                 if (dirEntry.isRedirect()) {
-                    global.selectedArchive.resolveRedirect(dirEntry, readArticle);
+                    appstate.selectedArchive.resolveRedirect(dirEntry, readArticle);
                 } else {
                     params.isLandingPage = false;
                     readArticle(dirEntry);
@@ -2459,12 +2461,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
          */
         function readArticle(dirEntry) {
             // Reset search prefix to allow users to search the same string again if they want to
-        global.search.prefix = '';
-        // Only update for expectedArticleURLToBeDisplayed.
-        expectedArticleURLToBeDisplayed = dirEntry.namespace + "/" + dirEntry.url;
+            appstate.search.prefix = '';
+            // Only update for expectedArticleURLToBeDisplayed.
+            expectedArticleURLToBeDisplayed = dirEntry.namespace + "/" + dirEntry.url;
             params.pagesLoaded++;
             if (dirEntry.isRedirect()) {
-                global.selectedArchive.resolveRedirect(dirEntry, readArticle);
+                appstate.selectedArchive.resolveRedirect(dirEntry, readArticle);
             } else {
                 //TESTING//
                 console.log("Initiating HTML load...");
@@ -2485,7 +2487,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
                 //Load cached start page if it exists and we have loaded the packaged file
                 var htmlContent = 0;
-                var zimName = global.selectedArchive._file._files[0].name.replace(/\.[^.]+$/, '');
+                var zimName = appstate.selectedArchive._file._files[0].name.replace(/\.[^.]+$/, '');
                 if (params.isLandingPage && params.cachedStartPage && (~params.packagedFile.indexOf(zimName) || ~params.fileVersion.indexOf(zimName))) {
                     htmlContent = -1;
                     // DEV: You should deal with the rare possibility that the cachedStartPage is not in the same namespace as the main page dirEntry...
@@ -2501,7 +2503,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                             displayArticleInForm(dirEntry, htmlContent);
                         } else {
                             document.getElementById('searchingArticles').style.display = 'block';
-                            global.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
+                            appstate.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
                         }
                     });
                 }
@@ -2529,7 +2531,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     } else {
                         //if (params.contentInjectionMode === 'jquery') {
                         // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
-                        global.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
+                        appstate.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
                         // This is needed so that the html is cached in displayArticleInForm
                         params.lastPageVisit = '';
                         //}
@@ -2573,7 +2575,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     cookies.removeItem('lastPageLoad');
                     // if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
                     //     params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
-                    //         "@kiwixKey@" + global.selectedArchive._file._files[0].name;
+                    //         "@kiwixKey@" + appstate.selectedArchive._file._files[0].name;
                     //     if (params.rememberLastPage) {
                     //         cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
                     //     }
@@ -2620,7 +2622,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                                 'content': ''
                             });
                         } else if (dirEntry.isRedirect()) {
-                            global.selectedArchive.resolveRedirect(dirEntry, function (resolvedDirEntry) {
+                            appstate.selectedArchive.resolveRedirect(dirEntry, function (resolvedDirEntry) {
                                 var redirectURL = resolvedDirEntry.namespace + "/" + resolvedDirEntry.url;
                                 // Ask the ServiceWork to send an HTTP redirect to the browser.
                                 // We could send the final content directly, but it is necessary to let the browser know in which directory it ends up.
@@ -2659,7 +2661,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                             }
 
                             // Let's read the content in the ZIM file
-                            global.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                            appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                                 console.log('SW read binary file for: ' + dirEntry.url);
                                 var mimetype = fileDirEntry.getMimetype();
                                 // Let's send the content to the ServiceWorker
@@ -2680,7 +2682,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                             });
                         }
                     };
-                    global.selectedArchive.getDirEntryByTitle(title).then(readFile).catch(function (err) {
+                    appstate.selectedArchive.getDirEntryByTitle(title).then(readFile).catch(function (err) {
                         console.error('Failed to read ' + title, err);
                         messagePort.postMessage({
                             'action': 'giveContent',
@@ -2771,7 +2773,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             }
             if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
                 params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
-                    "@kiwixKey@" + global.selectedArchive._file._files[0].name;
+                    "@kiwixKey@" + appstate.selectedArchive._file._files[0].name;
                 if (params.rememberLastPage) {
                     cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
                     //Store current document's raw HTML in localStorage for fast restart
@@ -2989,10 +2991,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     blobArray.push([title, cssBlobCache.get(title)]);
                     injectCSS();
                 } else {
-                    global.selectedArchive.getDirEntryByTitle(title)
+                    appstate.selectedArchive.getDirEntryByTitle(title)
                         .then(function (dirEntry) {
                             uiUtil.poll("Resolving CSS [" + title.replace(/[^/]+\//g, '').substring(0, 18) + "]...");
-                            return global.selectedArchive.readBinaryFile(dirEntry,
+                            return appstate.selectedArchive.readBinaryFile(dirEntry,
                                 function (fileDirEntry, content) {
                                     //DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
                                     //var cssContent = util.uintToString(content);
@@ -3097,7 +3099,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         return encodeURIComponent(matchedSubstring);
                     });
                     // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
-                    iframeArticleContent.src = "../" + global.selectedArchive._file._files[0].name + "/" + dirEntry.namespace + "/" + encodedUrl;
+                    iframeArticleContent.src = "../" + appstate.selectedArchive._file._files[0].name + "/" + dirEntry.namespace + "/" + encodedUrl;
                     return;
                 }
 
@@ -3349,8 +3351,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         trackBlob = ccBlob;
                     });
                     // Load media file
-                    global.selectedArchive.getDirEntryByTitle(decodeURIComponent(source)).then(function (dirEntry) {
-                        return global.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, mediaArray) {
+                    appstate.selectedArchive.getDirEntryByTitle(decodeURIComponent(source)).then(function (dirEntry) {
+                        return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, mediaArray) {
                             var mimeType = mediaSource.type ? mediaSource.type : dirEntry.getMimetype();
                             var blob = new Blob([mediaArray], {
                                 type: mimeType
@@ -3459,8 +3461,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     if (existingCC) existingCC.parentNode.removeChild(existingCC);
                     var sel = v.target.options[v.target.selectedIndex];
                     if (!sel.value) return; // User selected "none"
-                    global.selectedArchive.getDirEntryByTitle(sel.dataset.kiwixsrc).then(function (dirEntry) {
-                        return global.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, trackContents) {
+                    appstate.selectedArchive.getDirEntryByTitle(sel.dataset.kiwixsrc).then(function (dirEntry) {
+                        return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, trackContents) {
                             var blob = new Blob([trackContents], {
                                 type: 'text/vtt'
                             });
@@ -3534,11 +3536,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 var scriptUrl = script.attr("data-kiwixurl");
                 // TODO check that the type of the script is text/javascript or application/javascript
                 var title = uiUtil.removeUrlParameters(decodeURIComponent(scriptUrl));
-                global.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+                appstate.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
                     if (dirEntry === null) {
                         console.log("Error: js file not found: " + title);
                     } else {
-                        global.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                        appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                             // TODO : JavaScript support not yet functional [kiwix-js #152]
                             uiUtil.feedNodeWithBlob(script, 'src', content, 'text/javascript', params.allowHTMLExtraction);
                         });
@@ -3592,13 +3594,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 goToMainArticle();
                 return;
             }
-            global.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+            appstate.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
                     document.getElementById('searchingArticles').style.display = 'none';
                     console.error("Article with title " + title + " not found in the archive");
                     goToMainArticle();
                 } else if (download) {
-                    global.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                    appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                         uiUtil.displayFileDownloadAlert(title, download, contentType, content);
                         document.getElementById('searchingArticles').style.display = 'none';
                     });
@@ -3617,10 +3619,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
         function goToRandomArticle() {
             document.getElementById('searchingArticles').style.display = 'block';
-            if (global.selectedArchive === null) {
+            if (appstate.selectedArchive === null) {
                 return;
             } //Prevents exception if user hasn't selected an archive
-            global.selectedArchive.getRandomDirEntry(function (dirEntry) {
+            appstate.selectedArchive.getRandomDirEntry(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
                     document.getElementById('searchingArticles').style.display = 'none';
                     uiUtil.systemAlert("Error finding random article.");
@@ -3641,7 +3643,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
 
         function goToMainArticle() {
             document.getElementById('searchingArticles').style.display = 'block';
-            global.selectedArchive.getMainPageDirEntry(function (dirEntry) {
+            appstate.selectedArchive.getMainPageDirEntry(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
                     console.error("Error finding main article.");
                     document.getElementById('searchingArticles').style.display = 'none';
