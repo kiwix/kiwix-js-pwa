@@ -9,11 +9,11 @@ If you prefer not to (or cannot) use the Microsoft Store or wish to test a diffe
 ## Windows 10 Tablet / PC
 
 Starting in Windows 10 version 2004, **sideloading is enabled by default** and you can install apps by double-clicking signed app packages.
-On Windows 10 version 1909 and earlier, sideloading requires some additional configuration (see below).
+On Windows 10 version 1909 and earlier, sideloading requires some additional configuration.
 
-* **Simple procedure**: Just launch your package! The Kiwix JS Windows packages are signed: you can download an `.appxbundle` above inside `AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/` folders, and launch it by double-clicking. You may be prompted to allow sideloading, or you may need enable it first on older versions of Windows: Settings -> Update and security -> For developers.
-
-**You will need a ZIM archive to use the full features of this app - [see below](#download-a-zim-archive-all-platforms).**
+* **Simple procedure**: Just launch your package! The Kiwix JS Windows packages are signed: you can download an `.appxbundle` above inside `AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/` folders, and launch it by double-clicking.
+* You may be prompted to allow sideloading, or you may need to enable it first on version 1909 or earlier: go to Settings -> Update and security -> For developers.
+* **You will need a ZIM archive to use the full features of this app** - [see below](#download-a-zim-archive-all-platforms).
 
 **_If above procedure fails_**, the package may not be a signed one, or else you have an even older version of Windows 10. In this case, follow the more complex procedure below:
 
@@ -36,4 +36,6 @@ Enable Developer mode on your device (Settings / Updates and security / For deve
 
 You will need a ZIM file to work with this app. For testing, it comes packaged either with the Ray Charles ZIM or the Top 100 Wikipedia (English) articles ZIM. You can download other ZIM archives from the setup page in the app (the download completes in the browser). Place the file in an accessible location on your device, and use the Rescan Storage button in the app to display buttons that let you pick the file or the file's folder.
 
-Alternatively, you can download files from http://wiki.kiwix.org/wiki/Content_in_all_languages on a regular PC. Some ZIM files are very large (full English Wikipedia with images is over 90GB). If you plan to store your ZIM file on an SD card formatted as **FAT32**, you may need to use a programme like [File Splitter and Joiner](http://www.fastfilejoiner.com/) to split the file into 4GiB-1 chunks (chunks must be exactly 4,294,967,295 bytes or less). You will need to give a file extension to each chunk in the right order following this pattern: `*.zimaa`, `*.zimab`, `*.zimac`, `...`, etc.). However, if your SD card is formatted as exFAT or NTFS, you *do not need to do this*.
+Alternatively, you can download files from http://wiki.kiwix.org/wiki/Content_in_all_languages on a regular PC. Some ZIM files are very large (full English Wikipedia with images is over 90GB) -- we suggest you use BitTorrent to download these files: the app will provide you with a BitTorrent link for large files - just open the download Library in Configuration, browse for your ZIM and click on it: an information page with links will be shown.
+
+If you plan to store your ZIM file on an SD card formatted as **FAT32**, you may need to use a programme like [File Splitter and Joiner](http://www.fastfilejoiner.com/) to split the file into 4GiB-1 chunks (chunks must be exactly 4,294,967,295 bytes or less). You will need to give a file extension to each chunk in the right order following this pattern: `*.zimaa`, `*.zimab`, `*.zimac`, `...`, etc.). However, if your SD card is formatted as exFAT or NTFS, you *do not need to do this*.
