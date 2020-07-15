@@ -1,13 +1,35 @@
-# Installation Instructions (Windows 10 Mobile or PC required)
+# Installation Instructions (Windows 10 Tablet, PC, Mobile)
+
 The easiest way to install Kiwix JS Windows is from the Microsoft Store:
 
 https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j
- 
-If you prefer not to use the Microsoft Store or wish to test a different build, please follow the
-instructions below. Uninstall any previous installation of Kiwix JS Windows before you follow this
-procedure:
+
+If you prefer not to (or cannot) use the Microsoft Store or wish to test a different build, please follow
+the instructions below. _Uninstall any previous installation of Kiwix JS Windows before you follow this
+procedure_.
+
+## Windows 10 Tablet / PC
+
+Starting in Windows 10 version 2004, **sideloading is enabled by default** and you can install apps by double-clicking signed app packages.
+On Windows 10 version 1909 and earlier, sideloading requires some additional configuration (see below).
+
+The Kiwix JS Windows packages are signed: download your .appxbundle (packages available above inside AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/
+folders) and launch it by double-clicking. You may be prompted to allow sideloading, or you may need to do this first on older versions of Windows:
+Settings -> Update and security -> For developers.
+
+If this procedure fails, the package may not be a signed one, or else you have an even older version of Windows 10. In this case, follow the more complex procedure below:
+
+* Put your PC in Developer mode: Settings / Update and security / For developers (it is not enough to select "Sideload" for unsigned packages). Your device may need to download a developer package, install it, and restart.
+* Then, launch a PowerShell command window: press Windows key and type PowerShell, right-click and "Run as Administrator".
+* Type the following command: `Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser`
+* Accept the warnings and ensure the script finished correctly. (The above steps are one-time only: you shouldn't need to repeat them to install future builds.)
+* Now go to the latest `AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/` folder above and download **all** the files in the folder and subfolder. You can either do this by cloning the repository, or you can use https://minhaskamal.github.io/DownGit to download a zipped version of the folder (recommended).
+* Unzip in your downloads folder, or other accessible folder. Ensure the directory structure is intact.
+* Now you can right-click `Add-AppDevPackage.ps1` and select `Run with PowerShell`. This is the simplest method to install the certificate and the app at the same time.
+* If you see a red message flash, and the window closes, then go to your PowerShell terminal, navigate to the folder containing the script, and type `.\Add-AppDevPackage.ps1` (NB the `.\` is important). Observe and follow instructions to address the issue.
 
 ## Windows 10 Mobile
+
 Download the .appx or .appxbundle under AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/ and save it in
 your downloads folder, or other accessible folder, on the phone. NB DO NOT DOWNLOAD the .appxupload files
 you see above, as these are useless for installation. Instead of one of the packages above,
@@ -18,31 +40,8 @@ You will be asked if you wish to install, but it then installs silently in the b
 it can take a minute or so for the Kiwix icon to appear in the All Apps list. You will also need to download
 a ZIM file to use with the app (see below).
 
-## Windows 10 Tablet / PC
-If the package is signed (recent ones are) you can simply download the .appxbundle under AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/ and launch it. You may be prompted to allow sideloading (Settings / Update and security / For developers). If this procedure fails, the package may not be correctly signed. In this case, follow the more complex procedure below. 
-
-To install unsigned packages, you must first put your PC in Developer mode: Settings / Update and security / For developers. It is not enough to select "Sideload", as these packages require "Developer mode". Your device may need to download a developer
-package, install it, and restart.
-
-Then, launch a PowerShell command window: press Windows key and type PowerShell, right-click and "Run as Administrator".
-Type the following command:
-
-`Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser`
-
-Accept the warnings and ensure the script finished correctly. (The above steps are one-time only: you shouldn't need
-to repeat them to install future builds.)
-
-Now go to the latest `AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/` folder above and download **all** the files
-in the folder and subfolder. You can either do this by cloning the repository, or you can use
-https://minhaskamal.github.io/DownGit to download a zipped version of the folder (recommended). Unzip in your downloads folder,
-or other accessible folder. Ensure the directory structure is intact.
-
-Now you can right-click `Add-AppDevPackage.ps1` and select `Run with PowerShell`. This is the simplest method to install the
-certificate and the app at the same time. If you see a red message flash, and the window closes, then go to your PowerShell
-terminal, navigate to the folder containing the script, and type `.\Add-AppDevPackage.ps1` (NB the `.\` is important). Observe
-and follow instructions to address the issue.
-
 ## Download a ZIM archive (all platforms)
+
 You will need a ZIM file to work with this app. For testing, it comes packaged with the Ray Charles ZIM.
 You can download other ZIM archives from the setup page in the app (the download completes in the browser).
 Place the file in an accessible location on your device, and use the Rescan Storage button in the app to
