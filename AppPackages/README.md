@@ -11,13 +11,11 @@ If you prefer not to (or cannot) use the Microsoft Store or wish to test a diffe
 Starting in Windows 10 version 2004, **sideloading is enabled by default** and you can install apps by double-clicking signed app packages.
 On Windows 10 version 1909 and earlier, sideloading requires some additional configuration (see below).
 
-The Kiwix JS Windows packages are signed: download your `.appxbundle` (packages are available above inside `AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/`
-folders) and launch it by double-clicking. You may be prompted to allow sideloading, or you may need to do this first on older versions of Windows:
-Settings -> Update and security -> For developers.
+* **Simple procedure**: Just launch your package! The Kiwix JS Windows packages are signed: you can download an `.appxbundle` above inside `AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/` folders, and launch it by double-clicking. You may be prompted to allow sideloading, or you may need enable it first on older versions of Windows: Settings -> Update and security -> For developers.
 
-You will need a ZIM archive to use the full features of this app - [see below](#download-a-zim-archive-all-platforms).
+**You will need a ZIM archive to use the full features of this app - [see below](#download-a-zim-archive-all-platforms).**
 
-**_If this procedure fails_**, the package may not be a signed one, or else you have an even older version of Windows 10. In this case, follow the more complex procedure below:
+**_If above procedure fails_**, the package may not be a signed one, or else you have an even older version of Windows 10. In this case, follow the more complex procedure below:
 
 * Put your PC in Developer mode: Settings / Update and security / For developers (it is not enough to select "Sideload" for unsigned packages). Your device may need to download a developer package, install it, and restart.
 * Then, launch a PowerShell command window: press Windows key and type PowerShell, right-click and "Run as Administrator".
