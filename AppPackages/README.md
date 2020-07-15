@@ -4,20 +4,20 @@ The easiest way to install Kiwix JS Windows is from the Microsoft Store:
 
 https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j
 
-If you prefer not to (or cannot) use the Microsoft Store or wish to test a different build, please follow
-the instructions below. _Uninstall any previous installation of Kiwix JS Windows before you follow this
-procedure_.
+If you prefer not to (or cannot) use the Microsoft Store or wish to test a different build, please follow the instructions below. _Uninstall any previous installation of Kiwix JS Windows before you follow this procedure_.
 
 ## Windows 10 Tablet / PC
 
 Starting in Windows 10 version 2004, **sideloading is enabled by default** and you can install apps by double-clicking signed app packages.
 On Windows 10 version 1909 and earlier, sideloading requires some additional configuration (see below).
 
-The Kiwix JS Windows packages are signed: download your .appxbundle (packages available above inside AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/
+The Kiwix JS Windows packages are signed: download your `.appxbundle` (packages are available above inside `AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/`
 folders) and launch it by double-clicking. You may be prompted to allow sideloading, or you may need to do this first on older versions of Windows:
 Settings -> Update and security -> For developers.
 
-If this procedure fails, the package may not be a signed one, or else you have an even older version of Windows 10. In this case, follow the more complex procedure below:
+You will need a ZIM archive to use the full features of this app - [see below](#download-a-zim-archive-all-platforms).
+
+**_If this procedure fails_**, the package may not be a signed one, or else you have an even older version of Windows 10. In this case, follow the more complex procedure below:
 
 * Put your PC in Developer mode: Settings / Update and security / For developers (it is not enough to select "Sideload" for unsigned packages). Your device may need to download a developer package, install it, and restart.
 * Then, launch a PowerShell command window: press Windows key and type PowerShell, right-click and "Run as Administrator".
@@ -30,24 +30,12 @@ If this procedure fails, the package may not be a signed one, or else you have a
 
 ## Windows 10 Mobile
 
-Download the .appx or .appxbundle under AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/ and save it in
-your downloads folder, or other accessible folder, on the phone. NB DO NOT DOWNLOAD the .appxupload files
-you see above, as these are useless for installation. Instead of one of the packages above,
-you may prefer to use an .appxbundle from https://github.com/kiwix/kiwix-js-windows/releases (they are
-the same). Enable Developer mode on your device (Settings / Updates and security / For developers). 
-Open the File Explorer on the phone, navigate to the downloads folder and tap the KiwixWebApp bundle.
-You will be asked if you wish to install, but it then installs silently in the background. Be patient:
-it can take a minute or so for the Kiwix icon to appear in the All Apps list. You will also need to download
-a ZIM file to use with the app (see below).
+Download the .appx or .appxbundle (inside `AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/` folder above) and save it in your downloads folder, or other accessible folder, on the phone. NB DO NOT DOWNLOAD the .appxupload files you see above, as these are useless for installation. Instead of one of the packages above, you may prefer to use an .appxbundle from https://github.com/kiwix/kiwix-js-windows/releases (they are the same).
+
+Enable Developer mode on your device (Settings / Updates and security / For developers). Open the File Explorer on the phone, navigate to the downloads folder and tap the KiwixWebApp bundle. You will be asked if you wish to install, but it then installs silently in the background. Be patient: it can take a minute or so for the Kiwix icon to appear in the All Apps list. You will also need to download a ZIM file to use with the app (see below).
 
 ## Download a ZIM archive (all platforms)
 
-You will need a ZIM file to work with this app. For testing, it comes packaged with the Ray Charles ZIM.
-You can download other ZIM archives from the setup page in the app (the download completes in the browser).
-Place the file in an accessible location on your device, and use the Rescan Storage button in the app to
-display buttons that let you pick the file or the file's folder.
+You will need a ZIM file to work with this app. For testing, it comes packaged either with the Ray Charles ZIM or the Top 100 Wikipedia (English) articles ZIM. You can download other ZIM archives from the setup page in the app (the download completes in the browser). Place the file in an accessible location on your device, and use the Rescan Storage button in the app to display buttons that let you pick the file or the file's folder.
 
-Alternatively, you can download files from http://wiki.kiwix.org/wiki/Content_in_all_languages on a regular
-PC. The single non-indexed ZIM files work best. However, if you plan to store your ZIM file on an SD card 
-formatted as FAT32, you will only be able to use the split files (.zimaa, .zimab, etc.) in the pre-indexed
-archives. If your SD card is formatted as exFAT or NTFS, you can use either, but single file is easiest.
+Alternatively, you can download files from http://wiki.kiwix.org/wiki/Content_in_all_languages on a regular PC. Some ZIM files are very large (full English Wikipedia with images is over 90GB). If you plan to store your ZIM file on an SD card formatted as **FAT32**, you may need to use a programme like [File Splitter and Joiner](http://www.fastfilejoiner.com/) to split the file into 4GiB-1 chunks (chunks must be exactly 4,294,967,295 bytes or less). You will need to give a file extension to each chunk in the right order following this pattern: `*.zimaa`, `*.zimab`, `*.zimac`, `...`, etc.). However, if your SD card is formatted as exFAT or NTFS, you *do not need to do this*.
