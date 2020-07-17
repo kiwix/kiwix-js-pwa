@@ -23,8 +23,8 @@
 'use strict';
 
 // Set a global error handler to prevent app crashes
-window.onerror = function (msg, url) {
-    console.error('Error caught in app [' + url + ']:\n' + msg, msg);
+window.onerror = function (msg, url, line, col, error) {
+    console.error('Error caught in app [' + url + ':' + line + ']:\n' + msg, error);
     return true;
 };
 
