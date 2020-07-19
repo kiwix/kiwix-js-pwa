@@ -155,9 +155,12 @@ define(['q'], function(Q) {
         });
     };
     var readInternal = function (file, begin, end) {
-        if ('arrayBuffer' in Blob.prototype && file.readMode !== 'electron') {
-            return file.slice(begin, end).arrayBuffer().then(function (buffer) {
-                return new Uint8Array(buffer);
+        if ('arrayBuffer' in Blob.prototype && file.handle) {
+            // Use Native FS handle
+            return file.handle.getFile().then(function(fileInstance) {
+                return fileInstance.slice(begin, end).arrayBuffer().then(function (buffer) {
+                    return new Uint8Array(buffer);
+                });
             });
         } else {
             return Q.Promise(function (resolve, reject) {
