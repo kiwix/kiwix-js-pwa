@@ -26,8 +26,8 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cookies', 'q', 'transformStyles', 'kiwixServe'],
-    function ($, zimArchiveLoader, uiUtil, util, utf8, images, cookies, Q, transformStyles, kiwixServe) {
+define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cookies', 'q', 'transformStyles', 'kiwixServe'],
+    function ($, zimArchiveLoader, uiUtil, util, cache, images, cookies, Q, transformStyles, kiwixServe) {
 
         /**
          * The delay (in milliseconds) between two "keepalive" messages
@@ -121,7 +121,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
         });
 
         // Define behavior of HTML elements
-    var searchArticlesFocused = false;
+        var searchArticlesFocused = false;
         document.getElementById('searchArticles').addEventListener('click', function () {
             var prefix = document.getElementById('prefix').value;                    // Do not initiate the same search if it is already in progress
             if (appstate.search.prefix === prefix && !/^(cancelled|complete)$/.test(appstate.search.status)) return;
@@ -686,7 +686,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             } else {
                 cssUIThemeGetOrSet(determinedTheme);
             }
-            if (typeof Windows !== 'undefined') {
+            if (typeof Windows !== 'undefined' || typeof window.chooseFileSystemEntries !== 'undefined') {
+                if (typeof window.chooseFileSystemEntries !== 'undefined') {
+                    params.rescan = true;
+                    document.getElementById('chooseArchiveFromLocalStorage').style.display = "block";
+                }
                 document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
             }
             document.getElementById('libraryArea').style.borderColor = '';
@@ -804,7 +808,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
                 params.pickedFolder = params.localStorage;
             }
-            if (typeof Windows === 'undefined') {
+            if (typeof Windows === 'undefined' && typeof window.chooseFileSystemEntries === 'undefined') {
                 //If not UWP, display legacy File Select
                 document.getElementById('archiveFile').style.display = "none";
                 document.getElementById('archiveFiles').style.display = "none";
@@ -814,6 +818,34 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                 document.getElementById('instructions').style.display = "block";
                 document.getElementById('archiveFilesLegacy').style.display = "inline";
                 document.getElementById('archiveFilesLegacy').addEventListener('change', setLocalArchiveFromFileSelect);
+            }
+            // If user had previously picked a file using Native FS, offer to re-open
+            if (typeof window.chooseFileSystemEntries !== 'undefined' && !params.pickedFile) {
+                cache.idxDB('pickedFileHandle', function(val) {
+                    if (val) {
+                        var handle = val;
+                        // Check if we have persmission to open
+                        handle.requestPermission({mode: 'read'}).then(function(readPermission) {
+                            if (readPermission === 'granted') {
+                                processNativeFileHandle(handle);
+                            } else {
+                                  pickFileNativeFS();                              
+                            }
+                        }).catch(function(err) {
+                            console.error('Unable to load previously picked file', err);
+                            pickFileNativeFS();
+                        });
+                        // handle.queryPermission({mode: 'read'}).then(function(permission) {
+                        //     if (permission === 'granted') {
+                        //         processNativeFileHandle(handle);
+                        //     } else if (permission === 'prompt') {
+                        //         // Do nothing
+                        //     }
+                        // }).catch(function(err) {
+                        //     console.error('Unable to load previously picked file', err);
+                        // });
+                    }
+                });
             }
         });
         document.getElementById('btnAbout').addEventListener('click', function () {
@@ -874,7 +906,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 //UWP FilePicker
                 pickFileUWP();
-            } else {
+            } else if (typeof window.chooseFileSystemEntries !== 'undefined') {
+                // Native File System API file picker
+                pickFileNativeFS();
                 //@TODO enable and provide classic filepicker
             }
         });
@@ -1910,6 +1944,30 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
             // Filter folder contents
             filePicker.fileTypeFilter.replaceAll([".zim"]);
             filePicker.pickSingleFileAsync().then(processPickedFileUWP);
+        }
+
+        function pickFileNativeFS() {
+            window.chooseFileSystemEntries().then(function(fileHandle) {
+                // Serialize fileHandle to indexedDB
+                cache.idxDB('pickedFileHandle', fileHandle, function(val) {
+                    console.log('IndexedDB responded with ' + val);
+                });
+                processNativeFileHandle(fileHandle);
+            });
+        }
+
+        function processNativeFileHandle(fileHandle) {
+            var handle = fileHandle;
+            fileHandle.getFile().then(function(file) {
+                file.handle = handle;
+                params.pickedFile = file;
+                cookies.setItem('lastSelectedArchive', file.name, Infinity);
+                params.storedFile = file.name;
+                params.rescan = false;
+                document.getElementById('openLocalFiles').style.display = "none";
+                setLocalArchiveFromFileList([file]);
+                //populateDropDownListOfArchives([file.name]);
+            });
         }
 
         function processPickedFileUWP(file) {
@@ -3609,8 +3667,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                     $('.alert').hide();
                     readArticle(dirEntry);
                 }
-            }).catch(function () {
-                console.error("Error reading article with title " + title);
+            }).catch(function (e) {
+                console.error("Error reading article with title " + title, e);
                 if (params.appIsLaunching) goToMainArticle();
                 // Line below prevents bootloop
                 params.appIsLaunching = false;

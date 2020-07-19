@@ -73,6 +73,33 @@ define(['util'], function(util) {
         }
     }
 
+    // Transforms an asset (script or link) element string into a usable element containing the given content or a BLOB
+    // reference to the content
+    function createNewAssetElement(assetElement, attribute, content) {
+        var tag = assetElement.match(/^<([^\s]+)/)[1];
+        var regexpMatchAttr = new RegExp(attribute + '=["\']\\s*([^"\'\\s]+)');
+        var attrUri = assetElement.match(regexpMatchAttr);
+        attrUri = attrUri ? attrUri[1] : '';
+        var mimetype = /type=["']\s*([^"'\s]+)/.exec(assetElement);
+        mimetype = mimetype ? mimetype[1] : '';
+        var newAsset;
+        if (tag === 'link') {
+            // We use inline style replacements in this case for compatibility with FFOS
+            // If FFOS is no longer supported, we could use the more generic BLOB replacement below
+            mimetype = mimetype ? mimetype : 'text/css';
+            newAsset = '<style data-kiwixsrc="' + attrUri + '" type="' + mimetype + '">' + content + '</style>';
+        } else {
+            mimetype = mimetype ? mimetype : tag === 'script' ? 'text/javascript' : '';
+            var assetBlob = new Blob([content], { type: mimetype });
+            var assetUri = URL.createObjectURL(assetBlob);
+            var refAttribute = tag === 'script' ? 'src' : 'href';
+            newAsset = assetElement.replace(attribute, refAttribute);
+            newAsset = newAsset.replace(attrUri, assetUri);
+            newAsset = newAsset.replace(/>/, ' data-kiwixsrc="' + attrUri + '">');
+        }
+        return newAsset;
+    }
+
     function TableOfContents(articleDoc) {
         this.doc = articleDoc;
         this.headings = this.doc.querySelectorAll("h1, h2, h3, h4, h5, h6");
