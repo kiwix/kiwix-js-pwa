@@ -3114,8 +3114,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'images', 'cooki
                         return;
                     }
                     // Set a global error handler for iframe
-                    window.frames[0].onerror = function (msg, url) {
-                        console.log('Error caught in ZIM contents [' + url + ']:\n' + msg, msg);
+                    window.frames[0].onerror = function (msg, url, line, col, error) {
+                        console.error('Error caught in ZIM contents [' + url + ':' + line + ']:\n' + msg, error);
                         return true;
                     };
 
