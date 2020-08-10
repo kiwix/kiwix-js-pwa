@@ -824,30 +824,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 cache.idxDB('pickedFileHandle', function(val) {
                     if (val) {
                         var handle = val;
-                        // Check if we have persmission to open
-                        handle.requestPermission({mode: 'read'}).then(function(readPermission) {
-                            if (readPermission === 'granted') {
-                                processNativeFileHandle(handle);
-                            } else {
-                                  pickFileNativeFS();                              
-                            }
-                        }).catch(function(err) {
-                            console.error('Unable to load previously picked file', err);
-                            pickFileNativeFS();
+                        cache.verifyPermission(handle, false).then(function(status) {
+                            if (status) processNativeFileHandle(handle);
                         });
-                        // handle.queryPermission({mode: 'read'}).then(function(permission) {
-                        //     if (permission === 'granted') {
-                        //         processNativeFileHandle(handle);
-                        //     } else if (permission === 'prompt') {
-                        //         // Do nothing
-                        //     }
-                        // }).catch(function(err) {
-                        //     console.error('Unable to load previously picked file', err);
-                        // });
                     }
                 });
             }
         });
+    
         document.getElementById('btnAbout').addEventListener('click', function () {
             var btnAboutElement = document.getElementById('btnAbout');
             if (/glyphicon-print/.test(btnAboutElement.innerHTML)) {

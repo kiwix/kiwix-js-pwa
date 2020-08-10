@@ -625,6 +625,27 @@ define(['q', 'uiUtil'], function(Q, uiUtil) {
         return string;
     }
 
+    /**
+     * Provide 
+     * 
+     * @param {Object} fileHandle The file handle that we wish to verify with the Native Filesystem API 
+     * @param {Boolean} withWrite Indicates read only or read/write persmissions
+     * @returns {Promise<Boolean>} A Promise for a Boolean value indicating whether permission has been granted or not
+     */    
+    function verifyPermission(fileHandle, withWrite) {
+        var opts = withWrite ? { mode: 'readwrite' } : {};
+        return fileHandle.queryPermission(opts).then(function(permission) {
+            if (permission === "granted") return true;
+            return fileHandle.requestPermission(opts).then(function(permission) {
+                if (permission === 'granted') return true;
+                console.error('Permission for ' + fileHandle.name + ' was not granted: ' + permission);
+                return false;
+            }).catch(function(error) {
+                console.error('There was an error reading previously picked file ' + fileHandle.name, error);
+            });
+        }); 
+    };
+
     /** 
      * Wraps a semaphor in a Promise. A function can signal that it is done by setting a sempahor to true, 
      * if it has first set it to false at the outset of the procedure. Ensure no other functions use the same
@@ -676,6 +697,7 @@ define(['q', 'uiUtil'], function(Q, uiUtil) {
         clear: clear,
         wait: wait,
         getItemFromCacheOrZIM: getItemFromCacheOrZIM,
-        replaceAssetRefsWithUri: replaceAssetRefsWithUri
+        replaceAssetRefsWithUri: replaceAssetRefsWithUri,
+        verifyPermission: verifyPermission
     };
 });
