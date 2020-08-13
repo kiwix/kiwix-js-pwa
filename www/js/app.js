@@ -820,17 +820,45 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 document.getElementById('archiveFilesLegacy').addEventListener('change', setLocalArchiveFromFileSelect);
             }
             // If user had previously picked a file using Native FS, offer to re-open
-            if (typeof window.chooseFileSystemEntries !== 'undefined' && !params.pickedFile) {
-                cache.idxDB('pickedFileHandle', function(val) {
-                    if (val) {
-                        var handle = val;
-                        cache.verifyPermission(handle, false).then(function(status) {
-                            if (status) processNativeFileHandle(handle);
-                        });
-                    }
-                });
+            if (typeof window.chooseFileSystemEntries !== 'undefined' && !(params.pickedFile || params.pickedFolder)) {
+                getNativeFSHandle();
             }
         });
+
+        function getNativeFSHandle(callback) {
+            cache.idxDB('pickedFSHandle', function(val) {
+                if (val) {
+                    var handle = val;
+                    return cache.verifyPermission(handle, false).then(function(accessible) {
+                        if (accessible) {
+                            if (callback) {
+                                callback(handle);
+                                return;
+                            }
+                            if (handle.isFile) {
+                                return processNativeFileHandle(handle);
+                            } else if (handle.isDirectory) {
+                                return processNativeDirHandle(handle);
+                            }
+                        } 
+                    });
+                    // if (handle.isFile) {
+                    //     populateDropDownListOfArchives([handle.name]);
+                    //     return cache.verifyPermission(handle, false).then(function(status) {
+                    //         if (status) {
+                    //             return processNativeFileHandle(handle);
+                    //         } 
+                    //     });
+                    // } else if (handle.isDirectory) {
+                    //     return cache.verifyPermission(handle, false).then(function(status) {
+                    //         if (status) {
+                    //             return processNativeFileHandle(handle);
+                    //         } 
+                    //     });
+                    // }
+                }
+            });
+        }
     
         document.getElementById('btnAbout').addEventListener('click', function () {
             var btnAboutElement = document.getElementById('btnAbout');
@@ -868,19 +896,28 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
         document.getElementById('archiveList').addEventListener('change', function () {
             this.click();
         });
-        document.getElementById('archiveList').addEventListener('click', function () {
+        document.getElementById('archiveList').addEventListener('click', function (list) {
             if (selectFired) return;
             // If nothing was selected, user will have to click again
             // (NB this.selectedIndex will be -1 if no value has been selected)
-            if (!~this.selectedIndex) return;
+            if (!~list.selectedIndex) return;
             selectFired = true;
             $('#openLocalFiles').hide();
+            var selected = list.target.value;
             document.getElementById('moreInfo').style.display = 'none';
             // Void any previous picked file to prevent it launching
-            if (params.pickedFile && params.pickedFile.name !== this.options[this.selectedIndex].value) {
+            if (params.pickedFile && params.pickedFile.name !== selected) {
                 params.pickedFile = '';
             }
-            setLocalArchiveFromArchiveList();
+            if (typeof window.chooseFileSystemEntries !== 'undefined') {
+                getNativeFSHandle(function(handle) {
+                    if (handle.isFile) params.pickedFile = handle;
+                    if (handle.isDirectory) params.pickedFolder = handle;
+                    setLocalArchiveFromArchiveList(selected);
+                });
+            } else {
+                setLocalArchiveFromArchiveList(selected);
+            }
             setTimeout(function () {
                 selectFired = false;
             }, 0);
@@ -900,8 +937,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 //UWP FolderPicker
                 pickFolderUWP();
-            } else {
-                //@TODO hide folderpicker
+            } else if (typeof window.chooseFileSystemEntries !== 'undefined') {
+                // Native File System API folder picker
+                pickFolderNativeFS();
             }
         });
         document.getElementById('downloadTrigger').addEventListener('click', function () {
@@ -1573,7 +1611,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
         }
         if (storages !== null && storages.length > 0 ||
             typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined' ||
-            typeof window.fs !== 'undefined') {
+            typeof window.fs !== 'undefined' || typeof window.chooseFileSystemEntries !== 'undefined') {
             // Make a fake first access to device storage, in order to ask the user for confirmation if necessary.
             // This way, it is only done once at this moment, instead of being done several times in callbacks
             // After that, we can start looking for archives
@@ -1696,7 +1734,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 var lastSelectedArchive = params.rescan ? '' : params.storedFile;
                 if (lastSelectedArchive !== null && lastSelectedArchive !== undefined && lastSelectedArchive !== "") {
                     //  || comboArchiveList.options.length == 1
-                    // Either we have previously chosen a file, // or there is only one file
+                    // Either we have previously chosen a file, or there is only one file
                     // Attempt to select the corresponding item in the list, if it exists
                     var success = false;
                     if ($("#archiveList option[value='" + lastSelectedArchive + "']").length > 0) {
@@ -1794,7 +1832,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                                         if (/\.zim\w\w$/i.test(file.name)) {
                                             var genericFileName = file.name.replace(/(.*)\.zim\w\w$/i, "$1");
                                             var testFileName = new RegExp(genericFileName + '\\.zim\\w\\w$');
-                                            for (var i = 0; i < files.length; i++) {
+                                            for (i = 0; i < files.length; i++) {
                                                 if (testFileName.test(files[i].name)) {
                                                     //This converts a UWP storage file object into a standard JavaScript web file object
                                                     fileset.push(MSApp.createFileFromStorageFile(files[i]));
@@ -1811,13 +1849,63 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                                 } else {
                                     console.error("The picked file could not be found in the selected folder!");
                                     var archiveList = [];
-                                    for (var i = 0; i < files.length; i++) {
+                                    for (i = 0; i < files.length; i++) {
                                         if (/\.zima?a?$/i.test(files[i].name)) {
                                             archiveList.push(files[i].name);
                                         }
                                     }
                                     populateDropDownListOfArchives(archiveList);
                                     document.getElementById('btnConfigure').click();
+                                }
+                            });
+                            return;
+                        } else if (!params.pickedFile && params.pickedFolder && typeof window.chooseFileSystemEntries !== 'undefined') {
+                            // Native FS support
+                            cache.verifyPermission(params.pickedFolder).then(function(permission) {
+                                if (!permission) {
+                                    console.log('User denied permission to access the folder');
+                                    return;
+                                } else if (params.pickedFolder.isDirectory) {
+                                    return processNativeDirHandle(params.pickedFolder, function(fileHandles) {
+                                        var fileHandle;
+                                        if (fileHandles) {
+                                            for (var i = 0; i < fileHandles.length; i++) {
+                                                if (fileHandles[i].name == archiveDirectory) {
+                                                    fileHandle = fileHandles[i];
+                                                    break;
+                                                }
+                                            }
+                                            if (fileHandle) {
+                                                var fileset = [];
+                                                if (/\.zim\w\w$/i.test(fileHandle.name)) {
+                                                    var genericFileName = fileHandle.name.replace(/(.*)\.zim\w\w$/i, "$1");
+                                                    var testFileName = new RegExp(genericFileName + '\\.zim\\w\\w$');
+                                                    for (i = 0; i < fileHandles.length; i++) {
+                                                        if (testFileName.test(fileHandles[i].name)) {
+                                                            //This converts a UWP storage file object into a standard JavaScript web file object
+                                                            fileset.push(fileHandles[i]);
+                                                        }
+                                                    }
+                                                } else {
+                                                    fileHandle.getFile().then(function(file) {
+                                                        if (file) setLocalArchiveFromFileList([file]);
+                                                    });
+                                                }
+                                            } else {
+                                                console.error("The picked file could not be found in the selected folder!");
+                                                var archiveList = [];
+                                                for (i = 0; i < fileHandles.length; i++) {
+                                                    if (/\.zima?a?$/i.test(fileHandles[i].name)) {
+                                                        archiveList.push(fileHandles[i].name);
+                                                    }
+                                                }
+                                                populateDropDownListOfArchives(archiveList);
+                                                document.getElementById('btnConfigure').click();
+                                            }
+                                        } else {
+                                            console.log('There was an error obtaining the file handle(s).');
+                                        }
+                                    });
                                 }
                             });
                             return;
@@ -1931,18 +2019,19 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
         }
 
         function pickFileNativeFS() {
-            window.chooseFileSystemEntries().then(function(fileHandle) {
+            return window.chooseFileSystemEntries().then(function(fileHandle) {
                 // Serialize fileHandle to indexedDB
-                cache.idxDB('pickedFileHandle', fileHandle, function(val) {
+                cache.idxDB('pickedFSHandle', fileHandle, function(val) {
                     console.log('IndexedDB responded with ' + val);
                 });
-                processNativeFileHandle(fileHandle);
+                params.pickedFile = fileHandle;
+                return processNativeFileHandle(fileHandle);
             });
         }
 
         function processNativeFileHandle(fileHandle) {
             var handle = fileHandle;
-            fileHandle.getFile().then(function(file) {
+            return fileHandle.getFile().then(function(file) {
                 file.handle = handle;
                 params.pickedFile = file;
                 cookies.setItem('lastSelectedArchive', file.name, Infinity);
@@ -1983,6 +2072,49 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                     scanUWPFolderforArchives(folder);
                 }
             });
+        }
+
+        function pickFolderNativeFS() {
+            window.chooseFileSystemEntries({type: 'open-directory'}).then(function(dirHandle) {
+                // Serialize fileHandle to indexedDB
+                cache.idxDB('pickedFSHandle', dirHandle, function(val) {
+                    console.log('IndexedDB responded with ' + val);
+                });
+                params.pickedFolder = dirHandle;
+                document.getElementById('openLocalFiles').style.display = 'none';
+                return processNativeDirHandle(dirHandle);
+            }).catch(function(err) {
+                console.error('Error reading directory', err);
+            });
+        }
+
+        function processNativeDirHandle(dirHandle, callback) {
+            // We have to wrap async function because IE11 compiler throws error if unwrapped
+            eval(
+                "var processHandle = async function(handle, callback) {" +
+                    "var archiveList = [];" +
+                    "var files = await handle.getEntries();" +
+                    "for await (var file of files) {" +
+                    "   if (/\.(?:zim|zimaa)$/.test(file.name)) {" +
+                            "if (callback) archiveList.push(file);" +
+                            "else archiveList.push(file.name);" +
+                    "   }" +
+                    "}" +
+                    "if (archiveList.length) {" +
+                        "if (callback) { callback(archiveList); return; }" +
+                        "document.getElementById('noZIMFound').style.display = 'none';" +
+                    "   populateDropDownListOfArchives(archiveList);" +
+                    "} else {" +
+                        "if (callback) { callback(null); return; }" +
+                    "}" +
+                "};" +
+                "processHandle(dirHandle, callback);"
+            );
+            var archiveDisplay = document.getElementById('chooseArchiveFromLocalStorage');
+            archiveDisplay.style.display = "block";
+            document.getElementById('openLocalFiles').style.display = "none";
+            document.getElementById('rescanStorage').style.display = "none";
+            document.getElementById('archiveNumber').innerHTML = '<b>0</b> Archives found in local storage (tap "Select storage" to select an archive location)';
         }
 
         function scanUWPFolderforArchives(folder) {
