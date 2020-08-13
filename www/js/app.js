@@ -1920,6 +1920,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                                     uiUtil.systemAlert("The previously picked archive can no longer be found!");
                                     console.error("Picked archive not found: " + err);
                                 }
+                            } else if (params.pickedFile && typeof window.chooseFileSystemEntries !== 'undefined') {
+                                // Native FS API for single file
+                                setLocalArchiveFromFileList([params.pickedFile]);
                             }
                         }
                         //There was no picked file or folder, so we'll try setting the default localStorage
@@ -2024,8 +2027,25 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 cache.idxDB('pickedFSHandle', fileHandle, function(val) {
                     console.log('IndexedDB responded with ' + val);
                 });
-                params.pickedFile = fileHandle;
+                cookies.setItem('lastSelectedArchive', fileHandle.name, Infinity);
+                params.storedFile = fileHandle.name;
+                params.pickedFolder = null;
                 return processNativeFileHandle(fileHandle);
+            });
+        }
+
+        function pickFolderNativeFS() {
+            window.chooseFileSystemEntries({type: 'open-directory'}).then(function(dirHandle) {
+                // Serialize fileHandle to indexedDB
+                cache.idxDB('pickedFSHandle', dirHandle, function(val) {
+                    console.log('IndexedDB responded with ' + val);
+                });
+                params.pickedFolder = dirHandle;
+                params.pickedFile = null;
+                document.getElementById('openLocalFiles').style.display = 'none';
+                return processNativeDirHandle(dirHandle);
+            }).catch(function(err) {
+                console.error('Error reading directory', err);
             });
         }
 
@@ -2034,12 +2054,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             return fileHandle.getFile().then(function(file) {
                 file.handle = handle;
                 params.pickedFile = file;
-                cookies.setItem('lastSelectedArchive', file.name, Infinity);
-                params.storedFile = file.name;
                 params.rescan = false;
                 document.getElementById('openLocalFiles').style.display = "none";
-                setLocalArchiveFromFileList([file]);
-                //populateDropDownListOfArchives([file.name]);
+                populateDropDownListOfArchives([file.name]);
             });
         }
 
@@ -2071,20 +2088,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 if (folder) {
                     scanUWPFolderforArchives(folder);
                 }
-            });
-        }
-
-        function pickFolderNativeFS() {
-            window.chooseFileSystemEntries({type: 'open-directory'}).then(function(dirHandle) {
-                // Serialize fileHandle to indexedDB
-                cache.idxDB('pickedFSHandle', dirHandle, function(val) {
-                    console.log('IndexedDB responded with ' + val);
-                });
-                params.pickedFolder = dirHandle;
-                document.getElementById('openLocalFiles').style.display = 'none';
-                return processNativeDirHandle(dirHandle);
-            }).catch(function(err) {
-                console.error('Error reading directory', err);
             });
         }
 
