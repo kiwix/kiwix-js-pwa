@@ -911,9 +911,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             }
             if (typeof window.chooseFileSystemEntries !== 'undefined') {
                 getNativeFSHandle(function(handle) {
-                    if (handle.isFile) params.pickedFile = handle;
-                    if (handle.isDirectory) params.pickedFolder = handle;
-                    setLocalArchiveFromArchiveList(selected);
+                    if (handle.isDirectory) {
+                        params.pickedFolder = handle;
+                        setLocalArchiveFromArchiveList(selected);
+                    } else if (handle.isFile) {
+                        handle.getFile().then(function(file) {
+                            params.pickedFile = file;
+                            params.pickedFile.handle = handle;
+                            setLocalArchiveFromArchiveList(selected);
+                        }).catch(function(err) {
+                            console.error('Unable to read previously picked file!', err);
+                        });
+                    }
                 });
             } else {
                 setLocalArchiveFromArchiveList(selected);
@@ -1923,6 +1932,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                             } else if (params.pickedFile && typeof window.chooseFileSystemEntries !== 'undefined') {
                                 // Native FS API for single file
                                 setLocalArchiveFromFileList([params.pickedFile]);
+                                return;
                             }
                         }
                         //There was no picked file or folder, so we'll try setting the default localStorage
