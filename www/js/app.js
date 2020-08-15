@@ -687,10 +687,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 cssUIThemeGetOrSet(determinedTheme);
             }
             if (typeof Windows !== 'undefined' || typeof window.chooseFileSystemEntries !== 'undefined') {
-                if (typeof window.chooseFileSystemEntries !== 'undefined') {
-                    params.rescan = true;
-                    document.getElementById('chooseArchiveFromLocalStorage').style.display = "block";
-                }
                 document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
             }
             document.getElementById('libraryArea').style.borderColor = '';
@@ -842,20 +838,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                             }
                         } 
                     });
-                    // if (handle.isFile) {
-                    //     populateDropDownListOfArchives([handle.name]);
-                    //     return cache.verifyPermission(handle, false).then(function(status) {
-                    //         if (status) {
-                    //             return processNativeFileHandle(handle);
-                    //         } 
-                    //     });
-                    // } else if (handle.isDirectory) {
-                    //     return cache.verifyPermission(handle, false).then(function(status) {
-                    //         if (status) {
-                    //             return processNativeFileHandle(handle);
-                    //         } 
-                    //     });
-                    // }
                 }
             });
         }
@@ -2016,10 +1998,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             var files = packet.dataTransfer.files;
             document.getElementById('openLocalFiles').style.display = 'none';
             document.getElementById('moreInfo').style.display = 'none';
-
+            params.rescan = false;
             setLocalArchiveFromFileList(files);
             // This clears the display of any previously picked archive in the file selector
-            document.getElementById('archiveFiles').value = null;
+            document.getElementById('archiveFilesLegacy').value = '';
         }
 
         function pickFileUWP() { //Support UWP FilePicker [kiwix-js-windows #3]
@@ -2052,7 +2034,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 });
                 params.pickedFolder = dirHandle;
                 params.pickedFile = null;
-                document.getElementById('openLocalFiles').style.display = 'none';
                 return processNativeDirHandle(dirHandle);
             }).catch(function(err) {
                 console.error('Error reading directory', err);
@@ -2065,7 +2046,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 file.handle = handle;
                 params.pickedFile = file;
                 params.rescan = false;
-                document.getElementById('openLocalFiles').style.display = "none";
                 populateDropDownListOfArchives([file.name]);
             });
         }
@@ -2081,7 +2061,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 params.storedFile = file.name;
                 // Since we've explicitly picked a file, we should jump to it
                 params.rescan = false;
-                document.getElementById('openLocalFiles').style.display = "none";
                 populateDropDownListOfArchives([file.name]);
             } else {
                 // The picker was dismissed with no selected file
@@ -2124,9 +2103,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 "processHandle(dirHandle, callback);"
             );
             var archiveDisplay = document.getElementById('chooseArchiveFromLocalStorage');
+            // Do not attempt to jump to file (we have to let user choose)
+            params.rescan = true;
             archiveDisplay.style.display = "block";
-            document.getElementById('openLocalFiles').style.display = "none";
-            document.getElementById('rescanStorage').style.display = "none";
             document.getElementById('archiveNumber').innerHTML = '<b>0</b> Archives found in local storage (tap "Select storage" to select an archive location)';
         }
 
@@ -2156,8 +2135,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                     }
                     archiveDisplay.style.display = "inline";
                     document.getElementById('noZIMFound').style.display = "block";
-                    document.getElementById('openLocalFiles').style.display = "none";
-                    document.getElementById('rescanStorage').style.display = "block";
                     document.getElementById('archiveList').options.length = 0;
                     document.getElementById('archiveList').size = 0;
                     document.getElementById('archiveNumber').innerHTML = '<b>0</b> Archives found in local storage (tap "Select storage" to select an archive location)';
