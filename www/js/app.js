@@ -1995,13 +1995,24 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             packet.stopPropagation();
             packet.preventDefault();
             configDropZone.style.border = '';
-            var files = packet.dataTransfer.files;
-            document.getElementById('openLocalFiles').style.display = 'none';
-            document.getElementById('moreInfo').style.display = 'none';
-            params.rescan = false;
-            setLocalArchiveFromFileList(files);
-            // This clears the display of any previously picked archive in the file selector
-            document.getElementById('archiveFilesLegacy').value = '';
+            var items = packet.dataTransfer.items;
+            if (items && items[0].kind === 'file' && typeof items[0].getAsFileSystemHandle !== 'undefined') {
+                items[0].getAsFileSystemHandle().then(function (handle) {
+                    if (handle.kind === 'file') {
+                        processNativeFileHandle(handle);
+                    } else if (handle.kind === 'directory') {
+                        processNativeDirHandle(handle);
+                    }
+                });
+            } else {
+                var files = packet.dataTransfer.files;
+                document.getElementById('openLocalFiles').style.display = 'none';
+                document.getElementById('moreInfo').style.display = 'none';
+                params.rescan = false;
+                setLocalArchiveFromFileList(files);
+                // This clears the display of any previously picked archive in the file selector
+                document.getElementById('archiveFilesLegacy').value = '';
+            }
         }
 
         function pickFileUWP() { //Support UWP FilePicker [kiwix-js-windows #3]
@@ -2015,25 +2026,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
 
         function pickFileNativeFS() {
             return window.chooseFileSystemEntries().then(function(fileHandle) {
-                // Serialize fileHandle to indexedDB
-                cache.idxDB('pickedFSHandle', fileHandle, function(val) {
-                    console.log('IndexedDB responded with ' + val);
-                });
-                cookies.setItem('lastSelectedArchive', fileHandle.name, Infinity);
-                params.storedFile = fileHandle.name;
-                params.pickedFolder = null;
                 return processNativeFileHandle(fileHandle);
             });
         }
 
         function pickFolderNativeFS() {
-            window.chooseFileSystemEntries({type: 'open-directory'}).then(function(dirHandle) {
-                // Serialize fileHandle to indexedDB
-                cache.idxDB('pickedFSHandle', dirHandle, function(val) {
-                    console.log('IndexedDB responded with ' + val);
-                });
-                params.pickedFolder = dirHandle;
-                params.pickedFile = null;
+            window.chooseFileSystemEntries({ type: 'open-directory' }).then(function (dirHandle) {
+                // Do not attempt to jump to file (we have to let user choose)
+                params.rescan = true;
                 return processNativeDirHandle(dirHandle);
             }).catch(function(err) {
                 console.error('Error reading directory', err);
@@ -2042,6 +2042,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
 
         function processNativeFileHandle(fileHandle) {
             var handle = fileHandle;
+            // Serialize fileHandle to indexedDB
+            cache.idxDB('pickedFSHandle', fileHandle, function (val) {
+                console.log('IndexedDB responded with ' + val);
+            });
+            cookies.setItem('lastSelectedArchive', fileHandle.name, Infinity);
+            params.storedFile = fileHandle.name;
+            params.pickedFolder = null;
             return fileHandle.getFile().then(function(file) {
                 file.handle = handle;
                 params.pickedFile = file;
@@ -2081,6 +2088,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
         }
 
         function processNativeDirHandle(dirHandle, callback) {
+            // Serialize fileHandle to indexedDB
+            cache.idxDB('pickedFSHandle', dirHandle, function (val) {
+                console.log('IndexedDB responded with ' + val);
+            });
+            params.pickedFolder = dirHandle;
+            params.pickedFile = null;
             // We have to wrap async function because IE11 compiler throws error if unwrapped
             eval(
                 "var processHandle = async function(handle, callback) {" +
@@ -2103,8 +2116,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 "processHandle(dirHandle, callback);"
             );
             var archiveDisplay = document.getElementById('chooseArchiveFromLocalStorage');
-            // Do not attempt to jump to file (we have to let user choose)
-            params.rescan = true;
             archiveDisplay.style.display = "block";
             document.getElementById('archiveNumber').innerHTML = '<b>0</b> Archives found in local storage (tap "Select storage" to select an archive location)';
         }
