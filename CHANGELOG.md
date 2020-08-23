@@ -1,5 +1,18 @@
 # Changelog
 
+## Release 0.9.9.992 (beta)
+
+* UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-08.zim`
+* UPDATE: Some new Kiwix icons
+* FIX: Prevent extraneous titles appearing in search
+* FIX: Broken drag-and-drop
+* FIX: Bug with construction of backlinks preventing load of some Wikipedia articles
+* FIX: Calculate path of breakout icon correctly in SW mode
+* ENHANCEMENT: Use Native File System API in PWA version
+* ENHANCEMENT: Fix printing in the Electron app
+* ENHANCEMENT: Support launching Electron app from shortcut
+* ENHANCEMENT: Better error reporting in console log
+
 ## Release 0.9.9.991 (beta)
 
 * FIX: Bug preventing all Kiwix apps accessing latest ZIMs (incorrect method of reading MIME type list)
@@ -22,6 +35,7 @@
 * UPDATE: Update Q Promise support to v1.5.1
 
 ## Release 0.9.9.97 (beta)
+
 * ENHANCEMENT: Intuitive toolbar hiding/showing on scroll down/up
 * ENHANCEMENT: Added block cache to speed up search considerably
 * ENHANCEMENT: Provide option to set number of results to find when searching
