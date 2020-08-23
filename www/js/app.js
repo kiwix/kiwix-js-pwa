@@ -3105,7 +3105,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
 
             //Setup endnote backlinks if the ZIM doesn't have any
             htmlArticle = htmlArticle.replace(/<li\b[^>]+id=["']cite[-_]note[-_]([^"']+)[^>]+>(?![^/]+?[↑^])/ig, function (match, id) {
-                var fnSearchRegxp = new RegExp('id=["' + "'](cite[-_]ref[-_]" + id.replace(/[-_()]/g, "[-_()]") + '[^"' + "']*)", 'i');
+                var fnSearchRegxp = new RegExp('id=["' + "'](cite[-_]ref[-_]" + id.replace(/[-_()+]/g, "[-_()]+") + '[^"' + "']*)", 'i');
                 var fnReturnMatch = htmlArticle.match(fnSearchRegxp);
                 var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : "";
                 return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>';
