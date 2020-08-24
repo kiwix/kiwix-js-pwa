@@ -1,4 +1,4 @@
-/**
+﻿/**
  * cache.js : Provide a cache for assets from the ZIM archive using indexedDB, localStorage or memory cache
  * 
  * Copyright 2018 Mossroy, Jaifroid and contributors
