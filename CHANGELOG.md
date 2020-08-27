@@ -1,5 +1,16 @@
 # Changelog
 
+## Release 0.9.9.992 Wikivoyage (beta)
+
+* UPDATE: August 2020 update of Wikivoyage ZIM archive to `wikivoyage_en_all_maxi_2020-08.zim`
+* FIX: Prevent extraneous titles appearing in search
+* FIX: Broken drag-and-drop
+* FIX: Bug with construction of backlinks preventing load of some Wikipedia articles
+* FIX: Calculate path of breakout icon correctly in SW mode
+* ENHANCEMENT: Use Native File System API in PWA version
+* ENHANCEMENT: Various fixes to the Electron app
+* ENHANCEMENT: Better error reporting in console log
+
 ## Release 0.9.9.991 Wikivoyage (beta)
 
 * UPDATE: June 2020 update of Wikivoyage ZIM archive to wikivoyage_en_all_maxi_2020-06.zim
@@ -12,6 +23,7 @@
 * FIX: Incorrect hiding of toolbars after using in-page search
 
 ## Release 0.9.9.97 Wikivoyage (beta)
+
 * UPDATE: February 2020 update of Wikivoyage ZIM archive to wikivoyage_en_all_maxi_2020-02.zim
 * UPDATE: Added missing stylesheets for cache
 * ENHANCEMENT: Intuitive toolbar hiding/showing on scroll down/up
