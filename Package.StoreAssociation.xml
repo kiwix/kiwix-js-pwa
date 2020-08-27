@@ -361,43 +361,42 @@
     <Language Code="zu-za" InMinimumRequirementSet="true" />
   </SupportedLocales>
   <ProductReservedInfo>
-    <MainPackageIdentityName>Kiwix.KiwixJS</MainPackageIdentityName>
+    <MainPackageIdentityName>Kiwix.WikivoyagebyKiwix</MainPackageIdentityName>
     <ReservedNames>
-      <ReservedName>Kiwix JS</ReservedName>
-      <ReservedName>Kiwix JS Beta</ReservedName>
+      <ReservedName>Wikivoyage by Kiwix</ReservedName>
     </ReservedNames>
   </ProductReservedInfo>
   <AccountPackageIdentityNames>
     <MainPackageIdentityName>Kiwix.KiwixDesktop</MainPackageIdentityName>
+    <MainPackageIdentityName>Kiwix.KiwixJS</MainPackageIdentityName>
     <MainPackageIdentityName>Kiwix.WikiMed</MainPackageIdentityName>
-    <MainPackageIdentityName>Kiwix.WikivoyagebyKiwix</MainPackageIdentityName>
   </AccountPackageIdentityNames>
-  <PackageInfoList LandingUrl="https://developer.microsoft.com/dashboard/Application?appId=9P8SLZ4J979J">
+  <PackageInfoList LandingUrl="https://developer.microsoft.com/dashboard/Application?appId=9N5SB90Q4JBJ">
     <BundleInfo>
       <PackageInfo>
         <OsMinVersion>0.0.0.0</OsMinVersion>
         <PackageArchitecture>Neutral</PackageArchitecture>
-        <PackageMaxArchitectureVersion>0.9.9990.0</PackageMaxArchitectureVersion>
+        <PackageMaxArchitectureVersion>0.9.997.0</PackageMaxArchitectureVersion>
       </PackageInfo>
       <PackageInfo>
         <OsMinVersion>0.0.0.0</OsMinVersion>
         <PackageArchitecture>Neutral</PackageArchitecture>
-        <PackageMaxArchitectureVersion>0.9.9990.0</PackageMaxArchitectureVersion>
+        <PackageMaxArchitectureVersion>0.9.997.0</PackageMaxArchitectureVersion>
       </PackageInfo>
       <PackageInfo>
         <OsMinVersion>0.0.0.0</OsMinVersion>
         <PackageArchitecture>Neutral</PackageArchitecture>
-        <PackageMaxArchitectureVersion>0.9.9990.0</PackageMaxArchitectureVersion>
+        <PackageMaxArchitectureVersion>0.9.997.0</PackageMaxArchitectureVersion>
       </PackageInfo>
       <PackageInfo>
         <OsMinVersion>0.0.0.0</OsMinVersion>
         <PackageArchitecture>Neutral</PackageArchitecture>
-        <PackageMaxArchitectureVersion>0.9.9990.0</PackageMaxArchitectureVersion>
+        <PackageMaxArchitectureVersion>0.9.997.0</PackageMaxArchitectureVersion>
       </PackageInfo>
       <PackageInfo>
         <OsMinVersion>0.0.0.0</OsMinVersion>
         <PackageArchitecture>Neutral</PackageArchitecture>
-        <PackageMaxArchitectureVersion>0.9.9990.0</PackageMaxArchitectureVersion>
+        <PackageMaxArchitectureVersion>0.9.997.0</PackageMaxArchitectureVersion>
       </PackageInfo>
     </BundleInfo>
   </PackageInfoList>

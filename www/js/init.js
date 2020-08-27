@@ -49,12 +49,12 @@ var params = {};
  */
 var appstate = {};
 
-params['version'] = "0.9.9.992 Beta"; //DEV: Manually update this version when there is a new release: it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
-params['packagedFile'] = "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
-params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
-params['fileVersion'] = "wikipedia_en_100_maxi_2020-08.zim (21-Aug-2020)"; //Use generic name for actual file, and give version here
-params['cachedStartPage'] = false; //If you have cached the start page for quick start, give its URI here
-params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
+params['version'] = "0.9.9.991 Wikivoyage Beta"; //DEV: do not set this dynamically -- it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
+params['packagedFile'] = "wikivoyage_en.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
+params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)
+params['fileVersion'] = "wikivoyage_en_all_maxi_2020-06 (3-Jun-2020)"; //Use generic name for actual file, and give version here
+params['cachedStartPage'] = "Main_Page"; //If you have cached the start page for quick start, give its URI here
+params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/wikivoyage/"; //Include final slash
 
 params['cookieSupport'] = checkCookies();
 params['maxResults'] = ~~(getCookie('maxResults') || 25); //Number of search results to display
