@@ -1738,19 +1738,21 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                         setLocalArchiveFromArchiveList();
                     } else {
                         // We can't find lastSelectedArchive in the archive list
-                        // Let's first check if this is a Store UWP/PWA that has a different archive package from that indicated in init.js
+                        // Let's first check if this is a Store UWP/PWA that has a different archive package from that last selected
+                        // (or from that indicated in init.js)
                         if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined' && 
-                            params.storedFile === params.packagedFile && cookies.getItem('lastSelectedArchive') !== params.storedFile) {
+                            params.packagedFile && cookies.getItem('lastSelectedArchive') !== params.packagedFile) {
                             // We didn't pick this file previously, so select first one in list
-                            params.fileVersion = archiveDirectories[0];
-                            params.packagedFile = params.fileVersion;
-                            params.storedFile = params.fileVersion;
-                            setLocalArchiveFromArchiveList(params.fileVersion);
+                            params.storedFile = archiveDirectories[0];
+                            params.fileVersion = ~params.fileVersion.indexOf(params.storedFile.replace(/\.zim\w?\w?$/i, '')) ? params.fileVersion : params.storedFile;
+                            setLocalArchiveFromArchiveList(params.storedFile);
                         } else {
                             // It's genuinely no longer available, so let's ask the user to pick it
                             var message = '<p>We could not find the archive <b>' + lastSelectedArchive + '</b>!</p><p>Please select its location...</p>';
                             if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined')
                                 message += '<p><i>Note:</i> If you drag-drop an archive into this UWP app, then it will have to be dragged again each time you launch the app. Try double-clicking on the archive instead, or select it using the controls on this page.</p>';
+                            if (document.getElementById('configuration').style.display == 'none')
+                                document.getElementById('btnConfigure').click();
                             document.getElementById('alert-content').innerHTML = message;
                             $('#alertModal').off('hide.bs.modal');
                             $('#alertModal').on('hide.bs.modal', function () {
@@ -1760,8 +1762,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                                 backdrop: 'static',
                                 keyboard: true
                             });
-                            if (document.getElementById('configuration').style.display == 'none')
-                                document.getElementById('btnConfigure').click();
                         }
                     }
                 }
