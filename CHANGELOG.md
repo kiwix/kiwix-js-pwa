@@ -1,8 +1,9 @@
 # Changelog
 
-## Release 0.9.9.992 Wikivoyage (beta)
+## Release 0.9.9.993 Wikivoyage (beta)
 
 * UPDATE: August 2020 update of Wikivoyage ZIM archive to `wikivoyage_en_all_maxi_2020-08.zim`
+* FIX: Critical error on load if packaged archive name has changeds
 * FIX: Prevent extraneous titles appearing in search
 * FIX: Broken drag-and-drop
 * FIX: Bug with construction of backlinks preventing load of some Wikipedia articles
