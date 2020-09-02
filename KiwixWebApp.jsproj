@@ -125,6 +125,8 @@
     <Content Include="images\Wide310x150Logo.scale-150.png" />
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="images\Wide310x150Logo.scale-400.png" />
+    <Content Include="www\js\lib\zstdec.js" />
+    <Content Include="www\js\lib\zstdec_wrapper.js" />
     <None Include="Package.StoreAssociation.xml" />
     <None Include="kiwix.pfx" />
     <None Include="KiwixWebApp_StoreKey.pfx" />
