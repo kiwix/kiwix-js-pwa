@@ -191,7 +191,17 @@ define(['xzdec_wrapper', 'zstdec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry'], 
             return that._readSlice(clusterOffset, 1).then(function(compressionType) {
                 var decompressor;
                 var plainBlobReader = function(offset, size) {
-                    return that._readSlice(clusterOffset + 1 + offset, size);
+                    // DEV: old algorithm merely returned requested data size
+                    // but I believe we need to check that we are not reading beyond the end of the cluster
+                    // Is this an oversight in original code or an unnecessary protection?
+                    // return that._readSlice(clusterOffset + 1 + offset, size);
+                    var offsetStart = clusterOffset + 1 + offset;
+                    if ( offsetStart < nextCluster) {
+                        size = offsetStart + size <= nextCluster ? size : nextCluster - offsetStart;
+                        return that._readSlice(offsetStart, size);
+                    } else {
+                        return Q(new Uint8Array(0).buffer);
+                    }
                 };
                 if (compressionType[0] === 0 || compressionType[0] === 1) {
                     // uncompressed
@@ -226,14 +236,6 @@ define(['xzdec_wrapper', 'zstdec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry'], 
     function readMimetypeMap(file, mimeListPos, urlPtrPos) {
         var typeMap = new Map;
         var size = urlPtrPos - mimeListPos;
-        // DIAGNOSTICS FOR Kiwix JS Windows #89
-        if (size > 1024) {
-            console.warn("WARNING: " + file.name + " has urlPtrPos at offset " + urlPtrPos + ".\n" + 
-            "Attempted to read an arrayBuffer of **" + Math.floor(size / 10485.76) / 100 + " MB** while extracting MIME type table!\n" +
-            "We limited the buffer size to 1024 bytes.");
-        } else {
-            console.log("MIME type table of " + file.name + " is " + size + " bytes.");
-        }
         // ZIM archives produced since May 2020 relocate the URL Pointer List to the end of the archive
         // so we limit the slice size to max 1024 bytes in order to prevent reading the entire archive into an array buffer
         // See https://github.com/openzim/libzim/issues/353
