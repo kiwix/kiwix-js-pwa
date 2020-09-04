@@ -1014,8 +1014,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
         var oldScrollY;
         var newScrollY;
         var throttle = 0;
-        // If user hasn't stored a hideToolbars cookie choice, inform them of the new functionality
-        var hideToolbarsCookie = cookies.getItem('hideToolbars');
         var scrollFunction = function () {
             if (throttle) return;
             throttle = 1;
@@ -1031,16 +1029,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                             header.style.transform = 'translateY(-' + (navbarDim.height - 2) + 'px)';
                             if (params.hideToolbars === true) // Only hide footer if requested
                                 footer.style.transform = 'translateY(' + (footerDim.height - 2) + 'px)';
-                            // Block below can be deleted after a few iterations of the app
-                            if (!hideToolbarsCookie) {
-                                uiUtil.systemAlert('New functionality!\n\nWhen you scroll down, toolbars are hidden\n' + 
-                                'Scroll slightly up to show them again\nChange this behaviour in Configuration');
-                                hideToolbarsCookie = true;
-                                // Clean up old cookie
-                                cookies.removeItem('hideToolbar');
-                                // Store cookie choice
-                                cookies.setItem('hideToolbars', params.hideToolbars, Infinity);
-                            }
                         }
                         throttle = 0;
                     }, 200);
