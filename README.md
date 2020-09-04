@@ -6,7 +6,8 @@ but you will need a ZIM file for testing.]
 This repository is for development of the Kiwix JS app for Windows 10 Universal Windows Platform.
 Latest development code is on the [master-dev](https://github.com/kiwix/kiwix-js-windows/tree/master-dev/) branch.
 
-This is a version of the Kiwix JS Offline Wikimedia reader for UWP on Windows 10 that has been packaged with
+This contains versions of the Kiwix JS Offline Wikimedia reader for UWP on Windows 10 and for the Electron or NWJS
+platforms (can also be used with earlier Windows versions) that have been packaged with
 a WikiMed archive. If you are interested in the development of Kiwix JS, or want to install it without
 the packaged archive, please switch back to the Master branch: https://github.com/kiwix/kiwix-js-windows/tree/master.
 
@@ -28,9 +29,9 @@ WikiMed Offline Medical Wikipedia works offline, and does not collect or record 
 only remembers your browsing history for the duration of a session (for the purpose of returning to previously
 viewed pages). This history is lost on exiting the app and is not recorded in any way.                     
 
-By default, this application will remember your last-visited page between sessions using a local cookie
-that is accessible only by this app on this device. If you are accessing sensitive information that you do
-not wish to be displayed next time you open this app, we recommend that you [turn this option off](file:///C:/Users/geoff/Source/Repos/kiwix-js-windows-wikimed/www/index.html#privacy) in the Configuration options.            
+By default, this application will remember your last-visited page between sessions using a local cookie or Local Storage entries
+that are accessible only by this the device you run the app on. If you are accessing sensitive information that you do
+not wish to be displayed next time you open this app, we recommend that you turn this option off in the Configuration options.            
 
 This application only reads the archive files that you explicitly select on your device and files included in
 its own package: it is not capable of reading any other files. It will only access the Kiwix download server if
