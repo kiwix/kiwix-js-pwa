@@ -1,20 +1,20 @@
 # Changelog
 
-## Release 0.9.9.991 WikiMed (beta)
-## Release 0.9.9.992 (beta)
+## Release 0.9.9.993 WikiMed (beta)
 
-* UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-08.zim`
-* UPDATE: Some new Kiwix icons
+* UPDATE: September 2020 update of WikiMed ZIM archive to `wikipedia_en_medicine_maxi_2020-09.zim`
+* FIX: Critical error on load if packaged archive name has changed
 * FIX: Prevent extraneous titles appearing in search
 * FIX: Broken drag-and-drop
 * FIX: Bug with construction of backlinks preventing load of some Wikipedia articles
 * FIX: Calculate path of breakout icon correctly in SW mode
 * ENHANCEMENT: Use Native File System API in PWA version
-* ENHANCEMENT: Fix printing in the Electron app
+* ENHANCEMENT: Various fixes to the Electron app
 * ENHANCEMENT: Support launching Electron app from shortcut
 * ENHANCEMENT: Better error reporting in console log
+* DEPRECATED: Scrolling information for new users
 
-## Release 0.9.9.991 (beta)
+## Release 0.9.9.991 WikiMed (beta)
 
 * UPDATE: WikiMed ZIM archive to wikipedia_en_medicine_maxi_2020-07
 * FIX: Bug preventing all Kiwix apps accessing latest ZIMs (incorrect method of reading MIME type list)
