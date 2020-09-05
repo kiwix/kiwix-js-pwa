@@ -60,7 +60,7 @@
     "start": "electron .",
     "dist": "electron-builder build",
     "package-mac": "electron-packager . kiwix-js-windows --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
-    "package-win": "electron-packager . kiwix-js-windows --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=node_ --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --overwrite --platform=win32 --arch=ia32 --icon=www/img/icons/kiwix-64.ico --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Kiwix JS WikiMed Electron Edition'",
+    "package-win": "electron-packager . kiwix-js-windows --electron-version='10.1.1' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=node_ --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --overwrite --platform=win32 --arch=ia32 --icon=www/img/icons/kiwix-64.ico --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Kiwix JS WikiMed Electron Edition'",
     "postpackage-win": "(robocopy archives bld\\Electron\\kiwix-js-windows-win32-ia32\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0",
     "package-linux": "electron-packager . kiwix-js-windows --overwrite --platform=linux --arch=x64 --icon=www/img/icons/kiwix-64.png --prune=true --out=bld/electron"
   },
@@ -75,7 +75,7 @@
   "author": "Kiwix",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^9.0.5",
+    "electron": "^10.1.1",
     "electron-builder": "^22.7.0",
     "electron-packager": "^15.1.0"
   }
