@@ -3672,6 +3672,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                     if (cmatches.call(cele, s)) return cele;
                     cele = cele.parentElement || cele.parentNode;
                 } while (cele !== null && cele.nodeType === 1);
+                return null;
             };
             
             document.getElementById('dropup').style.fontSize = ~~(params.relativeUIFontSize * 0.14) + "px";
@@ -3692,9 +3693,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             Array.prototype.slice.call(ToCList.getElementsByTagName('a')).forEach(function (listElement) {
                 listElement.addEventListener('click', function () {
                     var sectionEle = innerDoc.getElementById(this.dataset.headingId);
-                    var csec = closest(sectionEle, 'details');
-                    if (csec && !csec.hasAttribute('open')) csec.setAttribute('open', '');
-                    if (csec && csec.style.display === 'none') csec.style.display = 'block';
+                    var csec = closest(sectionEle, 'details:not([open])');
+                    if (csec) csec.setAttribute('open', '');
+                    csec = closest(sectionEle, '[style*=display]');
+                    if (csec && csec.style.display === 'none') {
+                        var hiddenEles = csec.parentElement.querySelectorAll('[style*=display]');
+                        for (var i = 0; i < hiddenEles.length; i++) {
+                            if (hiddenEles[i].style.display === 'none') hiddenEles[i].style.removeAttribute('display');
+                        }
+                        // csec.style.removeAttribute('display');
+                    }
                     // Scroll to element
                     sectionEle.scrollIntoView();
                     // iframeWin.location.hash = this.dataset.headingId;
