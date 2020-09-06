@@ -3664,6 +3664,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             var innerDoc = iframe.contentDocument;
             var tableOfContents = new uiUtil.toc(innerDoc);
             var headings = tableOfContents.getHeadingObjects();
+            // Create a closest function alternative because IE11 and others do not support closest
+            var closest = function(ele, s) {
+                var cele = ele;
+                var cmatches = Element.prototype.matches || Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+                do {
+                    if (cmatches.call(cele, s)) return cele;
+                    cele = cele.parentElement || cele.parentNode;
+                } while (cele !== null && cele.nodeType === 1);
+            };
+            
             document.getElementById('dropup').style.fontSize = ~~(params.relativeUIFontSize * 0.14) + "px";
             var dropup = "";
             headings.forEach(function (heading) {
@@ -3681,15 +3691,23 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             ToCList.innerHTML = dropup;
             Array.prototype.slice.call(ToCList.getElementsByTagName('a')).forEach(function (listElement) {
                 listElement.addEventListener('click', function () {
-                    var iframeWin = document.getElementById('articleContent').contentWindow;
-                    iframeWin.location.hash = this.dataset.headingId;
-                    iframeWin.scrollBy(0, -5);
+                    var sectionEle = innerDoc.getElementById(this.dataset.headingId);
+                    var csec = closest(sectionEle, 'details');
+                    if (csec && !csec.hasAttribute('open')) csec.setAttribute('open', '');
+                    if (csec && csec.style.display === 'none') csec.style.display = 'block';
+                    // Scroll to element
+                    sectionEle.scrollIntoView();
+                    // iframeWin.location.hash = this.dataset.headingId;
+                    iframe.contentWindow.scrollBy(0, -5);
                     setTimeout(function () {
-                        iframeWin.scrollBy(0, 5);
+                        iframe.contentWindow.scrollBy(0, 5);
                     }, 250);
                 });
             });
+
         }
+
+        
 
         params.preloadAllImages = function () {
             if (params.preloadingAllImages !== true) {
