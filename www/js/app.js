@@ -83,7 +83,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
                 ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
             }
-            removePageMaxWidth();
             if (window.outerWidth <= 470) {
                 document.getElementById('dropup').classList.remove('col-xs-4');
                 document.getElementById('dropup').classList.add('col-xs-3');
