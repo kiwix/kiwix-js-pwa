@@ -3328,25 +3328,24 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                             collection[j].addEventListener("click", function (e) {
                                 var that = e.currentTarget;
                                 var topTag = that.tagName;
-                                that.classList.toggle("open-block");
+                                if (that.classList.contains("collapsible-block")) that.classList.toggle("open-block");
                                 var nextElement = that.nextElementSibling;
                                 that = that.parentNode;
                                 if (!nextElement) nextElement = that.nextElementSibling;
                                 if (!nextElement) return;
                                 // Decide toggle direction based on first sibling element
-                                var toggleDirection = nextElement.classList.contains("collapsible-block") && !nextElement.classList.contains("open-block") || nextElement.style.display == "none" ? "block" : "none";
-                                //if (nextElement.style.display == "none") {
-                                //    this.innerHTML += "<br />";
-                                //} else {
-                                //    this.innerHTML = this.innerHTML.replace(/<br\s*\/?>$/i, "");
-                                //}
+                                var toggleDirection = nextElement.classList.contains("collapsible-block") && !nextElement.classList.contains("open-block") || nextElement.style.display === "none" ? "" : "none";
                                 while (nextElement && !~nextElement.tagName.indexOf(topTag) && !~nextElement.tagName.indexOf("H1")) {
-                                    if (nextElement.classList.contains("collapsible-block")) {
+                                    if (~nextElement.tagName.indexOf("DETAILS") && nextElement.toggleAttribute) {
+                                        // IE11 doesn't support details/summary tags or toggleAttribute
+                                        nextElement.toggleAttribute("open");
+                                    } else if (nextElement.classList.contains("collapsible-block")) {
                                         nextElement.classList.toggle("open-block");
                                     } else if (that.classList.contains("collapsible-block")) {
                                         // We're in a document that has been marked up, but we've encountered one that doesn't have markup, so stop
                                         break;
                                     } else {
+                                        // Deals with other cases for legacy browsers
                                         nextElement.style.display = toggleDirection;
                                     }
                                     that = nextElement;
@@ -3697,9 +3696,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                     if (csec) csec.setAttribute('open', '');
                     csec = closest(sectionEle, '[style*=display]');
                     if (csec && csec.style.display === 'none') {
-                        var hiddenEles = csec.parentElement.querySelectorAll('[style*=display]');
+                        var hiddenEles = csec.parentElement.querySelectorAll('h2[style*=display], h2[style*=display], h3[style*=display]');
                         for (var i = 0; i < hiddenEles.length; i++) {
-                            if (hiddenEles[i].style.display === 'none') hiddenEles[i].style.removeAttribute('display');
+                            if (hiddenEles[i].style.display === 'none') hiddenEles[i].style.display = '';
                         }
                     }
                     // Scroll to element
