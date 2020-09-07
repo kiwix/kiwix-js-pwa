@@ -3695,7 +3695,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                     if (csec) csec.setAttribute('open', '');
                     csec = closest(sectionEle, '[style*=display]');
                     if (csec && csec.style.display === 'none') {
-                        var hiddenEles = csec.parentElement.querySelectorAll('h2[style*=display], h2[style*=display], h3[style*=display]');
+                        var hiddenEles = csec.parentElement.querySelectorAll('[style*=display]');
                         for (var i = 0; i < hiddenEles.length; i++) {
                             if (hiddenEles[i].style.display === 'none') hiddenEles[i].style.display = '';
                         }
