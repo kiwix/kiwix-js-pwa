@@ -3701,11 +3701,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                         for (var i = 0; i < hiddenEles.length; i++) {
                             if (hiddenEles[i].style.display === 'none') hiddenEles[i].style.removeAttribute('display');
                         }
-                        // csec.style.removeAttribute('display');
                     }
                     // Scroll to element
                     sectionEle.scrollIntoView();
-                    // iframeWin.location.hash = this.dataset.headingId;
+                    // Scrolling up then down ensures that the toolbars show according to user settings
                     iframe.contentWindow.scrollBy(0, -5);
                     setTimeout(function () {
                         iframe.contentWindow.scrollBy(0, 5);
