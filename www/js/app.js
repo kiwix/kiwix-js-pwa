@@ -3326,6 +3326,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                             //collection[j].classList.add("open-block");
                             collection[j].addEventListener("click", function (e) {
                                 var that = e.currentTarget;
+                                var detailsEle = closest(that, 'details');
+                                if (detailsEle && detailsEle.toggleAttribute) return;
                                 var topTag = that.tagName;
                                 if (that.classList.contains("collapsible-block")) that.classList.toggle("open-block");
                                 var nextElement = that.nextElementSibling;
@@ -3662,16 +3664,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             var innerDoc = iframe.contentDocument;
             var tableOfContents = new uiUtil.toc(innerDoc);
             var headings = tableOfContents.getHeadingObjects();
-            // Create a closest function alternative because IE11 and others do not support closest
-            var closest = function(ele, s) {
-                var cele = ele;
-                var cmatches = Element.prototype.matches || Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
-                do {
-                    if (cmatches.call(cele, s)) return cele;
-                    cele = cele.parentElement || cele.parentNode;
-                } while (cele !== null && cele.nodeType === 1);
-                return null;
-            };
             
             document.getElementById('dropup').style.fontSize = ~~(params.relativeUIFontSize * 0.14) + "px";
             var dropup = "";
@@ -3712,7 +3704,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
 
         }
 
-        
+        // Create a closest function alternative because IE11 and others do not support closest
+        function closest (ele, s) {
+            var cele = ele;
+            var cmatches = Element.prototype.matches || Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+            do {
+                if (cmatches.call(cele, s)) return cele;
+                cele = cele.parentElement || cele.parentNode;
+            } while (cele !== null && cele.nodeType === 1);
+            return null;
+        };
 
         params.preloadAllImages = function () {
             if (params.preloadingAllImages !== true) {
