@@ -26,7 +26,7 @@ However, if you prefer not to use the Store, or want to test a specific release,
 Releases: https://github.com/kiwix/kiwix-js-windows/releases. Installation instructions for the standalone app (Kiwix JS) 
 are provided on the Master branch: https://github.com/kiwix/kiwix-js-windows/tree/master. 
 
-You will need a ZIM file to work with this app. For testing, it comes packaged with the Ray Charles ZIM.
+You will need a ZIM file to work with this app. For testing, it comes packaged with an archive of the top 100 Wikipedia pages in English (with pictures) as a starter ZIM.
 You can download other ZIM archives from the setup page in the app (the download completes in the browser).
 Place the file in an accessible location on your device, and use the Rescan Storage button in the app to
 display buttons that let you pick the file or the file's folder.
