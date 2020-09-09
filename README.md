@@ -1,10 +1,10 @@
 # Kiwix JS Wikivoyage for Windows
 
-[There is a browser-based deployment of this app [here](https://kiwix.github.io/kiwix-js-windows/www/), 
-but you will need a ZIM file for testing.]
+*There is a browser-based deployment and installable Progressive Web App (PWA) version of this app [here](https://kiwix.github.io/kiwix-js-windows/www/), 
+but you will need a ZIM file for testing.*
 
-This repository is for development of the Kiwix JS app for Windows 10 Universal Windows Platform.
-Latest development code is on the [master-dev](https://github.com/kiwix/kiwix-js-windows/tree/master-dev/) branch.
+This repository is for development of the Kiwix JS app for Windows 10 Universal Windows Platform, PWA, Electron and NWJS.
+Latest development code is usually on the [master-dev](https://github.com/kiwix/kiwix-js-windows/tree/master-dev/) branch.
 
 [ Microsoft Store link: https://www.microsoft.com/store/apps/9N5SB90Q4JBJ ] 
 
@@ -18,16 +18,19 @@ in many different languages. The underlying app has only been tested fully on Wi
 
 However, if you prefer not to use the Store, or want to test a specific release, available packages are located under 
 Releases: https://github.com/kiwix/kiwix-js-windows/releases. Installation instructions for the standalone app (Kiwix JS) 
-are provided on the Master branch: https://github.com/kiwix/kiwix-js-windows/tree/master. 
+are provided on the Master branch: https://github.com/kiwix/kiwix-js-windows/tree/master. Electron and NWJS versions are also available from Releases,
+and a PWA version can be installed by visiting https://kiwix.github.io/kiwix-js-windows/.
 
 You can also run the app in your browser if you prefer, either from the file:// protocol or from your own
 local server. There is a test deployment at: [https://kiwix.github.io/kiwix-js-windows/www/](https://kiwix.github.io/kiwix-js-windows/www/), but note that
-you will need a ZIM file, and some functionality is limited (e.g. accessing the Kiwix servers in the app
-is blocked by CORS, and you have to pick a file each time you access the app in browser context).
+you will need a ZIM file, and some functionality is limited (e.g. you have to pick or authorize access to a file each time you access the app in browser context).
+If you install the PWA from that page and you are using Chrome or new Edge (Chromium), then you will not need to pick a file each time you start the app, but you
+will be prompted to authorize file access with a simple click.
 
-The authors of the HTML5 app for Kiwix did all the work. Their source code runs almost "as is" on
-the UWP platform, which is testament to how well written their app is. This port and further development 
-for Windows 10 (Mobile) is by Geoffrey Kantaris. I can be contacted by email: egk10 at cam ac uk.
+A lot of development for this app happens upstream in the [Kiwix JS repository](https://kiwix.github.io/kiwix-js/) to which I ontribute actively. Without Kiwix JS,
+this app would be impossible, and huge thanks goes to the original developers of first the Evopedia app and then Kiwix HTML5, which eventually became Kiwix JS.
+The original source code runs almost "as is" on the UWP platform, which is testament to how well written that app is. The port and further development of Kiwix JS
+Windows for Windows 10 (including Mobile) is by Geoffrey Kantaris. I can be contacted by email: egk10 at cam ac uk.
 
 # Privacy Policy
 
