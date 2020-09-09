@@ -3026,8 +3026,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
 
             //Remove the details polyfill: it's poor and doesn't recognize Edgium
             htmlArticle = htmlArticle.replace(/<script\b[^<]+details_polyfill\.js[^<]+<\/script>\s*/i, '');
-            //And make sure all sections are open
-            htmlArticle = htmlArticle.replace(/(<details\b(?![^>]+\sopen)[^>]+)>/ig, '$1 open>');
+            // And make sure all sections are open - this doesn't work, because they are all subsequently closed by JS
+            // htmlArticle = htmlArticle.replace(/(<details\b(?![^>]+\sopen)[^>]+)>/ig, '$1 open>');
+            // Remove the script.js that closes top-level sections if user requested this
+            if (params.openAllSections) htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/j\/js_modules\/script\.js"[^<]*<\/script>/i, "");
+
 
             //Remove empty div that causes layout issues in desktop style
             htmlArticle = htmlArticle.replace(/<div\b[^>]*?>\s*<\/div>\s*/, '');
