@@ -363,6 +363,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             btnContinue.disabled = false;
             btnContinue.innerHTML = "Continue";
             var printModalContent = document.getElementById('print-modal-content');
+            openAllSections(true);
             printModalContent.classList.remove('dark');
             var determinedTheme = params.cssUITheme;
             determinedTheme = determinedTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : determinedTheme;
@@ -1282,6 +1283,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 docStyle.margin = "0 auto";
             }
         }
+        document.getElementById('openAllSectionsCheck').addEventListener('click', function (e) {
+            params.openAllSections = this.checked;
+            cookies.setItem('openAllSections', params.openAllSections, Infinity);
+            openAllSections();
+        });
         $('input:radio[name=useMathJax]').on('click', function (e) {
             params.useMathJax = /true/i.test(this.value);
             cookies.setItem('useMathJax', params.useMathJax, Infinity);
@@ -2733,6 +2739,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                         removePageMaxWidth();
                         setupTableOfContents();
                         listenForSearchKeys();
+                        openAllSections();
                         // The content is ready : we can hide the spinner
                         setTab();
                         checkToolbar();
@@ -3399,10 +3406,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                         }
                     }
 
-                    //Hide top-level scrolling -- gets rid of interfering useless scroll bar, but re-enable for Config and About pages
-                    // document.getElementById('search-article').scrollTop = 0;
-                    // document.getElementById('search-article').style.overflow = "hidden";
-
+                    openAllSections();
                     var makeLink = uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
                     var linkListener = eval(makeLink);
                     //Prevent multiple listeners being attached on each browse
@@ -3422,17 +3426,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                     // Pattern to match a local anchor in an href even if prefixed by escaped url; will also match # on its own
                     var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#]*$)');
 
-                    // Set state of collapsible sections
-                    if (params.openAllSections === true) {
-                        var collapsedBlocks = iframeContentDocument.querySelectorAll('details:not([open]), .collapsible-block:not(.open-block), .collapsible-heading:not(.open-block)');
-                        for (var x = collapsedBlocks.length; x--;) {
-                            if (/DETAILS/.test(collapsedBlocks[x].tagName)) {
-                                collapsedBlocks[x].open = true;
-                            } else {
-                                collapsedBlocks[x].classList.add('open-block');
-                            }
-                        }
-                    }
                     // function insertAnchorsJQuery
                     Array.prototype.slice.call(iframeContentDocument.querySelectorAll('a, area')).forEach(function (anchor) {
                         // Attempts to access any properties of 'this' with malformed URLs causes app crash in Edge/UWP [kiwix-js #430]
@@ -3717,6 +3710,33 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             } while (cele !== null && cele.nodeType === 1);
             return null;
         };
+
+        // Sets state of collapsible sections
+        function openAllSections(override) {
+            var openAllSections = override === false ? false : override || params.openAllSections;
+            var iframeContentDocument = frames[0].frameElement.contentDocument;
+            var blocks;
+            var x;
+            if (openAllSections) {
+                blocks = iframeContentDocument.querySelectorAll('details:not([open]), .collapsible-block:not(.open-block), .collapsible-heading:not(.open-block)');
+                for (x = blocks.length; x--;) {
+                    if (/DETAILS/.test(blocks[x].tagName)) {
+                        blocks[x].open = true;
+                    } else {
+                        blocks[x].classList.add('open-block');
+                    }
+                }
+            } else {
+                blocks = iframeContentDocument.querySelectorAll('details[open], .collapsible-block .open-block, .collapsible-heading .open-block');
+                for (x = blocks.length; x--;) {
+                    if (/DETAILS/.test(blocks[x].tagName)) {
+                        blocks[x].removeAttribute('open');
+                    } else {
+                        blocks[x].classList.remove('open-block');
+                    }
+                }
+            }
+        }
 
         params.preloadAllImages = function () {
             if (params.preloadingAllImages !== true) {
