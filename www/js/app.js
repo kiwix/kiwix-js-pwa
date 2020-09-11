@@ -2740,6 +2740,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                         setupTableOfContents();
                         listenForSearchKeys();
                         openAllSections();
+                        setupHeadings();
                         // The content is ready : we can hide the spinner
                         setTab();
                         checkToolbar();
@@ -3032,7 +3033,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             htmlArticle = htmlArticle.replace(/background:url\([^)]+\)[^;}]*/ig, '');
 
             //Remove the details polyfill: it's poor and doesn't recognize Edgium
-            htmlArticle = htmlArticle.replace(/<script\b[^<]+details_polyfill\.js[^<]+<\/script>\s*/i, '');
+            htmlArticle = htmlArticle.replace(/<script\b[^<]+details[^"']*polyfill\.js[^<]+<\/script>\s*/i, '');
             // And make sure all sections are open - this doesn't work, because they are all subsequently closed by JS
             // htmlArticle = htmlArticle.replace(/(<details\b(?![^>]+\sopen)[^>]+)>/ig, '$1 open>');
             // Remove the script.js that closes top-level sections if user requested this
@@ -3324,47 +3325,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
 
                     setupTableOfContents();
 
-                    // Attach listeners to headers to open-close following sections
-                    var eles = ["H2", "H3"];
-                    for (var i = 0; i < eles.length; i++) {
-                        // Process headers
-                        var collection = docBody.getElementsByTagName(eles[i]);
-                        for (var j = 0; j < collection.length; j++) {
-                            // Prevent heading from getting selected when clicking on it
-                            collection[j].style.userSelect = 'none';
-                            collection[j].style.msUserSelect = 'none';
-                            //collection[j].classList.add("open-block");
-                            collection[j].addEventListener("click", function (e) {
-                                var that = e.currentTarget;
-                                var detailsEle = closest(that, 'details');
-                                if (detailsEle && detailsEle.toggleAttribute) return;
-                                var topTag = that.tagName;
-                                if (that.classList.contains("collapsible-block")) that.classList.toggle("open-block");
-                                var nextElement = that.nextElementSibling;
-                                that = that.parentNode;
-                                if (!nextElement) nextElement = that.nextElementSibling;
-                                if (!nextElement) return;
-                                // Decide toggle direction based on first sibling element
-                                var toggleDirection = nextElement.classList.contains("collapsible-block") && !nextElement.classList.contains("open-block") || nextElement.style.display === "none" ? "" : "none";
-                                while (nextElement && !~nextElement.tagName.indexOf(topTag) && !~nextElement.tagName.indexOf("H1")) {
-                                    if (~nextElement.tagName.indexOf("DETAILS") && nextElement.toggleAttribute) {
-                                        // IE11 doesn't support details/summary tags or toggleAttribute
-                                        nextElement.toggleAttribute("open");
-                                    } else if (nextElement.classList.contains("collapsible-block")) {
-                                        nextElement.classList.toggle("open-block");
-                                    } else if (that.classList.contains("collapsible-block")) {
-                                        // We're in a document that has been marked up, but we've encountered one that doesn't have markup, so stop
-                                        break;
-                                    } else {
-                                        // Deals with other cases for legacy browsers
-                                        nextElement.style.display = toggleDirection;
-                                    }
-                                    that = nextElement;
-                                    nextElement = that.nextElementSibling;
-                                }
-                            });
-                        }
-                    }
+                    setupHeadings();
+
                     // Process endnote references (so they open the reference block if closed)
                     var refs = docBody.getElementsByClassName("mw-reflink-text");
                     if (refs) {
@@ -3680,22 +3642,24 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 listElement.addEventListener('click', function () {
                     var sectionEle = innerDoc.getElementById(this.dataset.headingId);
                     var i;
-                    var csec = closest(sectionEle, 'details');
-                    if (csec) {
-                        if (/DETAILS/i.test(csec.parentElement.tagName)) csec = csec.parentElement; 
-                        csec.open = true;
-                        var closedEles = csec.querySelectorAll('details:not([open])');
-                        for (i = closedEles.length; i--;) {
-                            closedEles[i].open = true;
-                        }
-                    }
-                    csec = closest(sectionEle, '[style*=display]');
-                    if (csec && csec.style.display === 'none') {
-                        var hiddenEles = csec.parentElement.querySelectorAll('[style*=display]');
-                        for (i = hiddenEles.length; i--;) {
-                            if (hiddenEles[i].style.display === 'none') hiddenEles[i].style.display = '';
-                        }
-                    }
+                    var csec = closest(sectionEle, 'details, section');
+                    csec = csec && /DETAILS|SECTION/.test(csec.parentElement.tagName) ? csec.parentElement : csec;
+                    openAllSections(true, csec);
+                    // if (csec) {
+                    //     if (/DETAILS/i.test(csec.parentElement.tagName)) csec = csec.parentElement; 
+                    //     csec.open = true;
+                    //     var closedEles = csec.querySelectorAll('details:not([open])');
+                    //     for (i = closedEles.length; i--;) {
+                    //         closedEles[i].open = true;
+                    //     }
+                    // }
+                    // csec = closest(sectionEle, '[style*=display]');
+                    // if (csec && csec.style.display === 'none') {
+                    //     var hiddenEles = csec.parentElement.querySelectorAll('[style*=display]');
+                    //     for (i = hiddenEles.length; i--;) {
+                    //         if (hiddenEles[i].style.display === 'none') hiddenEles[i].style.display = '';
+                    //     }
+                    // }
                     // Scroll to element
                     sectionEle.scrollIntoView();
                     // Scrolling up then down ensures that the toolbars show according to user settings
@@ -3719,32 +3683,62 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             return null;
         }
 
+        /**
+         * Sets the state of collapsible sections for the iframe document, or for the given node
+         * @param {Boolean} override An optional value that overrides params.openAllSections (true to open, false to close)
+         * @param {Node} node An optional node within which elements will be opened or closed (this will normally be a details element)
+         */
         // Sets state of collapsible sections
-        function openAllSections(override) {
-            var openAllSections = override === false ? false : override || params.openAllSections;
-            var iframeContentDocument = frames[0].frameElement.contentDocument;
-            var blocks, children, x, y;
-            blocks = iframeContentDocument.querySelectorAll('details');
-            for (x = blocks.length; x--;) {
-                if (/DETAILS/.test(blocks[x].tagName)) {
-                    if (openAllSections) blocks[x].open = true;
-                    else blocks[x].removeAttribute('open');
-                    if (typeof HTMLDetailsElement === 'undefined') {         
-                        if (!/2|3/.test(blocks[x].dataset.level)) {
-                            blocks[x].style.display = openAllSections ? 'block' : 'none';
-                        } else if (blocks[x].dataset.level === '2') {
-                            children = blocks[x].children;
-                            for (y = children.length; y--;) {
-                                if (/SUMMARY/.test(children[y].tagName)) continue;
-                                if (openAllSections) children[y].style.removeProperty('display');
-                                else children[y].style.display = 'none';
-                            }
+        function openAllSections(override, node) {
+            var open = override === false ? false : override || params.openAllSections;
+            var container = node || frames[0].frameElement.contentDocument;
+            var blocks = container.querySelectorAll('details, section:not([data-mw-section-id="0"]), .collapsible-block, .collapsible-heading');
+            if (node) processSection(open, node);
+            for (var x = blocks.length; x--;) {
+                processSection(open, blocks[x]);
+            }
+        }
+
+        function processSection(open, node) {
+            if (/DETAILS|SECTION/.test(node.tagName)) {
+                if (open) node.setAttribute('open', '');
+                else node.removeAttribute('open');
+                if (typeof HTMLDetailsElement === 'undefined' || node.tagName === 'SECTION') {         
+                    var children = node.children;
+                    for (var y = children.length; y--;) {
+                        if (/SUMMARY|H\d/.test(children[y].tagName)) continue;
+                        if (open) {
+                            if (/DETAILS|SECTION/.test(children[y].tagName)) children[y].setAttribute('open', '');
+                            children[y].style.removeProperty('display');
+                        } else {
+                            if (/DETAILS|SECTION/.test(children[y].tagName)) children[y].removeAttribute('open');
+                            children[y].style.display = 'none';
                         }
                     }
-                } else {
-                    if (openAllSections) blocks[x].classList.add('open-block');
-                    else blocks[x].classList.remove('open-block');
                 }
+            } else {
+                if (open) node.classList.add('open-block');
+                else node.classList.remove('open-block');
+            }
+        }
+
+        // Attach listeners to headers to open-close following sections
+        function setupHeadings() {
+            var headings = frames[0].frameElement.contentDocument.querySelectorAll('h2, h3, h4, h5');
+            for (var i = headings.length; i--;) {
+                // Prevent heading from being selected when user clicks on it
+                headings[i].style.userSelect = 'none';
+                headings[i].style.msUserSelect = 'none';
+                headings[i].addEventListener('click', function(e) {
+                    // Override the built-in simplistic polyfill
+                    e.preventDefault();
+                    var that = e.currentTarget;
+                    var detailsEl = closest(that, 'details, section');
+                    if (detailsEl) {
+                        var toggle = !detailsEl.hasAttribute('open');
+                        openAllSections(toggle, detailsEl);
+                    }
+                });
             }
         }
 
