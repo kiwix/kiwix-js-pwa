@@ -3679,12 +3679,20 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             Array.prototype.slice.call(ToCList.getElementsByTagName('a')).forEach(function (listElement) {
                 listElement.addEventListener('click', function () {
                     var sectionEle = innerDoc.getElementById(this.dataset.headingId);
-                    var csec = closest(sectionEle, 'details:not([open])');
-                    if (csec) csec.setAttribute('open', '');
+                    var i;
+                    var csec = closest(sectionEle, 'details');
+                    if (csec) {
+                        if (/DETAILS/i.test(csec.parentElement.tagName)) csec = csec.parentElement; 
+                        csec.open = true;
+                        var closedEles = csec.querySelectorAll('details:not([open])');
+                        for (i = closedEles.length; i--;) {
+                            closedEles[i].open = true;
+                        }
+                    }
                     csec = closest(sectionEle, '[style*=display]');
                     if (csec && csec.style.display === 'none') {
                         var hiddenEles = csec.parentElement.querySelectorAll('[style*=display]');
-                        for (var i = 0; i < hiddenEles.length; i++) {
+                        for (i = hiddenEles.length; i--;) {
                             if (hiddenEles[i].style.display === 'none') hiddenEles[i].style.display = '';
                         }
                     }
@@ -3709,31 +3717,33 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 cele = cele.parentElement || cele.parentNode;
             } while (cele !== null && cele.nodeType === 1);
             return null;
-        };
+        }
 
         // Sets state of collapsible sections
         function openAllSections(override) {
             var openAllSections = override === false ? false : override || params.openAllSections;
             var iframeContentDocument = frames[0].frameElement.contentDocument;
-            var blocks;
-            var x;
-            if (openAllSections) {
-                blocks = iframeContentDocument.querySelectorAll('details:not([open]), .collapsible-block:not(.open-block), .collapsible-heading:not(.open-block)');
-                for (x = blocks.length; x--;) {
-                    if (/DETAILS/.test(blocks[x].tagName)) {
-                        blocks[x].open = true;
-                    } else {
-                        blocks[x].classList.add('open-block');
+            var blocks, children, x, y;
+            blocks = iframeContentDocument.querySelectorAll('details');
+            for (x = blocks.length; x--;) {
+                if (/DETAILS/.test(blocks[x].tagName)) {
+                    if (openAllSections) blocks[x].open = true;
+                    else blocks[x].removeAttribute('open');
+                    if (typeof HTMLDetailsElement === 'undefined') {         
+                        if (!/2|3/.test(blocks[x].dataset.level)) {
+                            blocks[x].style.display = openAllSections ? 'block' : 'none';
+                        } else if (blocks[x].dataset.level === '2') {
+                            children = blocks[x].children;
+                            for (y = children.length; y--;) {
+                                if (/SUMMARY/.test(children[y].tagName)) continue;
+                                if (openAllSections) children[y].style.removeProperty('display');
+                                else children[y].style.display = 'none';
+                            }
+                        }
                     }
-                }
-            } else {
-                blocks = iframeContentDocument.querySelectorAll('details[open], .collapsible-block .open-block, .collapsible-heading .open-block');
-                for (x = blocks.length; x--;) {
-                    if (/DETAILS/.test(blocks[x].tagName)) {
-                        blocks[x].removeAttribute('open');
-                    } else {
-                        blocks[x].classList.remove('open-block');
-                    }
+                } else {
+                    if (openAllSections) blocks[x].classList.add('open-block');
+                    else blocks[x].classList.remove('open-block');
                 }
             }
         }
