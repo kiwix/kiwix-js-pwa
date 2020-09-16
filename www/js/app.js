@@ -3642,7 +3642,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 listElement.addEventListener('click', function () {
                     var sectionEle = innerDoc.getElementById(this.dataset.headingId);
                     var i;
-                    var csec = closest(sectionEle, 'details, section');
+                    var csec = util.closest(sectionEle, 'details, section');
                     csec = csec && /DETAILS|SECTION/.test(csec.parentElement.tagName) ? csec.parentElement : csec;
                     openAllSections(true, csec);
                     // if (csec) {
@@ -3670,17 +3670,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 });
             });
 
-        }
-
-        // Create a closest function alternative because IE11 and others do not support closest
-        function closest (ele, s) {
-            var cele = ele;
-            var cmatches = Element.prototype.matches || Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
-            do {
-                if (cmatches.call(cele, s)) return cele;
-                cele = cele.parentElement || cele.parentNode;
-            } while (cele !== null && cele.nodeType === 1);
-            return null;
         }
 
         /**
@@ -3733,7 +3722,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                     // Override the built-in simplistic polyfill
                     e.preventDefault();
                     var that = e.currentTarget;
-                    var detailsEl = closest(that, 'details, section');
+                    var detailsEl = util.closest(that, 'details, section');
                     if (detailsEl) {
                         var toggle = !detailsEl.hasAttribute('open');
                         openAllSections(toggle, detailsEl);
