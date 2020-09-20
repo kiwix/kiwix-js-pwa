@@ -2,6 +2,10 @@
 
 ## Release 0.9.9.993 Wikivoyage (beta)
 
+* FIX: Critical error on load if packaged archive name has changed
+* DEPRECATED: Scrolling information for new users
+
+## Release 0.9.9.992 Wikivoyage (beta)* UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-08.zim`
 * UPDATE: August 2020 update of Wikivoyage ZIM archive to `wikivoyage_en_all_maxi_2020-08.zim`
 * FIX: Critical error on load if packaged archive name has changeds
 * FIX: Prevent extraneous titles appearing in search
