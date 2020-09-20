@@ -83,7 +83,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
                 ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
             }
-            removePageMaxWidth();
             if (window.outerWidth <= 470) {
                 document.getElementById('dropup').classList.remove('col-xs-4');
                 document.getElementById('dropup').classList.add('col-xs-3');
@@ -364,6 +363,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             btnContinue.disabled = false;
             btnContinue.innerHTML = "Continue";
             var printModalContent = document.getElementById('print-modal-content');
+            openAllSections(true);
             printModalContent.classList.remove('dark');
             var determinedTheme = params.cssUITheme;
             determinedTheme = determinedTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : determinedTheme;
@@ -1283,6 +1283,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 docStyle.margin = "0 auto";
             }
         }
+        document.getElementById('openAllSectionsCheck').addEventListener('click', function (e) {
+            params.openAllSections = this.checked;
+            cookies.setItem('openAllSections', params.openAllSections, Infinity);
+            openAllSections();
+        });
         $('input:radio[name=useMathJax]').on('click', function (e) {
             params.useMathJax = /true/i.test(this.value);
             cookies.setItem('useMathJax', params.useMathJax, Infinity);
@@ -2734,6 +2739,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                         removePageMaxWidth();
                         setupTableOfContents();
                         listenForSearchKeys();
+                        openAllSections();
+                        setupHeadings();
                         // The content is ready : we can hide the spinner
                         setTab();
                         checkToolbar();
@@ -3026,9 +3033,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             htmlArticle = htmlArticle.replace(/background:url\([^)]+\)[^;}]*/ig, '');
 
             //Remove the details polyfill: it's poor and doesn't recognize Edgium
-            htmlArticle = htmlArticle.replace(/<script\b[^<]+details_polyfill\.js[^<]+<\/script>\s*/i, '');
-            //And make sure all sections are open
-            htmlArticle = htmlArticle.replace(/(<details\b(?![^>]+\sopen)[^>]+)>/ig, '$1 open>');
+            htmlArticle = htmlArticle.replace(/<script\b[^<]+details[^"']*polyfill\.js[^<]+<\/script>\s*/i, '');
+            // And make sure all sections are open - this doesn't work, because they are all subsequently closed by JS
+            // htmlArticle = htmlArticle.replace(/(<details\b(?![^>]+\sopen)[^>]+)>/ig, '$1 open>');
+            // Remove the script.js that closes top-level sections if user requested this
+            if (params.openAllSections) htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/j\/js_modules\/script\.js"[^<]*<\/script>/i, "");
+
 
             //Remove empty div that causes layout issues in desktop style
             htmlArticle = htmlArticle.replace(/<div\b[^>]*?>\s*<\/div>\s*/, '');
@@ -3315,46 +3325,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
 
                     setupTableOfContents();
 
-                    // Attach listeners to headers to open-close following sections
-                    var eles = ["H2", "H3"];
-                    for (var i = 0; i < eles.length; i++) {
-                        // Process headers
-                        var collection = docBody.getElementsByTagName(eles[i]);
-                        for (var j = 0; j < collection.length; j++) {
-                            // Prevent heading from getting selected when clicking on it
-                            collection[j].style.userSelect = 'none';
-                            collection[j].style.msUserSelect = 'none';
-                            //collection[j].classList.add("open-block");
-                            collection[j].addEventListener("click", function (e) {
-                                var that = e.currentTarget;
-                                var topTag = that.tagName;
-                                that.classList.toggle("open-block");
-                                var nextElement = that.nextElementSibling;
-                                that = that.parentNode;
-                                if (!nextElement) nextElement = that.nextElementSibling;
-                                if (!nextElement) return;
-                                // Decide toggle direction based on first sibling element
-                                var toggleDirection = nextElement.classList.contains("collapsible-block") && !nextElement.classList.contains("open-block") || nextElement.style.display == "none" ? "block" : "none";
-                                //if (nextElement.style.display == "none") {
-                                //    this.innerHTML += "<br />";
-                                //} else {
-                                //    this.innerHTML = this.innerHTML.replace(/<br\s*\/?>$/i, "");
-                                //}
-                                while (nextElement && !~nextElement.tagName.indexOf(topTag) && !~nextElement.tagName.indexOf("H1")) {
-                                    if (nextElement.classList.contains("collapsible-block")) {
-                                        nextElement.classList.toggle("open-block");
-                                    } else if (that.classList.contains("collapsible-block")) {
-                                        // We're in a document that has been marked up, but we've encountered one that doesn't have markup, so stop
-                                        break;
-                                    } else {
-                                        nextElement.style.display = toggleDirection;
-                                    }
-                                    that = nextElement;
-                                    nextElement = that.nextElementSibling;
-                                }
-                            });
-                        }
-                    }
+                    setupHeadings();
+
                     // Process endnote references (so they open the reference block if closed)
                     var refs = docBody.getElementsByClassName("mw-reflink-text");
                     if (refs) {
@@ -3396,10 +3368,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                         }
                     }
 
-                    //Hide top-level scrolling -- gets rid of interfering useless scroll bar, but re-enable for Config and About pages
-                    // document.getElementById('search-article').scrollTop = 0;
-                    // document.getElementById('search-article').style.overflow = "hidden";
-
+                    openAllSections();
                     var makeLink = uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
                     var linkListener = eval(makeLink);
                     //Prevent multiple listeners being attached on each browse
@@ -3419,17 +3388,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                     // Pattern to match a local anchor in an href even if prefixed by escaped url; will also match # on its own
                     var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#]*$)');
 
-                    // Set state of collapsible sections
-                    if (params.openAllSections === true) {
-                        var collapsedBlocks = iframeContentDocument.querySelectorAll('details:not([open]), .collapsible-block:not(.open-block), .collapsible-heading:not(.open-block)');
-                        for (var x = collapsedBlocks.length; x--;) {
-                            if (/DETAILS/.test(collapsedBlocks[x].tagName)) {
-                                collapsedBlocks[x].open = true;
-                            } else {
-                                collapsedBlocks[x].classList.add('open-block');
-                            }
-                        }
-                    }
                     // function insertAnchorsJQuery
                     Array.prototype.slice.call(iframeContentDocument.querySelectorAll('a, area')).forEach(function (anchor) {
                         // Attempts to access any properties of 'this' with malformed URLs causes app crash in Edge/UWP [kiwix-js #430]
@@ -3664,6 +3622,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             var innerDoc = iframe.contentDocument;
             var tableOfContents = new uiUtil.toc(innerDoc);
             var headings = tableOfContents.getHeadingObjects();
+            
             document.getElementById('dropup').style.fontSize = ~~(params.relativeUIFontSize * 0.14) + "px";
             var dropup = "";
             headings.forEach(function (heading) {
@@ -3681,14 +3640,95 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             ToCList.innerHTML = dropup;
             Array.prototype.slice.call(ToCList.getElementsByTagName('a')).forEach(function (listElement) {
                 listElement.addEventListener('click', function () {
-                    var iframeWin = document.getElementById('articleContent').contentWindow;
-                    iframeWin.location.hash = this.dataset.headingId;
-                    iframeWin.scrollBy(0, -5);
+                    var sectionEle = innerDoc.getElementById(this.dataset.headingId);
+                    var i;
+                    var csec = util.closest(sectionEle, 'details, section');
+                    csec = csec && /DETAILS|SECTION/.test(csec.parentElement.tagName) ? csec.parentElement : csec;
+                    openAllSections(true, csec);
+                    // if (csec) {
+                    //     if (/DETAILS/i.test(csec.parentElement.tagName)) csec = csec.parentElement; 
+                    //     csec.open = true;
+                    //     var closedEles = csec.querySelectorAll('details:not([open])');
+                    //     for (i = closedEles.length; i--;) {
+                    //         closedEles[i].open = true;
+                    //     }
+                    // }
+                    // csec = closest(sectionEle, '[style*=display]');
+                    // if (csec && csec.style.display === 'none') {
+                    //     var hiddenEles = csec.parentElement.querySelectorAll('[style*=display]');
+                    //     for (i = hiddenEles.length; i--;) {
+                    //         if (hiddenEles[i].style.display === 'none') hiddenEles[i].style.display = '';
+                    //     }
+                    // }
+                    // Scroll to element
+                    sectionEle.scrollIntoView();
+                    // Scrolling up then down ensures that the toolbars show according to user settings
+                    iframe.contentWindow.scrollBy(0, -5);
                     setTimeout(function () {
-                        iframeWin.scrollBy(0, 5);
+                        iframe.contentWindow.scrollBy(0, 5);
                     }, 250);
                 });
             });
+
+        }
+
+        /**
+         * Sets the state of collapsible sections for the iframe document, or for the given node
+         * @param {Boolean} override An optional value that overrides params.openAllSections (true to open, false to close)
+         * @param {Node} node An optional node within which elements will be opened or closed (this will normally be a details element)
+         */
+        // Sets state of collapsible sections
+        function openAllSections(override, node) {
+            var open = override === false ? false : override || params.openAllSections;
+            var container = node || frames[0].frameElement.contentDocument;
+            var blocks = container.querySelectorAll('details, section:not([data-mw-section-id="0"]), .collapsible-block, .collapsible-heading');
+            if (node) processSection(open, node);
+            for (var x = blocks.length; x--;) {
+                processSection(open, blocks[x]);
+            }
+        }
+
+        function processSection(open, node) {
+            if (/DETAILS|SECTION/.test(node.tagName)) {
+                if (open) node.setAttribute('open', '');
+                else node.removeAttribute('open');
+                if (typeof HTMLDetailsElement === 'undefined' || node.tagName === 'SECTION') {         
+                    var children = node.children;
+                    for (var y = children.length; y--;) {
+                        if (/SUMMARY|H\d/.test(children[y].tagName)) continue;
+                        if (open) {
+                            if (/DETAILS|SECTION/.test(children[y].tagName)) children[y].setAttribute('open', '');
+                            children[y].style.removeProperty('display');
+                        } else {
+                            if (/DETAILS|SECTION/.test(children[y].tagName)) children[y].removeAttribute('open');
+                            children[y].style.display = 'none';
+                        }
+                    }
+                }
+            } else {
+                if (open) node.classList.add('open-block');
+                else node.classList.remove('open-block');
+            }
+        }
+
+        // Attach listeners to headers to open-close following sections
+        function setupHeadings() {
+            var headings = frames[0].frameElement.contentDocument.querySelectorAll('h2, h3, h4, h5');
+            for (var i = headings.length; i--;) {
+                // Prevent heading from being selected when user clicks on it
+                headings[i].style.userSelect = 'none';
+                headings[i].style.msUserSelect = 'none';
+                headings[i].addEventListener('click', function(e) {
+                    // Override the built-in simplistic polyfill
+                    e.preventDefault();
+                    var that = e.currentTarget;
+                    var detailsEl = util.closest(that, 'details, section');
+                    if (detailsEl) {
+                        var toggle = !detailsEl.hasAttribute('open');
+                        openAllSections(toggle, detailsEl);
+                    }
+                });
+            }
         }
 
         params.preloadAllImages = function () {

@@ -673,6 +673,16 @@ define(['q', 'filecache'], function(Q, FileCache) {
             el && (fn(el) ? el : getClosestBack(el.parentNode, fn));
     }
 
+    // Create a closest function alternative because IE11 and others do not support closest
+    function closest (ele, s) {
+        var cele = ele;
+        var cmatches = Element.prototype.matches || Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+        do {
+            if (cmatches.call(cele, s)) return cele;
+            cele = cele.parentElement || cele.parentNode;
+        } while (cele !== null && cele.nodeType === 1);
+        return null;
+    }
 
     /**
      * Functions and classes exposed by this module
@@ -695,6 +705,7 @@ define(['q', 'filecache'], function(Q, FileCache) {
         matchInner: matchInner,
         Hilitor: Hilitor,
         getClosestForward: getClosestForward,
-        getClosestBack: getClosestBack
+        getClosestBack: getClosestBack,
+        closest: closest
     };
 });
