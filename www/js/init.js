@@ -122,6 +122,7 @@ document.getElementById('removePageMaxWidthCheck').checked = params.removePageMa
 document.getElementById('removePageMaxWidthCheck').indeterminate = params.removePageMaxWidth == "auto";
 document.getElementById('removePageMaxWidthCheck').readOnly = params.removePageMaxWidth == "auto";
 document.getElementById('pageMaxWidthState').innerHTML = (params.removePageMaxWidth == "auto" ? "auto" : params.removePageMaxWidth ? "always" : "never");
+document.getElementById('openAllSectionsCheck').checked = params.openAllSections;
 document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme == "dark"; // Will be true, or false if light or auto
 document.getElementById('cssUIDarkThemeCheck').indeterminate = params.cssUITheme == "auto";
 document.getElementById('cssUIDarkThemeCheck').readOnly = params.cssUITheme == "auto";
