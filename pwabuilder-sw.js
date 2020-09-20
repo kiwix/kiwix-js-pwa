@@ -56,6 +56,8 @@ const precacheFiles = [
   "www/js/lib/util.js",
   "www/js/lib/xzdec.js",
   "www/js/lib/xzdec_wrapper.js",
+  "www/js/lib/zstdec.js",
+  "www/js/lib/zstdec_wrapper.js",
   "www/js/lib/zimArchive.js",
   "www/js/lib/zimArchiveLoader.js",
   "www/js/lib/zimDirEntry.js",
