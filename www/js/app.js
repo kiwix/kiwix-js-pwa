@@ -872,21 +872,21 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
             document.getElementById('search-article').style.overflowY = "auto";
         });
-        // Two event listeners are needed because the archive list doesn't "change" if there is only one element in it
-        // (also note that keyboard users might not click)
         var selectFired = false;
-        document.getElementById('archiveList').addEventListener('change', function () {
-            this.click();
+        document.getElementById('archiveList').addEventListener('keydown', function(e) {
+            if (/^Enter$/.test(e.key)) {
+                selectArchive(e);
+            }
         });
-        document.getElementById('archiveList').addEventListener('click', function (list) {
+        document.getElementById('archiveList').addEventListener('mousedown', selectArchive);
+
+        function selectArchive(list) {
             if (selectFired) return;
             // If nothing was selected, user will have to click again
             // (NB this.selectedIndex will be -1 if no value has been selected)
             if (!~list.selectedIndex) return;
             selectFired = true;
-            $('#openLocalFiles').hide();
             var selected = list.target.value;
-            document.getElementById('moreInfo').style.display = 'none';
             // Void any previous picked file to prevent it launching
             if (params.pickedFile && params.pickedFile.name !== selected) {
                 params.pickedFile = '';
@@ -910,9 +910,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 setLocalArchiveFromArchiveList(selected);
             }
             setTimeout(function () {
+                document.getElementById('openLocalFiles').style.display = 'none';
+                document.getElementById('moreInfo').style.display = 'none';
                 selectFired = false;
             }, 0);
-        });
+        }
 
         document.getElementById('archiveFile').addEventListener('click', function () {
             if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
@@ -2109,8 +2111,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 "processHandle(dirHandle, callback);"
             );
             var archiveDisplay = document.getElementById('chooseArchiveFromLocalStorage');
-            archiveDisplay.style.display = "block";
-            document.getElementById('archiveNumber').innerHTML = '<b>0</b> Archives found in local storage (tap "Select storage" to select an archive location)';
+            archiveDisplay.style.display = 'block';
         }
 
         function scanUWPFolderforArchives(folder) {
@@ -2137,8 +2138,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                             return;
                         }
                     }
-                    archiveDisplay.style.display = "inline";
-                    document.getElementById('noZIMFound').style.display = "block";
+                    archiveDisplay.style.display = 'block';
+                    document.getElementById('noZIMFound').style.display = 'block';
                     document.getElementById('archiveList').options.length = 0;
                     document.getElementById('archiveList').size = 0;
                     document.getElementById('archiveNumber').innerHTML = '<b>0</b> Archives found in local storage (tap "Select storage" to select an archive location)';
