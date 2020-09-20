@@ -1,7 +1,11 @@
 # Changelog
 
-## Release 0.9.9.993 (beta)
+## Release 0.9.9.994 (beta)
 
+* UPDATE: App now supports newest archives encoded with ZSTD compression
+* ENHANCEMENT: Significant decompression speed gains with ZSTD
+* ENHANCEMENT: Allow use of keyboard to select archive
+* FIX: Prevent archive list from jumping to wrong archive on click
 * FIX: Critical error on load if packaged archive name has changed
 * DEPRECATED: Scrolling information for new users
 
