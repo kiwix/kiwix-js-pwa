@@ -64,9 +64,7 @@ define(['q', 'zstdec'], function(Q) {
         // DEV: Size of outBuffer is currently set as recommended by zd._ZSTD_DStreamOutSize() below; if you are running into
         // memory issues, it may be possible to reduce memory consumption by setting a smaller outBuffer size here and
         // reompiling zstdec.js with lower TOTAL_MEMORY (or just search for INITIAL_MEMORY in zstdec.js and change it)
-        var recOutBufSize = zd._chunkSize * 500;
-        var maxOutBufSize = zd._ZSTD_DStreamOutSize();
-        var outBufSize = recOutBufSize > maxOutBufSize ? maxOutBufSize : recOutBufSize;
+        var outBufSize = zd._ZSTD_DStreamOutSize();
         console.log('*** Initiating ZSTD decoder with DStreamoutSize: ' + outBufSize + ' ***');
 
         // Initialize outBuffer
@@ -203,7 +201,6 @@ define(['q', 'zstdec'], function(Q) {
             // If data have been decompressed, check to see whether the data are in the offset range we need
             if (outPos > 0 && that._outStreamPos + outPos >= offset) {
                 var copyStart = offset - that._outStreamPos;
-                console.log('**Copying decompressed bytes**\ncopyStart: ' + copyStart);
                 if (copyStart < 0) copyStart = 0;
                 for (var i = copyStart; i < outPos && that._outDataBufPos < that._outDataBuf.length; i++)
                     that._outDataBuf[that._outDataBufPos++] = zd.HEAP8[zd._outBuffer.dst + i];
@@ -216,15 +213,9 @@ define(['q', 'zstdec'], function(Q) {
             // because they are before our required offset
             // Se we can now reset the asm outBuffer.pos field to 0
             zd.HEAP32[obx32ptr + 2] = 0;
-            // However, this isn't necessary becasuse zd._outBuffer.pos is always 0, and the buffer will be reset - WILL IT???
             // do not change the _outBuffer.size field locally; _outBuffer.size is the maximum amount the ZSTD codec is allowed
             // to decode in one go, but even if it is only partially written, we just copy the decoded bytes and reset _ouBuffer.pos to 0
-            
-            // TESTING (remove before merge)
-            console.log("Offset: " + offset + "\nLength: " + length + "\ninStreamPos: " + that._inStreamPos + "\noutStreamPos: " + that._outStreamPos);
-            
             if (finished) {
-                console.log("Read loop finished.");
                 return that._outDataBuf;
             } else {
                 return that._readLoop(offset, length, ret);
