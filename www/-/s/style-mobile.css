@@ -3262,7 +3262,7 @@ sub, sup {
         }
 
             .content table caption {
-                display: table-caption
+                display: flex;
             }
 
             .content table tbody {
