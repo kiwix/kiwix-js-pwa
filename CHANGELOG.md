@@ -1,5 +1,10 @@
 # Changelog
 
+## Release 0.9.9.993 (beta)
+
+* FIX: Critical error on load if packaged archive name has changed
+* DEPRECATED: Scrolling information for new users
+
 ## Release 0.9.9.992 (beta)
 
 * UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-08.zim`
