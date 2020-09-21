@@ -4,7 +4,8 @@
 
 * UPDATE: App now supports newest archives encoded with ZSTD compression
 * ENHANCEMENT: Significant decompression speed gains with ZSTD
-* ENHANCEMENT: Allow use of keyboard to select archive
+* ENHANCEMENT: Allow use of keyboard to select archive from archive list
+* ENHANCEMENT: Option to display articles with all sections open or closed
 * FIX: Prevent archive list from jumping to wrong archive on click
 * FIX: Critical error on load if packaged archive name has changed
 * FIX: Download links are no longer erroneously cached by the Service Worker
