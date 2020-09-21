@@ -2,6 +2,7 @@
 
 ## Release 1.0.0
 
+* UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-09.zim`
 * UPDATE: App now supports newest archives encoded with ZSTD compression
 * ENHANCEMENT: Significant decompression speed gains with ZSTD
 * ENHANCEMENT: Allow use of keyboard to select archive from archive list
