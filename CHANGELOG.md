@@ -1,12 +1,13 @@
 # Changelog
 
-## Release 0.9.9.993 Wikivoyage (beta)
+## Release 1.0.0 Wikivoyage
 
 * UPDATE: App now supports newest archives encoded with ZSTD compression
 * ENHANCEMENT: Significant decompression speed gains with ZSTD
 * ENHANCEMENT: Allow use of keyboard to select archive
 * FIX: Prevent archive list from jumping to wrong archive on click
 * FIX: Critical error on load if packaged archive name has changed
+* FIX: Download links are no longer erroneously cached by the Service Worker
 * DEPRECATED: Scrolling information for new users
 
 ## Release 0.9.9.992 Wikivoyage (beta)* UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-08.zim`
