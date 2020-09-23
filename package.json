@@ -1,24 +1,26 @@
 {
-  "name": "kiwix_js_wikimed",
-  "productName": "Kiwix JS WikiMed Electron Edition",
-  "version": "0.9.9993E",
-  "description": "Kiwix JS WikiMed Electron",
-  "main": "main.js",
-  "build-packaged": {
-    "appId": "kiwix.js.windows.wikimed",
-    "productName": "Kiwix JS WikiMed Electron Edition",
-    "directories": {
-      "output": "bld/Electron"
-    },
-    "win": {
-      "target": [
-        {
-          "target": "portable",
-          "arch": "ia32"
-        }
-      ]
-    },
-    "asar": false,
+  "name": "kiwix_js_windows",
+  "productName": "Kiwix JS Windows (NWJS)",
+  "version": "0.9.9.991N",
+  "description": "Kiwix JS Windows for NWJS",
+  "main": "index.html",
+  "domain": "kiwix.js.windows",
+  "window": {
+    "width": 1280,
+    "height": 840,
+    "min_width": 640,
+    "min_height": 480,
+    "icon": "www/img/icons/kiwix-256.png"
+  },
+  "scripts": {
+    "start": "run --x86 --mirror https://dl.nwjs.io/ .",
+    "dist-win-x86": "build --tasks win-x86 --mirror https://dl.nwjs.io/ .",
+    "dist-win-x64": "build --tasks win-x64 --mirror https://dl.nwjs.io/ .",
+    "dist": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./build_nwjs.ps1" 
+  },
+  "build-xp": {
+    "nwVersion": "0.14.7",
+    "output": "bld/nwjs/win-x86-xp",
     "files": [
       "pwabuilder-sw.js",
       "index.html",
@@ -26,43 +28,46 @@
       "LICENCE",
       "www/**",
       "archives/README.md",
-      "archives/wikip*.*",
-      "preload.js",
-      "main.js"
-    ]
-  },
-  "build": {
-    "appId": "kiwix.js.windows.wikimed",
-    "productName": "Kiwix JS WikiMed Electron Edition",
-    "directories": {
-      "output": "bld/Electron"
-    },
+      "archives/wikip*.*"
+    ],
     "win": {
-      "target": [
-        {
-          "target": "portable",
-          "arch": "ia32"
-        }
-      ]
-    },
-    "asar": false,
+      "icon": "www/img/icons/kiwix-64.ico"
+    }
+  },
+  "build-x64": {
+    "nwVersion": "0.46.3",
+    "output": "bld/nwjs/win-x64",
+    "targets": [
+      "zip"
+    ],
     "files": [
       "pwabuilder-sw.js",
       "index.html",
       "CHANGELOG.md",
       "LICENCE",
       "www/**",
-      "preload.js",
-      "main.js"
-    ]
+      "archives/README.md",
+      "archives/wikip*.*"
+    ],
+    "win": {
+      "icon": "www/img/icons/kiwix-64.ico"
+    }
   },
-  "scripts": {
-    "start": "electron .",
-    "dist": "electron-builder build",
-    "package-mac": "electron-packager . kiwix-js-windows --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
-    "package-win": "electron-packager . kiwix-js-windows --electron-version='10.1.1' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=node_ --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --overwrite --platform=win32 --arch=ia32 --icon=www/img/icons/kiwix-64.ico --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Kiwix JS WikiMed Electron Edition'",
-    "postpackage-win": "(robocopy archives bld\\Electron\\kiwix-js-windows-win32-ia32\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0",
-    "package-linux": "electron-packager . kiwix-js-windows --overwrite --platform=linux --arch=x64 --icon=www/img/icons/kiwix-64.png --prune=true --out=bld/electron"
+  "build": {
+    "nwVersion": "0.46.3",
+    "output": "bld/nwjs/win-x86",
+    "files": [
+      "pwabuilder-sw.js",
+      "index.html",
+      "CHANGELOG.md",
+      "LICENCE",
+      "www/**",
+      "archives/README.md",
+      "archives/wikip*.*"
+    ],
+    "win": {
+      "icon": "www/img/icons/kiwix-64.ico"
+    }
   },
   "repository": "https://github.com/kiwix/kiwix-js-windows",
   "keywords": [
@@ -75,8 +80,6 @@
   "author": "Kiwix",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^10.1.1",
-    "electron-builder": "^22.7.0",
-    "electron-packager": "^15.1.0"
+    "nwjs-builder-phoenix": "^1.15.0"
   }
 }
