@@ -7,7 +7,7 @@
   "domain": "kiwix.js.windows",
   "window": {
     "width": 1280,
-    "height": 840,
+    "height": 960,
     "min_width": 640,
     "min_height": 480,
     "icon": "www/img/icons/kiwix-256.png"
