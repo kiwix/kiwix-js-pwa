@@ -125,8 +125,8 @@
     <Content Include="images\Wide310x150Logo.scale-150.png" />
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="images\Wide310x150Logo.scale-400.png" />
-    <Content Include="www\js\lib\zstdec.js" />
-    <Content Include="www\js\lib\zstdec_wrapper.js" />
+    <Content Include="www\js\lib\zstddec.js" />
+    <Content Include="www\js\lib\zstddec_wrapper.js" />
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="manifest.json" />
     <Content Include="pwabuilder-sw.js" />
