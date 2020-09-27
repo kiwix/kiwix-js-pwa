@@ -1,5 +1,5 @@
 ﻿/**
- * zstdec_wrapper.js: Javascript wrapper around compiled zstd decompressor.
+ * zstddec_wrapper.js: Javascript wrapper around compiled zstd decompressor.
  *
  * Copyright 2020 Jaifroid, Mossroy and contributors
  * License GPL v3:
@@ -20,9 +20,9 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
-define(['q', 'zstdec'], function(Q) {
-    // DEV: zstdec.js has been compiled with `-s EXPORT_NAME="ZD" -s MODULARIZE=1` to avoid a clash with xzdec which uses "Module" as its exported object
-    // Note that we include zstdec above in requireJS definition, but we cannot change the name in the function list
+define(['q', 'zstddec'], function(Q) {
+    // DEV: zstddec.js has been compiled with `-s EXPORT_NAME="ZD" -s MODULARIZE=1` to avoid a clash with xzdec which uses "Module" as its exported object
+    // Note that we include zstddec above in requireJS definition, but we cannot change the name in the function list
     // There is no longer any need to load it in index.html
     // For explanation of loading method below to avoid conflicts, see https://github.com/emscripten-core/emscripten/blob/master/src/settings.js
     
@@ -46,8 +46,9 @@ define(['q', 'zstdec'], function(Q) {
         // NB there is no need to change this handle even between ZIM loads: zstddeclib encourages re-using assigned structures
         zd._decHandle = zd._ZSTD_createDStream();
         // DEV set chunkSize according to memory environment; for systems with plenty of memory,
-        // zd can provide a max recommended size with zd._chunkSize = zd._ZSTD_DStreamInSize();
-        zd._chunkSize = 5 * 1024;
+        // zd can provide a max recommended size with 
+        zd._chunkSize = zd._ZSTD_DStreamInSize();
+        // zd._chunkSize = 5 * 1024;
         
         // Initialize inBuffer
         zd._inBuffer = {
@@ -63,9 +64,8 @@ define(['q', 'zstdec'], function(Q) {
                 
         // DEV: Size of outBuffer is currently set as recommended by zd._ZSTD_DStreamOutSize() below; if you are running into
         // memory issues, it may be possible to reduce memory consumption by setting a smaller outBuffer size here and
-        // reompiling zstdec.js with lower TOTAL_MEMORY (or just search for INITIAL_MEMORY in zstdec.js and change it)
+        // reompiling zstddec.js with lower TOTAL_MEMORY (or just search for INITIAL_MEMORY in zstddec.js and change it)
         var outBufSize = zd._ZSTD_DStreamOutSize();
-        console.log('*** Initiating ZSTD decoder with DStreamoutSize: ' + outBufSize + ' ***');
 
         // Initialize outBuffer
         zd._outBuffer = {
@@ -112,7 +112,7 @@ define(['q', 'zstdec'], function(Q) {
     /**
      * Set up the decompression stream, and initiate a read loop to decompress from the beginning of the cluster
      * until we reach <offset> in the decompressed byte stream
-     * @param {Integer} offset Cluster offset (in deocmpressed stream) from which to start reading
+     * @param {Integer} offset Cluster offset (in decompressed stream) from which to start reading
      * @param {Integer} length Number of decompressed bytes to read
      * @returns {Promise<ArrayBuffer>} Promise for an ArrayBuffer with decoded data
      */
@@ -167,36 +167,20 @@ define(['q', 'zstdec'], function(Q) {
      * The main loop for sending compressed data to the decompressor and retrieving decompressed bytes
      * Consecutive calls to readLoop may only advance in the stream and may not overlap
      * @param {Integer} offset The offset in the *decompressed* byte stream at which the requested blob resides
-     * @param {Integer} length The deomcpressed size of the requested blob
-     * @param {Integer} dataRequest The recommended number of bytes the docompressor has requested
      * @returns {Promise<Int8Array>} A Promise for an Int8Array containing the requested blob's decompressed bytes
      */
-    Decompressor.prototype._readLoop = function(offset, length, dataRequest) {
+    Decompressor.prototype._readLoop = function (offset) {
         var that = this;
-        return this._fillInBufferIfNeeded(offset, length, dataRequest).then(function() {
+        return this._fillInBuffer().then(function () {
+            var finished = false;
             var ret = zd._ZSTD_decompressStream(zd._decHandle, zd._outBuffer.ptr, zd._inBuffer.ptr);
             if (zd._ZSTD_isError(ret)) {
                 var errorMessage = "Failed to decompress data stream!\n" + zd.getErrorString(ret);
-                console.error(errorMessage);
-                throw new Error(errorMessage);
+                return Q.reject(errorMessage);
             }
-            var finished = false;
-            if (ret === 0) {
-                // stream ended
-                finished = true;
-            } else if (ret > 0) {
-                // supply more data
-                zd._inBuffer.size = ret;
-            }
-
-            // Get updated inbuffer values for processing on the JS sice
-            // NB the zd.Decoder will read these values from its own buffers
-            var ibx32ptr = zd._inBuffer.ptr >> 2;
-            zd._inBuffer.pos = zd.HEAP32[ibx32ptr + 2];
-            
             // Get updated outbuffer values
-            var obx32ptr = zd._outBuffer.ptr >> 2;
-            var outPos = zd.HEAP32[obx32ptr + 2];
+            var obxPtr32Bit = zd._outBuffer.ptr >> 2;
+            var outPos = zd.HEAP32[obxPtr32Bit + 2];
             
             // If data have been decompressed, check to see whether the data are in the offset range we need
             if (outPos > 0 && that._outStreamPos + outPos >= offset) {
@@ -206,35 +190,33 @@ define(['q', 'zstdec'], function(Q) {
                     that._outDataBuf[that._outDataBufPos++] = zd.HEAP8[zd._outBuffer.dst + i];
             }
             if (that._outDataBufPos === that._outDataBuf.length) finished = true;
+            // Return without further processing if decompressor has finished
+            if (finished) return that._outDataBuf;
+
+            // Get updated inbuffer values for processing on the JS sice
+            // NB the zd.Decoder will read these values from its own buffers
+            var ibxPtr32Bit = zd._inBuffer.ptr >> 2;
+            zd._inBuffer.pos = zd.HEAP32[ibxPtr32Bit + 2];
+
             // Increment the byte stream positions
             that._inStreamPos += zd._inBuffer.pos;
             that._outStreamPos += outPos;
             // DEV: if outPos is > 0, then we have either copied all data from outBuffer, or we can now throw those data away
             // because they are before our required offset
             // Se we can now reset the asm outBuffer.pos field to 0
-            zd.HEAP32[obx32ptr + 2] = 0;
-            // do not change the _outBuffer.size field locally; _outBuffer.size is the maximum amount the ZSTD codec is allowed
-            // to decode in one go, but even if it is only partially written, we just copy the decoded bytes and reset _ouBuffer.pos to 0
-            if (finished) {
-                return that._outDataBuf;
-            } else {
-                return that._readLoop(offset, length, ret);
-            }
+            // Testing outPos is not strictly necessary, but there may be an overhead in writing to HEAP32
+            if (!outPos) zd.HEAP32[obxPtr32Bit + 2] = 0;
+            return that._readLoop(offset);
+        }).catch(function (err) {
+            console.error(err);
         });
     };
     
     /**
-     * Fills in the instream buffer if needed
-     * @param {Integer} req The requested number of compressed bytes (optional)
+     * Fills in the instream buffer
      * @returns {Promise<0>} A Promise for 0 when all data have been added to the stream
      */
-    Decompressor.prototype._fillInBufferIfNeeded = function(req) {
-        req = req || 0;
-        if (this._inStreamPos + req < this._inStreamChunkedPos) {
-            // We should still have enough data in the buffer
-            // DEV: When converting to Promise/A+, use Promise.resolve(0) here
-            return Q.when(0);
-        }
+    Decompressor.prototype._fillInBuffer = function() {
         var that = this;
         return this._reader(this._inStreamPos, zd._chunkSize).then(function(data) {
             // Populate inBuffer and assign asm/wasm memory if not already assigned
