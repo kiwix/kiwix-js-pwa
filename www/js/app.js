@@ -3669,7 +3669,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
         // Sets state of collapsible sections
         function openAllSections(override, node) {
             var open = override === false ? false : override || params.openAllSections;
-            var container = node || frames[0].frameElement.contentDocument;
+            var container = node || document.getElementById('articleContent');
             var blocks = container.querySelectorAll('details, section:not([data-mw-section-id="0"]), .collapsible-block, .collapsible-heading');
             if (node) processSection(open, node);
             for (var x = blocks.length; x--;) {
@@ -3702,7 +3702,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
 
         // Attach listeners to headers to open-close following sections
         function setupHeadings() {
-            var headings = frames[0].frameElement.contentDocument.querySelectorAll('h2, h3, h4, h5');
+            var headings = document.getElementById('articleContent').querySelectorAll('h2, h3, h4, h5');
             for (var i = headings.length; i--;) {
                 // Prevent heading from being selected when user clicks on it
                 headings[i].style.userSelect = 'none';
