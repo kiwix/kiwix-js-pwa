@@ -1,7 +1,7 @@
 {
   "name": "kiwix_js_windows",
   "productName": "Kiwix JS Windows (NWJS)",
-  "version": "0.9.9.991N",
+  "version": "1.0.0N",
   "description": "Kiwix JS Windows for NWJS",
   "main": "index.html",
   "domain": "kiwix.js.windows",
@@ -54,7 +54,7 @@
     }
   },
   "build": {
-    "nwVersion": "0.46.3",
+    "nwVersion": "0.48.2",
     "output": "bld/nwjs/win-x86",
     "files": [
       "pwabuilder-sw.js",
