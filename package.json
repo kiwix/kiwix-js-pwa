@@ -54,7 +54,7 @@
     }
   },
   "build": {
-    "nwVersion": "0.48.2",
+    "nwVersion": "0.48.3",
     "output": "bld/nwjs/win-x86",
     "files": [
       "pwabuilder-sw.js",
