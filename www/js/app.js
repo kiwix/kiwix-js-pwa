@@ -2648,7 +2648,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
                 localSearch = {};
 
-                var iframeArticleContent = document.getElementById('articleContent');
+                var iframe = document.getElementById('articleContent');
                 // Hide the display while loading
                 // iframeArticleContent.style.display = 'none';
                 // iframeArticleContent.onload = function(){};
@@ -2711,10 +2711,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             if (params.contentInjectionMode === 'serviceworker') {
                 // In ServiceWorker mode, we simply set the iframe src.
                 // (reading the backend is handled by the ServiceWorker itself)
-
-                iframeArticleContent.onload = function () {
+                // var iframe = document.getElementById('articleContent');
+                iframe.onload = function () {
                     // Deflect drag-and-drop of ZIM file on the iframe to Config
-                    var doc = iframeArticleContent ? iframeArticleContent.contentDocument : null;
+                    var doc = iframe ? iframe.contentDocument : null;
                     var docBody = doc ? doc.body : null;
                     if (docBody) {
                         docBody.addEventListener('dragover', handleIframeDragover);
@@ -2753,7 +2753,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                     // }
 
                     // Show spinner when the article unloads
-                    if (iframeArticleContent.contentWindow) iframeArticleContent.contentWindow.onunload = function () {
+                    if (iframe.contentWindow) iframe.contentWindow.onunload = function () {
                         $("#searchingArticles").show();
                     };
 
