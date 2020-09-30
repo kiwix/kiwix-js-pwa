@@ -141,7 +141,7 @@ self.addEventListener('fetch', intercept);
 
 // Look up fetch in cache, and if it does not exist, try to get it from the network
 function intercept(event) {
-  if (excludedURLSchema.test(event.request.url) && !(regexpKiwixDownloadLinks.test(event.request.url) && regexpZIMUrlWithNamespace.test(event.request.url))) return;
+  if (!regexpZIMUrlWithNamespace.test(event.request.url)) return;
   console.log('[SW] Service Worker ' + (event.request.method === "GET" ? 'intercepted ' : 'noted ') + event.request.url, event.request.method);
   if (event.request.method !== "GET") return;
   event.respondWith(
