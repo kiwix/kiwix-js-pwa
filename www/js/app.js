@@ -686,7 +686,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             } else {
                 cssUIThemeGetOrSet(determinedTheme);
             }
-            if (typeof Windows !== 'undefined' || typeof window.chooseFileSystemEntries !== 'undefined') {
+            if (typeof Windows !== 'undefined' || typeof window.showOpenFilePicker !== 'undefined') {
                 document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
             }
             document.getElementById('libraryArea').style.borderColor = '';
@@ -804,7 +804,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
                 params.pickedFolder = params.localStorage;
             }
-            if (typeof Windows === 'undefined' && typeof window.chooseFileSystemEntries === 'undefined') {
+            if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker === 'undefined') {
                 //If not UWP, display legacy File Select
                 document.getElementById('archiveFile').style.display = "none";
                 document.getElementById('archiveFiles').style.display = "none";
@@ -816,7 +816,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 document.getElementById('archiveFilesLegacy').addEventListener('change', setLocalArchiveFromFileSelect);
             }
             // If user had previously picked a file using Native FS, offer to re-open
-            if (typeof window.chooseFileSystemEntries !== 'undefined' && !(params.pickedFile || params.pickedFolder)) {
+            if (typeof window.showOpenFilePicker !== 'undefined' && !(params.pickedFile || params.pickedFolder)) {
                 getNativeFSHandle();
             }
         });
@@ -831,9 +831,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                                 callback(handle);
                                 return;
                             }
-                            if (handle.isFile) {
+                            if (handle.kind === 'file') {
                                 return processNativeFileHandle(handle);
-                            } else if (handle.isDirectory) {
+                            } else if (handle.kind === 'directory') {
                                 return processNativeDirHandle(handle);
                             }
                         } 
@@ -891,12 +891,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             if (params.pickedFile && params.pickedFile.name !== selected) {
                 params.pickedFile = '';
             }
-            if (typeof window.chooseFileSystemEntries !== 'undefined') {
+            if (typeof window.showOpenFilePicker !== 'undefined') {
                 getNativeFSHandle(function(handle) {
-                    if (handle.isDirectory) {
+                    if (handle.kind === 'directory') {
                         params.pickedFolder = handle;
                         setLocalArchiveFromArchiveList(selected);
-                    } else if (handle.isFile) {
+                    } else if (handle.kind === 'file') {
                         handle.getFile().then(function(file) {
                             params.pickedFile = file;
                             params.pickedFile.handle = handle;
@@ -920,7 +920,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 //UWP FilePicker
                 pickFileUWP();
-            } else if (typeof window.chooseFileSystemEntries !== 'undefined') {
+            } else if (typeof window.showOpenFilePicker !== 'undefined') {
                 // Native File System API file picker
                 pickFileNativeFS();
                 //@TODO enable and provide classic filepicker
@@ -930,7 +930,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 //UWP FolderPicker
                 pickFolderUWP();
-            } else if (typeof window.chooseFileSystemEntries !== 'undefined') {
+            } else if (typeof window.showOpenFilePicker !== 'undefined') {
                 // Native File System API folder picker
                 pickFolderNativeFS();
             }
@@ -1597,7 +1597,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
         }
         if (storages !== null && storages.length > 0 ||
             typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined' ||
-            typeof window.fs !== 'undefined' || typeof window.chooseFileSystemEntries !== 'undefined') {
+            typeof window.fs !== 'undefined' || typeof window.showOpenFilePicker !== 'undefined') {
             // Make a fake first access to device storage, in order to ask the user for confirmation if necessary.
             // This way, it is only done once at this moment, instead of being done several times in callbacks
             // After that, we can start looking for archives
@@ -1845,13 +1845,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                                 }
                             });
                             return;
-                        } else if (!params.pickedFile && params.pickedFolder && typeof window.chooseFileSystemEntries !== 'undefined') {
+                        } else if (!params.pickedFile && params.pickedFolder && typeof window.showOpenFilePicker !== 'undefined') {
                             // Native FS support
                             cache.verifyPermission(params.pickedFolder).then(function(permission) {
                                 if (!permission) {
                                     console.log('User denied permission to access the folder');
                                     return;
-                                } else if (params.pickedFolder.isDirectory) {
+                                } else if (params.pickedFolder.kind === 'directory') {
                                     return processNativeDirHandle(params.pickedFolder, function(fileHandles) {
                                         var fileHandle;
                                         if (fileHandles) {
@@ -1906,7 +1906,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                                     uiUtil.systemAlert("The previously picked archive can no longer be found!");
                                     console.error("Picked archive not found: " + err);
                                 }
-                            } else if (params.pickedFile && typeof window.chooseFileSystemEntries !== 'undefined') {
+                            } else if (params.pickedFile && typeof window.showOpenFilePicker !== 'undefined') {
                                 // Native FS API for single file
                                 setLocalArchiveFromFileList([params.pickedFile]);
                                 return;
@@ -2020,13 +2020,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
         }
 
         function pickFileNativeFS() {
-            return window.chooseFileSystemEntries().then(function(fileHandle) {
-                return processNativeFileHandle(fileHandle);
+            return window.showOpenFilePicker({multiple: false}).then(function(fileHandle) {
+                return processNativeFileHandle(fileHandle[0]);
             });
         }
 
         function pickFolderNativeFS() {
-            window.chooseFileSystemEntries({ type: 'open-directory' }).then(function (dirHandle) {
+            window.showDirectoryPicker().then(function (dirHandle) {
                 // Do not attempt to jump to file (we have to let user choose)
                 params.rescan = true;
                 return processNativeDirHandle(dirHandle);
@@ -2093,11 +2093,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             eval(
                 "var processHandle = async function(handle, callback) {" +
                     "var archiveList = [];" +
-                    "var files = await handle.getEntries();" +
-                    "for await (var file of files) {" +
-                    "   if (/\.(?:zim|zimaa)$/.test(file.name)) {" +
-                            "if (callback) archiveList.push(file);" +
-                            "else archiveList.push(file.name);" +
+                    "for await (const [name, entry] of handle) {" +
+                    "   if (/\.(?:zim|zimaa)$/.test(entry.name)) {" +
+                            "if (callback) archiveList.push(entry);" +
+                            "else archiveList.push(entry.name);" +
                     "   }" +
                     "}" +
                     "if (archiveList.length) {" +
