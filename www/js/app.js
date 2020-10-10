@@ -810,11 +810,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 document.getElementById('archiveFiles').style.display = "none";
                 document.getElementById('UWPInstructions').style.display = "none";
                 document.getElementById('archivesFound').style.display = "none";
-                document.getElementById('chooseArchiveFromLocalStorage').style.display = "block";
                 document.getElementById('instructions').style.display = "block";
                 document.getElementById('archiveFilesLegacy').style.display = "inline";
                 document.getElementById('archiveFilesLegacy').addEventListener('change', setLocalArchiveFromFileSelect);
             }
+            document.getElementById('chooseArchiveFromLocalStorage').style.display = "block";
             // If user had previously picked a file using Native FS, offer to re-open
             if (typeof window.showOpenFilePicker !== 'undefined' && !(params.pickedFile || params.pickedFolder)) {
                 getNativeFSHandle();
