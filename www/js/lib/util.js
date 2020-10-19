@@ -208,12 +208,9 @@ define(['q'], function(Q) {
             // the need to use FileReader and set up event listeners; it also uses the method's native Promise
             // rather than setting up potentially hundreds of new Q promises for small byte range reads
             // Also uses Native FS handle
-            var readInstance = function(fileInstance) {
-                return fileInstance.slice(begin, end).arrayBuffer().then(function (buffer) {
-                    return new Uint8Array(buffer);
-                });
-            };
-            return file.handle ? file.handle.getFile().then(readInstance) : readInstance(file);
+            return file.slice(begin, end).arrayBuffer().then(function (buffer) {
+                return new Uint8Array(buffer);
+            });
         } else {
             return Q.Promise(function (resolve, reject) {
                 if (file.readMode === 'electron') {
