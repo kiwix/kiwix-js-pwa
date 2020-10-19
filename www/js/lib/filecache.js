@@ -26,17 +26,17 @@ define(['q'], function(Q) {
      * Maximum size of cache in bytes = MAX_CACHE_SIZE * BLOCK_SIZE
      * @type {Integer}
      */
-    var MAX_CACHE_SIZE = 4000;
+    const MAX_CACHE_SIZE = 4000;
 
     /**
      * The maximum blocksize to read or store via the block cache (bytes)
      * @type {Integer}
     */
-    var BLOCK_SIZE = 4096;
+    const BLOCK_SIZE = 4096;
 
     /**
      * Creates a new cache with max size limit
-     * @param {Integer} limit The maximum number of 2048-byte blocks to be cached
+     * @param {Integer} limit The maximum number of blocks of BLOCK_SIZE to be cached
      */
     function LRUCache(limit) {
         console.log("Creating cache of size " + limit);
@@ -50,8 +50,10 @@ define(['q'], function(Q) {
     }
 
     /**
-     * Tries to retrieve an element by its namespace and id. If it is not present in the cache,
-     * returns undefined.
+     * Tries to retrieve an element by its id. If it is not present in the cache, returns undefined; if it is present,
+     * then the value is returned and the entry is moved to the top of the cache
+     * @param {String} id The block cache entry key
+     * @returns {Uint8Array|undefined} The requested cache data or undefined 
      */
     LRUCache.prototype.get = function(id) {
         var entry = this._entries[id]; 
@@ -61,6 +63,11 @@ define(['q'], function(Q) {
         this.moveToTop(entry);
         return entry.value;
     };
+    /**
+     * Stores a value in the cache by id and prunes the least recently used entry if the cache is larger than MAX_CACHE_SIZE
+     * @param {String} id The key under which to store the value (consists of filename + file number)
+     * @param {Uint16Array} value The value to store in the cache 
+     */
     LRUCache.prototype.store = function(id, value) {
         var entry = this._entries[id];
         if (entry === undefined) {
@@ -78,6 +85,11 @@ define(['q'], function(Q) {
             this.moveToTop(entry);
         }
     };
+
+    /**
+     * Delete a cache entry
+     * @param {String} entry The entry to delete 
+     */
     LRUCache.prototype.unlink = function(entry) {
         if (entry.next === null) {
             this._last = entry.prev;
@@ -90,6 +102,11 @@ define(['q'], function(Q) {
             entry.prev.next = entry.next;
         }
     };
+
+    /**
+     * Insert a cache entry at the top of the cache
+     * @param {String} entry The entry to insert 
+     */
     LRUCache.prototype.insertAtTop = function(entry) {
         if (this._first === null) {
             this._first = this._last = entry;
@@ -99,6 +116,11 @@ define(['q'], function(Q) {
             this._first = entry;
         }
     };
+
+    /**
+     * Move a cache entry to the top of the cache
+     * @param {String} entry The entry to move 
+     */
     LRUCache.prototype.moveToTop = function(entry) {
         this.unlink(entry);
         this.insertAtTop(entry);
@@ -114,12 +136,15 @@ define(['q'], function(Q) {
     /**
      * Read a certain byte range in the given file, breaking the range into chunks that go through the cache
      * If a read of more than blocksize (bytes) is requested, do not use the cache
-     * @return {Promise} promise that resolves to the correctly concatenated data.
+     * @param {Object} file The requested ZIM archive to read from
+     * @param {Integer} begin The byte from which to start reading
+     * @param {Integer} end The byte at which to stop reading (end will not be read)
+     * @return {Promise<Uint8Array>} A Promise that resolves to the correctly concatenated data from the split ZIM file set
      */
     var read = function(file, begin, end) {
         // Read large chunks bypassing the block cache because we would have to
         // stitch together too many blocks and would clog the cache
-        if (end - begin > BLOCK_SIZE * 2) return readInternal(file, begin, end);
+        if (end - begin > BLOCK_SIZE * 2) return file._readSplitSlice(begin, end);
         var readRequests = [];
         var blocks = {};
         for (var i = Math.floor(begin / BLOCK_SIZE) * BLOCK_SIZE; i < end; i += BLOCK_SIZE) {
@@ -127,7 +152,7 @@ define(['q'], function(Q) {
             if (block === undefined) {
                 misses++;
                 readRequests.push(function(offset) {
-                    return readInternal(file, offset, offset + BLOCK_SIZE).then(function(result) {
+                    return file._readSplitSlice(offset, offset + BLOCK_SIZE).then(function(result) {
                         cache.store(file.name + offset, result);
                         blocks[offset] = result;
                     });
@@ -148,50 +173,11 @@ define(['q'], function(Q) {
             for (var i = Math.floor(begin / BLOCK_SIZE) * BLOCK_SIZE; i < end; i += BLOCK_SIZE) {
                 var b = Math.max(i, begin) - i;
                 var e = Math.min(end, i + BLOCK_SIZE) - i;
-                result.set(blocks[i].subarray(b, e), pos);
+                if (blocks[i].subarray) result.set(blocks[i].subarray(b, e), pos);
                 pos += e - b;
             }
             return result;
         });
-    };
-    var readInternal = function (file, begin, end) {
-        if ('arrayBuffer' in Blob.prototype && file.handle) {
-            // Use Native FS handle
-            return file.handle.getFile().then(function(fileInstance) {
-                return fileInstance.slice(begin, end).arrayBuffer().then(function (buffer) {
-                    return new Uint8Array(buffer);
-                });
-            });
-        } else {
-            return Q.Promise(function (resolve, reject) {
-                if (file.readMode === 'electron') {
-                    // We are reading a packaged file and have to use Electron fs.read (so we don't have to pick the file)
-                    fs.open(file.path, 'r', function (err, fd) {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            var size = end - begin;
-                            var arr = typeof Buffer !== 'undefined' && Buffer.alloc(size) || new Uint8Array(size);
-                            fs.read(fd, arr, 0, size, begin, function (err, bytesRead, data) {
-                                if (err) reject(err);
-                                fs.close(fd, function (err) {
-                                    if (err) reject(err);
-                                    else return resolve(data);
-                                });
-                            });
-                        }
-                    });
-                } else {
-                    var reader = new FileReader();
-                    reader.readAsArrayBuffer(file.slice(begin, end));
-                    reader.addEventListener('load', function (e) {
-                        resolve(new Uint8Array(e.target.result));
-                    });
-                    reader.addEventListener('error', reject);
-                    reader.addEventListener('abort', reject);
-                }
-            });
-        }
     };
 
     return {
