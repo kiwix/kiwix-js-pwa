@@ -1864,19 +1864,24 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                                             if (fileHandle) {
                                                 var fileset = [];
                                                 if (/\.zim\w\w$/i.test(fileHandle.name)) {
-                                                    var genericFileName = fileHandle.name.replace(/(.*)\.zim\w\w$/i, "$1");
-                                                    var testFileName = new RegExp(genericFileName + '\\.zim\\w\\w$');
+                                                    var genericFileName = fileHandle.name.replace(/(\.zim)\w\w$/i, '$1');
+                                                    var testFileName = new RegExp(genericFileName + '\\w\\w$');
                                                     for (i = 0; i < fileHandles.length; i++) {
                                                         if (testFileName.test(fileHandles[i].name)) {
                                                             //This converts a UWP storage file object into a standard JavaScript web file object
-                                                            fileset.push(fileHandles[i]);
+                                                            fileset.push(fileHandles[i].getFile().then(function(file) {
+                                                                return file;
+                                                            }));
                                                         }
                                                     }
                                                 } else {
-                                                    fileHandle.getFile().then(function(file) {
-                                                        if (file) setLocalArchiveFromFileList([file]);
-                                                    });
+                                                    fileset.push(fileHandle.getFile().then(function(file) {
+                                                        return file;
+                                                    }));
                                                 }
+                                                Q.all(fileset).then(function(resolvedFiles) {
+                                                    setLocalArchiveFromFileList(resolvedFiles);
+                                                });
                                             } else {
                                                 console.error("The picked file could not be found in the selected folder!");
                                                 var archiveList = [];
@@ -2094,7 +2099,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 "var processHandle = async function(handle, callback) {" +
                     "var archiveList = [];" +
                     "for await (const [name, entry] of handle) {" +
-                    "   if (/\.(?:zim|zimaa)$/.test(entry.name)) {" +
+                    "   if (/\\.zim(\\w\\w)?$/.test(entry.name)) {" +
                             "if (callback) archiveList.push(entry);" +
                             "else archiveList.push(entry.name);" +
                     "   }" +
