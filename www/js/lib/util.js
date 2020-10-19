@@ -20,7 +20,7 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
-define(['q', 'filecache'], function(Q, FileCache) {
+define(['q'], function(Q) {
 
     /**
      * A Regular Expression to match the first letter of a word even if preceded by Unicode punctuation
@@ -196,15 +196,53 @@ define(['q', 'filecache'], function(Q, FileCache) {
     }
 
     /**
-     * Reads a Uint8Array from the given file starting at byte offset begin and
-     * for given size
+     * Reads a Uint8Array from the given file starting at byte offset begin until end
      * @param {File} file The file object to be read
      * @param {Integer} begin The offset in <File> at which to begin reading
-     * @param {Integer} size The number of bytes to read
+     * @param {Integer} end The byte at whcih to stop reading (reads up to and including end - 1)
      * @returns {Promise<Uint8Array>} A Promise for an array buffer with the read data 
      */
-    function readFileSlice(file, begin, size) {
-        return FileCache.read(file, begin, begin + size);
+    function readFileSlice(file, begin, end) {
+        if ('arrayBuffer' in Blob.prototype && file.handle) {
+            // DEV: This method uses the native arrayBuffer method of Blob, if available, as it eliminates
+            // the need to use FileReader and set up event listeners; it also uses the method's native Promise
+            // rather than setting up potentially hundreds of new Q promises for small byte range reads
+            // Also uses Native FS handle
+            return file.handle.getFile().then(function(fileInstance) {
+                return fileInstance.slice(begin, end).arrayBuffer().then(function (buffer) {
+                    return new Uint8Array(buffer);
+                });
+            });
+        } else {
+            return Q.Promise(function (resolve, reject) {
+                if (file.readMode === 'electron') {
+                    // We are reading a packaged file and have to use Electron fs.read (so we don't have to pick the file)
+                    fs.open(file.path, 'r', function (err, fd) {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            var size = end - begin;
+                            var arr = typeof Buffer !== 'undefined' && Buffer.alloc(size) || new Uint8Array(size);
+                            fs.read(fd, arr, 0, size, begin, function (err, bytesRead, data) {
+                                if (err) reject(err);
+                                fs.close(fd, function (err) {
+                                    if (err) reject(err);
+                                    else return resolve(data);
+                                });
+                            });
+                        }
+                    });
+                } else {
+                    var reader = new FileReader();
+                    reader.readAsArrayBuffer(file.slice(begin, end));
+                    reader.addEventListener('load', function (e) {
+                        resolve(new Uint8Array(e.target.result));
+                    });
+                    reader.addEventListener('error', reject);
+                    reader.addEventListener('abort', reject);
+                }
+            });
+        }
     }
 
     /**
