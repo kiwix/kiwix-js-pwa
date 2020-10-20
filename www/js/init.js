@@ -57,7 +57,7 @@ params['cachedStartPage'] = "Main_Page"; //If you have cached the start page for
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/wikivoyage/"; //Include final slash
 
 params['cookieSupport'] = checkCookies();
-params['maxResults'] = ~~(getCookie('maxResults') || 25); //Number of search results to display
+params['maxResults'] = ~~(getCookie('maxResults') || 30); //Number of search results to display
 params['relativeFontSize'] = ~~(getCookie('relativeFontSize') || 100); //Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
 params['relativeUIFontSize'] = ~~(getCookie('relativeUIFontSize') || 100); //Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
 params['cssSource'] = getCookie('cssSource') || "auto"; //Set default to "auto", "desktop" or "mobile"
