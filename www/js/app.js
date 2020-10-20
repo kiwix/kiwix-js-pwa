@@ -1806,6 +1806,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                             var query = params.pickedFolder.createFileQuery();
                             query.getFilesAsync().done(function (files) {
                                 var file;
+                                var fileset = [];
                                 if (files) {
                                     for (var i = 0; i < files.length; i++) {
                                         if (files[i].name == archiveDirectory) {
@@ -1814,10 +1815,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                                         }
                                     }
                                     if (file) {
-                                        var fileset = [];
                                         if (/\.zim\w\w$/i.test(file.name)) {
-                                            var genericFileName = file.name.replace(/(.*)\.zim\w\w$/i, "$1");
-                                            var testFileName = new RegExp(genericFileName + '\\.zim\\w\\w$');
+                                            var genericFileName = file.name.replace(/(\.zim)\w\w$/i, '$1');
+                                            var testFileName = new RegExp(genericFileName + '\\w\\w$');
                                             for (i = 0; i < files.length; i++) {
                                                 if (testFileName.test(files[i].name)) {
                                                     //This converts a UWP storage file object into a standard JavaScript web file object
@@ -1826,11 +1826,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                                             }
                                         } else {
                                             //This converts a UWP storage file object into a standard JavaScript web file object
-                                            fileset = [MSApp.createFileFromStorageFile(file)];
+                                            fileset.push(MSApp.createFileFromStorageFile(file));
                                         }
                                     }
                                 }
-                                if (fileset && fileset.length) {
+                                if (fileset.length) {
                                     setLocalArchiveFromFileList(fileset);
                                 } else {
                                     console.error("The picked file could not be found in the selected folder!");
@@ -1854,6 +1854,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                                 } else if (params.pickedFolder.kind === 'directory') {
                                     return processNativeDirHandle(params.pickedFolder, function(fileHandles) {
                                         var fileHandle;
+                                        var fileset = [];
                                         if (fileHandles) {
                                             for (var i = 0; i < fileHandles.length; i++) {
                                                 if (fileHandles[i].name == archiveDirectory) {
@@ -1862,13 +1863,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                                                 }
                                             }
                                             if (fileHandle) {
-                                                var fileset = [];
                                                 if (/\.zim\w\w$/i.test(fileHandle.name)) {
                                                     var genericFileName = fileHandle.name.replace(/(\.zim)\w\w$/i, '$1');
                                                     var testFileName = new RegExp(genericFileName + '\\w\\w$');
                                                     for (i = 0; i < fileHandles.length; i++) {
                                                         if (testFileName.test(fileHandles[i].name)) {
-                                                            //This converts a UWP storage file object into a standard JavaScript web file object
+                                                            //This gets a JS File object from a file handle
                                                             fileset.push(fileHandles[i].getFile().then(function(file) {
                                                                 return file;
                                                             }));
@@ -1879,9 +1879,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                                                         return file;
                                                     }));
                                                 }
-                                                Q.all(fileset).then(function(resolvedFiles) {
-                                                    setLocalArchiveFromFileList(resolvedFiles);
-                                                });
+                                                if (fileset.length) {
+                                                    Q.all(fileset).then(function (resolvedFiles) {
+                                                        setLocalArchiveFromFileList(resolvedFiles);
+                                                    });
+                                                } else {
+                                                    console.error("There was an error reading the picked file(s)!");
+                                                }
                                             } else {
                                                 console.error("The picked file could not be found in the selected folder!");
                                                 var archiveList = [];
@@ -2059,6 +2063,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
 
         function processPickedFileUWP(file) {
             if (file) {
+                if (params.falFolderToken && /\.zim\w\w$/i.test(file.name)) {
+                    // This is a split file in a picked folder, so we need to process differently
+                    params.pickedFile = '';
+                    setLocalArchiveFromArchiveList([file]);
+                    return;
+                }
                 // Cache file so the contents can be accessed at a later time
                 Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.addOrReplace(params.falFileToken, file);
                 params.pickedFile = file;
