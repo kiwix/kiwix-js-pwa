@@ -1,22 +1,25 @@
 # Changelog
 
-## Release 1.0.0
+## Release 1.0.1 WikiMed
 
-* UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-09.zim`
+* UPDATE: Packaged ZIM updated to `wikipedia_en_medicine_maxi_2020-10.zim`
 * UPDATE: App now supports newest archives encoded with ZSTD compression
-* ENHANCEMENT: Significant decompression speed gains with ZSTD
+* UPDATE: App is no longer in beta!
+* ENHANCEMENT: Decompression speed gains with ZSTD
 * ENHANCEMENT: Allow use of keyboard to select archive from archive list
 * ENHANCEMENT: Option to display articles with all sections open or closed
+* ENHANCEMENT: Use Native File System API in PWA version
+* ENHANCEMENT: Support launching Electron app from shortcut
+* ENHANCEMENT: Better error reporting in console log
+* ENHANCEMENT: Improved block cache and faster conversion of file slice to blob
 * FIX: Prevent archive list from jumping to wrong archive on click
 * FIX: Critical error on load if packaged archive name has changed
+* FIX: Download links are no longer erroneously cached by the Service Worker
 * FIX: Prevent extraneous titles appearing in search
 * FIX: Broken drag-and-drop
 * FIX: Bug with construction of backlinks preventing load of some Wikipedia articles
 * FIX: Calculate path of breakout icon correctly in SW mode
-* ENHANCEMENT: Use Native File System API in PWA version
-* ENHANCEMENT: Various fixes to the Electron app
-* ENHANCEMENT: Support launching Electron app from shortcut
-* ENHANCEMENT: Better error reporting in console log
+* FIX: Support for loading split ZIM archives in UWP and Native FS
 * DEPRECATED: Scrolling information for new users
 
 ## Release 0.9.9.991 WikiMed (beta)
