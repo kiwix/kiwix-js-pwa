@@ -49,10 +49,10 @@ var params = {};
  */
 var appstate = {};
 
-params['version'] = "0.9.9.993 WikiMed Beta"; //DEV: Manually update this version when there is a new release: it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "1.0.1 WikiMed-dev"; //DEV: Manually update this version when there is a new release: it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 params['packagedFile'] = "wikipedia_en_medicine_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
-params['fileVersion'] = "wikipedia_en_medicine_maxi_2020-09 (2-Sep-2020)"; //This will be displayed in the app - optionally include date of ZIM file
+params['fileVersion'] = "wikipedia_en_medicine_maxi_2020-10 (3-Oct-2020)"; //This will be displayed in the app - optionally include date of ZIM file
 params['cachedStartPage'] = "Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine"; //If you have cached the start page for quick start, give its URI here
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/wikipedia/"; //Include final slash
 
