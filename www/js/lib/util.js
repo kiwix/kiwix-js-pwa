@@ -203,7 +203,7 @@ define(['q'], function(Q) {
      * @returns {Promise<Uint8Array>} A Promise for an array buffer with the read data 
      */
     function readFileSlice(file, begin, end) {
-        if ('arrayBuffer' in Blob.prototype) {
+        if (file.slice && 'arrayBuffer' in Blob.prototype) {
             // DEV: This method uses the native arrayBuffer method of Blob, if available, as it eliminates
             // the need to use FileReader and set up event listeners; it also uses the method's native Promise
             // rather than setting up potentially hundreds of new Q promises for small byte range reads
