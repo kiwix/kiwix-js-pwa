@@ -1,36 +1,9 @@
 {
   "name": "kiwix_js_wikimed",
   "productName": "Kiwix JS WikiMed Electron Edition",
-  "version": "0.9.9993E",
+  "version": "1.0.1E",
   "description": "Kiwix JS WikiMed Electron",
   "main": "main.js",
-  "build-packaged": {
-    "appId": "kiwix.js.windows.wikimed",
-    "productName": "Kiwix JS WikiMed Electron Edition",
-    "directories": {
-      "output": "bld/Electron"
-    },
-    "win": {
-      "target": [
-        {
-          "target": "portable",
-          "arch": "ia32"
-        }
-      ]
-    },
-    "asar": false,
-    "files": [
-      "pwabuilder-sw.js",
-      "index.html",
-      "CHANGELOG.md",
-      "LICENCE",
-      "www/**",
-      "archives/README.md",
-      "archives/wikip*.*",
-      "preload.js",
-      "main.js"
-    ]
-  },
   "build": {
     "appId": "kiwix.js.windows.wikimed",
     "productName": "Kiwix JS WikiMed Electron Edition",
@@ -75,8 +48,8 @@
   "author": "Kiwix",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^10.1.1",
-    "electron-builder": "^22.7.0",
+    "electron": "^10.1.5",
+    "electron-builder": "^22.9.1",
     "electron-packager": "^15.1.0"
   }
 }
