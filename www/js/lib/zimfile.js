@@ -22,6 +22,13 @@
 'use strict';
 define(['xzdec_wrapper', 'zstddec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry', 'filecache'], function(xz, zstd, util, utf8, Q, zimDirEntry, FileCache) {
 
+    /**
+     * A variable to keep track of the currently loaded ZIM archive, e.g., for labelling cache entries
+     * The ID is temporary and is reset to 0 at each session start; it is incremented by 1 each time a new ZIM is loaded
+     * @type {Integer} 
+     */
+    var tempFileId = 0;
+
     var readInt = function (data, offset, size) {
         var r = 0;
         for (var i = 0; i < size; i++) {
@@ -38,15 +45,15 @@ define(['xzdec_wrapper', 'zstddec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry', 
      * 
      * @typedef ZIMFile
      * @property {Array<File>} _files Array of ZIM files
-     * @property {String} name Abstract name of ZIM file set
-     * @property {Integer} articleCount total number of articles
-     * @property {Integer} clusterCount total number of clusters
-     * @property {Integer} urlPtrPos position of the directory pointerlist ordered by URL
-     * @property {Integer} titlePtrPos position of the directory pointerlist ordered by title
-     * @property {Integer} clusterPtrPos position of the cluster pointer list
-     * @property {Integer} mimeListPos position of the MIME type list (also header size)
-     * @property {Integer} mainPage main page or 0xffffffff if no main page
-     * @property {Integer} layoutPage layout page or 0xffffffffff if no layout page
+     * @property {Integer} id Arbitrary numeric ZIM id used to track the currently loaded archive
+     * @property {Integer} articleCount Total number of articles
+     * @property {Integer} clusterCount Total number of clusters
+     * @property {Integer} urlPtrPos Position of the directory pointerlist ordered by URL
+     * @property {Integer} titlePtrPos Position of the directory pointerlist ordered by title
+     * @property {Integer} clusterPtrPos Position of the cluster pointer list
+     * @property {Integer} mimeListPos Position of the MIME type list (also header size)
+     * @property {Integer} mainPage Main page or 0xffffffff if no main page
+     * @property {Integer} layoutPage Layout page or 0xffffffffff if no layout page
      */
     
     /**
@@ -70,7 +77,7 @@ define(['xzdec_wrapper', 'zstddec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry', 
     };
 
     /**
-     * Read a slice from the ZIM set starting at offset for size of bytes
+     * Read a slice from the FileCache or ZIM set, starting at offset for size of bytes
      * @param {Integer} offset The absolute offset from the start of the ZIM file or file set at which to start reading
      * @param {Integer} size The number of bytes to read
      * @returns {Promise<Uint8Array>} A Promise for a Uint8Array containing the requested data
@@ -105,7 +112,6 @@ define(['xzdec_wrapper', 'zstddec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry', 
             return readRequests[0];
         } else {
             // Wait until all are resolved and concatenate.
-            console.log("CONCAT");
             return Q.all(readRequests).then(function(arrays) {
                 var concatenated = new Uint8Array(end - begin);
                 var offset = 0;
@@ -119,7 +125,7 @@ define(['xzdec_wrapper', 'zstddec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry', 
     };
 
     /**
-     * Read and parse a a Directory Entry at the given archive offset
+     * Read and parse a Directory Entry at the given archive offset
      * @param {Integer} offset The offset at which the DirEntry is located
      * @returns {Promise<DirEntry>} A Promise for the requested DirEntry
      */
@@ -279,9 +285,8 @@ define(['xzdec_wrapper', 'zstddec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry', 
                 var urlPtrPos = readInt(header, 32, 8);
                 return readMimetypeMap(fileArray[0], mimeListPos, urlPtrPos).then(function (data) {
                     var zf = new ZIMFile(fileArray);
-                    // Line below provides an abstracted filename in case the ZIM file is split into multiple parts;
-                    // it greatly simplifies coding of the block cache, as it can store and respond to offsets from the start of the file set
-                    zf.name = fileArray[0].name.replace(/(\.zim)\w\w$/i, '$1');
+                    // Line below provides a temporary, per-session numeric ZIM ID used in filecache.js
+                    zf.id = tempFileId++;
                     zf.articleCount = readInt(header, 24, 4);
                     zf.clusterCount = readInt(header, 28, 4);
                     zf.urlPtrPos = urlPtrPos;
@@ -291,6 +296,8 @@ define(['xzdec_wrapper', 'zstddec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry', 
                     zf.mainPage = readInt(header, 64, 4);
                     zf.layoutPage = readInt(header, 68, 4);
                     zf.mimeTypes = data;
+                    // Initialize or reset the FileCache
+                    FileCache.init();
                     return zf;
                 });
             });
