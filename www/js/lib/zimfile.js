@@ -29,6 +29,12 @@ define(['xzdec_wrapper', 'zstddec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry', 
      */
     var tempFileId = 0;
 
+    /**
+     * A Map to keep track of temporary File IDs
+     * @type {Map}
+     */
+    var fileIDs = new Map();
+
     var readInt = function (data, offset, size) {
         var r = 0;
         for (var i = 0; i < size; i++) {
@@ -43,8 +49,9 @@ define(['xzdec_wrapper', 'zstddec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry', 
      * 
      * See https://wiki.openzim.org/wiki/ZIM_file_format#Header
      * 
-     * @typedef ZIMFile
+     * @typedef {Object} ZIMFile
      * @property {Array<File>} _files Array of ZIM files
+     * @property {String} name Abstract archive name for file set
      * @property {Integer} id Arbitrary numeric ZIM id used to track the currently loaded archive
      * @property {Integer} articleCount Total number of articles
      * @property {Integer} clusterCount Total number of clusters
@@ -285,8 +292,14 @@ define(['xzdec_wrapper', 'zstddec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry', 
                 var urlPtrPos = readInt(header, 32, 8);
                 return readMimetypeMap(fileArray[0], mimeListPos, urlPtrPos).then(function (data) {
                     var zf = new ZIMFile(fileArray);
-                    // Line below provides a temporary, per-session numeric ZIM ID used in filecache.js
-                    zf.id = tempFileId++;
+                    // Add an abstract archive name (ignoring split file extensions)
+                    zf.name = fileArray[0].name.replace(/(\.zim)\w\w$/i, '$1');
+                    // Provide a temporary, per-session numeric ZIM ID used in filecache.js
+                    zf.id = fileIDs.get(zf.name);
+                    if (zf.id === undefined) {
+                        zf.id = tempFileId++;
+                        fileIDs.set(zf.name, zf.id);
+                    }
                     zf.articleCount = readInt(header, 24, 4);
                     zf.clusterCount = readInt(header, 28, 4);
                     zf.urlPtrPos = urlPtrPos;
@@ -296,8 +309,6 @@ define(['xzdec_wrapper', 'zstddec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry', 
                     zf.mainPage = readInt(header, 64, 4);
                     zf.layoutPage = readInt(header, 68, 4);
                     zf.mimeTypes = data;
-                    // Initialize or reset the FileCache
-                    FileCache.init();
                     return zf;
                 });
             });
