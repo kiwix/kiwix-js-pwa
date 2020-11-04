@@ -26,123 +26,88 @@ define(['q'], function(Q) {
     /**
      * Set maximum number of cache blocks of BLOCK_SIZE bytes each
      * Maximum size of cache in bytes = MAX_CACHE_SIZE * BLOCK_SIZE
-     * @type {Integer}
+     * @constant
+     * @type {Number}
      */
     const MAX_CACHE_SIZE = 4000;
 
     /**
      * The maximum blocksize to read or store via the block cache (bytes)
-     * @type {Integer}
+     * @constant
+     * @type {Number}
     */
     const BLOCK_SIZE = 4096;
 
     /**
-     * A Cache Entry
-     * @typedef CacheEntry
-     * @property {String} id The cache key (stored also in the entry)
-     * @property {CacheEntry} prev The previous linked cache entry
-     * @property {CacheEntry} next The next linked cache entry
-     * @property {Uint8Array} value The cached data
-     */
-
-    /**
      * A Block Cache employing a Least Recently Used caching strategy
-     * @typedef BlockCache
-     * @property {Integer} _limit The maximum number of entries in the cache 
-     * @property {Map} _entries A map to store the cache keys and data
-     * @property {CacheEntry} _first The most recent entry in the cache
-     * @property {CacheEntry} _last The least recedntly used entry in the cache
+     * @typedef {Object} BlockCache
+     * @property {Number} capacity The maximum number of entries in the cache 
+     * @property {Map} cache A map to store the cache keys and data
      */
 
     /**
      * Creates a new cache with max size limit of MAX_CACHE_SIZE blocks
+     * LRUCache implemnentation with Map adapted from https://markmurray.co/blog/lru-cache/
      */
     function LRUCache() {
         console.log('Creating cache of size ' + MAX_CACHE_SIZE + ' * ' + BLOCK_SIZE + ' bytes');
-        this._limit = MAX_CACHE_SIZE;
+        // Initialize persistent Cache properties
+        this.capacity = MAX_CACHE_SIZE;
+        this.cache = new Map();
     }
 
     /**
      * Tries to retrieve an element by its id. If it is not present in the cache, returns undefined; if it is present,
-     * then the value is returned and the entry is moved to the top of the cache
-     * @param {String} key The block cache entry key (byte offset + '' + file.id)
+     * then the value is returned and the entry is moved to the bottom of the cache
+     * @param {String} key The block cache entry key (file.id + ':' + byte offset)
      * @returns {Uint8Array|undefined} The requested cache data or undefined 
      */
     LRUCache.prototype.get = function (key) {
-        var entry = this._entries.get(key);
-        if (entry === undefined) {
+        var entry = this.cache.get(key);
+        // If the key does not exist, return
+        if (!entry) return entry;
+        // Remove the key and re-insert it (this moves the key to the bottom of the Map: bottom = most recent)
+        this.cache.delete(key);
+        this.cache.set(key, entry);
+        // Return the cached data
             return entry;
-        }
-        this.moveToTop(entry);
-        return entry.value;
     };
     
     /**
      * Stores a value in the cache by id and prunes the least recently used entry if the cache is larger than MAX_CACHE_SIZE
-     * @param {String} key The key under which to store the value (byte offset + '' + file.id from start of ZIM archive)
+     * @param {String} key The key under which to store the value (file.id + ':' + byte offset from start of ZIM archive)
      * @param {Uint8Array} value The value to store in the cache 
      */
     LRUCache.prototype.store = function (key, value) {
-        var entry = this.get(key);
-        if (entry === undefined) {
-            entry = {
-                id: key,
-                prev: null,
-                next: null,
-                value: value
-            };
-            this._entries.set(key, entry);
-            this.insertAtTop(entry);
-            if (this._entries.size >= this._limit) {
-                var e = this._last;
-                this.unlink(e);
-                this._entries.delete(e.id);
-            }
-        }
-    };
-
-    /**
-     * Delete a cache entry
-     * @param {CacheEntry} entry The entry to delete 
-     */
-    LRUCache.prototype.unlink = function(entry) {
-        if (entry.next === null) {
-            this._last = entry.prev;
+        var entry = this.cache.get(key);
+        // If the key already exists, delete it so that it will be added
+        // to the bottom of the Map (bottom = most recent)
+        if (entry) this.cache.delete(key);
+        else entry = value;
+        // Store a reference to the entry in the Map
+        this.cache.set(key, entry);
+        // If we've exceeded the cache capacity, then delete the least recently accessed value, 
+        // which will be the item at the top of the Map, i.e the first position
+        if (this.cache.size > this.capacity) {
+            if (this.cache.keys) {
+                var firstKey = this.cache.keys().next().value;
+                this.cache.delete(firstKey);
         } else {
-            entry.next.prev = entry.prev;
+                // IE11 doesn't support the keys iterator, so we have to do forEach loop through all 4000 entries
+                // to get the oldest values. To prevent excessive iterations, we delete 25% at a time.
+                var q = Math.floor(0.25 * this.capacity);
+                var c = 0;
+                console.log('Deleteing ' + q + ' cache entries');
+                this.cache.forEach(function (v, k, map) {
+                    if (c > q) return;
+                    map.delete(k);
+                    c++;
+                });
         }
-        if (entry.prev === null) {
-            this._first = null;
-        } else {
-            entry.prev.next = entry.next;
-        }
-    };
-
-    /**
-     * Insert a cache entry at the top of the cache
-     * @param {CacheEntry} entry The entry to insert 
-     */
-    LRUCache.prototype.insertAtTop = function(entry) {
-        if (this._first === null) {
-            this._first = this._last = entry;
-        } else {
-            this._first.prev = entry;
-            entry.next = this._first;
-            this._first = entry;
         }
     };
 
     /**
-     * Move a cache entry to the top of the cache
-     * @param {CacheEntry} entry The entry to move 
-     */
-    LRUCache.prototype.moveToTop = function(entry) {
-        this.unlink(entry);
-        this.insertAtTop(entry);
-    };
-
-    /**
-
      * A new Block Cache
      * @type {BlockCache}
      */
@@ -153,21 +118,11 @@ define(['q'], function(Q) {
     var misses = 0;
 
     /**
-     * Initializes or resets the cache - this should be called whenever a new ZIM is loaded
-     */
-    var init = function () {
-        console.log('Initialize or reset FileCache');
-        cache._entries = new Map();
-        // Initialize linked list of entries
-        cache._first = null;
-        cache._last = null;
-    };
-    /**
      * Read a certain byte range in the given file, breaking the range into chunks that go through the cache
      * If a read of more than BLOCK_SIZE * 2 (bytes) is requested, do not use the cache
      * @param {Object} file The requested ZIM archive to read from
-     * @param {Integer} begin The byte from which to start reading
-     * @param {Integer} end The byte at which to stop reading (end will not be read)
+     * @param {Number} begin The byte from which to start reading
+     * @param {Number} end The byte at which to stop reading (end will not be read)
      * @return {Promise<Uint8Array>} A Promise that resolves to the correctly concatenated data from the cache 
      *     or from the ZIM archive
      */
@@ -179,13 +134,15 @@ define(['q'], function(Q) {
         var blocks = {};
         // Look for the requested data in the blocks: we may need to stitch together data from two or more blocks
         for (var id = Math.floor(begin / BLOCK_SIZE) * BLOCK_SIZE; id < end; id += BLOCK_SIZE) {
-            var block = cache.get(id + '' + file.id);
+            var block = cache.get(file.id + ':' + id);
             if (block === undefined) {
                 // Data not in cache, so read from archive
                 misses++;
+                // DEV: This is a self-calling function, i.e. the function is called with an argument of <id> which then 
+                // becomes the <offset> parameter
                 readRequests.push(function(offset) {
                     return file._readSplitSlice(offset, offset + BLOCK_SIZE).then(function(result) {
-                        cache.store(offset + '' + file.id, result);
+                        cache.store(file.id + ':' + offset, result);
                         blocks[offset] = result;
                     });
                 }(id));
@@ -215,7 +172,6 @@ define(['q'], function(Q) {
     };
 
     return {
-        read: read,
-        init: init
+        read: read
     };
 });
