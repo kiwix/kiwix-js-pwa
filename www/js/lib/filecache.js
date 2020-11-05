@@ -95,7 +95,7 @@ define(['q'], function(Q) {
             if (this.cache.keys) {
                 var firstKey = this.cache.keys().next().value;
                 this.cache.delete(firstKey);
-        } else {
+            } else {
                 // IE11 doesn't support the keys iterator, so we have to do a forEach loop through all 4000 entries
                 // to get the oldest values. To prevent excessive iterations, we delete 25% at a time.
                 var q = Math.floor(0.25 * this.capacity);
@@ -106,7 +106,7 @@ define(['q'], function(Q) {
                     map.delete(k);
                     c++;
                 });
-        }
+            }
         }
     };
 
