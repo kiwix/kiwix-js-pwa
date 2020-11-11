@@ -2,7 +2,7 @@
 
 ## Release 1.0.2 Wikivoyage
 
-* UPDATE: Packaged ZIM updated to `wikipedia_en_medicine_maxi_2020-10.zim`
+* UPDATE: Packaged ZIM updated to `wikipedia_en_medicine_maxi_2020-11.zim`
 * ENHANCEMENT: Improvements to block cache
 * FIX: Prevent erroneous display of Active Content Warning with ZSTD archives
 * FIX: Reduce some cross-origin errors
