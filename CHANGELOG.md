@@ -1,7 +1,12 @@
 # Changelog
 
-## Release 1.0.0 Wikivoyage
+## Release 1.0.2 Wikivoyage
 
+* UPDATE: Packaged ZIM updated to `wikipedia_en_medicine_maxi_2020-10.zim`
+* ENHANCEMENT: Improvements to block cache
+* FIX: Prevent erroneous display of Active Content Warning with ZSTD archives
+* FIX: Reduce some cross-origin errors
+* REGRESSION: Loading of locally cached styles broken in Electron app running in Service Worker mode
 * UPDATE: Packaged ZIM updated to `wikipedia_en_medicine_maxi_2020-10.zim`
 * UPDATE: App now supports newest archives encoded with ZSTD compression
 * UPDATE: App is no longer in beta!
