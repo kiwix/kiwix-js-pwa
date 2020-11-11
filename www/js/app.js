@@ -2648,6 +2648,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             // Only update for expectedArticleURLToBeDisplayed.
             expectedArticleURLToBeDisplayed = dirEntry.namespace + "/" + dirEntry.url;
             params.pagesLoaded++;
+            
+            var iframe = document.getElementById('articleContent');
+                
             if (dirEntry.isRedirect()) {
                 appstate.selectedArchive.resolveRedirect(dirEntry, readArticle);
             } else {
@@ -2662,7 +2665,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
                 localSearch = {};
 
-                var iframe = document.getElementById('articleContent');
                 // Hide the display while loading
                 // iframeArticleContent.style.display = 'none';
                 // iframeArticleContent.onload = function(){};
