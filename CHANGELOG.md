@@ -1,5 +1,13 @@
 # Changelog
 
+## Release 1.0.2 WikiMed
+
+* UPDATE: Packaged ZIM updated to `wikipedia_en_medicine_maxi_2020-10.zim`
+* ENHANCEMENT: Improvements to block cache
+* FIX: Prevent erroneous display of Active Content Warning with ZSTD archives
+* FIX: Reduce some cross-origin errors
+* REGRESSION: Loading of locally cached styles broken in Electron app running in Service Worker mode
+
 ## Release 1.0.1 WikiMed
 
 * UPDATE: Packaged ZIM updated to `wikipedia_en_medicine_maxi_2020-10.zim`
