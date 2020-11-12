@@ -1,5 +1,10 @@
 # Changelog
 
+## Release 1.1.0 WikiMed
+
+* UPDATE: Packaged ZIM updated to `wikipedia_en_medicine-app_maxi_2020-11.zim`
+* ENHANCEMENT: Significantly smaller ZIM archive with same content (using ZSTD and WebP compression)
+
 ## Release 1.0.2 WikiMed
 
 * UPDATE: Packaged ZIM updated to `wikipedia_en_medicine_maxi_2020-11.zim`
