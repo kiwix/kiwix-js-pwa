@@ -4,6 +4,7 @@
 
 * UPDATE: Packaged ZIM updated to `wikipedia_en_medicine-app_maxi_2020-11.zim`
 * ENHANCEMENT: Significantly smaller ZIM archive with same content (using ZSTD and WebP compression)
+* ENHANCEMENT: Experimental WebP support (via polyfill) for older browsers including Windows Mobile
 
 ## Release 1.0.2 WikiMed
 
