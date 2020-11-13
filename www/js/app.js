@@ -122,13 +122,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
         // Define behavior of HTML elements
         var searchArticlesFocused = false;
         document.getElementById('searchArticles').addEventListener('click', function () {
-            var prefix = document.getElementById('prefix').value;                    // Do not initiate the same search if it is already in progress
+            var prefix = document.getElementById('prefix').value;
+            // Do not initiate the same search if it is already in progress
             if (appstate.search.prefix === prefix && !/^(cancelled|complete)$/.test(appstate.search.status)) return;
             $("#welcomeText").hide();
             $('.alert').hide();
             document.getElementById('searchingArticles').style.display = 'block';
             pushBrowserHistoryState(null, $('#prefix').val());
-        // Initiate the search
+            // Initiate the search
             searchDirEntriesFromPrefix($('#prefix').val());
             clearFindInArticle();
             //Re-enable top-level scrolling
@@ -136,13 +137,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
                 $('#navbarToggle').click();
             }
-        // This flag is set to true in the mousedown event below
-        searchArticlesFocused = false;
+            // This flag is set to true in the mousedown event below
+            searchArticlesFocused = false;
         });
         document.getElementById('formArticleSearch').addEventListener('submit', function () {
             document.getElementById('searchArticles').click();
         });
-    // Handle keyboard events in the prefix (article search) field
+        // Handle keyboard events in the prefix (article search) field
         var keyPressHandled = false;
         $('#prefix').on('keydown', function (e) {
         // If user presses Escape...
