@@ -65,10 +65,11 @@
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>5A76EAF3DF52F0B9A1A933C0A1C0DA78D207FDA6</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>8AEFAC31D8EFEB7747C6ADB9240A264BDE587030</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
+    <PackageCertificateKeyFile>KiwixWebAppWikiMed_StoreKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="archives\wikipedia_en_medicine-app_maxi.zim" />
@@ -120,6 +121,7 @@
     <Content Include="images\Wide310x150Logo.scale-400.png" />
     <Content Include="www\-\j\js_modules\webpHeroBundle.js" />
     <Content Include="www\-\j\js_modules\webpHeroPolyfills.js" />
+    <Content Include="www\img\icons\kiwix-midnightblue-90.png" />
     <Content Include="www\js\lib\zstddec.js" />
     <Content Include="www\js\lib\zstddec_wrapper.js" />
     <None Include="Package.StoreAssociation.xml" />
