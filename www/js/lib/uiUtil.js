@@ -25,7 +25,7 @@ define(['util'], function(util) {
      * Global variables
      */
     var itemsCount = false;
-    var webPMachine;
+    var webpMachine;
     
     /**
      * Creates a Blob from the given content, then a URL from this Blob
@@ -43,9 +43,9 @@ define(['util'], function(util) {
     function feedNodeWithBlob(node, nodeAttribute, content, mimeType, makeDataURI, callback) {
         var url;
         // Decode WebP data if the mimeType is webp and the browser does not support WebP 
-        if (!webPSupport && /\bwebp$/i.test(mimeType)) {
+        if (webpMachine && /\bwebp$/i.test(mimeType)) {
             node.style.transition = 'opacity 0.5s ease-in';
-            webPMachine.decode(content).then(function (url){
+            webpMachine.decode(content).then(function (url){
                 node.setAttribute(nodeAttribute, url);
                 if (callback) callback();
             });
@@ -560,21 +560,16 @@ define(['util'], function(util) {
         return string;
     }
 
-    // Attach WebP polyfill if needed
-    // Location of external scripts to load conditionally
-    var webPSupport = false;
-            
+    // Initialize the WebpMachine only if needed
     var testWebP = function(callback) {
         var webP = new Image();
         webP.onload = webP.onerror = function () {
-            callback(webP.height == 2);
+            callback(webP.height === 2);
         };
         webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
     };
-
     testWebP(function(support) {
-        webPSupport = support;
-        if (!support) webPMachine = new webpHero.WebpMachine();
+        if (!support) webpMachine = new webpHero.WebpMachine();
     });
 
     /**
