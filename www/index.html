@@ -40,6 +40,15 @@
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen" />
     <!-- link href="css/bootstrap-theme.min.css" rel="stylesheet" media="screen" /-->
     <!--script src="-/j/js_modules/webpHeroPolyfills.js"></script -->
+    <script type="text/javascript">
+        // Only load webHeroPolyfills if Promise and Array.from are not supported
+        if (!window.Promise || !Array.from) {
+            // Attach the polyfills
+            var js = document.createElement('script');
+            js.src = '-/j/js_modules/webpHeroPolyfills.js';
+            document.head.appendChild(js);
+        }
+    </script>
     <script type="text/javascript" src="-/j/js_modules/webpHeroBundle.js"></script>
     <script type="text/javascript">
         // This script is needed to retrieve launch arguments when the app is started by double-clicking on a file
