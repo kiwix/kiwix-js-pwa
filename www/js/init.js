@@ -2,7 +2,7 @@
  * init.js : Configuration for the library require.js
  * This file handles the dependencies between javascript libraries
  * 
- * Copyright 2013-2018 Mossroy and contributors
+ * Copyright 2013-2020 Mossroy and contributors
  * License GPL v3:
  * 
  * This file is part of Kiwix.
@@ -49,7 +49,7 @@ var params = {};
  */
 var appstate = {};
 
-params['version'] = "1.0.1"; //DEV: Manually update this version when there is a new release: it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "1.1.0-dev"; //DEV: Manually update this version when there is a new release: it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 params['packagedFile'] = "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
 params['fileVersion'] = "wikipedia_en_100_maxi_2020-08.zim (21-Aug-2020)"; //Use generic name for actual file, and give version here
@@ -295,7 +295,9 @@ require.config({
         'jquery': 'jquery-3.2.1.slim',
         //'jquery': 'jquery-3.2.1',
         //'bootstrap': 'bootstrap'
-        'bootstrap': 'bootstrap.min'
+        'bootstrap': 'bootstrap.min',
+        'webpHeroBundle': 'webpHeroBundle_0.0.0-dev.27',
+        'webpHeroPolyfills': 'webpHeroPolyfills_0.0.0-dev.27'
     },
     shim: {
         'jquery': {
@@ -303,8 +305,29 @@ require.config({
         },
         'bootstrap': {
             deps: ['jquery']
+        },
+        'webpHeroBundle': {
+            deps: ['webpHeroPolyfills']
         }
     }
 });
 
-define(['bootstrap','../app']);
+requirejs(['bootstrap'], function (bootstrap) {
+    requirejs(['../app']);
+});
+
+// Load the WebP Polyfills only if needed
+var webpMachine = false;
+// Using self-invoking function to avoid defining global functions and variables
+(function (callback) {
+    // Tests for native WebP support
+    var webP = new Image();
+    webP.onload = webP.onerror = function () {
+        callback(webP.height === 2);
+    };
+    webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
+})(function (support) {
+    if (!support) {
+        webpMachine = true;
+    }
+});
