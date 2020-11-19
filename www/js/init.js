@@ -2,7 +2,7 @@
  * init.js : Configuration for the library require.js
  * This file handles the dependencies between javascript libraries
  * 
- * Copyright 2013-2018 Mossroy and contributors
+ * Copyright 2013-2020 Mossroy and contributors
  * License GPL v3:
  * 
  * This file is part of Kiwix.
@@ -295,7 +295,9 @@ require.config({
         'jquery': 'jquery-3.2.1.slim',
         //'jquery': 'jquery-3.2.1',
         //'bootstrap': 'bootstrap'
-        'bootstrap': 'bootstrap.min'
+        'bootstrap': 'bootstrap.min',
+        'webpHeroBundle': 'webpHeroBundle_0.0.0-dev.27',
+        'webpHeroPolyfills': 'webpHeroPolyfills_0.0.0-dev.27'
     },
     shim: {
         'jquery': {
@@ -303,8 +305,29 @@ require.config({
         },
         'bootstrap': {
             deps: ['jquery']
+        },
+        'webpHeroBundle': {
+            deps: ['webpHeroPolyfills']
         }
     }
 });
 
-define(['bootstrap','../app']);
+requirejs(['bootstrap'], function (bootstrap) {
+    requirejs(['../app']);
+});
+
+// Load the WebP Polyfills only if needed
+var webpMachine = false;
+// Using self-invoking function to avoid defining global functions and variables
+(function (callback) {
+    // Tests for native WebP support
+    var webP = new Image();
+    webP.onload = webP.onerror = function () {
+        callback(webP.height === 2);
+    };
+    webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
+})(function (support) {
+    if (!support) {
+        webpMachine = true;
+    }
+});
