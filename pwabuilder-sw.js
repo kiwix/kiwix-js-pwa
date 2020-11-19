@@ -80,7 +80,6 @@ const precacheFiles = [
   "www/js/katex/fonts/KaTeX_Size2-Regular.woff2",
   "www/js/katex/fonts/KaTeX_Size3-Regular.woff2",
   "www/js/katex/fonts/KaTeX_Size4-Regular.woff2",
-  "www/-/j/js_modules/webpHeroBundle.js"
 ];
 
 // DEV: add any URL schemata that should be excluded from caching with the Cache API to the regex below
