@@ -20,12 +20,28 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
-define(['util'], function(util) {
+
+// DEV: Please put your RequireJS definition in the rqDef array below, and any function exports in the function parenthesis of the define statement
+// (we need to do it this way in order to load WebP polyfills conditionally)
+var rqDef = [];
+
+// Add WebP polyfill only if webpHero was loaded in init.js
+if (webpMachine) {
+    rqDef.push('webpHeroBundle');
+}
+
+define(rqDef, function() {
+
+    /**
+     * A queue for WebP images to be decoded by the single-threaded WebpMachine
+     * @type Array
+     */
+    var webpQueue = [];
+    
     /**
      * Global variables
      */
     var itemsCount = false;
-    var webpMachine;
     
     /**
      * Creates a Blob from the given content, then a URL from this Blob
@@ -33,43 +49,60 @@ define(['util'], function(util) {
      * 
      * This is useful to inject images (and other dependencies) inside an article
      * 
-     * @param {Object} node
-     * @param {String} nodeAttribute
-     * @param {Uint8Array} content
-     * @param {String} mimeType
+     * @param {Object} node The node to which the BLOB data should be added
+     * @param {String} nodeAttribute The attribute to set to the BLOB URI
+     * @param {Uint8Array} content The binary content to convert to a BLOB URI
+     * @param {String} mimeType The MIME type of the content
      * @param {Boolean} makeDataURI If true, make a data: URI instead of a blob URL
      * @param {Function} callback The function to call when the data are read
      */
     function feedNodeWithBlob(node, nodeAttribute, content, mimeType, makeDataURI, callback) {
-        var url;
         // Decode WebP data if the mimeType is webp and the browser does not support WebP 
-        if (webpMachine && /\bwebp$/i.test(mimeType)) {
-            node.style.transition = 'opacity 0.5s ease-in';
-            webpMachine.decode(content).then(function (url){
-                node.setAttribute(nodeAttribute, url);
-                if (callback) callback();
-            });
-            return;
-        }
-        var blob = new Blob([content], { type: mimeType });
-        if (makeDataURI) {
-            // Because btoa fails on utf8 strings (in SVGs, for example) we need to use FileReader method
-            // See https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding#The_Unicode_Problem
-            // url = 'data:' + mimeType + ';base64,' + btoa(util.uintToString(content));
-            var myReader = new FileReader();
-            myReader.onloadend = function () {
-                url = myReader.result;
-                node.setAttribute(nodeAttribute, url);
-                if (callback) callback();
-            };
-            myReader.readAsDataURL(blob);
+        if (webpMachine && /image\/webp/i.test(mimeType)) {
+            // Queue WebP images to be decoded (required by the WebP polyfill)
+            webpQueue.push({ 'node': node, 'nodeAttribute': nodeAttribute, 'content': content });
+            (function decodeImage() {
+                if (!webpQueue.length || webpQueue.busy) return;
+                webpQueue.busy = true;
+                var img = webpQueue.shift();
+                webpMachine.decode(img.content).then(function (url) {
+                    // DEV: WebpMachine.decode() returns a Data URI
+                    img.node.setAttribute(img.nodeAttribute, url);
+                    webpQueue.busy = false;
+                    decodeImage();
+                    if (callback) callback();
+                }).catch(function (err) {
+                    console.error('There was an error decoding image in WebpMachine', err);
+                    webpQueue.busy = false;
+                    decodeImage();
+                    if (callback) callback();
+                });
+            })();
         } else {
-            url = URL.createObjectURL(blob);
-            node.addEventListener('load', function () {
-                URL.revokeObjectURL(url);
-            });
-            node.setAttribute(nodeAttribute, url);
-            if (callback) callback();
+            var blob = new Blob([content], { type: mimeType });
+            var url;
+            if (makeDataURI) {
+                // Because btoa fails on utf8 strings (in SVGs, for example) we need to use FileReader method
+                // See https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding#The_Unicode_Problem
+                // url = 'data:' + mimeType + ';base64,' + btoa(util.uintToString(content));
+                var myReader = new FileReader();
+                myReader.onloadend = function () {
+                    url = myReader.result;
+                    node.setAttribute(nodeAttribute, url);
+                    if (callback) callback();
+                };
+                myReader.readAsDataURL(blob);
+            } else {
+                blob = new Blob([content], {
+                    type: mimeType
+                });
+                url = URL.createObjectURL(blob);
+                node.addEventListener('load', function () {
+                    URL.revokeObjectURL(url);
+                });
+                node.setAttribute(nodeAttribute, url);
+                if (callback) callback();
+            }
         }
     }
         
@@ -560,17 +593,8 @@ define(['util'], function(util) {
         return string;
     }
 
-    // Initialize the WebpMachine only if needed
-    var testWebP = function(callback) {
-        var webP = new Image();
-        webP.onload = webP.onerror = function () {
-            callback(webP.height === 2);
-        };
-        webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
-    };
-    testWebP(function(support) {
-        if (!support) webpMachine = new webpHero.WebpMachine();
-    });
+    // If global variable webpMachine was defined, then we need to initialize the WebP Polyfill
+    if (webpMachine) webpMachine = new webpHero.WebpMachine();
 
     /**
      * Functions and classes exposed by this module
