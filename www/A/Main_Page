@@ -45,7 +45,7 @@
 		<span class=""><a href="Africa" title="Africa"><span class="mw-ui-button mw-ui-progressive" style="margin:5px; width:40%;">Africa</span></a></span><br><span class=""><a href="Asia" title="Asia"><span class="mw-ui-button mw-ui-progressive" style="margin:5px; width:40%;">Asia</span></a></span>
 		<span class=""><a href="Oceania" title="Oceania"><span class="mw-ui-button mw-ui-progressive" style="margin:5px; width:40%;">Oceania</span></a></span><br><span class=""><a href="North_America" title="North America"><span class="mw-ui-button mw-ui-progressive" style="margin:5px; width:40%;">North America</span></a></span>
 		<span class=""><a href="South_America" title="South America"><span class="mw-ui-button mw-ui-progressive" style="margin:5px; width:40%;">South America</span></a></span><br><span class=""><a href="Antarctica" title="Antarctica"><span class="mw-ui-button mw-ui-progressive" style="margin:5px; width:40%;">Antarctica</span></a></span>
-		<span class=""><a href="Other_destinations" title="Other destinations"><span class="mw-ui-button mw-ui-progressive" style="margin:5px; width:40%;">Other destinations</span></a></span><br><span>The official, non-commercial <a href="#siteContainer">sister site</a> of Wikipedia for sightseeing, activities, cuisine and accommodation around the world; with 29,072 articles in English written by travellers like <i>you</i>.</span>
+		<span class=""><a href="Other_destinations" title="Other destinations"><span class="mw-ui-button mw-ui-progressive" style="margin:5px; width:40%;">Other destinations</span></a></span><br><span>The official, non-commercial <a href="#siteContainer">sister site</a> of Wikipedia for sightseeing, activities, cuisine and accommodation around the world; with 30,110 articles in English written by travellers like <i>you</i>.</span>
 </p><p>		Read about a location <b>near you</b>.
 </p>
 		<p id="mainpage-touristoffice">Got a specific question?<br> <i>Ask it at the tourist office</i></p>
@@ -60,50 +60,66 @@
         <div class="jcarousel-item">
 <style data-mw-deduplicate="TemplateStyles:r3732050">.mw-parser-output .mainpage-shadowbox{color:white;background:rgb(16,16,16);background:rgba(0,0,0,0.3);border-radius:4px}.mw-parser-output .mainpage-shadowbox h2,.mw-parser-output .mainpage-shadowbox h3{color:white;border:none;font-family:sans-serif;line-height:1.2em;margin:0;padding:0}.mw-parser-output .mainpage-shadowbox a{color:white;font-weight:bold}.mw-parser-output .banner-image{position:relative;max-width:1125px;height:auto;margin-bottom:.6em}.mw-parser-output .banner-image img{max-width:100%;height:auto}.mw-parser-output .banner-box-wide{width:80%}.mw-parser-output .banner-box-left,.mw-parser-output .banner-box-right{padding:8px 7px;background:rgb(16,16,16);background:rgba(0,0,0,0.3);border-radius:4px;width:40%}.mw-parser-output .banner-box-left{text-align:left}.mw-parser-output .banner-box-right{text-align:right}.mw-parser-output .banner-box-2{position:absolute;z-index:2;min-width:20em}@media screen and (min-width:720px){.mw-parser-output .banner-image img.nolink{display:none}.mw-parser-output .mainpage-shadowbox h2{font-size:190%}.mw-parser-output .mainpage-shadowbox h3{font-size:150%}.mw-parser-output .banner-image{overflow:hidden}.mw-parser-output .banner-box-left{left:3%}.mw-parser-output .banner-box-right{right:3%}.mw-parser-output .banner-box-2{margin-top:2em}.mw-parser-output .banner-box-2 .quote{font-size:80%;line-height:1.2em}}@media screen and (max-width:720px){.mw-parser-output .banner-image img:not(.nolink){display:none}.mw-parser-output .banner-image>.mainpage-shadowbox{width:inherit!important;min-height:100%;margin-left:-150%;margin-right:150%;opacity:0;background:black}.mw-parser-output .mainpage-shadowbox .quote>a:after{content:"\a Tap to learn more.";white-space:pre}.mw-parser-output .jcarousel-item:hover .mainpage-shadowbox{margin:unset;opacity:1;transition:margin 0.5s;bottom:50%}.mw-parser-output .jcarousel-control-prev,.mw-parser-output .jcarousel-control-next{display:none}.mw-parser-output .interactiveIcon{position:absolute;opacity:0.4;height:75%!important;width:auto;bottom:0;right:0}}</style><div class="banner-image js-proportonal-resize">
 <p>	<img alt="Interactive icon.svg" src="../I/m/Interactive_icon.svg.png" decoding="async" width="220" height="331" class="nolink interactiveIcon" data-file-width="133" data-file-height="200"></p>
-	<div class="mainpage-shadowbox banner-box-2 banner-box-left" style="width:30%">
-		<h2><span class="mw-headline" id="Istanbul"><a href="Istanbul" title="Istanbul">Istanbul</a></span></h2>
-		<h3><span class="mw-headline" id="Destination_of_the_month"><a href="Previous_Featured_travel_topics" title="Previous Featured travel topics">Destination of the month</a></span></h3>
-		<div class="quote"><a href="Istanbul" title="Istanbul">Bridging Europe and Asia, Turkey's largest city boasts all the rich history and cosmopolitan culture that you'd expect from the ancient seat of not one but two of the world's great empires.</a></div>
+	<div class="mainpage-shadowbox banner-box-2 banner-box-left" style="width:50%">
+		<h2><span class="mw-headline" id="COVID-19_pandemic"><a href="COVID-19_pandemic" title="COVID-19 pandemic">COVID-19 pandemic</a></span></h2>
+		<h3 class="in-block"><span class="mw-headline" id="Stay_healthy"><a href="/wiki/Stay_healthy" title="Stay healthy">Stay healthy</a></span></h3>
+		<div class="quote"><a href="COVID-19_pandemic" title="COVID-19 pandemic">Should you cancel trips? How can you protect yourself if you're travelling? Read about how the pandemic is affecting travel.</a></div>
 	</div>
-<p>	<img alt="Istanbul" src="../I/m/Istanbul_Banner_2.jpg" decoding="async" title="Istanbul" width="1700" height="566" class="nolink" data-file-width="2800" data-file-height="933"></p>
-	<a href="Istanbul" title="Istanbul"><img alt="Istanbul" src="../I/m/Istanbul_Banner_2.jpg" decoding="async" width="1700" height="566" data-file-width="2800" data-file-height="933"></a></div>
-        </div>
-        <div class="jcarousel-item">
-<style data-mw-deduplicate="TemplateStyles:r3732050">.mw-parser-output .mainpage-shadowbox{color:white;background:rgb(16,16,16);background:rgba(0,0,0,0.3);border-radius:4px}.mw-parser-output .mainpage-shadowbox h2,.mw-parser-output .mainpage-shadowbox h3{color:white;border:none;font-family:sans-serif;line-height:1.2em;margin:0;padding:0}.mw-parser-output .mainpage-shadowbox a{color:white;font-weight:bold}.mw-parser-output .banner-image{position:relative;max-width:1125px;height:auto;margin-bottom:.6em}.mw-parser-output .banner-image img{max-width:100%;height:auto}.mw-parser-output .banner-box-wide{width:80%}.mw-parser-output .banner-box-left,.mw-parser-output .banner-box-right{padding:8px 7px;background:rgb(16,16,16);background:rgba(0,0,0,0.3);border-radius:4px;width:40%}.mw-parser-output .banner-box-left{text-align:left}.mw-parser-output .banner-box-right{text-align:right}.mw-parser-output .banner-box-2{position:absolute;z-index:2;min-width:20em}@media screen and (min-width:720px){.mw-parser-output .banner-image img.nolink{display:none}.mw-parser-output .mainpage-shadowbox h2{font-size:190%}.mw-parser-output .mainpage-shadowbox h3{font-size:150%}.mw-parser-output .banner-image{overflow:hidden}.mw-parser-output .banner-box-left{left:3%}.mw-parser-output .banner-box-right{right:3%}.mw-parser-output .banner-box-2{margin-top:2em}.mw-parser-output .banner-box-2 .quote{font-size:80%;line-height:1.2em}}@media screen and (max-width:720px){.mw-parser-output .banner-image img:not(.nolink){display:none}.mw-parser-output .banner-image>.mainpage-shadowbox{width:inherit!important;min-height:100%;margin-left:-150%;margin-right:150%;opacity:0;background:black}.mw-parser-output .mainpage-shadowbox .quote>a:after{content:"\a Tap to learn more.";white-space:pre}.mw-parser-output .jcarousel-item:hover .mainpage-shadowbox{margin:unset;opacity:1;transition:margin 0.5s;bottom:50%}.mw-parser-output .jcarousel-control-prev,.mw-parser-output .jcarousel-control-next{display:none}.mw-parser-output .interactiveIcon{position:absolute;opacity:0.4;height:75%!important;width:auto;bottom:0;right:0}}</style><div class="banner-image js-proportonal-resize">
-<p>	<img alt="Interactive icon.svg" src="../I/m/Interactive_icon.svg.png" decoding="async" width="220" height="331" class="nolink interactiveIcon" data-file-width="133" data-file-height="200"></p>
-	<div class="mainpage-shadowbox banner-box-2 banner-box-right" style="width:35%">
-		<h2><span class="mw-headline" id="Bouzigues"><a href="Bouzigues" title="Bouzigues">Bouzigues</a></span></h2>
-		<h3><span class="mw-headline" id="Off_the_Beaten_Path"><a href="Previously_Off_the_beaten_path" title="Previously Off the beaten path">Off the Beaten Path</a></span></h3>
-		<div class="quote"><a href="Bouzigues" title="Bouzigues">In the sleepy oyster capital of France, walking the seafront and the old town alleys is an enjoyable experience.</a></div>
-	</div>
-<p>	<img alt="Bouzigues" src="../I/m/Bouzigues_Banner_2.jpg" decoding="async" title="Bouzigues" width="1700" height="567" class="nolink" data-file-width="7185" data-file-height="2395"></p>
-	<a href="Bouzigues" title="Bouzigues"><img alt="Bouzigues" src="../I/m/Bouzigues_Banner_2.jpg" decoding="async" width="1700" height="567" data-file-width="7185" data-file-height="2395"></a></div>
-        </div>
-        <div class="jcarousel-item">
-<style data-mw-deduplicate="TemplateStyles:r3732050">.mw-parser-output .mainpage-shadowbox{color:white;background:rgb(16,16,16);background:rgba(0,0,0,0.3);border-radius:4px}.mw-parser-output .mainpage-shadowbox h2,.mw-parser-output .mainpage-shadowbox h3{color:white;border:none;font-family:sans-serif;line-height:1.2em;margin:0;padding:0}.mw-parser-output .mainpage-shadowbox a{color:white;font-weight:bold}.mw-parser-output .banner-image{position:relative;max-width:1125px;height:auto;margin-bottom:.6em}.mw-parser-output .banner-image img{max-width:100%;height:auto}.mw-parser-output .banner-box-wide{width:80%}.mw-parser-output .banner-box-left,.mw-parser-output .banner-box-right{padding:8px 7px;background:rgb(16,16,16);background:rgba(0,0,0,0.3);border-radius:4px;width:40%}.mw-parser-output .banner-box-left{text-align:left}.mw-parser-output .banner-box-right{text-align:right}.mw-parser-output .banner-box-2{position:absolute;z-index:2;min-width:20em}@media screen and (min-width:720px){.mw-parser-output .banner-image img.nolink{display:none}.mw-parser-output .mainpage-shadowbox h2{font-size:190%}.mw-parser-output .mainpage-shadowbox h3{font-size:150%}.mw-parser-output .banner-image{overflow:hidden}.mw-parser-output .banner-box-left{left:3%}.mw-parser-output .banner-box-right{right:3%}.mw-parser-output .banner-box-2{margin-top:2em}.mw-parser-output .banner-box-2 .quote{font-size:80%;line-height:1.2em}}@media screen and (max-width:720px){.mw-parser-output .banner-image img:not(.nolink){display:none}.mw-parser-output .banner-image>.mainpage-shadowbox{width:inherit!important;min-height:100%;margin-left:-150%;margin-right:150%;opacity:0;background:black}.mw-parser-output .mainpage-shadowbox .quote>a:after{content:"\a Tap to learn more.";white-space:pre}.mw-parser-output .jcarousel-item:hover .mainpage-shadowbox{margin:unset;opacity:1;transition:margin 0.5s;bottom:50%}.mw-parser-output .jcarousel-control-prev,.mw-parser-output .jcarousel-control-next{display:none}.mw-parser-output .interactiveIcon{position:absolute;opacity:0.4;height:75%!important;width:auto;bottom:0;right:0}}</style><div class="banner-image js-proportonal-resize">
-<p>	<img alt="Interactive icon.svg" src="../I/m/Interactive_icon.svg.png" decoding="async" width="220" height="331" class="nolink interactiveIcon" data-file-width="133" data-file-height="200"></p>
-	<div class="mainpage-shadowbox banner-box-2 banner-box-right" style="width:30%">
-		<h2><span class="mw-headline" id="Common_scams"><a href="Common_scams" title="Common scams">Common scams</a></span></h2>
-		<h3><span class="mw-headline" id="Featured_Travel_Topic"><a href="Previous_Featured_travel_topics" title="Previous Featured travel topics">Featured Travel Topic</a></span></h3>
-		<div class="quote"><a href="Common_scams" title="Common scams">"Special offers", supposedly "closed" businesses, fake police, unsolicited "help": check out our guide and be prepared for some of the most common tricks that con artists try to pull on travellers.</a></div>
-	</div>
-<p>	<img alt="Common scams" src="../I/m/CommonScamsBanner1.jpg" decoding="async" title="Common scams" width="1700" height="567" class="nolink" data-file-width="1710" data-file-height="570"></p>
-	<a href="Common_scams" title="Common scams"><img alt="Common scams" src="../I/m/CommonScamsBanner1.jpg" decoding="async" width="1700" height="567" data-file-width="1710" data-file-height="570"></a></div>
+<p>	<img alt="COVID-19 pandemic" src="/www/I/m/Hand_sanitizer_banner.jpg" decoding="async" title="COVID-19 pandemic" width="1700" height="569" class="nolink" data-file-width="3415" data-file-height="1144"></p>
+	<a href="COVID-19_pandemic" title="COVID-19 pandemic"><img alt="COVID-19 pandemic" src="/www/I/m/Hand_sanitizer_banner.jpg" decoding="async" width="1700" height="569" data-file-width="3415" data-file-height="1144"></a></div>
         </div>
     </div>
 </div>
-<p><span class="jcarousel-control-prev"><a href="/wiki/">‹</a></span>
-<span class="jcarousel-control-next"><a href="/wiki/">›</a></span>
+<div class="jcarousel-wrapper">
+<div class="jcarousel jcarousel-randomize">
+    <div class="jcarousel-list">
+        <div class="jcarousel-item">
+<link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r3732050"><div class="banner-image js-proportonal-resize">
+<p>	<img alt="Interactive icon.svg" src="../I/m/Interactive_icon.svg.png" decoding="async" width="220" height="331" class="nolink interactiveIcon" data-file-width="133" data-file-height="200"></p>
+	<div class="mainpage-shadowbox banner-box-2 banner-box-right" style="width:30%">
+		<h2><span class="mw-headline" id="Arequipa"><a href="Arequipa" title="Arequipa">Arequipa</a></span></h2>
+		<h3 class="in-block"><span class="mw-headline" id="Destination_of_the_month"><a href="Previous_Destinations_of_the_month" title="Previous Destinations of the month">Destination of the month</a></span></h3>
+		<div class="quote"><a href="Arequipa" title="Arequipa">Peru's second city (and the world's alpaca capital)<br>is not only surrounded by volcanoes – the lovely Spanish colonial architecture in the old town is largely built of volcanic rock!</a></div>
+	</div>
+<p>	<img alt="Arequipa" src="/www/I/m/ArequipaBanner3.jpg" decoding="async" title="Arequipa" width="1700" height="567" class="nolink" data-file-width="1710" data-file-height="570"></p>
+	<a href="Arequipa" title="Arequipa"><img alt="Arequipa" src="/www/I/m/ArequipaBanner3.jpg" decoding="async" width="1700" height="567" data-file-width="1710" data-file-height="570"></a></div>
+        </div>
+        <div class="jcarousel-item">
+<link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r3732050"><div class="banner-image js-proportonal-resize">
+<p>	<img alt="Interactive icon.svg" src="../I/m/Interactive_icon.svg.png" decoding="async" width="220" height="331" class="nolink interactiveIcon" data-file-width="133" data-file-height="200"></p>
+	<div class="mainpage-shadowbox banner-box-2 banner-box-left" style="width:33%">
+		<h2><span class="mw-headline" id="Iriomote"><a href="Iriomote" title="Iriomote">Iriomote</a></span></h2>
+		<h3 class="in-block"><span class="mw-headline" id="Off_the_Beaten_Path"><a href="Previously_Off_the_beaten_path" title="Previously Off the beaten path">Off the Beaten Path</a></span></h3>
+		<div class="quote"><a href="Iriomote" title="Iriomote">One of the few remaining great wildernesses of Japan, whose jungles are famous for their native wild cats.</a></div>
+	</div>
+<p>	<img alt="Iriomote" src="/www/I/m/IriomoteBanner1.jpg" decoding="async" title="Iriomote" width="1700" height="567" class="nolink" data-file-width="1710" data-file-height="570"></p>
+	<a href="Iriomote" title="Iriomote"><img alt="Iriomote" src="/www/I/m/IriomoteBanner1.jpg" decoding="async" width="1700" height="567" data-file-width="1710" data-file-height="570"></a></div>
+        </div>
+        <div class="jcarousel-item">
+<link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r3732050"><div class="banner-image js-proportonal-resize">
+<p>	<img alt="Interactive icon.svg" src="../I/m/Interactive_icon.svg.png" decoding="async" width="220" height="331" class="nolink interactiveIcon" data-file-width="133" data-file-height="200"></p>
+	<div class="mainpage-shadowbox banner-box-2 banner-box-left" style="width:35%">
+		<h2><span class="mw-headline" id="Aviation_history"><a href="Aviation_history" title="Aviation history">Aviation history</a></span></h2>
+		<h3 class="in-block"><span class="mw-headline" id="Featured_Travel_Topic"><a href="/w/index.php?title=Previous_Featured_Travel_Topics&amp;action=edit&amp;redlink=1" class="new" title="Previous Featured Travel Topics (page does not exist)">Featured Travel Topic</a></span></h3>
+		<div class="quote"><a href="Aviation_history" title="Aviation history">The past, present and future of flying are ready to explore at a multiplicity of museums and events the world over.</a></div>
+	</div>
+<p>	<img alt="Aviation history" src="/www/I/m/AviationHistoryBanner3.jpg" decoding="async" title="Aviation history" width="1700" height="567" class="nolink" data-file-width="1710" data-file-height="570"></p>
+	<a href="Aviation_history" title="Aviation history"><img alt="Aviation history" src="/www/I/m/AviationHistoryBanner3.jpg" decoding="async" width="1700" height="567" data-file-width="1710" data-file-height="570"></a></div>
+        </div>
+    </div>
+</div>
+<p><span class="jcarousel-control-prev"><a href="../">‹</a></span>
+<span class="jcarousel-control-next"><a href="../">›</a></span>
 </p>
 <p class="jcarousel-pagination"></p>
 </div>
-<style data-mw-deduplicate="TemplateStyles:r3728792">.mw-parser-output #bottombox-d{background-color:#c5d7f0}.mw-parser-output #bottombox-d>div{width:48.5%;display:inline-block;padding:0.7em 0 1em 0.75%;vertical-align:top}.mw-parser-output #bottombox-d>div h3{margin:0;padding:0}@media screen and (max-width:720px){.mw-parser-output #bottombox-d>div{width:100%;padding-left:0}}</style><div id="bottombox-d">
-	<div><h3><span class="mw-headline" id="Discover"><a href="Discover" title="Discover">Discover</a></span></h3><div class="floatright"><img alt="Wagenia 17 copy.jpg" src="../I/m/Wagenia_17_copy.jpg" decoding="async" width="200" height="133" data-file-width="2551" data-file-height="1701"></div>
-<ul><li>The Atlantic ocean absorbs heat in winter and releases it in summer, granting <a href="Tenerife" title="Tenerife">Tenerife</a> <b>fairly constant temperatures throughout the year</b>.</li>
-<li>In <a href="Rzesz%C3%B3w" title="Rzeszów">Rzeszów</a> you can visit a <b>museum dedicated to popular animated films for children</b> before bedtime.</li>
-<li>On of the major sights in <a href="Kisangani" title="Kisangani">Kisangani</a> is the Boyoma Falls with <b>fishermen using conical traps to catch fish</b> (<i>pictured</i>).</li></ul></div>
-	<div><h3><span class="mw-headline" id="Easter_travel">Easter travel</span></h3><div class="thumb tright"><div class="thumbinner" style="width:222px;"><img alt="" src="../I/m/Ulm_Neu-Ulm_Lebendiger_Kreuzweg_2011_Bild_11.JPG" decoding="async" width="220" height="165" class="thumbimage" data-file-width="3648" data-file-height="2736">  <div class="thumbcaption">Reenactment of the Way of the Cross in <a href="Ulm" title="Ulm">Ulm</a>, <a href="Germany" title="Germany">Germany</a></div></div></div>
-<ul><li><a href="Easter_travel" title="Easter travel">Easter</a> is one of the two most important holidays in Christianity. There are special events and foods enjoyed around the world, and many people travel to see friends and family. This year, Easter Sunday falls on 21 April.<p>&nbsp;</p><h3><span class="mw-headline" id="Get_involved">Get involved</span></h3><div class="floatright"><img alt="Be bold2.svg" src="../I/m/Be_bold2.svg.png" decoding="async" width="125" height="125" data-file-width="750" data-file-height="750"></div></li>
+<style data-mw-deduplicate="TemplateStyles:r3728792">.mw-parser-output #bottombox-d{background-color:#c5d7f0}.mw-parser-output #bottombox-d>div{width:48.5%;display:inline-block;padding:0.7em 0 1em 0.75%;vertical-align:top}.mw-parser-output #bottombox-d>div h3{margin:0;padding:0}@media screen and (max-width:720px){.mw-parser-output #bottombox-d>div{width:100%;padding-left:0}}</style>
+<div id="bottombox-d">
+	<div><h3 class="in-block"><span class="mw-headline" id="Discover"><a href="Discover" title="Discover">Discover</a></span></h3><div class="floatright"><a href="../I/m/Newport_RI_Cliff_Walk.jpg" class="image"><img alt="Newport RI Cliff Walk.jpg" src="../I/m/Newport_RI_Cliff_Walk.jpg" decoding="async" width="200" height="135" data-file-width="480" data-file-height="323"></a></div>
+<ul><li>Every day at midday <b>a trumpeter dressed in historic costume</b> walks up 120 stairs and plays a tune from the top of the <b>Fire Tower</b> in <a href="Grodno" title="Grodno">Grodno</a>.</li>
+<li>The cliff walk (<i>pictured</i>) in <a href="Newport_(Rhode_Island)" title="Newport (Rhode Island)">Newport (Rhode Island)</a> offers <b>some of the most beautiful views in New England</b>, and wildlife can be seen everywhere throughout the walk.</li>
+<li>The <a href="Diving_the_Cape_Peninsula_and_False_Bay/SATS_General_Botha" title="Diving the Cape Peninsula and False Bay/SATS General Botha">SATS General Botha</a> site is considered <b>one of the more interesting wreck dives of False Bay</b>, and the depth appeals to the more adventurous divers.</li></ul></div>
+<ul>
 <li>New to Wikivoyage and have a question? Post it here!</li>
 <li>How to edit a page</li>
 <li>Tips on contributing</li>

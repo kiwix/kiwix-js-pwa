@@ -125,6 +125,12 @@
     <Content Include="images\Wide310x150Logo.scale-150.png" />
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="images\Wide310x150Logo.scale-400.png" />
+    <Content Include="www\I\m\ArequipaBanner3.jpg" />
+    <Content Include="www\I\m\AviationHistoryBanner3.jpg" />
+    <Content Include="www\I\m\Hand_sanitizer_banner.jpg" />
+    <Content Include="www\I\m\IriomoteBanner1.jpg" />
+    <Content Include="www\js\lib\webpHeroBundle_0.0.0-dev.27.js" />
+    <Content Include="www\js\lib\webpHeroPolyfills_0.0.0-dev.27.js" />
     <Content Include="www\js\lib\zstddec.js" />
     <Content Include="www\js\lib\zstddec_wrapper.js" />
     <None Include="Package.StoreAssociation.xml" />
