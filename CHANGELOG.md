@@ -1,6 +1,6 @@
 # Changelog
 
-## Release 1.1.0
+## Release 1.1.0 (in progress)
 
 * UPDATE: App now supports newest archives encoded with ZSTD compression
 * UPDATE: WebP support (via polyfill) for older browsers including Windows Mobile 
