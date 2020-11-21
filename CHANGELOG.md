@@ -1,17 +1,17 @@
 # Changelog
 
-## Release 1.0.1 WikiMed
+## Release 1.1.0
 
-* UPDATE: Packaged ZIM updated to `wikipedia_en_medicine_maxi_2020-10.zim`
 * UPDATE: App now supports newest archives encoded with ZSTD compression
-* UPDATE: App is no longer in beta!
+* UPDATE: WebP support (via polyfill) for older browsers including Windows Mobile 
 * ENHANCEMENT: Decompression speed gains with ZSTD
 * ENHANCEMENT: Allow use of keyboard to select archive from archive list
 * ENHANCEMENT: Option to display articles with all sections open or closed
 * ENHANCEMENT: Use Native File System API in PWA version
-* ENHANCEMENT: Support launching Electron app from shortcut
 * ENHANCEMENT: Better error reporting in console log
 * ENHANCEMENT: Improved block cache and faster conversion of file slice to blob
+* FIX: Prevent erroneous display of Active Content Warning with ZSTD archives
+* FIX: Reduce some cross-origin errors
 * FIX: Prevent archive list from jumping to wrong archive on click
 * FIX: Critical error on load if packaged archive name has changed
 * FIX: Download links are no longer erroneously cached by the Service Worker
