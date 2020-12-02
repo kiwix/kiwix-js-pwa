@@ -2,16 +2,18 @@
 
 ## Release 1.1.0 (in progress)
 
-* UPDATE: App now supports newest archives encoded with ZSTD compression
 * UPDATE: WebP support (via polyfill) for older browsers including Windows Mobile 
-* ENHANCEMENT: Decompression speed gains with ZSTD
-* ENHANCEMENT: Allow use of keyboard to select archive from archive list
-* ENHANCEMENT: Option to display articles with all sections open or closed
-* ENHANCEMENT: Use Native File System API in PWA version
-* ENHANCEMENT: Better error reporting in console log
 * ENHANCEMENT: Improved block cache and faster conversion of file slice to blob
 * FIX: Prevent erroneous display of Active Content Warning with ZSTD archives
 * FIX: Reduce some cross-origin errors
+
+## Release 1.0.0
+
+* UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-09.zim`
+* UPDATE: App now supports newest archives encoded with ZSTD compression
+* ENHANCEMENT: Decompression speed gains with ZSTD
+* ENHANCEMENT: Allow use of keyboard to select archive from archive list
+* ENHANCEMENT: Option to display articles with all sections open or closed
 * FIX: Prevent archive list from jumping to wrong archive on click
 * FIX: Critical error on load if packaged archive name has changed
 * FIX: Download links are no longer erroneously cached by the Service Worker
