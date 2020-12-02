@@ -125,12 +125,18 @@ define(['uiUtil'], function (uiUtil) {
                     e.preventDefault();
                     e.stopPropagation();
                 }
-                var visibleImages = queueImages('poll', 0, function() { extractImages(visibleImages); }).visible;
-                visibleImages.forEach(function (image) { 
-                    image.style.opacity = '0';
-                    if (image.dataset.kiwixheight) image.height = image.dataset.kiwixheight;
-                    else image.removeAttribute('height');
-                });
+                // DEV: Algorithm below doesn't queue webp images correctly, so for now we will extract images
+                // only one-by-one on image click
+                // var visibleImages = queueImages('poll', 0, function() { extractImages(visibleImages); }).visible;
+                // visibleImages.forEach(function (image) { 
+                //    image.style.opacity = '0';
+                //    if (image.dataset.kiwixheight) image.height = image.dataset.kiwixheight;
+                //    else image.removeAttribute('height');
+                //});
+                extractImages([thisImage]);
+                thisImage.style.opacity = '0';
+                if (thisImage.dataset.kiwixheight) thisImage.height = thisImage.dataset.kiwixheight;
+                else thisImage.removeAttribute('height');
             });
         }
     }
