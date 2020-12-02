@@ -2,7 +2,8 @@
 
 ## Release 1.1.0 (in progress)
 
-* UPDATE: WebP support (via polyfill) for older browsers including Windows Mobile 
+* UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-11.zim`
+* UPDATE: WebP support (via polyfill) for older browsers including Windows Mobile
 * ENHANCEMENT: Improved block cache and faster conversion of file slice to blob
 * FIX: Prevent erroneous display of Active Content Warning with ZSTD archives
 * FIX: Reduce some cross-origin errors
