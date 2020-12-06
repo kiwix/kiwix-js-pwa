@@ -3078,23 +3078,25 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 /[^\\](\$\$?)((?:\\\$|(?!\1)[\s\S])+)\1/.test(htmlArticle) : false;
             //Replace all TeX SVGs with MathJax scripts
             if (params.useMathJax) {
-                htmlArticle = htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*(['"])((?:[^"']|(?!\1)[\s\S])+)[^>]+>/ig,
-                    function (p0, p1, math) {
-                        // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
-                        math = math.replace(/&amp;/g, '&');
-                        // Change any mbox commands to fbox (because KaTeX doesn't support mbox)
-                        math = math.replace(/mbox{/g, 'fbox{');
-                        return '<script type="math/tex">' + math + '</script>';
-                    });
                 // Deal with any newer MathML blocks
                 htmlArticle = htmlArticle.replace(/(<math\b[^>]+alttext=(["']))((?:[^"']|[\s\S](?!\2))+?)(\2(?:[^<]|<(?!\/math))+(?:[^<]|<(?!img))+)<img\b[^>]+?class=["'][^"']*?mwe-math-fallback-image[^>]+>/ig,
-                    function (_p0, p1, _p2, math, p4) {
-                        // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
-                        math = math.replace(/&amp;/g, '&');
-                        // Change any mbox commands to fbox (because KaTeX doesn't support mbox)
-                        math = math.replace(/mbox{/g, 'fbox{');
-                        return p1 + math + p4 + '<script type="math/tex">' + math + '</script>';
-                    });
+                function (_p0, p1, _p2, math, p4) {
+                    // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
+                    math = math.replace(/&amp;/g, '&');
+                    // Change any mbox commands to fbox (because KaTeX doesn't support mbox)
+                    math = math.replace(/mbox{/g, 'fbox{');
+                    return p1 + math + p4 + '<script type="math/tex">' + math + '</script>';
+                });
+                // Older math blocks
+                htmlArticle = htmlArticle.replace(/<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*(['"])((?:[^"']|(?!\1)[\s\S])+)[^>]+>/ig,
+                function (p0, p1, math) {
+                    // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
+                    math = math.replace(/&amp;/g, '&');
+                    // Change any mbox commands to fbox (because KaTeX doesn't support mbox)
+                    math = math.replace(/mbox{/g, 'fbox{');
+                    return '<script type="math/tex">' + math + '</script>';
+                });
+                
             }
 
             params.containsMathTex = params.useMathJax ? /<script\s+type\s*=\s*['"]\s*math\/tex\s*['"]/i.test(htmlArticle) : false;
