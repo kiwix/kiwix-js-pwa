@@ -5,6 +5,7 @@
 _pkginfo.txt
 /bld/
 /bin/
+/build/
 /BundleArtifacts/
 /archives/*.zim
 /AppPackages/*wikivoyage*
@@ -13,3 +14,9 @@ _pkginfo.txt
 package-lock.json
 .vscode/launch.json
 null
+/scripts/
+/scripts/kiwix-*.pem
+/scripts/set_secret_environment_variables.sh
+/scripts/travisci_builder_id_key
+/scripts/secret_files.tar.gz
+
