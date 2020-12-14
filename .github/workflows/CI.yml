@@ -23,8 +23,20 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      # Set up secret files from encrypted secrets
+      - name: Set up secret files
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          echo "$SSH_KEY" > ./scripts/ssh_key
+
       # Runs a single command using the runners shell
       - name: Run a one-line script
         env:
           TAG_NAME: ${{ github.event.registry_package.package_version.tag_name }}
-        run: echo "This is the $TAG_NAME we retrieved"
+        run: |
+          # Provide a dummy tag if the tag is not defined
+          if ("x$TAG_NAME" -e "x") {
+            $TAG_NAME = "0.0.0"
+          }
+          ./scripts/Push-KiwixRelease.ps1 "$TAG_NAME" -tag -yes -dryrun
