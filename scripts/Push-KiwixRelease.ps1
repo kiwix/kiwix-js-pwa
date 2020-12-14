@@ -26,9 +26,12 @@ function Main {
     # Construct the filename if a tag was entered
     if ($tag) {
         $tagname = $filename
-        $filename = dir "$PSScriptRoot/../AppPackages/*$tagname*_Test/*$tagname*.appx*"
+        $filename = dir "$PSScriptRoot/../AppPackages/*_$tagname*_Test/*_$tagname*.appx*"
         if ($filename -and $filename.count -eq 1) {
             "Setting file to $filename..."
+        } elseif ($filename.count -ge 2) {
+            "More than one file matches that tag!"
+            return
         } else {
             "No package matching that tag was found. Aborting."
             return
