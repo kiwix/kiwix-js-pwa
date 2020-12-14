@@ -25,4 +25,6 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
-        run: echo Hello world
+        env:
+          TAG_NAME: ${{ github.event.registry_package.package_version.tag_name }}
+        run: echo "This is the $TAG_NAME we retrieved"
