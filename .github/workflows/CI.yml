@@ -27,6 +27,7 @@ jobs:
       - name: Set up secret files
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
+        shell: powershell
         run: |
           if ("x$SSH_KEY" -eq "x") {
             echo "WARNING! The SSH secret is empty!"
@@ -37,10 +38,10 @@ jobs:
       - name: Run a one-line script
         env:
           TAG_NAME: ${{ github.event.registry_package.package_version.tag_name }}
+        shell: powershell
         run: |
           # Provide a dummy tag if the tag is not defined
           if ("x$TAG_NAME" -e "x") {
             $TAG_NAME = "0.0.0"
           }
-
           ./scripts/Push-KiwixRelease.ps1 "$TAG_NAME" -tag -yes -dryrun
