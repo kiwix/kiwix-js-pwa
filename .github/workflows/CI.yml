@@ -32,7 +32,7 @@ jobs:
           if ("x$SSH_KEY" -eq "x") {
             echo "WARNING! The SSH secret is empty!"
           }
-          echo "$SSH_KEY" > ./scripts/ssh_key
+          echo "$SSH_KEY" > .\scripts\ssh_key
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
@@ -44,4 +44,4 @@ jobs:
           if ("x$TAG_NAME" -e "x") {
             $TAG_NAME = "0.0.0"
           }
-          ./scripts/Push-KiwixRelease.ps1 "$TAG_NAME" -tag -yes -dryrun
+          .\scripts\Push-KiwixRelease.ps1 "$TAG_NAME" -tag -yes -dryrun
