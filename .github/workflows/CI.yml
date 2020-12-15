@@ -1,0 +1,51 @@
+# This is a draft workflow to publish released assets on download.kiwix.org
+
+name: CI
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow when a registry_package is publsihed or updated
+  registry_package:
+    types: [ published, updated ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "upload"
+  upload:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Set up secret files from encrypted secrets
+      - name: Set up secret files
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        shell: pwsh
+        run: |
+          $SSH_KEY = $Env:SSH_KEY
+          if ("x$SSH_KEY" -eq "x") {
+            echo "WARNING! The SSH secret is empty!"
+          }
+          echo "$SSH_KEY" > .\scripts\ssh_key
+
+      # Runs the upload script
+      - name: Run upload script
+        env:
+          TAG_NAME: ${{ github.event.registry_package.package_version.tag_name }}
+        shell: pwsh
+        run: |
+          $TAG_NAME = $Env:TAG_NAME
+          # Provide a dummy tag if the tag is not defined
+          if ("x$TAG_NAME" -eq "x") {
+            echo "Setting dummy tag because tag name is empty..."
+            $TAG_NAME = "0.0.0"
+          }
+          echo "Using tag: $TAG_NAME for version upload"
+          .\scripts\Push-KiwixRelease.ps1 "$TAG_NAME" -tag -yes
