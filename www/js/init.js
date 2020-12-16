@@ -49,15 +49,15 @@ var params = {};
  */
 var appstate = {};
 
-params['version'] = "1.1.2"; //DEV: Manually update this version when there is a new release: it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
-params['packagedFile'] = "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
+params['version'] = "1.1.0 WikiMed"; //DEV: Manually update this version when there is a new release: it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
+params['packagedFile'] = "wikipedia_en_medicine-app_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
-params['fileVersion'] = "wikipedia_en_100_maxi_2020-11.zim (6-Nov-2020)"; //Use generic name for actual file, and give version here
-params['cachedStartPage'] = false; //If you have cached the start page for quick start, give its URI here
-params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
+params['fileVersion'] = "wikipedia_en_medicine-app_maxi_2020-11 (2-Nov-2020)"; //This will be displayed in the app - optionally include date of ZIM file
+params['cachedStartPage'] = "Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine"; //If you have cached the start page for quick start, give its URI here
+params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/wikipedia/"; //Include final slash
 
 params['cookieSupport'] = checkCookies();
-params['maxResults'] = ~~(getCookie('maxResults') || 25); //Number of search results to display
+params['maxResults'] = ~~(getCookie('maxResults') || 30); //Number of search results to display
 params['relativeFontSize'] = ~~(getCookie('relativeFontSize') || 100); //Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
 params['relativeUIFontSize'] = ~~(getCookie('relativeUIFontSize') || 100); //Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
 params['cssSource'] = getCookie('cssSource') || "auto"; //Set default to "auto", "desktop" or "mobile"
