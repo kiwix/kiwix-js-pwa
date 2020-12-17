@@ -119,9 +119,9 @@
     <Content Include="images\Wide310x150Logo.scale-150.png" />
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="images\Wide310x150Logo.scale-400.png" />
-    <Content Include="www\-\j\js_modules\webpHeroBundle.js" />
-    <Content Include="www\-\j\js_modules\webpHeroPolyfills.js" />
     <Content Include="www\img\icons\kiwix-midnightblue-90.png" />
+    <Content Include="www\js\lib\webpHeroBundle_0.0.0-dev.27.js" />
+    <Content Include="www\js\lib\webpHeroPolyfills_0.0.0-dev.27.js" />
     <Content Include="www\js\lib\zstddec.js" />
     <Content Include="www\js\lib\zstddec_wrapper.js" />
     <None Include="Package.StoreAssociation.xml" />
