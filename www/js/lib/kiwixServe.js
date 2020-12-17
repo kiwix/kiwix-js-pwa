@@ -336,6 +336,9 @@ define([], function () {
         zea: 'Zeeuws'
     };
 
+    var downloadLinks = document.getElementById('downloadLinks');
+    var serverResponse = document.getElementById('serverResponse');
+    
     // DEV: If you support more packaged files, add to this list
     var regexpFilter = /_medicine/.test(params.packagedFile) ? /^(?!.+_medicine_)[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$\s+/mig : null;
     regexpFilter = /wikivoyage/.test(params.packagedFile) ? /^(?!.+wikivoyage_)[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$\s+/mig : regexpFilter;
@@ -352,20 +355,20 @@ define([], function () {
             return;
         }
         var xhttp = new XMLHttpRequest();
-        //DEV: timeout set here to 20s; if this isn't long enough for your target countries, increase
-        var xhttpTimeout = setTimeout(ajaxTimeout, 20000);
+        //DEV: timeout set here to 20s (except for meta4 links); if this isn't long enough for your target countries, increase
+        var timeout = /\.meta4$/i.test(URL) ? 6000 : 20000;
+        var xhttpTimeout = setTimeout(ajaxTimeout, timeout);
         function ajaxTimeout() {
             xhttp.abort();
             var responseMessageBox = document.getElementById('serverResponse');
             responseMessageBox.innerHTML = "Connection attempt timed out (failed)";
             if (/https?:|file:/.test(window.location.protocol)) responseMessageBox.innerHTML = "Browser's CORS Policy disallowed access!";
+            if (/\.meta4$/i.test(URL)) responseMessageBox.innerHTML = "Archive descriptor xml file (meta4) is missing!";
             document.getElementById('serverResponse').style.display = "inline";
-            serverError();
+            serverError(URL);
             return;
         }
         xhttp.onreadystatechange = function () {
-            var downloadLinks = document.getElementById('downloadLinks');
-            var serverResponse = document.getElementById('serverResponse');
             serverResponse.innerHTML = "Server response: 0 Waiting...";
             serverResponse.style.display = "inline";
             if (this.readyState == 4) {
@@ -387,13 +390,33 @@ define([], function () {
         xhttp.open("GET", URL, true);
         xhttp.send(null);
 
-        function serverError() {
-            var errormessage = document.getElementById('downloadLinks');
-            errormessage.innerHTML = '<span style="font-weight:bold;font-family:consolas,monospace;">' +
-                '<p style="color:salmon;">Unable to access the server. Please see message below for reason.</p>' +
-                '<p>You can either try again or else open this link in a new browser window:<br />' +
-                '<a href="' + params.kiwixDownloadLink + '" target="_blank">' + params.kiwixDownloadLink + '</a></p><br />';
-            errormessage.style.display = "block";
+        function serverError(URL) {
+            var requestedURL, altURL, torrentURL;
+            if (/\.meta4$/i.test(URL)) {
+                requestedURL = URL.replace(/\.meta4$/i, '');
+                altURL = /wikipedia|wikisource|wikivoyage|wiktionary/i.test(URL) ? 
+                    requestedURL.replace(/(download\.kiwix\.org)/i, 'www.mirrorservice.org/sites/$1') : '';
+                torrentURL = URL.replace(/\.meta4$/i, '.torrent');
+                var header = document.getElementById('dl-panel-heading');
+                var headerDoc = 'There is a server issue, but please try the following links to your file:';
+                header.outerHTML = header.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + headerDoc + '</div>');
+                var body = document.getElementById('dl-panel-body');
+                var bodyDoc = '<p><b>Directly download ZIM archive:</b></p>' + 
+                '<p><a href="' + requestedURL + '" target="_blank">' + requestedURL + '</a></p>' +
+                (altURL ? '<p><b>Possible mirror:</b></p>' + 
+                '<p><a href="' + altURL + '" target="_blank">' + altURL + '</a></p>' : '') +
+                '<p><b>Download with bittorrent:</b></p>' + 
+                '<p><a href="' + torrentURL + '" target="_blank">' + torrentURL + '</a></p>';
+                body.outerHTML = body.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<pre$1>' + bodyDoc + '</pre>');
+                downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, "File in");
+                downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, "panel-warning");
+            } else {
+                downloadLinks.innerHTML = '<span style="font-weight:bold;font-family:consolas,monospace;">' +
+                    '<p style="color:salmon;">Unable to access the server. Please see message below for reason.</p>' +
+                    '<p>You can either try again or else open this link in a new browser window:<br />' +
+                    '<a href="' + params.kiwixDownloadLink + '" target="_blank">' + params.kiwixDownloadLink + '</a></p><br /></span>';
+            }
+            downloadLinks.style.display = "block";
         }
 
         function processXhttpData(doc) {
