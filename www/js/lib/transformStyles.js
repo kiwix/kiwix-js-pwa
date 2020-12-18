@@ -49,36 +49,36 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             //DEV: Add any local stylesheets you wish to include here
             if (cc &&
                 (/-\/s\/style.css/i.test(zl) ||
-                    /-\/s\/css_modules\/mediawiki.toc.css/i.test(zl) ||
-                    /-\/s\/css_modules\/ext.cite.styles.css/i.test(zl) ||
-                    /-\/s\/css_modules\/ext.timeline.styles.css/i.test(zl) ||
-                    /-\/s\/css_modules\/ext.scribunto.logs.css/i.test(zl) ||
-                    /-\/s\/css_modules\/mediawiki.page.gallery.styles.css/i.test(zl) ||
-                    /-\/s\/css_modules\/ext.cite.a11y.css/i.test(zl) ||
-                    /-\/s\/css_modules\/ext.kartographer.style.css/i.test(zl) ||
-                    /-\/s\/css_modules\/ext.kartographer.link.css/i.test(zl) ||
-                    /-\/s\/css_modules\/ext.kartographer.frame.css/i.test(zl) ||
-                    /-\/s\/css_modules\/mw.TMHGalleryHook.js.css/i.test(zl) ||
-                    /-\/s\/css_modules\/mw.PopUpMediaTransform.css/i.test(zl) ||
-                    /-\/s\/css_modules\/mw.MediaWikiPlayer.loader.css/i.test(zl) ||
-                    /-\/s\/css_modules\/ext.tmh.thumbnail.styles.css/i.test(zl) ||
-                    /-\/s\/css_modules\/ext.math.styles.css/i.test(zl) ||
-                    /-\/s\/css_modules\/ext.math.scripts.css/i.test(zl) ||
-                    /-\/s\/css_modules\/ext.inputBox.styles.css/i.test(zl) ||
-                    /-\/s\/css_modules\/ext.cite.ux-enhancements.css/i.test(zl) ||
-                    /-\/s\/css_modules\/mobile_main_page.css/i.test(zl) ||
-                    /-\/s\/css_modules\/mediawiki.ui.input.css/i.test(zl) ||
-                    /-\/s\/css_modules\/mediawiki.ui.checkbox.css/i.test(zl) ||
-                    /-\/s\/css_modules\/content.parsoid.css/i.test(zl) ||
-                    /-\/s\/css_modules\/inserted_style_mobile.css/i.test(zl) ||
-                    /-\/s\/css_modules\/inserted_style.css/i.test(zl) ||
-                    /-\/s\/css_modules\/style.css/i.test(zl) ||
+                    /\/mediawiki.toc.css/i.test(zl) ||
+                    /\/ext.cite.styles.css/i.test(zl) ||
+                    /\/ext.timeline.styles.css/i.test(zl) ||
+                    /\/ext.scribunto.logs.css/i.test(zl) ||
+                    /\/mediawiki.page.gallery.styles.css/i.test(zl) ||
+                    /\/ext.cite.a11y.css/i.test(zl) ||
+                    /\/ext.kartographer.style.css/i.test(zl) ||
+                    /\/ext.kartographer.link.css/i.test(zl) ||
+                    /\/ext.kartographer.frame.css/i.test(zl) ||
+                    /\/mw.TMHGalleryHook.js.css/i.test(zl) ||
+                    /\/mw.PopUpMediaTransform.css/i.test(zl) ||
+                    /\/mw.MediaWikiPlayer.loader.css/i.test(zl) ||
+                    /\/ext.tmh.thumbnail.styles.css/i.test(zl) ||
+                    /\/ext.math.styles.css/i.test(zl) ||
+                    /\/ext.math.scripts.css/i.test(zl) ||
+                    /\/ext.inputBox.styles.css/i.test(zl) ||
+                    /\/ext.cite.ux-enhancements.css/i.test(zl) ||
+                    /\/mobile_main_page.css/i.test(zl) ||
+                    /\/mediawiki.ui.input.css/i.test(zl) ||
+                    /\/mediawiki.ui.checkbox.css/i.test(zl) ||
+                    /\/content.parsoid.css/i.test(zl) ||
+                    /\/inserted_style_mobile.css/i.test(zl) ||
+                    /\/inserted_style.css/i.test(zl) ||
+                    /\/style.css/i.test(zl) ||
                     /-\/static\/bootstrap\/css\/bootstrap.min.css/i.test(zl) ||
                     /-\/static\/bootstrap\/css\/bootstrap-theme.min.css/i.test(zl) ||
                     /-\/static\/main.css/i.test(zl) ||
-                    /-\/s\/css_modules\/mobile.css/i.test(zl) ||
+                    /\/mobile.css/i.test(zl) ||
                     /-\/s\/style-mobile.css/i.test(zl) ||
-                    /-\/s\/css_modules\/skins.minerva.base.reset\|skins.minerva.content.styles\|ext.cite.style\|mediawiki.page.gallery.styles\|mobile.app.pagestyles.android\|mediawiki.skinning.content.parsoid.css/i.test(zl)
+                    /\/skins.minerva.base.reset\|skins.minerva.content.styles\|ext.cite.style\|mediawiki.page.gallery.styles\|mobile.app.pagestyles.android\|mediawiki.skinning.content.parsoid.css/i.test(zl)
                 )) {
                 zl = zl.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename - but next line renders this redundant in current implementation)
                 if (/(-\/s\/style\.css)|minerva|inserted_style_mobile/i.test(zl)) { //If it matches one of the required styles...
@@ -107,9 +107,9 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
         //DEV: Careful not to add styles twice...
         //NB Can't relocate to filterCSS function above because it filters styles serially and code would be called for every style...
         if (zim == "desktop" && zim != cs) { //If ZIM doesn't match user-requested style, add in stylesheets if they're missing
-            css += /-\/s\/css_modules\/content\.parsoid\.css/i.test(css) ? "" : '<link href="' + prefix + '-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css">\r\n';
-            css += /-\/s\/css_modules\/inserted_style_mobile\.css/i.test(css) ? "" : '<link href="' + prefix + '-/s/style-mobile.css" rel="stylesheet" type="text/css">\r\n';
-            css += /-\/s\/css_modules\/mobile\.css/i.test(css) ? "" : '<link href="' + prefix + '-/s/css_modules/mobile.css" rel="stylesheet" type="text/css">\r\n';
+            css += /\/content\.parsoid\.css/i.test(css) ? "" : '<link href="' + prefix + '-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css">\r\n';
+            css += /\/inserted_style_mobile\.css/i.test(css) ? "" : '<link href="' + prefix + '-/s/style-mobile.css" rel="stylesheet" type="text/css">\r\n';
+            css += /\/mobile\.css/i.test(css) ? "" : '<link href="' + prefix + '-/s/css_modules/mobile.css" rel="stylesheet" type="text/css">\r\n';
         }
         if (cc || (zim == "desktop")) { //If user requested cached styles OR the ZIM does not contain mobile styles
             console.log(zim == "desktop" ? "Transforming display style to mobile..." : "Optimizing cached styles for mobile display...");
@@ -177,7 +177,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             if (/class\s*=\s*["']gallery/i.test(html) && !/gallery/i.test(css)) {
                 console.log("Inserting missing css required for gallery display [mediawiki.page.gallery.styles.css]...");
                 uiUtil.poll("Inserting missing css [mediawiki.page.gallery.styles.css]...");
-                css += /-\/s\/css_modules\/mediawiki\.page\.gallery\.styles\.css/i.test(css) ? "" : '<link href="' + prefix + '-/s/css_modules/mediawiki.page.gallery.styles.css" rel="stylesheet" type="text/css">\r\n';
+                css += /\/mediawiki\.page\.gallery\.styles\.css/i.test(css) ? "" : '<link href="' + prefix + '-/s/css_modules/mediawiki.page.gallery.styles.css" rel="stylesheet" type="text/css">\r\n';
             }
         }
         if (cc || (zim == "mobile")) { //If user requested cached styles OR the ZIM does not contain desktop styles
