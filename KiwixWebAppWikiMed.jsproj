@@ -148,13 +148,7 @@
     <Content Include="www\-\mw\newstyle_main_page.css" />
     <Content Include="www\-\mw\original-inserted_style_mobile.css" />
     <Content Include="www\-\mw\style.css" />
-    <Content Include="www\-\original-style-mobile.css" />
-    <Content Include="www\-\style-dark-invert.css" />
-    <Content Include="www\-\style-dark.css" />
-    <Content Include="www\-\style-dark2.css" />
-    <Content Include="www\-\style-mobile.css" />
     <Content Include="www\-\style.css" />
-    <Content Include="www\-\vector.css" />
     <Content Include="www\img\icons\kiwix-midnightblue-90.png" />
     <Content Include="www\js\lib\webpHeroBundle_0.0.0-dev.27.js" />
     <Content Include="www\js\lib\webpHeroPolyfills_0.0.0-dev.27.js" />
