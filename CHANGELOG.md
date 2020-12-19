@@ -1,7 +1,7 @@
 # Changelog
 
 ## Release 1.1.2 WikiMed
-* UPDATE: Packaged ZIM updated to `wikipedia_en_medicine_maxi_2020-12.zim`
+* UPDATE: Packaged ZIM updated to `wikipedia_en_medicine-app_maxi_2020-12.zim`
 * UPDATE: Support new location of mobile and desktop styles in Wikimedia ZIMs
 * ENHANCEMENT: Improved block cache and faster conversion of file slice to blob
 * ENHANCEMENT: Provide fallback download links in case server does not provde meta4 file descriptor
