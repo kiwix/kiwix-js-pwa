@@ -1,5 +1,9 @@
 # Changelog
 
+## Release 1.1.3 (in progress)
+
+* UPDATE: Support new location of mobile and desktop styles in Wikimedia ZIMs
+
 ## Release 1.1.2
 
 * UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-11.zim`
