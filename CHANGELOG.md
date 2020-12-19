@@ -2,6 +2,7 @@
 
 ## Release 1.1.2 WikiMed
 * UPDATE: Packaged ZIM updated to `wikipedia_en_medicine_maxi_2020-12.zim`
+* UPDATE: Support new location of mobile and desktop styles in Wikimedia ZIMs
 * ENHANCEMENT: Improved block cache and faster conversion of file slice to blob
 * ENHANCEMENT: Provide fallback download links in case server does not provde meta4 file descriptor
 * REGRESSION: Manual extraction of images reverted to one-by-one to prevent errors with WebP batch decoding
