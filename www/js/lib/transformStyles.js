@@ -28,27 +28,27 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
     /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i]  */
     function filterCSS(zl, zim, cc, cs, i) {
         var rtnFunction = "injectCSS";
-        if ((zim != cs) && zl.match(/(-\/s\/(?:css_modules\/)?style\.css)|minerva|mobile|parsoid/i)) { //If it's the wrong ZIM type and style matches main styles...
-            if (zl.match(/-\/s\/style\.css|minerva|style-mobile\.css/i)) { //If it matches one of the required styles...
+        if ((zim != cs) && zl.match(/(-\/(?:s\/css_modules\/|mw\/)?style\.css)|minerva|mobile|parsoid/i)) { //If it's the wrong ZIM type and style matches main styles...
+            if (zl.match(/-\/(?:s\/|mw\/)?style\.css|minerva|style-mobile\.css/i)) { //If it matches one of the required styles...
                 zl = (cs == "mobile") ? prefix + "-/s/style-mobile.css" : prefix + "-/s/style.css"; //Take it from cache, because not in the ZIM
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem because style is not in ZIM" +
                     "\nbut your display options require a " + cs + " style");
                 uiUtil.poll("Matched [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] from cache" + " because your display options require a " + cs + " style...");
             }
-            if (cs == "desktop" && /minerva|mobile|parsoid|css_modules\/style\.css/.test(zl) && !/css_modules\/mobile_main_page\.css/.test(zl)) {
+            if (cs == "desktop" && /minerva|mobile|parsoid|(css_modules|mw)\/style\.css/.test(zl) && !/(css_modules|mw)\/mobile_main_page\.css/.test(zl)) {
                 //If user selected desktop style and style is one of the mobile styles, but not mobile_main_page for newstyle all image homepages
                 console.log("Voiding #" + i + " [" + zl + "] from document header \nbecause your display options require a desktop style");
                 uiUtil.poll("Voiding [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] because your display options require a " + cs + " style...");
                 zl = "#"; //Void these mobile styles
             }
             // Rename this required mobile style so that we don't trigger reading ZIM as mobile in print intercept
-            zl = /css_modules\/mobile_main_page\.css/.test(zl) && cs == 'desktop' ? prefix + "-/s/css_modules/newstyle_main_page.css" : zl;
+            zl = /(css_modules|mw)\/mobile_main_page\.css/.test(zl) && cs == 'desktop' ? prefix + "-/s/css_modules/newstyle_main_page.css" : zl;
         } else {
             //If this is a standard Wikipedia css use stylesheet cached in the filesystem...
             //DEV: Although "." matches any character in regex, there is enough specificity in the patterns below
             //DEV: Add any local stylesheets you wish to include here
             if (cc &&
-                (/-\/s\/style.css/i.test(zl) ||
+                (/-\/(s\/)?style.css/i.test(zl) ||
                     /\/mediawiki.toc.css/i.test(zl) ||
                     /\/ext.cite.styles.css/i.test(zl) ||
                     /\/ext.timeline.styles.css/i.test(zl) ||
@@ -77,7 +77,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                     /-\/static\/bootstrap\/css\/bootstrap-theme.min.css/i.test(zl) ||
                     /-\/static\/main.css/i.test(zl) ||
                     /\/mobile.css/i.test(zl) ||
-                    /-\/s\/style-mobile.css/i.test(zl) ||
+                    /\/style-mobile.css/i.test(zl) ||
                     /\/skins.minerva.base.reset\|skins.minerva.content.styles\|ext.cite.style\|mediawiki.page.gallery.styles\|mobile.app.pagestyles.android\|mediawiki.skinning.content.parsoid.css/i.test(zl)
                 )) {
                 zl = zl.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename - but next line renders this redundant in current implementation)
@@ -85,7 +85,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                     zl = cs == "mobile" ? "-/s/style-mobile.css" : "-/s/style.css";
                 }
                 // Rename this required mobile style so that we don't trigger reading ZIM as mobile in print intercept
-                zl = /css_modules\/mobile_main_page\.css/.test(zl) ? "-/s/css_modules/newstyle_main_page.css" : zl;
+                zl = /\/mobile_main_page\.css/.test(zl) ? "-/s/css_modules/newstyle_main_page.css" : zl;
                 // Replace bootstrap with own: DEV: when upgrading to Bootstrap 4, stop doing this!
                 zl = zl.replace(/.+(bootstrap[^\/]*?\.css)/i, "css/$1");
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem");
