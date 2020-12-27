@@ -1,13 +1,11 @@
 # Changelog
 
-## Release 1.1.3 (in progress)
-
-* UPDATE: Support new location of mobile and desktop styles in Wikimedia ZIMs
-
-## Release 1.1.2
+## Release 1.1.3
 
 * UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-11.zim`
+* UPDATE: Support new location of mobile and desktop styles in Wikimedia ZIMs
 * UPDATE: WebP support (via polyfill) for older browsers including Windows Mobile
+* ENHANCEMENT: Enable use of Native File System with NWJS
 * ENHANCEMENT: Improved block cache and faster conversion of file slice to blob
 * REGRESSION: Manual extraction of images reverted to one-by-one to prevent errors with WebP batch decoding
 * FIX: Critical error on some new Wikipedia articles containing equations
