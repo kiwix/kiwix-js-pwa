@@ -837,8 +837,20 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                             } else if (handle.kind === 'directory') {
                                 return processNativeDirHandle(handle);
                             }
-                        } 
+                        } else {
+                            if (callback) {
+                                callback(handle);
+                            } else {
+                                searchForArchivesInPreferencesOrStorage();
+                            }
+                        }
                     });
+                } else {
+                    if (callback) {
+                        callback(null);
+                    } else {
+                        searchForArchivesInPreferencesOrStorage();
+                    }
                 }
             });
         }
@@ -1603,8 +1615,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             // After that, we can start looking for archives
             //storages[0].get("fake-file-to-read").then(searchForArchivesInPreferencesOrStorage,
             if (!params.pickedFile) {
-                searchForArchivesInPreferencesOrStorage();
-            } else if (typeof window.fs === 'undefined') {
+                if (params.storedFile && typeof window.showOpenFilePicker !== 'undefined') {
+                    getNativeFSHandle();
+                } else {
+                    searchForArchivesInPreferencesOrStorage();
+                }
+            } else if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 processPickedFileUWP(params.pickedFile);
             } else {
                 // We're in an Electron app with a packaged file that we need to read from the node File System
