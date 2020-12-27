@@ -3,6 +3,7 @@
 ## Release 1.1.3 (in progress)
 
 * UPDATE: Support new location of mobile and desktop styles in Wikimedia ZIMs
+* ENHANCEMENT: Enable use of Native File System with NWJS
 
 ## Release 1.1.2
 
