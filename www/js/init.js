@@ -56,7 +56,7 @@ params['fileVersion'] = "wikipedia_en_100_maxi_2020-12.zim (23-Dec-2020)"; //Use
 params['cachedStartPage'] = false; //If you have cached the start page for quick start, give its URI here
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
 
-params['cookieSupport'] = checkCookies();
+params['storeType'] = checkCookies();
 params['maxResults'] = ~~(getCookie('maxResults') || 25); //Number of search results to display
 params['relativeFontSize'] = ~~(getCookie('relativeFontSize') || 100); //Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
 params['relativeUIFontSize'] = ~~(getCookie('relativeUIFontSize') || 100); //Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
@@ -92,7 +92,7 @@ params['localStorage'] = params['localStorage'] || "";
 params['pickedFile'] = launchArguments ? launchArguments.files[0] : "";
 params['pickedFolder'] = params['pickedFolder'] || "";
 params['lastPageVisit'] = getCookie('lastPageVisit') || "";
-params['lastPageVisit'] = params['lastPageVisit'] ? decodeURIComponent(params['lastPageVisit']) : "";
+params.lastPageVisit = params.lastPageVisit ? decodeURIComponent(params.lastPageVisit): "";
 params['themeChanged'] = params['themeChanged'] || false;
 params['allowInternetAccess'] = params['allowInternetAccess'] || false; //Do not get value from cookie, should be explicitly set by user on a per-session basis
 params['printIntercept'] = false;
@@ -146,10 +146,6 @@ document.getElementById('hideToolbarsCheck').indeterminate = params.hideToolbars
 document.getElementById('hideToolbarsCheck').readOnly = params.hideToolbars === "top";
 document.getElementById('hideToolbarsState').innerHTML = (params.hideToolbars === "top" ? "top" : params.hideToolbars ? "both" : "never");
 
-//Set up packaged Electron app
-if (!params.pickedFile && params.storedFile && typeof window.fs !== 'undefined') {
-    params.pickedFile = params.storedFile;
-}
 //Set up storage types
 if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') { //UWP
     Windows.ApplicationModel.Package.current.installedLocation.getFolderAsync(params.archivePath).done(function (folder) {
@@ -245,7 +241,7 @@ window.addEventListener('appinstalled', function(e) {
 
 function getCookie(name) {
     var result;
-    if (params.cookieSupport == 'cookie') {
+    if (params.storeType == 'cookie') {
         var regexp = new RegExp('(?:^|;)\\s*' + name + '=([^;]+)(?:;|$)');
         result = document.cookie.match(regexp);
         result = result && result.length > 1 ? result[1] : null;
