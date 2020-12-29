@@ -51,6 +51,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             'status': '', // The status of the search: ''|'init'|'interim'|'cancelled'|'complete'
             'type': '' // The type of the search: 'basic'|'full' (set automatically in search algorithm)
         };
+
+        // A parameter to determine the Settings Store API in use
+        params['storeType'] = settingsStore.getBestAvailableStorageAPI();
             
         // Unique identifier of the article expected to be displayed
         var expectedArticleURLToBeDisplayed = "";
@@ -257,9 +260,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
         $("#printModal").off('hide.bs.modal');
         $("#printModal").on('hide.bs.modal', function () {
             //Restore temporarily changed values
-            params.cssSource = cookies.getItem('cssSource') || "auto";
-            params.cssTheme = cookies.getItem('cssTheme') || "light";
-            //params.contentInjectionMode = cookies.getItem('contentInjectionMode');
+            params.cssSource = settingsStore.getItem('cssSource') || "auto";
+            params.cssTheme = settingsStore.getItem('cssTheme') || "light";
+            //params.contentInjectionMode = settingsStore.getItem('contentInjectionMode');
             if (document.activeElement.id != "confirm-print-continue") { //User cancelled
                 if (params.printInterception) {
                     printCleanup();
@@ -309,7 +312,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             btnCancel.disabled = true;
             btnContinue.disabled = true;
             btnContinue.innerHTML = "Please wait";
-            goToArticle(decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, "")));
+            goToArticle(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
         });
         document.getElementById('printImageCheck').addEventListener('click', function (e) {
             //Reload article if user wants to print images
@@ -322,7 +325,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 btnCancel.disabled = true;
                 btnContinue.disabled = true;
                 btnContinue.innerHTML = "Please wait";
-                goToArticle(decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, "")));
+                goToArticle(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
             }
         });
 
@@ -330,17 +333,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             params.printIntercept = false;
             params.printInterception = false;
             // Immediately restore temporarily changed values
-            params.allowHTMLExtraction = cookies.getItem('allowHTMLExtraction') == "true";
-            //params.contentInjectionMode = cookies.getItem('contentInjectionMode');
+            params.allowHTMLExtraction = settingsStore.getItem('allowHTMLExtraction') == "true";
+            //params.contentInjectionMode = settingsStore.getItem('contentInjectionMode');
             //goToArticle(decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, "")));
             if (history.state !== null) {
                 var thisURL = decodeURIComponent(history.state.title);
                 goToArticle(thisURL);
             }
             setTimeout(function () { //Restore temporarily changed value after page has reloaded
-                params.rememberLastPage = cookies.getItem('rememberLastPage') == "true";
+                params.rememberLastPage = settingsStore.getItem('rememberLastPage') == "true";
                 if (!params.rememberLastPage) {
-                    cookies.setItem('lastPageVisit', "", Infinity);
+                    settingsStore.setItem('lastPageVisit', "", Infinity);
                     params.lastPageHTML = "";
                     if (typeof Storage !== "undefined") {
                         try {
@@ -393,7 +396,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                     backdrop: "static",
                     keyboard: true
                 });
-                goToArticle(decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, "")));
+                goToArticle(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
                 return;
             }
             //Pre-load all images in case user wants to print them
@@ -458,7 +461,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             if (searchDiv.style.display != "none") {
                 setTab();
                 // Return params.hideToolbars to its original state
-                params.hideToolbars = cookies.getItem('hideToolbars');
+                params.hideToolbars = settingsStore.getItem('hideToolbars');
                 params.hideToolbars = params.hideToolbars === 'true' ? true : params.hideToolbars === 'false' ? false : params.hideToolbars;
                 checkToolbar();
                 return;
@@ -574,7 +577,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             setTimeout(function () {
                 document.getElementById('lblZoom').innerHTML = "";
             }, 1000);
-            cookies.setItem('relativeFontSize', params.relativeFontSize, Infinity);
+            settingsStore.setItem('relativeFontSize', params.relativeFontSize, Infinity);
         });
         document.getElementById('btnZoomout').addEventListener('click', function () {
             params.relativeFontSize -= 5;
@@ -585,7 +588,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             setTimeout(function () {
                 document.getElementById('lblZoom').innerHTML = "";
             }, 1000);
-            cookies.setItem('relativeFontSize', params.relativeFontSize, Infinity);
+            settingsStore.setItem('relativeFontSize', params.relativeFontSize, Infinity);
         });
         setRelativeUIFontSize(params.relativeUIFontSize);
         document.getElementById('relativeUIFontSizeSlider').addEventListener('change', function () {
@@ -616,7 +619,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             //document.getElementById('prefix').style.height = ~~(value * 14 / 100) * 1.4285 + 14 + "px";
             if (value != params.relativeUIFontSize) {
                 params.relativeUIFontSize = value;
-                cookies.setItem('relativeUIFontSize', value, Infinity);
+                settingsStore.setItem('relativeUIFontSize', value, Infinity);
             }
         }
 
@@ -971,39 +974,39 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
         });
         $('input:checkbox[name=cssCacheMode]').on('change', function (e) {
             params.cssCache = this.checked ? true : false;
-            cookies.setItem('cssCache', params.cssCache, Infinity);
+            settingsStore.setItem('cssCache', params.cssCache, Infinity);
             params.themeChanged = true;
         });
         $('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
             params.imageDisplay = this.checked ? true : false;
             params.imageDisplayMode = this.checked ? 'progressive' : 'manual';
             params.themeChanged = params.imageDisplay; //Only reload page if user asked for all images to be displayed
-            cookies.setItem('imageDisplay', params.imageDisplay, Infinity);
+            settingsStore.setItem('imageDisplay', params.imageDisplay, Infinity);
         });
         $('input:checkbox[name=hideActiveContentWarning]').on('change', function (e) {
             params.hideActiveContentWarning = this.checked ? true : false;
-            cookies.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
+            settingsStore.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
         });
         $('input:checkbox[name=allowHTMLExtraction]').on('change', function (e) {
             params.allowHTMLExtraction = this.checked ? true : false;
-            cookies.setItem('allowHTMLExtraction', params.allowHTMLExtraction, Infinity);
+            settingsStore.setItem('allowHTMLExtraction', params.allowHTMLExtraction, Infinity);
             params.themeChanged = true;
         });
         $('input:text[name=alphaChar]').on('change', function (e) {
             params.alphaChar = this.value.length == 1 ? this.value : params.alphaChar;
             this.value = params.alphaChar;
-            cookies.setItem('alphaChar', params.alphaChar, Infinity);
+            settingsStore.setItem('alphaChar', params.alphaChar, Infinity);
         });
         $('input:text[name=omegaChar]').on('change', function (e) {
             params.omegaChar = this.value.length == 1 ? this.value : params.omegaChar;
             this.value = params.omegaChar;
-            cookies.setItem('omegaChar', params.omegaChar, Infinity);
+            settingsStore.setItem('omegaChar', params.omegaChar, Infinity);
         });
         $('input:text[name=maxResults]').on('change', function (e) {
             params.maxResults = this.value > 5 ? this.value : 5;
             params.maxResults = params.maxResults < 50 ? params.maxResults : 50;
             this.value = params.maxResults;
-            cookies.setItem('maxResults', params.maxResults, Infinity);
+            settingsStore.setItem('maxResults', params.maxResults, Infinity);
         });
         document.getElementById('hideToolbarsCheck').addEventListener('click', function () {
             // This code implements a tri-state checkbox
@@ -1015,7 +1018,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             // else if (this.checked) this.readOnly = this.indeterminate = true;
             params.hideToolbars = this.indeterminate ? "top" : this.checked;
             document.getElementById('hideToolbarsState').innerHTML = params.hideToolbars == "top" ? "top only" : params.hideToolbars ? "both" : "never";
-            cookies.setItem('hideToolbars', params.hideToolbars, Infinity);
+            settingsStore.setItem('hideToolbars', params.hideToolbars, Infinity);
             checkToolbar();
         });
 
@@ -1115,7 +1118,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             //else if (this.checked) this.readOnly = this.indeterminate = true;
             params.cssUITheme = this.indeterminate ? "auto" : this.checked ? 'dark' : 'light';
             if (!uiSettings) initializeUISettings();
-            cookies.setItem('cssUITheme', params.cssUITheme, Infinity);
+            settingsStore.setItem('cssUITheme', params.cssUITheme, Infinity);
             document.getElementById('cssUIDarkThemeState').innerHTML = params.cssUITheme;
             cssUIThemeGetOrSet(params.cssUITheme);
             //Make subsequent check valid if params.cssTheme is "invert" rather than "dark"
@@ -1134,7 +1137,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             document.getElementById('darkInvert').style.display = determinedValue == 'light' ? 'none' : 'inline';
             params.cssTheme = document.getElementById('cssWikiDarkThemeInvertCheck').checked && determinedValue == 'dark' ? 'invert' : params.cssTheme;
             document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
-            cookies.setItem('cssTheme', params.cssTheme, Infinity);
+            settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
             switchCSSTheme();
         });
         $('input:checkbox[name=cssWikiDarkThemeInvert]').on('change', function (e) {
@@ -1144,7 +1147,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 var darkThemeCheckbox = document.getElementById('cssWikiDarkThemeCheck');
                 params.cssTheme = darkThemeCheckbox.indeterminate ? 'auto' : darkThemeCheckbox.checked ? 'dark' : 'light';
             }
-            cookies.setItem('cssTheme', params.cssTheme, Infinity);
+            settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
             switchCSSTheme();
         });
 
@@ -1196,7 +1199,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
 
         function switchCSSTheme() {
             var doc = window.frames[0].frameElement.contentDocument;
-            var treePath = decodeURIComponent(params.lastPageVisit).replace(/[^/]+\/(?:[^/]+$)?/g, "../");
+            var treePath = params.lastPageVisit.replace(/[^/]+\/(?:[^/]+$)?/g, "../");
             //If something went wrong, use the page reload method
             if (!treePath) {
                 params.themeChanged = true;
@@ -1229,9 +1232,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
         $('input:checkbox[name=rememberLastPage]').on('change', function (e) {
             if (params.rememberLastPage && this.checked) document.getElementById('rememberLastPageCheck').checked = true;
             params.rememberLastPage = this.checked ? true : false;
-            cookies.setItem('rememberLastPage', params.rememberLastPage, Infinity);
+            settingsStore.setItem('rememberLastPage', params.rememberLastPage, Infinity);
             if (!params.rememberLastPage) {
-                cookies.setItem('lastPageVisit', "", Infinity);
+                settingsStore.setItem('lastPageVisit', "", Infinity);
                 //Clear localStorage
                 if (typeof Storage !== "undefined") {
                     try {
@@ -1246,7 +1249,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
         });
         $('input:radio[name=cssInjectionMode]').on('click', function (e) {
             params.cssSource = this.value;
-            cookies.setItem('cssSource', params.cssSource, Infinity);
+            settingsStore.setItem('cssSource', params.cssSource, Infinity);
             params.themeChanged = true;
         });
         document.getElementById('removePageMaxWidthCheck').addEventListener('click', function () {
@@ -1255,7 +1258,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             else if (!this.checked) this.readOnly = this.indeterminate = true;
             params.removePageMaxWidth = this.indeterminate ? "auto" : this.checked;
             document.getElementById('pageMaxWidthState').innerHTML = (params.removePageMaxWidth == "auto" ? "auto" : params.removePageMaxWidth ? "always" : "never");
-            cookies.setItem('removePageMaxWidth', params.removePageMaxWidth, Infinity);
+            settingsStore.setItem('removePageMaxWidth', params.removePageMaxWidth, Infinity);
             removePageMaxWidth();
         });
 
@@ -1288,12 +1291,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
         }
         document.getElementById('openAllSectionsCheck').addEventListener('click', function (e) {
             params.openAllSections = this.checked;
-            cookies.setItem('openAllSections', params.openAllSections, Infinity);
+            settingsStore.setItem('openAllSections', params.openAllSections, Infinity);
             openAllSections();
         });
         $('input:radio[name=useMathJax]').on('click', function (e) {
             params.useMathJax = /true/i.test(this.value);
-            cookies.setItem('useMathJax', params.useMathJax, Infinity);
+            settingsStore.setItem('useMathJax', params.useMathJax, Infinity);
             params.themeChanged = true;
         });
         document.getElementById('otherLangs').addEventListener('click', function () {
@@ -1319,7 +1322,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 currentArchive.style.display = params.showFileSelectors ? "none" : "block";
                 document.getElementById('downloadLinksText').style.display = params.showFileSelectors ? "none" : "block";
             }
-            cookies.setItem('showFileSelectors', params.showFileSelectors, Infinity);
+            settingsStore.setItem('showFileSelectors', params.showFileSelectors, Infinity);
             if (params.showFileSelectors) document.getElementById('configuration').scrollIntoView();
         });
 
@@ -1339,14 +1342,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 }
             }
             //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
-            if (cookies.getItem('version') !== params.version) {
+            if (settingsStore.getItem('version') !== params.version) {
                 firstRun = true;
                 // On some platforms, bootstrap's jQuery functions have not been injected yet, so we have to run in a timeout
                 setTimeout(function () {
                     $('#myModal').modal({
                         backdrop: "static"
                     });
-                    cookies.setItem('version', params.version, Infinity);
+                    settingsStore.setItem('version', params.version, Infinity);
                 }, 1000);
             }
         });
@@ -1517,11 +1520,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             $('input:radio[name=contentInjectionMode]').filter('[value="' + value + '"]').prop('checked', true);
             params.contentInjectionMode = value;
             // Save the value in a cookie, so that to be able to keep it after a reload/restart
-            cookies.setItem('lastContentInjectionMode', value, Infinity);
+            settingsStore.setItem('lastContentInjectionMode', value, Infinity);
         }
 
         // At launch, we try to set the last content injection mode (stored in a cookie)
-        var lastContentInjectionMode = cookies.getItem('lastContentInjectionMode');
+        var lastContentInjectionMode = settingsStore.getItem('lastContentInjectionMode');
         if (lastContentInjectionMode) {
             setContentInjectionMode(lastContentInjectionMode);
         } else {
@@ -1570,7 +1573,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
 
         function searchForArchivesInPreferencesOrStorage() {
             // First see if the list of archives is stored in the cookie
-            var listOfArchivesFromCookie = cookies.getItem("listOfArchives");
+            var listOfArchivesFromCookie = settingsStore.getItem("listOfArchives");
             if (listOfArchivesFromCookie !== null && listOfArchivesFromCookie !== undefined && listOfArchivesFromCookie !== "") {
                 var directories = listOfArchivesFromCookie.split('|');
                 populateDropDownListOfArchives(directories);
@@ -1614,6 +1617,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             // This way, it is only done once at this moment, instead of being done several times in callbacks
             // After that, we can start looking for archives
             //storages[0].get("fake-file-to-read").then(searchForArchivesInPreferencesOrStorage,
+            if (!params.pickedFile && params.packagedFile && params.storedFile === params.packagedFile && typeof window.fs !== 'undefined') {
+                // We're in Electron / NWJS and we need to load the packaged app, so we are forced to use the .fs code
+                params.pickedFile = params.storedFile;
+            }
             if (!params.pickedFile) {
                 if (params.storedFile && typeof window.showOpenFilePicker !== 'undefined') {
                     getNativeFSHandle();
@@ -1623,18 +1630,23 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             } else if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 processPickedFileUWP(params.pickedFile);
             } else {
-                // We're in an Electron app with a packaged file that we need to read from the node File System
+                // We're in an Electron or NWJS app with a packaged file that we need to read from the node File System
                 console.log("Loading packaged ZIM or last selected archive for Electron...");
+                loadPackagedArchive();
                 // Create a fake File object (this avoids extensive patching of later code)
                 createFakeFileObjectElectron(params.storedFile, params.storedFilePath, function (fakeFile) {
                     if (fakeFile.size) {
                         params.pickedFile = fakeFile;
-                        setLocalArchiveFromFileList([params.pickedFile]);
+                        if (typeof window.showOpenFilePicker !== 'undefined') {
+                            populateDropDownListOfArchives([params.pickedFile.name]);
+                        } else {
+                            setLocalArchiveFromFileList([params.pickedFile]);
+                        }
                     } else {
                         // Attempts to load the file seem to have failed: maybe it has moved or been deleted
                         // Let's see if we can open the packaged ZIM instead (if this isn't the packaged ZIM)
-                        cookies.removeItem('lastSelectedArchive');
-                        cookies.removeItem('lastSelectedArchivePath');
+                        settingsStore.removeItem('lastSelectedArchive');
+                        settingsStore.removeItem('lastSelectedArchivePath');
                         if (params.packagedFile && params.storedFile !== params.packagedFile) {
                             createFakeFileObjectElectron(params.packagedFile, params.archivePath + '/' + params.packagedFile, function (fakeFile) {
                                 if (fakeFile.size) {
@@ -1724,7 +1736,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 }
             }
             // Store the list of archives in a cookie, to avoid rescanning at each start
-            cookies.setItem("listOfArchives", archiveDirectories.join('|'), Infinity);
+            settingsStore.setItem("listOfArchives", archiveDirectories.join('|'), Infinity);
             comboArchiveList.size = comboArchiveList.length;
             //Kiwix-Js-Windows #23 - remove dropdown caret if only one archive
             if (comboArchiveList.length > 1) comboArchiveList.removeAttribute("multiple");
@@ -1742,7 +1754,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                     if ($("#archiveList option[value='" + lastSelectedArchive + "']").length > 0) {
                         $("#archiveList").val(lastSelectedArchive);
                         success = true;
-                        cookies.setItem("lastSelectedArchive", lastSelectedArchive, Infinity);
+                        settingsStore.setItem("lastSelectedArchive", lastSelectedArchive, Infinity);
                     }
                     // Set the localArchive as the last selected (if none has been selected previously, wait for user input)
                     if (success) {
@@ -1752,7 +1764,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                         // Let's first check if this is a Store UWP/PWA that has a different archive package from that last selected
                         // (or from that indicated in init.js)
                         if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined' && 
-                            params.packagedFile && cookies.getItem('lastSelectedArchive') !== params.packagedFile) {
+                            params.packagedFile && settingsStore.getItem('lastSelectedArchive') !== params.packagedFile) {
                             // We didn't pick this file previously, so select first one in list
                             params.storedFile = archiveDirectories[0];
                             params.fileVersion = ~params.fileVersion.indexOf(params.storedFile.replace(/\.zim\w?\w?$/i, '')) ? params.fileVersion : params.storedFile;
@@ -1957,7 +1969,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 //if (cssDirEntryCache)
                 //    cssDirEntryCache = new Map();
                 appstate.selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
-                    cookies.setItem("lastSelectedArchive", archiveDirectory, Infinity);
+                    settingsStore.setItem("lastSelectedArchive", archiveDirectory, Infinity);
                     // The archive is set : go back to home page to start searching
                     if (params.rescan) {
                         document.getElementById('btnConfigure').click();
@@ -2066,7 +2078,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             cache.idxDB('pickedFSHandle', fileHandle, function (val) {
                 console.log('IndexedDB responded with ' + val);
             });
-            cookies.setItem('lastSelectedArchive', fileHandle.name, Infinity);
+            settingsStore.setItem('lastSelectedArchive', fileHandle.name, Infinity);
             params.storedFile = fileHandle.name;
             params.pickedFolder = null;
             return fileHandle.getFile().then(function(file) {
@@ -2090,7 +2102,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 params.pickedFile = file;
                 if (params.pickedFolder) Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.remove(params.falFolderToken);
                 params.pickedFolder = "";
-                cookies.setItem("lastSelectedArchive", file.name, Infinity);
+                settingsStore.setItem("lastSelectedArchive", file.name, Infinity);
                 params.storedFile = file.name;
                 // Since we've explicitly picked a file, we should jump to it
                 params.rescan = false;
@@ -2222,8 +2234,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             appstate.selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
                 // The archive is set : go back to home page to start searching
                 params.storedFile = archive._file._files[0].name;
-                cookies.setItem("lastSelectedArchive", params.storedFile, Infinity);
-                cookies.setItem("lastSelectedArchivePath", archive._file._files[0].path ? archive._file._files[0].path : '', Infinity);
+                settingsStore.setItem("lastSelectedArchive", params.storedFile, Infinity);
+                settingsStore.setItem("lastSelectedArchivePath", archive._file._files[0].path ? archive._file._files[0].path : '', Infinity);
                 var reloadLink = document.getElementById("reloadPackagedArchive");
                 if (reloadLink) {
                     if (params.packagedFile != params.storedFile) {
@@ -2247,7 +2259,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                     $('#openLocalFiles').hide();
                     document.getElementById('moreInfo').style.display = 'none';
                     if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile)) {
-                        var lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
+                        var lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, "");
                         goToArticle(lastPage);
                     } else {
                         // The archive has changed, so we must blank the last page in case the Home page of the new archive
@@ -2271,8 +2283,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 if (!params.rescan) setLocalArchiveFromArchiveList(params.storedFile);
             } else if (typeof window.fs !== 'undefined') {
                 // We're in an Electron packaged app
-                cookies.removeItem('lastSelectedArchive');
-                cookies.removeItem('lastSelectedArchivePath');
+                settingsStore.removeItem('lastSelectedArchive');
+                settingsStore.removeItem('lastSelectedArchivePath');
                 if (params.packagedFile && params.storedFile !== params.packagedFile) {
                     createFakeFileObjectElectron(params.packagedFile, params.archivePath + '/' + params.packagedFile, function (fakeFile) {
                         if (fakeFile.size) {
@@ -2676,7 +2688,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 //Set startup cookie to guard against boot loop
                 //Cookie will signal failure until article is fully loaded
                 //document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
-                cookies.setItem('lastPageLoad', 'failed', Infinity);
+                settingsStore.setItem('lastPageLoad', 'failed', Infinity);
 
                 //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
                 localSearch = {};
@@ -2712,7 +2724,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 //Load lastPageVisit if it is the currently requested page
                 if (!htmlContent) {
                     var lastPage = '';
-                    if (params.rememberLastPage && params.lastPageVisit) lastPage = decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
+                    if (params.rememberLastPage && params.lastPageVisit) lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, "");
                     if (params.rememberLastPage && (typeof Storage !== "undefined") && dirEntry.namespace + '/' + dirEntry.url == lastPage) {
                         if (!params.lastPageHTML) {
                             try {
@@ -2775,12 +2787,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                         var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
                         uiUtil.insertBreakoutLink(determinedTheme);
                     }
-                    cookies.removeItem('lastPageLoad');
+                    settingsStore.removeItem('lastPageLoad');
                     // if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
                     //     params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
                     //         "@kiwixKey@" + appstate.selectedArchive._file._files[0].name;
                     //     if (params.rememberLastPage) {
-                    //         cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
+                    //         settingsStore.setItem('lastPageVisit', params.lastPageVisit, Infinity);
                     //     }
                     // }
 
@@ -2854,7 +2866,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                                     maxPageWidthProcessed = false;
                                 } else {
                                     // It's an unstransformed html file, so we need to do some content transforms
-                                    if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) params.lastPageVisit = '';
+                                    if (!~params.lastPageVisit.indexOf(dirEntry.url)) params.lastPageVisit = '';
                                     readArticle(dirEntry);
                                     // Send a blank response to the initial request
                                     message.content = new Uint8Array();
@@ -2974,11 +2986,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 !~window.history.state.title.indexOf("/" + dirEntry.url)) {
                 pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
             }
-            if (!~decodeURIComponent(params.lastPageVisit).indexOf(dirEntry.url)) {
-                params.lastPageVisit = encodeURIComponent(dirEntry.namespace + "/" + dirEntry.url) +
+            if (!~params.lastPageVisit.indexOf(dirEntry.url)) {
+                params.lastPageVisit = dirEntry.namespace + "/" + dirEntry.url +
                     "@kiwixKey@" + appstate.selectedArchive._file._files[0].name;
                 if (params.rememberLastPage) {
-                    cookies.setItem('lastPageVisit', params.lastPageVisit, Infinity);
+                    settingsStore.setItem('lastPageVisit', params.lastPageVisit, Infinity);
                     //Store current document's raw HTML in localStorage for fast restart
                     try {
                         // Ensure we don't go over quota
@@ -2988,7 +3000,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                         if (/quota\s*exceeded/i.test(err.message)) {
                             // Note that Edge gives a quotaExceeded message when running from localhost even if the quota isn't exceeded
                             // Basically, it means localStorage is not supported in Edge running from localhost...
-                            if (params.cookieSupport == 'local_storage') {
+                            if (params.storeType === 'local_storage') {
                                 uiUtil.systemAlert('Your localStorage has exceeded its quota, so we are forced to clear it.\n' +
                                     'Because your browser is using localStorage for remembering your settings, these may\n' +
                                     'have been reset. Next time the app launches, please go to Config and set them again.');
@@ -3466,7 +3478,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
 
                     // Document has loaded except for images, so we can now change the startup cookie (and delete) [see init.js]
                     // document.cookie = 'lastPageLoad=success;expires=Thu, 21 Sep 1979 00:00:01 UTC';
-                    cookies.removeItem('lastPageLoad');
+                    settingsStore.removeItem('lastPageLoad');
 
                     // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
                     if (params.printIntercept) printIntercept();
