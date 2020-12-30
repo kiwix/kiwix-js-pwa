@@ -26,8 +26,8 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cookies', 'q', 'transformStyles', 'kiwixServe'],
-    function ($, zimArchiveLoader, uiUtil, util, cache, images, cookies, Q, transformStyles, kiwixServe) {
+define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'settingsStore', 'q', 'transformStyles', 'kiwixServe'],
+    function ($, zimArchiveLoader, uiUtil, util, cache, images, settingsStore, Q, transformStyles, kiwixServe) {
 
         /**
          * The delay (in milliseconds) between two "keepalive" messages
@@ -52,7 +52,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
             'type': '' // The type of the search: 'basic'|'full' (set automatically in search algorithm)
         };
 
-        // A parameter to determine the Settings Store API in use
+        // A parameter to determine the Settings Store API in use (we need to nullify before testing)
+        // because params.storeType is also set in a preliminary way in init.js
+        params['storeType'] = null;
         params['storeType'] = settingsStore.getBestAvailableStorageAPI();
             
         // Unique identifier of the article expected to be displayed
@@ -347,7 +349,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                     params.lastPageHTML = "";
                     if (typeof Storage !== "undefined") {
                         try {
-                            localStorage.setItem('lastPageHTML', "");
+                            localStorage.setItem(params.keyPrefix + 'lastPageHTML', "");
                         } catch (err) {
                             console.log("localStorage not supported: " + err);
                         }
@@ -1238,7 +1240,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                 //Clear localStorage
                 if (typeof Storage !== "undefined") {
                     try {
-                        localStorage.setItem('lastPageHTML', "");
+                        localStorage.setItem(params.keyPrefix + 'lastPageHTML', "");
                         localStorage.clear();
                     } catch (err) {
                         console.log("localStorage not supported: " + err);
@@ -2728,7 +2730,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                     if (params.rememberLastPage && (typeof Storage !== "undefined") && dirEntry.namespace + '/' + dirEntry.url == lastPage) {
                         if (!params.lastPageHTML) {
                             try {
-                                params.lastPageHTML = localStorage.getItem('lastPageHTML');
+                                params.lastPageHTML = localStorage.getItem(params.keyPrefix + 'lastPageHTML');
                             } catch (err) {
                                 console.log("localStorage not supported: " + err);
                             }
@@ -2994,8 +2996,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'cook
                     //Store current document's raw HTML in localStorage for fast restart
                     try {
                         // Ensure we don't go over quota
-                        localStorage.removeItem('lastPageHTML');
-                        localStorage.setItem('lastPageHTML', htmlArticle);
+                        localStorage.removeItem(params.keyPrefix + 'lastPageHTML');
+                        localStorage.setItem(params.keyPrefix + 'lastPageHTML', htmlArticle);
                     } catch (err) {
                         if (/quota\s*exceeded/i.test(err.message)) {
                             // Note that Edge gives a quotaExceeded message when running from localhost even if the quota isn't exceeded

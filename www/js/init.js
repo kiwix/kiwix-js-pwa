@@ -57,6 +57,7 @@ params['cachedStartPage'] = false; //If you have cached the start page for quick
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
 
 params['storeType'] = checkCookies();
+params['keyPrefix'] = 'kiwixjs-'; // Prefix to use for localStorage keys
 params['maxResults'] = ~~(getCookie('maxResults') || 25); //Number of search results to display
 params['relativeFontSize'] = ~~(getCookie('relativeFontSize') || 100); //Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
 params['relativeUIFontSize'] = ~~(getCookie('relativeUIFontSize') || 100); //Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
@@ -102,16 +103,14 @@ params['PWAInstalled'] = decodeURIComponent(getCookie('PWAInstalled'));
 params.pagesLoaded = 0; // Page counter used to show PWA Install Prompt only after user has played with the app for a while
 
 //Prevent app boot loop with problematic pages that cause an app crash
-if (getCookie('lastPageLoad') == 'failed') {
+if (getCookie('lastPageLoad') === 'failed') {
     params.lastPageVisit = "";
 } else {
     //Cookie will signal failure until article is fully loaded
-    if (typeof window.fs === 'undefined') {
+    if (params.storeType === 'cookie') {
         document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
-    } else {
-        if (typeof localStorage !== 'undefined') {
-            localStorage.setItem('lastPageLoad', 'failed');
-        }
+    } else if (params.storeType === 'local_storage') {
+        localStorage.setItem(params.keyPrefix + 'lastPageLoad', 'failed');
     }
 }
 
@@ -236,26 +235,24 @@ function installApp(e) {
 
 window.addEventListener('appinstalled', function(e) {
     params.PWAInstalled = params.version;
-    document.cookie = 'PWAInstalled=' + encodeURIComponent(params.PWAInstalled) + ';expires=Fri, 31 Dec 9999 23:59:59 GMT';
+    if (params.storeType === 'cookie') {
+        document.cookie = 'PWAInstalled=' + encodeURIComponent(params.PWAInstalled) + ';expires=Fri, 31 Dec 9999 23:59:59 GMT';
+    } else if (params.storeType === 'local_storage') {
+        localStorage.setItem(params.keyPrefix + 'PWAInstalled', params.PWAInstalled);
+    }
 });
 
 function getCookie(name) {
     var result;
-    if (params.storeType == 'cookie') {
+    if (params.storeType === 'cookie') {
         var regexp = new RegExp('(?:^|;)\\s*' + name + '=([^;]+)(?:;|$)');
         result = document.cookie.match(regexp);
         result = result && result.length > 1 ? result[1] : null;
-    } else {
-        // We're in an electron app that may not be able to access cookies, so use localStorage instead
-        if (typeof Storage !== 'undefined') {
-            try {
-                result = localStorage.getItem(name);
-            } catch (err) {
-                console.log("localStorage not supported: " + err);
-            }
-        }
+    } else if (params.storeType === 'local_storage') {
+        // Use localStorage instead
+        result = localStorage.getItem(params.keyPrefix + name);
     }
-    return result === null || result == "undefined" ? null : result == "true" ? true : result == "false" ? false : result;
+    return result === null || result === "undefined" ? null : result === "true" ? true : result === "false" ? false : result;
 }
 
 function checkCookies() {
@@ -268,16 +265,14 @@ function checkCookies() {
         kiwixCookie = !/kiwixCookie=working/i.test(document.cookie);
     }
     document.cookie = 'kiwixCookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    if (!kiwixCookie) {
-        // Cookies appear to be blocked, so test for localStorage support
-        var result = false;
-        try {
-            result = 'localStorage' in window && window['localStorage'] !== null;
-        } catch (e) {
-            console.log('LocalStorage is not supported!');
-        }
-        if (result) storeType = 'local_storage';
+    // Test for localStorage support
+    var result = false;
+    try {
+        result = 'localStorage' in window && window['localStorage'] !== null;
+    } catch (e) {
+        console.log('LocalStorage is not supported!');
     }
+    if (result) storeType = 'local_storage';
     console.log('Test1: storeType: ' + storeType);
     return storeType;
 }
