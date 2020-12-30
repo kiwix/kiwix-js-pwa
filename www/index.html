@@ -55,10 +55,7 @@
         if (typeof window.nw !== 'undefined') {
             window.requireNode = window.require;
             window.require = undefined;
-            // If Native FS is unavailable, we'll use NWJS fs
-            if (typeof window.showOpenFilePicker === 'undefined') {
-                window.fs = requireNode('fs');
-            }
+            window.fs = requireNode('fs');
         } 
         if ('serviceWorker' in navigator && /^http/.test(window.location.protocol)) {
             console.log('Trying to activate Service Worker...');
