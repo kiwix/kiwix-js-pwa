@@ -21,7 +21,7 @@
  */
 
 'use strict';
-define(['q', 'uiUtil'], function(Q, uiUtil) {
+define(['q', 'settingsStore', 'uiUtil'], function(Q, settingsStore, uiUtil) {
 
     var CACHE_NAME = 'kiwixjs-assetCache'; // Set the database or cache name here
     var objStore = 'Assets'; // Name of the object store
@@ -268,27 +268,26 @@ define(['q', 'uiUtil'], function(Q, uiUtil) {
      */
     function setArticle(zimFile, article, content, callback) {
         // Prevent storage if user has deselected the option in Configuration
-        if (/rememberLastPage=false\b/i.test(document.cookie)) {
+        if (!params.rememberLastPage) {
             callback(-1);
             return;
         }
-        document.cookie = zimFile + '=' + encodeURIComponent(article) + ';expires=Fri, 31 Dec 9999 23:59:59 GMT';
+        settingsStore.setItem(zimFile, article, Infinity);
         setItem(zimFile, content, function(response) {
             callback(response);
         });
     }
     
     /**
-     * Retrieves article contents from cache only if the article's key has been stored in cookie
-     * (since checking the cookie is synchronous, it prevents unnecessary async cache lookups)
+     * Retrieves article contents from cache only if the article's key has been stored in settings store
+     * (since checking the store is synchronous, it prevents unnecessary async cache lookups)
      * 
      * @param {String} zimFile The filename (or name of first file in set) of the ZIM archive
      * @param {String} article The URL of the article to be retrieved (including namespace)
      * @param {Function} callback The function to call with the result
      */
     function getArticle(zimFile, article, callback) {
-        var encodedTitle = encodeURIComponent(article);
-        if (~document.cookie.indexOf(zimFile + '=' + encodedTitle)) {
+        if (settingsStore.getItem(zimFile) === article) {
             getItem(zimFile, callback);
         } else {
             callback(false);
@@ -305,7 +304,7 @@ define(['q', 'uiUtil'], function(Q, uiUtil) {
     function setItem(key, contents, callback) {
         // Prevent use of storage if user has deselected the option in Configuration
         // or if the asset is of the wrong type
-        if (/useCache=false\b/i.test(document.cookie) || !regexpKeyTypes.test(key)) {
+        if (params.useCache === false || !regexpKeyTypes.test(key)) {
             callback(-1);
             return;
         }
@@ -412,7 +411,7 @@ define(['q', 'uiUtil'], function(Q, uiUtil) {
                 if (!/\.css$|\.js$/.test(key)) {
                     document.getElementById('cachingAssets').style.display = 'none';
                     document.getElementById('searchingArticles').style.display = 'block';
-                } else if (/useCache=true\b/i.test(document.cookie)) {
+                } else if (params.useCache !== false) {
                     var shortTitle = key.replace(/[^/]+\//g, '').substring(0, 18);
                     document.getElementById('cachingAssets').innerHTML = 'Getting ' + shortTitle + '...';
                     document.getElementById('cachingAssets').style.display = 'block';
