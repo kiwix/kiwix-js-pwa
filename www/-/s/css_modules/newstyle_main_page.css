@@ -9,9 +9,11 @@
 } */
 
 body {
-    margin: 0; 
-    border-width: 0; 
+    margin: 0;
+    border-width: 0;
     padding: 0;
+    display: flex;
+    justify-content: center;
 }
 
 h1,
@@ -35,6 +37,7 @@ a {
 }
 
 #list {
+    padding: 40px;
     background: white;
 }
 
