@@ -35,7 +35,7 @@ define([], function () {
   var regexpCookieKeysToMigrate = new RegExp([
     'lastContentInjectionMode', 'lastSelectedArchivePath', 'imageDisplay', 'useMathJax', 'version', 'lastSelectedArchive',
     'listOfArchives', 'lastPageVisit', 'cssUITheme', 'cssTheme', 'cssSource', 'removePageMaxWidth', 'hideActiveContentWarning',
-    'allowHTMLExtraction'
+    'allowHTMLExtraction', 'PWAInstalled', 'lastPageLoad', 'hideToolbars', 'showFileSelectors', 'cssCache'
   ].join('|'));
 
   /**
@@ -43,7 +43,7 @@ define([], function () {
    * potential collision of key names with localStorage keys used by code inside ZIM archives
    * @type {String}
    */
-  const keyPrefix = 'kiwixjs-';
+  const keyPrefix = params.keyPrefix || 'kiwixjs-';
 
   // Tests for available Storage APIs (document.cookie or localStorage) and returns the best available of these
   function getBestAvailableStorageAPI() {
