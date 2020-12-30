@@ -13,6 +13,7 @@ const CACHE = "sw-precache";
 const precacheFiles = [
   "manifest.json",
   "pwabuilder-sw.js",
+  "www/-/style.css",
   "www/-/s/style.css",
   "www/-/s/style-dark.css",
   "www/-/s/style-dark-invert.css",
