@@ -2,9 +2,9 @@
 
 ## Release 1.1.3 (in progress)
 
+* UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-12.zim`
 * UPDATE: Support new location of mobile and desktop styles in Wikimedia ZIMs
 * UPDATE: Upgrade Settings store to use localStorage over cookies where available
-* ENHANCEMENT: Enable use of Native File System with NWJS
 * ENHANCEMENT: Enable use of Native File System with NWJS
 
 ## Release 1.1.2
