@@ -909,7 +909,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (params.pickedFile && params.pickedFile.name !== selected) {
                 params.pickedFile = '';
             }
-            if (params.pickedFile && params.pickedFile.readMode !== 'electron' && typeof window.showOpenFilePicker !== 'undefined') {
+            if (params.pickedFile.readMode !== 'electron' && typeof window.showOpenFilePicker !== 'undefined') {
                 getNativeFSHandle(function(handle) {
                     if (handle.kind === 'directory') {
                         params.pickedFolder = handle;
@@ -2137,7 +2137,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 console.log('IndexedDB responded with ' + val);
             });
             params.pickedFolder = dirHandle;
-            params.pickedFile = null;
+            params.pickedFile = '';
             // We have to wrap async function because IE11 compiler throws error if unwrapped
             eval(
                 "var processHandle = async function(handle, callback) {" +
