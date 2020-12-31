@@ -4,11 +4,11 @@ name: CI
 
 # Controls when the action will run. 
 on:
-  # Triggers the workflow when a registry_package is publsihed or updated
-  registry_package:
+  # Triggers the workflow when a release is publsihed or updated
+  release:
     types:
       - published
-      - updated
+      - edited
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -40,7 +40,7 @@ jobs:
       # Runs the upload script
       - name: Run upload script
         env:
-          TAG_NAME: ${{ github.event.package.package_version.tag_name }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
         shell: pwsh
         run: |
           $TAG_NAME = $Env:TAG_NAME
