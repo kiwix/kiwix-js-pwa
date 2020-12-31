@@ -3,6 +3,8 @@
 ## Release 1.1.3 (in progress)
 
 * UPDATE: Support new location of mobile and desktop styles in Wikimedia ZIMs
+* UPDATE: Upgrade Settings store to use localStorage over cookies where available
+* ENHANCEMENT: Enable use of Native File System with NWJS
 * ENHANCEMENT: Enable use of Native File System with NWJS
 
 ## Release 1.1.2
@@ -13,7 +15,9 @@
 * REGRESSION: Manual extraction of images reverted to one-by-one to prevent errors with WebP batch decoding
 * FIX: Critical error on some new Wikipedia articles containing equations
 * FIX: Prevent erroneous display of Active Content Warning with ZSTD archives
+* FIX: Styling of index-based landing pages
 * FIX: Reduce some cross-origin errors
+* FIX: Bugs with file picking in Native FS
 
 ## Release 1.0.0
 
