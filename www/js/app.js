@@ -909,7 +909,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (params.pickedFile && params.pickedFile.name !== selected) {
                 params.pickedFile = '';
             }
-            if (typeof window.showOpenFilePicker !== 'undefined') {
+            if (params.pickedFile && params.pickedFile.readMode !== 'electron' && typeof window.showOpenFilePicker !== 'undefined') {
                 getNativeFSHandle(function(handle) {
                     if (handle.kind === 'directory') {
                         params.pickedFolder = handle;
@@ -1619,9 +1619,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // This way, it is only done once at this moment, instead of being done several times in callbacks
             // After that, we can start looking for archives
             //storages[0].get("fake-file-to-read").then(searchForArchivesInPreferencesOrStorage,
-            if (!params.pickedFile && params.packagedFile && params.storedFile === params.packagedFile && typeof window.fs !== 'undefined') {
-                // We're in Electron / NWJS and we need to load the packaged app, so we are forced to use the .fs code
-                params.pickedFile = params.storedFile;
+            if (!params.pickedFile && typeof window.fs !== 'undefined') {
+                if (params.packagedFile && params.storedFile === params.packagedFile) {
+                    // We're in Electron / NWJS and we need to load the packaged app, so we are forced to use the .fs code
+                    params.pickedFile = params.storedFile;
+                } else if (typeof window.showOpenFilePicker === 'undefined') {
+                    // We're in an older Eolectron / NWJS app, so we need to use the .fs code anyway
+                    params.pickedFile = params.storedFile;
+                }
             }
             if (!params.pickedFile) {
                 if (params.storedFile && typeof window.showOpenFilePicker !== 'undefined') {
@@ -1634,7 +1639,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             } else {
                 // We're in an Electron or NWJS app with a packaged file that we need to read from the node File System
                 console.log("Loading packaged ZIM or last selected archive for Electron...");
-                loadPackagedArchive();
                 // Create a fake File object (this avoids extensive patching of later code)
                 createFakeFileObjectElectron(params.storedFile, params.storedFilePath, function (fakeFile) {
                     if (fakeFile.size) {
@@ -2255,8 +2259,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 cssUIThemeGetOrSet(params.cssUITheme);
                 if (params.rescan) {
                     document.getElementById('btnConfigure').click();
-                    document.getElementById('btnConfigure').click();
-                    params.rescan = false;
+                    setTimeout(function() {
+                        document.getElementById('btnConfigure').click();
+                        params.rescan = false;
+                    }, 100);
                 } else {
                     $('#openLocalFiles').hide();
                     document.getElementById('moreInfo').style.display = 'none';
@@ -2275,23 +2281,30 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
         function loadPackagedArchive() {
             // Reload any ZIM files in local storage (whcih the user can't otherwise select with the filepicker)
+            
+            // Reset params.packagedFile to its original value, in case we manipulated it previously
+            params.packagedFile = params.originalPackagedFile;
+            params.pickedFile = '';
             if (params.localStorage) {
-                // Reset params.packagedFile to its original value, in case we manipulated it previously
-                params.packagedFile = params.originalPackagedFile;
-                params.pickedFile = '';
-                params.storedFile = params.packagedFile || '';
                 params.pickedFolder = params.localStorage;
+                params.storedFile = params.packagedFile || '';
                 scanUWPFolderforArchives(params.localStorage);
                 if (!params.rescan) setLocalArchiveFromArchiveList(params.storedFile);
             } else if (typeof window.fs !== 'undefined') {
                 // We're in an Electron packaged app
                 settingsStore.removeItem('lastSelectedArchive');
                 settingsStore.removeItem('lastSelectedArchivePath');
+                params.lastPageVisit = '';
                 if (params.packagedFile && params.storedFile !== params.packagedFile) {
                     createFakeFileObjectElectron(params.packagedFile, params.archivePath + '/' + params.packagedFile, function (fakeFile) {
                         if (fakeFile.size) {
                             params.pickedFile = fakeFile;
-                            setLocalArchiveFromFileList([params.pickedFile]);
+                            params.storedFile = params.packagedFile;
+                            if (typeof window.showOpenFilePicker !== 'undefined') {
+                                populateDropDownListOfArchives([params.pickedFile.name]);
+                            } else {
+                                setLocalArchiveFromFileList([params.pickedFile]);
+                            }
                         } else {
                             // This shouldn't happen!
                             params.showFileSelectors = true;
