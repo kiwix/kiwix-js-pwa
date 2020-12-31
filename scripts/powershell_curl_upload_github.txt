@@ -1,0 +1,8 @@
+& curl @('-u', 'jaifroid:personal-access-token-here', '-X', 'POST', '-H', 'Accept: application/vnd.github.v3+json', 'https://api.github.com/repos/kiwix/kiwix-js-windows/releases', '-d', @"
+{
+  \"tag_name\":\"v1.1.3E\",
+  \"name\":\"A test release!\",
+  \"draft\":true,
+  \"body\":\"This is my test release.\"
+  }
+"@)
