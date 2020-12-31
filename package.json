@@ -16,7 +16,7 @@
     "start": "run --x86 --mirror https://dl.nwjs.io/ .",
     "dist-win-x86": "build --tasks win-x86 --mirror https://dl.nwjs.io/ .",
     "dist-win-x64": "build --tasks win-x64 --mirror https://dl.nwjs.io/ .",
-    "dist": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./Build_NWJS.ps1" 
+    "dist": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./scripts/Build_NWJS.ps1" 
   },
   "build-xp": {
     "nwVersion": "0.14.7",
@@ -36,7 +36,7 @@
   },
   "build": {
     "nwVersion": "0.50.2",
-    "output": "bld/nwjs/win-x86",
+    "output": "bld/nwjs/win-x64",
     "files": [
       "pwabuilder-sw.js",
       "index.html",
