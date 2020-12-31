@@ -8,11 +8,13 @@ cd ..
 foreach ($build in $builds) {
     "Building $build $version..."
     $OBuild = $build
+    $sep = '-'
     if ($build -eq "win-xp") {
         $build = "win-ia32"
         $version = $versionXP
+        $sep = '-XP-'
     }
-    $target = "bld\nwjs\$build-$version\kiwix_js_windows-$appBuild"
+    $target = "bld\nwjs\$build-$version\kiwix_js_windows$sep$appBuild"
     $fullTarget = "$target-$build"
     $buildLocation = "node_modules\nwjs-builder-phoenix\caches\nwjs-v$version-$build.zip-extracted\nwjs-v$version-$build\"
     $archiveFolder = "$fullTarget\archives"
@@ -30,15 +32,18 @@ foreach ($build in $builds) {
     cp "archives\$ZIMbase*.*", "archives\README.md" $archiveFolder
     "Creating launchers..."
     $launcherStub = ".\bld\nwjs\$build-$version\Start Kiwix JS Windows"
+    $foldername = "kiwix_js_windows$sep$appBuild-$build"
     # Batch file
-    $batch = '@cd "' + "kiwix_js_windows-$appBuild-$build" + '"' + "`r`n" + '@start "Kiwix JS Windows" "nw.exe"' + "`r`n'"
+    $batch = '@cd "' + $foldername + '"' + "`r`n" + '@start "Kiwix JS Windows" "nw.exe"' + "`r`n'"
     $batch > "$launcherStub.bat"
     # Shortcut
     $WshShell = New-Object -ComObject WScript.Shell
     $Shortcut = $WshShell.CreateShortcut("$launcherStub.lnk")
     $Shortcut.TargetPath = '%windir%\explorer.exe'
-    $Shortcut.Arguments = "kiwix_js_windows-$appBuild-$build\nw.exe"
+    $Shortcut.Arguments = "$foldername\nw.exe"
     $Shortcut.IconLocation = '%windir%\explorer.exe,12'
     $Shortcut.Save()
+    "Compressing folder..."
+    Compress-Archive "bld\nwjs\$build-$version\*" "bld\nwjs\$foldername.zip"
     "Build $OBuild finished.`n"
 }
