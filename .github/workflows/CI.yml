@@ -45,7 +45,7 @@ jobs:
           # Provide a dummy tag if the tag is not defined
           if ("x$TAG_NAME" -eq "x") {
             echo "Setting dummy tag because tag name is empty..."
-            $TAG_NAME = "0.0.0"
+            $TAG_NAME = "1.1.3"
           }
           echo "Using tag: $TAG_NAME for version upload"
           .\scripts\Push-KiwixRelease.ps1 "$TAG_NAME" -tag -yes
