@@ -1588,7 +1588,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         // Archive files are already selected, 
                         setLocalArchiveFromFileSelect();
                     } else {
-                        document.getElementById('btnConfigure').click();
+                        var btnConfigure = document.getElementById('btnConfigure');
+                        if (!btnConfigure.classList.contains('active')) btnConfigure.click();
                     }
                 }
             }
@@ -1630,7 +1631,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
             if (!params.pickedFile) {
                 if (params.storedFile && typeof window.showOpenFilePicker !== 'undefined') {
-                    getNativeFSHandle();
+                    document.getElementById('btnConfigure').click();
                 } else {
                     searchForArchivesInPreferencesOrStorage();
                 }
@@ -1963,7 +1964,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         if (params.localStorage) {
                             scanUWPFolderforArchives(params.localStorage);
                         } else {
-                            document.getElementById('btnConfigure').click();
+                            var btnConfigure = document.getElementById('btnConfigure');
+                            if (!btnConfigure.classList.contains('active')) btnConfigure.click();
                         }
                         return;
                         //}
@@ -3037,9 +3039,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             htmlArticle = htmlArticle.replace(/(<(audio|video)\b(?:[^<]|<(?!\/\2))+<\/\2>)/ig, function (p0) {
                 return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
             });
-
-            //@BUG WORKAROUND for Kiwix-JS-Windows #18
-            htmlArticle = htmlArticle.replace(/(<link\s+[^>]*?\bhref\s*=\s*["'])(s\/[\s\S]+(?!\.css))(["'])/gi, "$1../-/$2.css$3");
 
             //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
             //so add some whitespace at the end of the document
