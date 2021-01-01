@@ -3085,8 +3085,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // htmlArticle = htmlArticle.replace(/(<details\b(?![^>]+\sopen)[^>]+)>/ig, '$1 open>');
             // Remove the script.js that closes top-level sections if user requested this
             if (params.openAllSections) htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/j\/js_modules\/script\.js"[^<]*<\/script>/i, "");
-            // Remove landing page scripts that don't work
-            htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/j\/js_modules\/((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, "");
+            // Remove landing page scripts that don't work in SW mode
+            if (params.cssCache) htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/j\/js_modules\/((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, "");
 
             //Remove empty div that causes layout issues in desktop style
             htmlArticle = htmlArticle.replace(/<div\b[^>]*?>\s*<\/div>\s*/, '');
