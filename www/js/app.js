@@ -1408,7 +1408,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 var tmpMessageChannel = new MessageChannel();
                 tmpMessageChannel.port1.onmessage = handleMessageChannelMessage;
                 // Send the init message to the ServiceWorker, with this MessageChannel as a parameter
-                navigator.serviceWorker.controller.postMessage({
+                if (navigator.serviceWorker.controller) navigator.serviceWorker.controller.postMessage({
                     'action': 'init'
                 }, [tmpMessageChannel.port2]);
                 messageChannel = tmpMessageChannel;
@@ -3085,7 +3085,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // htmlArticle = htmlArticle.replace(/(<details\b(?![^>]+\sopen)[^>]+)>/ig, '$1 open>');
             // Remove the script.js that closes top-level sections if user requested this
             if (params.openAllSections) htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/j\/js_modules\/script\.js"[^<]*<\/script>/i, "");
-
+            // Remove landing page scripts that don't work
+            htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/j\/js_modules\/((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, "");
 
             //Remove empty div that causes layout issues in desktop style
             htmlArticle = htmlArticle.replace(/<div\b[^>]*?>\s*<\/div>\s*/, '');
