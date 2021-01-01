@@ -56,34 +56,34 @@ params['fileVersion'] = "wikipedia_en_100_maxi_2020-12.zim (23-Dec-2020)"; //Use
 params['cachedStartPage'] = false; //If you have cached the start page for quick start, give its URI here
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
 
-params['storeType'] = checkCookies();
+params['storeType'] = getBestAvailableStorageAPI();
 params['keyPrefix'] = 'kiwixjs-'; // Prefix to use for localStorage keys
-params['maxResults'] = ~~(getCookie('maxResults') || 25); //Number of search results to display
-params['relativeFontSize'] = ~~(getCookie('relativeFontSize') || 100); //Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
-params['relativeUIFontSize'] = ~~(getCookie('relativeUIFontSize') || 100); //Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
-params['cssSource'] = getCookie('cssSource') || "auto"; //Set default to "auto", "desktop" or "mobile"
-params['removePageMaxWidth'] = getCookie('removePageMaxWidth') != null ? getCookie('removePageMaxWidth') : "auto"; //Set default for removing max-width restriction on Wikimedia pages ("auto" = removed in desktop, not in mobile; true = always remove; false = never remove)
-params['openAllSections'] = getCookie('openAllSections') != null ? getCookie('openAllSections') : true; //Set default for opening all sections in ZIMs that have collapsible sections and headings ("auto" = let CSS decide according to screen width; true = always open until clicked by user; false = always closed until clicked by user)
-params['cssCache'] = getCookie('cssCache') != null ? getCookie('cssCache') : true; //Set default to true to use cached CSS, false to use Zim only
-params['cssTheme'] = getCookie('cssTheme') || 'light'; //Set default to 'auto', 'light', 'dark' or 'invert' to use respective themes for articles
-params['cssUITheme'] = getCookie('cssUITheme') || 'light'; //Set default to 'auto', 'light' or 'dark' to use respective themes for UI
-params['imageDisplay'] = getCookie('imageDisplay') != null ? getCookie('imageDisplay') : true; //Set default to display images from Zim
-params['hideToolbars'] = getCookie('hideToolbars') != null ? getCookie('hideToolbars') : true; //Set default to true (hides both), 'top' (hides top only), or false (no hiding)
-params['rememberLastPage'] = getCookie('rememberLastPage') != null ? getCookie('rememberLastPage') : true; //Set default option to remember the last visited page between sessions
-params['useMathJax'] = getCookie('useMathJax') != null ? getCookie('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
+params['maxResults'] = ~~(getSetting('maxResults') || 25); //Number of search results to display
+params['relativeFontSize'] = ~~(getSetting('relativeFontSize') || 100); //Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
+params['relativeUIFontSize'] = ~~(getSetting('relativeUIFontSize') || 100); //Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
+params['cssSource'] = getSetting('cssSource') || "auto"; //Set default to "auto", "desktop" or "mobile"
+params['removePageMaxWidth'] = getSetting('removePageMaxWidth') != null ? getSetting('removePageMaxWidth') : "auto"; //Set default for removing max-width restriction on Wikimedia pages ("auto" = removed in desktop, not in mobile; true = always remove; false = never remove)
+params['openAllSections'] = getSetting('openAllSections') != null ? getSetting('openAllSections') : true; //Set default for opening all sections in ZIMs that have collapsible sections and headings ("auto" = let CSS decide according to screen width; true = always open until clicked by user; false = always closed until clicked by user)
+params['cssCache'] = getSetting('cssCache') != null ? getSetting('cssCache') : true; //Set default to true to use cached CSS, false to use Zim only
+params['cssTheme'] = getSetting('cssTheme') || 'light'; //Set default to 'auto', 'light', 'dark' or 'invert' to use respective themes for articles
+params['cssUITheme'] = getSetting('cssUITheme') || 'light'; //Set default to 'auto', 'light' or 'dark' to use respective themes for UI
+params['imageDisplay'] = getSetting('imageDisplay') != null ? getSetting('imageDisplay') : true; //Set default to display images from Zim
+params['hideToolbars'] = getSetting('hideToolbars') != null ? getSetting('hideToolbars') : true; //Set default to true (hides both), 'top' (hides top only), or false (no hiding)
+params['rememberLastPage'] = getSetting('rememberLastPage') != null ? getSetting('rememberLastPage') : true; //Set default option to remember the last visited page between sessions
+params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
 //params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
 params['showFileSelectors'] = true; //False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
-params['hideActiveContentWarning'] = getCookie('hideActiveContentWarning') != null ? getCookie('hideActiveContentWarning') : false;
-params['allowHTMLExtraction'] = getCookie('allowHTMLExtraction') == true;
-params['alphaChar'] = getCookie('alphaChar') || 'A'; //Set default start of alphabet string (used by the Archive Index)
-params['omegaChar'] = getCookie('omegaChar') || 'Z'; //Set default end of alphabet string
-params['contentInjectionMode'] = getCookie('contentInjectionMode') || 'jquery'; //Defaults to jquery mode (widest compatibility)
+params['hideActiveContentWarning'] = getSetting('hideActiveContentWarning') != null ? getSetting('hideActiveContentWarning') : false;
+params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') == true;
+params['alphaChar'] = getSetting('alphaChar') || 'A'; //Set default start of alphabet string (used by the Archive Index)
+params['omegaChar'] = getSetting('omegaChar') || 'Z'; //Set default end of alphabet string
+params['contentInjectionMode'] = getSetting('contentInjectionMode') || 'jquery'; //Defaults to jquery mode (widest compatibility)
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['imageDisplayMode'] = params.imageDisplay ? 'progressive' : 'manual';
-params['storedFile'] = getCookie('lastSelectedArchive') || params['packagedFile'];
+params['storedFile'] = getSetting('lastSelectedArchive') || params['packagedFile'];
 params.storedFile = launchArguments ? launchArguments.files[0].name : params.storedFile;
-params['storedFilePath'] = getCookie('lastSelectedArchivePath');
+params['storedFilePath'] = getSetting('lastSelectedArchivePath');
 params.storedFilePath = params.storedFilePath ? decodeURIComponent(params.storedFilePath) : params.archivePath + '/' + params.packagedFile;
 params.storedFilePath = launchArguments ? launchArguments.files[0].path || '' : params.storedFilePath;
 params.originalPackagedFile = params.packagedFile;
@@ -92,18 +92,18 @@ params['falFolderToken'] = params['falFolderToken'] || "zimfilestore"; //UWP sup
 params['localStorage'] = params['localStorage'] || "";
 params['pickedFile'] = launchArguments ? launchArguments.files[0] : "";
 params['pickedFolder'] = params['pickedFolder'] || "";
-params['lastPageVisit'] = getCookie('lastPageVisit') || "";
+params['lastPageVisit'] = getSetting('lastPageVisit') || "";
 params.lastPageVisit = params.lastPageVisit ? decodeURIComponent(params.lastPageVisit): "";
 params['themeChanged'] = params['themeChanged'] || false;
 params['allowInternetAccess'] = params['allowInternetAccess'] || false; //Do not get value from cookie, should be explicitly set by user on a per-session basis
 params['printIntercept'] = false;
 params['printInterception'] = false;
 params['appIsLaunching'] = true; //Allows some routines to tell if the app has just been launched
-params['PWAInstalled'] = decodeURIComponent(getCookie('PWAInstalled'));
+params['PWAInstalled'] = decodeURIComponent(getSetting('PWAInstalled'));
 params.pagesLoaded = 0; // Page counter used to show PWA Install Prompt only after user has played with the app for a while
 
 //Prevent app boot loop with problematic pages that cause an app crash
-if (getCookie('lastPageLoad') === 'failed') {
+if (getSetting('lastPageLoad') === 'failed') {
     params.lastPageVisit = "";
 } else {
     //Cookie will signal failure until article is fully loaded
@@ -161,7 +161,7 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
         });
     }
     //If we don't already have a picked file (e.g. by launching app with click on a ZIM file), then retrieve it from futureAccessList if possible
-    var listOfArchives = getCookie('listOfArchives');
+    var listOfArchives = getSetting('listOfArchives');
     // But don't get the picked file if we already have access to the folder and the file is in it!
     if (listOfArchives && ~listOfArchives.indexOf(params.storedFile) && params.pickedFolder) {
         params.pickedFile = '';
@@ -242,7 +242,7 @@ window.addEventListener('appinstalled', function(e) {
     }
 });
 
-function getCookie(name) {
+function getSetting(name) {
     var result;
     if (params.storeType === 'cookie') {
         var regexp = new RegExp('(?:^|;)\\s*' + name + '=([^;]+)(?:;|$)');
@@ -255,27 +255,29 @@ function getCookie(name) {
     return result === null || result === "undefined" ? null : result === "true" ? true : result === "false" ? false : result;
 }
 
-function checkCookies() {
-    // Test for cookie support
-    var storeType = 'cookie';
-    document.cookie = 'kiwixCookie=working;expires=Fri, 31 Dec 9999 23:59:59 GMT';
-    var kiwixCookie = /kiwixCookie=working/i.test(document.cookie);
-    if (kiwixCookie) {
-        document.cookie = 'kiwixCookie=broken;expires=Fri, 31 Dec 9999 23:59:59 GMT';
-        kiwixCookie = !/kiwixCookie=working/i.test(document.cookie);
-    }
-    document.cookie = 'kiwixCookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    // Test for localStorage support
-    var result = false;
+ // Tests for available Storage APIs (document.cookie or localStorage) and returns the best available of these
+ // DEV: This function is replicated from settingsStore.js because RequireJS has not yet loaded it,
+ // except that it returns 'cookie' if the always-present lastContentInjectionMode is still in cookie, which
+ // means the store previously used cookies and hasn't upgraded yet: this won't be done till app.js is loaded
+ function getBestAvailableStorageAPI() {
+    var type = 'none';
+    var localStorageTest;
     try {
-        result = 'localStorage' in window && window['localStorage'] !== null;
+      localStorageTest = 'localStorage' in window && window['localStorage'] !== null;
+      if (localStorageTest) {
+        localStorage.setItem('tempKiwixStorageTest', '');
+        localStorage.removeItem('tempKiwixStorageTest');
+      }
     } catch (e) {
-        console.log('LocalStorage is not supported!');
+      localStorageTest = false;
     }
-    if (result) storeType = 'local_storage';
-    console.log('Test1: storeType: ' + storeType);
-    return storeType;
-}
+    document.cookie = 'tempKiwixCookieTest=working; expires=Fri, 31 Dec 9999 23:59:59 GMT; SameSite=Strict';
+    var kiwixCookieTest = /tempKiwixCookieTest=working/.test(document.cookie);
+    document.cookie = 'tempKiwixCookieTest=; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict';
+    if (kiwixCookieTest) type = 'cookie';
+    if (localStorageTest && !/lastContentInjectionMode=(?:jquery|serviceworker)/.test(document.cookie)) type = 'local_storage';
+    return type;
+  }
 
 
 require.config({

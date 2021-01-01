@@ -52,8 +52,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             'type': '' // The type of the search: 'basic'|'full' (set automatically in search algorithm)
         };
 
-        // A parameter to determine the Settings Store API in use (we need to nullify before testing)
-        // because params.storeType is also set in a preliminary way in init.js
+        // A parameter to determine the Settings Store API in use (we need to nullify before testing
+        // because params.storeType is also set in a preliminary way in init.js)
         params['storeType'] = null;
         params['storeType'] = settingsStore.getBestAvailableStorageAPI();
             
