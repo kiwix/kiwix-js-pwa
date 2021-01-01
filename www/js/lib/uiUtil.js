@@ -34,6 +34,11 @@ if (webpMachine) {
 define(rqDef, function() {
 
     /**
+     * Global variables
+     */
+    var itemsCount = false;
+    
+    /**
      * Creates either a blob: or data: URI from the given content
      * The given attribute of the DOM node (nodeAttribute) is then set to this URI
      * 
