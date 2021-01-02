@@ -1,6 +1,10 @@
 ﻿// Service Worker with Cache-first network, with some code from pwabuilder.com 
 'use strict';
 
+// App version number
+// DEV: Find a way to set this programmatically
+const appVersion = '1.1.3';
+
 // Kiwix ZIM Archive Download Server in regex form
 // DEV: The server URL is defined in init.js, but is not available to us in SW
 const regexpKiwixDownloadLinks = /download\.kiwix\.org/i;
@@ -9,7 +13,7 @@ const regexpKiwixDownloadLinks = /download\.kiwix\.org/i;
 // In our case, there is also the ZIM file name, used as a prefix in the URL
 const regexpZIMUrlWithNamespace = /(?:^|\/)([^\/]+\/)([-ABIJMUVWX])\/(.+)/;
 
-const CACHE = "sw-precache";
+const CACHE = "kiwix-precache-" + appVersion;
 const precacheFiles = [
   "manifest.json",
   "pwabuilder-sw.js",
@@ -90,9 +94,6 @@ var excludedURLSchema = /^(?:file|chrome-extension|example-extension):/i;
 
 self.addEventListener("install", function (event) {
   console.log("[SW] Install Event processing");
-
-  console.log("[SW] Skip waiting on install");
-  self.skipWaiting();
   var requests = precacheFiles.map(function(url) {
     return new Request(url);
   });
@@ -109,7 +110,16 @@ self.addEventListener("install", function (event) {
 // Allow sw to control current page
 self.addEventListener("activate", function (event) {
   console.log("[SW] Claiming clients for current page");
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys().then((keyList) => {
+          return Promise.all(keyList.map((key) => {
+        if(key !== CACHE) {
+          console.log("[SW] App updated to version " + appVersion + ": deleting old cache")
+          return caches.delete(key);
+        }
+      }));
+    })
+  );
 });
 
 /**
@@ -151,10 +161,10 @@ function intercept(event) {
         // The response was found in the cache so we respond with it and update the entry
 
         // This is where we call the server to get the newest version of the
-        // file to use the next time we show view
-        if (!excludedURLSchema.test(event.request.url)) event.waitUntil(
+        // Service Worker to use when upgrading
+        if (/pwabuilder-sw.js/i.test(event.request.url) && !excludedURLSchema.test(event.request.url)) event.waitUntil(
            fetch(event.request).then(function (response) {
-             console.log('[SW] Refreshing CACHE from server...');
+             console.log('[SW] Refreshing Service Worker from server...');
              return updateCache(event.request, response);
            })
          );
