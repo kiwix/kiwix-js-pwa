@@ -33,9 +33,9 @@ define([], function () {
    * @type {RegExp}
    */
   var regexpCookieKeysToMigrate = new RegExp([
-    'lastContentInjectionMode', 'lastSelectedArchivePath', 'imageDisplay', 'useMathJax', 'version', 'lastSelectedArchive',
-    'listOfArchives', 'lastPageVisit', 'cssUITheme', 'cssTheme', 'cssSource', 'removePageMaxWidth', 'hideActiveContentWarning',
-    'allowHTMLExtraction', 'PWAInstalled', 'lastPageLoad', 'hideToolbars', 'showFileSelectors', 'cssCache'
+    'lastContentInjectionMode', 'lastSelectedArchive', 'lastSelectedArchivePath', 'imageDisplay', 'useMathJax', 'version',
+    'listOfArchives', 'lastPageVisit', 'cssCache', 'cssUITheme', 'cssTheme', 'cssSource', 'removePageMaxWidth', 'hideActiveContentWarning',
+    'hideToolbars', 'allowHTMLExtraction', 'openAllSections', 'PWAInstalled', 'lastPageLoad', 'showFileSelectors'
   ].join('|'));
 
   /**
@@ -73,6 +73,7 @@ define([], function () {
     // If both cookies and localStorage are supported, and document.cookie contains keys to migrate,
     // migrate settings to use localStorage
     if (kiwixCookieTest && localStorageTest && regexpCookieKeysToMigrate.test(document.cookie)) _migrateStorageSettings();
+    if (localStorageTest) localStorage.removeItem('lastPageHTML');
     // Note that if this function returns 'none', the cookie implementations below will run anyway. This is because storing a cookie
     // does not cause an exception even if cookies are blocked in some contexts, whereas accessing localStorage may cause an exception
     return type;
