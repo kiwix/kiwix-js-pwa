@@ -1,4 +1,4 @@
-# Kiwix JS for Windows
+# Kiwix JS Wikivoyage for Windows
 
 *There is a browser-based deployment and installable Progressive Web App (PWA) version of this app [here](https://kiwix.github.io/kiwix-js-windows/www/), 
 but you will need a ZIM file for testing.*
@@ -6,35 +6,20 @@ but you will need a ZIM file for testing.*
 This repository is for development of the Kiwix JS app for Windows 10 Universal Windows Platform, PWA, Electron and NWJS.
 Latest development code is usually on the [master-dev](https://github.com/kiwix/kiwix-js-windows/tree/master-dev/) branch.
 
-This is a port of the Kiwix Offline Wikipedia (and other Wiki) reader for UWP and related app technologies on Windows 10.
-The NWJS and Electron versions of the app also run on earlier Windows (see the respective [releases](https://github.com/kiwix/kiwix-js-windows/releases)
-for more information). The app enables offline reading of a ZIM file downloaded from the Kiwix repository, including full
-Wikipedia versions with or without images in many different languages. It is regularly tested 
-fully on Wikimedia ZIM files, though a number of other ZIM file types work (e.g. Stackexchange ZIMs).
+[ Microsoft Store link: https://www.microsoft.com/store/apps/9N5SB90Q4JBJ ] 
 
-This began as a simple port of Kiwix JS, the HTML5 web app provided upstream at https://github.com/kiwix/kiwix-js, although
-significant development has been undertaken to add functionality and to make the app sit happily
-with the Universal Windows Platform, and more recently Electron and NWJS, as well as to work as an installable PWA.
-The port runs as a UWP Store App on Windows 10 and Windows 10 Mobile, but it should also run on any Windows 10 platform: x86, x64, ARM, on Mobile, tablets, Xbox,
-Surface Hub, Holographic and PC. It has only been tested on Lumia 950XL (Mobile), Tablet/PC x64 (Windows 10), and a Windows 10 Mobile VM.
+This is a version of the Kiwix Offline Wikimedia reader for UWP on Windows 10 that has been packaged with
+a Wikivoyage archive. If you are interested in the development of Kiwix JS, or want to install it without
+the packaged archive, please switch back to the Master branch: https://github.com/kiwix/kiwix-js-windows/tree/master
 
-The UWP app is currently installable from the Microsoft Store at:
-
-[https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j](https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j)
+This app enables offline reading of the packaged ZIM archive, although many other ZIM files may be
+downloaded from the Kiwix repository, including full Wikipedia versions with or without images
+in many different languages. The underlying app has only been tested fully on Wikimedia ZIM files to date.
 
 However, if you prefer not to use the Store, or want to test a specific release, available packages are located under 
 Releases: https://github.com/kiwix/kiwix-js-windows/releases. Installation instructions for the standalone app (Kiwix JS) 
 are provided on the Master branch: https://github.com/kiwix/kiwix-js-windows/tree/master. Electron and NWJS versions are also available from Releases,
 and a PWA version can be installed by visiting https://kiwix.github.io/kiwix-js-windows/.
-
-You will need a ZIM file to work with this app. For testing, the Store version comes packaged with an archive of the top 100 Wikipedia pages in English
-(with pictures) as a starter ZIM, while packaged aps of WikiMed and Wikivoyage are also available in the Store or from [Releases](https://kiwix.github.io/kiwix-js-windows/releases). You can download other ZIM archives from the setup page in the app (the download completes in the browser).
-Place the file in an accessible location on your device, and use the Rescan Storage button in the app to display buttons that
-let you pick the file or the file's folder (if you do not see such buttons, look under Expert Settings in Config to enable the file picking UI).
-
-Alternatively, you can download files from [https://wiki.kiwix.org/wiki/Content_in_all_languages](http://wiki.kiwix.org/wiki/Content_in_all_languages) on a regular
-PC. If you plan to store your ZIM file on an SD card formatted as FAT32, and you wish to use an archive larger than 4GB, then you will need to split the ZIM: see
-[file splitting instructions](https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#download-a-zim-archive-all-platforms). If your SD card is formatted as exFAT or NTFS, you do not need to split the ZIM archive.
 
 You can also run the app in your browser if you prefer, either from the file:// protocol or from your own
 local server. There is a test deployment at: [https://kiwix.github.io/kiwix-js-windows/www/](https://kiwix.github.io/kiwix-js-windows/www/), but note that
@@ -49,13 +34,14 @@ Windows for Windows 10 (including Mobile) is by Geoffrey Kantaris. I can be cont
 
 # Privacy Policy
 
-Kiwix JS Windows works offline, and does not collect or record any of your personal data. It
+Kiwix JS Wikivoyage works offline, and does not collect or record any of your personal data. It
 only remembers your browsing history for the duration of a session (for the purpose of returning to previously
 viewed pages). This history is lost on exiting the app and is not recorded in any way.                     
 
 By default, this application will remember your last-visited page between sessions using a local cookie
 that is accessible only by this app on this device. If you are accessing sensitive information that you do
-not wish to be displayed next time you open this app, we recommend that you [turn this option off](file:///C:/Users/geoff/Source/Repos/kiwix-js-windows-wikimed/www/index.html#privacy) in the Configuration options.            
+not wish to be displayed next time you open this app, we recommend that you turn this option off in the
+Configuration options.
 
 This application only reads the archive files that you explicitly select on your device and files included in
 its own package: it is not capable of reading any other files. It will only access the Kiwix download server if
