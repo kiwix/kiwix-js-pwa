@@ -19,3 +19,4 @@ null
 /scripts/ssh_key
 /scripts/secret_files.*
 
+/scripts/github_token
