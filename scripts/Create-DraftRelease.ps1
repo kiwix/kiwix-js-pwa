@@ -92,7 +92,7 @@ if ($release.assets_url -imatch '^https:') {
     # Upload asset to the release server
     # $upload = [System.IO.File]::ReadAllBytes($upload_file) | Invoke-RestMethod @upload_params
     $upload = Invoke-RestMethod @upload_params
-    if ($upload.url -imatch '^https:') {
+    if ($upload.name -eq $asset_name) {
       "Upload successfully posted as " + $upload.url
       "Full details:"
       echo $upload
