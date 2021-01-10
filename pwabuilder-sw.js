@@ -102,7 +102,7 @@ self.addEventListener("install", function (event) {
   console.log("[SW] Install Event processing");
   self.skipWaiting();
   var requests = precacheFiles.map(function(url) {
-    return new Request(url, { cache: 'no-cache' });
+    return new Request(url + '?v' + appVersion, { cache: 'no-cache' });
   });
   if (!excludedURLSchema.test(requests[0].url)) event.waitUntil(
     // caches.open(CACHE).then(function (cache) {
@@ -264,9 +264,12 @@ function intercept(event) {
             }, [messageChannel.port2]);
           });
         } else {
+          // It's not a ZIM URL
           return fetch(event.request).then(function (response) {
             // If request was success, add or update it in the cache
-            if (!excludedURLSchema.test(event.request.url)) event.waitUntil(updateCache(event.request, response.clone()));
+            if (!excludedURLSchema.test(event.request.url) && !/\.zim\w{0,2}$/i.test(event.request.url)) {
+              event.waitUntil(updateCache(event.request, response.clone()));
+            }
             return response;
           }).catch(function (error) {
             console.log("[SW] Network request failed and no cache.", error);
