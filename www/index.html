@@ -349,7 +349,7 @@
                         viewed pages). This history is lost on exiting the app and is not recorded in any way.
                     </p>
                     <p>
-                        By default, this application will remember your last-visited page between sessions using a local cookie that is accessible
+                        By default, this application will remember your last-visited page between sessions using local sorage or a cookie that is accessible
                         only by this app on this device. If you are accessing sensitive information that you do not wish to be displayed next time
                         you open this app, we recommend that you <a href="#privacy" onclick="$('#btnConfigure').click();">turn this option off</a>
                         in the Configuration options.
@@ -360,49 +360,38 @@
                         you specifically request it to find and display download links for ZIM archives on the Configuration page.
                         However, some ZIM archives contain active content (scripts) which may, in rare circumstances, attempt to
                         contact external servers for incidental files such as fonts. These scripts will only run if you enable Service
-                        Worker mode in Configuration. Nevertheless, if you believe your Internet access is insecure, or is being
-                        observed or censored, we recommend that you completely shut down your Internet (Data or WiFi) access before
-                        using the application.
+                        Worker mode in Configuration.
+                    </p>
+                    <p>
+                        <b>If you believe your Internet access is insecure, or is being observed or censored, we recommend that you completely
+                        shut down your Internet (Data or WiFi) access before using the application.</b>
                     </p>
                     <p>
                         Additionally, if you obtained this app from a Vendor Store (including extensions), then the Store operator may
                         track your usage of the app (e.g. download, install, uninstall, date and number of sessions) for the purpose of
-                        providing anonymous, aggregate usage statistics to developers. If this concerns you, you should check the
-                        relevant Store Privacy Policy for further information. <b>Builds of this app are available that do not use a
-                        Store. Please see <a href="https://github.com/kiwix/kiwix-js-windows/releases" target="_blank">Releases</a></b>.
+                        providing anonymous, aggregate usage statistics to developers. If this concerns you, you should check the relevant
+                        Store Privacy Policy for further information. If you are using the PWA version, then note that <b>by design</b> any PWA
+                        will periodically check the PWA server (in this case, kiwix.github.io) to see if the Service Worker has been updated.
+                    </p>
+                    <p>
+                        <b>Builds of this app are available that do not use a Store or an online Service Worker.</b> Please see:
+                        <ul>
+                            <li><a href="https://github.com/kiwix/kiwix-js-windows/releases">Releases</a></li>
+                            <li><a href="https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html">NWJS version</a> - this version is completely
+                                standalone and will never self-update.</li>
+                        </ul>
                     </p>
                     <h3 id="feedback">Feedback / helping / contributing</h3>
                     <p>
                         This application is still a work in progress. There are bugs that still need fixing and improvements that
-                        need to be implemented. In particular:
-                    </p>
-                    <ul>
-                        <li>
-                            <a href="https://github.com/kiwix/kiwix-js/issues/13" target="_blank">Issue #13</a>: All the user
-                            interface is in English : we plan to translate it at least into French and Spanish. If you feel able to
-                            translate it in your language, please contact us
-                        </li>
-                        <li>
-                            <a href="https://github.com/kiwix/kiwix-js/issues/172" target="_blank">Issue #172</a> and
-                            <a href="https://github.com/kiwix/kiwix-js/issues/152" target="_blank">#152</a>: Handle video and
-                            javascript content
-                        </li>
-                        <li>
-                            <a href="https://github.com/kiwix/kiwix-js/issues/117" target="_blank">Issue #117</a> : Better handle
-                            upper/lowercase and accents/diacritics in title search
-                        </li>
-                        <li>Performance improvements etc.</li>
-                    </ul>
-                    <p>
-                        Suggestions and patches/pull requests are welcome: the source code is on
+                        need to be implemented. Suggestions and patches/pull requests are welcome: the source code is on
                         <a href="https://github.com/kiwix/kiwix-js-windows" target="_blank">github</a>.
-                        The <a href="https://github.com/kiwix/kiwix-js-windows/issues" target="_blank">
-                            Kiwix JS Windows issue tracker
-                        </a> is on GitHub too, though also check the <a href="https://github.com/kiwix/kiwix-js/issues"
+                        The <a href="https://github.com/kiwix/kiwix-js-windows/issues" target="_blank">Kiwix JS Windows issue tracker</a>
+                        is on GitHub too, though also check the <a href="https://github.com/kiwix/kiwix-js/issues"
                         target="_blank">tracker for Kiwix JS</a> as a lot of the development is done for both apps.
                     </p>
                     <p>
-                        Alternatively, you can send your feedback <a href="mailto:egk10@cam.ac.uk?subject=%5BKiwix%5D%20Feedback%20about%20WikiMed">
+                        Alternatively, you can send your feedback <a href="mailto:egk10@cam.ac.uk?subject=%5BKiwix%5D%20Feedback%20about%20Kiwix-JS-Windows">
                             by email
                         </a>.
                     </p>

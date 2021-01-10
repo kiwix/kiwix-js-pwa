@@ -51,23 +51,30 @@ Windows for Windows 10 (including Mobile) is by Geoffrey Kantaris. I can be cont
 
 Kiwix JS Windows works offline, and does not collect or record any of your personal data. It
 only remembers your browsing history for the duration of a session (for the purpose of returning to previously
-viewed pages). This history is lost on exiting the app and is not recorded in any way.                     
+viewed pages). This history is lost on exiting the app and is not recorded in any way.
 
-By default, this application will remember your last-visited page between sessions using a local cookie
+By default, this application will remember your last-visited page between sessions using local stoarage or a cookie
 that is accessible only by this app on this device. If you are accessing sensitive information that you do
-not wish to be displayed next time you open this app, we recommend that you [turn this option off](file:///C:/Users/geoff/Source/Repos/kiwix-js-windows-wikimed/www/index.html#privacy) in the Configuration options.            
+not wish to be displayed next time you open this app, we recommend that you [turn this option off](file:///C:/Users/geoff/Source/Repos/kiwix-js-windows-wikimed/www/index.html#privacy) in the Configuration options.
 
 This application only reads the archive files that you explicitly select on your device and files included in
 its own package: it is not capable of reading any other files. It will only access the Kiwix download server if
 you specifically request it to find and display download links for ZIM archives on the Configuration page.
 However, some ZIM archives contain active content (scripts) which may, in rare circumstances, attempt to
 contact external servers for incidental files such as fonts. These scripts will only run if you enable Service
-Worker mode in Configuration. Nevertheless, if you believe your Internet access is insecure, or is being
-observed or censored, we recommend that you completely shut down your Internet (Data or WiFi) access before
-using the application.                     
+Worker mode in Configuration.
+
+**If you believe your Internet access is insecure, or is being observed or censored, we recommend that you completely
+shut down your Internet (Data or WiFi) access before using the application.**
 
 Additionally, if you obtained this app from a Vendor Store (including extensions), then the Store operator may
 track your usage of the app (e.g. download, install, uninstall, date and number of sessions) for the purpose of
-providing anonymous, aggregate usage statistics to developers. If this concerns you, you should check the
-relevant Store Privacy Policy for further information. **Builds of this app are available that do not use a
-Store. Please see [Releases](https://github.com/kiwix/kiwix-js-windows/releases)**. 
+providing anonymous, aggregate usage statistics to developers. If this concerns you, you should check the relevant
+Store Privacy Policy for further information. If you are using the PWA version, then note that **by design** any PWA
+will periodically check the PWA server (in this case, kiwix.github.io) to see if the Service Worker has been updated.
+
+**Builds of this app are available that do not use a Store or an online Service Worker.** Please see:
+
+* [Releases](https://github.com/kiwix/kiwix-js-windows/releases)
+* [NWJS version](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html) - this version is completely standalone
+  and will never self-update
