@@ -754,6 +754,27 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     divInstall1.style.display = 'none';
                 }
             }
+            // Check for upgrade of PWA
+            if(!params.upgradeNeeded && 'serviceWorker' in navigator && /https?:/i.test(window.location.protocol) && activeBtn === 'btnConfigure') {
+                cache.cacheAPI('version', function(value) {
+                    if (value && value !== params.version) {
+                        params.upgradeNeeded = true;
+                        var alertHTML =
+                            '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
+                                '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
+                                '<strong>An update was found:</strong> Kiwix JS Windows will be updated to version ' + value + ' on next app launch' +
+                            '</div>';
+                        var alertBoxHeader = document.getElementById('alertBoxHeader');
+                        alertBoxHeader.innerHTML = alertHTML;
+                        alertBoxHeader.style.display = 'block';
+                        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                            registrations.forEach(function (registration) {
+                                registration.update();
+                            });
+                        });
+                    }
+                });
+            }
             setTimeout(resizeIFrame, 100);
         }
 
@@ -911,6 +932,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
             if (params.pickedFile.readMode !== 'electron' && typeof window.showOpenFilePicker !== 'undefined') {
                 getNativeFSHandle(function(handle) {
+                    if (!handle) {
+                        console.error('No handle was retrieved');
+                        uiUtil.systemAlert('We could not get a handle to the previously picked file or folder!\nPlease try picking it again.');
+                        return;
+                    }
                     if (handle.kind === 'directory') {
                         params.pickedFolder = handle;
                         setLocalArchiveFromArchiveList(selected);
@@ -921,6 +947,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             setLocalArchiveFromArchiveList(selected);
                         }).catch(function(err) {
                             console.error('Unable to read previously picked file!', err);
+                            uiUtil.systemAlert('We could not retrieve the previously picked file or folder!\nPlease try picking it again.');
                         });
                     }
                 });
