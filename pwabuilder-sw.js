@@ -44,6 +44,7 @@ const precacheFiles = [
   "www/css/bootstrap.min.css",
   "www/fonts/glyphicons-halflings-regular.woff2",
   "www/img/icons/kiwix-256.png",
+  "www/img/icons/kiwix-192.png",
   "www/img/icons/kiwix-32.png",
   "www/img/icons/kiwix-60.png",
   "www/img/icons/kiwix-blue-32.png",
@@ -101,9 +102,21 @@ self.addEventListener("install", function (event) {
   console.log("[SW] Install Event processing");
   self.skipWaiting();
   var requests = precacheFiles.map(function(url) {
-    return new Request(url);
+    return new Request(url, { cache: 'no-cache' });
   });
   if (!excludedURLSchema.test(requests[0].url)) event.waitUntil(
+    // caches.open(CACHE).then(function (cache) {
+    //   Promise.all(
+    //     precacheFiles.map(fucntion (url) {
+    //       // cache-bust using a random query string
+    //       return fetch(`${url}?${Math.random()}`).then((response) => {
+    //         // fail on 404, 500 etc
+    //         if (!response.ok) throw Error('Not ok');
+    //         return cache.put(url, response);
+    //       });
+    //     })
+    //   );
+    // })
     caches.open(CACHE).then(function (cache) {
       console.log("[SW] Caching pages during install");
       return cache.addAll(requests).then().catch(function(err) {
