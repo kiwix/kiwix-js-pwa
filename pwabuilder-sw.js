@@ -1,7 +1,7 @@
 ﻿// Service Worker with Cache-first network, with some code from pwabuilder.com 
 'use strict';
 
-// App version number
+// App version number - ENSURE IT MATCHES VALUE IN init.js
 // DEV: Find a way to set this programmatically
 const appVersion = '1.1.3';
 
@@ -15,6 +15,9 @@ const regexpZIMUrlWithNamespace = /(?:^|\/)([^\/]+\/)([-ABIJMUVWX])\/(.+)/;
 
 const CACHE = "kiwix-precache-" + appVersion;
 const precacheFiles = [
+  ".",
+  "www",
+  "www/",
   "manifest.json",
   "pwabuilder-sw.js",
   "www/-/style.css",
@@ -56,13 +59,14 @@ const precacheFiles = [
   "www/js/init.js",
   "www/js/lib/bootstrap.js",
   "www/js/lib/bootstrap.min.js",
-  "www/js/lib/settingsStore.js",
+  "www/js/lib/cache.js",
   "www/js/lib/filecache.js",
   "www/js/lib/images.js",
   "www/js/lib/jquery-3.2.1.slim.js",
   "www/js/lib/kiwixServe.js",
   "www/js/lib/q.js",
   "www/js/lib/require.js",
+  "www/js/lib/settingsStore.js",
   "www/js/lib/transformStyles.js",
   "www/js/lib/uiUtil.js",
   "www/js/lib/utf8.js",
@@ -94,6 +98,7 @@ var excludedURLSchema = /^(?:file|chrome-extension|example-extension):/i;
 
 self.addEventListener("install", function (event) {
   console.log("[SW] Install Event processing");
+  self.skipWaiting();
   var requests = precacheFiles.map(function(url) {
     return new Request(url);
   });
@@ -111,12 +116,13 @@ self.addEventListener("install", function (event) {
 self.addEventListener("activate", function (event) {
   console.log("[SW] Claiming clients for current page");
   event.waitUntil(
-    caches.keys().then((keyList) => {
-          return Promise.all(keyList.map((key) => {
-        if(key !== CACHE) {
-          console.log("[SW] App updated to version " + appVersion + ": deleting old cache")
-          return caches.delete(key);
-        }
+    caches.keys().then(function (keyList) {
+        return Promise.all(keyList.map(function (key) {
+          console.log('[SW] Current cache key is ' + key);
+          if (key !== CACHE) {
+            console.log("[SW] App updated to version " + appVersion + ": deleting old cache")
+            return caches.delete(key);
+          }
       }));
     })
   );
@@ -152,23 +158,28 @@ self.addEventListener('fetch', intercept);
 
 // Look up fetch in cache, and if it does not exist, try to get it from the network
 function intercept(event) {
-  if (!regexpZIMUrlWithNamespace.test(event.request.url)) return;
   console.log('[SW] Service Worker ' + (event.request.method === "GET" ? 'intercepted ' : 'noted ') + event.request.url, event.request.method);
   if (event.request.method !== "GET") return;
   event.respondWith(
-    fromCache(event.request).then(
-      function (response) {
-        // The response was found in the cache so we respond with it and update the entry
-
-        // This is where we call the server to get the newest version of the
-        // Service Worker to use when upgrading
-        if (/pwabuilder-sw.js/i.test(event.request.url) && !excludedURLSchema.test(event.request.url)) event.waitUntil(
-           fetch(event.request).then(function (response) {
-             console.log('[SW] Refreshing Service Worker from server...');
-             return updateCache(event.request, response);
-           })
-         );
-
+    fromCache(event.request).then(function (response) {
+        // This is where we call the server to check for any new release
+        if (/\/init\.js$/i.test(event.request.url) && !excludedURLSchema.test(event.request.url)) {
+          event.waitUntil(
+            fetch(event.request).then(function (response) {
+              // Get response text
+              return response.text().then(function (text) {
+                var version = appVersion;
+                var versionMatch = text.match(/params\[.version.]\s*=\s*["']([^"]+)["']/);
+                if (versionMatch) version = versionMatch[1];
+                if (version !== appVersion) {
+                  console.log('[SW] New version of PWA found:' + version);
+                }
+                // Cache flag to app.js to update SW
+                return updateCache('version', new Response(version));
+              }); 
+            })
+          );
+        }
         console.log('[SW] Supplying ' + event.request.url + ' from CACHE...');
         return response;
       },
@@ -279,7 +290,6 @@ function fromCache(request) {
       if (!matching || matching.status === 404) {
         return Promise.reject("no-match");
       }
-
       return matching;
     });
   });
