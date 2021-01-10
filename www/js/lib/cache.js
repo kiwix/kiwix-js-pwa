@@ -23,8 +23,8 @@
 'use strict';
 define(['q', 'settingsStore', 'uiUtil'], function(Q, settingsStore, uiUtil) {
 
-    var CACHE_NAME = 'kiwixjs-assetCache'; // Set the database or cache name here
-    var objStore = 'Assets'; // Name of the object store
+    const CACHE = 'kiwix-precache-' + params.version; // Set the database or cache name here
+    var objStore = 'kiwix-assets'; // Name of the object store
     
     // DEV: Regex below defines the permitted key types for the cache; add further types as needed
     // NB: The key type of '.zim', or '.zimaa' (etc.) is used to store a ZIM's last-accessed article 
@@ -111,7 +111,7 @@ define(['q', 'settingsStore', 'uiUtil'], function(Q, settingsStore, uiUtil) {
                 case 'cacheAPI':
                     type = 'cacheAPI';
                     description = 'CacheAPI';
-                    caches.open(CACHE_NAME).then(function (cache) {
+                    caches.open(CACHE).then(function (cache) {
                         cache.keys().then(function (keys) {
                             callback({'type': type, 'description': description, 'count': keys.length});
                         });
@@ -147,7 +147,7 @@ define(['q', 'settingsStore', 'uiUtil'], function(Q, settingsStore, uiUtil) {
         } 
         
         // Open (or create) the database
-        var open = indexedDB.open(CACHE_NAME, 1);
+        var open = indexedDB.open(CACHE, 1);
 
         open.onerror = function(e) {
             // Suppress error reporting if testing (older versions of Firefox support indexedDB but cannot use it with
@@ -222,14 +222,14 @@ define(['q', 'settingsStore', 'uiUtil'], function(Q, settingsStore, uiUtil) {
         var rtnFn = callback || valueOrCallback;
         // Process commands
         if (keyOrCommand === 'clear') {
-            caches.delete(CACHE_NAME).then(rtnFn);
+            caches.delete(CACHE).then(rtnFn);
         } else if (keyOrCommand === 'delete') {
-            caches.open(CACHE_NAME).then(function(cache) {
+            caches.open(CACHE).then(function(cache) {
                 cache.delete(value).then(rtnFn);
             });
         } else if (value === null) {
             // Request retrieval of data
-            caches.open(CACHE_NAME).then(function(cache) {
+            caches.open(CACHE).then(function(cache) {
                 cache.match('../' + keyOrCommand).then(function(response) {
                     if (!response) {
                         rtnFn(null);
@@ -245,7 +245,7 @@ define(['q', 'settingsStore', 'uiUtil'], function(Q, settingsStore, uiUtil) {
             });
         } else {
             // Request storing of data in cache
-            caches.open(CACHE_NAME).then(function(cache) {
+            caches.open(CACHE).then(function(cache) {
                 // Construct a Response from value
                 var response = new Response(value);
                 cache.put('../' + keyOrCommand, response).then(function() {
@@ -689,6 +689,7 @@ define(['q', 'settingsStore', 'uiUtil'], function(Q, settingsStore, uiUtil) {
         test: test,
         count: count,
         idxDB: idxDB,
+        cacheAPI: cacheAPI,
         setArticle: setArticle,
         getArticle: getArticle,
         setItem: setItem,
