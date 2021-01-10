@@ -105,18 +105,6 @@ self.addEventListener("install", function (event) {
     return new Request(url + '?v' + appVersion, { cache: 'no-cache' });
   });
   if (!excludedURLSchema.test(requests[0].url)) event.waitUntil(
-    // caches.open(CACHE).then(function (cache) {
-    //   Promise.all(
-    //     precacheFiles.map(fucntion (url) {
-    //       // cache-bust using a random query string
-    //       return fetch(`${url}?${Math.random()}`).then((response) => {
-    //         // fail on 404, 500 etc
-    //         if (!response.ok) throw Error('Not ok');
-    //         return cache.put(url, response);
-    //       });
-    //     })
-    //   );
-    // })
     caches.open(CACHE).then(function (cache) {
       console.log("[SW] Caching pages during install");
       return cache.addAll(requests).then().catch(function(err) {
