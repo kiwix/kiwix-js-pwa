@@ -2,8 +2,9 @@
 'use strict';
 
 // App version number - ENSURE IT MATCHES VALUE IN init.js
-// DEV: Find a way to set this programmatically
-const appVersion = '1.1.3';
+// DEV: Changing this will cause the browser to recognize that the Service Worker has changed, and it will download and
+// install a new copy
+const appVersion = '1.1.4';
 
 // Kiwix ZIM Archive Download Server in regex form
 // DEV: The server URL is defined in init.js, but is not available to us in SW
@@ -162,24 +163,6 @@ function intercept(event) {
   if (event.request.method !== "GET") return;
   event.respondWith(
     fromCache(event.request).then(function (response) {
-        // This is where we call the server to check for any new release
-        if (/\/init\.js$/i.test(event.request.url) && !excludedURLSchema.test(event.request.url)) {
-          event.waitUntil(
-            fetch(event.request).then(function (response) {
-              // Get response text
-              return response.text().then(function (text) {
-                var version = appVersion;
-                var versionMatch = text.match(/params\[.version.]\s*=\s*["']([^"]+)["']/);
-                if (versionMatch) version = versionMatch[1];
-                if (version !== appVersion) {
-                  console.log('[SW] New version of PWA found:' + version);
-                }
-                // Cache flag to app.js to update SW
-                return updateCache('version', new Response(version));
-              }); 
-            })
-          );
-        }
         console.log('[SW] Supplying ' + event.request.url + ' from CACHE...');
         return response;
       },
