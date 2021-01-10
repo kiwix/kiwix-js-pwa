@@ -48,8 +48,9 @@ var params = {};
  * @type Object
  */
 var appstate = {};
-
-params['version'] = "1.1.3"; //DEV: Manually update this version when there is a new release: it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
+/******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION *******/
+params['version'] = "1.1.3"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
+/******* UPDATE THIS ^^^^^^ IN serveice worker!! ********************/
 params['packagedFile'] = "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
 params['fileVersion'] = "wikipedia_en_100_maxi_2020-12.zim (23-Dec-2020)"; //Use generic name for actual file, and give version here
