@@ -4,7 +4,7 @@
 // App version number - ENSURE IT MATCHES VALUE IN init.js
 // DEV: Changing this will cause the browser to recognize that the Service Worker has changed, and it will download and
 // install a new copy
-const appVersion = '1.1.4-RP1';
+const appVersion = '1.1.4-RP2';
 
 // Kiwix ZIM Archive Download Server in regex form
 // DEV: The server URL is defined in init.js, but is not available to us in SW
@@ -57,6 +57,7 @@ const precacheFiles = [
   "www/img/icons/map_marker-18px.png",
   "www/img/spinner.gif",
   "www/index.html",
+  "www/article.html",
   "www/js/app.js",
   "www/js/init.js",
   "www/js/lib/bootstrap.js",
@@ -106,10 +107,17 @@ self.addEventListener("install", function (event) {
   });
   if (!excludedURLSchema.test(requests[0].url)) event.waitUntil(
     caches.open(CACHE).then(function (cache) {
-      console.log("[SW] Caching pages during install");
-      return cache.addAll(requests).then().catch(function(err) {
-          console.error('There was an error precaching the app because', err);
-      });
+      return Promise.all(
+        requests.map(function (request) {
+          return fetch(request).then(function (response) {
+            // Fail on 404, 500 etc
+            if (!response.ok) throw Error('Could not fetch ' + request.url);
+            return cache.put(request.url.replace(/\?v[^?/]+$/, ''), response);
+          }).catch(function (err) {
+            console.error("There was an error pre-caching files", err);
+          });
+        })
+      );
     })
   );
 });
