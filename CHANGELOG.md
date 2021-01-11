@@ -1,5 +1,13 @@
 # Changelog
 
+## Release 1.1.4-dev (in progress)
+
+* ENHANCEMENT: Provide more robust upgrade process for PWAs
+* FIX: Disable HTTP cache when pre-caching upgraded app files
+* FIX: Switching to jQuery mode in the PWA app no longer prevents the app working offline
+* FIX: Display of masonry-style landing pages in SW mode
+* FIX: Inconsistent use of Settings Store during app initialization
+
 ## Release 1.1.3
 
 * UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-12.zim`
