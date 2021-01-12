@@ -73,7 +73,13 @@ define([], function () {
     // If both cookies and localStorage are supported, and document.cookie contains keys to migrate,
     // migrate settings to use localStorage
     if (kiwixCookieTest && localStorageTest && regexpCookieKeysToMigrate.test(document.cookie)) _migrateStorageSettings();
-    if (localStorageTest) localStorage.removeItem('lastPageHTML');
+    // Remove deprecated keys
+    if (localStorageTest) {
+      localStorage.removeItem('lastPageHTML');
+      localStorage.removeItem(keyPrefix + 'lastPageHTML');
+      localStorage.removeItem('lastPageVisit');
+    }
+    settingsStore.removeItem('lastPageVisit');
     // Note that if this function returns 'none', the cookie implementations below will run anyway. This is because storing a cookie
     // does not cause an exception even if cookies are blocked in some contexts, whereas accessing localStorage may cause an exception
     return type;
