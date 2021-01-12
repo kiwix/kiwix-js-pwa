@@ -176,13 +176,13 @@ define(rqDef, function() {
 
     function poll(msg) {
         document.getElementById('searchingArticles').style.display = 'block';
-        document.getElementById('progressMessage').innerHTML = msg;
-        document.getElementById('progressMessage').style.display = 'block';
+        document.getElementById('cachingAssets').innerHTML = msg;
+        document.getElementById('cachingAssets').style.display = 'block';
     }
 
     function clear() {
-        document.getElementById('progressMessage').innerHTML = '';
-        document.getElementById('progressMessage').style.display = 'none';
+        document.getElementById('cachingAssets').innerHTML = '';
+        document.getElementById('cachingAssets').style.display = 'none';
     }
 
     function printCustomElements() {
