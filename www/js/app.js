@@ -926,7 +926,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (selectFired) return;
             // If nothing was selected, user will have to click again
             // (NB this.selectedIndex will be -1 if no value has been selected)
-            if (!list || !~list.selectedIndex) return;
+            if (typeof list.selectedIndex === 'undefined' || !~list.selectedIndex) return;
             selectFired = true;
             var selected = list.target.value;
             // Void any previous picked file to prevent it launching
