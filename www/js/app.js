@@ -757,6 +757,27 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     divInstall1.style.display = 'none';
                 }
             }
+            // Check for upgrade of PWA
+            if (!params.upgradeNeeded && params.appType === 'PWA' && activeBtn === 'btnConfigure') {
+                caches.keys().then(function (keyList) {
+                    if (keyList.length < 2) document.getElementById('alertBoxPersistent').innerHTML = '';
+                    keyList.forEach(function(key) {
+                        if (key === 'kiwix-precache-' + params.version) return;
+                        // If we get here, then there is a cache key that does not match our version, i.e. a PWA-in-waiting
+                        params.upgradeNeeded = true;
+                        document.getElementById('alertBoxPersistent').innerHTML =
+                            '<div id="upgradeAlert" class="alert alert-info alert-dismissible">\n' +
+                            '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
+                            '    <span id="persistentMessage"></span>\n' +
+                            '</div>\n';
+                        document.getElementById('persistentMessage').innerHTML = 'Version ' + key.replace(/kiwix-precache-/, '') + ' is ready to install!'
+                            + ' (Re-launch app to install.)';
+                    });
+                });
+            } else if (params.upgradeNeeded) {
+                var upgradeAlert = document.getElementById('upgradeAlert');
+                if (upgradeAlert) upgradeAlert.style.display = 'block';
+            }
             setTimeout(resizeIFrame, 100);
         }
 
@@ -784,6 +805,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
                 return;
             }
+            $('.alert').hide();
             setTab('btnConfigure');
             // Highlight the selected section in the navbar
             $('#liHomeNav').attr("class", "");
@@ -797,7 +819,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // Show the selected content in the page
             $('#configuration').show();
             $('#articleContent').hide();
-            $('.alert').hide();
             $('#downloadLinks').hide();
             $('#serverResponse').hide();
             $('#myModal').hide();
