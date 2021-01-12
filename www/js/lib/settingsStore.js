@@ -77,7 +77,7 @@ define([], function () {
     if (localStorageTest) {
       localStorage.removeItem('lastPageHTML');
       localStorage.removeItem(keyPrefix + 'lastPageHTML');
-      localStorage.removeItem('lastPageVisit');
+      localStorage.removeItem(keyPrefix + 'lastPageVisit');
     }
     settingsStore.removeItem('lastPageVisit');
     // Note that if this function returns 'none', the cookie implementations below will run anyway. This is because storing a cookie
