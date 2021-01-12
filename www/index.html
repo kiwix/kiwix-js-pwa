@@ -215,7 +215,7 @@
         <!-- Status indicators -->
         <div id="searchingArticles" style="display: none;" class="status">
             <div class="loader"></div>
-            <div id="progressMessage" style="display: none;" class="message"></div>
+            <div id="cachingAssets" style="display: none;" class="message"></div>
         </div>
     <section id="search-article" role="region">
         <header id="top" style="width:100%; transition: top 0.3s;">
@@ -264,7 +264,7 @@
                     <h3 style="margin-top:0;">
                         Offline Wikipedia Viewer <small>(Version <span class="version"></span>)</small>
                     </h3>
-                    <p>Packaged ZIM archive: <b><span class="fileVersion"></span></b></p>
+                    <p class="packagedInfo" style="display: none">Packaged ZIM archive: <b><span class="fileVersion"></span></b></p>
                     <ul style="padding-left:1em;">
                         <li><a href="#addingArchives">Adding archives and languages</a></li>
                         <li><a href="#changelog">Changelog and Features</a></li>
@@ -466,7 +466,7 @@
                         <div id="divInstall2" style="display:none; float:right;">
                             <button id="btnInstall2" class="btn btn-xs btn-primary">Install PWA</button>
                         </div>
-                        <p>
+                        <p class="packagedInfo" style="display: none;">
                             Packaged ZIM archive: <b><span class="fileVersion"></span></b>
                             <button style="display:none;" id="reloadPackagedArchive" type="button" class="btn btn-primary btn-xs">Reload</button>
                         </p>
