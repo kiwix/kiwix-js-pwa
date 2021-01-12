@@ -51,9 +51,9 @@ var appstate = {};
 /******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION *******/
 params['version'] = "1.1.4-RP2"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN serveice worker!! ********************/
-params['packagedFile'] = "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
+params['packagedFile'] = null; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
-params['fileVersion'] = "wikipedia_en_100_maxi_2020-12.zim (23-Dec-2020)"; //Use generic name for actual file, and give version here
+params['fileVersion'] = ""; //Use generic name for actual file, and give version here
 params['cachedStartPage'] = false; //If you have cached the start page for quick start, give its URI here
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
 
@@ -88,19 +88,19 @@ params['storedFilePath'] = getSetting('lastSelectedArchivePath');
 params.storedFilePath = params.storedFilePath ? decodeURIComponent(params.storedFilePath) : params.archivePath + '/' + params.packagedFile;
 params.storedFilePath = launchArguments ? launchArguments.files[0].path || '' : params.storedFilePath;
 params.originalPackagedFile = params.packagedFile;
-params['falFileToken'] = params['falFileToken'] || "zimfile"; //UWP support
-params['falFolderToken'] = params['falFolderToken'] || "zimfilestore"; //UWP support
+params['falFileToken'] = params['falFileToken'] || "zimfile"; // UWP support
+params['falFolderToken'] = params['falFolderToken'] || "zimfilestore"; // UWP support
 params['localStorage'] = params['localStorage'] || "";
 params['pickedFile'] = launchArguments ? launchArguments.files[0] : "";
 params['pickedFolder'] = params['pickedFolder'] || "";
-params['lastPageVisit'] = getSetting('lastPageVisit') || "";
-params.lastPageVisit = params.lastPageVisit ? decodeURIComponent(params.lastPageVisit): "";
 params['themeChanged'] = params['themeChanged'] || false;
-params['allowInternetAccess'] = params['allowInternetAccess'] || false; //Do not get value from cookie, should be explicitly set by user on a per-session basis
+params['allowInternetAccess'] = params['allowInternetAccess'] || false; // Do not get value from cookie, should be explicitly set by user on a per-session basis
 params['printIntercept'] = false;
 params['printInterception'] = false;
-params['appIsLaunching'] = true; //Allows some routines to tell if the app has just been launched
+params['appIsLaunching'] = true; // Allows some routines to tell if the app has just been launched
+params['useCache'] = true; // This needs to be made optional in UI
 params['PWAInstalled'] = decodeURIComponent(getSetting('PWAInstalled'));
+params['appType'] = getAppType();
 params.pagesLoaded = 0; // Page counter used to show PWA Install Prompt only after user has played with the app for a while
 
 //Prevent app boot loop with problematic pages that cause an app crash
@@ -146,7 +146,15 @@ document.getElementById('hideToolbarsCheck').indeterminate = params.hideToolbars
 document.getElementById('hideToolbarsCheck').readOnly = params.hideToolbars === "top";
 document.getElementById('hideToolbarsState').innerHTML = (params.hideToolbars === "top" ? "top" : params.hideToolbars ? "both" : "never");
 
-//Set up storage types
+// Get app type
+function getAppType() {
+    if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') return 'UWP';
+    if (window.fs || window.nw) return 'Electron';
+    if (navigator.serviceWorker) return 'PWA';
+    return 'HTML5';
+}
+
+// Set up storage types
 if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') { //UWP
     Windows.ApplicationModel.Package.current.installedLocation.getFolderAsync(params.archivePath).done(function (folder) {
         params.localStorage = folder;
@@ -197,7 +205,6 @@ window.addEventListener('beforeinstallprompt', function(e) {
     // Don't display prompt if the PWA for this version is already installed
     if (!params.beforeinstallpromptFired && params.PWAInstalled !== params.version) {
         params.beforeinstallpromptFired = true;
-        var config = document.getElementById('configuration');
         btnInstall1.addEventListener('click', installApp);
         btnLater.addEventListener('click', function (e) {
             e.preventDefault();
