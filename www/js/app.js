@@ -926,7 +926,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (selectFired) return;
             // If nothing was selected, user will have to click again
             // (NB this.selectedIndex will be -1 if no value has been selected)
-            if (!~list.selectedIndex) return;
+            if (!list || !~list.selectedIndex) return;
             selectFired = true;
             var selected = list.target.value;
             // Void any previous picked file to prevent it launching
@@ -1369,6 +1369,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
             if (settingsStore.getItem('version') !== params.version) {
                 firstRun = true;
+                // Make user re-pick file if we have upgraded (it's less confusing than filehandle errors)
+                settingsStore.removeItem('listOfArchives');
                 // On some platforms, bootstrap's jQuery functions have not been injected yet, so we have to run in a timeout
                 setTimeout(function () {
                     $('#myModal').modal({
