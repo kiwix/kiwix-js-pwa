@@ -56,7 +56,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         // because params.storeType is also set in a preliminary way in init.js)
         params['storeType'] = null;
         params['storeType'] = settingsStore.getBestAvailableStorageAPI();
-            
+        // Test caching capibility
+        cache.test(function(){});
+        params['lastPageVisit'] = params.storedFile ? settingsStore.getItem(params.storedFile) : '';
+        params.lastPageVisit = params.lastPageVisit ? params.lastPageVisit + '@kiwixKey@' + params.storedFile : '';
+
         // Unique identifier of the article expected to be displayed
         var expectedArticleURLToBeDisplayed = "";
     
@@ -343,17 +347,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 goToArticle(thisURL);
             }
             setTimeout(function () { //Restore temporarily changed value after page has reloaded
-                params.rememberLastPage = settingsStore.getItem('rememberLastPage') == "true";
+                params.rememberLastPage = settingsStore.getItem('rememberLastPage') === 'true';
                 if (!params.rememberLastPage) {
-                    settingsStore.setItem('lastPageVisit', "", Infinity);
-                    params.lastPageHTML = "";
-                    if (typeof Storage !== "undefined") {
-                        try {
-                            localStorage.setItem(params.keyPrefix + 'lastPageHTML', "");
-                        } catch (err) {
-                            console.log("localStorage not supported: " + err);
-                        }
-                    }
+                    settingsStore.setItem('lastPageVisit', '', Infinity);
+                    params.lastPageHTML = '';
+                    // DEV: replace this with cache.clear when you have repaired that method
+                    cache.setArticle(params.lastPageVisit.replace(/.+@kiwixKey@/, ''), params.lastPageVisit.replace(/@kiwixKey@.+/, ''), '', function(){});
                 }
             }, 5000);
         }
@@ -713,9 +712,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             for (var i = 0; i < versionSpans.length; i++) {
                 versionSpans[i].innerHTML = i ? params.version : params.version.replace(/\s+.*$/, "");
             }
-            var fileVersionDivs = document.getElementsByClassName('fileVersion');
-            for (i = 0; i < fileVersionDivs.length; i++) {
-                fileVersionDivs[i].innerHTML = i ? params.fileVersion.replace(/\s+.+$/, "") : params.fileVersion;
+            if (params.fileVersion && /UWP|Electron/.test(params.appType)) {
+                var packagedInfoParas = document.getElementsByClassName('packagedInfo');
+                var fileVersionDivs = document.getElementsByClassName('fileVersion');
+                for (i = 0; i < fileVersionDivs.length; i++) {
+                    packagedInfoParas[i].style.display = 'block';
+                    fileVersionDivs[i].innerHTML = i ? params.fileVersion.replace(/\s+.+$/, '') : params.fileVersion;
+                }
             }
             var update = document.getElementById('update');
             if (update) document.getElementById('logUpdate').innerHTML = update.innerHTML.match(/<ul[^>]*>[\s\S]+/i);
@@ -1243,15 +1246,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             settingsStore.setItem('rememberLastPage', params.rememberLastPage, Infinity);
             if (!params.rememberLastPage) {
                 settingsStore.setItem('lastPageVisit', "", Infinity);
-                //Clear localStorage
-                if (typeof Storage !== "undefined") {
-                    try {
-                        localStorage.setItem(params.keyPrefix + 'lastPageHTML', "");
-                        localStorage.clear();
-                    } catch (err) {
-                        console.log("localStorage not supported: " + err);
-                    }
-                }
+                // DEV: replace this with cache.clear when you have repaired that method
+                cache.setArticle(params.lastPageVisit.replace(/.+@kiwixKey@/, ''), params.lastPageVisit.replace(/@kiwixKey@.+/, ''), '', function(){});
                 params.lastPageHTML = "";
             }
         });
@@ -2756,13 +2752,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     if (params.rememberLastPage && params.lastPageVisit) lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, "");
                     if (params.rememberLastPage && (typeof Storage !== "undefined") && dirEntry.namespace + '/' + dirEntry.url == lastPage) {
                         if (!params.lastPageHTML) {
-                            try {
-                                params.lastPageHTML = localStorage.getItem(params.keyPrefix + 'lastPageHTML');
-                            } catch (err) {
-                                console.log("localStorage not supported: " + err);
-                            }
+                            cache.getArticle(params.lastPageVisit.replace(/.*@kiwixKey@/, ''), lastPage, function (html) {
+                                params.lastPageHTML = html;
+                                htmlContent = params.lastPageHTML || htmlContent;
+                            });
+                        } else {
+                            htmlContent = params.lastPageHTML;
                         }
-                        htmlContent = params.lastPageHTML || htmlContent;
+                        
                     }
                     if (/<html[^>]*>/.test(htmlContent)) {
                         console.log("Fast article retrieval from localStorage: " + lastPage);
@@ -3015,34 +3012,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 !~window.history.state.title.indexOf("/" + dirEntry.url)) {
                 pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
             }
+            // Store for fast retrieval
             if (!~params.lastPageVisit.indexOf(dirEntry.url)) {
                 params.lastPageVisit = dirEntry.namespace + "/" + dirEntry.url +
                     "@kiwixKey@" + appstate.selectedArchive._file._files[0].name;
-                if (params.rememberLastPage) {
-                    settingsStore.setItem('lastPageVisit', params.lastPageVisit, Infinity);
-                    //Store current document's raw HTML in localStorage for fast restart
-                    try {
-                        // Ensure we don't go over quota
-                        localStorage.removeItem(params.keyPrefix + 'lastPageHTML');
-                        localStorage.setItem(params.keyPrefix + 'lastPageHTML', htmlArticle);
-                    } catch (err) {
-                        if (/quota\s*exceeded/i.test(err.message)) {
-                            // Note that Edge gives a quotaExceeded message when running from localhost even if the quota isn't exceeded
-                            // Basically, it means localStorage is not supported in Edge running from localhost...
-                            if (params.storeType === 'local_storage') {
-                                uiUtil.systemAlert('Your localStorage has exceeded its quota, so we are forced to clear it.\n' +
-                                    'Because your browser is using localStorage for remembering your settings, these may\n' +
-                                    'have been reset. Next time the app launches, please go to Config and set them again.');
-                            }
-                            console.log('Clearing localStorage because quota was exceeded...');
-                            localStorage.clear();
-                        } else {
-                            console.error("Something went wrong with localStorage: ", err);
-                        }
-                    }
-                    params.lastPageHTML = htmlArticle;
-                }
+                cache.setArticle(appstate.selectedArchive._file._files[0].name, dirEntry.namespace + '/' + dirEntry.url, htmlArticle, function(){});
             }
+            params.htmlArticle = htmlArticle;
 
             // Replaces ZIM-style URLs of img, script, link and media tags with a data-kiwixurl to prevent 404 errors [kiwix-js #272 #376]
             // This replacement also processes the URL to remove the path so that the URL is ready for subsequent jQuery functions

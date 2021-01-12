@@ -186,8 +186,7 @@ div:not(.panel-success, .alert-message) {
 
 .message {
     position: absolute;
-    bottom: 0;
-    margin: auto 10px 50px auto;
+    margin: 70px auto 0;
     left: 0;
     right: 0;
     font-size: smaller;
@@ -195,8 +194,7 @@ div:not(.panel-success, .alert-message) {
     color: dimgrey;
     border: 1px solid gainsboro;
     padding: 1px 4px;
-    max-width: 300px;
-    width: 60%;
+    width: 200px;
 }
 
 .dark .message {
