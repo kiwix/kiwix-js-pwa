@@ -4,7 +4,7 @@
 // App version number - ENSURE IT MATCHES VALUE IN init.js
 // DEV: Changing this will cause the browser to recognize that the Service Worker has changed, and it will download and
 // install a new copy
-const appVersion = '1.1.4-RP2';
+const appVersion = '1.1.4-RP3';
 
 // Kiwix ZIM Archive Download Server in regex form
 // DEV: The server URL is defined in init.js, but is not available to us in SW
@@ -101,7 +101,8 @@ var excludedURLSchema = /^(?:file|chrome-extension|example-extension):/i;
 
 self.addEventListener("install", function (event) {
   console.log("[SW] Install Event processing");
-  self.skipWaiting();
+  // DEV: We can't skip waiting because too many params are loaded at an early stage from the old file before the new one can activate...
+  // self.skipWaiting();
   var requests = precacheFiles.map(function(url) {
     return new Request(url + '?v' + appVersion, { cache: 'no-cache' });
   });
