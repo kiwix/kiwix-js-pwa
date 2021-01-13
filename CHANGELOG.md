@@ -2,7 +2,7 @@
 
 ## Release 1.1.4-dev (in progress)
 
-* ENHANCEMENT: Provide more robust upgrade process for PWAs
+* ENHANCEMENT: Provide more robust upgrade process for PWAs, including notification banner
 * FIX: Disable HTTP cache when pre-caching upgraded app files
 * FIX: Switching to jQuery mode in the PWA app no longer prevents the app working offline
 * FIX: Display of masonry-style landing pages in SW mode
