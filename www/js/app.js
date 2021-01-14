@@ -1368,12 +1368,20 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
             if (settingsStore.getItem('version') !== params.version) {
                 firstRun = true;
-                // Make user re-pick file if we have upgraded (it's less confusing than filehandle errors)
-                settingsStore.removeItem('listOfArchives');
+                
+                // Make user re-pick file if we have upgraded (it's less confusing than filehandle errors) - NOT NEEDED, remove in due course
+                // settingsStore.removeItem('listOfArchives');
+
+                //  Update the installed version
                 if (params.PWAInstalled) {
                     params.PWAInstalled = params.version;
                     settingsStore.setItem('PWAInstalled', params.PWAInstalled);
-                } 
+                }
+                // One-time cleanup of idxDB files to delete deprecated databases if possible
+                cache.idxDB('deleteNonCurrent', function (result) {
+                    if (result === false) console.log('Unable to delete old idxDB databases (this is normal in non-Chromium browsers');
+                    else console.log('Deleted ' + result + ' deprecated database(s).');
+                });
                 // On some platforms, bootstrap's jQuery functions have not been injected yet, so we have to run in a timeout
                 setTimeout(function () {
                     $('#myModal').modal({

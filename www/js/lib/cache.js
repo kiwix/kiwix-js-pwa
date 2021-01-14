@@ -23,7 +23,8 @@
 'use strict';
 define(['q', 'settingsStore', 'uiUtil'], function(Q, settingsStore, uiUtil) {
 
-    const CACHE = 'kiwix-precache-' + params.version; // Set the database or cache name here
+    const CACHEAPI = 'kiwix-precache-' + params.version; // Set the database or cache name here
+    const CACHEIDB = 'kiwix-assetsCache'; // For idxDB we don't want the name to change
     var objStore = 'kiwix-assets'; // Name of the object store
     
     // DEV: Regex below defines the permitted key types for the cache; add further types as needed
@@ -111,7 +112,7 @@ define(['q', 'settingsStore', 'uiUtil'], function(Q, settingsStore, uiUtil) {
                 case 'cacheAPI':
                     type = 'cacheAPI';
                     description = 'CacheAPI';
-                    caches.open(CACHE).then(function (cache) {
+                    caches.open(CACHEAPI).then(function (cache) {
                         cache.keys().then(function (keys) {
                             callback({'type': type, 'description': description, 'count': keys.length});
                         });
@@ -134,7 +135,8 @@ define(['q', 'settingsStore', 'uiUtil'], function(Q, settingsStore, uiUtil) {
      * on the database
      * 
      * @param {String} keyOrCommand The key of the value to be written or read, or commands 'clear' (clears objStore),
-     *     'count' (counts number of objects in objStore), 'delete' (deletes a record with key passed in valueOrCallback)         
+     *     'count' (counts number of objects in objStore), 'delete' (deletes a record with key passed in valueOrCallback),
+     *      'deleteNonCurrent' (deletes all databases that do not match CACHEIDB - but only works in Chromium currently)         
      * @param {Variable} valueOrCallback The value to write, or a callback function for read and command transactions
      * @param {Function} callback Callback for write transactions only
      */
@@ -145,9 +147,29 @@ define(['q', 'settingsStore', 'uiUtil'], function(Q, settingsStore, uiUtil) {
             rtnFn(false);
             return;
         } 
+
+        // Delete all non-curren IdxDB databases (only works in Chromium currently)
+        if (keyOrCommand === 'deleteNonCurrent') {
+            if (indexedDB.databases) {
+                var result = 0;
+                indexedDB.databases().then(function (dbs) {
+                    dbs.forEach(function (db) {
+                        if (db.name !== CACHEIDB) {
+                            result++;
+                            indexedDB.deleteDatabase(db.name);
+                        }
+                    });
+                }).then(function () {
+                    rtnFn(result);
+                });
+            } else {
+                rtnFn(false);
+            }
+            return;
+        }
         
         // Open (or create) the database
-        var open = indexedDB.open(CACHE, 1);
+        var open = indexedDB.open(CACHEIDB, 1);
 
         open.onerror = function(e) {
             // Suppress error reporting if testing (older versions of Firefox support indexedDB but cannot use it with
@@ -222,14 +244,14 @@ define(['q', 'settingsStore', 'uiUtil'], function(Q, settingsStore, uiUtil) {
         var rtnFn = callback || valueOrCallback;
         // Process commands
         if (keyOrCommand === 'clear') {
-            caches.delete(CACHE).then(rtnFn);
+            caches.delete(CACHEAPI).then(rtnFn);
         } else if (keyOrCommand === 'delete') {
-            caches.open(CACHE).then(function(cache) {
+            caches.open(CACHEAPI).then(function(cache) {
                 cache.delete(value).then(rtnFn);
             });
         } else if (value === null) {
             // Request retrieval of data
-            caches.open(CACHE).then(function(cache) {
+            caches.open(CACHEAPI).then(function(cache) {
                 cache.match('../' + keyOrCommand).then(function(response) {
                     if (!response) {
                         rtnFn(null);
@@ -245,7 +267,7 @@ define(['q', 'settingsStore', 'uiUtil'], function(Q, settingsStore, uiUtil) {
             });
         } else {
             // Request storing of data in cache
-            caches.open(CACHE).then(function(cache) {
+            caches.open(CACHEAPI).then(function(cache) {
                 // Construct a Response from value
                 var response = new Response(value);
                 cache.put('../' + keyOrCommand, response).then(function() {
