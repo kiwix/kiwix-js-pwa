@@ -86,6 +86,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 }
                 // Rename this required mobile style so that we don't trigger reading ZIM as mobile in print intercept
                 zl = /\/mobile_main_page\.css/.test(zl) ? "-/s/css_modules/newstyle_main_page.css" : zl;
+                zl = /\/content\.parsoid\.css/.test(zl) ? "-/s/css_modules/content.parsoid.css" : zl;
                 // Replace bootstrap with own: DEV: when upgrading to Bootstrap 4, stop doing this!
                 zl = zl.replace(/.+(bootstrap[^\/]*?\.css)/i, "css/$1");
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem");
