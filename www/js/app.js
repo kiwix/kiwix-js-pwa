@@ -1444,9 +1444,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 var tmpMessageChannel = new MessageChannel();
                 tmpMessageChannel.port1.onmessage = handleMessageChannelMessage;
                 // Send the init message to the ServiceWorker, with this MessageChannel as a parameter
-                if (navigator.serviceWorker.controller) navigator.serviceWorker.controller.postMessage({
-                    'action': 'init'
-                }, [tmpMessageChannel.port2]);
+                if (navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({
+                        'action': 'init'
+                    }, [tmpMessageChannel.port2]);
+                } else {
+                    console.error('The Service Worker is active but is not controlling the current page! We have to reload.');
+                    window.location.reload();
+                    return;
+                }
                 messageChannel = tmpMessageChannel;
                 // Schedule to do it again regularly to keep the 2-way communication alive.
                 // See https://github.com/kiwix/kiwix-js/issues/145 to understand why
@@ -1467,27 +1473,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (value === 'jquery') {
                 // Because the "outer" Service Worker still runs in a PWA app, we don't actually disable the SW in this context, but it will no longer
                 // be intercepting requests
-                if ('serviceWorker' in navigator && /\/\/(localhost|kiwix.github.io)\//i.test(window.location.href)) {
+                if ('serviceWorker' in navigator) {
                     serviceWorkerRegistration = null;
-                } else {
-                    if (isServiceWorkerReady()) {
-                        // We need to disable the ServiceWorker
-                        // Unregistering it does not seem to work as expected : the ServiceWorker
-                        // is indeed unregistered but still active...
-                        // So we have to disable it manually (even if it's still registered and active)
-                        navigator.serviceWorker.controller.postMessage({
-                            'action': 'disable'
-                        });
-                        messageChannel = null;
-                        // If we're in electron, completely remove the SW (but we need to keep it active if we're in a PWA)
-                        if (typeof window.fs !== 'undefined') {
-                            navigator.serviceWorker.getRegistrations().then(function (registrations) {
-                                registrations.forEach(function (registration) {
-                                    registration.unregister();
-                                });
-                            });
-                        }
-                    }
                 }
                 refreshAPIStatus();
             } else if (value === 'serviceworker') {
