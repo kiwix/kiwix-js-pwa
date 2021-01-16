@@ -169,6 +169,10 @@ self.addEventListener('fetch', intercept);
 
 // Look up fetch in cache, and if it does not exist, try to get it from the network
 function intercept(event) {
+  // Test if we're in an Electron app
+  // DEV: Electron uses the file:// protocol and hacks it to work with SW, but it has CORS issues when using the Fetch API to fetch local files,
+  // so we must bypass it here if we're fetching a local file
+  if (/^file:/i.test(event.request.url) && ! (regexpZIMUrlWithNamespace.test(event.request.url) && /\.zim\w{0,2}\//i.test(event.request.url))) return;
   console.log('[SW] Service Worker ' + (event.request.method === "GET" ? 'intercepted ' : 'noted ') + event.request.url, event.request.method);
   if (event.request.method !== "GET") return;
   event.respondWith(
@@ -179,7 +183,7 @@ function intercept(event) {
       function () {
         // The response was not found in the cache so we look for it on the server
         if (/\.zim\w{0,2}\//i.test(event.request.url) && regexpZIMUrlWithNamespace.test(event.request.url)) {
-          if (imageDisplay !== 'all' && /(^|\/)[IJ]\/.*\.(jpe?g|png|svg|gif)($|[?#])(?!kiwix-display)/i.test(event.request.url)) {
+          if (imageDisplay !== 'all' && /(^|\/)[IJ]\/.*\.(jpe?g|png|svg|gif|webp)($|[?#])(?!kiwix-display)/i.test(event.request.url)) {
             // If the user has disabled the display of images, and the browser wants an image, respond with empty SVG
             // A URL with "?kiwix-display" query string acts as a passthrough so that the regex will not match and
             // the image will be fetched by app.js  
@@ -223,6 +227,8 @@ function intercept(event) {
                   msgEvent.data.imageDisplay : imageDisplay;
                 var headers = new Headers();
                 if (contentLength) headers.set('Content-Length', contentLength);
+                // Prevent CORS issues in PWAs
+                if (contentLength) headers.set('Access-Control-Allow-Origin', '*');
                 if (contentType) headers.set('Content-Type', contentType);
                 // Test if the content is a video or audio file
                 // See kiwix-js #519 and openzim/zimwriterfs #113 for why we test for invalid types like "mp4" or "webm" (without "video/")
