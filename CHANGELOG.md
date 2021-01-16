@@ -1,35 +1,40 @@
 # Changelog
 
-## Release 1.1.4-dev (in progress)
+## Release 1.1.4 WikiMed
 
-* ENHANCEMENT: Provide more robust upgrade process for PWAs, including notification banner
-* FIX: Disable HTTP cache when pre-caching upgraded app files
-* FIX: Switching to jQuery mode in the PWA app no longer prevents the app working offline
+* UPDATE: Packaged ZIM updated to `wikipedia_en_medicine-app_maxi_2021-01.zim`
+* UPDATE: Upgrade Settings store to use localStorage over cookies where available
+* ENHANCEMENT: Enable use of Native File System with NWJS app
 * FIX: Display of masonry-style landing pages in SW mode
 * FIX: Inconsistent use of Settings Store during app initialization
-
-## Release 1.1.3
-
-* UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-12.zim`
-* UPDATE: Support new location of mobile and desktop styles in Wikimedia ZIMs
-* UPDATE: Upgrade Settings store to use localStorage over cookies where available
-* ENHANCEMENT: Enable use of Native File System with NWJS
-* FIX: Styling of index-based landing pages
 * FIX: Bugs with file picking in Native FS
+* FIX: Styling of index-based landing pages
 
-## Release 1.1.2
-
-* UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-11.zim`
-* UPDATE: WebP support (via polyfill) for older browsers including Windows Mobile
+## Release 1.1.2 WikiMed
+* UPDATE: Packaged ZIM updated to `wikipedia_en_medicine-app_maxi_2020-12.zim`
+* UPDATE: Support new location of mobile and desktop styles in Wikimedia ZIMs
 * ENHANCEMENT: Improved block cache and faster conversion of file slice to blob
+* ENHANCEMENT: Provide fallback download links in case server does not provde meta4 file descriptor
 * REGRESSION: Manual extraction of images reverted to one-by-one to prevent errors with WebP batch decoding
 * FIX: Critical error on some new Wikipedia articles containing equations
+
+## Release 1.1.0 WikiMed
+
+* UPDATE: Packaged ZIM updated to `wikipedia_en_medicine-app_maxi_2020-11.zim`
+* ENHANCEMENT: Significantly smaller ZIM archive with same content (using ZSTD and WebP compression)
+* ENHANCEMENT: Experimental WebP support (via polyfill) for older browsers including Windows Mobile
+
+## Release 1.0.2 WikiMed
+
+* UPDATE: Packaged ZIM updated to `wikipedia_en_medicine_maxi_2020-11.zim`
+* ENHANCEMENT: Improvements to block cache
+* REGRESSION: Manual extraction of images reverted to one-by-one to prevent errors with WebP batch decoding
 * FIX: Prevent erroneous display of Active Content Warning with ZSTD archives
 * FIX: Reduce some cross-origin errors
+* REGRESSION: Loading of locally cached styles broken in Electron app running in Service Worker mode
 
-## Release 1.0.0
+## Release 1.0.1 WikiMed
 
-* UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-09.zim`
 * UPDATE: App now supports newest archives encoded with ZSTD compression
 * ENHANCEMENT: Decompression speed gains with ZSTD
 * ENHANCEMENT: Allow use of keyboard to select archive from archive list
@@ -37,58 +42,59 @@
 * FIX: Prevent archive list from jumping to wrong archive on click
 * FIX: Critical error on load if packaged archive name has changed
 * FIX: Download links are no longer erroneously cached by the Service Worker
-* DEPRECATED: Scrolling information for new users
-
-## Release 0.9.9.992 (beta)
-
-* UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-08.zim`
-* UPDATE: Some new Kiwix icons
 * FIX: Prevent extraneous titles appearing in search
 * FIX: Broken drag-and-drop
 * FIX: Bug with construction of backlinks preventing load of some Wikipedia articles
 * FIX: Calculate path of breakout icon correctly in SW mode
-* ENHANCEMENT: Use Native File System API in PWA version
-* ENHANCEMENT: Fix printing in the Electron app
-* ENHANCEMENT: Support launching Electron app from shortcut
-* ENHANCEMENT: Better error reporting in console log
+* FIX: Support for loading split ZIM archives in UWP and Native FS
+* DEPRECATED: Scrolling information for new users
 
-## Release 0.9.9.991 (beta)
+## Release 0.9.9.991 WikiMed (beta)
 
+* UPDATE: WikiMed ZIM archive to wikipedia_en_medicine_maxi_2020-07
 * FIX: Bug preventing all Kiwix apps accessing latest ZIMs (incorrect method of reading MIME type list)
-* ENHANCEMENT: Included ZIM changed to wikipedia_en_100_maxi_2020-06.zim
+* FIX: Bug displaying extraneous titles in case-insensitive search
 * FIX: Several bugfixes to allow better running of Electron app in SW mode
 
-## Release 0.9.9.99 (beta)
+## Release 0.9.9.99 WikiMed (beta)
 
-* ENHANCEMENT: Major upgrade to the title-search algorithm: search is now near-case-insensitive
-* UPDATE: Included sample ZIM updated to wikipedia_en_ray_charles_maxi_2020-05.zim
+* Update of WikiMed ZIM archive to 25th April release of wikipedia_en_medicine_maxi_2020-04
+* Greatly expanded index of COVID-19 articles on home page
+* Major upgrade to the title-search algorithm: search is now near-case-insensitive
 
-## Release 0.9.9.98 (beta)
+## Release 0.9.9.985 WikiMed (beta)
 
-* ENHANCEMENT: Make app compatible with Electron / NWJS as a packaged app
-* ENHANCEMENT: Better user experience for PWA version
-* ENHANCEMENT: Attempt to make app a little more usable on Android browsers
+* UPDATE: WikiMed ZIM archive to wikipedia_en_medicine_maxi_2020-04
 * FIX: Incorrect layout when transforming WikiMed articles to desktop style
 * FIX: Failure to load landing page when backing into it from history.back
 * FIX: Incorrect hiding of toolbars after using in-page search
-* UPDATE: Update Q Promise support to v1.5.1
 
-## Release 0.9.9.97 (beta)
+## Release 0.9.9.98 WikiMed (beta)
+
+* NEW: COVID-19 information panel at top of WikiMed Home Page
+* UPDATE: WikiMed ZIM archive to wikipedia_en_medicine_maxi_2020-03
+* UPDATE: Update Q Promise support to v1.5.1
+* ENHANCEMENT: Make app compatible with Electron / NWJS as a packaged app
+* ENHANCEMENT: Better user experience for PWA version
+* ENHANCEMENT: Attempt to make app a little more usable on Android browsers
+
+## Release 0.9.9.97 WikiMed (beta)
+
+* UPDATE: WikiMed ZIM archive to wikipedia_en_medicine_maxi_2020-02
+* UPDATE: Added missing stylesheets for cache
 
 * ENHANCEMENT: Intuitive toolbar hiding/showing on scroll down/up
 * ENHANCEMENT: Added block cache to speed up search considerably
 * ENHANCEMENT: Provide option to set number of results to find when searching
-* ENHANCEMENT: Provide app install experience for PWA
 * FIX: Search results can now be scrolled by touch on Windows 10 tablets
 * FIX: Corrected height of search results window so content is not hidden under footer
-* FIX: Prevent ugly jumping of iframe on new article load
 * FIX: Allow use of special characters in article search
 * FIX: Remove broken links to deprecated portable versions of archives
-* UPDATE: Added missing stylesheets for cache
-* UPDATE: Added some more initial files to load for PWA
 
-## Release 0.9.9.96 (beta)
+## Release 0.9.9.96 WikiMed (beta)
 
+* UPDATE: WikiMed ZIM archive to wikipedia_en_medicine_maxi_2019-12
+* UPDATE: Updated KaTeX library to v0.11.1
 * FIX: Broken display of Kiwix download library
 * FIX: Broken display of MathML when there are no images in the document
 * FIX: Search bar always remains on-screen if selected (in non-mobile contexts)
@@ -97,25 +103,28 @@
 * FIX: Display-style maths SVGs are now correctly inverted in dark mode
 * FIX: Standard dark-mode SVGs in infoboxes and elsewhere are now displayed correctly without inversion
 * FIX: Truncated display of search box
-* UPDATE: Updated KaTeX library to v0.11.1
 * ENHANCEMENT: Include more files in PWA payload to allow better offline functionality in PWA scenarios
 * ENHANCEMENT: Appxbundle is now signed with Kiwix certificate for a better sideloading experience
 * KNOWN ISSUE: In mobile contexts, top bar always gets hidden by Bootstrap on scroll
 
-## Release 0.9.9.95 (beta)
+## Release 0.9.9.95 WikiMed (beta)
 
+* UPDATE: September 2019 update of WikiMed ZIM archive to wikipedia_en_medicine_maxi_2019-09.zim
 * UPDATE: Improved support for stylesheets in latest Wikipedia ZIMs
 * UPDATE: Updated the Privacy Policy
 * ENHANCEMENT: The base app (not UWP) can now be installed as a PWA (visit https://kiwix.github.io/kiwix-js-windows/www/index.html to try)
 * ENHANCEMENT: Assets are now cached in Service Worker mode
 * ENHANCEMENT: Support MathML in latest Wikimedia ZIMs
 * FIX: Fixed broken drag-and-drop
+* FIX: Enable printing in Service Worker mode
 * FIX: Enable page extraction in Service Worker mode
+* FIX: Critical page reload loop when switching styles in print dialogue
+* FIX: Update printing filters to support deatils-summary ZIMs
 * FIX: Rare condition where a missing ZIM causes the app to crash on load
-* FIX: Fixed broken display of active content warning
+* FIX: Scripts no longer run in Quirks mode (for clients supporting Service Worker)
 
-## Release 0.9.9.94 (beta)
-
+## Release 0.9.9.93 WikiMed (beta)
+* UPDATE: August 2019 update of WikiMed ZIM archive to wikipedia_en_medicine_novid_2019-08.zim
 * ENHANCEMENT: Provide an alert if a packaged or picked file cannot be found
 * ENHANCEMENT: App can now be compiled with Electron or NWJS to support Win XP/7/8.1 (see [releases](https://github.com/kiwix/kiwix-js-windows/releases))
 * ENHANCEMENT: CORS errors are now detected and a message provided to the user to help resolve
@@ -129,15 +138,10 @@
 * FIX: Missing target attribute for hyperlinks to some external files
 * FIX: Race condition preventing jQuery `alert.hide()` statements from running
 * FIX: Enable dark theme and style transformations in Service Worker mode
-* FIX: Enable printing in Service Worker mode
-* FIX: Critical page reload loop when switching styles in print dialogue
-* FIX: Update printing filters to support deatils-summary ZIMs
 * FIX: Rare condition where a missing ZIM causes the app to crash on load
 * FIX: Article is now re-loaded on change of content injection mode
-* FIX: Scripts no longer run in Quirks mode (for clients supporting Service Worker)
-* UPDATE: August 2019 update of Ray Charles ZIM
 
-## Release 0.9.9.91 (beta)
+## Release 0.9.9.91 WikiMed (beta)
 
 * FIX: Remembered last page is now properly blanked on new archive load
 * FIX: The article content div is now hidden until the HTML for the requested article is injected
@@ -163,20 +167,7 @@
 * ENHANCEMENT: Allow breakout link to work in Service Worker mode
 * ENHANCEMENT: Change MathTex rendering engine from MathJax to KaTeX (much faster)
 
-## Release 0.9.9.90 (beta)
-
-* FIX: Remembered last page is now properly blanked on new archive load
-* FIX: Number of stylesheets retrieved from ZIM was not being counted properly, causing some pages to load twice
-* FIX: The article content div is now hidden until the HTML for the requested article is injected 
-
-## Release 0.9.9.89 (beta)
-
-* FIX: Fixed regression preventing use of download library
-* FIX: Fixed problems searching for dirEntries with empty titles in new ZIMs
-* FIX: Correctly handle anchor links with a single #
-* ENHANCEMENT: Improved styling of checkboxes in light and dark modes 
-
-## Release 0.9.9.88 (beta)
+## Release 0.9.9.88 WikiMed (beta)
 
 * ENHANCEMENT: Article can now be sent to device's browser for reading, side-by-side viewing, printing
 * ENHANCEMENT: A breakout icon can optionally be shown on each page to enable sending page to browser (see Settings)
@@ -188,28 +179,23 @@
 * ENHANCEMENT: Download link more clearly signalled
 * UPDATE: Deal with re-organized stylesheets in mwoffliner ZIMs
 * FIX: Fixed regression caused by removal of timeout for find in article function
+* FIX: Fixed problems searching for dirEntries with empty titles in new ZIMs
+* FIX: Correctly handle anchor links with a single #
 * FIX: App detects a language that is predominantly ASCII and uses left-side word searching in that case (Chinese open-type search should be unaffected)
 * FIX: Prevent crash if changing language selector on "wrong" screen
-* FIX: Prevent timeout-related crashes on slower 
+* FIX: Prevent timeout-related crashes on slower devices
 * FIX: Prevent unusable app state after clicking non-Roman alphabet button in Archive Index
 
-## Release 0.9.9.87 (beta)
-
-* FIX: Removed timeout preventing fast typing for find in article function (Ctrl-F / Alt-F)
-* FIX: Allow searching in article for languages that do not use spaces (such as Chinese)
-
-## Release 0.9.9.85 (beta)
+## Release 0.9.9.87 WikiMed (beta)
 
 * ENHANCEMENT: Support for playing media (video/audio) in the ZIM if the device has the required codec
 * ENHANCEMENT: Support for "downloading" media (e.g. videos+subtitles) from the ZIM
 * ENHANCEMENT: Media are launched via appropriate app selection menu after download (mobile)
-* ENHANCEMENT: Preliminary support for TED and dirtybiology ZIMs
-* ENHANCEMENT: Preliminary support for Project Gutenberg ZIMs
-* ENHANCEMENT: Support for "downloading" epub ebooks from Gutenberg ZIMs
-* ENHANCEMENT: Epubs are launched in Edge's built-in epub reader, or via app selection menu
 * ENHANCEMENT: Typing a space in search box now displays an Archive Index
 * ENHANCEMENT: Option to support non-Roman alphabets for Archive Index
 * ENHANCEMENT: If active content is detected in the ZIM, information is given about accessing the Index instead
+* FIX: Removed timeout preventing fast typing for find in article function (Ctrl-F / Alt-F)
+* FIX: Allow searching in article for languages that do not use spaces (such as Chinese)
 * FIX: Add startup bootloop crash prevention
 * FIX: Exceptions produced by unsupported JS in ZIM articles are now caught
 * FIX: Prevent app crash with malformed anchor references
@@ -219,25 +205,28 @@
 * FIX: Assets with unescaped characters in URL should now be retrieved correctly
 * FIX: Individual extraction of images when images are disabled in Configuration
 
-## Release 0.9.9.8 (beta)
-
-* UPDATE: Ray Charles ZIM to October 2018 version
+## Release 0.9.9.81 WikiMed (beta)
+* UPDATE: October 2018 update of WikiMed ZIM archive to wikipedia_en_medicine_novid_2018-10.zim
 * ENHANCEMENT: Add a modern CSS spinner and rework status messages
 * ENHANCEMENT: Neater presentation of article search results
+* ENHANCEMENT: Test for CORS violation if server cannot be accessed
+* ENHANCEMENT: Add API for reading ZIM metadata
 * FIX: Crash when previously picked archive has been moved or deleted
+* FIX: Added startup boot loop crash protection
+* FIX: Prevent app crash with malformed anchor hrefs
 * FIX: Support changed format of anchor references in latest English Wikipedia
 * FIX: Correctly apply mobile styles when one of the defaults is missing
 * FIX: Incorrect utf8 characters in mobile styles 
 
-## Release 0.9.9.7 (beta)
+## Release 0.9.9.7 WikiMed (beta)
+* UPDATE: August 2018 update of WikiMed ZIM archive to wikipedia_en_medicine_novid_2018-08.zim
 
 * ENHANCEMENT: Optimization of decompression process
-* WORKAROUND: Prevent periodic hang in Service Worker mode
 * FIX: Crash in RegExp engine caused by malformed backreferences in some articles
 
-## Release 0.9.9.6 (beta)
-
-* UPDATE: Mobile styles
+## Release 0.9.9.6 WikiMed (beta)
+* UPDATE: June 2018 update of WikiMed ZIM archive to wikipedia_en_medicine_novid_2018-06.zim
+* UPDATE: Mobile styles and cached home page
 * ENHANCEMENT: New compile of decoding engine provides significant performance improvement
 * ENHANCEMENT: Better memory management to prevent app crashes
 * ENHANCEMENT: Reduced dependency on jQuery for further performance gains
@@ -248,56 +237,56 @@
 * FIX: Whitespace at the end of the page is now preserved when hiding reference section
 * FIX: Tapping headers now only opens and closes sections on narrow screens as intended by WikiMedia
 
-## Release 0.9.9.5 (beta)
+## Release 0.9.9.5 WikiMed (beta)
 
 * ENHANCEMENT: Headings in article can be toggled open or closed with tap or click
 * ENHANCEMENT: Current page is cached in localStorage for very fast restart and reloading
 * ENHANCEMENT: Automatically switch to desktop style for better printing result
+* ENHANCEMENT: Print zoom capability
+* ENHANCEMENT: Set maximum page width to 100% before printing
 * FIX: Bug which prevented switching the printing device (caused app crash)
 * FIX: Bug in download links preventing display of language codes that are substrings of other language codes
-
-## Release 0.9.9.4 (beta)
-
-* ENHANCEMENT: Experimental support for printing articles
-* ENHANCEMENT: Print zoom capability
-* ENHANCEMENT: Prevent printing of location pins
-* ENHANCEMENT: Set maximum page width to 100% before printing
-* ENHANCEMENT: Better presentation of About and Changelog information
 * WORKAROUND: MW-Offliner bug which places extraneous tags in some HTML id attributes
 
-## Release 0.9.9.3 (beta)
+## Release 0.9.9.4 WikiMed (beta)
+* UPDATE: March 2018 update of WikiMed ZIM archive to wikipedia_en_medicine_novid_2018-03.zim
+
+* ENHANCEMENT: Experimental support for printing articles
+* ENHANCEMENT: Better presentation of About and Changelog information
+
+## Release 0.9.9.3 WikiMed (beta)
 
 * FIX: Article now reloads correctly when switching styles
 * FIX: Unhandled exception after using in-article word search
 * FIX: Browser history now remembered for first page load
+* FIX: Added more padding for content hidden under the bottom bar
+* FIX: New mode of injecting HTML into iframe fixes baseUrl issues
 * ENHANCEMENT: Filter ZIM archives by date in download links
 * ENHANCEMENT: Option to remove maximum page width restriction for Wikipedia articles
 * ENHANCEMENT: Setting or clearing dark themes no longer require page reload
 * ENHANCEMENT: Wider range of infoboxes, and "homonymie" hatnotes supported
 * ENHANCEMENT: Better algorithm for moving first paragraph when there are stacked infoboxes
-
-## Release 0.9.9.2 (beta)
-
-* FIX: Added more padding for content hidden under the bottom bar
-* FIX: New mode of injecting HTML into iframe fixes baseUrl issues
+* ENHANCEMENT: Applying or removing dark themes no longer requires a page reload
+* ENHANCEMENT: Option to remove max page width restriction
 * ENHANCEMENT: Some code redundancy removed
 * ENHANCEMENT: Faster typesetting of TeX equations
-* ENHANCEMENT: Experimental support for equations in mathoverflow and related stackechange ZIMs
-* ENHANCEMENT: Dark theme support for stackexchange ZIMs
 * ENHANCEMENT: Uncluttered the UI for file selection
 
-## Release 0.9.9 (beta)
+## Release 0.9.9 WikiMed (beta)
 
 * FIX: Reduced memory usage for decompressing multiple SVG images/equations to prevent crash on devices with 1GB RAM
 * FIX: Display bug causing Settings tab to remain selected after article load
-* FIX: Corrected dark-style backgrounds in some infoboxes on WikiMed
 * FIX: Loads landing page when an article is not found (instead of throwing a silent error)
-* WORKAROUND for misplaced hatnotes in mobile-style ZIMs
-* WORKAROUND for hidden IPA pronunciation information on some articles
 * ENHANCEMENT: 'Unclicking' a tab (Settings or About) now returns the user to the article
-* ENHANCEMENT: Activating dark theme for UI now activates article dark theme by default
 * ENHANCEMENT: Improved handling and display of file selectors
 * ENHANCEMENT: Clearer navigation signposting from About tab
+
+## Release 0.9.8 WikiMed (beta)
+* FIX: Corrected dark-style backgrounds in some infoboxes on WikiMed 
+* WORKAROUND for hidden IPA pronunciation information on some WikiMed articles
+* WORKAROUND for misplaced hatnotes in mobile-style ZIMs
+* ENHANCEMENT: Cache start page in the filesystem for quick start or return to home
+* ENHANCEMENT: Activating dark theme for UI now activates article dark theme by default
 * ENHANCEMENT: Dedicated icon for WikiMed archives
 
 ## Release 0.9.7 (beta)
