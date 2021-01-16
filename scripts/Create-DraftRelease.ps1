@@ -26,7 +26,7 @@ $text_tag
 $release_title
 $release_body = Get-Content -Raw ("$PSScriptRoot/Kiwix_JS_" + $text_tag + "_Release_Body.md")
 $release_body = $release_body -replace '<<base_tag>>', "$base_tag"
-# Set up release_params object
+# Set up release_params object - for API see https://docs.github.com/en/rest/reference/repos#releases
 $release_params = @{
   Uri = $release_uri
   Method = 'POST'
