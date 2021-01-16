@@ -222,7 +222,7 @@ define(['uiUtil'], function (uiUtil) {
                 });
             }
             // DEV: make sure list of file types here is the same as the list in Service Worker code
-            if (/(^|\/)[IJ]\/.*\.(jpe?g|png|svg|gif)($|[?#])/i.test(documentImages[i].src)) {
+            if (/(^|\/)[IJ]\/.*\.(jpe?g|png|svg|gif|webp)($|[?#])/i.test(documentImages[i].src)) {
                 documentImages[i].dataset.kiwixurl = documentImages[i].getAttribute('src');
                 if (params.imageDisplayMode === 'progressive') {
                     documentImages[i].style.opacity = '0';
