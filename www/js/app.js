@@ -1316,6 +1316,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         document.getElementById('openAllSectionsCheck').addEventListener('click', function (e) {
             params.openAllSections = this.checked;
             settingsStore.setItem('openAllSections', params.openAllSections, Infinity);
+            if (params.contentInjectionMode === 'serviceworker') {
+                // We have to reload the article to respect user's choice
+                goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+                return;
+            }
             openAllSections();
         });
         $('input:radio[name=useMathJax]').on('click', function (e) {
@@ -3093,7 +3098,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // And make sure all sections are open - this doesn't work, because they are all subsequently closed by JS
             // htmlArticle = htmlArticle.replace(/(<details\b(?![^>]+\sopen)[^>]+)>/ig, '$1 open>');
             // Remove the script.js that closes top-level sections if user requested this
-            if (params.openAllSections) htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/j\/js_modules\/script\.js"[^<]*<\/script>/i, "");
+            if (params.openAllSections) htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/(j\/js_modules\/)?script\.js"[^<]*<\/script>/i, "");
             // Remove landing page scripts that don't work in SW mode
             if (params.cssCache) htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/j\/js_modules\/((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, "");
 
