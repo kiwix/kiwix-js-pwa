@@ -1,5 +1,6 @@
 param (
-    [string]$tag_name = ""
+    [string]$tag_name = "",
+    [switch]$dryrun = $false
 )
 
 # Provide parameters
@@ -14,9 +15,16 @@ if ($tag_name -NotMatch '^v\d+\.\d+\.\d+') {
   exit
 }
 "`nCreating release for $tag_name..."
-$base_tag = $tag_name -replace '^v([\d.]+)', '$1'
-$release_title = "Kiwix JS Windows $base_tag UWP"
-$release_body = Get-Content -Raw "$PSScriptRoot/Kiwix_JS_Windows_Release_Body.md"
+$base_tag = $tag_name -replace '^v([\d.]+).*', '$1'
+$text_tag = $tag_name -replace '^v[\d.]+-?(.*)$', '$1'
+if ($text_tag -eq "") { $text_tag = "Windows" }
+$branch = "master"
+if ($text_tag -ne "Windows") { $branch = "Kiwix-JS-$text_tag" }
+$release_title = "Kiwix JS $text_tag $base_tag UWP"
+if ($text_tag -eq "Wikivoyage") { $release_title = "Wikivoyage by Kiwix $base_tage UWP" }
+$text_tag
+$release_title
+$release_body = Get-Content -Raw ("$PSScriptRoot/Kiwix_JS_" + $text_tag + "_Release_Body.md")
 $release_body = $release_body -replace '<<base_tag>>', "$base_tag"
 # Set up release_params object
 $release_params = @{
@@ -28,6 +36,7 @@ $release_params = @{
   }
   Body = @{
     'tag_name' = $tag_name
+    'target_commitish' = $branch
     'name' = $release_title
     'draft' = $true
     'body' = $release_body
@@ -36,10 +45,10 @@ $release_params = @{
 }
 
 # Post to the release server
-$release = Invoke-RestMethod @release_params
+if (-Not $dryrun) { $release = Invoke-RestMethod @release_params }
 
 # Check that we appear to have created a release
-if ($release.assets_url -imatch '^https:') {
+if ($dryrun -or $release.assets_url -imatch '^https:') {
   "The draft release details were successfully created.`n"
   "Searching for assets..."
   $AppxBundle = dir "$PSScriptRoot/../AppPackages/*_$base_tag*_Test/*_$base_tag*.appx*"
@@ -57,13 +66,13 @@ if ($release.assets_url -imatch '^https:') {
   # ZIP the remaining assets
   "Compressing remaining assets..."
   $compressed_assets_dir = $AppxBundle -replace '[^/\\]+$', ''
-  $compressed_archive = $compressed_assets_dir + "PowerShell.Installation.Script.KiwixWebApp_$base_tag.0_Test.zip"
+  $compressed_archive = $compressed_assets_dir + "PowerShell.Installation.Script.KiwixWebAppWikiMed_$base_tag.0_Test.zip"
   $AddAppPackage = $compressed_assets_dir + "Add-AppDevPackage*.*"
   $cert_file = $AppxBundle -replace '\.[^.]+$', '.cer'
   "Compressing: $AddAppPackage, $cert_file"
-  "$AddAppPackage", "$cert_file" | Compress-Archive -DestinationPath $compressed_archive -Force
+  if (-Not $dryrun) { "$AddAppPackage", "$cert_file" | Compress-Archive -DestinationPath $compressed_archive -Force }
   # Check the compressed file exists
-  if (Test-Path $compressed_archive -PathType leaf) {
+  if ($dryrun -or (Test-Path $compressed_archive -PathType leaf)) {
     "Compression successful`n"
   } else {
     "There was an error compressing assets."
@@ -91,11 +100,15 @@ if ($release.assets_url -imatch '^https:') {
     "`nUpploading $asset..."
     # Upload asset to the release server
     # $upload = [System.IO.File]::ReadAllBytes($upload_file) | Invoke-RestMethod @upload_params
-    $upload = Invoke-RestMethod @upload_params
-    if ($upload.name -eq $asset_name) {
-      "Upload successfully posted as " + $upload.url
-      "Full details:"
-      echo $upload
+    if (-Not $dryrun) { $upload = Invoke-RestMethod @upload_params }
+    if ($dryrun -or $upload.name -eq $asset_name) {
+      if (-Not $dryrun) {
+        "Upload successfully posted as " + $upload.url
+        "Full details:"
+        echo $upload
+      } else {
+        echo "DRYRUN with these upload parameters:`n" + @upload_params 
+      }
     } else {
       "The upload appears to have failed!"
       if ($upload) {
@@ -108,7 +121,7 @@ if ($release.assets_url -imatch '^https:') {
     }
   }
   "Cleaning up..."
-  del $compressed_archive
+  if (-Not $dryrun) { del $compressed_archive }
   "`nDone."
 } else {
   "There was an error setting up the release!"
