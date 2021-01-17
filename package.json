@@ -1,7 +1,7 @@
 {
   "name": "kiwix_js_windows",
   "productName": "Kiwix JS Windows (NWJS)",
-  "version": "1.1.3N",
+  "version": "1.1.4N",
   "description": "Kiwix JS Windows for NWJS",
   "main": "index.html",
   "domain": "kiwix.js.windows",
@@ -16,7 +16,7 @@
     "start": "run --x86 --mirror https://dl.nwjs.io/ .",
     "dist-win-x86": "build --tasks win-x86 --mirror https://dl.nwjs.io/ .",
     "dist-win-x64": "build --tasks win-x64 --mirror https://dl.nwjs.io/ .",
-    "dist": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./scripts/Build_NWJS.ps1" 
+    "dist": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./scripts/Build_NWJS.ps1"
   },
   "build-xp": {
     "nwVersion": "0.14.7",
@@ -35,7 +35,7 @@
     }
   },
   "build": {
-    "nwVersion": "0.50.2",
+    "nwVersion": "0.50.3",
     "output": "bld/nwjs/win-x64",
     "files": [
       "pwabuilder-sw.js",
@@ -51,7 +51,7 @@
     }
   },
   "build-x86": {
-    "nwVersion": "0.50.2",
+    "nwVersion": "0.50.3",
     "output": "bld/nwjs/win-x86",
     "files": [
       "pwabuilder-sw.js",
