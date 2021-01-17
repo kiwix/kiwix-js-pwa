@@ -201,9 +201,11 @@ window.addEventListener('beforeinstallprompt', function(e) {
     e.preventDefault();
     // Stash the event so it can be triggered later.
     deferredPrompt = e;
-    // Show the install buttons
+    // Show the install button
+    divInstall2.style.display = 'block';
+    btnInstall2.addEventListener('click', installApp);
     // Don't display prompt if the PWA for this version is already installed
-    if (!params.beforeinstallpromptFired && params.PWAInstalled !== params.version) {
+    if (!params.beforeinstallpromptFired) {
         params.beforeinstallpromptFired = true;
         btnInstall1.addEventListener('click', installApp);
         btnLater.addEventListener('click', function (e) {
@@ -214,8 +216,6 @@ window.addEventListener('beforeinstallprompt', function(e) {
             }, 4000);
             params.installLater = true;
         });
-        divInstall2.style.display = 'block';
-        btnInstall2.addEventListener('click', installApp);
     }
 });
 
@@ -239,6 +239,12 @@ function installApp(e) {
         deferredPrompt = null;
         params.beforeinstallpromptFired = false;
     });
+    // The app hasn't actually been installed or use has uninstalled, so we need to reset any setting
+    if (params.storeType === 'cookie') {
+        document.cookie = 'PWAInstalled=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    } else if (params.storeType === 'local_storage') {
+        localStorage.removeItem(params.keyPrefix + 'PWAInstalled');
+    }
 }
 
 window.addEventListener('appinstalled', function(e) {
