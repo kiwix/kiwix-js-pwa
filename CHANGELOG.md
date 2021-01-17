@@ -19,15 +19,9 @@
 
 * UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-12.zim`
 * UPDATE: Support new location of mobile and desktop styles in Wikimedia ZIMs
+* UPDATE: WebP support (via polyfill) for older browsers including Windows Mobile
 * UPDATE: Upgrade Settings store to use localStorage over cookies where available
 * ENHANCEMENT: Enable use of Native File System with NWJS
-* FIX: Styling of index-based landing pages
-* FIX: Bugs with file picking in Native FS
-
-## Release 1.1.2
-
-* UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2020-11.zim`
-* UPDATE: WebP support (via polyfill) for older browsers including Windows Mobile
 * ENHANCEMENT: Improved block cache and faster conversion of file slice to blob
 * REGRESSION: Manual extraction of images reverted to one-by-one to prevent errors with WebP batch decoding
 * FIX: Critical error on some new Wikipedia articles containing equations
