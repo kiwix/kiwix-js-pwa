@@ -1379,7 +1379,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // settingsStore.removeItem('listOfArchives');
 
                 //  Update the installed version
-                if (params.PWAInstalled) {
+                if (settingsStore.getItem('PWAInstalled')) {
                     params.PWAInstalled = params.version;
                     settingsStore.setItem('PWAInstalled', params.PWAInstalled);
                 }
