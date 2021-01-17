@@ -10,22 +10,43 @@ $github_token = Get-Content -Raw "$PSScriptRoot/github_token"
 if ($tag_name -eq "") {
   $tag_name = Read-Host "`nEnter the tag name to use for this release"
 }
-if ($tag_name -NotMatch '^v\d+\.\d+\.\d+') {
-  "`nTag name must be in the format " + '"v0.0.0[-text]"!' + "`n"
+if ($tag_name -NotMatch '^v\d+\.\d+\.\d+([EN-]|$)') {
+  "`nTag name must be in the format " + '"v0.0.0[E][N][-text]"!' + "`n"
   exit
 }
 "`nCreating release for $tag_name..."
-$base_tag = $tag_name -replace '^v([\d.]+).*', '$1'
-$text_tag = $tag_name -replace '^v[\d.]+-?(.*)$', '$1'
-if ($text_tag -eq "") { $text_tag = "Windows" }
+$base_tag = $tag_name -replace '^v([\d.EN]+).*', '$1'
+$text_tag = $tag_name -replace '^v[\d.EN]+-?(.*)$', '$1'
+if ($text_tag -eq '') { $text_tag = 'Windows' }
 $branch = "master"
 if ($text_tag -ne "Windows") { $branch = "Kiwix-JS-$text_tag" }
 $release_title = "Kiwix JS $text_tag $base_tag UWP"
 if ($text_tag -eq "Wikivoyage") { $release_title = "Wikivoyage by Kiwix $base_tage UWP" }
-$text_tag
-$release_title
-$release_body = Get-Content -Raw ("$PSScriptRoot/Kiwix_JS_" + $text_tag + "_Release_Body.md")
+$flavour = ''
+$init_params = Get-Content -Raw "$PSScriptRoot\..\www\js\init.js"
+$file_version = ''
+if ($init_params -match 'params\[[''"]fileVersion[''"]]\s*=\s*[''"]([^''"]+)') {
+  $file_version = $matches[1] 
+}
+$zim = ''
+$date = ''
+if ($file_version) { 
+  $zim = ($file_version -replace '\s\([^(]+\)\s*$', '') + '.zim'
+  $date = $file_version -replace '^[^(]+\(([^(]+)\)\s*$', '$1'
+}
+"File Version: $file_version"
+"Zim: $zim"
+"Date: $date"
+if ($base_tag -match 'E$') { 
+  $release_title = $release_title -replace '([^\s]+)\sUWP$', 'Electron Edition for Win7/Win8/Win10 $1' 
+  $flavour = '_E'
+}
+"Text tag: $text_tag"
+"Release title: $release_title"
+$release_body = Get-Content -Raw ("$PSScriptRoot/Kiwix_JS_" + $text_tag + $flavour + "_Release_Body.md")
 $release_body = $release_body -replace '<<base_tag>>', "$base_tag"
+$release_body = $release_body -replace '<<zim>>', "$zim"
+$release_body = $release_body -replace '<<date>>', "$date"
 # Set up release_params object - for API see https://docs.github.com/en/rest/reference/repos#releases
 $release_params = @{
   Uri = $release_uri
@@ -45,32 +66,50 @@ $release_params = @{
 }
 
 # Post to the release server
-if (-Not $dryrun) { $release = Invoke-RestMethod @release_params }
+if (-Not $dryrun) { 
+  $release = Invoke-RestMethod @release_params 
+} else {
+  "[DRYRUN] Release Body:`n$release_body"
+}
 
 # Check that we appear to have created a release
 if ($dryrun -or $release.assets_url -imatch '^https:') {
   "The draft release details were successfully created.`n"
   "Searching for assets..."
-  $AppxBundle = dir "$PSScriptRoot/../AppPackages/*_$base_tag*_Test/*_$base_tag*.appx*"
-  # Check the file exists and it's of the right type
-  if ($AppxBundle -and ($AppxBundle.count -eq 1) -and (Test-Path $AppxBundle -PathType leaf) -and 
-    ($AppxBundle -imatch '(.*)\.(?:appx|appxbundle|appxupload)$')) {
-      "Setting main bundle file to $AppxBundle..."
-  } elseif ($AppxBundle.count -ge 2) {
-      "More than one file matches that tag!"
-      return
+  if ($flavour -eq '_E') {
+    # Package electron app
+    "Building Electron app"
+    if (-Not $dryrun) { npm run package-win }
+    "Compressing release package for Electron..."
+    $compressed_assets_dir = "$PSScriptRoot/../bld/electron/kiwix-js-windows-win32-ia32"
+    $base_dir = "$PSScriptRoot/../bld/electron/"
+    $compressed_archive = $base_dir + "Kiwix.JS.$text_tag.$base_tag.zip"
+    $AddAppPackage = $base_dir + "Start*.*"
+    "Compressing: $AddAppPackage, $compressed_assets_dir to $compressed_archive"
+    if (-Not $dryrun) { "$AddAppPackage", "$compressed_assets_dir" | Compress-Archive -DestinationPath $compressed_archive -Force }
+    $ReleaseBundle = ''
   } else {
-      "No package matching that tag was found. Aborting."
-      return
+    $ReleaseBundle = dir "$PSScriptRoot/../AppPackages/*_$base_tag*_Test/*_$base_tag*.appx*"
+    # Check the file exists and it's of the right type
+    if ($ReleaseBundle -and ($ReleaseBundle.count -eq 1) -and (Test-Path $ReleaseBundle -PathType leaf) -and 
+      ($ReleaseBundle -imatch '(.*)\.(?:appx|ReleaseBundle|appxupload)$')) {
+        "Setting main bundle file to $ReleaseBundle..."
+    } elseif ($ReleaseBundle.count -ge 2) {
+        "More than one file matches that tag!"
+        return
+    } else {
+        "No package matching that tag was found. Aborting."
+        return
+    }
+    # ZIP the remaining assets
+    "Compressing remaining assets..."
+    $compressed_assets_dir = $ReleaseBundle -replace '[^/\\]+$', ''
+    $compressed_archive = $compressed_assets_dir + "PowerShell.Installation.Script.KiwixWebAppWikiMed_$base_tag.0_Test.zip"
+    $AddAppPackage = $compressed_assets_dir + "Add-AppDevPackage*.*"
+    $cert_file = $ReleaseBundle -replace '\.[^.]+$', '.cer'
+    "Compressing: $AddAppPackage, $cert_file"
+    if (-Not $dryrun) { "$AddAppPackage", "$cert_file" | Compress-Archive -DestinationPath $compressed_archive -Force }
   }
-  # ZIP the remaining assets
-  "Compressing remaining assets..."
-  $compressed_assets_dir = $AppxBundle -replace '[^/\\]+$', ''
-  $compressed_archive = $compressed_assets_dir + "PowerShell.Installation.Script.KiwixWebAppWikiMed_$base_tag.0_Test.zip"
-  $AddAppPackage = $compressed_assets_dir + "Add-AppDevPackage*.*"
-  $cert_file = $AppxBundle -replace '\.[^.]+$', '.cer'
-  "Compressing: $AddAppPackage, $cert_file"
-  if (-Not $dryrun) { "$AddAppPackage", "$cert_file" | Compress-Archive -DestinationPath $compressed_archive -Force }
   # Check the compressed file exists
   if ($dryrun -or (Test-Path $compressed_archive -PathType leaf)) {
     "Compression successful`n"
@@ -78,12 +117,13 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
     "There was an error compressing assets."
     return
   }
-
-  $upload_assets = @($compressed_archive, $AppxBundle)
+  # Upload the release
+  $upload_assets = @($compressed_archive, $ReleaseBundle)
   $upload_uri = $release.upload_url -ireplace '\{[^{}]+}', '' 
   "Uploading assets to: $upload_uri..."
   
   ForEach($asset in $upload_assets) {
+    if (-Not $asset) { Continue }
     $asset_name = $asset -replace '^.*[\\/]([^\\/]+)$', '$1'
     # Establish upload params
     $upload_params = @{
