@@ -49,7 +49,7 @@ var params = {};
  */
 var appstate = {};
 /******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION *******/
-params['version'] = "1.1.4-RP6"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "1.1.4-RP7"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN serveice worker!! ********************/
 params['packagedFile'] = "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
@@ -99,7 +99,7 @@ params['printIntercept'] = false;
 params['printInterception'] = false;
 params['appIsLaunching'] = true; // Allows some routines to tell if the app has just been launched
 params['useCache'] = true; // This needs to be made optional in UI
-params['PWAInstalled'] = decodeURIComponent(getSetting('PWAInstalled'));
+params['PWAInstalled'] = getSetting('PWAInstalled');
 params['appType'] = getAppType();
 params.pagesLoaded = 0; // Page counter used to show PWA Install Prompt only after user has played with the app for a while
 
@@ -217,6 +217,12 @@ window.addEventListener('beforeinstallprompt', function(e) {
             params.installLater = true;
         });
     }
+    // The app hasn't actually been installed or user has uninstalled, so we need to reset any setting
+    if (params.storeType === 'cookie') {
+        document.cookie = 'PWAInstalled=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    } else if (params.storeType === 'local_storage') {
+        localStorage.removeItem(params.keyPrefix + 'PWAInstalled');
+    }
 });
 
 function installApp(e) {
@@ -239,18 +245,12 @@ function installApp(e) {
         deferredPrompt = null;
         params.beforeinstallpromptFired = false;
     });
-    // The app hasn't actually been installed or use has uninstalled, so we need to reset any setting
-    if (params.storeType === 'cookie') {
-        document.cookie = 'PWAInstalled=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    } else if (params.storeType === 'local_storage') {
-        localStorage.removeItem(params.keyPrefix + 'PWAInstalled');
-    }
 }
 
 window.addEventListener('appinstalled', function(e) {
     params.PWAInstalled = params.version;
     if (params.storeType === 'cookie') {
-        document.cookie = 'PWAInstalled=' + encodeURIComponent(params.PWAInstalled) + ';expires=Fri, 31 Dec 9999 23:59:59 GMT';
+        document.cookie = 'PWAInstalled=' + encodeURIComponent(params.PWAInstalled) + '; expires=Fri, 31 Dec 9999 23:59:59 GMT';
     } else if (params.storeType === 'local_storage') {
         localStorage.setItem(params.keyPrefix + 'PWAInstalled', params.PWAInstalled);
     }
