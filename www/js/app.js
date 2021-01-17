@@ -770,8 +770,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
                             '    <span id="persistentMessage"></span>\n' +
                             '</div>\n';
-                        document.getElementById('persistentMessage').innerHTML = 'Version ' + key.replace(/kiwix-precache-/, '') + ' is ready to install!'
-                            + ' (Re-launch app to install.)';
+                        var loadOrInstall = params.PWAInstalled ? 'install' : 'load';
+                        document.getElementById('persistentMessage').innerHTML = 'Version ' + key.replace(/kiwix-precache-/, '') + ' is ready to '
+                            + loadOrInstall + '! (Re-launch app to ' + loadOrInstall + '.)';
                     });
                 });
             } else if (params.upgradeNeeded) {
