@@ -49,13 +49,13 @@ var params = {};
  */
 var appstate = {};
 /******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION *******/
-params['version'] = "1.1.4-RP8"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "1.1.3 Wikivoyage"; //DEV: Manually update this version when there is a new release: it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN serveice worker!! ********************/
-params['packagedFile'] = "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
-params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
-params['fileVersion'] = "wikipedia_en_100_maxi_2020-12.zim (23-Dec-2020)"; //Use generic name for actual file, and give version here
-params['cachedStartPage'] = false; //If you have cached the start page for quick start, give its URI here
-params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
+params['packagedFile'] = "wikivoyage_en_all_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
+params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)
+params['fileVersion'] = "wikivoyage_en_all_maxi_2020-12 (16-Dec-2020)"; //Use generic name for actual file, and give version here
+params['cachedStartPage'] = "Main_Page"; //If you have cached the start page for quick start, give its URI here
+params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/wikivoyage/"; //Include final slash
 
 params['storeType'] = getBestAvailableStorageAPI();
 params['keyPrefix'] = 'kiwixjs-'; // Prefix to use for localStorage keys
@@ -73,7 +73,7 @@ params['hideToolbars'] = getSetting('hideToolbars') != null ? getSetting('hideTo
 params['rememberLastPage'] = getSetting('rememberLastPage') != null ? getSetting('rememberLastPage') : true; //Set default option to remember the last visited page between sessions
 params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
 //params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
-params['showFileSelectors'] = true; //False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
+params['showFileSelectors'] = false; //False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
 params['hideActiveContentWarning'] = getSetting('hideActiveContentWarning') != null ? getSetting('hideActiveContentWarning') : false;
 params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') == true;
 params['alphaChar'] = getSetting('alphaChar') || 'A'; //Set default start of alphabet string (used by the Archive Index)
