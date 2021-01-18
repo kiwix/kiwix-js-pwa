@@ -49,11 +49,11 @@ var params = {};
  */
 var appstate = {};
 /******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION *******/
-params['version'] = "1.1.3 Wikivoyage"; //DEV: Manually update this version when there is a new release: it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "1.1.4 Wikivoyage"; //DEV: Manually update this version when there is a new release: it is compared to the cookie "version" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN serveice worker!! ********************/
 params['packagedFile'] = "wikivoyage_en_all_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)
-params['fileVersion'] = "wikivoyage_en_all_maxi_2020-12 (16-Dec-2020)"; //Use generic name for actual file, and give version here
+params['fileVersion'] = "wikivoyage_en_all_maxi_2021-01 (2-Jan-2020)"; //Use generic name for actual file, and give version here
 params['cachedStartPage'] = "Main_Page"; //If you have cached the start page for quick start, give its URI here
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/wikivoyage/"; //Include final slash
 
