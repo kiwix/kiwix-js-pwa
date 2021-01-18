@@ -1,12 +1,20 @@
 # Changelog
 
-## Release 1.1.4 Wikivoyage (in progress)
+## Release 1.1.4 Wikivoyage
 
+* UPDATE: Included ZIM updated to `wikivoyage_en_all_maxi_2021-01.zim`
+* UPDATE: More consistent install prompt display in Configuration (for PWA)
 * ENHANCEMENT: Provide more robust upgrade process for PWAs, including notification banner
+* FIX: Inconsistent use of Settings Store during app initialization
 * FIX: Disable HTTP cache when pre-caching upgraded app files
 * FIX: Switching to jQuery mode in the PWA app no longer prevents the app working offline
 * FIX: Display of masonry-style landing pages in SW mode
-* FIX: Inconsistent use of Settings Store during app initialization
+* FIX: Delete accidentally created Indexed Databases with wrong filename on startup (where possible)
+* FIX: Provide explicit Content Security Policy headers to reduce or eliminate CORS errors in SW mode
+* FIX: Broken manual display of images in SW mode
+* FIX: Broken "Open all headings" option in SW mode
+* FIX: Printing in SW mode
+* META: Create-DraftRelease PowerShell script supports automatic creation of GitHub releases for more versions of the app
 
 ## Release 1.1.3 Wikivoyage
 
