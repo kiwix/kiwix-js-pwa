@@ -162,6 +162,11 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
       return
     }
   }
+  "Creating permalink..."
+  $permalink = Get-Content -Raw "$PSScriptRoot/../$text_tag-uwp.html"
+  $permalink = $permalink -replace 'v[\d.EN]+[^"'']*', $tag_name
+  if (-Not $dryrun) { Set-Content "$PSScriptRoot/../$text_tag-uwp.html" $permalink }
+  else { "`n[DRYRUN] would have written:`n$permalink`n" }
   "Cleaning up..."
   if (-Not $dryrun) { del $compressed_archive }
   "`nDone."
