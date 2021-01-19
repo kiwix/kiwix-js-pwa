@@ -34,7 +34,7 @@
       "icon": "www/img/icons/kiwix-64.ico"
     }
   },
-  "build": {
+  "build-x64": {
     "nwVersion": "0.50.3",
     "output": "bld/nwjs/win-x64",
     "files": [
@@ -50,7 +50,7 @@
       "icon": "www/img/icons/kiwix-64.ico"
     }
   },
-  "build-x86": {
+  "build": {
     "nwVersion": "0.50.3",
     "output": "bld/nwjs/win-x86",
     "files": [
