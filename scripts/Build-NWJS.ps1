@@ -14,14 +14,31 @@ foreach ($build in $builds) {
         $version = $versionXP
         $sep = '-XP-'
     }
-    $target = "bld\nwjs\$build-$version\kiwix_js_windows$sep$appBuild"
+    $folderTarget = "bld\nwjs\$build-$version"
+    $target = "$folderTarget\kiwix_js_windows$sep$appBuild"
     $fullTarget = "$target-$build"
-    $buildLocation = "node_modules\nwjs-builder-phoenix\caches\nwjs-v$version-$build.zip-extracted\nwjs-v$version-$build\"
+    $ZipLocation = "node_modules\nwjs-builder-phoenix\caches\nwjs-v$version-$build.zip"
+    $UnzipLocation = "$ZipLocation-extracted\"
+    $buildLocation = "$ZipLocation-extracted\nwjs-v$version-$build\"
+    if (-Not (Test-Path $buildLocation -PathType Container)) {
+        # We need to download and/or unzip the release, as it is not available
+        if (-Not (Test-Path $ZipLocation -PathType Leaf)) {
+            $serverFile = "https://dl.nwjs.io/v$version/nwjs-v$version-$build.zip"
+            "Downloading $serverFile"
+            Invoke-WebRequest -Uri $serverFile -OutFile $ZipLocation
+        }
+        "Unzipping archive $ZipLocation"
+        Expand-Archive $ZipLocation $UnzipLocation
+        if (-Not (Test-Path $buildLocation -PathType Container)) {
+            "There was an error! The unzipped folder $buildLocation could not be found!"
+            return
+        }
+    }
     $archiveFolder = "$fullTarget\archives"
-    if (Test-Path $fullTarget -PathType container) {
-        "Removing directory $fullTarget..."
-        rm $fullTarget\* -Recurse
-        rm $fullTarget
+    if (Test-Path $folderTarget -PathType Container) {
+        "Removing directory $folderTarget..."
+        rm $folderTarget\* -Recurse
+        rm $folderTarget
     }
     md $fullTarget
     # Copy latest binary x64
@@ -43,7 +60,13 @@ foreach ($build in $builds) {
     $Shortcut.Arguments = "$foldername\nw.exe"
     $Shortcut.IconLocation = '%windir%\explorer.exe,12'
     $Shortcut.Save()
+    # Zip everything up
+    $ZipBuild = "bld\nwjs\$foldername.zip"
+    if (Test-Path $ZipBuild -PathType Leaf) {
+        "Deleting old Zip build $ZipBuild..."
+        del $ZipBuild
+    }
     "Compressing folder..."
-    Compress-Archive "bld\nwjs\$build-$version\*" "bld\nwjs\$foldername.zip"
+    Compress-Archive "bld\nwjs\$build-$version\*" "bld\nwjs\$foldername.zip" -Force
     "Build $OBuild finished.`n"
 }
