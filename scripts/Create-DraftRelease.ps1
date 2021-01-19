@@ -21,7 +21,7 @@ if ($text_tag -eq '') { $text_tag = 'Windows' }
 $branch = "master"
 if ($text_tag -ne "Windows") { $branch = "Kiwix-JS-$text_tag" }
 $release_title = "Kiwix JS $text_tag $base_tag UWP"
-if ($text_tag -eq "Wikivoyage") { $release_title = "Wikivoyage by Kiwix $base_tage UWP" }
+if ($text_tag -eq "Wikivoyage") { $release_title = "Wikivoyage by Kiwix $base_tag UWP" }
 $flavour = ''
 $init_params = Get-Content -Raw "$PSScriptRoot\..\www\js\init.js"
 $file_version = ''
@@ -42,6 +42,7 @@ if ($base_tag -match 'E$') {
   $flavour = '_E'
 }
 "Text tag: $text_tag"
+"Base tag: $base_tag"
 "Release title: $release_title"
 $release_body = Get-Content -Raw ("$PSScriptRoot/Kiwix_JS_" + $text_tag + $flavour + "_Release_Body.md")
 $release_body = $release_body -replace '<<base_tag>>', "$base_tag"
@@ -92,13 +93,14 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
     $ReleaseBundle = dir "$PSScriptRoot/../AppPackages/*_$base_tag*_Test/*_$base_tag*.appx*"
     # Check the file exists and it's of the right type
     if ($ReleaseBundle -and ($ReleaseBundle.count -eq 1) -and (Test-Path $ReleaseBundle -PathType leaf) -and 
-      ($ReleaseBundle -imatch '(.*)\.(?:appx|ReleaseBundle|appxupload)$')) {
+      ($ReleaseBundle -imatch '(.*)\.(?:appx|appxbundle|appxupload)$')) {
         "Setting main bundle file to $ReleaseBundle..."
     } elseif ($ReleaseBundle.count -ge 2) {
         "More than one file matches that tag!"
         return
     } else {
         "No package matching that tag was found. Aborting."
+        "Tag yielded $ReleaseBundle"
         return
     }
     # ZIP the remaining assets
