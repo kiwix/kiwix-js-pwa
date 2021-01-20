@@ -18,8 +18,6 @@ if ($tag_name -NotMatch '^v\d+\.\d+\.\d+([EN-]|$)') {
 $base_tag = $tag_name -replace '^v([\d.EN]+).*', '$1'
 $text_tag = $tag_name -replace '^v[\d.EN]+-?(.*)$', '$1'
 if ($text_tag -eq '') { $text_tag = 'Windows' }
-$branch = "master"
-if ($text_tag -ne "Windows") { $branch = "Kiwix-JS-$text_tag" }
 $release_title = "Kiwix JS $text_tag $base_tag UWP"
 if ($text_tag -eq "Wikivoyage") { $release_title = "Wikivoyage by Kiwix $base_tag UWP" }
 $flavour = ''
@@ -37,12 +35,20 @@ if ($file_version) {
 "File Version: $file_version"
 "Zim: $zim"
 "Date: $date"
-if ($base_tag -match 'E$') { 
-  $release_title = $release_title -replace '([^\s]+)\sUWP$', 'Electron Edition for Win7/Win8/Win10 $1' 
-  $flavour = '_E'
+$branch = "master"
+if ($text_tag -ne "Windows") { $branch = "Kiwix-JS-$text_tag" }
+if ($base_tag -match '[EN]$') {
+  $flavour = '_' + $matches[0]
+  $title_flavour = 'Electron'
+  if ($flavour -eq '_N') { 
+    $title_flavour = 'NWJS'
+    $branch = 'nwjs-en-top' 
+  } 
+  $release_title = $release_title -replace '([^\s]+)\sUWP$', ("$title_flavour Edition for Win7/Win8/Win10 " + '$1') 
 }
 "Text tag: $text_tag"
 "Base tag: $base_tag"
+"Branch: $branch"
 "Release title: $release_title"
 $release_body = Get-Content -Raw ("$PSScriptRoot/Kiwix_JS_" + $text_tag + $flavour + "_Release_Body.md")
 $release_body = $release_body -replace '<<base_tag>>', "$base_tag"
@@ -89,6 +95,25 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
     "Compressing: $AddAppPackage, $compressed_assets_dir to $compressed_archive"
     if (-Not $dryrun) { "$AddAppPackage", "$compressed_assets_dir" | Compress-Archive -DestinationPath $compressed_archive -Force }
     $ReleaseBundle = ''
+  } elseif ($flavour -eq '_N') {
+    # Package NWJS app if necessary
+    $base_dir = "$PSScriptRoot/../bld/nwjs"
+    $stubs = @("$base_tag-win-ia32", "$base_tag-win-x64", "XP-$base_tag-win-ia32")
+    $found = $true
+    $NWJSAssets = @()
+    $NWJSAssets = {$NWJSAssets}.Invoke()
+    foreach ($stub in $stubs) {
+      $NWJSAsset = "$base_dir/kiwix-js-windows-$stub.zip"
+      $NWJSAssets.Add($NWJSAsset)
+      if (-Not (Test-Path $NWJSAsset -PathType Leaf)) { $found = $false }
+    }
+    if (-Not $found) {
+      "WARNING: One or more NWJS build(s) could not be found."
+      if (-Not $dryrun) {
+        "Building NWJS apps..."
+        & $PSScriptRoot/Build-NWJS.ps1
+      }
+    }
   } else {
     $ReleaseBundle = dir "$PSScriptRoot/../AppPackages/*_$base_tag*_Test/*_$base_tag*.appx*"
     # Check the file exists and it's of the right type
@@ -121,6 +146,7 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
   }
   # Upload the release
   $upload_assets = @($compressed_archive, $ReleaseBundle)
+  if ($flavour -eq '_N') { $upload_assets = $NWJSAssets }
   $upload_uri = $release.upload_url -ireplace '\{[^{}]+}', '' 
   "Uploading assets to: $upload_uri..."
   
@@ -163,9 +189,12 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
     }
   }
   "Creating permalink..."
-  $permalink = Get-Content -Raw "$PSScriptRoot/../$text_tag-uwp.html"
+  $permalinkFile = "$PSScriptRoot/../kiwix-js-uwp.html"
+  if ($flavour -eq '_N') { $permalinkFile = $permalinkFile -replace 'uwp', 'nwjs' }
+  $permalink = Get-Content -Raw $permalinkFile
   $permalink = $permalink -replace 'v[\d.EN]+[^"'']*', $tag_name
-  if (-Not $dryrun) { Set-Content "$PSScriptRoot/../$text_tag-uwp.html" $permalink }
+  "Looking for: $permalinkFile"
+  if (-Not $dryrun) { Set-Content $permalinkFile $permalink }
   else { "`n[DRYRUN] would have written:`n$permalink`n" }
   "Cleaning up..."
   if (-Not $dryrun) { del $compressed_archive }
