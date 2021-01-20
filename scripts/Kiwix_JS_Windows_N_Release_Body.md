@@ -24,7 +24,7 @@ There is no installation required: the app is fully portable. Simply unzip it in
 
 ### Release Notes
 
-* This app is packaged with `wikipedia_en_100.zim` for testing purposes. The packaged archive is located in the `archives` folder. Note that it has a generic name intentionally. See the readme in that folder;
+* This app is packaged with `<<zim>>` (<<date>>) for testing purposes. The packaged archive is located in the `archives` folder. Note that it has a generic name intentionally. See the readme in that folder;
 * The app is compatible with new ZIMs that are compressed with zstandard and containing WebP images, while remaining backwardly compatible with xz compression;
 * If a different archive is picked, it will be remembered and launched automatically on startup;
 * Service Worker mode is only operational in builds for modern Windows;
