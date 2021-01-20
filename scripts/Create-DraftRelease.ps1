@@ -29,7 +29,7 @@ if ($init_params -match 'params\[[''"]fileVersion[''"]]\s*=\s*[''"]([^''"]+)') {
 $zim = ''
 $date = ''
 if ($file_version) { 
-  $zim = ($file_version -replace '\s\([^(]+\)\s*$', '') + '.zim'
+  $zim = ($file_version -replace '\s\([^(]+\)\s*$', '')
   $date = $file_version -replace '^[^(]+\(([^(]+)\)\s*$', '$1'
 }
 "File Version: $file_version"
