@@ -44,7 +44,8 @@ if ($base_tag -match '[EN]$') {
     $title_flavour = 'NWJS'
     $branch = 'nwjs-en-top' 
   } 
-  $release_title = $release_title -replace '([^\s]+)\sUWP$', ("$title_flavour Edition for Win7/Win8/Win10 " + '$1') 
+  $release_title = $release_title -replace '([^\s]+)\sUWP$', ("$title_flavour Edition for Win7/Win8/Win10 " + '$1')
+  if ($flavour -eq '_N') { $release_title = $release_title -replace 'Edition\s(for\s)', '$1XP/Vista/' } 
 }
 "Text tag: $text_tag"
 "Base tag: $base_tag"
