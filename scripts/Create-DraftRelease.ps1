@@ -103,9 +103,10 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
     $NWJSAssets = @()
     $NWJSAssets = {$NWJSAssets}.Invoke()
     foreach ($stub in $stubs) {
-      $NWJSAsset = "$base_dir/kiwix-js-windows-$stub.zip"
+      $NWJSAsset = "$base_dir/kiwix_js_windows-$stub.zip"
       $NWJSAssets.Add($NWJSAsset)
       if (-Not (Test-Path $NWJSAsset -PathType Leaf)) { $found = $false }
+      if (-Not $found) { "Unable to locate $NWJSAsset..." }
     }
     if (-Not $found) {
       "WARNING: One or more NWJS build(s) could not be found."
@@ -138,7 +139,7 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
     if (-Not $dryrun) { "$AddAppPackage", "$cert_file" | Compress-Archive -DestinationPath $compressed_archive -Force }
   }
   # Check the compressed file exists
-  if ($dryrun -or (Test-Path $compressed_archive -PathType leaf)) {
+  if ($dryrun -or $found -or (Test-Path $compressed_archive -PathType leaf)) {
     "Compression successful`n"
   } else {
     "There was an error compressing assets."
@@ -197,7 +198,7 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
   if (-Not $dryrun) { Set-Content $permalinkFile $permalink }
   else { "`n[DRYRUN] would have written:`n$permalink`n" }
   "Cleaning up..."
-  if (-Not $dryrun) { del $compressed_archive }
+  if ((-Not $dryrun) -and $compressed_archive ) { del $compressed_archive }
   "`nDone."
 } else {
   "There was an error setting up the release!"
