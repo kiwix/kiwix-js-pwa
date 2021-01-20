@@ -1,6 +1,6 @@
 # Changelog
 
-## Release 1.1.4-dev (in progress)
+## Release 1.1.4
 
 * ENHANCEMENT: Provide more robust upgrade process for PWAs, including notification banner
 * UPDATE: More consistent install prompt display in Configuration (for PWA)
