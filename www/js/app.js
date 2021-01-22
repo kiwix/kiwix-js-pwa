@@ -1378,6 +1378,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // Make user re-pick file if we have upgraded (it's less confusing than filehandle errors) - NOT NEEDED, remove in due course
                 // settingsStore.removeItem('listOfArchives');
 
+                // If we have an update, it is best not to preserve last read article
+                params.lastPageVisit = "";
+                
+
                 //  Update the installed version
                 if (settingsStore.getItem('PWAInstalled')) {
                     params.PWAInstalled = params.version;
@@ -2776,32 +2780,40 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 //Load lastPageVisit if it is the currently requested page
                 if (!htmlContent) {
                     var lastPage = '';
+                    // NB code below must be able to run async, hence it is a function
+                    var goToRetrievedContent = function(html) {
+                        if (/<html[^>]*>/.test(html)) {
+                            console.log("Fast article retrieval from localStorage: " + lastPage);
+                            //if (~lastPage.indexOf(params.cachedStartPage)) params.isLandingPage = true;
+                            setTimeout(function () {
+                                displayArticleInForm(dirEntry, html);
+                            }, 10);
+                        } else {
+                            //if (params.contentInjectionMode === 'jquery') {
+                            // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
+                            appstate.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
+                            // This is needed so that the html is cached in displayArticleInForm
+                            params.lastPageVisit = '';
+                            //}
+                        }
+                    };
                     if (params.rememberLastPage && params.lastPageVisit) lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, "");
                     if (params.rememberLastPage && (typeof Storage !== "undefined") && dirEntry.namespace + '/' + dirEntry.url == lastPage) {
                         if (!params.lastPageHTML) {
                             cache.getArticle(params.lastPageVisit.replace(/.*@kiwixKey@/, ''), lastPage, function (html) {
                                 params.lastPageHTML = html;
                                 htmlContent = params.lastPageHTML || htmlContent;
+                                goToRetrievedContent(htmlContent);
                             });
                         } else {
                             htmlContent = params.lastPageHTML;
+                            goToRetrievedContent(htmlContent);
                         }
                         
-                    }
-                    if (/<html[^>]*>/.test(htmlContent)) {
-                        console.log("Fast article retrieval from localStorage: " + lastPage);
-                        //if (~lastPage.indexOf(params.cachedStartPage)) params.isLandingPage = true;
-                        setTimeout(function () {
-                            displayArticleInForm(dirEntry, htmlContent);
-                        }, 10);
                     } else {
-                        //if (params.contentInjectionMode === 'jquery') {
-                        // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
-                        appstate.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
-                        // This is needed so that the html is cached in displayArticleInForm
-                        params.lastPageVisit = '';
-                        //}
+                        goToRetrievedContent(htmlContent);
                     }
+                    
                 }
             }
 
