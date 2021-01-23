@@ -49,7 +49,7 @@ var params = {};
  */
 var appstate = {};
 /******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION *******/
-params['version'] = "1.1.4-RP9"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "1.1.4-RP10"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN serveice worker!! ********************/
 params['packagedFile'] = "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
@@ -149,10 +149,11 @@ document.getElementById('hideToolbarsState').innerHTML = (params.hideToolbars ==
 
 // Get app type
 function getAppType() {
-    if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') return 'UWP';
-    if (window.fs || window.nw) return 'Electron';
-    if (navigator.serviceWorker) return 'PWA';
-    return 'HTML5';
+    var type = 'HTML5';
+    if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') type = 'UWP';
+    if (window.fs || window.nw) type = 'Electron';
+    if (navigator.serviceWorker) type += '|PWA';
+    return type;
 }
 
 // Set up storage types
