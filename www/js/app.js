@@ -758,7 +758,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
             }
             // Check for upgrade of PWA
-            if (!params.upgradeNeeded && params.appType === 'PWA' && activeBtn === 'btnConfigure') {
+            if (!params.upgradeNeeded && /PWA/.test(params.appType) && activeBtn === 'btnConfigure') {
                 caches.keys().then(function (keyList) {
                     if (keyList.length < 2) document.getElementById('alertBoxPersistent').innerHTML = '';
                     keyList.forEach(function(key) {
@@ -1378,9 +1378,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // Make user re-pick file if we have upgraded (it's less confusing than filehandle errors) - NOT NEEDED, remove in due course
                 // settingsStore.removeItem('listOfArchives');
 
-                // If we have an update, it is best not to preserve last read article
-                params.lastPageVisit = "";
-                
+                // If we have an update and the last selected archive is the packaged file, it is best not to preserve last read article
+                if (params.storedFile === params.packagedFile) params.lastPageVisit = '';
 
                 //  Update the installed version
                 if (settingsStore.getItem('PWAInstalled')) {
