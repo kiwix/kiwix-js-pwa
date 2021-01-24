@@ -48,7 +48,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             //DEV: Although "." matches any character in regex, there is enough specificity in the patterns below
             //DEV: Add any local stylesheets you wish to include here
             if (cc &&
-                (/-\/(s\/)?style.css/i.test(zl) ||
+                (/-\/(s\/|mw\/)?style.css/i.test(zl) ||
                     /\/mediawiki.toc.css/i.test(zl) ||
                     /\/ext.cite.styles.css/i.test(zl) ||
                     /\/ext.timeline.styles.css/i.test(zl) ||
@@ -72,7 +72,6 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                     /\/content.parsoid.css/i.test(zl) ||
                     /\/inserted_style_mobile.css/i.test(zl) ||
                     /\/inserted_style.css/i.test(zl) ||
-                    /\/style.css/i.test(zl) ||
                     /-\/static\/bootstrap\/css\/bootstrap.min.css/i.test(zl) ||
                     /-\/static\/bootstrap\/css\/bootstrap-theme.min.css/i.test(zl) ||
                     /-\/static\/main.css/i.test(zl) ||
@@ -81,7 +80,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                     /\/skins.minerva.base.reset\|skins.minerva.content.styles\|ext.cite.style\|mediawiki.page.gallery.styles\|mobile.app.pagestyles.android\|mediawiki.skinning.content.parsoid.css/i.test(zl)
                 )) {
                 zl = zl.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename - but next line renders this redundant in current implementation)
-                if (/(-\/(s\/)?style\.css)|minerva|inserted_style_mobile/i.test(zl)) { //If it matches one of the required styles...
+                if (/(-\/(s\/|mw\/)?style\.css)|minerva|inserted_style_mobile/i.test(zl)) { //If it matches one of the required styles...
                     zl = cs == "mobile" ? "-/s/style-mobile.css" : "-/s/style.css";
                 }
                 // Rename this required mobile style so that we don't trigger reading ZIM as mobile in print intercept
