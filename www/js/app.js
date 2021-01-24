@@ -1541,6 +1541,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         }, function (err) {
                             console.error('error while registering serviceWorker', err);
                             refreshAPIStatus();
+                            var goPWA = false;
                             var message = "The ServiceWorker could not be properly registered. Switching back to jQuery mode. Error message : " + err;
                             var protocol = window.location.protocol;
                             if (protocol === 'moz-extension:') {
@@ -1548,8 +1549,22 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 message += "\nPlease vote for https://bugzilla.mozilla.org/show_bug.cgi?id=1344561 so that some future Firefox versions support it";
                             } else if (protocol === 'file:') {
                                 message += "\n\nYou seem to be opening kiwix-js with the file:// protocol. You should open it through a web server : either through a local one (http://localhost/...) or through a remote one (but you need SSL : https://webserver/...)";
+                            } else if (protocol === 'ms-appx-web:') {
+                                message = 'This UWP app uses locally packaged code by default.\n' +
+                                    'To enable the Service Worker we need to switch to PWA mode.\n\n' +
+                                    'WARNING: This will attempt to access the server: ' + params.PWAServer;
+                                goPWA = true;
                             }
-                            uiUtil.systemAlert(message);
+                            if (goPWA) {
+                                uiUtil.systemAlert(message, 'Warning!', 'Access server', function () {
+                                    settingsStore.setItem('lastContentInjectionMode', value, Infinity);
+                                    window.location.href = 'https://kiwix.github.io/kiwix-js-windows/www/index.html?contentInjectionMode=serviceworker';
+                                }, 'Cancel', function () {
+                                    document.getElementById('btnConfigure').click();
+                                });
+                            } else {
+                                uiUtil.systemAlert(message, 'Information');
+                            }
                             setContentInjectionMode("jquery");
                             return;
                         });
