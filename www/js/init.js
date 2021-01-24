@@ -56,6 +56,8 @@ params['archivePath'] = "archives"; //The directory containing the packaged arch
 params['fileVersion'] = "wikipedia_en_100_maxi_2021-01.zim (23-Jan-2021)"; //Use generic name for actual file, and give version here
 params['cachedStartPage'] = false; //If you have cached the start page for quick start, give its URI here
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
+params['PWAServer'] = "https://kiwix.github.io/kiwix-js-windows/";
+params['PWAMode'] = getSetting('PWAMode'); // Set to true if the app should always operate in PWA mode 
 
 params['storeType'] = getBestAvailableStorageAPI();
 params['keyPrefix'] = 'kiwixjs-'; // Prefix to use for localStorage keys
@@ -103,6 +105,13 @@ params['useCache'] = true; // This needs to be made optional in UI
 params['PWAInstalled'] = getSetting('PWAInstalled');
 params['appType'] = getAppType();
 params.pagesLoaded = 0; // Page counter used to show PWA Install Prompt only after user has played with the app for a while
+
+// Make sure we are accessing the correct server according to the PWA setting
+if (params.PWAMode && !~window.location.href.indexOf(params.PWAServer) && /UWP/.test(params.appType)) {
+    // User wants PWA mode so reload now
+    window.location.href = params.PWAServer;
+}
+
 
 //Prevent app boot loop with problematic pages that cause an app crash
 if (getSetting('lastPageLoad') === 'failed') {
