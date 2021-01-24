@@ -2,8 +2,9 @@
 
 ## Release 1.1.4
 
-* ENHANCEMENT: Provide more robust upgrade process for PWAs, including notification banner
+* UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2021-01.zim`
 * UPDATE: More consistent install prompt display in Configuration (for PWA)
+* ENHANCEMENT: Provide more robust upgrade process for PWAs, including notification banner
 * FIX: Disable HTTP cache when pre-caching upgraded app files
 * FIX: Switching to jQuery mode in the PWA app no longer prevents the app working offline
 * FIX: Display of masonry-style landing pages in SW mode
