@@ -529,11 +529,18 @@ define(rqDef, function() {
      * Provides system-specific alert function
      * 
      * @param {String} message The message to display
+     * @param {String} title The message title
+     * @param {String} btn1 An optional button to display
+     * @param {Function} btn1Func An optional function to run when btn1 is selected
+     * @param {String} btn2 An optional secondary button to display
+     * @param {Function} btn2Func An optional function to run when btn2 is selected
      */
-    function systemAlert(message) {
+    function systemAlert(message, title, btn1, btn1Func, btn2, btn2Func) {
         // Test for UWP
         if (typeof Windows !== 'undefined' && typeof Windows.UI !== 'undefined' && typeof Windows.UI.Popups !== 'undefined') {
             var dialog = new Windows.UI.Popups.MessageDialog(message);
+            if (btn1 && btn1Func) dialog.commands.append(new Windows.UI.Popups.UICommand(btn1, btn1Func));
+            if (btn2 && btn2Func) dialog.commands.append(new Windows.UI.Popups.UICommand(btn2, btn2Func));
             dialog.showAsync();
         } else {
             alert(message);
