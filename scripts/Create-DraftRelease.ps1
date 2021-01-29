@@ -194,7 +194,7 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
   $permalinkFile = "$PSScriptRoot/../kiwix-js-uwp.html"
   if ($flavour -eq '_N') { $permalinkFile = $permalinkFile -replace 'uwp', 'nwjs' }
   $permalink = Get-Content -Raw $permalinkFile
-  $permalink = $permalink -replace 'v[\d.EN]+[^"'']*', $tag_name
+  $permalink = $permalink -replace 'v[\d.EN]{5,}[^"'']*', $tag_name
   "Looking for: $permalinkFile"
   if (-Not $dryrun) { Set-Content $permalinkFile $permalink }
   else { "`n[DRYRUN] would have written:`n$permalink`n" }
