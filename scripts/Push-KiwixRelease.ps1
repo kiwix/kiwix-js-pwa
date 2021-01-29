@@ -25,7 +25,7 @@ function Main {
 
     # Construct the filename if a tag was entered
     if ($tag) {
-        $tagname = $filename
+        $tagname = $filename -replace '^v', ''
         $filename = dir "$PSScriptRoot/../AppPackages/*_$tagname*_Test/*_$tagname*.appx*"
         if ($filename -and $filename.count -eq 1) {
             "Setting file to $filename..."
