@@ -14,6 +14,7 @@
 * FIX: Broken manual display of images in SW mode
 * FIX: Broken "Open all headings" option in SW mode
 * FIX: Printing in SW mode
+* FIX: Bugs with reload of last visited article
 * META: Create-DraftRelease PowerShell script supports automatic creation of GitHub releases for more versions of the app
 
 ## Release 1.1.3
