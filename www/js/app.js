@@ -795,14 +795,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
         document.getElementById('btnConfigure').addEventListener('click', function () {
             var searchDiv = document.getElementById('configuration');
-            if (searchDiv.style.display != 'none') {
+            if (searchDiv.style.display !== 'none') {
                 setTab();
                 if (params.themeChanged) {
                     params.themeChanged = false;
-                    if (history.state !== null) {
-                        var thisURL = decodeURIComponent(history.state.title);
-                        goToArticle(thisURL);
+                    var archiveName = appstate.selectedArchive ? appstate.selectedArchive._file._files[0].name : null;
+                    if (archiveName && ~params.lastPageVisit.indexOf(archiveName)) {
+                        goToArticle(params.lastPageVisit.replace(/@kiwixKey@.+$/, ''));
                     }
+                    //if (history.state !== null) {
+                    //    var thisURL = decodeURIComponent(history.state.title);
+                    //    goToArticle(thisURL);
+                    //}
                 }
                 return;
             }
@@ -2312,7 +2316,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     } else {
                         // The archive has changed, so we must blank the last page in case the Home page of the new archive
                         // has the same title as the previous archive (possible if it is, for example, "index") 
-                        params.lastPageVisit = "";
+                        params.lastPageVisit = '';
+                        params.lastPageHTML = '';
                         document.getElementById('btnHome').click();
                     }
                 }
@@ -2793,11 +2798,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             appstate.selectedArchive.readUtf8File(dirEntry, displayArticleInForm);
                             // This is needed so that the html is cached in displayArticleInForm
                             params.lastPageVisit = '';
+                            params.lastPageHTML = '';
                             //}
                         }
                     };
                     if (params.rememberLastPage && params.lastPageVisit) lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, "");
-                    if (params.rememberLastPage && (typeof Storage !== "undefined") && dirEntry.namespace + '/' + dirEntry.url == lastPage) {
+                    if (params.rememberLastPage && dirEntry.namespace + '/' + dirEntry.url === lastPage) {
                         if (!params.lastPageHTML) {
                             cache.getArticle(params.lastPageVisit.replace(/.*@kiwixKey@/, ''), lastPage, function (html) {
                                 params.lastPageHTML = html;
@@ -3045,17 +3051,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             var baseUrl = dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, '');
 
             //Since page has been successfully loaded, store it in the browser history
-            if (!window.history.state ||
-                !window.history.state.title ||
-                !~window.history.state.title.indexOf("/" + dirEntry.url)) {
-                pushBrowserHistoryState(dirEntry.namespace + "/" + dirEntry.url);
-            }
+            pushBrowserHistoryState(dirEntry.namespace + '/' + dirEntry.url);
             // Store for fast retrieval
-            if (!~params.lastPageVisit.indexOf(dirEntry.url)) {
-                params.lastPageVisit = dirEntry.namespace + "/" + dirEntry.url +
-                    "@kiwixKey@" + appstate.selectedArchive._file._files[0].name;
-                cache.setArticle(appstate.selectedArchive._file._files[0].name, dirEntry.namespace + '/' + dirEntry.url, htmlArticle, function(){});
-            }
+            params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive._file._files[0].name;
+            cache.setArticle(appstate.selectedArchive._file._files[0].name, dirEntry.namespace + '/' + dirEntry.url, htmlArticle, function(){});
             params.htmlArticle = htmlArticle;
 
             // Replaces ZIM-style URLs of img, script, link and media tags with a data-kiwixurl to prevent 404 errors [kiwix-js #272 #376]
