@@ -1,6 +1,6 @@
 ## This is the Windows 10 UWP app (Store or manual installation)
 
-**This release is intended for the Microsoft Store.** If you are running a previous version of Windows (XP/Vista/7/8), then you can use the [NWJS release instead](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html). If you are running Windows 10, then it is easiest to install this app from the Store here:
+**This release is intended for the Microsoft Store.** It includes a small sample ZIM archve with a collection of the 100 most popular Wikipedia articles `<<zim>>` (<<date>>) together with the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md). **If you are running an older version of Windows (XP/Vista/7/8), then you can use the [NWJS release instead](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html).** If you are running Windows 10, then it is easiest to install this app from the Store here:
 
 https://www.microsoft.com/store/apps/9P8SLZ4J979J 
 
