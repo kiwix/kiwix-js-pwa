@@ -1570,7 +1570,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             }
                             if (goPWA) {
                                 var launchPWA = function () {
-                                    settingsStore.setItem('lastContentInjectionMode', value, Infinity);
+                                    settingsStore.setItem('contentInjectionMode', value, Infinity);
                                     settingsStore.setItem('allowInternetAccess', true, Infinity);
                                     window.location.href = 'https://kiwix.github.io/kiwix-js-windows/www/index.html?contentInjectionMode=serviceworker&allowInternetAccess=true';
                                 };
@@ -1600,13 +1600,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             $('input:radio[name=contentInjectionMode]').filter('[value="' + value + '"]').prop('checked', true);
             params.contentInjectionMode = value;
             // Save the value in a cookie, so that to be able to keep it after a reload/restart
-            settingsStore.setItem('lastContentInjectionMode', value, Infinity);
+            settingsStore.setItem('contentInjectionMode', value, Infinity);
         }
 
         // At launch, we try to set the last content injection mode (stored in a cookie)
-        var lastContentInjectionMode = settingsStore.getItem('lastContentInjectionMode');
-        if (lastContentInjectionMode) {
-            setContentInjectionMode(lastContentInjectionMode);
+        var contentInjectionMode = settingsStore.getItem('contentInjectionMode');
+        if (contentInjectionMode) {
+            setContentInjectionMode(contentInjectionMode);
         } else {
             setContentInjectionMode('jquery');
         }
