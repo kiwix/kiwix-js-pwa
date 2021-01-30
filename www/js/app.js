@@ -1578,11 +1578,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     var serverContentInjectionMode = params.allowInternetAccess ? '' : '&contentInjectionMode=serviceworker';
                                     window.location.href = params.PWAServer + 'www/index.html?allowInternetAccess=true' + serverContentInjectionMode;
                                 };
+                                var checkPWA = function () {
+                                    uiUtil.checkServerIsAccessible(params.PWAServer + 'www/img/icons/kiwix-32.png', launchPWA, function (err) {
+                                        uiUtil.systemAlert('The server is not currently accessible! ' + err +
+                                            '\n\n(Kiwix needs one-time access to the server to cache the PWA).' +
+                                            '\nPlease try again when you have a stable Internet connection.', 'Error!');
+                                    });
+                                };
                                 if (params.allowInternetAccess) {
-                                    launchPWA();
+                                    checkPWA();
                                     return;
                                 } else {
-                                    uiUtil.systemAlert(message, 'Warning!', 'Access server', launchPWA, 'Cancel', function () {
+                                    uiUtil.systemAlert(message, 'Warning!', 'Access server', checkPWA, 'Cancel', function () {
                                         document.getElementById('btnConfigure').click();
                                         return;
                                     });
