@@ -49,7 +49,7 @@ var params = {};
  */
 var appstate = {};
 /******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION *******/
-params['version'] = "1.2.0-RP5"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "1.2.0-RP6"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN serveice worker!! ********************/
 params['packagedFile'] = "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
@@ -81,20 +81,12 @@ params['hideActiveContentWarning'] = getSetting('hideActiveContentWarning') != n
 params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') == true;
 params['alphaChar'] = getSetting('alphaChar') || 'A'; //Set default start of alphabet string (used by the Archive Index)
 params['omegaChar'] = getSetting('omegaChar') || 'Z'; //Set default end of alphabet string
-params['allowInternetAccess'] = getSetting('allowInternetAccess'); // This should only be set by the PWA access permissions box
 if (/contentInjectionMode=serviceworker/i.test(window.location.href) && /^http/i.test(window.location.protocol)) {
     // We have launched the app from a PWA redirect so set preferred contentInjectionMode (this can be overridden by user below)
     params.contentInjectionMode = 'serviceworker';
-    if (/allowInternetAccess=true/i.test(window.location.href)) {
-        params.allowInternetAccess = true;
-        if (params.storeType === 'cookie') {
-            document.cookie = 'allowInternetAccess=true;expires=Fri, 31 Dec 9999 23:59:59 GMT';
-        } else if (params.storeType === 'local_storage') {
-            localStorage.setItem('allowInternetAccess', true);
-        }
-    }
 }
 params['contentInjectionMode'] = getSetting('contentInjectionMode') || params.contentInjectionMode || 'jquery'; // Defaults to jquery mode (widest compatibility)
+params['allowInternetAccess'] = getSetting('allowInternetAccess');
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['imageDisplayMode'] = params.imageDisplay ? 'progressive' : 'manual';
@@ -123,7 +115,20 @@ if (params.PWAMode && !~window.location.href.indexOf(params.PWAServer) && /UWP/.
     // User wants PWA mode so reload now
     window.location.href = params.PWAServer;
 }
-
+// Test for an override parameter in querystring
+if (/allowInternetAccess/.test(window.location.href)) {
+    params.allowInternetAccess = /allowInternetAccess=(true|false)/.exec(window.location.href);
+    // DEV: note that below we want string values initially
+    params.allowInternetAccess = params.allowInternetAccess ? params.allowInternetAccess[1] : 'false';
+    if (params.storeType === 'cookie') {
+        document.cookie = 'allowInternetAccess=' + params.allowInternetAccess + ';expires=Fri, 31 Dec 9999 23:59:59 GMT';
+    }
+    // Now convert to Boolean
+    params.allowInternetAccess = params.allowInternetAccess === 'true';
+    if (params.storeType === 'local_storage') {
+        localStorage.setItem('allowInternetAccess', params.allowInternetAccess);
+    }
+}
 
 //Prevent app boot loop with problematic pages that cause an app crash
 if (getSetting('lastPageLoad') === 'failed') {
