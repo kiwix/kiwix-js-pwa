@@ -1011,7 +1011,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     var launchLocal = function () {
                         params.allowInternetAccess = false;
                         settingsStore.setItem('allowInternetAccess', false, Infinity);
-                        window.location.href = 'ms-appx-web:///www/index.html';
+                        window.location.href = 'ms-appx-web:///www/index.html?allowInternetAccess=false';
                     };
                     uiUtil.systemAlert(message, 'Warning!', 'Reload app', launchLocal, 'Cancel', function () {
                         document.getElementById('btnConfigure').click();
@@ -1572,15 +1572,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             if (goPWA) {
                                 var launchPWA = function () {
                                     settingsStore.setItem('lastContentInjectionMode', value, Infinity);
-                                    params.allowInternetAccess = true;
-                                    settingsStore.setItem('allowInternetAccess', params.allowInternetAccess, Infinity);
+                                    settingsStore.setItem('allowInternetAccess', true, Infinity);
                                     window.location.href = 'https://kiwix.github.io/kiwix-js-windows/www/index.html?contentInjectionMode=serviceworker&allowInternetAccess=true';
                                 };
                                 if (params.allowInternetAccess) {
                                     launchPWA();
+                                    return;
                                 } else {
                                     uiUtil.systemAlert(message, 'Warning!', 'Access server', launchPWA, 'Cancel', function () {
                                         document.getElementById('btnConfigure').click();
+                                        return;
                                     });
                                 }
                             } else {
