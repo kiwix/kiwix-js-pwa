@@ -33,7 +33,7 @@ define([], function () {
    * @type {RegExp}
    */
   var regexpCookieKeysToMigrate = new RegExp([
-    'lastContentInjectionMode', 'lastSelectedArchive', 'lastSelectedArchivePath', 'imageDisplay', 'useMathJax', 'version',
+    'contentInjectionMode', 'lastContentInjectionMode', 'lastSelectedArchive', 'lastSelectedArchivePath', 'imageDisplay', 'useMathJax', 'version',
     'listOfArchives', 'lastPageVisit', 'cssCache', 'cssUITheme', 'cssTheme', 'cssSource', 'removePageMaxWidth', 'hideActiveContentWarning',
     'hideToolbars', 'allowHTMLExtraction', 'openAllSections', 'PWAInstalled', 'lastPageLoad', 'showFileSelectors'
   ].join('|'));
@@ -78,6 +78,7 @@ define([], function () {
       localStorage.removeItem('lastPageHTML');
       localStorage.removeItem(keyPrefix + 'lastPageHTML');
       localStorage.removeItem(keyPrefix + 'lastPageVisit');
+      localStorage.removeItem(keyPrefix + 'lastContentInjectionMode');
     }
     settingsStore.removeItem('lastPageVisit');
     // Note that if this function returns 'none', the cookie implementations below will run anyway. This is because storing a cookie
