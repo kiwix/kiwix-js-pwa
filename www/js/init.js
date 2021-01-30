@@ -49,7 +49,7 @@ var params = {};
  */
 var appstate = {};
 /******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION *******/
-params['version'] = "1.2.0-RP9"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "1.2.0-RP10"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN serveice worker!! ********************/
 params['packagedFile'] = "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
@@ -119,16 +119,18 @@ if (params.PWAMode && !~window.location.href.indexOf(params.PWAServer) && /UWP/.
         if (matches[1] && matches[2]) {
             var paramKey = decodeURIComponent(matches[1]);
             var paramVal = decodeURIComponent(matches[2]);
-            // Store new values
-            if (params.storeType === 'cookie') {
-                document.cookie = paramKey + '=' + paramVal + ';expires=Fri, 31 Dec 9999 23:59:59 GMT';
+            if (paramKey !== 'title') {
+                // Store new values
+                if (params.storeType === 'cookie') {
+                    document.cookie = encodeUriComponent(paramKey) + '=' + encodeUriComponent(paramVal) + ';expires=Fri, 31 Dec 9999 23:59:59 GMT';
+                }
+                // Make Boolean value
+                paramVal = paramVal === 'false' ? false : paramVal === 'true' ? true : paramVal;
+                if (params.storeType === 'local_storage') {
+                    localStorage.setItem(params.keyPrefix + paramKey, paramVal);
+                }
+                params[paramKey] = paramVal;
             }
-            // Make Boolean value
-            paramVal = paramVal === 'false' ? false : paramVal === 'true' ? true : paramVal;
-            if (params.storeType === 'local_storage') {
-                localStorage.setItem(paramKey, paramVal);
-            }
-            params[paramKey] = paramVal;
         }
         matches = rgx.exec(window.location.search);
     }
