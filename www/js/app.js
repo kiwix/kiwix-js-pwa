@@ -1556,12 +1556,19 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 goPWA = true;
                             }
                             if (goPWA) {
-                                uiUtil.systemAlert(message, 'Warning!', 'Access server', function () {
+                                var launchPWA = function () {
                                     settingsStore.setItem('lastContentInjectionMode', value, Infinity);
+                                    params.allowInternetAccess = true;
+                                    settingsStore.setItem('allowInternetAccess', params.allowInternetAccess, Infinity);
                                     window.location.href = 'https://kiwix.github.io/kiwix-js-windows/www/index.html?contentInjectionMode=serviceworker';
-                                }, 'Cancel', function () {
-                                    document.getElementById('btnConfigure').click();
-                                });
+                                };
+                                if (params.allowInternetAccess) {
+                                    launchPWA();
+                                } else {
+                                    uiUtil.systemAlert(message, 'Warning!', 'Access server', launchPWA, 'Cancel', function () {
+                                        document.getElementById('btnConfigure').click();
+                                    });
+                                }
                             } else {
                                 uiUtil.systemAlert(message, 'Information');
                             }

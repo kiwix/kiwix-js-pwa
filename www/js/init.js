@@ -81,7 +81,11 @@ params['hideActiveContentWarning'] = getSetting('hideActiveContentWarning') != n
 params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') == true;
 params['alphaChar'] = getSetting('alphaChar') || 'A'; //Set default start of alphabet string (used by the Archive Index)
 params['omegaChar'] = getSetting('omegaChar') || 'Z'; //Set default end of alphabet string
-params['contentInjectionMode'] = getSetting('contentInjectionMode') || 'jquery'; //Defaults to jquery mode (widest compatibility)
+if (/contentInjectionMode=serviceworker/i.test(window.location.href) && /^http/i.test(window.location.protocol)) {
+    // We have launched the app from a PWA redirect so set preferred contentInjectionMode (this can be overridden by user below)
+    params.contentInjectionMode = 'serviceworker';
+}
+params['contentInjectionMode'] = getSetting('contentInjectionMode') || params.contentInjectionMode || 'jquery'; // Defaults to jquery mode (widest compatibility)
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['imageDisplayMode'] = params.imageDisplay ? 'progressive' : 'manual';
@@ -97,7 +101,7 @@ params['localStorage'] = params['localStorage'] || "";
 params['pickedFile'] = launchArguments ? launchArguments.files[0] : "";
 params['pickedFolder'] = params['pickedFolder'] || "";
 params['themeChanged'] = params['themeChanged'] || false;
-params['allowInternetAccess'] = params['allowInternetAccess'] || false; // Do not get value from cookie, should be explicitly set by user on a per-session basis
+params['allowInternetAccess'] = getSetting('allowInternetAccess'); // This should only be set by the PWA access permissions box
 params['printIntercept'] = false;
 params['printInterception'] = false;
 params['appIsLaunching'] = true; // Allows some routines to tell if the app has just been launched
@@ -126,6 +130,7 @@ if (getSetting('lastPageLoad') === 'failed') {
 }
 
 //Initialize checkbox, radio and other values
+document.getElementById('allowInternetAccessCheck').checked = params.allowInternetAccess;
 document.getElementById('cssCacheModeCheck').checked = params.cssCache;
 document.getElementById('imageDisplayModeCheck').checked = params.imageDisplay;
 document.getElementById('removePageMaxWidthCheck').checked = params.removePageMaxWidth === true; // Will be false if false or auto
