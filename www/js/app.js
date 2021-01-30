@@ -1610,8 +1610,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         } else {
             setContentInjectionMode('jquery');
         }
-        // We also ned to set the Internet Access box
-        document.getElementById('allowInternetAccessCheck').checked = settingsStore.getItem('allowInternetAccess') === 'true';
 
         /**
          * Tells if the ServiceWorker API is available
