@@ -1001,12 +1001,26 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             params.themeChanged = true; // This will reload the page
         });
         $('input:checkbox[name=allowInternetAccess]').on('change', function (e) {
-            params.allowInternetAccess = this.checked ? true : false;
             document.getElementById('serverResponse').style.display = "none";
+            params.allowInternetAccess = this.checked;
             if (!this.checked) {
                 document.getElementById('downloadLinks').style.display = "none";
+                if (/UWP/.test(params.appType) && /^http/i.test(window.location.protocol)) {
+                    var message = 'This will switch the app back to using locally packaged legacy code, and configuration setting may be lost.\n\n' +
+                        'WARNING: App will re-load in jQuery mode!';
+                    var launchLocal = function () {
+                        params.allowInternetAccess = false;
+                        settingsStore.setItem('allowInternetAccess', false, Infinity);
+                        window.location.href = 'ms-appx-web:///www/index.html';
+                    };
+                    uiUtil.systemAlert(message, 'Warning!', 'Reload app', launchLocal, 'Cancel', function () {
+                        document.getElementById('btnConfigure').click();
+                    });
+                    this.checked = true;
+                    params.allowInternetAccess = true;
+                }
+                settingsStore.setItem('allowInternetAccess', false, Infinity);
             }
-            //NB do not store this value in a cookie -- should be enabled by the user on a per-session basis only
         });
         $('input:checkbox[name=cssCacheMode]').on('change', function (e) {
             params.cssCache = this.checked ? true : false;
