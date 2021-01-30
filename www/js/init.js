@@ -49,7 +49,7 @@ var params = {};
  */
 var appstate = {};
 /******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION *******/
-params['version'] = "1.2.0-RP14"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "1.2.0-RP15"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN serveice worker!! ********************/
 params['packagedFile'] = "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
@@ -104,7 +104,7 @@ params['PWAInstalled'] = getSetting('PWAInstalled');
 params['appType'] = getAppType();
 params['falFileToken'] = "zimfile"; // UWP support
 params['falFolderToken'] = "zimfilestore"; // UWP support
-if (/UWP/.test(params.appType) && /PWA/.test(params.appType) && /^http/.test(window.location.protocol) {
+if (/UWP/.test(params.appType) && /PWA/.test(params.appType) && /^http/.test(window.location.protocol)) {
     // We need different file access tokens so that the apps do not attempt to launch the same file
     params.falFileToken = 'zimfilePWA';
     params.falFolderToken = 'zimFilestorePWA';
