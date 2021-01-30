@@ -1571,8 +1571,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             if (goPWA) {
                                 var launchPWA = function () {
                                     settingsStore.setItem('contentInjectionMode', value, Infinity);
+                                    // This is needed so that we get passthrough on subsequent launches
                                     settingsStore.setItem('allowInternetAccess', true, Infinity);
-                                    window.location.href = 'https://kiwix.github.io/kiwix-js-windows/www/index.html?contentInjectionMode=serviceworker&allowInternetAccess=true';
+                                    // We are using allowInternetAccess as a passthrough, so if it is enabled, we don't force a
+                                    // switch to SW mode on the server 
+                                    var serverContentInjectionMode = params.allowInternetAccess ? '' : '&contentInjectionMode=serviceworker';
+                                    window.location.href = params.PWAServer + 'www/index.html?allowInternetAccess=true' + serverContentInjectionMode;
                                 };
                                 if (params.allowInternetAccess) {
                                     launchPWA();
