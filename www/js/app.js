@@ -1009,9 +1009,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     var message = 'This will switch to using locally packaged code only. Configuration settings may be lost.\n\n' +
                         'WARNING: App will re-load in jQuery mode!';
                     var launchLocal = function () {
-                        params.allowInternetAccess = false;
                         settingsStore.setItem('allowInternetAccess', false, Infinity);
-                        window.location.href = 'ms-appx-web:///www/index.html?allowInternetAccess=false';
+                        window.location.href = 'ms-appx-web:///www/index.html?allowInternetAccess=false&contentInjectionMode=jquery';
                     };
                     uiUtil.systemAlert(message, 'Warning!', 'Reload app', launchLocal, 'Cancel', function () {
                         document.getElementById('btnConfigure').click();
