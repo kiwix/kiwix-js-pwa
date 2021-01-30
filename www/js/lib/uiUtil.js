@@ -548,6 +548,20 @@ define(rqDef, function() {
     }
 
     /**
+     * Checks if a server is accessible by attempting to load a test image from the server
+     * 
+     * @param {String} imageSrc The full URI of the image
+     * @param {any} onSuccess A function to call if the image can be loaded
+     * @param {any} onError A function to call if the image cannot be loaded
+     */
+    function checkServerIsAccessible(imageSrc, onSuccess, onError) {
+        var image = new Image();
+        image.onload = onSuccess;
+        image.onerror = onError;
+        image.src = imageSrc;
+    }
+
+    /**
      * Checks whether an element is partially or fully inside the current viewport, and adds the rect.top value to element.top
      * 
      * @param {Element} el The DOM element for which to check visibility
@@ -612,6 +626,7 @@ define(rqDef, function() {
         insertBreakoutLink: insertBreakoutLink,
         extractHTML: extractHTML,
         systemAlert: systemAlert,
+        checkServerIsAccessible: checkServerIsAccessible,
         htmlEscapeChars: htmlEscapeChars
     };
 });
