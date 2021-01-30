@@ -1574,7 +1574,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     settingsStore.setItem('lastContentInjectionMode', value, Infinity);
                                     params.allowInternetAccess = true;
                                     settingsStore.setItem('allowInternetAccess', params.allowInternetAccess, Infinity);
-                                    window.location.href = 'https://kiwix.github.io/kiwix-js-windows/www/index.html?contentInjectionMode=serviceworker';
+                                    window.location.href = 'https://kiwix.github.io/kiwix-js-windows/www/index.html?contentInjectionMode=serviceworker&allowInternetAccess=true';
                                 };
                                 if (params.allowInternetAccess) {
                                     launchPWA();
