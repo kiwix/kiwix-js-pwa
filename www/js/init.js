@@ -49,7 +49,7 @@ var params = {};
  */
 var appstate = {};
 /******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION *******/
-params['version'] = "1.2.0-RP8"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "1.2.0-RP9"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN serveice worker!! ********************/
 params['packagedFile'] = "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
@@ -304,7 +304,7 @@ function getSetting(name) {
 
  // Tests for available Storage APIs (document.cookie or localStorage) and returns the best available of these
  // DEV: This function is replicated from settingsStore.js because RequireJS has not yet loaded it,
- // except that it returns 'cookie' if the always-present lastContentInjectionMode is still in cookie, which
+ // except that it returns 'cookie' if the always-present contentInjectionMode is still in cookie, which
  // means the store previously used cookies and hasn't upgraded yet: this won't be done till app.js is loaded
  function getBestAvailableStorageAPI() {
     var type = 'none';
@@ -322,7 +322,7 @@ function getSetting(name) {
     var kiwixCookieTest = /tempKiwixCookieTest=working/.test(document.cookie);
     document.cookie = 'tempKiwixCookieTest=; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict';
     if (kiwixCookieTest) type = 'cookie';
-    if (localStorageTest && !/lastContentInjectionMode=(?:jquery|serviceworker)/.test(document.cookie)) type = 'local_storage';
+    if (localStorageTest && !/contentInjectionMode=(?:jquery|serviceworker)/.test(document.cookie)) type = 'local_storage';
     return type;
   }
 
