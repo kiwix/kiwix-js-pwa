@@ -1,5 +1,9 @@
 # Changelog
 
+## Release 1.2.0 (in progress)
+
+* ENHANCEMENT: Enable Service Worker mode in UWP app
+
 ## Release 1.1.4
 
 * UPDATE: Included ZIM updated to `wikipedia_en_100_maxi_2021-01.zim`
