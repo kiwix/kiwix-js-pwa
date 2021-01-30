@@ -56,7 +56,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         // because params.storeType is also set in a preliminary way in init.js)
         params['storeType'] = null;
         params['storeType'] = settingsStore.getBestAvailableStorageAPI();
-        // Test caching capibility
+        // Test caching capability
         cache.test(function(){});
         params['lastPageVisit'] = params.storedFile ? settingsStore.getItem(params.storedFile) : '';
         params.lastPageVisit = params.lastPageVisit ? params.lastPageVisit + '@kiwixKey@' + params.storedFile : '';
@@ -1006,7 +1006,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (!this.checked) {
                 document.getElementById('downloadLinks').style.display = "none";
                 if (/UWP/.test(params.appType) && /^http/i.test(window.location.protocol)) {
-                    var message = 'This will switch the app back to using locally packaged legacy code, and configuration setting may be lost.\n\n' +
+                    var message = 'This will switch to using locally packaged code only. Configuration settings may be lost.\n\n' +
                         'WARNING: App will re-load in jQuery mode!';
                     var launchLocal = function () {
                         params.allowInternetAccess = false;
@@ -1610,6 +1610,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         } else {
             setContentInjectionMode('jquery');
         }
+        // We also ned to set the Internet Access box
+        document.getElementById('allowInternetAccessCheck').checked = settingsStore.getItem('allowInternetAccess') === 'true';
 
         /**
          * Tells if the ServiceWorker API is available
