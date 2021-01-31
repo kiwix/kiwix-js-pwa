@@ -91,11 +91,9 @@
                     <h3>Please read this important information</h3>
                     <div class="disclaimer">
                         <p>
-                            <b>DISCLAIMER:</b> Please be aware that Kiwix works with offline archives, so information in any archive (ZIM
-                            file) you download will only be as up-to-date as the archive itself. To get updated info, you will need to
-                            download a new archive. Information in archives is free, open source and provided by volunteers.<br>
-                            <strong>Kiwix gives no guarantee as to the accuracy of information contained in archives you access with this
-                            app.</strong> You should not rely on it as your only source of information for making important decisions.
+                            <b>DISCLAIMER:</b> Please be aware that Kiwix works with offline archives. To get updated info, you will need to
+                            download a new archive periodically. Information in archives is free, open source and provided by volunteers.<br>
+                            <strong>Kiwix gives no guarantee as to the accuracy of information in the archives you access with this app.</strong>
                         </p>
                     </div>
                     <p style="padding-top:10px;">
@@ -283,11 +281,9 @@
                     </ul>
                     <div class="disclaimer">
                         <p>
-                            <b>DISCLAIMER:</b> Please be aware that Kiwix works entirely offline, so information in any archive (ZIM
-                            file) you download will only be as up-to-date as the archive itself. To get updated info, you will need to
-                            download a new archive. Information in archives is free, open source and provided by volunteers.<br>
-                            <strong>Kiwix gives no guarantee as to the accuracy of information contained in archives you access with this
-                            app.</strong> You should not rely on it as your only source of information for making important decisions.
+                            <b>DISCLAIMER:</b> Please be aware that Kiwix works with offline archives. To get updated info, you will need to
+                            download a new archive periodically. Information in archives is free, open source and provided by volunteers.<br>
+                            <strong>Kiwix gives no guarantee as to the accuracy of information in the archives you access with this app.</strong>
                         </p>
                     </div>
                     <br>
@@ -324,6 +320,7 @@
                         Alternatively, visit <a href="https://download.kiwix.org/zim" target="_blank">https://download.kiwix.org/zim/</a> using a regular computer.
                         <strong>Currently only Wikimedia contents (ZIM files in wiki* subdirectories) and Stackexchange have been tested fully</strong>.
                         There are known bugs when reading some other content, and dynamic content is not supported in jQuery mode.
+                        You may need to switch the app to the experimental PWA mode (see Expert Settings in configuration) to access dynamic content.
                     </p>
                     <p>
                         If you have enough space, you can put several archives on your device storage. If you download the content
@@ -339,12 +336,20 @@
                         cable to copy the ZIM archive(s) to an accessible location on your device, such as the SD card or the main storage area if there is enough
                         space there.
                     </p>
-                    <h4>Step 3: open this app, go to the "Configure" menu and select your ZIM file</h4>
+                    <h4>Step 3: go to the "Configure" menu and select your ZIM file (or double-click / drag-and-drop your file into the app)</h4>
                     <p>
-                        On the Configuration page, tap the "Select storage" button. If you have downloaded more than one archive, or you have a split ZIM archive
-                        consisting of several 2GB files, then you will need to pick the <b>folder</b> that contains these files. If you have just one unsplit ZIM
-                        archive, you can instead pick the <b>file</b> directly, using the respective buttons on the
-                        <a href="#" onclick="$('#btnConfigure').click();">Configuration</a> page (note that these buttons only appear after you tap "Select Storage").
+                        On the Configuration page, tap the "Select storage" button. If you have downloaded more than one archive, or you have a
+                        split ZIM archive consisting of several 2GB files, then you will need to pick the <b>folder</b> that contains these files
+                        or else (in older browsers) you will need to select all the split parts. If you have just one unsplit ZIM archive, you
+                        can instead pick the <b>file</b> directly, using the respective buttons on the 
+                        <a href="#" onclick="document.getElementById('btnConfigure').click();">Configuration</a> page (note that these buttons
+                        only appear after you tap "Select Storage"). In most modern contexts the archive will be remembered on next launch
+                        (Firefox and IE11 are exceptions).
+                    </p>
+                    <p>
+                        Alternatively, in the UWP app you can simply <b>double-click</b> the ZIM file to launch it in the app, even if the app
+                        is closed (your choice will be remembered on next launch). You can also <b>drag-and-drop</b> your ZIM file into the app,
+                        but it may not be remembered on next launch in all contexts (try it if this method interests you!).
                     </p>
                     <h4>Step 4: enjoy your content offline!</h4>
                     <h3 id="changelog">Changes in <span class="version">0.9</span></h3>
