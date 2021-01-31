@@ -1564,9 +1564,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             } else if (protocol === 'file:') {
                                 message += "\n\nYou seem to be opening kiwix-js with the file:// protocol. You should open it through a web server : either through a local one (http://localhost/...) or through a remote one (but you need SSL : https://webserver/...)";
                             } else if (protocol === 'ms-appx-web:') {
-                                message = 'This UWP app uses locally packaged code by default.\n' +
-                                    'To enable the Service Worker we need to switch to PWA mode.\n\n' +
-                                    'WARNING: This will attempt to access the server: ' + params.PWAServer;
+                                message = 'This UWP app uses locally packaged code by default. ' +
+                                    'To enable the Service Worker we need to switch to PWA mode, ' +
+                                    'which requires one-time access to our secure server to cache the PWA code.\n\n' +
+                                    'The app will be able to run offline in PWA mode, but will auto-update ' +
+                                    'periodically when online as per the Service Worker spec.\n\n' +
+                                    'You can switch back any time by toggling "Allow Internet access?" off.\n\n' +
+                                    'WARNING: This will attempt to access the following server: \n' + params.PWAServer;
                                 goPWA = true;
                             }
                             if (goPWA) {
@@ -3680,6 +3684,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         });
                     });
                 });
+                // For TED ZIMs, the initial video div height is set incorectly, so we correct it
+                var videoWrapper = iframe.getElementById('video-wrapper');
+                if (videoWrapper) videoWrapper.style.height = 'auto';
             }
 
             /**
@@ -3712,7 +3719,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // Create the new container and menu
                 var d = doc.createElement('DIV');
                 d.id = 'kiwixCCMenu';
-                d.setAttribute('style', 'margin-top: 1em; text-align: left;');
+                d.setAttribute('style', 'margin-top: 1em; text-align: left; position: relative;');
                 d.innerHTML = 'Please select subtitle language: ' + newKiwixCCMenu;
                 mediaElement.parentElement.insertBefore(d, mediaElement.nextSibling);
                 // Add event listener to extract the text track from the ZIM and insert it into the media element when the user selects it
