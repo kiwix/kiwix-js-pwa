@@ -49,7 +49,7 @@ var params = {};
  */
 var appstate = {};
 /******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION *******/
-params['version'] = "1.2.0-RP18"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "1.2.0-RP19"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN serveice worker!! ********************/
 params['packagedFile'] = "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
@@ -73,7 +73,6 @@ params['cssUITheme'] = getSetting('cssUITheme') || 'light'; //Set default to 'au
 params['imageDisplay'] = getSetting('imageDisplay') != null ? getSetting('imageDisplay') : true; //Set default to display images from Zim
 params['hideToolbars'] = getSetting('hideToolbars') != null ? getSetting('hideToolbars') : true; //Set default to true (hides both), 'top' (hides top only), or false (no hiding)
 params['rememberLastPage'] = getSetting('rememberLastPage') != null ? getSetting('rememberLastPage') : true; //Set default option to remember the last visited page between sessions
-params['lastPageVisit'] = getSetting('lastPageVisit') || '';
 params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
 //params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
 params['showFileSelectors'] = true; //False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
@@ -86,8 +85,10 @@ params['allowInternetAccess'] = getSetting('allowInternetAccess');
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['imageDisplayMode'] = params.imageDisplay ? 'progressive' : 'manual';
-params['storedFile'] = getSetting('lastSelectedArchive') || params['packagedFile'];
+params['storedFile'] = getSetting('lastSelectedArchive') || params['packagedFile'] || '';
 params.storedFile = launchArguments ? launchArguments.files[0].name : params.storedFile;
+params['lastPageVisit'] = params.rememberLastPage && params.storedFile ? getSetting(params.storedFile) || '' : '';
+params.lastPageVisit = params.lastPageVisit ? params.lastPageVisit + '@kiwixKey@' + params.storedFile : '';
 params['storedFilePath'] = getSetting('lastSelectedArchivePath');
 params.storedFilePath = params.storedFilePath ? decodeURIComponent(params.storedFilePath) : params.archivePath + '/' + params.packagedFile;
 params.storedFilePath = launchArguments ? launchArguments.files[0].path || '' : params.storedFilePath;
@@ -146,7 +147,7 @@ if (/UWP/.test(params.appType) && params.contentInjectionMode === 'serviceworker
 
 //Prevent app boot loop with problematic pages that cause an app crash
 if (getSetting('lastPageLoad') === 'failed') {
-    params.lastPageVisit = "";
+    params.lastPageVisit = '';
 } else {
     //Cookie will signal failure until article is fully loaded
     if (params.storeType === 'cookie') {
