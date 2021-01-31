@@ -1010,7 +1010,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         'WARNING: App will re-load in jQuery mode!';
                     var launchLocal = function () {
                         settingsStore.setItem('allowInternetAccess', false, Infinity);
-                        window.location.href = 'ms-appx-web:///www/index.html?allowInternetAccess=false&contentInjectionMode=jquery';
+                        var uriParams = '?allowInternetAccess=false&contentInjectionMode=jquery';
+                        uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
+                        uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
+                        uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
+                        window.location.href = 'ms-appx-web:///www/index.html' + uriParams;
                     };
                     uiUtil.systemAlert(message, 'Warning!', 'Reload app', launchLocal, 'Cancel', function () {
                         document.getElementById('btnConfigure').click();
@@ -1573,26 +1577,27 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     settingsStore.setItem('contentInjectionMode', value, Infinity);
                                     // This is needed so that we get passthrough on subsequent launches
                                     settingsStore.setItem('allowInternetAccess', true, Infinity);
-                                    // We are using allowInternetAccess as a passthrough, so if it is enabled, we don't force a
-                                    // switch to SW mode on the server 
-                                    var serverContentInjectionMode = params.allowInternetAccess ? '' : '&contentInjectionMode=serviceworker';
-                                    var listOfArchives = '&listOfArchives=' + settingsStore.getItem('listOfArchives');
-                                    var lastArchive = '&lastSelectedArchive=' + params.lastSelectedArchive;
-                                    window.location.href = params.PWAServer + 'www/index.html?allowInternetAccess=true' +
-                                        serverContentInjectionMode + listOfArchives + lastArchive;
+                                    var uriParams = '?allowInternetAccess=true';
+                                    // We are using allowInternetAccess as a passthrough, so we don't force a switch to SW mode on the server
+                                    // except on first launch of SW mode
+                                    uriParams += params.allowInternetAccess ? '' : '&contentInjectionMode=serviceworker';
+                                    uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
+                                    uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
+                                    uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
+                                    window.location.href = params.PWAServer + 'www/index.html' + uriParams;
                                 };
-                                var checkPWA = function () {
+                                var checkPWAIsOnline = function () {
                                     uiUtil.checkServerIsAccessible(params.PWAServer + 'www/img/icons/kiwix-32.png', launchPWA, function (err) {
                                         uiUtil.systemAlert('The server is not currently accessible! ' + err +
                                             '\n\n(Kiwix needs one-time access to the server to cache the PWA).' +
                                             '\nPlease try again when you have a stable Internet connection.', 'Error!');
                                     });
                                 };
-                                if (params.allowInternetAccess) {
-                                    checkPWA();
+                                if (settingsStore.getItem('allowInternetAccess') === 'true') {
+                                    checkPWAIsOnline();
                                     return;
                                 } else {
-                                    uiUtil.systemAlert(message, 'Warning!', 'Access server', checkPWA, 'Cancel', function () {
+                                    uiUtil.systemAlert(message, 'Warning!', 'Access server', checkPWAIsOnline, 'Cancel', function () {
                                         document.getElementById('btnConfigure').click();
                                         return;
                                     });
