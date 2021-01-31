@@ -1576,7 +1576,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     // We are using allowInternetAccess as a passthrough, so if it is enabled, we don't force a
                                     // switch to SW mode on the server 
                                     var serverContentInjectionMode = params.allowInternetAccess ? '' : '&contentInjectionMode=serviceworker';
-                                    window.location.href = params.PWAServer + 'www/index.html?allowInternetAccess=true' + serverContentInjectionMode;
+                                    var listOfArchives = '&listOfArchives=' + settingsStore.getItem('listOfArchives');
+                                    var lastArchive = '&lastSelectedArchive=' + params.lastSelectedArchive;
+                                    window.location.href = params.PWAServer + 'www/index.html?allowInternetAccess=true' +
+                                        serverContentInjectionMode + listOfArchives + lastArchive;
                                 };
                                 var checkPWA = function () {
                                     uiUtil.checkServerIsAccessible(params.PWAServer + 'www/img/icons/kiwix-32.png', launchPWA, function (err) {
