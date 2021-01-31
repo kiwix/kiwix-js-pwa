@@ -105,11 +105,6 @@ params['PWAInstalled'] = getSetting('PWAInstalled');
 params['appType'] = getAppType();
 params['falFileToken'] = "zimfile"; // UWP support
 params['falFolderToken'] = "zimfilestore"; // UWP support
-//if (/UWP/.test(params.appType) && /PWA/.test(params.appType) && /^http/.test(window.location.protocol)) {
-//    // We need different file access tokens so that the apps do not attempt to launch the same file
-//    params.falFileToken = 'zimfilePWA';
-//    params.falFolderToken = 'zimFilestorePWA';
-//}
 params.pagesLoaded = 0; // Page counter used to show PWA Install Prompt only after user has played with the app for a while
 
 // Apply any override parameters in querystring (done as a self-calling funciton to avoid creating global variables)
