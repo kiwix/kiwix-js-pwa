@@ -58,9 +58,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         params['storeType'] = settingsStore.getBestAvailableStorageAPI();
         // Test caching capability
         cache.test(function(){});
-        params['lastPageVisit'] = params.storedFile ? settingsStore.getItem(params.storedFile) : '';
-        params.lastPageVisit = params.lastPageVisit ? params.lastPageVisit + '@kiwixKey@' + params.storedFile : '';
-
         // Unique identifier of the article expected to be displayed
         var expectedArticleURLToBeDisplayed = "";
     
