@@ -274,6 +274,7 @@
                     <ul style="padding-left:1em;">
                         <li><a href="#addingArchives">Adding archives and languages</a></li>
                         <li><a href="#changelog">Changelog and Features</a></li>
+                        <li><a href="#expert">Expert or Experimental Settings</a></li>
                         <li><a href="#privacy">Privacy Policy</a></li>
                         <li><a href="#feedback">Feedback and Support</a></li>
                         <li><a href="#credits">Credits and Licence</a></li>
@@ -341,7 +342,7 @@
                         On the Configuration page, tap the "Select storage" button. If you have downloaded more than one archive, or you have a
                         split ZIM archive consisting of several 2GB files, then you will need to pick the <b>folder</b> that contains these files
                         or else (in older browsers) you will need to select all the split parts. If you have just one unsplit ZIM archive, you
-                        can instead pick the <b>file</b> directly, using the respective buttons on the 
+                        can instead pick the <b>file</b> directly, using the respective buttons on the
                         <a href="#" onclick="document.getElementById('btnConfigure').click();">Configuration</a> page (note that these buttons
                         only appear after you tap "Select Storage"). In most modern contexts the archive will be remembered on next launch
                         (Firefox and IE11 are exceptions).
@@ -359,40 +360,73 @@
                     <p>
                         Kiwix JS Windows works offline, and does not collect or record any of your personal data. It
                         only remembers your browsing history for the duration of a session (for the purpose of returning to previously
-                        viewed pages). This history is lost on exiting the app and is not recorded in any way.
+                        viewed pages). This history is lost on exiting the app with the optional exception of the last-visited page.
                     </p>
                     <p>
-                        By default, this application will remember your last-visited page between sessions using local sorage or a cookie that is accessible
-                        only by this app on this device. If you are accessing sensitive information that you do not wish to be displayed next time
-                        you open this app, we recommend that you <a href="#privacy" onclick="$('#btnConfigure').click();">turn this option off</a>
-                        in the Configuration options.
+                        By default, this application will remember your last-visited page for each ZIM between sessions using local storage
+                        or a cookie that is accessible only by this app on this device. If you are accessing sensitive information that you do
+                        not wish to be displayed next time you open this app, we recommend that you <a href="#privacy"
+                                                                                                       onclick="document.getElementById('btnConfigure').click();">turn this option off</a> in the Configuration options.
                     </p>
                     <p>
                         This application only reads the archive files that you explicitly select on your device and files included in
                         its own package: it is not capable of reading any other files. It will only access the Kiwix download server if
-                        you specifically request it to find and display download links for ZIM archives on the Configuration page.
-                        However, some ZIM archives contain active content (scripts) which may, in rare circumstances, attempt to
+                        you specifically request it to find and display download links for ZIM archives on the Configuration page. If you
+                        run the app as a PWA, it will cache its own code from the secure PWA server and then can be used offline.
+                        Some ZIM archives contain active content (scripts) which may, in rare circumstances, attempt to
                         contact external servers for incidental files such as fonts. These scripts will only run if you enable Service
                         Worker mode in Configuration.
                     </p>
                     <p>
-                        <b>If you believe your Internet access is insecure, or is being observed or censored, we recommend that you completely
-                        shut down your Internet (Data or WiFi) access before using the application.</b>
+                        <b>
+                            If you believe your Internet access is insecure, or is being observed or censored, we recommend that you completely
+                            shut down your Internet (Data or WiFi) access before using the application.
+                        </b>
                     </p>
                     <p>
                         Additionally, if you obtained this app from a Vendor Store (including extensions), then the Store operator may
                         track your usage of the app (e.g. download, install, uninstall, date and number of sessions) for the purpose of
                         providing anonymous, aggregate usage statistics to developers. If this concerns you, you should check the relevant
                         Store Privacy Policy for further information. If you are using the PWA version, then note that <b>by design</b> any PWA
-                        will periodically check the PWA server (in this case, kiwix.github.io) to see if the Service Worker has been updated.
+                        will periodically check the PWA server (in this case, kiwix.github.io) to see if the Service Worker has been updated,
+                        but the app will still run entirely offline when the server is unavailable or the device is offline.
                     </p>
                     <p>
                         <b>Builds of this app are available that do not use a Store or an online Service Worker.</b> Please see:
                         <ul>
                             <li><a href="https://github.com/kiwix/kiwix-js-windows/releases">Releases</a></li>
-                            <li><a href="https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html">NWJS version</a> - this version is completely
-                                standalone and will never self-update.</li>
+                            <li><a href="https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html">NWJS version</a> - this version is completely standalone and will never self-update.</li>
                         </ul>
+                    </p>
+                    <h3 id="expert">Expert or experimental settings</h3>
+                    <p>
+                        Depending on your browser or framework, this app may be capable of running in two different modes, which we call
+                        "JQuery Mode" and "ServiceWorker Mode" for short. There is a toggle under Expert Settings
+                        in Configuration. Here is an explanation of what these modes do:
+                        <ul>
+                            <li>
+                                <b>JQuery Mode</b>: This mode (which does not in fact require JQuery) is fine for everyday use with 
+                                Wikipedia / WikiMedia archives, and is stable and safe. It is a way of inserting articles extracted from the
+                                ZIM into the DOM (browser document) by injecting the content into an iframe or tab. We then use
+                                native DOM methods, or sometimes JQuery, to parse the article's HTML and insert required assets 
+                                (images, stylesheets, event listeners for hyperlinks, etc.). On old devices DOM traversal can be slow, 
+                                but it is compensated for because we do not extract or run JavaScript assets (which would be technically
+                                extremely complicated). As a result, for WikiMedia archives this mode is usually quite fast. On the downside,
+                                ZIMs that have a proprietary dynamic UI (such as Gutenberg or TED talks) are only partially supported in this
+                                mode: the UI does not work, but articles can be searched for and loaded from the search bar.
+                            </li>
+                            <li>
+                                <b>ServiceWorker Mode</b>: This mode, as its name implies, requires that the browser or framework be capable of
+                                installing a Service Worker. It works by intercepting the browser or framework's Fetch calls (network requests)
+                                and supplying the requested content from the ZIM. This mode requires no DOM traversal, and the content is
+                                read and supplied as-is from the archive. Dynamic content (e.g. JavaScript) and proprietary UIs are fully
+                                supported in this mode. It can feel initially a little slower while commonly used assets are being cached,
+                                but it soon equals JQuery mode in speed, at least in modern browsers. However, older browsers such as IE11 do
+                                not support this mode, and the app must be running in a secure context (https:, localhost, or certain browser
+                                extensions). Note that this mode also cannot run under the file: protocol (but only IE11 and old Edge allow the
+                                app to run this way).
+                            </li>
+                        </ul> 
                     </p>
                     <h3 id="feedback">Feedback / helping / contributing</h3>
                     <p>
@@ -446,8 +480,8 @@
                             <br />MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
                             <br />GNU General Public Licence for more details.
                             <br />
-                    <br />You should have received a copy of the GNU General Public Licence
-                    <br />along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <a href="https://www.gnu.org/licenses/" target="_blank">https://www.gnu.org/licenses/</a>
+                            <br />You should have received a copy of the GNU General Public Licence
+                            <br />along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <a href="https://www.gnu.org/licenses/" target="_blank">https://www.gnu.org/licenses/</a>
                         </i>
                     </p>
                     <p>Main libraries and resources used:</p>
@@ -728,6 +762,7 @@
                                 <div class="panel panel-danger" id="contentInjectionModeDiv">
                                     <div class="panel-heading">Content injection mode</div>
                                     <div class="panel-body">
+                                        <p>See <a href="#expert" id="modesLink">About (Expert Settings)</a> for an explanation of the difference between these modes:</p>
                                         <label class="radio">
                                             <input type="radio" name="contentInjectionMode" value="jquery" id="jQueryModeRadio" checked>
                                             <span class="radiobtn"></span>
