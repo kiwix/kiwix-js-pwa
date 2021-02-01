@@ -1071,6 +1071,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             settingsStore.setItem('hideToolbars', params.hideToolbars, Infinity);
             checkToolbar();
         });
+        document.getElementById('modesLink').addEventListener('click', function () {
+            document.getElementById('btnAbout').click();
+        });
+
 
         var iframe = document.getElementById('articleContent');
         var header = document.getElementById('top');
@@ -1574,6 +1578,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 goPWA = true;
                             }
                             if (goPWA) {
+                                var localSettings = Windows.Storage.ApplicationData.current.localSettings;
                                 var launchPWA = function () {
                                     settingsStore.setItem('contentInjectionMode', value, Infinity);
                                     // This is needed so that we get passthrough on subsequent launches
@@ -1585,6 +1590,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
                                     uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
                                     uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
+                                    // Signal failure of PWA until it has successfully launched (in init.js it will be changed to 'success')
+                                    localSettings.values['PWA_launch'] = 'fail';
                                     window.location.href = params.PWAServer + 'www/index.html' + uriParams;
                                 };
                                 var checkPWAIsOnline = function () {
@@ -1594,10 +1601,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                             '\nPlease try again when you have a stable Internet connection.', 'Error!');
                                     });
                                 };
-                                if (settingsStore.getItem('allowInternetAccess') === 'true') {
+                                if (settingsStore.getItem('allowInternetAccess') === 'true' && localSettings.values['PWA_launch'] !== 'fail') {
                                     checkPWAIsOnline();
                                     return;
                                 } else {
+                                    if (localSettings.values['PWA_launch'] === 'fail') {
+                                        message = 'WARNING: The PWA failed to launch on the last attempt!' +
+                                            '\n\nTo prevent a boot loop, we recommend you select Cancel,\n' +
+                                            'or you can try to launch the PWA again by selecting Access server:';
+                                    }
                                     uiUtil.systemAlert(message, 'Warning!', 'Access server', checkPWAIsOnline, 'Cancel', function () {
                                         document.getElementById('btnConfigure').click();
                                         return;
