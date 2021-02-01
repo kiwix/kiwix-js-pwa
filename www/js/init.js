@@ -49,7 +49,7 @@ var params = {};
  */
 var appstate = {};
 /******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION *******/
-params['version'] = "1.2.0-RP20"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "1.2.0-RP21"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN serveice worker!! ********************/
 params['packagedFile'] = "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
@@ -152,13 +152,11 @@ if (!/^http/i.test(window.location.protocol) && /UWP/.test(params.appType) &&
 
 // This code runs on the PWA UWP app running from https:// and is the mirror of the above
 if (/^http/i.test(window.location.protocol) && /UWP/.test(params.appType) && params.allowInternetAccess) {
-    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-        // We are in a PWA, so signal success
-        (function signalPWASuccess() {
-            var localSettings = Windows.Storage.ApplicationData.current.localSettings;
-            localSettings.values['PWA_launch'] = 'success';
-        })();
-    }
+    // We are in a PWA UWP app, so signal success
+    (function signalPWASuccess() {
+        var localSettings = Windows.Storage.ApplicationData.current.localSettings;
+        localSettings.values['PWA_launch'] = 'success';
+    })();
 }
 
 
