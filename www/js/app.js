@@ -1421,6 +1421,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     settingsStore.setItem('version', params.version, Infinity);
                 }, 1000);
             }
+            // This code runs on the PWA UWP app running from https:// and is the mirror of code in init.js
+            if (/^http/i.test(window.location.protocol) && /UWP/.test(params.appType) && params.allowInternetAccess) {
+                if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                    // We are in a PWA, so signal success
+                    var localSettings = Windows.Storage.ApplicationData.current.localSettings;
+                    localSettings.values['PWA_launch'] = 'success';
+                }
+            }
         });
 
         /**
