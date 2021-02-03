@@ -1506,6 +1506,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // be intercepting requests
                 if ('serviceWorker' in navigator) {
                     serviceWorkerRegistration = null;
+                    // If we're in a PWA UWP app, warn the user that this does not disable the PWA
+                    if (/UWP\|PWA/.test(params.appType) && settingsStore.getItem('allowInternetAccess') === 'true') {
+                        uiUtil.systemAlert(
+                            'Please note that switching to JQuery mode does not exit the PWA app and revert to local code.\n' +
+                            'If you wish to disable the PWA, you will need to turn off "Allow Internet access?" above.'
+                        );
+                    }
                 }
                 refreshAPIStatus();
             } else if (value === 'serviceworker') {
@@ -1606,7 +1613,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 } else {
                                     if (params.localUWPSettings.PWA_launch === 'fail') {
                                         message = 'WARNING: The PWA failed to launch on the last attempt!' +
-                                            '\n\nTo prevent a boot loop, we recommend you select Cancel,\n' +
+                                            '\n\nTo remain in local mode select Cancel,\n' +
                                             'or you can try to launch the PWA again by selecting Access server:';
                                     }
                                     uiUtil.systemAlert(message, 'Warning!', 'Access server', checkPWAIsOnline, 'Cancel', function () {
