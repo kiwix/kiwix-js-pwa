@@ -995,6 +995,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
             // Do the necessary to enable or disable the Service Worker
             setContentInjectionMode(this.value);
+            // If we're in a PWA UWP app, warn the user that this does not disable the PWA
+            if (this.value === 'jquery' && /^http/i.test(window.location.href) && /UWP\|PWA/.test(params.appType) &&
+                settingsStore.getItem('allowInternetAccess') === 'true') {
+                uiUtil.systemAlert(
+                    'Please note that switching content injection mode does not revert to local code.\n' +
+                    'If you wish to exit the PWA, you will need to turn off "Allow Internet access?" above.'
+                );
+            }
             params.themeChanged = true; // This will reload the page
         });
         $('input:checkbox[name=allowInternetAccess]').on('change', function (e) {
@@ -1506,13 +1514,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // be intercepting requests
                 if ('serviceWorker' in navigator) {
                     serviceWorkerRegistration = null;
-                    // If we're in a PWA UWP app, warn the user that this does not disable the PWA
-                    if (/UWP\|PWA/.test(params.appType) && settingsStore.getItem('allowInternetAccess') === 'true') {
-                        uiUtil.systemAlert(
-                            'Please note that switching to JQuery mode does not exit the PWA app and revert to local code.\n' +
-                            'If you wish to disable the PWA, you will need to turn off "Allow Internet access?" above.'
-                        );
-                    }
                 }
                 refreshAPIStatus();
             } else if (value === 'serviceworker') {
