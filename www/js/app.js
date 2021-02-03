@@ -1421,14 +1421,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     settingsStore.setItem('version', params.version, Infinity);
                 }, 1000);
             }
-            // This code runs on the PWA UWP app running from https:// and is the mirror of code in init.js
-            if (/^http/i.test(window.location.protocol) && /UWP/.test(params.appType) && params.allowInternetAccess) {
-                if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-                    // We are in a PWA, so signal success
-                    var localSettings = Windows.Storage.ApplicationData.current.localSettings;
-                    localSettings.values['PWA_launch'] = 'success';
-                }
-            }
         });
 
         /**
@@ -1586,7 +1578,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 goPWA = true;
                             }
                             if (goPWA) {
-                                var localSettings = Windows.Storage.ApplicationData.current.localSettings;
                                 var launchPWA = function () {
                                     settingsStore.setItem('contentInjectionMode', value, Infinity);
                                     // This is needed so that we get passthrough on subsequent launches
@@ -1599,27 +1590,28 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
                                     uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
                                     // Signal failure of PWA until it has successfully launched (in init.js it will be changed to 'success')
-                                    localSettings.values['PWA_launch'] = 'fail';
+                                    params.localUWPSettings.PWA_launch = 'fail'
                                     window.location.href = params.PWAServer + 'www/index.html' + uriParams;
                                 };
                                 var checkPWAIsOnline = function () {
-                                    uiUtil.checkServerIsAccessible(params.PWAServer + 'www/img/icons/kiwix-32.png', launchPWA, function (err) {
-                                        uiUtil.systemAlert('The server is not currently accessible! ' + err +
+                                    uiUtil.checkServerIsAccessible(params.PWAServer + 'www/img/icons/kiwix-32.png', launchPWA, function () {
+                                        uiUtil.systemAlert('The server is not currently accessible! ' +
                                             '\n\n(Kiwix needs one-time access to the server to cache the PWA).' +
                                             '\nPlease try again when you have a stable Internet connection.', 'Error!');
                                     });
                                 };
-                                if (settingsStore.getItem('allowInternetAccess') === 'true' && localSettings.values['PWA_launch'] !== 'fail') {
+                                if (settingsStore.getItem('allowInternetAccess') === 'true' && params.localUWPSettings.PWA_launch !== 'fail') {
                                     checkPWAIsOnline();
                                     return;
                                 } else {
-                                    if (localSettings.values['PWA_launch'] === 'fail') {
+                                    if (params.localUWPSettings.PWA_launch === 'fail') {
                                         message = 'WARNING: The PWA failed to launch on the last attempt!' +
                                             '\n\nTo prevent a boot loop, we recommend you select Cancel,\n' +
                                             'or you can try to launch the PWA again by selecting Access server:';
                                     }
                                     uiUtil.systemAlert(message, 'Warning!', 'Access server', checkPWAIsOnline, 'Cancel', function () {
-                                        document.getElementById('btnConfigure').click();
+                                        var allowAccessCheck = document.getElementById('allowInternetAccessCheck');
+                                        if (allowAccessCheck.checked) allowAccessCheck.click();
                                         return;
                                     });
                                 }
