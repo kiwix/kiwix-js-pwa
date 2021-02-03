@@ -49,7 +49,7 @@ var params = {};
  */
 var appstate = {};
 /******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION *******/
-params['version'] = "1.2.0-RP22"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "1.2.0-RP23"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN serveice worker!! ********************/
 params['packagedFile'] = "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
@@ -149,16 +149,18 @@ if (!/^http/i.test(window.location.protocol) && params.localUWPSettings &&
         params.localUWPSettings.PWA_launch = 'fail';
         // User wants PWA mode and it has previously launched, so do quick reload now
         window.location.href = params.PWAServer + 'www/index.html?allowInternetAccess=true';
+        // This will trigger the error catching above, cleanly dematerialize this script and transport us swiftly to PWA land
+        window.beamMeUpScotty();
     } else if (params.localUWPSettings.PWA_launch === 'fail') {
         console.error('PWA failed to launch correctly last time! Setting failsafe to avoid boot-loop...');
     }
 }
 
-//Prevent app boot loop with problematic pages that cause an app crash
+// Prevent app boot loop with problematic pages that cause an app crash
 if (getSetting('lastPageLoad') === 'failed') {
     params.lastPageVisit = '';
 } else {
-    //Cookie will signal failure until article is fully loaded
+    // Cookie will signal failure until article is fully loaded
     if (params.storeType === 'cookie') {
         document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
     } else if (params.storeType === 'local_storage') {
@@ -166,7 +168,7 @@ if (getSetting('lastPageLoad') === 'failed') {
     }
 }
 
-//Initialize checkbox, radio and other values
+// Initialize checkbox, radio and other values
 document.getElementById('allowInternetAccessCheck').checked = params.allowInternetAccess;
 document.getElementById('cssCacheModeCheck').checked = params.cssCache;
 document.getElementById('imageDisplayModeCheck').checked = params.imageDisplay;
