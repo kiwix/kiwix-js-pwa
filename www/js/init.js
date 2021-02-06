@@ -56,7 +56,7 @@ params['archivePath'] = "archives"; //The directory containing the packaged arch
 params['fileVersion'] = "wikipedia_en_100_maxi_2021-01.zim (23-Jan-2021)"; //Use generic name for actual file, and give version here
 params['cachedStartPage'] = false; //If you have cached the start page for quick start, give its URI here
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
-params['PWAServer'] = "https://kiwix.github.io/kiwix-js-windows/";
+params['PWAServer'] = "https://pwa.kiwix.org/";
 params['PWAMode'] = getSetting('PWAMode'); // Set to true if the app should always operate in PWA mode 
 
 params['storeType'] = getBestAvailableStorageAPI();
