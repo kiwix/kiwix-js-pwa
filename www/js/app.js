@@ -1010,22 +1010,36 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             params.allowInternetAccess = this.checked;
             if (!this.checked) {
                 document.getElementById('downloadLinks').style.display = "none";
-                if (/UWP/.test(params.appType) && /^http/i.test(window.location.protocol)) {
-                    var message = 'This will switch to using locally packaged code only. Configuration settings may be lost.\n\n' +
+                if (/^http/i.test(window.location.protocol)) {
+                    var message;
+                    if (!/PWA/.test(params.appType)) {
+                        message = 'You are accessing Kiwix JS from a remote server, and it is not possible to disable Internet access fully without exiting the app.\n' +
+                            'Please visit https://github.com/kiwix/kiwix-js-windows/releases/ to find an app version that will run offline.';
+                        uiUtil.systemAlert(message);
+                        this.checked = true;
+                        params.allowInternetAccess = true;
+                        return;
+                    } else if (!/UWP/.test(params.appType)) {
+                        uiUtil.systemAlert("This PWA can run offline, but to be absolutely sure that it won't contact the server to update itself, you should shut " +
+                            'off the Internet connection on your computer. By design, the PWA spec allows an offline app to check whether the Service Worker ' +
+                            'code has changed, and this app cannot override that completely.');
+                    } else {
+                        message = 'This will switch to using locally packaged code only. Configuration settings may be lost.\n\n' +
                         'WARNING: App will re-load in jQuery mode!';
-                    var launchLocal = function () {
-                        settingsStore.setItem('allowInternetAccess', false, Infinity);
-                        var uriParams = '?allowInternetAccess=false&contentInjectionMode=jquery';
-                        uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
-                        uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
-                        uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
-                        window.location.href = 'ms-appx-web:///www/index.html' + uriParams;
-                    };
-                    uiUtil.systemAlert(message, 'Warning!', 'Reload app', launchLocal, 'Cancel', function () {
-                        document.getElementById('btnConfigure').click();
-                    });
-                    this.checked = true;
-                    params.allowInternetAccess = true;
+                        var launchLocal = function () {
+                            settingsStore.setItem('allowInternetAccess', false, Infinity);
+                            var uriParams = '?allowInternetAccess=false&contentInjectionMode=jquery';
+                            uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
+                            uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
+                            uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
+                            window.location.href = 'ms-appx-web:///www/index.html' + uriParams;
+                        };
+                        uiUtil.systemAlert(message, 'Warning!', 'Reload app', launchLocal, 'Cancel', function () {
+                            this.checked = true;
+                            params.allowInternetAccess = true;
+                            document.getElementById('btnConfigure').click();
+                        });
+                    }
                 }
                 settingsStore.setItem('allowInternetAccess', false, Infinity);
             }
