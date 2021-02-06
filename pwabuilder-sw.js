@@ -12,7 +12,7 @@ const regexpKiwixDownloadLinks = /download\.kiwix\.org/i;
 
 // Pattern for ZIM file namespace - see https://wiki.openzim.org/wiki/ZIM_file_format#Namespaces
 // In our case, there is also the ZIM file name, used as a prefix in the URL
-const regexpZIMUrlWithNamespace = /(?:^|\/)([^\/]+\/)([-ABIJMUVWX])\/(.+)/;
+const regexpZIMUrlWithNamespace = /(?:^|\/)([^\/]+\/)([-ABCIJMUVWX])\/(.+)/;
 
 const CACHE = "kiwix-precache-" + appVersion;
 const precacheFiles = [
