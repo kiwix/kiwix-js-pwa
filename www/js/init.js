@@ -108,7 +108,7 @@ params['falFolderToken'] = "zimfilestore"; // UWP support
 params.pagesLoaded = 0; // Page counter used to show PWA Install Prompt only after user has played with the app for a while
 params.localUWPSettings = /UWP/.test(params.appType) ? Windows.Storage.ApplicationData.current.localSettings.values : null;
 
-// Apply any override parameters in querystring (done as a self-calling funciton to avoid creating global variables)
+// Apply any override parameters in querystring (done as a self-calling function to avoid creating global variables)
 (function overrideParams() {
     var rgx = /[?&]([^=]+)=([^&]+)/g;
     var matches = rgx.exec(window.location.search);
@@ -169,7 +169,6 @@ if (getSetting('lastPageLoad') === 'failed') {
 }
 
 // Initialize checkbox, radio and other values
-document.getElementById('allowInternetAccessCheck').checked = params.allowInternetAccess;
 document.getElementById('cssCacheModeCheck').checked = params.cssCache;
 document.getElementById('imageDisplayModeCheck').checked = params.imageDisplay;
 document.getElementById('removePageMaxWidthCheck').checked = params.removePageMaxWidth === true; // Will be false if false or auto
@@ -199,6 +198,10 @@ document.getElementById('hideToolbarsCheck').checked = params.hideToolbars === t
 document.getElementById('hideToolbarsCheck').indeterminate = params.hideToolbars === "top";
 document.getElementById('hideToolbarsCheck').readOnly = params.hideToolbars === "top";
 document.getElementById('hideToolbarsState').innerHTML = (params.hideToolbars === "top" ? "top" : params.hideToolbars ? "both" : "never");
+document.getElementById('allowInternetAccessCheck').checked = params.allowInternetAccess;
+// Howeever, if we're accessing the app from a server, add indication that we are online by default (user can turn off and will receive instructions)
+if (/^http/i.test(window.location.protocol) && params.allowInternetAccess === null) document.getElementById('allowInternetAccessCheck').checked = true;
+
 
 // Get app type
 function getAppType() {
