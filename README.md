@@ -1,4 +1,4 @@
-# Kiwix JS for Windows
+# Kiwix JS for PWA and Universal Windows Platform
 
 *There is a browser-based deployment and **(installable Progressive Web App (PWA))[https://pwa.kiwix.org/]** version of this app at
 https://pwa.kiwix.org/, but you will need a ZIM file for testing.* A [development deployment](https://kiwix.github.io/kiwix-js-windows/)
@@ -51,9 +51,14 @@ egk10 at cam ac uk.
 
 # Privacy Policy
 
-Kiwix JS Windows works offline, and does not collect or record any of your personal data. It
+When installed, Kiwix JS Windows works offline, and does not collect or record any of your personal data. It
 only remembers your browsing history for the duration of a session (for the purpose of returning to previously
 viewed pages). This history is lost on exiting the app and is not recorded in any way.
+
+If you access this app from a secure web server (e.g. the PWA server), it will only work offline if your browser is
+capable of installing a Service Worker. If you install or bookmark the PWA version, then it will work offline, but
+note that **by design** any PWA will periodically check the PWA server (in this case, https://pwa.kiwix.org/), if it
+is available, to check for an updated Service Worker.
 
 By default, this application will remember your last-visited page between sessions using local stoarage or a cookie
 that is accessible only by this app on this device. If you are accessing sensitive information that you do
@@ -72,8 +77,7 @@ shut down your Internet (Data or WiFi) access before using the application.**
 Additionally, if you obtained this app from a Vendor Store (including extensions), then the Store operator may
 track your usage of the app (e.g. download, install, uninstall, date and number of sessions) for the purpose of
 providing anonymous, aggregate usage statistics to developers. If this concerns you, you should check the relevant
-Store Privacy Policy for further information. If you are using the PWA version, then note that **by design** any PWA
-will periodically check the PWA server (in this case, kiwix.github.io) to see if the Service Worker has been updated.
+Store Privacy Policy for further information.
 
 **Builds of this app are available that do not use a Store or an online Service Worker.** Please see:
 
