@@ -45,7 +45,7 @@ function createWindow() {
 
     // and load the index.html of the app.
     // mainWindow.loadURL(`https://${__dirname}/www/index.html`);
-    // mainWindow.loadURL(`https://kiwix.github.io/kiwix-js-windows/`);
+    // mainWindow.loadURL(`https://pwa.kiwix.org/`);
     // DEV: If you need Service Worker more than you need document.cookie, load app like this:
     mainWindow.loadFile('www/index.html');
 
