@@ -1,6 +1,6 @@
 # Kiwix JS for PWA and Universal Windows Platform
 
-*There is a browser-based deployment and **(installable Progressive Web App (PWA))[https://pwa.kiwix.org/]** version of this app at
+*There is a browser-based deployment and **[installable Progressive Web App (PWA)](https://pwa.kiwix.org/)** version of this app at
 https://pwa.kiwix.org/, but you will need a ZIM file for testing.* A [development deployment](https://kiwix.github.io/kiwix-js-windows/)
 is also available, but code may be buggy and change rapidly, and it is not recommended to install this as a PWA. 
 
