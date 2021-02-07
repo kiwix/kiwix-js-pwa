@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="appx" ContentType="application/vnd.ms-appx"/><Default Extension="xml" ContentType="application/vnd.ms-appx.bundlemanifest+xml"/><Override PartName="/AppxBlockMap.xml" ContentType="application/vnd.ms-appx.blockmap+xml"/><Override PartName="/AppxSignature.p7x" ContentType="application/vnd.ms-appx.signature"/></Types>
