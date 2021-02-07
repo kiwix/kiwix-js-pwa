@@ -1,8 +1,11 @@
 # Changelog
 
-## Release 1.2.0 (in progress)
+## Release 1.2.0
 
 * ENHANCEMENT: Enable Service Worker mode in UWP app
+* ENHANCEMENT: New domain pwa.kiwix.org for the PWA/UWP app
+* UPDATE: Preliminary support for ZIM archives with no namespace
+* UPDATE: Revised Privacy Policy to reflect PWA usage
 
 ## Release 1.1.4
 
