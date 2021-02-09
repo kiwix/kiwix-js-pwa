@@ -1578,7 +1578,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 // in case it has been stopped and lost its context
                                 initOrKeepAliveServiceWorker();
                             }
-                        }, function (err) {
+                        }).catch(function (err) {
                             console.error('error while registering serviceWorker', err);
                             refreshAPIStatus();
                             var goPWA = false;
@@ -1597,9 +1597,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     'periodically when online as per the Service Worker spec.\n\n' +
                                     'You can switch back any time by toggling "Allow Internet access?" off.\n\n' +
                                     'WARNING: This will attempt to access the following server: \n' + params.PWAServer;
-                                goPWA = true;
-                            }
-                            if (goPWA) {
                                 var launchPWA = function () {
                                     settingsStore.setItem('contentInjectionMode', value, Infinity);
                                     // This is needed so that we get passthrough on subsequent launches
@@ -1625,12 +1622,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 if (settingsStore.getItem('allowInternetAccess') === 'true' && params.localUWPSettings.PWA_launch !== 'fail') {
                                     checkPWAIsOnline();
                                     return;
-                                } else {
-                                    if (params.localUWPSettings.PWA_launch === 'fail') {
-                                        message = 'WARNING: The PWA failed to launch on the last attempt!' +
-                                            '\n\nTo remain in local mode select Cancel,\n' +
-                                            'or you can try to launch the PWA again by selecting Access server:';
-                                    }
+                                } else if (params.localUWPSettings.PWA_launch === 'fail') {
+                                    message = 'WARNING: The PWA failed to launch on the last attempt!' +
+                                        '\n\nTo remain in local mode select Cancel,\n' +
+                                        'or you can try to launch the PWA again by selecting Access server:';
                                     uiUtil.systemAlert(message, 'Warning!', 'Access server', checkPWAIsOnline, 'Cancel', function () {
                                         var allowAccessCheck = document.getElementById('allowInternetAccessCheck');
                                         if (allowAccessCheck.checked) allowAccessCheck.click();
