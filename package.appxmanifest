@@ -18,6 +18,7 @@
       <uap:ApplicationContentUriRules>
         <uap:Rule Match="ms-appx-web:///www/index.html" Type="include" uap5:ServiceWorker="true" WindowsRuntimeAccess="all" />
         <uap:Rule Match="https://pwa.kiwix.org/" Type="include" uap5:ServiceWorker="true" WindowsRuntimeAccess="all" />
+        <uap:Rule Match="https://kiwix.github.io/kiwix-js-windows/" Type="include" uap5:ServiceWorker="true" WindowsRuntimeAccess="all" />
       </uap:ApplicationContentUriRules>
       <uap:VisualElements DisplayName="Kiwix JS" Description="Kiwix Offline Wikipedia and ZIM File Reader" BackgroundColor="transparent" Square150x150Logo="images\Square150x150Logo.png" Square44x44Logo="images\Square44x44Logo.png">
         <uap:DefaultTile ShortName="Kiwix JS" Square310x310Logo="images\LargeTile.png" Wide310x150Logo="images\Wide310x150Logo.png" Square71x71Logo="images\SmallTile.png">
