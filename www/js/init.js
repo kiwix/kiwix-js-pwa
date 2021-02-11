@@ -137,7 +137,7 @@ params.localUWPSettings = /UWP/.test(params.appType) ? Windows.Storage.Applicati
 })();
 
 // This code runs on the PWA UWP app running from https://
-if (/^http/i.test(window.location.protocol) && /UWP\|PWA/.test(params.appType) && params.allowInternetAccess) {
+if (/^http/i.test(window.location.protocol) && /UWP\|PWA/.test(params.appType)) {
     // We are in a PWA, so signal success
     params.localUWPSettings.PWA_launch = 'success';
 }
