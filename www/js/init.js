@@ -202,7 +202,16 @@ document.getElementById('hideToolbarsCheck').readOnly = params.hideToolbars === 
 document.getElementById('hideToolbarsState').innerHTML = (params.hideToolbars === "top" ? "top" : params.hideToolbars ? "both" : "never");
 document.getElementById('allowInternetAccessCheck').checked = params.allowInternetAccess;
 // Howeever, if we're accessing the app from a server, add indication that we are online by default (user can turn off and will receive instructions)
-if (/^http/i.test(window.location.protocol) && params.allowInternetAccess === null) document.getElementById('allowInternetAccessCheck').checked = true;
+if (/^http/i.test(window.location.protocol) && params.allowInternetAccess === null) {
+    document.getElementById('allowInternetAccessCheck').checked = true;
+    params.allowInternetAccess = true;
+}
+// If we're in a PWA served from http, change the app titles
+if (/^http/i.test(window.location.protocol)) {
+    Array.prototype.slice.call(document.querySelectorAll('span.identity')).forEach(function (ele) {
+        ele.innerHTML = 'PWA';
+    });
+}
 
 
 // Get app type
