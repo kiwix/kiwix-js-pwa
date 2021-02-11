@@ -1581,7 +1581,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         }).catch(function (err) {
                             console.error('error while registering serviceWorker', err);
                             refreshAPIStatus();
-                            var goPWA = false;
                             var message = "The ServiceWorker could not be properly registered. Switching back to jQuery mode. Error message : " + err;
                             var protocol = window.location.protocol;
                             if (protocol === 'moz-extension:') {
@@ -1597,11 +1596,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     'periodically when online as per the Service Worker spec.\n\n' +
                                     'You can switch back any time by toggling "Allow Internet access?" off.\n\n' +
                                     'WARNING: This will attempt to access the following server: \n' + params.PWAServer;
-                                goPWA = true;
-                            }
-                            if (goPWA) {
                                 var launchPWA = function () {
-                                    settingsStore.setItem('contentInjectionMode', value, Infinity);
+                                    settingsStore.setItem('contentInjectionMode', 'serviceworker', Infinity);
                                     // This is needed so that we get passthrough on subsequent launches
                                     settingsStore.setItem('allowInternetAccess', true, Infinity);
                                     var uriParams = '?allowInternetAccess=true';
@@ -1614,6 +1610,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     // Signal failure of PWA until it has successfully launched (in init.js it will be changed to 'success')
                                     params.localUWPSettings.PWA_launch = 'fail';
                                     window.location.href = params.PWAServer + 'www/index.html' + uriParams;
+                                    beamMeUpScotty();
                                 };
                                 var checkPWAIsOnline = function () {
                                     uiUtil.checkServerIsAccessible(params.PWAServer + 'www/img/icons/kiwix-32.png', launchPWA, function () {
@@ -1623,7 +1620,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     });
                                 };
                                 if (settingsStore.getItem('allowInternetAccess') === 'true' && params.localUWPSettings.PWA_launch !== 'fail') {
-                                    checkPWAIsOnline();
+                                    if (params.localUWPSettings.PWA_launch === 'success') launchPWA();
+                                    else checkPWAIsOnline();
                                     return;
                                 } else {
                                     if (params.localUWPSettings.PWA_launch === 'fail') {
@@ -1634,7 +1632,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     uiUtil.systemAlert(message, 'Warning!', 'Access server', checkPWAIsOnline, 'Cancel', function () {
                                         var allowAccessCheck = document.getElementById('allowInternetAccessCheck');
                                         if (allowAccessCheck.checked) allowAccessCheck.click();
-                                        return;
                                     });
                                 }
                             } else {
