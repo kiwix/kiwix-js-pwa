@@ -12,10 +12,11 @@
     Kiwix (offline Wikipedia reader) - HTML5/Javascript version
     Home page : https://www.kiwix.org
 
-    Main authors of this application :
+    Main authors of this application:
         Mossroy - https://github.com/mossroy - mossroy@mossroy.fr
     Peter-x - https://github.com/peter-x
-    Jaifroid - Adapted for UWP for Windows 10 and Windows Mobile 10 : Geoffrey Kantaris egk10@cam.ac.uk
+    Jaifroid - Adapted for UWP for Windows 10 and Windows Mobile 10, Electron, NWJS and PWA:
+        Geoffrey Kantaris egk10@cam.ac.uk
 
         Copyright 2013-2018 Mossroy, Peter-x, Jaifroid, sharun-s and contributors
     License GPL v3:
@@ -85,7 +86,7 @@
                     <img style="float:left; padding-right:1em;" alt="Kiwix icon" src="img/icons/kiwix-midnightblue-90.png">
 
                     <h2 style="font-size:32px;margin-top:10px;">
-                        Welcome to Kiwix&nbsp;JS for Windows
+                        Welcome to Kiwix&nbsp;JS <span class="identity">for Windows</span>
                     </h2>
                     <h4>Version <span class="version">1.0</span> (<a href="#update">changes</a>)</h4>
                     <h3>Please read this important information</h3>
@@ -258,7 +259,7 @@
                     <div class="returntoArticle" style="text-align:center;padding-top:30px;"></div>
                     <h2>
                         <img src="img/icons/kiwix-60.png" alt="Kiwix icon" id="kiwixIconAbout" />
-                        Kiwix JS Windows
+                        Kiwix JS <span class="identity">Windows</span>
                     </h2>
                     <h3 style="margin-top:0;">
                         Offline Wikipedia Viewer <small>(Version <span class="version"></span>)</small>
@@ -303,8 +304,8 @@
                     <p>
                         On some Wikivoyage (English and German) pages
                         you will see a map location marker: <img src="img/icons/map_marker-18px.png" />. Tap this icon to open
-                        the <b>Maps app</b> at the selected location. This will work offline if you have downloaded the map for the relevant country
-                        in the Windows Settings for <b>Offline Maps</b>.
+                        the <b>Maps app</b> at the selected location. In the UWP version of this app, this will work offline if you have downloaded the map for the relevant country
+                        in the Settings for <b>Offline Maps</b>.
                     </p>
 
                     <h3 id="addingArchives">Usage</h3>
@@ -314,7 +315,7 @@
                         Alternatively, visit <a href="https://download.kiwix.org/zim" target="_blank">https://download.kiwix.org/zim/</a> using a regular computer.
                         <strong>Currently only Wikimedia contents (ZIM files in wiki* subdirectories) and Stackexchange have been tested fully</strong>.
                         There are known bugs when reading some other content, and dynamic content is not supported in jQuery mode.
-                        You may need to switch the app to the experimental PWA mode (see Expert Settings in configuration) to access dynamic content.
+                        You may need to switch the app to the experimental PWA/ServiceWorker mode (see Expert Settings in configuration) to access dynamic content.
                     </p>
                     <p>
                         If you have enough space, you can put several archives on your device storage. If you download the content
@@ -351,7 +352,7 @@
                     <div id="logFeatures"></div>
                     <h3 id="privacy">Privacy policy</h3>
                     <p>
-                        When installed, Kiwix JS Windows works offline, and does not collect or record any of your personal data. It
+                        When installed, Kiwix JS <span class="identity">Windows</span> works offline, and does not collect or record any of your personal data. It
                         only remembers your browsing history for the duration of a session (for the purpose of returning to previously
                         viewed pages). This history is lost on exiting the app with the optional exception of the last-visited page.
                     </p>
@@ -430,7 +431,7 @@
                         This application is still a work in progress. There are bugs that still need fixing and improvements that
                         need to be implemented. Suggestions and patches/pull requests are welcome: the source code is on
                         <a href="https://github.com/kiwix/kiwix-js-windows" target="_blank">github</a>.
-                        The <a href="https://github.com/kiwix/kiwix-js-windows/issues" target="_blank">Kiwix JS Windows issue tracker</a>
+                        The <a href="https://github.com/kiwix/kiwix-js-windows/issues" target="_blank">Kiwix JS <span class="identity">Windows</span> issue tracker</a>
                         is on GitHub too, though also check the <a href="https://github.com/kiwix/kiwix-js/issues"
                         target="_blank">tracker for Kiwix JS</a> as a lot of the development is done for both apps.
                     </p>
@@ -462,7 +463,7 @@
                     <h3>Licence information</h3>
                     <p>
                         Copyright 2013-2019 Mossroy, Peter-x, Jaifroid, sharun-s and other contributors
-                        <br />Jaifroid for adaptation and development of the app on the Universal Windows Platform
+                        <br />Jaifroid for adaptation and development of the app on the Universal Windows, Electron, NWJS and PWA Platforms
                         <br />
                         <br />This application is licensed under the GPL v3 licence:
                         <br />
