@@ -57,8 +57,8 @@ params['fileVersion'] = "wikipedia_en_100_maxi_2021-01.zim (23-Jan-2021)"; //Use
 params['cachedStartPage'] = false; //If you have cached the start page for quick start, give its URI here
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
 /******* DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
-params['PWAServer'] = "https://pwa.kiwix.org/"; // Production server
-// params['PWAServer'] = "https://kiwix.github.io/kiwix-js-windows/"; // Test server
+// params['PWAServer'] = "https://pwa.kiwix.org/"; // Production server
+params['PWAServer'] = "https://kiwix.github.io/kiwix-js-windows/"; // Test server
 params['PWAMode'] = getSetting('PWAMode'); // Set to true if the app should always operate in PWA mode 
 
 params['storeType'] = getBestAvailableStorageAPI();
@@ -140,6 +140,12 @@ params.localUWPSettings = /UWP/.test(params.appType) ? Windows.Storage.Applicati
 if (/^http/i.test(window.location.protocol) && /UWP\|PWA/.test(params.appType)) {
     // We are in a PWA, so signal success
     params.localUWPSettings.PWA_launch = 'success';
+    // DEV: Internal code for testing. If you need to debug restart of app, pause in DevTools on line below,
+    // set params.reboot = true and then continue. App will reboot to local code.
+    if (params.reboot) {
+        window.location.href = 'ms-appx-web:///www/index.html';
+        beamMeDownScotty();
+    }
 }
 
 // This code runs on the basic UWP app running from ms-appx-web://
