@@ -996,7 +996,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // Do the necessary to enable or disable the Service Worker
             setContentInjectionMode(this.value);
             // If we're in a PWA UWP app, warn the user that this does not disable the PWA
-            if (this.value === 'jquery' && /^http/i.test(window.location.href) && /UWP\|PWA/.test(params.appType) &&
+            if (this.value === 'jquery' && /^http/i.test(window.location.protocol) && /UWP\|PWA/.test(params.appType) &&
                 settingsStore.getItem('allowInternetAccess') === 'true') {
                 uiUtil.systemAlert(
                     'Please note that switching content injection mode does not revert to local code.\n' +
@@ -1033,6 +1033,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
                             uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
                             window.location.href = 'ms-appx-web:///www/index.html' + uriParams;
+                            beamMeDownScotty();
                         };
                         uiUtil.systemAlert(message, 'Warning!', 'Reload app', launchLocal, 'Cancel', function () {
                             this.checked = true;
