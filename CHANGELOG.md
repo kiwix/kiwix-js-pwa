@@ -1,5 +1,11 @@
 # Changelog
 
+## Release 1.2.1
+
+* UPDATE: Minor update to improve handover between local and PWA code
+* ENHANCEMENT: If app is running as a PWA, its identity is changed to Kiwix JS PWA
+* FIX: Display of masonry tiles in JQuery mode with latest ZIMs
+
 ## Release 1.2.0
 
 * ENHANCEMENT: Enable Service Worker mode in UWP app
