@@ -1,5 +1,9 @@
 # Changelog
 
+## Release 1.2.2
+
+* FIX: Race condition in handover to PWA code
+
 ## Release 1.2.1
 
 * UPDATE: Minor update to improve handover between local and PWA code
