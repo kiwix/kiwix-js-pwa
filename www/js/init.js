@@ -56,7 +56,10 @@ params['version'] = "1.2.2-WikiMed-dev"; //DEV: Manually update this version whe
 params['packagedFile'] = "wikipedia_en_medicine-app_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
 params['fileVersion'] = "wikipedia_en_medicine-app_maxi_2021-02 (2-Feb-2021)"; //This will be displayed in the app - optionally include date of ZIM file
-params['cachedStartPage'] = "Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine"; //If you have cached the start page for quick start, give its URI here
+// List of known start pages cached in the FS:
+params['cachedStartPages'] = {
+    'wikipedia_en_medicine-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine'
+};
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/wikipedia/"; //Include final slash
 /******* DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
 params['PWAServer'] = "https://pwa.kiwix.org/"; // Production server
