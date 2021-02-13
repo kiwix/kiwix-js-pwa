@@ -2848,17 +2848,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
                 //Load cached start page if it exists and we have loaded the packaged file
                 var htmlContent = 0;
-                var zimName = appstate.selectedArchive._file._files[0].name.replace(/\.[^.]+$/, '');
-                if (params.isLandingPage && params.cachedStartPage && (~params.packagedFile.indexOf(zimName) || ~params.fileVersion.indexOf(zimName))) {
+                var zimName = appstate.selectedArchive._file._files[0].name.replace(/\.[^.]+$/, '').replace('_\d+_\d+$', '');
+                if (params.isLandingPage && params.cachedStartPages[zimName]) {
                     htmlContent = -1;
-                    // DEV: You should deal with the rare possibility that the cachedStartPage is not in the same namespace as the main page dirEntry...
-                    // Ideally include the namespace in params.cachedStartPage and adjust/test code (not hard)
-                    uiUtil.XHR(dirEntry.namespace + '/' + encodeURIComponent(encodeURIComponent(params.cachedStartPage).replace(/%2F/, '/')).replace(/%2F/, '/'), 'text', function (responseTxt, status) {
+                    var encURL = encodeURIComponent(encodeURIComponent(params.cachedStartPages[zimName]).replace(/%2F/g, '/')).replace(/%2F/g, '/');
+                    uiUtil.XHR(encURL, 'text', function (responseTxt, status) {
                         htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
                         if (htmlContent) {
                             console.log('Article retrieved from storage cache...');
                             // Alter the dirEntry url and title parameters in case we are overriding the start page
-                            dirEntry.url = params.cachedStartPage;
+                            dirEntry.url = params.cachedStartPages[zimName].replace(/[AC]\//, '');
                             var title = htmlContent.match(/<title[^>]*>((?:[^<]|<(?!\/title))+)/);
                             dirEntry.title = title ? title[1] : dirEntry.title;
                             displayArticleInForm(dirEntry, htmlContent);
@@ -2876,7 +2875,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     var goToRetrievedContent = function(html) {
                         if (/<html[^>]*>/.test(html)) {
                             console.log("Fast article retrieval from localStorage: " + lastPage);
-                            //if (~lastPage.indexOf(params.cachedStartPage)) params.isLandingPage = true;
                             setTimeout(function () {
                                 displayArticleInForm(dirEntry, html);
                             }, 10);
@@ -3980,7 +3978,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             //This removes any search highlighting
             clearFindInArticle();
             document.getElementById('searchingArticles').style.display = 'block';
-            if (~title.indexOf(params.cachedStartPage)) {
+            var zimName = appstate.selectedArchive._file._files[0].name.replace(/\.[^.]+$/, '').replace('_\d+_\d+$', '');
+            if (~title.indexOf(params.cachedStartPages[zimName])) {
                 goToMainArticle();
                 return;
             }
