@@ -1608,6 +1608,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
                                     uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
                                     uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
+                                    uriParams += params.packagedFile ? '&packagedFile=' + encodeURIComponent(params.packagedFile) : '';
+                                    uriParams += params.fileVersion ? '&fileVersion=' + encodeURIComponent(params.fileVersion) : '';
                                     // Signal failure of PWA until it has successfully launched (in init.js it will be changed to 'success')
                                     params.localUWPSettings.PWA_launch = 'fail';
                                     window.location.href = params.PWAServer + 'www/index.html' + uriParams;
@@ -2848,7 +2850,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
                 //Load cached start page if it exists and we have loaded the packaged file
                 var htmlContent = 0;
-                var zimName = appstate.selectedArchive._file._files[0].name.replace(/\.[^.]+$/, '').replace('_\d+_\d+$', '');
+                var zimName = appstate.selectedArchive._file._files[0].name.replace(/\.[^.]+$/, '').replace('_\d+-\d+$', '');
                 if (params.isLandingPage && params.cachedStartPages[zimName]) {
                     htmlContent = -1;
                     var encURL = encodeURIComponent(encodeURIComponent(params.cachedStartPages[zimName]).replace(/%2F/g, '/')).replace(/%2F/g, '/');
