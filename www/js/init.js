@@ -51,17 +51,17 @@ var appstate = {};
 /******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION *******/
 params['version'] = "1.2.2"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN serveice worker!! ********************/
-params['packagedFile'] = "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
+params['packagedFile'] = getSetting('packagedFile') || "wikipedia_en_100_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
-params['fileVersion'] = "wikipedia_en_medicine-app_maxi_2021-02 (2-Feb-2021)"; //This will be displayed in the app - optionally include date of ZIM file
+params['fileVersion'] = getSetting('fileVersion') || "wikipedia_en_100_maxi_2021-01.zim (23-Jan-2021)"; //This will be displayed in the app - optionally include date of ZIM file
 // List of known start pages cached in the FS:
 params['cachedStartPages'] = {
     'wikipedia_en_medicine-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine'
 };
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
 /******* DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
-params['PWAServer'] = "https://pwa.kiwix.org/"; // Production server
-// params['PWAServer'] = "https://kiwix.github.io/kiwix-js-windows/"; // Test server
+// params['PWAServer'] = "https://pwa.kiwix.org/"; // Production server
+params['PWAServer'] = "https://kiwix.github.io/kiwix-js-windows/"; // Test server
 params['PWAMode'] = getSetting('PWAMode'); // Set to true if the app should always operate in PWA mode 
 
 params['storeType'] = getBestAvailableStorageAPI();
