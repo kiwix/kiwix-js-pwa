@@ -9,7 +9,7 @@ If you have a distribution of this app and want to delete the packaged archive t
 ```
 params['packagedFile'] = "name_of_your_file.zim";
 params['fileVersion'] = "descriptive_name_of_your_file (Jan-2020)"; // These values will show in the app
-params['cachedStartPage'] = false;
+params['cachedStartPages'] = false;
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
 ```
 
