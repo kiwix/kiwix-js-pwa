@@ -152,7 +152,8 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
     # ZIP the remaining assets
     "Compressing remaining assets..."
     $compressed_assets_dir = $ReleaseBundle -replace '[^/\\]+$', ''
-    $compressed_archive = $compressed_assets_dir + "PowerShell.Installation.Script.KiwixWebAppWikiMed_$base_tag.0_Test.zip"
+    $compressed_assets_base = $compressed_assets_dir -replace '^.*[\\/]([^\\/]+)[\\/]', '$1'
+    $compressed_archive = $compressed_assets_dir + "PowerShell.Installation.Script.$compressed_assets_base.zip"
     $AddAppPackage = $compressed_assets_dir + "Add-AppDevPackage*.*"
     $cert_file = $ReleaseBundle -replace '\.[^.]+$', '.cer'
     "Compressing: $AddAppPackage, $cert_file"
@@ -211,7 +212,10 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
   }
   "Creating permalink..."
   $permalinkFile = "$PSScriptRoot/../kiwix-js-uwp.html"
+  if ($tag_name -imatch 'WikiMed') { $permalinkFile = $permalinkFile -replace 'kiwix-js-uwp', 'wikimed-uwp' }
+  if ($tag_name -imatch 'Wikivoyage') { $permalinkFile = $permalinkFile -replace 'kiwix-js-uwp', 'wikivoyage-uwp' }
   if ($flavour -eq '_N') { $permalinkFile = $permalinkFile -replace 'uwp', 'nwjs' }
+  if ($flavour -eq '_E') { $permalinkFile = $permalinkFile -replace 'uwp', 'electron' }
   $permalink = Get-Content -Raw $permalinkFile
   $permalink = $permalink -replace 'v[\d.EN]{5,}[^"'']*', $tag_name
   "Looking for: $permalinkFile"
