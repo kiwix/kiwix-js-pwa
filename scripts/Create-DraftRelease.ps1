@@ -1,6 +1,7 @@
 param (
     [string]$tag_name = "",
-    [switch]$dryrun = $false
+    [switch]$dryrun = $false,
+    [switch]$usetestrelease = $false
 )
 
 # Provide parameters
@@ -23,7 +24,7 @@ if ($text_tag -eq "Wikivoyage") { $release_title = "Wikivoyage by Kiwix $base_ta
 $flavour = ''
 $init_params = Get-Content -Raw "$PSScriptRoot\..\www\js\init.js"
 $file_version = ''
-if ($init_params -match 'params\[[''"]fileVersion[''"]]\s*=\s*[''"]([^''"]+)') {
+if ($init_params -match 'params\[[''"]fileVersion[''"]]\s*=\s*(?:getSetting\([''"]fileVersion[''"]\)\s*\|\|\s*)?[''"]([^''"]+)') {
   $file_version = $matches[1] 
 }
 $zim = ''
@@ -117,10 +118,28 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
       }
     }
   } else {
+    # If we are releasing a certified version we have to copy it from a different location
+    if (-Not $usetestrelease) {
+      $UploadBundle = dir "$PSScriptRoot/../bin/Release/Upload/*_$base_tag.0/*_$base_tag*.appx*"
+      "$UploadBundle"
+      if ($UploadBundle -and ($UploadBundle.count -eq 1) -and (Test-Path $UploadBundle -PathType leaf) -and ($UploadBundle -imatch '\.(?:appx|appxbundle|appxupload)$')) {
+        $ReleaseFolder = dir "$PSScriptRoot/../AppPackages/*_$base_tag*_Test"
+        if ($ReleaseFolder -and (Test-Path $ReleaseFolder -PathType Container)) {
+          "Copying signed archive $UploadBundle to release folder..."
+          if (-Not $dryrun) { cp $UploadBundle $ReleaseFolder }
+        } else {
+          "WARNING: Could not find release folder!"
+        }
+      } else {
+        "WARNING: Could not find the upload bundle, so we will use the test release..."
+      }
+    } else {
+      "Using test release because usetestrelease flag was set."
+    }
     $ReleaseBundle = dir "$PSScriptRoot/../AppPackages/*_$base_tag*_Test/*_$base_tag*.appx*"
     # Check the file exists and it's of the right type
     if ($ReleaseBundle -and ($ReleaseBundle.count -eq 1) -and (Test-Path $ReleaseBundle -PathType leaf) -and 
-      ($ReleaseBundle -imatch '(.*)\.(?:appx|appxbundle|appxupload)$')) {
+      ($ReleaseBundle -imatch '\.(?:appx|appxbundle|appxupload)$')) {
         "Setting main bundle file to $ReleaseBundle..."
     } elseif ($ReleaseBundle.count -ge 2) {
         "More than one file matches that tag!"
