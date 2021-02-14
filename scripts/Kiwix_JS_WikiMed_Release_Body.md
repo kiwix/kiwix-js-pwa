@@ -2,7 +2,7 @@
 
 It contains the <<date>> release of the WikiMed ZIM together with the changes detailed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-WikiMed/CHANGELOG.md).
 
-**Status of store app: PUBLISHED**
+**Status of store app: IN CERTIFICATION**
 
 https://www.microsoft.com/store/apps/9PHJSNP1CZ8J
 
