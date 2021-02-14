@@ -3080,7 +3080,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         // URLs that begin 'http' (i.e. non-relative URLs). It then captures the whole of the URL up until either the opening delimiter
         // (" or ', which is capture group \3) or a querystring or hash character (? or #). When the regex is used below, it will be further
         // processed to calculate the ZIM URL from the relative path. This regex can cope with legitimate single quote marks (') in the URL.
-        var regexpTagsWithZimUrl = /(<(?:img|script|link|track)\b[^>]*?\s)(?:src|href)(\s*=\s*(["']))(?!http)(.+?)(?=\3|\?|#)/ig;
+        var regexpTagsWithZimUrl = /(<(?:img|script|link|track)\b[^>]*?\s)(?:src|href)(\s*=\s*(["']))(?!http|app:)(.+?)(?=\3|\?|#)/ig;
         // Regex below tests the html of an article for active content [kiwix-js #466]
         // It inspects every <script> block in the html and matches in the following cases: 1) the script loads a UI application called app.js;
         // 2) the script block has inline content that does not contain "importScript()", "toggleOpenSection" or an "articleId" assignment
@@ -3271,7 +3271,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             var regexpGeoLocationDE = /<span\s+class\s?=\s?"[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<span[^>]+listing-name[^>]+>([^<]+)<\/span>)/ig;
             htmlArticle = htmlArticle.replace(regexpGeoLocationDE, function (match, latitude, longitude, href, id) {
                 return '<a href="bingmaps:?collection=point.' + latitude + '_' + longitude + '_' + encodeURIComponent(id.replace(/_/g, " ")) +
-                    '">\r\n<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;margin-top:5px !important" />\r\n</a>' + href;
+                    '">\r\n<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="app:///www/img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;margin-top:5px !important" />\r\n</a>' + href;
             });
 
             //Adapt English Wikivoyage POI data format
@@ -3279,11 +3279,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             htmlArticle = htmlArticle.replace(regexpGeoLocationEN, function (match, p1, latitude, longitude, p4, p5, p6, id) {
                 return p1 + "bingmaps:?collection=point." + latitude + "_" + longitude + "_" +
                     encodeURIComponent(id.replace(/_/g, " ")).replace(/\.(\w\w)/g, "%$1") +
-                    (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Map marker" title="Show this place on a map" src="img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" />' + p6 + id;
+                    (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Map marker" title="Show this place on a map" src="app:///www/img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" />' + p6 + id;
             });
 
             //Clean up remaining geo: links
             htmlArticle = htmlArticle.replace(/href\s*=\s*"\s*geo:([\d.-]+),([\d.-]+)/ig, 'href="bingmaps:?collection=point.$1_$2_' + encodeURIComponent(dirEntry.getTitleOrUrl()));
+
+            // Process any app:// links (these are always from the app payload) to match the current protocol
+            htmlArticle = htmlArticle.replace(/(['"])app:\/\//g, '$1' + window.location.protocol + '//');
 
             //Setup endnote backlinks if the ZIM doesn't have any
             htmlArticle = htmlArticle.replace(/<li\b[^>]+id=["']cite[-_]note[-_]([^"']+)[^>]+>(?![^/]+?[↑^])/ig, function (match, id) {
