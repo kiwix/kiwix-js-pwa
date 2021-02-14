@@ -1628,9 +1628,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     return;
                                 } else {
                                     if (params.localUWPSettings.PWA_launch === 'fail') {
-                                        message = 'WARNING: The PWA failed to launch on the last attempt!' +
-                                            '\n\nTo remain in local mode select Cancel,\n' +
-                                            'or you can try to launch the PWA again by selecting Access server:';
+                                        message = 'The PWA MAY have failed to launch on the last attempt ' +
+                                            '(but this is usually a transitory error you can ignore).' +
+                                            '\n\nIn case it genuinely failed, try again by selecting Access server:';
                                     }
                                     uiUtil.systemAlert(message, 'Warning!', 'Access server', checkPWAIsOnline, 'Cancel', function () {
                                         var allowAccessCheck = document.getElementById('allowInternetAccessCheck');
