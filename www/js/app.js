@@ -3286,7 +3286,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             htmlArticle = htmlArticle.replace(/href\s*=\s*"\s*geo:([\d.-]+),([\d.-]+)/ig, 'href="bingmaps:?collection=point.$1_$2_' + encodeURIComponent(dirEntry.getTitleOrUrl()));
 
             // Process any app:// links (these are always from the app payload) to match the current protocol
-            htmlArticle = htmlArticle.replace(/(['"])app:\/\//g, '$1' + window.location.protocol + '//');
+            htmlArticle = htmlArticle.replace(/(['"])app:\/\//g, function (p0, p1) {
+                var appRootDir = window.location.href.replace(/\/www\/index\.html.*$/i, '');
+                return p1 + appRootDir;
+            });
 
             //Setup endnote backlinks if the ZIM doesn't have any
             htmlArticle = htmlArticle.replace(/<li\b[^>]+id=["']cite[-_]note[-_]([^"']+)[^>]+>(?![^/]+?[↑^])/ig, function (match, id) {
