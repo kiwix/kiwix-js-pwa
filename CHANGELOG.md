@@ -2,6 +2,7 @@
 
 ## Release 1.2.2 WikiMed
 
+* UPDATE: Packaged ZIM updated to `wikipedia_en_medicine-app_maxi_2021-02.zim`
 * ENHANCEMENT: Enable Service Worker mode in UWP app
 * ENHANCEMENT: New domain pwa.kiwix.org for the PWA/UWP app
 * ENHANCEMENT: If app is running as a PWA, its identity is changed to Kiwix JS WikiMed PWA
