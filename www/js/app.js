@@ -3287,7 +3287,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
             // Process any app:// links (these are always from the app payload) to match the current protocol
             htmlArticle = htmlArticle.replace(/(['"])app:\/\//g, function (p0, p1) {
-                var appRootDir = window.location.href.replace(/\/www\/index\.html.*$/i, '');
+                var appRootDir = window.location.href.replace(/\/www\/.*$/i, '');
                 return p1 + appRootDir;
             });
 
