@@ -9,7 +9,7 @@ https://www.microsoft.com/store/apps/9PHJSNP1CZ8J
 If you prefer not to use the Microsoft Store or wish to test a different build, please follow the
 instructions below the screenshot.
 
-![image](https://user-images.githubusercontent.com/4304337/102692331-8c8ba400-420a-11eb-9f70-37e6880b9ccf.png)
+![image](https://user-images.githubusercontent.com/4304337/107876789-192ba900-6ec0-11eb-8dcc-c1f7bc12b6f6.png)
 
 ## Manual Installation: Windows 10 Tablet / PC
 
