@@ -2,7 +2,11 @@
 
 ## Release 1.2.2
 
+* ENHANCEMENT: Use a list of customized start pages even if the app is generic 
+* FIX: Map markers not showing in Service Worker mode
+* FIX: Implement internal app:// links for app-based assets
 * FIX: Race condition in handover to PWA code
+* FIX: Faulty permalinks
 
 ## Release 1.2.1
 
