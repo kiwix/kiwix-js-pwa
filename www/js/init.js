@@ -57,12 +57,13 @@ params['archivePath'] = "archives"; //The directory containing the packaged arch
 params['fileVersion'] = getSetting('fileVersion') || "wikipedia_en_medicine-app_maxi_2021-02 (2-Feb-2021)"; //This will be displayed in the app - optionally include date of ZIM file
 // List of known start pages cached in the FS:
 params['cachedStartPages'] = {
-    'wikipedia_en_medicine-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine'
+    'wikipedia_en_medicine-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine',
+    'wikivoyage_en_all_maxi': 'A/Main_Page'
 };
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/wikipedia/"; //Include final slash
 /******* DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
-params['PWAServer'] = "https://pwa.kiwix.org/"; // Production server
-// params['PWAServer'] = "https://kiwix.github.io/kiwix-js-windows/"; // Test server
+// params['PWAServer'] = "https://pwa.kiwix.org/"; // Production server
+params['PWAServer'] = "https://kiwix.github.io/kiwix-js-windows/"; // Test server
 params['PWAMode'] = getSetting('PWAMode'); // Set to true if the app should always operate in PWA mode 
 
 params['storeType'] = getBestAvailableStorageAPI();
