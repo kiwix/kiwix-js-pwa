@@ -11,8 +11,9 @@ If you prefer not to (or cannot) use the Microsoft Store or wish to test a diffe
 Starting in Windows 10 version 2004, **sideloading is enabled by default** and you can install apps by double-clicking signed app packages.
 On Windows 10 version 1909 and earlier, sideloading requires some additional configuration.
 
-* **Simple procedure**: Just launch your package! The Kiwix JS Windows packages are signed: you can download an `.appxbundle` above inside `AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/` folders, and launch it by double-clicking.
-* You may be prompted to allow sideloading, or you may need to enable it first on version 1909 or earlier: go to Settings -> Update and security -> For developers.
+* **Simple procedure**: Just launch your package! The Kiwix JS Windows packages downloadable from [Releases](https://github.com/kiwix/kiwix-js-windows/releases/) are signed. Download the `.appxbundle` from the Assets section of a Release and launch it by double-clicking.
+* If you wish to test an unsigned package, find an `.appxbundle` above inside `AppPackages/KiwixWebApp_x.x.x.x_[AnyCPU]_Test/` folders, and try to launch it by double-clicking.
+* You may be prompted to allow sideloading, or you may need to enable it first on version 1909 or earlier: go to Settings -> Update and security -> For developers. If this doesn't work, follow procedure below.
 * **You will need a ZIM archive to use the full features of this app** - [see below](#download-a-zim-archive-all-platforms).
 
 **_If above procedure fails_**, the package may not be a signed one, or else you have an even older version of Windows 10. In this case, follow the more complex procedure below:
@@ -21,7 +22,7 @@ On Windows 10 version 1909 and earlier, sideloading requires some additional con
 * Then, launch a PowerShell command window: press Windows key and type PowerShell, right-click and "Run as Administrator".
 * Type the following command: `Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser`
 * Accept the warnings and ensure the script finished correctly. (The above steps are one-time only: you shouldn't need to repeat them to install future builds.)
-* Now go to the latest `AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/` folder above and download **all** the files in the folder and subfolder. You can either do this by cloning the repository, or you can use https://minhaskamal.github.io/DownGit to download a zipped version of the folder (recommended).
+* Now go to the latest `AppPackages/KiwixWebApp_x.x.x.x_[AnyCPU]_Test/` folder above and download **all** the files in the folder and subfolder. You can either do this by cloning the repository, or you can use https://minhaskamal.github.io/DownGit to download a zipped version of the folder (recommended).
 * Unzip in your downloads folder, or other accessible folder. Ensure the directory structure is intact.
 * Now you can right-click `Add-AppDevPackage.ps1` and select `Run with PowerShell`. This is the simplest method to install the certificate and the app at the same time.
 * If you see a red message flash, and the window closes, then go to your PowerShell terminal, navigate to the folder containing the script, and type `.\Add-AppDevPackage.ps1` (NB the `.\` is important). Observe and follow instructions to address the issue.
