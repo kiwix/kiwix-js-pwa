@@ -1,5 +1,11 @@
 # Changelog
 
+## Release 1.2.3 WikiMed
+
+* UPDATE: Packaged ZIM updated to `wikipedia_en_medicine-app_maxi_2021-03.zim`
+* UPDATE: Better messaging around 'failure' to load SW mode (not a real failure)
+* FIX: Calculation of appRoot directory
+
 ## Release 1.2.2 WikiMed
 
 * UPDATE: Packaged ZIM updated to `wikipedia_en_medicine-app_maxi_2021-02.zim`
