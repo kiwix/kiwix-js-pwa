@@ -54,7 +54,7 @@ params['version'] = "1.2.3-WikiMed"; //DEV: Manually update this version when th
 /******* UPDATE THIS ^^^^^^ IN serveice worker!! ********************/
 params['packagedFile'] = getSetting('packagedFile') || "wikipedia_en_medicine-app_maxi.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
-params['fileVersion'] = getSetting('fileVersion') || "wikipedia_en_medicine-app_maxi_2021-02 (2-Feb-2021)"; //This will be displayed in the app - optionally include date of ZIM file
+params['fileVersion'] = getSetting('fileVersion') || "wikipedia_en_medicine-app_maxi_2021-03 (6-Mar-2021)"; //This will be displayed in the app - optionally include date of ZIM file
 // List of known start pages cached in the FS:
 params['cachedStartPages'] = {
     'wikipedia_en_medicine-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine',
