@@ -1,5 +1,10 @@
 # Changelog
 
+## In-progress release 1.2.3
+
+* UPDATE: Better messaging around 'failure' to load SW mode (not a real failure)
+* FIX: Calculation of appRoot directory
+
 ## Release 1.2.2
 
 * ENHANCEMENT: Use a list of customized start pages even if the app is generic 
