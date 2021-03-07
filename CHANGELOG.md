@@ -1,5 +1,23 @@
 # Changelog
 
+## Release 1.2.3 Wikivoyage
+
+* UPDATE: Included ZIM updated to `wikivoyage_en_all_maxi_2021-01.zim`
+* ENHANCEMENT: Enable Service Worker mode in UWP app
+* ENHANCEMENT: New domain pwa.kiwix.org for the PWA/UWP app
+* ENHANCEMENT: If app is running as a PWA, its identity is changed to Kiwix JS PWA
+* ENHANCEMENT: Use a list of customized start pages even if the app is generic 
+* UPDATE: Preliminary support for ZIM archives with no namespace
+* UPDATE: Revised Privacy Policy to reflect PWA usage
+* UPDATE: Minor update to improve handover between local and PWA code
+* UPDATE: Better messaging around 'failure' to load SW mode (not a real failure)
+* FIX: Calculation of appRoot directory
+* FIX: Display of masonry tiles in JQuery mode with latest ZIMs
+* FIX: Map markers not showing in Service Worker mode
+* FIX: Implement internal app:// links for app-based assets
+* FIX: Race condition in handover to PWA code
+* FIX: Faulty permalinks
+
 ## Release 1.1.4 Wikivoyage
 
 * UPDATE: Included ZIM updated to `wikivoyage_en_all_maxi_2021-01.zim`
