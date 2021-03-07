@@ -35,7 +35,7 @@ egk10 at cam ac uk.
 
 # Privacy Policy
 
-When installed, Kiwix JS Wikivoyage works offline, and does not collect or record any of your personal data. It
+When installed, Wikivoyage by Kiwix works offline, and does not collect or record any of your personal data. It
 only remembers your browsing history for the duration of a session (for the purpose of returning to previously
 viewed pages). This history is lost on exiting the app with the optional exception of the last-visited page.
 
