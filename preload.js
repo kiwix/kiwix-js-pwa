@@ -3,11 +3,19 @@
 
 'use strict';
 
-// const { remote } = require('electron');
-// var win = remote.getCurrentWebContents();
+// DEV: TO SUPPORT ELECTRON ^12 YOU WILL NEED THIS
+// const { contextBridge } = require('electron');
 const { open, read, close, stat } = require('fs');
 
 console.log("Inserting required Electron functions into DOM...");
+
+// DEV: FOR ELECTRON ^12 DO IT THIS WAY:
+// contextBridge.exposeInMainWorld('fs', {
+//     open: open, 
+//     read: read,
+//     close: close, 
+//     stat: stat
+// });
 
 window.fs = {
     open: open, 
