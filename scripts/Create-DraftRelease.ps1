@@ -86,16 +86,20 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
   "The draft release details were successfully created.`n"
   "Searching for assets..."
   if ($flavour -eq '_E') {
-    # Package electron app
-    "Building Electron app"
-    if (-Not $dryrun) { npm run package-win }
-    "Compressing release package for Electron..."
-    $compressed_assets_dir = "$PSScriptRoot/../bld/electron/kiwix-js-windows-win32-ia32"
     $base_dir = "$PSScriptRoot/../bld/electron/"
     $compressed_archive = $base_dir + "Kiwix.JS.$text_tag.$base_tag.zip"
-    $AddAppPackage = $base_dir + "Start*.*"
-    "Compressing: $AddAppPackage, $compressed_assets_dir to $compressed_archive"
-    if (-Not $dryrun) { "$AddAppPackage", "$compressed_assets_dir" | Compress-Archive -DestinationPath $compressed_archive -Force }
+    if (-Not (Test-Path $compressed_archive -PathType Leaf)) {
+      # Package electron app
+      "Building Electron app"
+      if (-Not $dryrun) { npm run package-win }
+      "Compressing release package for Electron..."
+      $compressed_assets_dir = "$PSScriptRoot/../bld/electron/kiwix-js-windows-win32-ia32"
+      $base_dir = "$PSScriptRoot/../bld/electron/"
+      $compressed_archive = $base_dir + "Kiwix.JS.$text_tag.$base_tag.zip"
+      $AddAppPackage = $base_dir + "Start*.*"
+      "Compressing: $AddAppPackage, $compressed_assets_dir to $compressed_archive"
+      if (-Not $dryrun) { "$AddAppPackage", "$compressed_assets_dir" | Compress-Archive -DestinationPath $compressed_archive -Force }
+    }
     $ReleaseBundle = ''
   } elseif ($flavour -eq '_N') {
     # Package NWJS app if necessary
