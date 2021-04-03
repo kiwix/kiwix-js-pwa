@@ -444,7 +444,7 @@ define(['q', 'settingsStore', 'uiUtil'], function(Q, settingsStore, uiUtil) {
                 selectedArchive.readUtf8File : selectedArchive.readBinaryFile;
             // Bypass getting dirEntry if we already have it
             var getDirEntry = dirEntry ? Q.Promise.resolve() :
-                selectedArchive.getDirEntryByTitle(title);
+                selectedArchive.getDirEntryByPath(title);
             // Read data from ZIM
             getDirEntry.then(function(resolvedDirEntry) {
                 if (dirEntry) resolvedDirEntry = dirEntry;
