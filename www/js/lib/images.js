@@ -84,7 +84,7 @@ define(['uiUtil'], function (uiUtil) {
                 });
                 return;
             }
-            appstate.selectedArchive.getDirEntryByTitle(title).then(function (dirEntry) {
+            appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
                 return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                     image.style.background = '';
                     var mimetype = dirEntry.getMimetype();
