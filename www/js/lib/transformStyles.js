@@ -118,7 +118,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             html = html.replace(/class\s*=\s*["']\s*thumbcaption\s*["']\s*/ig, 'style="margin: 0.5em 0 0.5em; font-size: 0.8em; line-height: 1.5; padding: 0 !important; color: #54595d; width: auto !important;"');
             //Wrap <h2> tags in <div> to control bottom border width if there's an infobox, but not if it's a new-style ZIM with collapsible details tags
             if (!/<details[\s\S]+?<summary\b/i.test(html)) {
-                html = /table\s+(?=[^>]*class\s*=\s*["'][^"']*(?:mw-stack|infobox|vertical-navbox|qbRight|wv-quickbar))/i.test(html) ? html.replace(/(<h2\s+[^<]*<\/h2>)/ig, '<div style="width: 60%;">$1</div>') : html;
+                html = /<table\s+(?=[^>]*class\s*=\s*["'][^"']*(?:mw-stack|infobox|vertical-navbox|qbRight|wv-quickbar))/i.test(html) ? html.replace(/(<h2\s+[^<]*<\/h2>)/ig, '<div style="width: 60%;">$1</div>') : html;
             }
             if (zim == "desktop") {
                 var infobox = [];
@@ -186,9 +186,9 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             //If it's in mobile position, move info-box above lead paragraph like on Wikipedia desktop
             if (zim == "mobile") {
                 //Attempt to match div-style infobox first
-                var tableBox = util.matchOuter(html, '<div\\b[^>]+?(?:infobox|vertical-navbox|qbRight|wv-quickbar)[^>]+>', '</div>', 'i');
+                var tableBox = util.matchOuter(html, '<div\\b[^>]+?(?:infobox[^-]|vertical-navbox|qbRight|wv-quickbar)[^>]*>', '</div>', 'i');
                 //If above failed we may have traditional table-style infobox
-                tableBox = !(tableBox && tableBox.length) ? util.matchOuter(html, '<table\\b[^>]+?(?:mw-stack|infobox|vertical-navbox|qbRight|wv-quickbar)[^>]+>', '</table>', 'i') : tableBox;
+                tableBox = !(tableBox && tableBox.length) ? util.matchOuter(html, '<table\\b[^>]+?(?:mw-stack|infobox[^-]|vertical-navbox|qbRight|wv-quickbar)[^>]*>', '</table>', 'i') : tableBox;
                 if (tableBox && tableBox.length) {
                     html = html.replace(tableBox, "");
                     html = html.replace(/(<\/h1>\s*)/i, "$1" + tableBox);
