@@ -1,6 +1,13 @@
 # Changelog
 
-## In-progress release 1.2.3
+## In progress Release 1.2.4
+
+* ENHANCEMENT: Support v1 article index in no-namespace ZIM archives
+* ENHANECMENT: Detect and correct erroneous hard-coded sytling of navboxes in recent ZIMs
+* FIX: Failure to recognize mouse click on title index entry
+* FIX: Issue preventing proper relocation of infobox when transforming to desktop style
+
+## Release 1.2.3
 
 * UPDATE: Better messaging around 'failure' to load SW mode (not a real failure)
 * FIX: Calculation of appRoot directory
