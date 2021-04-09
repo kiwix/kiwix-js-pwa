@@ -1,12 +1,12 @@
 {
-  "name": "kiwix_js_windows",
-  "productName": "Kiwix JS Windows Electron Edition",
+  "name": "kiwix_js_wikimed",
+  "productName": "Kiwix JS WikiMed Electron Edition",
   "version": "1.2.3E",
-  "description": "Kiwix JS Windows packaged for the Electron framework",
+  "description": "Kiwix JS WikiMed Electron",
   "main": "main.js",
   "build": {
-    "appId": "kiwix.js.windows",
-    "productName": "Kiwix JS Windows Electron Edition",
+    "appId": "kiwix.js.windows.wikimed",
+    "productName": "Kiwix JS WikiMed Electron Edition",
     "directories": {
       "output": "bld/Electron"
     },
@@ -33,7 +33,7 @@
     "start": "electron .",
     "dist": "electron-builder build",
     "package-mac": "electron-packager . kiwix-js-windows --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
-    "package-win": "electron-packager . kiwix-js-windows --electron-version='10.4.0' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=node_ --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --overwrite --platform=win32 --arch=ia32 --icon=www/img/icons/kiwix-64.ico --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Kiwix JS Windows Electron Edition'",
+    "package-win": "electron-packager . kiwix-js-windows --electron-version='10.4.0' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=node_ --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --overwrite --platform=win32 --arch=ia32 --icon=www/img/icons/kiwix-64.ico --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Kiwix JS WikiMed Electron Edition'",
     "postpackage-win": "(robocopy archives bld\\Electron\\kiwix-js-windows-win32-ia32\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0",
     "package-linux": "electron-packager . kiwix-js-windows --overwrite --platform=linux --arch=x64 --icon=www/img/icons/kiwix-64.png --prune=true --out=bld/electron"
   },
