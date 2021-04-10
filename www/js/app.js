@@ -3212,12 +3212,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (params.cssCache) {
                 // Remove landing page scripts that don't work in SW mode
                 htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/[^>]*((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, '');
-                // Set max-width for infoboxes
-                htmlArticle = htmlArticle.replace(/(<table\s+)(class=["'][^"']*infobox\b)/gi, '$1style="max-width:25%;" $2');
+                // Set max-width for infoboxes (now set in -/s/styles.css)
+                // htmlArticle = htmlArticle.replace(/(<table\s+)(class=["'][^"']*infobox\b)/gi, '$1style="max-width:25%;" $2');
                 // Remove override sidebar styles recently hard-coded into some Wikipedia ZIMs
                 htmlArticle = htmlArticle.replace(/<style\s+data-mw-deduplicate[^<]+<\/style>\s*/gi, '');
-                // Edit sidebar style
-                htmlArticle = htmlArticle.replace(/(<table\s+)(class=["'][^"']*)sidebar\s/gi, '$1style="max-width:25%;" $2infobox ');
+                // Edit sidebar style to make it an infobox
+                htmlArticle = htmlArticle.replace(/(<table\s+class=["'][^"']*)sidebar\s/gi, '$1infobox ');
             }
 
             //Remove empty div that causes layout issues in desktop style
