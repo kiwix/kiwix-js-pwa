@@ -342,7 +342,8 @@ tr + tr > .navbox-abovebelow,tr + tr > .navbox-group,tr + tr > .navbox-image,tr 
     float: right;
     clear: right;
     font-size: 88%;
-    line-height: 1.5em
+    line-height: 1.5em;
+    max-width: 320px
 }
 
 .infobox caption {
