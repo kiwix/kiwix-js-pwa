@@ -13,7 +13,7 @@ If you intend to use this app with other archives than WikiMed, then download th
 ### Instructions:
 
 * Download [Kiwix JS WikiMed <<base_tag>>.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed.<<base_tag>>.zip), or open Assets below and download the zipped file (not the source code). Unzip the contents of the archive to any folder, or to a flash drive / thumb drive;
-* Double click on `Start Kiwix JS WikiMed`, or that doesn't work, use the provided batch file `Start Kiwix JS WikiMed via batch file.bat`, or open the `kiwix-js-windows-win32-ia32` folder and double click on `kiwix-js-windows.exe`;
+* Double click on `Start Kiwix JS WikiMed`, or if that doesn't work, use the provided batch file `Start Kiwix JS WikiMed via batch file.bat`, or open the `kiwix-js-windows-win32-ia32` folder and double click on `kiwix-js-windows.exe`;
 * **Because the archive may not be commonly downloaded, you may face Windows SmartScreen issues** on first launch. Follow instructions to "Run anyway" if you trust this site. The app was made using Electron Packager version 15.2.0, and the `electron.exe` binary (renamed `kiwix-js-window.exe` with the Kiwix icon). You will not be asked again on subsequent launches.
 
 ### Release Notes
