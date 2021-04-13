@@ -1,9 +1,11 @@
 # Changelog
 
-## In progress Release 1.2.4
+## Release 1.2.4
 
+* UPDATE: Packaged archive updated to wikipedia_en_100_maxi_2021-03
 * ENHANCEMENT: Support v1 article index in no-namespace ZIM archives
 * ENHANECMENT: Detect and correct erroneous hard-coded sytling of navboxes in recent ZIMs
+* FIX: Correct width of infoboxes in Wikipedia Desktop style
 * FIX: Failure to recognize mouse click on title index entry
 * FIX: Issue preventing proper relocation of infobox when transforming to desktop style
 
