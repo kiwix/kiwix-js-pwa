@@ -51,7 +51,7 @@ foreach ($build in $builds) {
     $launcherStub = ".\bld\nwjs\$build-$version\Start Kiwix JS Windows"
     $foldername = "kiwix_js_windows$sep$appBuild-$build"
     # Batch file
-    $batch = '@cd "' + $foldername + '"' + "`r`n" + '@start "Kiwix JS Windows" "nw.exe"' + "`r`n'"
+    $batch = '@cd "' + $foldername + '"' + "`r`n" + '@start "Kiwix JS Windows" "nw.exe"' + "`r`n"
     $batch > "$launcherStub.bat"
     # Shortcut
     $WshShell = New-Object -ComObject WScript.Shell
