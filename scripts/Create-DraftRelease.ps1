@@ -10,6 +10,13 @@ $github_token = Get-Content -Raw "$PSScriptRoot/github_token"
 
 if ($tag_name -eq "") {
   $tag_name = Read-Host "`nEnter the tag name to use for this release"
+  if (-Not $dryrun) {
+    $dryrun = Read-Host "Is this a dry run? [Y/N]"
+    $dryrun = $dryrun -imatch 'n'
+    If ($dryrun) {
+      "Initiating dry run..."
+    }
+  }
 }
 if ($tag_name -NotMatch '^v\d+\.\d+\.\d+([EN-]|$)') {
   "`nTag name must be in the format " + '"v0.0.0[E][N][-text]"!' + "`n"
@@ -119,6 +126,7 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
       if (-Not $dryrun) {
         "Building NWJS apps..."
         & $PSScriptRoot/Build-NWJS.ps1
+        $found = $true
       }
     }
   } else {

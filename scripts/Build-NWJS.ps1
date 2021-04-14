@@ -1,7 +1,7 @@
 $builds = @("win-x64", "win-ia32", "win-xp")
-$version = "0.51.2"
+$version = "0.52.2"
 $versionXP = "0.14.7"
-$appBuild = "1.2.3N"
+$appBuild = "1.2.4N"
 $ZIMbase = "wikipedia_en_100_maxi"
 cd $PSScriptRoot
 cd ..
