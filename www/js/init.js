@@ -157,10 +157,12 @@ if (!/^http/i.test(window.location.protocol) && params.localUWPSettings &&
     params.contentInjectionMode === 'serviceworker' && params.allowInternetAccess) {
     // Test that there has been a successful handover to the PWA
     if (params.localUWPSettings.PWA_launch === 'success') {
-        // Signal failure until the PWA has launched, where this will be changed to 'success'
+        var uriParams = '?allowInternetAccess=true';
+        uriParams += params.packagedFile ? '&packagedFile=' + encodeURIComponent(params.packagedFile) : '';
+        uriParams += params.fileVersion ? '&fileVersion=' + encodeURIComponent(params.fileVersion) : '';
+        // Signal failure of PWA until it has successfully launched (in init.js it will be changed to 'success')
         params.localUWPSettings.PWA_launch = 'fail';
-        // User wants PWA mode and it has previously launched, so do quick reload now
-        window.location.href = params.PWAServer + 'www/index.html?allowInternetAccess=true';
+        window.location.href = params.PWAServer + 'www/index.html' + uriParams;
         // This will trigger the error catching above, cleanly dematerialize this script and transport us swiftly to PWA land
         window.beamMeUpScotty();
     } else if (params.localUWPSettings.PWA_launch === 'fail') {
