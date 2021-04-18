@@ -48,7 +48,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             //DEV: Although "." matches any character in regex, there is enough specificity in the patterns below
             //DEV: Add any local stylesheets you wish to include here
             if (cc &&
-                (/-\/(s\/|mw\/)?style.css/i.test(zl) ||
+                (/-\/(?:s\/css_modules\/|mw\/)?style.css/i.test(zl) ||
                     /\/mediawiki.toc.css/i.test(zl) ||
                     /\/ext.cite.styles.css/i.test(zl) ||
                     /\/ext.timeline.styles.css/i.test(zl) ||
@@ -80,11 +80,11 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                     /\/skins.minerva.base.reset\|skins.minerva.content.styles\|ext.cite.style\|mediawiki.page.gallery.styles\|mobile.app.pagestyles.android\|mediawiki.skinning.content.parsoid.css/i.test(zl)
                 )) {
                 zl = zl.replace(/\|/ig, "_"); //Replace "|" with "_" (legacy for some stylesheets with pipes in filename - but next line renders this redundant in current implementation)
-                if (/(-\/(s\/|mw\/)?style\.css)|minerva|inserted_style_mobile/i.test(zl)) { //If it matches one of the required styles...
+                if (/(-\/(?:s\/css_modules\/|mw\/)?style\.css)|minerva|inserted_style_mobile/i.test(zl)) { //If it matches one of the required styles...
                     zl = cs == "mobile" ? "-/s/style-mobile.css" : "-/s/style.css";
                 }
                 // Rename this required mobile style so that we don't trigger reading ZIM as mobile in print intercept
-                zl = /\/mobile_main_page\.css/.test(zl) ? "-/s/css_modules/newstyle_main_page.css" : zl;
+                zl = /\/mobile_main_page\.css/.test(zl) ? "-/mw/newstyle_main_page.css" : zl;
                 zl = /\/content\.parsoid\.css/.test(zl) ? "-/s/css_modules/content.parsoid.css" : zl;
                 // Replace bootstrap with own: DEV: when upgrading to Bootstrap 4, stop doing this!
                 zl = zl.replace(/.+(bootstrap[^\/]*?\.css)/i, "css/$1");
