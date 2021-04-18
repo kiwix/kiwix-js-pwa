@@ -3222,8 +3222,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/[^>]*((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, '');
                 // Set max-width for infoboxes (now set in -/s/styles.css)
                 // htmlArticle = htmlArticle.replace(/(<table\s+)(class=["'][^"']*infobox\b)/gi, '$1style="max-width:25%;" $2');
-                // Remove override sidebar styles recently hard-coded into some Wikipedia ZIMs
-                htmlArticle = htmlArticle.replace(/<style\s+data-mw-deduplicate[^<]+<\/style>\s*/gi, '');
+                // Remove override sidebar styles recently hard-coded into some Wikipedia ZIMs - reverted due to error with Wikivoyage and now dealt with in styles.css
+                // htmlArticle = htmlArticle.replace(/<style\s+data-mw-deduplicate[^<]+<\/style>\s*/gi, '');
                 // Edit sidebar style to make it an infobox
                 htmlArticle = htmlArticle.replace(/(<table\s+class=["'][^"']*)sidebar\s/gi, '$1infobox ');
             }
