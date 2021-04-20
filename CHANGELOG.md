@@ -1,5 +1,12 @@
 # Changelog
 
+## Release 1.2.5
+
+* ENHANCEMENT: PWA now adapts if it was launched from a basic packaged app
+* UPDATE: Location of cached styles tweaked to reflect latest location in ZIM archives
+* UPDATE: Cached main pages for WikiMed and Wikivoyage updated and used by vanilla app
+* FIX: Properly define width of infoboxes in Wikimedia Destop style
+
 ## Release 1.2.4
 
 * UPDATE: Packaged archive updated to wikipedia_en_100_maxi_2021-03
