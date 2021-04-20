@@ -11,8 +11,8 @@ $github_token = Get-Content -Raw "$PSScriptRoot/github_token"
 if ($tag_name -eq "") {
   $tag_name = Read-Host "`nEnter the tag name to use for this release"
   if (-Not $dryrun) {
-    $dryrun = Read-Host "Is this a dry run? [Y/N]"
-    $dryrun = $dryrun -imatch 'n'
+    $dryrun_check = Read-Host "Is this a dry run? [Y/N]"
+    $dryrun = -Not ( $dryrun_check -imatch 'n' )
     If ($dryrun) {
       "Initiating dry run..."
     }
@@ -123,7 +123,15 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
     }
     if (-Not $found) {
       "WARNING: One or more NWJS build(s) could not be found."
-      if (-Not $dryrun) {
+      "`nBuilding..."
+      "Updating Build-NWJS script with required tag..."
+      $script_body = Get-Content -Raw ("$PSScriptRoot/Build-NWJS.ps1")
+      $script_body = $script_body -ireplace '(appBuild\s*=\s*")[^"]+', "`${1}$base_tag"
+      if ($dryrun) {
+        "[DRYRUN] would have written:`n"
+        $script_body
+      } else {
+        Set-Content "$PSScriptRoot/Build-NWJS.ps1" $script_body
         "Building NWJS apps..."
         & $PSScriptRoot/Build-NWJS.ps1
         $found = $true
