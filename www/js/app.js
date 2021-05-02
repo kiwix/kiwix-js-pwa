@@ -1772,6 +1772,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             } else {
                 // We're in an Electron or NWJS app with a packaged file that we need to read from the node File System
                 console.log("Loading packaged ZIM or last selected archive for Electron...");
+                // If we're in an AppImage package and the storedFilePath points to the packaged archive, then the storedFilePath will be invalid,
+                // because a new path is established each time the image's filesystem is mounted. So we reset to default.
+                if (params.storedFile === params.packagedFile) {
+                    var archiveFilePath = params.archivePath + '/' + params.packagedFile;
+                    if (~params.storedFilePath.indexOf(archiveFilePath)) {
+                        params.storedFilePath = archiveFilePath;
+                    }
+                }
                 // Create a fake File object (this avoids extensive patching of later code)
                 createFakeFileObjectElectron(params.storedFile, params.storedFilePath, function (fakeFile) {
                     if (fakeFile.size) {
@@ -2473,10 +2481,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         function createFakeFileObjectElectron(filename, filepath, callback) {
             var file = {};
             // For Electron, we need to set an absolute filepath in case the file was launched from a shortcut (and if it's not already absolute)
-            // DEV: Periodically check Electron hasn't changed its resources folder; NB the ! in indexOf below indicates position at start of string
-            if (!filepath.indexOf(params.archivePath) && /^file:/.test(window.location.protocol)) {
-                filepath = window.location.pathname.replace(/^\//, '').replace(/(resources\/app\/)?www\/[^/]+$/, '') + filepath;
+            if (filepath === params.archivePath + '/' + filename && /^file:/i.test(window.location.protocol)) {
+                filepath = window.location.protocol + window.location.pathname.replace(/www\/[^/]+$/, '') + filepath;
             }
+            if (/^file:/i.test(filepath)) filepath = new URL(filepath);
             file.name = filename;
             file.path = filepath;
             file.readMode = 'electron';
