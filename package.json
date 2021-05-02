@@ -30,6 +30,7 @@
       "archives/README.md",
       "archives/wikip*.*"
     ],
+    "afterPack": "./scripts/appimage-fix.js",
     "win": {
       "icon": "www/img/icons/kiwix-64.ico"
     }
@@ -38,6 +39,7 @@
     "nwVersion": "0.52.2",
     "output": "bld/nwjs/win-x64",
     "files": [
+      "archives/**",
       "pwabuilder-sw.js",
       "index.html",
       "CHANGELOG.md",
