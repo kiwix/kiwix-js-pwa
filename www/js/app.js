@@ -2665,7 +2665,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     document.getElementById('findText').click();
                 }
             });
-
             document.getElementById('articleContent').contentWindow.addEventListener('keydown', function (e) {
                 //Ctrl-P to patch printing support, so iframe gets printed
                 if (e.ctrlKey && e.which == 80) {
@@ -3738,11 +3737,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // control the Window. Additionally, Edge Legacy cannot build the DOM for a completely hidden document, hence we catch
                 // these browser types with 'MSBlobBuilder' (and also IE11).
                 if (!(/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting))) {
-                    htmlArticle = htmlArticle.replace(/(<html\b[^>]*)>/i, '$1 bgcolor="black">');
+                    htmlArticle = htmlArticle.replace(/(<html\b[^>]*)>/i, '$1 bgcolor="' + 
+                        (cssUIThemeGetOrSet(params.cssTheme, true) !== 'light' ? 'grey' : 'whitesmoke') + '">');
                     if (!('MSBlobBuilder' in window)) htmlArticle = htmlArticle.replace(/(<body\b[^>]*)/i, '$1 hidden');
                 }
-                // articleWindow.document.documentElement.hidden = true;
-                // articleWindow.document.documentElement.bgcolor = 'black';
 
                 if (params.contentInjectionMode === 'serviceworker') {
                     // Add doctype if missing so that scripts run in standards mode 
