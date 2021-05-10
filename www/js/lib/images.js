@@ -234,7 +234,7 @@ define(['uiUtil'], function (uiUtil) {
                 // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
                 setTimeout(function() {
                     lazyLoad(container, documentImages);
-                }, 500);
+                }, 300);
             }
         }
     }
