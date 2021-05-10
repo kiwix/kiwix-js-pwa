@@ -1395,33 +1395,55 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             removePageMaxWidth();
         });
 
-        function removePageMaxWidth() {
-            var doc = articleWindow.document;
-            if (!doc || !doc.head) return;
-            var zimType = /<link\b[^>]+(?:minerva|mobile)/i.test(doc.head.innerHTML) ? "mobile" : "desktop";
-            var cssSource = params.cssSource == "auto" ? zimType : params.cssSource;
-            var idArray = ["content", "bodyContent"];
-            for (var i = 0; i < idArray.length; i++) {
-                var contentElement = doc.getElementById(idArray[i]);
-                if (!contentElement) continue;
-                var docStyle = contentElement.style;
-                if (!docStyle) continue;
-                if (contentElement.className == "mw-body") {
-                    docStyle.padding = "1em";
-                    docStyle.border = "1px solid #a7d7f9";
+        /**
+         * Removes the WikiMedia max-page-width restrictions either by operating on an HTML string, or by using
+         * DOM methods on the articleWindow. If the parameters are empty, DOM methods are used.
+         * 
+         * @param {String} html An optional HTML string on which to operate
+         * @param {Function} callback A function to call with the transformed string
+         * @returns {String} A string containing the transformed HTML
+         */
+        function removePageMaxWidth(html) {
+            var zimType;
+            var cssSource;
+            if (!html) {
+                var doc = articleWindow.document;
+                if (!doc || !doc.head) return;
+                zimType = /<link\b[^>]+(?:minerva|mobile)/i.test(doc.head.innerHTML) ? "mobile" : "desktop";
+                cssSource = params.cssSource === "auto" ? zimType : params.cssSource;
+                var idArray = ["content", "bodyContent"];
+                for (var i = 0; i < idArray.length; i++) {
+                    var contentElement = doc.getElementById(idArray[i]);
+                    if (!contentElement) continue;
+                    var docStyle = contentElement.style;
+                    if (!docStyle) continue;
+                    if (contentElement.className === "mw-body") {
+                        docStyle.padding = "1em";
+                        docStyle.border = "1px solid #a7d7f9";
+                    }
+                    if (params.removePageMaxWidth === "auto") {
+                        docStyle.maxWidth = cssSource === "desktop" ? "100%" : window.innerWidth > 1024 ? "90%" : "55.8em";
+                        docStyle.cssText = docStyle.cssText.replace(/(max-width[^;]+)/i, "$1 !important");
+                        docStyle.border = "0";
+                    } else {
+                        docStyle.maxWidth = params.removePageMaxWidth ? "100%" : "55.8em";
+                        docStyle.cssText = docStyle.cssText.replace(/(max-width[^;]+)/i, "$1 !important");
+                        if (params.removePageMaxWidth || zimType == "mobile") docStyle.border = "0";
+                    }
+                    docStyle.margin = "0 auto";
                 }
-                if (params.removePageMaxWidth == "auto") {
-                    docStyle.maxWidth = cssSource == "desktop" ? "100%" : window.innerWidth > 1024 ? "90%" : "55.8em";
-                    docStyle.cssText = docStyle.cssText.replace(/(max-width[^;]+)/i, "$1 !important");
-                    docStyle.border = "0";
-                } else {
-                    docStyle.maxWidth = params.removePageMaxWidth ? "100%" : "55.8em";
-                    docStyle.cssText = docStyle.cssText.replace(/(max-width[^;]+)/i, "$1 !important");
-                    if (params.removePageMaxWidth || zimType == "mobile") docStyle.border = "0";
-                }
-                docStyle.margin = "0 auto";
+            } else {
+                // We shall transform the raw HTML
+                zimType = /<link\b[^>]+(?:minerva|mobile)/i.test(html) ? "mobile" : "desktop";
+                cssSource = params.cssSource === "auto" ? zimType : params.cssSource;
+                html = html.replace(/(id=["'](?:content|bodyContent)["'](?=[^>]*?mw-)[^>]*)/ig, 
+                    '$1 style="padding:1em; border:0; max-width:' +
+                    (cssSource === 'desktop' || params.removePageMaxWidth === true ? '100%' : window.innerWidth > 1024 ? '90%' : '55.8em') + 
+                    ' !important; margin: 0 auto;"');
+                return html;
             }
         }
+
         document.getElementById('openAllSectionsCheck').addEventListener('click', function (e) {
             params.openAllSections = this.checked;
             settingsStore.setItem('openAllSections', params.openAllSections, Infinity);
@@ -3025,7 +3047,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 zimType = /minerva|mobile[^"']*\.css/i.test(doc.head.innerHTML) ? "mobile" : zimType;
                 docBody.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
                 //Set page width according to user preference
-                removePageMaxWidth();
+                // removePageMaxWidth();
                 openAllSections();
                 setupHeadings();
                 listenForNavigationKeys();
@@ -3746,6 +3768,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     // Add doctype if missing so that scripts run in standards mode 
                     // (quirks mode prevents katex from running, and is incompatible with jQuery)
                     params.transformedHTML = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(htmlArticle) ? '<!DOCTYPE html>\n' + htmlArticle : htmlArticle;
+                    // Remove page max width restriction if required
+                    if (params.removePageMaxWidth) params.transformedHTML = removePageMaxWidth(params.transformedHTML);
                     // We will need the encoded URL on article load so that we can set the iframe's src correctly,
                     // but we must not encode the '/' character or else relative links may fail [kiwix-js #498]
                     var encodedUrl = dirEntry.url.replace(/[^/]+/g, function (matchedSubstring) {
