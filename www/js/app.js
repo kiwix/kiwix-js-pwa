@@ -134,8 +134,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             $("#welcomeText").hide();
             $('.alert').hide();
             $("#searchingArticles").show();
-            // Ensure selected search item is displayed in the iframe, not a new window or tab
-            appstate.target = 'iframe';
             pushBrowserHistoryState(null, prefix);
             // Initiate the search
             searchDirEntriesFromPrefix(prefix);
@@ -2879,7 +2877,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             return false;
         }
 
-
         /**
          * Creates an instance of DirEntry from given dirEntryId (including resolving redirects),
          * and call the function to read the corresponding article
@@ -2890,6 +2887,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 var dirEntry = appstate.selectedArchive.parseDirEntryId(dirEntryId);
                 // Remove focus from search field to hide keyboard and to allow navigation keys to be used
                 document.getElementById('articleContent').contentWindow.focus();
+                // Ensure selected search item is displayed in the iframe, not a new window or tab
+                appstate.target = 'iframe';
                 $("#searchingArticles").show();
                 if (dirEntry.isRedirect()) {
                     appstate.selectedArchive.resolveRedirect(dirEntry, readArticle);
@@ -3725,6 +3724,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 if (appstate.target === 'iframe') {
                     // Tell jQuery we're removing the iframe document: clears jQuery cache and prevents memory leaks [kiwix-js #361]
                     $('#articleContent').contents().remove();
+                    articleContainer = document.getElementById('articleContent');
                     articleWindow = articleContainer.contentWindow;
                 }
 
@@ -3771,8 +3771,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // articleWindow.document.close();
                 
                 if (appstate.target === 'iframe') {
-                    // Tell jQuery we're removing the iframe document: clears jQuery cache and prevents memory leaks [kiwix-js #361]
-                    $('#articleContent').contents().remove();
                     // Store the frame article's target in the top-level window, so that when we retrieve the window with
                     // history manipulation, we'll know where to place the iframe contentWindow
                     window.kiwixType = appstate.target;
