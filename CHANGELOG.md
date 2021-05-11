@@ -1,6 +1,6 @@
 # Changelog
 
-## Release 1.2.6
+## In-progress release 1.3.0...
 
 * FEATURE: Open dynamic navigable tabs or windows with right-click / long-press / ctrl-click / middle-click on a ZIM link
 * UPDATE: Sample archive updated to wikipedia_en_100_maxi_2021-04
