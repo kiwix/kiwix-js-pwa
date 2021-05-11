@@ -1,5 +1,15 @@
 # Changelog
 
+## Release 1.2.6
+
+* FEATURE: Open dynamic navigable tabs or windows with right-click / long-press / ctrl-click / middle-click on a ZIM link
+* UPDATE: Sample archive updated to wikipedia_en_100_maxi_2021-04
+* UPDATE: Release Linux AppImage packages for Electron-based build
+* FIX: Prevent flash between page loads by adapting empty screen to the selected theme color
+* FIX: Crash on upgrade of ZIM archive
+* FIX: Subtitle dislplay on videos
+* FIX: Download of media and subtitles
+
 ## Release 1.2.5
 
 * ENHANCEMENT: PWA now adapts if it was launched from a basic packaged app
