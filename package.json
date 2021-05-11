@@ -44,9 +44,7 @@
       "index.html",
       "CHANGELOG.md",
       "LICENCE",
-      "www/**",
-      "archives/README.md",
-      "archives/wikip*.*"
+      "www/**"
     ],
     "win": {
       "icon": "www/img/icons/kiwix-64.ico"
