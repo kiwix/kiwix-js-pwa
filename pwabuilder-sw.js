@@ -4,7 +4,7 @@
 // App version number - ENSURE IT MATCHES VALUE IN init.js
 // DEV: Changing this will cause the browser to recognize that the Service Worker has changed, and it will download and
 // install a new copy
-const appVersion = '1.2.5';
+const appVersion = '1.2.5.20-dev';
 
 // Kiwix ZIM Archive Download Server in regex form
 // DEV: The server URL is defined in init.js, but is not available to us in SW
