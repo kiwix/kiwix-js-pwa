@@ -1,10 +1,11 @@
 # Changelog
 
-## In-progress release 1.3.0 WikiMed...
+## Release 1.3.0 WikiMed...
 
-* FEATURE: Open dynamic navigable tabs or windows with right-click / long-press / ctrl-click / middle-click on a ZIM link
-* UPDATE: Sample archive updated to wikipedia_en_100_maxi_2021-04
+* FEATURE: Open a new browsable tab or window with right-click, long-press or ctrl-click
+* UPDATE: Packaged archive updated to `wikipedia_en_medicine-app_maxi_2021-05.zim`
 * UPDATE: Release Linux AppImage packages for Electron-based build
+* ENHANCEMENT: Alt-left or Ctrl-left (and same for right key) can now be used for navigation in the UWP app
 * FIX: Prevent flash between page loads by adapting empty screen to the selected theme color
 * FIX: Crash on upgrade of ZIM archive
 * FIX: Subtitle dislplay on videos
