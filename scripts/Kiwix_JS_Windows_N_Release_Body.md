@@ -1,4 +1,4 @@
-## This is a portable build of Kiwix JS Windows NWJS for any 32bit or 64bit edition of Windows
+## This is a portable build of Kiwix JS NWJS for any 32bit or 64bit edition of Windows
 
 This is **not** the UWP/Microsoft Store build. If you are using **Windows 10**, you may prefer to use [the release for the Microsoft Store](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html), which is smaller and faster to load. This version runs on the [NWJS platform](https://nwjs.io/) (which is very similar to ElectronJS, but supports older versions of Windows). The package does **not** auto-update (whereas the Store version does). Please choose the correct build as follows:
 
@@ -8,7 +8,7 @@ For Windows 7,8,10 64bit: [`kiwix_js_windows-<<base_tag>>-win-x64.zip`](https://
 
 If you have a modern Windows and do not know if your system is 64bit or 32bit, choose the 32bit (ia32) build.
 
-The non-XP builds are based on NWJS 0.50.3 x64 or ia32 (x86).
+The non-XP builds are based on NWJS 0.53.0 x64 or ia32 (x86).
 
 The XP/Vista build is based on a legacy LTS release of NWJS 0.14.7 ia32.
 
@@ -24,8 +24,9 @@ There is no installation required: the app is fully portable. Simply unzip it in
 
 ### Release Notes
 
-* This app is packaged with `<<zim>>` (<<date>>) for testing purposes. The packaged archive is located in the `archives` folder. Note that it has a generic name intentionally. See the readme in that folder;
-* The app is compatible with new ZIMs that are compressed with zstandard and containing WebP images, while remaining backwardly compatible with xz compression;
+* This app is packaged with `<<zim>>` (<<date>>) for testing purposes. The packaged archive is located in the `archives` folder. See the readme in that folder;
+* You can open new dynamic, browsable article tabs or windows with right-click, ctrl-click, etc., on an internal link (or right-click on the page itself to open current article in new tab);
+* The app is compatible with new ZIMs that are compressed with zstandard and containing WebP images, and also with no-namespace ZIMs, while remaining backwardly compatible with xz compression;
 * If a different archive is picked, it will be remembered and launched automatically on startup;
 * Service Worker mode is only operational in builds for modern Windows;
 * In modern versions of Windows, you can print by pressing Ctrl-P or using the print icon. If local printers are not available (after clicking on More options...) then print to PDF and use another app to print.
