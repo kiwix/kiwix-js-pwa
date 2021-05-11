@@ -64,6 +64,6 @@
     "electron-packager": "^15.2.0"
   },
   "dependencies": {
-    "@types/fs-extra": "^9.0.7"
+    "@types/fs-extra": "^9.0.11"
   }
 }
