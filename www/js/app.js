@@ -3228,13 +3228,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         var regexpPath = /^(.*\/)[^\/]+$/;
         // Pattern to find a ZIM URL (with its namespace) - see https://wiki.openzim.org/wiki/ZIM_file_format#Namespaces
         var regexpZIMUrlWithNamespace = /^[./]*([-ABCIJMUVWX]\/.+)$/;
-        // Regex below finds images, scripts, stylesheets and tracks with ZIM-type metadata and image namespaces [kiwix-js #378].
+        // Regex below finds images, scripts, stylesheets (not tracks) with ZIM-type metadata and image namespaces [kiwix-js #378].
         // It first searches for <img, <script, <link, etc., then scans forward to find, on a word boundary, either src=["'] or href=["']
         // (ignoring any extra whitespace), and it then tests the path of the URL with a non-capturing negative lookahead that excludes
         // URLs that begin 'http' (i.e. non-relative URLs). It then captures the whole of the URL up until either the opening delimiter
         // (" or ', which is capture group \3) or a querystring or hash character (? or #). When the regex is used below, it will be further
         // processed to calculate the ZIM URL from the relative path. This regex can cope with legitimate single quote marks (') in the URL.
-        var regexpTagsWithZimUrl = /(<(?:img|script|link|track)\b[^>]*?\s)(?:src|href)(\s*=\s*(["']))(?!http|app:)(.+?)(?=\3|\?|#)/ig;
+        var regexpTagsWithZimUrl = /(<(?:img|script|link)\b[^>]*?\s)(?:src|href)(\s*=\s*(["']))(?!http|app:)(.+?)(?=\3|\?|#)/ig;
         // Regex below tests the html of an article for active content [kiwix-js #466]
         // It inspects every <script> block in the html and matches in the following cases: 1) the script loads a UI application called app.js;
         // 2) the script block has inline content that does not contain "importScript()", "toggleOpenSection" or an "articleId" assignment
@@ -3822,7 +3822,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     }
                     var mediaElement = /audio|video/i.test(mediaSource.tagName) ? mediaSource : mediaSource.parentElement;
                     // Create custom subtitle / cc load menu if it doesn't already exist
-                    if (!articleDocument.getElementById('kiwixCCMenu')) buildCustomCCMenu(articleDocument, mediaElement, function (ccBlob) {
+                    if (!articleWindow.document.getElementById('kiwixCCMenu')) buildCustomCCMenu(articleWindow.document, mediaElement, function (ccBlob) {
                         trackBlob = ccBlob;
                     });
                     // Load media file
@@ -3838,60 +3838,63 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             if (/track/i.test(mediaSource.tagName)) return;
                             mediaElement.load();
                             // Add a download link in case media source not supported
-                            document.getElementById('alertBoxFooter').innerHTML =
-                                '<div id="downloadAlert" class="alert alert-info alert-dismissible">\n' +
-                                '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
-                                '    <span id="alertMessage"></span>\n' +
-                                '</div>\n';
-                            var alertMessage = document.getElementById('alertMessage');
-                            var filename = articleWindow.title + '_' + dirEntry.url.replace(/^.*\/([^\/]+)$/, '$1');
-                            // Make filename safe
-                            filename = filename.replace(/[\/\\:*?"<>|]/g, '_');
-                            alertMessage.innerHTML = '<a href="#" class="alert-link" id="downloadMedia">Download this file</a> (and any selected subtitles) to play with another app';
-                            document.getElementById('downloadMedia').addEventListener('click', function () {
-                                var downloadFiles = [];
-                                downloadFiles.push({
-                                    'blob': blob,
-                                    'filename': filename,
-                                    'src': mediaSource.src
-                                });
-                                // Add any selected subtitle file to the download package
-                                var selTextTrack = iframe.getElementById('kiwixSelCC');
-                                if (selTextTrack) {
-                                    var selTextExt = selTextTrack.dataset.kiwixurl.replace(/^.*\.([^.]+)$/, '$1');
-                                    // Subtitle files should have same name as video + .es.vtt (for example)
+                            if (articleWindow.kiwixType === 'iframe') {
+                                var iframe = document.getElementById('articleContent').contentDocument;
+                                document.getElementById('alertBoxFooter').innerHTML =
+                                    '<div id="downloadAlert" class="alert alert-info alert-dismissible">\n' +
+                                    '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
+                                    '    <span id="alertMessage"></span>\n' +
+                                    '</div>\n';
+                                var alertMessage = document.getElementById('alertMessage');
+                                var filename = iframe.title + '_' + dirEntry.url.replace(/^.*\/([^\/]+)$/, '$1');
+                                // Make filename safe
+                                filename = filename.replace(/[\/\\:*?"<>|]/g, '_');
+                                alertMessage.innerHTML = '<a href="#" class="alert-link" id="downloadMedia">Download this file</a> (and any selected subtitles) to play with another app';
+                                document.getElementById('downloadMedia').addEventListener('click', function () {
+                                    var downloadFiles = [];
                                     downloadFiles.push({
-                                        'blob': trackBlob,
-                                        'filename': filename.replace(/^(.*)\.[^.]+$/, '$1.' + selTextTrack.srclang + '.' + selTextExt),
-                                        'src': selTextTrack.src
+                                        'blob': blob,
+                                        'filename': filename,
+                                        'src': mediaSource.src
                                     });
-                                }
-                                for (var j = downloadFiles.length; j--;) {
-                                    if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
-                                        uiUtil.downloadBlobUWP(downloadFiles[j].blob, downloadFiles[j].filename, alertMessage);
-                                    } else {
-                                        var mimeType = downloadFiles[j].blob.type ? downloadFiles[j].blob.type : 'application/octet-stream';
-                                        var a = document.createElement('a');
-                                        a.href = downloadFiles[j].src;
-                                        a.target = '_blank';
-                                        a.type = mimeType;
-                                        a.download = downloadFiles[j].filename;
-                                        alertMessage.appendChild(a); // NB we have to add the anchor to the document for Firefox to be able to click it
-                                        try {
-                                            a.click();
-                                        } catch (err) {
-                                            // If the click fails, use an alternative download method
-                                            if (window.navigator && window.navigator.msSaveBlob) {
-                                                // This works for IE11
-                                                window.navigator.msSaveBlob(downloadFiles[j].blob, downloadFiles[j].filename);
+                                    // Add any selected subtitle file to the download package
+                                    var selTextTrack = iframe.getElementById('kiwixSelCC');
+                                    if (selTextTrack) {
+                                        var selTextExt = selTextTrack.dataset.kiwixurl.replace(/^.*\.([^.]+)$/, '$1');
+                                        // Subtitle files should have same name as video + .es.vtt (for example)
+                                        downloadFiles.push({
+                                            'blob': trackBlob,
+                                            'filename': filename.replace(/^(.*)\.[^.]+$/, '$1.' + selTextTrack.srclang + '.' + selTextExt),
+                                            'src': selTextTrack.src
+                                        });
+                                    }
+                                    for (var j = downloadFiles.length; j--;) {
+                                        if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
+                                            uiUtil.downloadBlobUWP(downloadFiles[j].blob, downloadFiles[j].filename, alertMessage);
+                                        } else {
+                                            var mimeType = downloadFiles[j].blob.type ? downloadFiles[j].blob.type : 'application/octet-stream';
+                                            var a = document.createElement('a');
+                                            a.href = downloadFiles[j].src;
+                                            a.target = '_blank';
+                                            a.type = mimeType;
+                                            a.download = downloadFiles[j].filename;
+                                            alertMessage.appendChild(a); // NB we have to add the anchor to the document for Firefox to be able to click it
+                                            try {
+                                                a.click();
+                                            } catch (err) {
+                                                // If the click fails, use an alternative download method
+                                                if (window.navigator && window.navigator.msSaveBlob) {
+                                                    // This works for IE11
+                                                    window.navigator.msSaveBlob(downloadFiles[j].blob, downloadFiles[j].filename);
+                                                }
                                             }
                                         }
                                     }
-                                }
-                                articleContainer.addEventListener('unload', function (e) {
-                                    alertMessage.remove();
+                                    articleContainer.addEventListener('unload', function (e) {
+                                        alertMessage.remove();
+                                    });
                                 });
-                            });
+                            }
                         });
                     });
                 });
