@@ -36,7 +36,7 @@ function createWindow() {
             nodeIntegration: false
             // contextIsolation: true,
             , preload: path.join(__dirname, 'preload.js')
-            // , nativeWindowOpen: true
+            , nativeWindowOpen: true
             // , webSecurity: false
             // , session: ses
             // , partition: 'persist:kiwixjs'
@@ -51,15 +51,22 @@ function createWindow() {
 
     //mainWindow.autoHideMenuBar = true;
 
-    mainWindow.webContents.on('new-window', function(e, url) {
-        // Make sure blob urls stay in electron perimeter
-        if(/^blob:/i.test(url)) {
-          return;
-        }
-        // And open every other protocol in the OS browser      
-        e.preventDefault();
-        shell.openExternal(url);
-      });
+    // mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    //     if (!/blob:/i.test(url)) {
+    //         return { action: 'allow' };
+    //     }
+    //     return { action: 'deny' };
+    // });
+
+    // mainWindow.webContents.on('new-window', function(e, url) {
+    //     // Make sure blob urls stay in electron perimeter
+    //     if(/^blob:/i.test(url)) {
+    //       return;
+    //     }
+    //     // And open every other protocol in the OS browser      
+    //     e.preventDefault();
+    //     shell.openExternal(url);
+    // });
     
     // DEV: Enable code below to check cookies saved by app in console log
     // mainWindow.webContents.on('did-finish-load', function() {
