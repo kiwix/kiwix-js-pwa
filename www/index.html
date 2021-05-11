@@ -698,10 +698,16 @@
                                             <input type="text" name="maxResults" id="maxResults" value="20" style="width:2em;color:steelblue;">
                                             (higher number will result in slower search performance)
                                         </label>
+                                        <label class="checkbox" title="Tap three times for tab | window | off">
+                                            <input type="checkbox" name="windowOpener" id="windowOpenerCheck">
+                                            <span class="checkmark"></span>
+                                            <strong>Open archive links in new browsable [ <span id="windowOpenerState"></span> ]</strong><br />
+                                            <span id="windowOpenerHelp" class="form-text" hidden></span>
+                                        </label>
                                         <label class="checkbox">
                                             <input type="checkbox" name="allowHTMLExtraction" id="allowHTMLExtractionCheck">
                                             <span class="checkmark"></span>
-                                            <b>Enable opening articles in a separate browser tab</b> (slightly increases app's memory usage)
+                                            <b>Add breakout link to open <i>current</i> article in new (non-browsable) window</b> (supported by all browsers)
                                         </label>
                                         <label class="checkbox">
                                             <input type="checkbox" name="openAllSections" id="openAllSectionsCheck">

@@ -84,8 +84,9 @@ define(rqDef, function() {
                 blob = new Blob([content], {
                     type: mimeType
                 });
+            // Establish the current window (avoids having to pass it to this function)
                 var docWindow = node.ownerDocument.defaultView || node.ownerDocument.parentWindow || window;
-                var url = docWindow.URL.createObjectURL(blob);
+                url = docWindow.URL.createObjectURL(blob);
                 if (callback) callback(url);
                 node.addEventListener('load', function () {
                     URL.revokeObjectURL(url);
@@ -499,8 +500,14 @@ define(rqDef, function() {
                     myReader.addEventListener("loadend", function () {
                         if (myReader.result) {
                             var dataURL = myReader.result.replace(/data:;/, 'data:' + mimetype + ';');
-                            if (item.href) item.href = dataURL;
-                            if (item.src) item.src = dataURL;
+                            if (item.href) {
+                                try { item.href = dataURL; }
+                                catch (err) { null; }
+                            }
+                            if (item.src) {
+                                try { item.src = dataURL; }
+                                catch (err) { null; }
+                            }
                         }
                         itemsCount--;
                         if (itemsCount === 0) extractHTML();
