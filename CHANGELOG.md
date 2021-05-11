@@ -9,6 +9,7 @@
 * FIX: Crash on upgrade of ZIM archive
 * FIX: Subtitle dislplay on videos
 * FIX: Download of media and subtitles
+* FIX: Display of list-based home pages
 
 ## Release 1.2.4 WikiMed
 
