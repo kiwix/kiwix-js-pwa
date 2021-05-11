@@ -1432,6 +1432,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     }
                     docStyle.margin = "0 auto";
                 }
+                if (doc.body && doc.body.classList.contains('article-list-home')) {
+                    doc.body.style.padding = '2em';
+                } 
             } else {
                 // We shall transform the raw HTML
                 zimType = /<link\b[^>]+(?:minerva|mobile)/i.test(html) ? "mobile" : "desktop";
@@ -1838,9 +1841,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // After that, we can start looking for archives
             //storages[0].get("fake-file-to-read").then(searchForArchivesInPreferencesOrStorage,
             if (!params.pickedFile && typeof window.fs !== 'undefined') {
-                if (params.packagedFile && params.storedFile === params.packagedFile) {
+                // Below we compare the prefix of the files, i.e. the generic filename without date, so we can smoothly deal with upgrades
+                if (params.packagedFile && params.storedFile.replace(/_[\d-]+\.zim\w?\w?$/i, '') === params.packagedFile.replace(/_[\d-]+\.zim\w?\w?$/i, '')) {
                     // We're in Electron / NWJS and we need to load the packaged app, so we are forced to use the .fs code
-                    params.pickedFile = params.storedFile;
+                    params.pickedFile = params.packagedFile;
                 } else if (typeof window.showOpenFilePicker === 'undefined') {
                     // We're in an older Eolectron / NWJS app, so we need to use the .fs code anyway
                     params.pickedFile = params.storedFile;
