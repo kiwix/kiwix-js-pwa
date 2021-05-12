@@ -250,9 +250,9 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
         echo "DRYRUN with these upload parameters:`n" + @upload_params 
       }
     } else {
-      "The upload appears to have failed!"
+      "`nI'm sorry, the upload appears to have failed! Please try again..."
       if ($upload) {
-        "The server returned:"
+        "`nThe server returned:"
         echo $upload
       } else {
         "The server did not respond."
