@@ -7,7 +7,7 @@ This is **not** the UWP/Microsoft Store build. If you are using Windows 10, you 
 * Choose the correct build:
   - **Portable** Win7/8/10 32bit/64bit (just unzip, no install needed) - [Kiwix JS WikiMed <<base_tag>>.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed.<<base_tag>>.zip)
   - **Installer** Win7/8/10 32bit/64bit - [Kiwix JS WikiMed Setup <<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed.Setup.<<numeric_tag>>-E.exe)
-  - Linux 64bit AMD (Ubuntu, Debian) - [Kiwix JS WikiMed-<<numeric_tag>>-E.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed-<<base_tag>>.AppImage)
+  - Linux 64bit AMD (Ubuntu, Debian) - [Kiwix JS WikiMed-<<numeric_tag>>-E.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed-<<numeric_tag>>-E.AppImage)
   - Linux 32bit i386 (Ubuntu, Debian) - [Kiwix JS WikiMed-<<numeric_tag>>-E-i386.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed-<<numeric_tag>>-E-i386.AppImage)
 
 There is no installation required for the Portable versions, or you can install the Setup version (on Windows) if you prefer. It does NOT auto-update (yet). **Warning: the download is 1.2GB (it includes the full WikiMed archive).** See instructions for unzipping and launching below the screenshot.
