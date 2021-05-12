@@ -52,7 +52,7 @@ if ($base_tag -match '[EN]$') {
     $title_flavour = 'NWJS'
     $branch = 'nwjs-en-top' 
   } 
-  $release_title = $release_title -replace '([^\s]+)\sUWP$', ("$title_flavour Edition for Win7/Win8/Win10 " + '$1')
+  $release_title = $release_title -replace '([^\s]+)\sUWP$', ("$title_flavour Edition (Window/Linux) " + '$1')
   if ($flavour -eq '_N') { $release_title = $release_title -replace 'Edition\s(for\s)', '$1XP/Vista/' } 
 }
 "Text tag: $text_tag"
@@ -91,6 +91,15 @@ if (-Not $dryrun) {
 # Check that we appear to have created a release
 if ($dryrun -or $release.assets_url -imatch '^https:') {
   "The draft release details were successfully created.`n"
+  "Updating release version in package.json"
+  $json_object = Get-Content -Raw "$PSScriptRoot/../package.json"
+  $json_object = $json_object -replace '("version": ")[^"]+', "`${1}$base_tag"
+  if ($dryrun) {
+    "[DRYRUN] would have written:`n"
+    $json_object
+  } else {
+    Set-Content "$PSScriptRoot/../package.json" $json_object
+  }
   "Searching for assets..."
   if ($flavour -eq '_E') {
     $base_dir = "$PSScriptRoot/../bld/electron/"

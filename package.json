@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-windows",
   "productName": "Kiwix JS Windows",
-  "version": "1.2.4E",
+  "version": "1.2.6E",
   "description": "Kiwix JS Windows packaged for the Electron framework",
   "main": "main.js",
   "build": {
@@ -23,7 +23,10 @@
       "target": [
         {
           "target": "AppImage",
-          "arch": "ia32"
+          "arch": [
+            "x64",
+            "ia32"
+          ]
         }
       ]
     },
@@ -42,9 +45,10 @@
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder build",
+    "dist-linux": "electron-builder build --linux",
     "package-mac": "electron-packager . kiwix-js-windows --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
     "package-win": "electron-packager . kiwix-js-windows --electron-version='10.4.0' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=node_ --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --overwrite --platform=win32 --arch=ia32 --icon=www/img/icons/kiwix-64.ico --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Kiwix JS Windows Electron Edition'",
-    "postpackage-win": "(robocopy archives bld\\Electron\\kiwix-js-windows-win32-ia32\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0",
+    "postpackage-win": "(robocopy archives bld\\Electron\\kiwix-js-windows-win32-ia32\\resources\\app\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0",
     "package-linux": "electron-packager . kiwix-js-windows --overwrite --platform=linux --icon=www/img/icons/kiwix-64.png --electron-version='10.4.0' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=node_ --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --overwrite --arch=x64 --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Kiwix JS WikiMed Electron Edition'",
     "postpackage-linux": "(robocopy archives bld\\Electron\\kiwix-js-windows-linux-x64\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0"
   },
