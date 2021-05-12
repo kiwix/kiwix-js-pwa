@@ -1,14 +1,15 @@
 {
   "name": "kiwix-js-wikimed",
   "productName": "Kiwix JS WikiMed",
-  "version": "1.2.6E",
+  "version": "1.3.0E",
   "description": "Kiwix JS WikiMed Electron Edition",
   "main": "main.js",
   "build": {
     "appId": "kiwix.js.wikimed",
     "productName": "Kiwix JS WikiMed",
     "directories": {
-      "output": "bld/Electron"
+      "output": "bld/Electron",
+      "buildResources": "bld"
     },
     "afterPack": "./scripts/appimage-fix.js",
     "win": {
