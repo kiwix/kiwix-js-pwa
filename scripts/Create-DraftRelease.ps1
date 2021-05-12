@@ -96,8 +96,8 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
     $base_dir = "$PSScriptRoot/../bld/electron/"
     $compressed_archive = $base_dir + "Kiwix.JS.$text_tag.$base_tag.zip"
     if (-Not (Test-Path $compressed_archive -PathType Leaf)) {
-      # Package electron app
-      "Building Electron app"
+      # Package electron app for Windows
+      "Building Electron app for Windows"
       if (-Not $dryrun) { npm run package-win }
       "Compressing release package for Electron..."
       $compressed_assets_dir = "$PSScriptRoot/../bld/electron/kiwix-js-windows-win32-ia32"
@@ -106,6 +106,26 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
       $AddAppPackage = $base_dir + "Start*.*"
       "Compressing: $AddAppPackage, $compressed_assets_dir to $compressed_archive"
       if (-Not $dryrun) { "$AddAppPackage", "$compressed_assets_dir" | Compress-Archive -DestinationPath $compressed_archive -Force }
+    }
+    # Package Electron app for Linux
+    "`nChecking for Electron packages for Linux"
+    $LinuxBasePackage = $base_dir + "Kiwix JS $text_tag-" + ($base_tag -replace "([\d.]+)E", "`${1}-E")
+    $AppImageArchives = @("$LinuxBasePackage.AppImage", ($LinuxBasePackage + "-i386.AppImage"))
+    "Processing $AppImageArchives"
+    foreach ($AppImageArchive in $AppImageArchives) {
+      if (-Not (Test-Path $AppImageArchive -PathType Leaf)) {
+        "No packages found: building $AppImageArchive"
+        if (-Not $dryrun) {
+          # To get docker to start, you might need to run below commands as admin
+          # net stop com.docker.service
+          # taskkill /IM "Docker Desktop.exe" /F
+          # net start com.docker.service
+          # runas /noprofile /user:Administrator "net stop com.docker.service; taskkill /IM 'Docker Desktop.exe' /F; net start com.docker.service"
+          docker run -v C:\Users\geoff\Source\Repos\kiwix-js-windows-wikimed\:/project -w /project electronuserland/builder npm run dist-linux
+        }
+      } else {
+        "Linux Electron package $AppImageArchive is available"
+      }
     }
     $ReleaseBundle = ''
   } elseif ($flavour -eq '_N') {
@@ -189,6 +209,7 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
   # Upload the release
   $upload_assets = @($compressed_archive, $ReleaseBundle)
   if ($flavour -eq '_N') { $upload_assets = $NWJSAssets }
+  if ($flavour -eq '_E') { $upload_assets = ($AppImageArchives += $compressed_archive) }
   $upload_uri = $release.upload_url -ireplace '\{[^{}]+}', '' 
   "Uploading assets to: $upload_uri..."
   
