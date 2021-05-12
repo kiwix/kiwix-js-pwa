@@ -1,7 +1,8 @@
 param (
     [string]$tag_name = "",
     [switch]$dryrun = $false,
-    [switch]$usetestrelease = $false
+    [switch]$usetestrelease = $false,
+    [switch]$draftonly = $false
 )
 
 # Provide parameters
@@ -53,7 +54,7 @@ if ($base_tag -match '[EN]$') {
     $title_flavour = 'NWJS'
     $branch = 'nwjs-en-top' 
   } 
-  $release_title = $release_title -replace '([^\s]+)\sUWP$', ("$title_flavour Edition (Window/Linux) " + '$1')
+  $release_title = $release_title -replace '([^\s]+)\sUWP$', ("$title_flavour Edition (Windows/Linux) " + '$1')
   if ($flavour -eq '_N') { $release_title = $release_title -replace 'Edition\s(for\s)', '$1XP/Vista/' } 
 }
 "Text tag: $text_tag"
@@ -102,6 +103,11 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
     $json_object
   } else {
     Set-Content "$PSScriptRoot/../package.json" $json_object
+  }
+  if ($draftonly) {
+    "`nDraft only switch was set, so we will not upload assets. Please do so manually."
+    "Done."
+    return
   }
   "Searching for assets..."
   if ($flavour -eq '_E') {
