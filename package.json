@@ -1,14 +1,15 @@
 {
   "name": "kiwix-js-windows",
   "productName": "Kiwix JS Windows",
-  "version": "1.2.6E",
+  "version": "1.3.0E",
   "description": "Kiwix JS Windows packaged for the Electron framework",
   "main": "main.js",
   "build": {
     "appId": "kiwix.js.windows",
     "productName": "Kiwix JS Windows",
     "directories": {
-      "output": "bld/Electron"
+      "output": "bld/Electron",
+      "buildResources": "bld"
     },
     "afterPack": "./scripts/appimage-fix.js",
     "win": {
