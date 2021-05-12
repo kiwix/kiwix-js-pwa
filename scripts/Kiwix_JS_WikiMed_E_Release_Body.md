@@ -11,7 +11,7 @@ This is **not** the UWP/Microsoft Store build. If you are using Windows 10, you 
 
 There is no installation required: the app is fully portable. It does NOT auto-update (yet). **Warning: the download is 1.2GB (it includes the full WikiMed archive).** See instructions for unzipping and launching below the screenshot.
 
-![image](https://user-images.githubusercontent.com/4304337/98874889-03e35080-2473-11eb-9a0c-60a5ab3a2645.png)
+![imagen](https://user-images.githubusercontent.com/4304337/118011859-5df0a000-b348-11eb-911c-4bb70acd6f2a.png)
 
 If you intend to use this app with other archives than WikiMed, then download the generic [Kiwix JS Windows reader](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html), which is a much smaller download, or install the small functional [Store version of the reader](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html) which keeps itself up-to-date.
 
