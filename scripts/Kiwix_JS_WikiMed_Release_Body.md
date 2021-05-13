@@ -1,13 +1,12 @@
 ## This is the WikiMed UWP release (for Store or manual installation)
 
-It contains the <<date>> release of the WikiMed ZIM together with the changes detailed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-WikiMed/CHANGELOG.md).
+It contains the <<date>> release of the WikiMed ZIM together with the changes detailed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-WikiMed/CHANGELOG.md). **If you are running an older version of Windows (7/8), or Linux (Ubuntu, Debian), then you can use the [WikiMed Electron version](https://kiwix.github.io/kiwix-js-windows/wikimed-electron.html) instead.** For Windows XP or Vista, we have the [NWJS release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html) (separate archive download required for NWJS version). If you are running **Windows 10**, then it is easiest to install this app from the Store here:
 
 **Status of store app: IN CERTIFICATION**
 
 https://www.microsoft.com/store/apps/9PHJSNP1CZ8J
 
-If you prefer not to use the Microsoft Store or wish to test a different build, please follow the
-instructions below the screenshot.
+The Store version will keep itself up-to-date, but if you prefer not to use the Microsoft Store or wish to test a different build, please follow the instructions below the screenshot.
 
 ![image](https://user-images.githubusercontent.com/4304337/107876789-192ba900-6ec0-11eb-8dcc-c1f7bc12b6f6.png)
 
@@ -15,7 +14,7 @@ instructions below the screenshot.
 
 **Uninstall any previous installation of Kiwix JS WikiMed before you follow this procedure**.
 
-Download the signed bundle [KiwixWebAppWikiMed_<<base_tag>>.0_AnyCPU.appxbundle](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/KiwixWebAppWikiMed_<<base_tag>>.0_AnyCPU.appxbundle) and run/launch it (depending on the browser, you may need to single-click or double-click the file or "download complete" notification).  The App Installer should open and ask you whether you wish to install (it may also ask you if you wish to allow sideloading apps: if so, answer yes). If you are satisfied that the app is trusted, click Install.
+Download the signed bundle [KiwixWebAppWikiMed_<<base_tag>>.0_AnyCPU.appxbundle](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/KiwixWebAppWikiMed_<<base_tag>>.0_AnyCPU.appxbundle) and run/launch it (depending on the browser, you may need to single-click or double-click the file or "download complete" notification). The App Installer should open and ask you whether you wish to install (it may also ask you if you wish to allow sideloading apps: if so, answer yes). If you are satisfied that the app is trusted, click Install.
 
 On slightly older versions of Windows 10, you may need to enable sideloading of apps beforehand: go to Settings / Update and security / For developers and select "Sideload apps". You may be asked to reboot.
 
