@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 1.3.0...
+## Release 1.3.0
 
 * FEATURE: Open a new browsable tab or window with right-click, long-press or ctrl-click
 * UPDATE: Packaged archive updated to `wikipedia_en_medicine-app_maxi_2021-05.zim`
