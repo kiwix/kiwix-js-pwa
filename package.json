@@ -28,8 +28,20 @@
             "x64",
             "ia32"
           ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
         }
       ]
+    },
+    "nsis": {
+      "oneClick": "false",
+      "allowElevation": "true",
+      "runAfterFinish": "true"
     },
     "asar": false,
     "files": [
@@ -45,7 +57,7 @@
   },
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder build",
+    "dist-win": "electron-builder build --win",
     "dist-linux": "electron-builder build --linux",
     "package-mac": "electron-packager . kiwix-js-windows --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
     "package-win": "electron-packager . kiwix-js-windows --electron-version='10.4.0' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=node_ --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --overwrite --platform=win32 --arch=ia32 --icon=www/img/icons/kiwix-64.ico --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Kiwix JS Windows Electron Edition'",
@@ -61,7 +73,11 @@
     "ZIM",
     "reader"
   ],
-  "author": "Kiwix",
+  "author": {
+    "name": "Kiwix",
+    "email": "kiwix@kiwix.org"
+  },
+  "maintainer": "Jaifroid",
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "10.4.0",
