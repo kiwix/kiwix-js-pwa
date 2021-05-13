@@ -1,7 +1,7 @@
 param (
     [string]$tag_name = "",
     [switch]$dryrun = $false,
-    [switch]$usetestrelease = $false,
+    [switch]$usestorerelease = $false,
     [switch]$draftonly = $false
 )
 
@@ -97,7 +97,7 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
   "The draft release details were successfully created.`n"
   "Updating release version in package.json"
   $json_object = Get-Content -Raw "$PSScriptRoot/../package.json"
-  $json_object = $json_object -replace '("version": ")[^"]+', "`${1}$base_tag"
+  $json_object = $json_object -replace '("version": ")[^"]+', "`${1}$numeric_tag"
   if ($dryrun) {
     "[DRYRUN] would have written:`n"
     $json_object
@@ -193,8 +193,9 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
       }
     }
   } else {
-    # If we are releasing a certified version we have to copy it from a different location
-    if (-Not $usetestrelease) {
+    # If we are releasing the MS Store version we have to copy it from a different location
+    if ($usestorerelease) {
+      "Using Store release becuase usestorerelease flag was set."
       $UploadBundle = dir "$PSScriptRoot/../bin/Release/Upload/*_$base_tag.0/*_$base_tag*.appx*"
       "$UploadBundle"
       if ($UploadBundle -and ($UploadBundle.count -eq 1) -and (Test-Path $UploadBundle -PathType leaf) -and ($UploadBundle -imatch '\.(?:appx|appxbundle|appxupload)$')) {
@@ -209,7 +210,7 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
         "WARNING: Could not find the upload bundle, so we will use the test release..."
       }
     } else {
-      "Using test release because usetestrelease flag was set."
+      "Using locally signed release."
     }
     $ReleaseBundle = dir "$PSScriptRoot/../AppPackages/*_$base_tag*_Test/*_$base_tag*.appx*"
     # Check the file exists and it's of the right type
