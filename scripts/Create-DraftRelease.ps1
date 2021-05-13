@@ -57,11 +57,18 @@ if ($base_tag -match '[EN]$') {
   $release_title = $release_title -replace '([^\s]+)\sUWP$', ("$title_flavour Edition (Windows/Linux) " + '$1')
   if ($flavour -eq '_N') { $release_title = $release_title -replace 'Edition\s(for\s)', '$1XP/Vista/' } 
 }
+# Get package name
+$json_object = Get-Content -Raw "$PSScriptRoot/../package.json"
+$package_name = '' 
+if ($json_object -imatch '"name":\s"([\w]+-[^"]+)') {
+	$package_name = $matches[1]
+}
 "Text tag: $text_tag"
 "Base tag: $base_tag"
 "Numeric tag: $numeric_tag"
 "Branch: $branch"
 "Release title: $release_title"
+"Package name: $package_name"
 $release_body = Get-Content -Raw ("$PSScriptRoot/Kiwix_JS_" + $text_tag + $flavour + "_Release_Body.md")
 $release_body = $release_body -replace '<<base_tag>>', "$base_tag"
 $release_body = $release_body -replace '<<numeric_tag>>', "$numeric_tag"
@@ -96,7 +103,6 @@ if (-Not $dryrun) {
 if ($dryrun -or $release.assets_url -imatch '^https:') {
   "The draft release details were successfully created.`n"
   "Updating release version in package.json"
-  $json_object = Get-Content -Raw "$PSScriptRoot/../package.json"
   $json_object = $json_object -replace '("version": ")[^"]+', "`${1}$numeric_tag"
   if ($dryrun) {
     "[DRYRUN] would have written:`n"
@@ -131,7 +137,7 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
     if (-Not (Test-Path $WinInstaller -PathType Leaf)) {
       "No package found: building $WinInstaller..."
       if (-Not $dryrun) {
-        npm run dist
+        npm run dist-win
         if (Test-Path $WinInstaller -PathType Leaf) {
           "Successfully built."
         } else {
@@ -145,7 +151,9 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
     # Package Electron app for Linux
     "`nChecking for Electron packages for Linux..."
     $LinuxBasePackage = $base_dir + "Kiwix JS $text_tag-$numeric_tag-E"
-    $AppImageArchives = @("$LinuxBasePackage.AppImage", ($LinuxBasePackage + "-i386.AppImage"))
+    $DebBasePackage = $base_dir + $package_name + "_$numeric_tag-E"
+    $AppImageArchives = @("$LinuxBasePackage.AppImage", ($LinuxBasePackage + "-i386.AppImage"),
+      ("$DebBasePackage" + "_i386.deb"), ("$DebBasePackage" + "_amd64.deb"))
     "Processing $AppImageArchives"
     foreach ($AppImageArchive in $AppImageArchives) {
       if (-Not (Test-Path $AppImageArchive -PathType Leaf)) {
