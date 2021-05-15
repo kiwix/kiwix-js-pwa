@@ -4040,48 +4040,48 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             var kiwixTarget = appstate.target;
             var thisWindow = articleWindow;
             var thisContainer = articleContainer;
-            // Establish a variable for tracking long press
-            var touched = false;
-            a.addEventListener('touchstart', function () {
-                if (!params.windowOpener) return;
-                touched = true;
+            a.addEventListener('touchstart', function (e) {
+                if (!params.windowOpener || a.touched) return;
+                e.stopPropagation();
+                a.touched = true;
+                console.log('Touch activation detected:', e.target);
                 // The link will be clicked if the user long-presses for more than 600ms (if the option is enabled)
                 setTimeout(function () {
-                    if (!touched) return;
+                    if (!a.touched || a.launched) return;
+                    a.launched = true;
                     a.click();
                 }, 600);
-            }, {
-                passive: true
             });
             a.addEventListener('touchend', function () {
-                touched = false;
-            }, {
-                passive: true
+                a.touched = false;
+                a.launched = false;
             });
             // This detects right-click in all browsers (only if the option is enabled)
             a.addEventListener('contextmenu', function (e) {
                 if (!params.windowOpener) return;
                 e.preventDefault();
                 e.stopPropagation();
-                touched = true;
+                a.launched = true;
                 a.click();
             });
             // This detects the middle-click event
             a.addEventListener('mousedown', function (e) {
                 if (e.which === 2 || e.button === 4) {
                     e.preventDefault();
-                    touched = true;
+                    a.launched = true;
                     a.click();
                 }
             });
             // The main click routine (called by other events above as well)
             a.addEventListener('click', function (e) {
+                // Prevent opening multiple windows
+                if (a.touched && !a.launched) return;
                 // Restore original values for this window/tab
                 appstate.target = kiwixTarget;
                 articleWindow = thisWindow;
                 articleContainer = thisContainer;
                 // This detects Ctrl-click, Command-click, the long-press event, and middle-click
-                if ((e.ctrlKey || e.metaKey || touched || e.which === 2 || e.button === 4) && params.windowOpener) {
+                if ((e.ctrlKey || e.metaKey || a.launched || e.which === 2 || e.button === 4) && params.windowOpener) {
                     // We open the new window immediately so that it is a direct result of user action (click)
                     // and we'll populate it later - this avoids most popup blockers
                     articleContainer = window.open('article.html', params.windowOpener === 'tab' ? '_blank' : a.title,
@@ -4094,11 +4094,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     // and allow any propagated clicks on other elements to run 
                     return;
                 }
-                touched = false;
                 e.preventDefault();
                 e.stopPropagation();
                 var zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
                 goToArticle(zimUrl, downloadAttrValue, contentType);
+                setTimeout(function () {
+                    // By delaying unblocking of the touch event, we prevent multiple touch events launching the same window
+                    a.touched = false;
+                    a.launched = false;
+                }, 1400);
             });
         }
 
