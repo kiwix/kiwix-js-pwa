@@ -1104,6 +1104,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     woHelp.innerHTML = params.windowOpener === 'tab' ?
                         'Use right-click / long-press / ctrl-click / middle-click. <i>May not work in mobile contexts.</i>' : 
                         'Use right-click / long-press. You may need to turn off popup blocking. <i>May not work in mobile contexts.</i>';
+                    document.getElementById('tapHint').innerHTML = params.windowOpener === 'tab' ? '-> tap again for window mode' : '';
                 }
             } else {
                 woState.innerHTML = 'tab / window';
@@ -3069,13 +3070,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     articleDocument.bgcolor = '';
                     docBody.hidden = false;
                 }, 200);
-                
+                settingsStore.removeItem('lastPageLoad');
+                $("#searchingArticles").hide();
                 // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
                 if (params.printIntercept) printIntercept();
+            } else {
+                loaded = false;
             }
-            
-            settingsStore.removeItem('lastPageLoad');
-            $("#searchingArticles").hide();
             
             // Show spinner when the article unloads
             articleContainer.onunload = function () {
@@ -3755,7 +3756,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
 
                 // Hide the document to avoid display flash before stylesheets are loaded; also improves performance during loading of
-                // assets in most browsers (the document will be unhidden again by renderIfCSSFulfilled).
+                // assets in most browsers
                 // DEV: We cannot do `articleWindow.document.documentElement.hidden = true;` because documentElement gets overwritten
                 // during the document.write() process; and since the latter is synchronous, we get slow display rewrites before it is
                 // effective if we do it after document.close().
@@ -4044,7 +4045,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 if (!params.windowOpener || a.touched) return;
                 e.stopPropagation();
                 a.touched = true;
-                console.log('Touch activation detected:', e.target);
                 // The link will be clicked if the user long-presses for more than 600ms (if the option is enabled)
                 setTimeout(function () {
                     if (!a.touched || a.launched) return;
