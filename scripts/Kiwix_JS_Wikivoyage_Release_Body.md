@@ -8,7 +8,7 @@ https://www.microsoft.com/store/apps/9N5SB90Q4JBJ
 
 The Store version will keep itself up-to-date, but if you prefer not to use the Microsoft Store or wish to test a different build, please follow the instructions below the screenshot.
 
-![image](https://user-images.githubusercontent.com/4304337/99881839-f74dbd80-2c13-11eb-87fe-19880fb09964.png)
+![image](https://user-images.githubusercontent.com/4304337/118415611-46484d00-b6a3-11eb-8586-11b23e3391be.png)
 
 ## Manual Installation: Windows 10 Tablet / PC
 
