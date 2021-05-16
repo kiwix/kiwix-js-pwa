@@ -1,14 +1,12 @@
 ## This is the Wikivoyage UWP release (for Store or Manual installation)
 
-It contains the <<date>> release of the Wikivoyage archive `<<zim>>` together with the changes detailed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-Wikivoyage/CHANGELOG.md).
-
-**The easiest way to install is from the Microsoft Store:**
+It contains the <<date>> release of the Wikivoyage archive `<<zim>>` together with the changes detailed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-Wikivoyage/CHANGELOG.md). **If you are running an older version of Windows (XP/Vista/7/8)** then we recommend the [NWJS release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html) (separate archive download required for NWJS version). If you are running **Windows 10**, then it is easiest to install this app from the Store here:
 
 https://www.microsoft.com/store/apps/9N5SB90Q4JBJ
 
 **Status of Store App: IN CERTIFICATION**
 
-If you prefer not to use the Microsoft Store or wish to test a different build, please follow the instructions below the screenshot.
+The Store version will keep itself up-to-date, but if you prefer not to use the Microsoft Store or wish to test a different build, please follow the instructions below the screenshot.
 
 ![image](https://user-images.githubusercontent.com/4304337/99881839-f74dbd80-2c13-11eb-87fe-19880fb09964.png)
 
