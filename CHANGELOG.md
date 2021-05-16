@@ -1,5 +1,20 @@
 # Changelog
 
+## Release 1.3.0-Wikivoyage
+
+* FEATURE: Open a new browsable tab or window with right-click, long-press or ctrl-click
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2021-05`
+* UPDATE: Location of cached styles tweaked to reflect latest location in ZIM archives
+* UPDATE: Cached main pages for WikiMed and Wikivoyage updated and used by vanilla app
+* ENHANCEMENT: PWA now adapts if it was launched from a basic packaged app
+* ENHANCEMENT: Alt-left or Ctrl-left (and same for right key) can now be used for navigation in the UWP app
+* FIX: Prevent flash between page loads by adapting empty screen to the selected theme color
+* FIX: Crash on upgrade of ZIM archive in some contexts
+* FIX: Subtitle dislplay on videos
+* FIX: Download of media and subtitles
+* FIX: Display of list-based home pages
+* FIX: Properly define width of infoboxes in Wikimedia Destop style
+
 ## Release 1.2.4-Wikivoyage
 
 * UPDATE: Packaged archive updated to wikivoyage_en_all_maxi_2021-04
