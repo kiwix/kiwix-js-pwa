@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-windows",
   "productName": "Kiwix JS Windows",
-  "version": "1.3.0E",
+  "version": "1.3.0",
   "description": "Kiwix JS Windows packaged for the Electron framework",
   "main": "main.js",
   "build": {
