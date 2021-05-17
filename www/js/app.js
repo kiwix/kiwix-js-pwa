@@ -3482,6 +3482,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (cssArray) {
                 getBLOB(cssArray);
             } else {
+                // Apply dark or light content theme if necessary
+                var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
+                var contentThemeStyle = (determinedTheme == "dark") ? '<link href="' + prefix + '/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' :
+                    params.cssTheme == "invert" ? '<link href="' + prefix + '/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
+                htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, contentThemeStyle + '$1');
                 injectHTML();
             }
 
@@ -3723,7 +3728,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     images.prepareImagesJQuery(articleWindow);
                     //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
                     insertMediaBlobsJQuery();
-                    var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
+                    var determinedTheme = params.cssTheme === 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
                     if (params.allowHTMLExtraction && appstate.target === 'iframe') {
                         uiUtil.insertBreakoutLink(determinedTheme);
                     }
