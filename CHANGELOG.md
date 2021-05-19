@@ -7,7 +7,7 @@
 * UPDATE: Location of cached styles tweaked to reflect latest location in ZIM archives
 * UPDATE: Cached main pages for WikiMed and Wikivoyage updated and used by vanilla app
 * ENHANCEMENT: PWA now adapts if it was launched from a basic packaged app
-* ENHANCEMENT: Alt-left or Ctrl-left (and same for right key) can now be used for navigation in the UWP app
+* ENHANCEMENT: Alt-left or Ctrl-left (and same for right key) can now be used for navigation
 * FIX: Prevent flash between page loads by adapting empty screen to the selected theme color
 * FIX: Crash on upgrade of ZIM archive in some contexts
 * FIX: Subtitle dislplay on videos
