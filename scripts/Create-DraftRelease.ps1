@@ -19,6 +19,13 @@ if ($tag_name -eq "") {
       "Initiating dry run..."
     }
   }
+  if (-Not $buildonly) {
+    $buildonly_check = Read-Host "Do you wish to Build only, or build and Release? [B/R]"
+    $buildonly = -Not ( $buildonly_check -imatch 'r' )
+    If ($buildonly) {
+      "Packages will be built, but not uploaded for release."
+    }
+  }
 }
 if ($tag_name -NotMatch '^v\d+\.\d+\.\d+([EN-]|$)') {
   "`nTag name must be in the format " + '"v0.0.0[E][N][-text]"!' + "`n"
