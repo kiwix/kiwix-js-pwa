@@ -1444,6 +1444,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     '$1 style="padding:1em; border:0; max-width:' +
                     (cssSource === 'desktop' || params.removePageMaxWidth === true ? '100%' : window.innerWidth > 1024 ? '90%' : '55.8em') + 
                     ' !important; margin: 0 auto;"');
+                html = html.replace(/(<body\b[^>]+?article-list-home[^>]+)/i, '$1 style="padding:2em;"');
                 return html;
             }
         }
@@ -3052,7 +3053,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 zimType = /minerva|mobile[^"']*\.css/i.test(doc.head.innerHTML) ? "mobile" : zimType;
                 docBody.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
                 //Set page width according to user preference
-                // removePageMaxWidth();
+                removePageMaxWidth();
                 openAllSections();
                 setupHeadings();
                 listenForNavigationKeys();
