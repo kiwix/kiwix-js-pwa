@@ -111,7 +111,7 @@ if (-Not ($dryrun -or $buildonly)) {
 if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   if (-Not $buildonly) { "The draft release details were successfully created." }
   "`nUpdating release version in package.json"
-  $json_object = $json_object -replace '("version": ")[^"]+', "`${1}$numeric_tag"
+  $json_object = $json_object -replace '("version": ")[^"]+', "`${1}$base_tag"
   if ($dryrun) {
     "[DRYRUN] would have written:`n"
     $json_object
@@ -132,16 +132,35 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       "Building portable Electron app for Windows"
       if (-Not $dryrun) { npm run package-win }
       "Compressing release package for Electron..."
-      $compressed_assets_dir = "$PSScriptRoot/../bld/electron/kiwix-js-windows-win32-ia32"
+      $foldername = "kiwix-js-windows-win32-ia32"
+      $compressed_assets_dir = "$PSScriptRoot/../bld/electron/$foldername"
       $base_dir = "$PSScriptRoot/../bld/electron/"
       $compressed_archive = $base_dir + "Kiwix.JS.$text_tag.$base_tag.zip"
+      "Creating launchers..."
+      $launcherStub = "$base_dir\Start Kiwix JS Windows"
+      # Batch file
+      $batch = '@cd "' + $foldername + '"' + "`r`n" + '@start "Kiwix JS Windows" "kiwix-js-windows.exe"' + "`r`n"
+      if (-Not $dryrun) {
+        $batch > "$launcherStub.bat"
+        # Shortcut
+        $WshShell = New-Object -ComObject WScript.Shell
+        $Shortcut = $WshShell.CreateShortcut("$launcherStub.lnk")
+        $Shortcut.TargetPath = '%windir%\explorer.exe'
+        $Shortcut.Arguments = "$foldername\kiwix-js-windows.exe"
+        $Shortcut.IconLocation = '%windir%\explorer.exe,12'
+        $Shortcut.Save()
+      } else {
+        "Would have written batch file:"
+        "$batch"
+      }
       $AddAppPackage = $base_dir + "Start*.*"
       "Compressing: $AddAppPackage, $compressed_assets_dir to $compressed_archive"
       if (-Not $dryrun) { "$AddAppPackage", "$compressed_assets_dir" | Compress-Archive -DestinationPath $compressed_archive -Force }
     }
     # Package installer electron app for Windows
     "`nChecking for installer package for Windows..."
-    $WinInstaller = $base_dir + "Kiwix JS $text_tag Setup $numeric_tag-E.exe"
+    $alt_tag = $text_tag -ireplace 'Windows', 'PWA'
+    $WinInstaller = $base_dir + "Kiwix JS $alt_tag Setup $numeric_tag-E.exe"
     if (-Not (Test-Path $WinInstaller -PathType Leaf)) {
       "No package found: building $WinInstaller..."
       if (-Not $dryrun) {
@@ -149,8 +168,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         if (Test-Path $WinInstaller -PathType Leaf) {
           "Successfully built."
         } else {
-          "Oh no! The build failed!"
-          return
+          "Oh no! The Windows installer build failed!"
         }
       }
     } else {
@@ -158,7 +176,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     }
     # Package Electron app for Linux
     "`nChecking for Electron packages for Linux..."
-    $LinuxBasePackage = $base_dir + "Kiwix JS $text_tag-$numeric_tag-E"
+    $LinuxBasePackage = $base_dir + "Kiwix JS $alt_tag-$numeric_tag-E"
     $DebBasePackage = $base_dir + $package_name + "_$numeric_tag-E"
     $AppImageArchives = @("$LinuxBasePackage.AppImage", ($LinuxBasePackage + "-i386.AppImage"),
       ("$DebBasePackage" + "_i386.deb"), ("$DebBasePackage" + "_amd64.deb"))
@@ -172,7 +190,11 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
           # taskkill /IM "Docker Desktop.exe" /F
           # net start com.docker.service
           # runas /noprofile /user:Administrator "net stop com.docker.service; taskkill /IM 'Docker Desktop.exe' /F; net start com.docker.service"
-          docker run -v C:\Users\geoff\Source\Repos\kiwix-js-windows-wikimed\:/project -w /project electronuserland/builder npm run dist-linux
+          $repo_dir = ($PSScriptRoot -replace '[\\/]scripts[\\/]*$', '')
+          "Using docker command:"
+          "docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux"
+          docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux
+          # docker $build_command
         }
       } else {
         "Linux Electron package $AppImageArchive is available"
