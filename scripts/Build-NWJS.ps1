@@ -1,7 +1,7 @@
 $builds = @("win-x64", "win-ia32", "win-xp")
-$version = "0.53.0"
+$version = "0.53.0" # <<< value updated automatically from package.json if launched from Create-DraftRelease
 $versionXP = "0.14.7"
-$appBuild = "1.2.6N"
+$appBuild = "1.2.6N" # <<< value updated auotmatically from package.json if launched form Create-DraftRelease
 $ZIMbase = "wikipedia_en_100_maxi"
 cd $PSScriptRoot
 cd ..
