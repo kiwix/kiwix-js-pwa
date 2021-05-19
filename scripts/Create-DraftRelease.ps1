@@ -2,7 +2,8 @@ param (
     [string]$tag_name = "",
     [switch]$dryrun = $false,
     [switch]$usestorerelease = $false,
-    [switch]$draftonly = $false
+    [switch]$draftonly = $false,
+    [switch]$buildonly = $false
 )
 
 # Provide parameters
@@ -93,16 +94,16 @@ $release_params = @{
 }
 
 # Post to the release server
-if (-Not $dryrun) { 
+if (-Not ($dryrun -or $buildonly)) { 
   $release = Invoke-RestMethod @release_params 
 } else {
   "[DRYRUN] Release Body:`n$release_body"
 }
 
 # Check that we appear to have created a release
-if ($dryrun -or $release.assets_url -imatch '^https:') {
-  "The draft release details were successfully created.`n"
-  "Updating release version in package.json"
+if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
+  if (-Not $buildonly) { "The draft release details were successfully created." }
+  "`nUpdating release version in package.json"
   $json_object = $json_object -replace '("version": ")[^"]+', "`${1}$numeric_tag"
   if ($dryrun) {
     "[DRYRUN] would have written:`n"
@@ -190,6 +191,14 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
       "Updating Build-NWJS script with required tag..."
       $script_body = Get-Content -Raw ("$PSScriptRoot/Build-NWJS.ps1")
       $script_body = $script_body -ireplace '(appBuild\s*=\s*")[^"]+', "`${1}$base_tag"
+      $json_nwVersion = ''
+      if ($json_object -match '"build":\s*\{[^"]*"nwVersion":\s*"([^"]+)') {
+        $json_nwVersion = $matches[1]
+      }
+      if ($json_nwVersion) {
+        "Updating Build-NWJS with NWJS version from package.json: $json_nwVersion"
+        $script_body = $script_body -ireplace '(\$version\s*=\s*")[^"]+', "`${1}$json_nwVersion" 
+      }
       if ($dryrun) {
         "[DRYRUN] would have written:`n"
         $script_body
@@ -248,6 +257,12 @@ if ($dryrun -or $release.assets_url -imatch '^https:') {
     "Compression successful`n"
   } else {
     "There was an error compressing assets."
+    return
+  }
+  if ($buildonly) {
+    "`nThe buildonly option was set, so no draft release was created."
+    "Please upload and release your packages manually, or re-run this script without the buildonly switch."
+    "`nDone."
     return
   }
   # Upload the release
