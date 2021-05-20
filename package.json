@@ -27,17 +27,19 @@
           "arch": [
             "x64",
             "ia32"
-          ]
+          ],
+          "icon": "./bld/icons/"
         },
         {
           "target": "deb",
           "arch": [
             "x64",
             "ia32"
-          ]
+          ],
+          "icon": "./bld/icons/"
         }
       ],
-      "category": "education"
+      "category": "Education"
     },
     "nsis": {
       "oneClick": "false",
@@ -89,6 +91,7 @@
     "@types/fs-extra": "^9.0.11"
   }
 }
+
 
 
 
