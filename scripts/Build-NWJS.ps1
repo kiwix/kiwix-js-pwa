@@ -68,12 +68,12 @@ foreach ($build in $builds) {
     $Shortcut.IconLocation = '%windir%\explorer.exe,12'
     $Shortcut.Save()
     # Zip everything up
-    $ZipBuild = "bld\nwjs\$foldername.zip"
+    $ZipBuild = "$PSScriptRoot\..\bld\nwjs\$foldername.zip"
     if (Test-Path $ZipBuild -PathType Leaf) {
         "Deleting old Zip build $ZipBuild..."
         del $ZipBuild
     }
     "Compressing folder..."
-    Compress-Archive "bld\nwjs\$build-$version\*" "bld\nwjs\$foldername.zip" -Force
+    Compress-Archive "$PSScriptRoot\..\bld\nwjs\$build-$version\*" "$PSScriptRoot\..\bld\nwjs\$foldername.zip" -Force
     "Build $OBuild finished.`n"
 }
