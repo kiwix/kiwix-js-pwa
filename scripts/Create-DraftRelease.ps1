@@ -5,6 +5,7 @@ param (
     [switch]$draftonly = $false,
     [switch]$buildonly = $false
 )
+# DEV: To build Electron packages for all platforms and NWJS for XP and Vista in a single release, use, e.g., "v1.3.0E+N" (Electron + NWJS)
 # DEV: To build new icons, use
 # electron-icon-builder --input=C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\icon.png --output=./bld/
 # then move icons in png into /bld/icons/
@@ -235,11 +236,13 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         $nwjs_archives = dir $nwjs_archives_path
         if ($nwjs_archives.count -eq 2) {
           "NWJS packages were correclty built."
+          $found = $true
         } else {
           "Oh no! The NWJS package build failed."
         }
       } else {
         "NWJS packages found."
+        $found = $true
       }
     }
     $ReleaseBundle = ''
