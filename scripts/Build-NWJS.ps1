@@ -54,7 +54,7 @@ foreach ($build in $builds) {
     md $archiveFolder
     cp "archives\$ZIMbase*.*", "archives\README.md" $archiveFolder
     "Creating launchers..."
-    $launcherStub = ".\bld\nwjs\$build-$version\Start Kiwix JS Windows"
+    $launcherStub = $PSScriptRoot -replace 'scripts.*$', "bld\nwjs\$build-$version\Start Kiwix JS Windows"
     $foldername = "kiwix_js_windows$sep$appBuild-$build"
     # Batch file
     $batch = '@cd "' + $foldername + '"' + "`r`n" + '@start "Kiwix JS Windows" "nw.exe"' + "`r`n"
