@@ -22,7 +22,7 @@ if ($tag_name -eq "") {
       "Initiating dry run..."
     }
   }
-  if (-Not $buildonly) {
+  if (-Not ($buildonly -or $dryrun)) {
     $buildonly_check = Read-Host "Do you wish to Build only, or build and Release? [B/R]"
     $buildonly = -Not ( $buildonly_check -imatch 'r' )
     If ($buildonly) {
@@ -36,8 +36,9 @@ if ($tag_name -NotMatch '^v\d+\.\d+\.\d+([EN-]|$)') {
 }
 "`nCreating release for $tag_name..."
 $base_tag = $tag_name -replace '^v([\d.EN]+).*', '$1'
-$text_tag = $tag_name -replace '^v[\d.EN]+-?(.*)$', '$1'
+$text_tag = $tag_name -replace '^v[\d.EN+]+-?(.*)$', '$1'
 $numeric_tag = $base_tag -replace "([\d.]+)[EN]", '$1'
+$old_windows_support = $tag_name -match '\+N'
 if ($text_tag -eq '') { $text_tag = 'Windows' }
 $release_title = "Kiwix JS $text_tag $base_tag UWP"
 if ($text_tag -eq "Wikivoyage") { $release_title = "Wikivoyage by Kiwix $base_tag UWP" }
@@ -115,6 +116,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   if (-Not $buildonly) { "The draft release details were successfully created." }
   "`nUpdating release version in package.json"
   $json_object = $json_object -replace '("version": ")[^"]+', "`${1}$base_tag"
+  $json_object = $json_object -replace '\s*$', "`n"
   if ($dryrun) {
     "[DRYRUN] would have written:`n"
     $json_object
@@ -130,7 +132,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   if ($flavour -eq '_E') {
     $base_dir = "$PSScriptRoot/../bld/electron/"
     $compressed_archive = $base_dir + "Kiwix.JS.$text_tag.$base_tag.zip"
-    if (-Not (Test-Path $compressed_archive -PathType Leaf)) {
+    if (-Not ($old_windows_support -or (Test-Path $compressed_archive -PathType Leaf))) {
       # Package portable electron app for Windows
       "Building portable Electron app for Windows"
       if (-Not $dryrun) { npm run package-win }
@@ -203,6 +205,43 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         "Linux Electron package $AppImageArchive is available"
       }
     }
+    if ($old_windows_support) {
+      "`nSupport for XP and Vista was requested."
+      "Searching for archives..."
+      $nwjs_base = $PSScriptRoot -ireplace 'kiwix-js-windows.scripts.*$', 'kiwix-js-windows-nwjs'
+      "NWJS base directory: " + $nwjs_base
+      $nwjs_archives_path = "$nwjs_base/bld/nwjs/kiwix_js_windows*$numeric_tag" + "N-win-ia32.zip"
+      "NWJS archives path: " + $nwjs_archives_path
+      $nwjs_archives = dir $nwjs_archives_path
+      if (-Not ($nwjs_archives.count -eq 2)) {
+        "`nBuilding portable 32bit NWJS archives to add to Electron release for XP and Vista..."
+        "Updating Build-NWJS script with required tag..."
+        $script_body = Get-Content -Raw ("$nwjs_base/scripts/Build-NWJS.ps1")
+        $script_body = $script_body -ireplace '(appBuild\s*=\s*")[^"]+', ("`${1}$numeric_tag" + "N")
+        $script_body = $script_body -replace '\s*$', "`n"
+        if ($dryrun) {
+          "[DRYRUN] would have written:`n"
+          $script_body
+        } else {
+          Set-Content "$nwjs_base/scripts/Build-NWJS.ps1" $script_body
+        }
+        if (-Not $dryrun) {
+          "Building..."
+          & $nwjs_base/scripts/Build-NWJS.ps1 -32bitonly
+        } else {
+          "Build command: $nwjs_base/scripts/Build-NWJS.ps1 -32bitonly"
+        }
+        "Verifying build..."
+        $nwjs_archives = dir $nwjs_archives_path
+        if ($nwjs_archives.count -eq 2) {
+          "NWJS packages were correclty built."
+        } else {
+          "Oh no! The NWJS package build failed."
+        }
+      } else {
+        "NWJS packages found."
+      }
+    }
     $ReleaseBundle = ''
   } elseif ($flavour -eq '_N') {
     # Package NWJS app if necessary
@@ -218,7 +257,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       if (-Not $found) { "Unable to locate $NWJSAsset..." }
     }
     if (-Not $found) {
-      "WARNING: One or more NWJS build(s) could not be found."
+      "One or more NWJS build(s) could not be found."
       "`nBuilding..."
       "Updating Build-NWJS script with required tag..."
       $script_body = Get-Content -Raw ("$PSScriptRoot/Build-NWJS.ps1")
@@ -231,6 +270,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         "Updating Build-NWJS with NWJS version from package.json: $json_nwVersion"
         $script_body = $script_body -ireplace '(\$version\s*=\s*")[^"]+', "`${1}$json_nwVersion" 
       }
+      $script_body = $script_body -replace '\s*$', "`n"
       if ($dryrun) {
         "[DRYRUN] would have written:`n"
         $script_body
@@ -301,7 +341,11 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   $upload_assets = @($compressed_archive, $ReleaseBundle)
   if ($flavour -eq '_N') { $upload_assets = $NWJSAssets }
   if ($flavour -eq '_E') { 
-    $upload_assets = ($AppImageArchives += $compressed_archive) 
+    if ($old_windows_support) {
+      $upload_assets = ($AppImageArchives += $nwjs_archives)  
+    } else {
+      $upload_assets = ($AppImageArchives += $compressed_archive)
+    }
     $upload_assets += $WinInstaller
   }
   $upload_uri = $release.upload_url -ireplace '\{[^{}]+}', '' 
@@ -344,15 +388,16 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       }
     }
   }
-  "Creating permalink..."
+  "`nCreating permalink..."
   $permalinkFile = "$PSScriptRoot/../kiwix-js-uwp.html"
   if ($tag_name -imatch 'WikiMed') { $permalinkFile = $permalinkFile -replace 'kiwix-js-uwp', 'wikimed-uwp' }
   if ($tag_name -imatch 'Wikivoyage') { $permalinkFile = $permalinkFile -replace 'kiwix-js-uwp', 'wikivoyage-uwp' }
   if ($flavour -eq '_N') { $permalinkFile = $permalinkFile -replace 'uwp', 'nwjs' }
   if ($flavour -eq '_E') { $permalinkFile = $permalinkFile -replace 'uwp', 'electron' }
+  "Looking for: $permalinkFile"
   $permalink = Get-Content -Raw $permalinkFile
   $permalink = $permalink -replace 'v[\d.EN]{5,}[^"'']*', $tag_name
-  "Looking for: $permalinkFile"
+  $permalink = $permalink -replace '\s*$', "`n"
   if (-Not $dryrun) { Set-Content $permalinkFile $permalink }
   else { "`n[DRYRUN] would have written:`n$permalink`n" }
   "Cleaning up..."
