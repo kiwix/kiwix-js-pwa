@@ -4,15 +4,15 @@ param (
 $builds = @("win-ia32", "win-xp")
 if (-Not $32bitonly) {
     $builds += "win-x64"
+    "Caller requested 32bit and 64bit build"
+} else {
+    "Caller requested 32bitonly build"
 }
 $version = "0.53.1" # <<< value updated automatically from package.json if launched from Create-DraftRelease
 $versionXP = "0.14.7"
 $appBuild = "1.3.0N" # <<< value updated auotmatically from package.json if launched form Create-DraftRelease
 $ZIMbase = "wikipedia_en_100_maxi"
-cd $PSScriptRoot
-cd ..
 foreach ($build in $builds) {
-    "Building $build $version..."
     $OBuild = $build
     $sep = '-'
     if ($build -eq "win-xp") {
@@ -20,10 +20,11 @@ foreach ($build in $builds) {
         $version = $versionXP
         $sep = '-XP-'
     }
-    $folderTarget = "bld\nwjs\$build-$version"
+    "`nBuilding $build $version..."
+    $folderTarget = "$PSScriptRoot\..\bld\nwjs\$build-$version"
     $target = "$folderTarget\kiwix_js_windows$sep$appBuild"
     $fullTarget = "$target-$build"
-    $ZipLocation = "node_modules\nwjs-builder-phoenix\caches\nwjs-v$version-$build.zip"
+    $ZipLocation = "$PSScriptRoot\..\node_modules\nwjs-builder-phoenix\caches\nwjs-v$version-$build.zip"
     $UnzipLocation = "$ZipLocation-extracted\"
     $buildLocation = "$ZipLocation-extracted\nwjs-v$version-$build\"
     if (-Not (Test-Path $buildLocation -PathType Container)) {
