@@ -5,6 +5,9 @@ param (
     [switch]$draftonly = $false,
     [switch]$buildonly = $false
 )
+# DEV: To build new icons, use
+# electron-icon-builder --input=C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\icon.png --output=./bld/
+# then move icons in png into /bld/icons/
 
 # Provide parameters
 $release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-windows/releases'
