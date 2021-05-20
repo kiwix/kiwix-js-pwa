@@ -27,16 +27,14 @@
           "arch": [
             "x64",
             "ia32"
-          ],
-          "icon": "./bld/icons/"
+          ]
         },
         {
           "target": "deb",
           "arch": [
             "x64",
             "ia32"
-          ],
-          "icon": "./bld/icons/"
+          ]
         }
       ],
       "category": "Education"
