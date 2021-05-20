@@ -50,10 +50,11 @@ foreach ($build in $builds) {
     md $fullTarget
     # Copy latest binary x64
     cp $buildLocation\* $fullTarget -Recurse
-    cp .\package.json, .\pwabuilder-sw.js, .\index.html, .\CHANGELOG.md, .\LICENSE, .\www $fullTarget -Recurse
+    $root = $PSScriptRoot -replace 'scripts.*$', ''
+    cp $root\package.json, $root\pwabuilder-sw.js, $root\index.html, $root\CHANGELOG.md, $root\LICENSE, $root\www $fullTarget -Recurse
     "Copying archive..."
     md $archiveFolder
-    cp "archives\$ZIMbase*.*", "archives\README.md" $archiveFolder
+    cp "$root\archives\$ZIMbase*.*", "$root\archives\README.md" $archiveFolder
     "Creating launchers..."
     $launcherStub = $PSScriptRoot -replace 'scripts.*$', "bld\nwjs\$build-$version\Start Kiwix JS Windows"
     $foldername = "kiwix_js_windows$sep$appBuild-$build"
