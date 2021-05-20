@@ -1,4 +1,10 @@
-$builds = @("win-x64", "win-ia32", "win-xp")
+param (
+    [switch]$32bitonly = $false
+)
+$builds = @("win-ia32", "win-xp")
+if (-Not $32bitonly) {
+    $builds += "win-x64"
+}
 $version = "0.53.1" # <<< value updated automatically from package.json if launched from Create-DraftRelease
 $versionXP = "0.14.7"
 $appBuild = "1.3.0N" # <<< value updated auotmatically from package.json if launched form Create-DraftRelease
