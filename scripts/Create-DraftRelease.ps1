@@ -404,7 +404,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   if (-Not $dryrun) { Set-Content $permalinkFile $permalink }
   else { "`n[DRYRUN] would have written:`n$permalink`n" }
   "Cleaning up..."
-  if ((-Not $dryrun) -and $compressed_archive ) { del $compressed_archive }
+  if ((-Not ($dryrun -or $old_windows_support)) -and $compressed_archive ) { del $compressed_archive }
   "`nDone."
 } else {
   "There was an error setting up the release!"
