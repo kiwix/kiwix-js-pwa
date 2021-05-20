@@ -227,9 +227,9 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         }
         if (-Not $dryrun) {
           "Building..."
-          & $nwjs_base/scripts/Build-NWJS.ps1 -32bitonly
+          & $nwjs_base/scripts/Build-NWJS.ps1 -only32bit
         } else {
-          "Build command: $nwjs_base/scripts/Build-NWJS.ps1 -32bitonly"
+          "Build command: $nwjs_base/scripts/Build-NWJS.ps1 -only32bit"
         }
         "Verifying build..."
         $nwjs_archives = dir $nwjs_archives_path

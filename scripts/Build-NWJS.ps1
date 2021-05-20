@@ -1,8 +1,8 @@
 param (
-    [switch]$32bitonly = $false
+    [switch]$only32bit = $false
 )
 $builds = @("win-ia32", "win-xp")
-if (-Not $32bitonly) {
+if (-Not $only32bit) {
     $builds += "win-x64"
     "Caller requested 32bit and 64bit build"
 } else {
