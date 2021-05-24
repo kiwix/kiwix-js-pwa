@@ -1,15 +1,20 @@
-## This is the Windows 10 UWP app (Store or manual installation)
+## This is the Windows 10 UWP app for Windows desktop/mobile/ARM
 
-**This release is intended for the Microsoft Store.** It includes a small sample ZIM archve with a collection of the 100 most popular Wikipedia articles `<<zim>>` (<<date>>) together with the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md). **If you are running an older version of Windows (XP/Vista/7/8), then you can use the [NWJS release instead](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html).** If you are running Windows 10, then it is easiest to install this app from the Store here:
+### Major new feature: multiple browsing windows for desktop users (see screenshot)!
 
-https://www.microsoft.com/store/apps/9P8SLZ4J979J 
+Please choose the correct version:
+
+* For **Windows 10**: install it from the Microsoft Store: https://www.microsoft.com/store/apps/9P8SLZ4J979J (it will self-update automatically), or you can sideload it (see instructions below)
+* For **Windows 7/8/10** or **Linux (Ubuntu, Debian)** 32bit/64bit desktop only: use the portable or installable [NWJS/Electron versions](https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html) (NB these do not self-update yet)
+* For **Windows XP** or **Windows Vista**: use the older [NWJS release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html)
+
+This UWP app includes a small sample ZIM archve with a collection of the 100 most popular Wikipedia articles `<<zim>>` (<<date>>) together with the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md).
 
 **Status of Store App: IN CERTIFICATION**
 
 If you prefer not to use the Microsoft Store or wish to test a [different build](https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages), please follow the instructions below the screenshot.
 
-![image](https://user-images.githubusercontent.com/4304337/100858968-91203080-3486-11eb-88c9-baa7f7f7d97d.png)
-
+![image](https://user-images.githubusercontent.com/4304337/119402976-99d71e00-bcd5-11eb-8bf4-dfa6c12e68aa.png)
 
 ## Manual Installation: Windows 10 Tablet / PC
 
@@ -33,7 +38,6 @@ Open the File Explorer on the phone, navigate to the downloads folder and tap th
 
 ## Download a ZIM archive (all platforms)
 
-You will need a ZIM file to work with this app. For testing, it comes packaged with an archive of the top 100 Wikipedia articles in English.
-You can download other ZIM archives from the Configuration page in the app (the download completes in the browser). Place the file in an accessible location on your device, and use the Select Storage button in the app to rescan storage and display buttons that let you pick the file or the file's folder.
+You will need a ZIM file to do anything useful with this app. For testing, it only comes packaged with an archive of the top 100 Wikipedia articles in English. You can download other ZIM archives from the Configuration page in the app (the download completes in the browser). Place the file in an accessible location on your device, and use the Select Storage button in the app to rescan storage and display buttons that let you pick the file or the file's folder.
 
 Alternatively, you can download ZIM archives from http://wiki.kiwix.org/wiki/Content_in_all_languages on a regular PC and (if you are using an external device like a mobile) transfer them to your device with a USB cable.
