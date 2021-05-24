@@ -12,6 +12,7 @@
 * FIX: Display of list-based home pages
 * FIX: Failure to apply dark theme to articles with no CSS
 * FIX: Bug affecting middle-click when opening a new window or tab
+* FIX: Bug which hid the file selectors when the app could not get a handle on a file or directory
 
 ## Release 1.2.5
 
