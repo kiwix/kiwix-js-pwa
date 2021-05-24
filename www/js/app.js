@@ -1063,14 +1063,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             params.hideActiveContentWarning = this.checked ? true : false;
             settingsStore.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
         });
-        
-        // Establish Window Opener functionality
-        setWindowOpenerUI(true); // Runs on initial load of app
-        document.getElementById('windowOpenerCheck').addEventListener('click', function () {
-            // Tri-state checkbox using readOnly and indeterminate attributes to track state
-            if (this.readOnly) { this.checked = true; this.readOnly = false; }
-            else if (this.checked) this.readOnly = this.indeterminate = true;
-            params.windowOpener = this.indeterminate ? 'tab' : this.checked ? 'window' : false;
+        document.getElementById('tabOpenerCheck').addEventListener('click', function () {
+            params.windowOpener = this.checked ? 'tab' : false;
             if (params.windowOpener && /UWP\|PWA/.test(params.appType) && params.contentInjectionMode === 'jquery') {
                 uiUtil.systemAlert('In this UWP app, opening a new browsable window only works in Service Worker mode.\n' + 
                 'Your system appears to support SW mode, so please try switching to it in Expert Settings below.\n' +
@@ -1090,34 +1084,40 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             setWindowOpenerUI();
             params.themeChanged = true;
         });
-
-        function setWindowOpenerUI(setCheckbox) {
-            var woState = document.getElementById('windowOpenerState');
-            var woHelp = document.getElementById('windowOpenerHelp');
-            if (params.windowOpener) {
-                woState.innerHTML = params.windowOpener;
-                woHelp.hidden = false;
-                if (contentInjectionMode === 'serviceworker') {
-                    woHelp.innerHTML = 'This setting has no effect in ServiceWorker mode because opening new tabs or windows (if supported by the context) ' +
-                        'is handled natively with right-clcik or ctrl-click. Turn this setting off to hide this message.';
-                } else {
-                    woHelp.innerHTML = params.windowOpener === 'tab' ?
-                        'Use right-click / long-press / ctrl-click / middle-click. <i>May not work in mobile contexts.</i>' : 
-                        'Use right-click / long-press. You may need to turn off popup blocking. <i>May not work in mobile contexts.</i>';
-                    document.getElementById('tapHint').innerHTML = params.windowOpener === 'tab' ? '-> tap again for window mode' : '';
-                }
-            } else {
-                woState.innerHTML = 'tab / window';
-                woHelp.hidden = true;
+        document.getElementById('winOpenerCheck').addEventListener('click', function () {
+            var tabCheck = document.getElementById('tabOpenerCheck');
+            params.windowOpener = this.checked ? 'window' : tabCheck.checked ? 'tab' : false;
+            settingsStore.setItem('windowOpener', params.windowOpener, Infinity);
+            setWindowOpenerUI();
+        });
+        function setWindowOpenerUI() {
+            var woHelp = document.getElementById('winOpenerHelp');
+            var newWin = document.getElementById('openInNewWindow');
+            var tabCheck = document.getElementById('tabOpenerCheck');
+            var winCheck = document.getElementById('winOpenerCheck');
+            if (params.windowOpener === 'window') {
+                newWin.style.display = 'block';
+                woHelp.style.display = 'block';
+                tabCheck.checked = true;
+                winCheck.checked = true;
+                woHelp.innerHTML = 'If blocked, allow popups permanently for this app and try again. May not work in mobile contexts.';
+            } else if (params.windowOpener === 'tab') {
+                tabCheck.checked = true;
+                winCheck.checked = false;
+                newWin.style.display = 'block';
+                woHelp.style.display = 'block';
+                woHelp.innerHTML = 'In some cases a window may open regardless of this setting. May not work in mobile contexts.';
+            } else { // The options are turned off
+                tabCheck.checked = false;
+                winCheck.checked = false;
+                woHelp.style.display = 'none';
+                newWin.style.display = 'none';
             }
-            if (setCheckbox) {
-                var checkbox = document.getElementById('windowOpenerCheck');
-                checkbox.checked = params.windowOpener === 'window';
-                checkbox.indeterminate = params.windowOpener === 'tab';
-                checkbox.readOnly = params.windowOpener === 'tab';
-            }
+            // if (params.contentInjectionMode === 'serviceworker') {
+            //     woHelp.innerHTML = 'These settings have no effect in ServiceWorker mode because opening new tabs or windows ' +
+            //         'is handled natively with right-click or ctrl-click. Turn settings off to hide this message.';
+            // } // NB this is not true for the kiwix-js-windows app
         }
-
         document.getElementById('allowHTMLExtractionCheck').addEventListener('change', function (e) {
             params.allowHTMLExtraction = e.target.checked;
             if (params.windowOpener && params.allowHTMLExtraction) {
@@ -1660,6 +1660,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     // Create the MessageChannel
                                     // and send the 'init' message to the ServiceWorker
                                     initOrKeepAliveServiceWorker();
+		                            setWindowOpenerUI();
                                 }
                             });
                             if (serviceWorker.state === 'activated') {
@@ -1745,9 +1746,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             params.contentInjectionMode = value;
             // Save the value in a cookie, so that to be able to keep it after a reload/restart
             settingsStore.setItem('contentInjectionMode', value, Infinity);
+            setWindowOpenerUI();
         }
 
-        // At launch, we try to set the last content injection mode (stored in a cookie)
+        // At launch, we try to set the last content injection mode (stored in Settings Store)
         var contentInjectionMode = settingsStore.getItem('contentInjectionMode');
         if (contentInjectionMode) {
             setContentInjectionMode(contentInjectionMode);
@@ -4015,7 +4017,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
             });
             // Add event listeners to the main document so user can open current document in new tab or window
-            addListenersToLink(articleDocument, encodeURIComponent(dirEntry.url.replace(/[^/]+\//g, '')), baseUrl);
+            if (articleWindow.document.body) addListenersToLink(articleWindow.document.body, encodeURIComponent(dirEntry.url.replace(/[^/]+\//g, '')), baseUrl);
         }
 
         /**
@@ -4027,6 +4029,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
          */
         function addListenersToLink(a, href, baseUrl) {
             var uriComponent = uiUtil.removeUrlParameters(href);
+            var loadingContainer = false;
             var contentType;
             var downloadAttrValue;
             // Some file types need to be downloaded rather than displayed (e.g. *.epub)
@@ -4047,55 +4050,23 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             var kiwixTarget = appstate.target;
             var thisWindow = articleWindow;
             var thisContainer = articleContainer;
-            a.addEventListener('touchstart', function (e) {
-                if (!params.windowOpener || a.touched) return;
-                e.stopPropagation();
-                a.touched = true;
-                // The link will be clicked if the user long-presses for more than 600ms (if the option is enabled)
-                setTimeout(function () {
-                    if (!a.touched || a.launched) return;
-                    a.launched = true;
-                    a.click();
-                }, 600);
-            });
-            a.addEventListener('touchend', function () {
-                a.touched = false;
-                a.launched = false;
-            });
-            // This detects right-click in all browsers (only if the option is enabled)
-            a.addEventListener('contextmenu', function (e) {
-                if (!params.windowOpener) return;
-                e.preventDefault();
-                e.stopPropagation();
-                a.launched = true;
-                a.click();
-            });
-            // This detects the middle-click event
-            a.addEventListener('mousedown', function (e) {
-                if (e.which === 2 || e.button === 4) {
-                    e.preventDefault();
-                    a.launched = true;
-                    a.click();
-                }
-            });
-            // The main click routine (called by other events above as well)
-            a.addEventListener('click', function (e) {
-                // Prevent opening multiple windows
-                if (a.touched && !a.launched) return;
+            
+            var onDetectedClick = function (e) {
                 // Restore original values for this window/tab
                 appstate.target = kiwixTarget;
                 articleWindow = thisWindow;
                 articleContainer = thisContainer;
                 // This detects Ctrl-click, Command-click, the long-press event, and middle-click
-                if ((e.ctrlKey || e.metaKey || a.launched || e.which === 2 || e.button === 4) && params.windowOpener) {
+                if (a.newcontainer && params.windowOpener) {
                     // We open the new window immediately so that it is a direct result of user action (click)
                     // and we'll populate it later - this avoids most popup blockers
+                    loadingContainer = true;
                     articleContainer = window.open('article.html', params.windowOpener === 'tab' ? '_blank' : a.title,
                         params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
                     appstate.target = 'window';
                     articleContainer.kiwixType = appstate.target;
                     articleWindow = articleContainer;
-                } else if (a.tagName === 'HTML') {
+                } else if (a.tagName === 'BODY') {
                     // We have registered a click on the document, but a new tab wasn't requested, so ignore
                     // and allow any propagated clicks on other elements to run 
                     return;
@@ -4107,8 +4078,72 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 setTimeout(function () {
                     // By delaying unblocking of the touch event, we prevent multiple touch events launching the same window
                     a.touched = false;
-                    a.launched = false;
+                    a.newcontainer = false;
+                    loadingContainer = false;
                 }, 1400);
+            };
+            
+            a.addEventListener('touchstart', function (e) {
+                if (!params.windowOpener || a.touched) return;
+                e.stopPropagation();
+                // e.preventDefault();
+                a.touched = true;
+                loadingContainer = true;
+                var event = e;
+                // The link will be clicked if the user long-presses for more than 800ms (if the option is enabled)
+                setTimeout(function () {
+                    if (!a.touched || a.newcontainer) return;
+                    e.preventDefault();
+                    a.newcontainer = true;
+                    onDetectedClick(event);
+                }, 800);
+            }, { passive:false });
+            a.addEventListener('touchend', function () {
+                a.touched = false;
+                a.newcontainer = false;
+            });
+            // This detects right-click in all browsers (only if the option is enabled)
+            a.addEventListener('contextmenu', function (e) {
+                console.log('contextmenu');
+                if (!params.windowOpener) return;
+                e.preventDefault();
+                e.stopPropagation();
+                if (a.touched || a.newcontainer) return; // Prevent double activation
+                a.newcontainer = true;
+                onDetectedClick(e);
+            });
+            // This traps the middle-click event before tha auxclick event fires
+            a.addEventListener('mousedown', function (e) {
+                console.log('mosuedown');
+                if (!params.windowOpener) return;
+                e.preventDefault();
+                e.stopPropagation();
+                if (a.touched || a.newcontainer) return; // Prevent double activations
+                if (e.ctrlKey || e.metaKey || e.which === 2 || e.button === 4) {
+                    a.newcontainer = true;
+                    onDetectedClick(e);
+                } else {
+                    console.log('suppressed mousedown');
+                }
+            });
+            // This detects the middle-click event that opens a new tab in recent Firefox and Chrome
+            // See https://developer.mozilla.org/en-US/docs/Web/API/Element/auxclick_event
+            a.addEventListener('auxclick', function (e) {
+                console.log('auxclick');
+                if (!params.windowOpener) return;
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            // The main click routine (called by other events above as well)
+            a.addEventListener('click', function (e) {
+                console.log('Click event', e);
+                // Prevent opening multiple windows
+                if (loadingContainer || a.touched || a.newcontainer) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                } else {
+                    onDetectedClick(e);
+                }
             });
         }
 
