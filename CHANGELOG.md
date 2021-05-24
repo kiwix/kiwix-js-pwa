@@ -3,6 +3,7 @@
 ## Release 1.3.1
 
 * FEATURE: Open a new browsable tab or window with right-click, long-press, ctrl-click, middle-click
+* UPDATE: Sample archive updated to `wikipedia_en_100_maxi_2021-04`
 * UPDATE: Release Linux AppImage packages for Electron-based build
 * ENHANCEMENT: Alt-left or Ctrl-left (and same for right key) can now be used for navigation
 * FIX: Prevent flash between page loads by adapting empty screen to the selected theme color
@@ -23,7 +24,7 @@
 
 ## Release 1.2.4
 
-* UPDATE: Packaged archive updated to wikipedia_en_100_maxi_2021-03
+* UPDATE: Packaged archive updated to `wikipedia_en_100_maxi_2021-03`
 * ENHANCEMENT: Support v1 article index in no-namespace ZIM archives
 * ENHANECMENT: Detect and correct erroneous hard-coded sytling of navboxes in recent ZIMs
 * FIX: Correct width of infoboxes in Wikipedia Desktop style
