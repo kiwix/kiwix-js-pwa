@@ -703,12 +703,17 @@
                                             <input type="text" name="maxResults" id="maxResults" value="20" style="width:2em;color:steelblue;">
                                             (higher number will result in slower search performance)
                                         </label>
-                                        <label class="checkbox" title="Tap three times for tab | window | off">
-                                            <input type="checkbox" name="windowOpener" id="windowOpenerCheck">
+                                        <label class="checkbox" id="openInNewTab" title="Open article in new tab">
+                                            <input type="checkbox" name="tabOpener" id="tabOpenerCheck">
                                             <span class="checkmark"></span>
-                                            <strong>Open archive links in new browsable [ <span id="windowOpenerState"></span> ]</strong>  <i><span id="tapHint"></span></i><br />
-                                            <span id="windowOpenerHelp" class="form-text" hidden></span>
+                                            <strong>Open ZIM links in new tab</strong> with right-click, ctrl-click, middle-click or long-press
                                         </label>
+                                        <label class="checkbox" id="openInNewWindow" hidden title="Open article in new window">
+                                            <input type="checkbox" name="windowOpener" id="winOpenerCheck">
+                                            <span class="checkmark"></span>
+                                            <strong>Open in new window instead</strong>
+                                        </label>
+                                        <div id="winOpenerHelp" style="padding-bottom:1em;"></div>
                                         <label class="checkbox">
                                             <input type="checkbox" name="allowHTMLExtraction" id="allowHTMLExtractionCheck">
                                             <span class="checkmark"></span>
