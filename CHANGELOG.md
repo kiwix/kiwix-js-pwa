@@ -1,6 +1,6 @@
 # Changelog
 
-## Release 1.3.1
+## Release 1.3.2
 
 * FEATURE: Open a new browsable tab or window with right-click, long-press, ctrl-click, middle-click
 * UPDATE: Sample archive updated to `wikipedia_en_100_maxi_2021-04`
@@ -14,6 +14,7 @@
 * FIX: Failure to apply dark theme to articles with no CSS
 * FIX: Bug affecting middle-click when opening a new window or tab
 * FIX: Bug which hid the file selectors when the app could not get a handle on a file or directory
+* FIX: Bug preventing touch navigation
 
 ## Release 1.2.5
 
