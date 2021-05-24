@@ -941,7 +941,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 getNativeFSHandle(function(handle) {
                     if (!handle) {
                         console.error('No handle was retrieved');
-                        uiUtil.systemAlert('We could not get a handle to the previously picked file or folder!\nPlease try picking it again.');
+                        uiUtil.systemAlert('We could not get a handle to the previously picked file or folder!\n' +
+                            'This is probably because the contents of the folder have changed. Please try picking it again.');
+                        document.getElementById('openLocalFiles').style.display = 'block';
                         return;
                     }
                     if (handle.kind === 'directory') {
@@ -955,6 +957,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         }).catch(function(err) {
                             console.error('Unable to read previously picked file!', err);
                             uiUtil.systemAlert('We could not retrieve the previously picked file or folder!\nPlease try picking it again.');
+                            document.getElementById('openLocalFiles').style.display = 'block';
                         });
                     }
                 });
@@ -1510,11 +1513,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (settingsStore.getItem('version') !== params.version) {
                 firstRun = true;
                 
-                // Make user re-pick file if we have upgraded (it's less confusing than filehandle errors) - NOT NEEDED, remove in due course
-                // settingsStore.removeItem('listOfArchives');
-
                 // If we have an update and the last selected archive is the packaged file, it is best not to preserve last read article
-                if (params.storedFile === params.packagedFile) params.lastPageVisit = '';
+                var packagedFileStub = params.packagedFile.replace(/_[\d-]+\.zim\w?\w?$/, '');
+                if (~params.storedFile.indexOf(packagedFileStub)) {
+                    params.lastPageVisit = '';
+                    params.storedFile = '';
+                }
 
                 //  Update the installed version
                 if (settingsStore.getItem('PWAInstalled')) {
