@@ -2,7 +2,7 @@
 
 ## Release 1.3.0-Wikivoyage
 
-* FEATURE: Open a new browsable tab or window with right-click, long-press or ctrl-click
+* FEATURE: Open a new browsable tab or window with right-click, long-press, ctrl-click, middle-click
 * UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2021-05`
 * UPDATE: Location of cached styles tweaked to reflect latest location in ZIM archives
 * UPDATE: Cached main pages for WikiMed and Wikivoyage updated and used by vanilla app
