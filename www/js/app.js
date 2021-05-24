@@ -4050,7 +4050,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             var kiwixTarget = appstate.target;
             var thisWindow = articleWindow;
             var thisContainer = articleContainer;
-            
+            var reset = function () {
+                // By delaying unblocking of the touch event, we prevent multiple touch events launching the same window
+                a.touched = false;
+                a.newcontainer = false;
+                loadingContainer = false;
+            };
             var onDetectedClick = function (e) {
                 // Restore original values for this window/tab
                 appstate.target = kiwixTarget;
@@ -4061,14 +4066,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         // We have registered a click on the document
                         if (!a.newcontainer) return; // A new tab wasn't requested, so ignore
                         // If we're not clicking within the scope of an H1, H2, etc., ignore the click
-                        var getClosestHeading = function (el) {
-                            do {
-                                if (/H\d/.test(el.tagName)) return el;
-                                el = el.parentElement || el.parentNode;
-                            } while (el !== null && el.nodeType === 1);
-                            return null;
-                        };
-                        if (!getClosestHeading(e.target)) return;
+                        if (!uiUtil.getClosestMatchForTagname(e.target, /H\d/)) {
+                            setTimeout(reset, 1400);
+                            return;
+                        }
                     }
                     // This processes Ctrl-click, Command-click, the long-press event, and middle-click
                     if (a.newcontainer) {
@@ -4086,12 +4087,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 e.stopPropagation();
                 var zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
                 goToArticle(zimUrl, downloadAttrValue, contentType);
-                setTimeout(function () {
-                    // By delaying unblocking of the touch event, we prevent multiple touch events launching the same window
-                    a.touched = false;
-                    a.newcontainer = false;
-                    loadingContainer = false;
-                }, 1400);
+                setTimeout(reset, 1400);
             };
             
             a.addEventListener('touchstart', function (e) {

@@ -295,6 +295,21 @@ define(rqDef, function() {
     }
 
     /**
+     * Walk up the DOM tree to find the closest element where the tagname matches the supplied regular expression
+     * 
+     * @param {Element} el The starting DOM element
+     * @param {RegExp} rgx A regular expression to match the element's tagname
+     * @returns {Element|null} The matching element or null if no match was found
+     */
+    function getClosestMatchForTagname(el, rgx) {
+        do {
+            if (rgx.test(el.tagName)) return el;
+            el = el.parentElement || el.parentNode;
+        } while (el !== null && el.nodeType === 1);
+        return null;
+    }
+
+    /**
      * Displays a Bootstrap warning alert with information about how to access content in a ZIM with unsupported active UI
      */
     function displayActiveContentWarning() {
@@ -619,6 +634,7 @@ define(rqDef, function() {
     return {
         feedNodeWithBlob: feedNodeWithBlob,
         deriveZimUrlFromRelativeUrl: deriveZimUrlFromRelativeUrl,
+        getClosestMatchForTagname: getClosestMatchForTagname,
         removeUrlParameters: removeUrlParameters,
         toc: TableOfContents,
         isElementInView: isElementInView,
