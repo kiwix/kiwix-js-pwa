@@ -1124,7 +1124,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 uiUtil.systemAlert('Enabling this option disables the more advanced tab/window opening option above');
                 params.windowOpener = false;
                 settingsStore.setItem('windowOpener', params.windowOpener, Infinity);
-                setWindowOpenerUI(true);
+                setWindowOpenerUI();
             }
             settingsStore.setItem('allowHTMLExtraction', params.allowHTMLExtraction, Infinity);
             params.themeChanged = true;
@@ -4056,20 +4056,31 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 appstate.target = kiwixTarget;
                 articleWindow = thisWindow;
                 articleContainer = thisContainer;
-                // This detects Ctrl-click, Command-click, the long-press event, and middle-click
-                if (a.newcontainer && params.windowOpener) {
-                    // We open the new window immediately so that it is a direct result of user action (click)
-                    // and we'll populate it later - this avoids most popup blockers
-                    loadingContainer = true;
-                    articleContainer = window.open('article.html', params.windowOpener === 'tab' ? '_blank' : a.title,
-                        params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
-                    appstate.target = 'window';
-                    articleContainer.kiwixType = appstate.target;
-                    articleWindow = articleContainer;
-                } else if (a.tagName === 'BODY') {
-                    // We have registered a click on the document, but a new tab wasn't requested, so ignore
-                    // and allow any propagated clicks on other elements to run 
-                    return;
+                if (params.windowOpener) {
+                    if (a.tagName === 'BODY') {
+                        // We have registered a click on the document
+                        if (!a.newcontainer) return; // A new tab wasn't requested, so ignore
+                        // If we're not clicking within the scope of an H1, H2, etc., ignore the click
+                        var getClosestHeading = function (el) {
+                            do {
+                                if (/H\d/.test(el.tagName)) return el;
+                                el = el.parentElement || el.parentNode;
+                            } while (el !== null && el.nodeType === 1);
+                            return null;
+                        };
+                        if (!getClosestHeading(e.target)) return;
+                    }
+                    // This processes Ctrl-click, Command-click, the long-press event, and middle-click
+                    if (a.newcontainer) {
+                        // We open the new window immediately so that it is a direct result of user action (click)
+                        // and we'll populate it later - this avoids most popup blockers
+                        loadingContainer = true;
+                        articleContainer = window.open('article.html', params.windowOpener === 'tab' ? '_blank' : a.title,
+                            params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
+                        appstate.target = 'window';
+                        articleContainer.kiwixType = appstate.target;
+                        articleWindow = articleContainer;
+                    }
                 }
                 e.preventDefault();
                 e.stopPropagation();
