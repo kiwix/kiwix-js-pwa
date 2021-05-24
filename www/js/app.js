@@ -4112,6 +4112,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             a.addEventListener('touchend', function () {
                 a.touched = false;
                 a.newcontainer = false;
+                loadingContainer = false;
             });
             // This detects right-click in all browsers (only if the option is enabled)
             a.addEventListener('contextmenu', function (e) {
