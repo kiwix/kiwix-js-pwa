@@ -1,8 +1,8 @@
 # Changelog
 
-## Release 1.3.0
+## Release 1.3.1
 
-* FEATURE: Open a new browsable tab or window with right-click, long-press or ctrl-click
+* FEATURE: Open a new browsable tab or window with right-click, long-press, ctrl-click, middle-click
 * UPDATE: Release Linux AppImage packages for Electron-based build
 * ENHANCEMENT: Alt-left or Ctrl-left (and same for right key) can now be used for navigation
 * FIX: Prevent flash between page loads by adapting empty screen to the selected theme color
@@ -11,6 +11,7 @@
 * FIX: Download of media and subtitles
 * FIX: Display of list-based home pages
 * FIX: Failure to apply dark theme to articles with no CSS
+* FIX: Bug affecting middle-click when opening a new window or tab
 
 ## Release 1.2.5
 
