@@ -3072,9 +3072,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
                     uiUtil.insertBreakoutLink(determinedTheme);
                 }
+                checkToolbar();
                 // The content is ready : we can hide the spinner
                 setTab();
-                checkToolbar();
                 setTimeout(function() {
                     articleDocument.bgcolor = '';
                     docBody.hidden = false;
