@@ -3168,7 +3168,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                         maxPageWidthProcessed = false;
                                         loaded = false;
                                         var thisDirEntry = dirEntry;
-                                        // If loading the iframe, we can hide the frame (for UWP apps: for others, the doc should already be hidden)
+                                        // If loading the iframe, we can hide the frame (for UWP apps: for others, the doc should already be
+                                        // hidden). Note that testing appstate.target is probably redundant for UWP because it will always
+                                        // be iframe even if an external window is loaded... (but we probably need to do so for other cases)
                                         if (appstate.target === 'iframe') articleContainer.style.display = 'none';
                                         articleContainer.onload = function() {
                                             articleLoadedSW(thisDirEntry);
@@ -3177,6 +3179,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                         // so we have to simulate this event (note potential for race condition if timeout is too short)
                                         // NB The UWP app cannot control the opened window, so it can only be controlled by the Service Worker
                                         if (/UWP/.test(params.appType)) {
+                                            setTimeout(function () {
+                                                articleContainer.style.display = 'block';
+                                            }, 500);
                                             setTimeout(function () {
                                                 $("#searchingArticles").hide();
                                             }, 2000);
