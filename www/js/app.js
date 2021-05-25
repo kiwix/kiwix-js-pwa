@@ -3060,6 +3060,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 zimType = /-\/static\/main\.css/i.test(doc.head.innerHTML) ? "desktop-stx" : zimType; //Support stackexchange
                 zimType = /minerva|mobile[^"']*\.css/i.test(doc.head.innerHTML) ? "mobile" : zimType;
                 docBody.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
+                checkToolbar();
                 //Set page width according to user preference
                 removePageMaxWidth();
                 openAllSections();
@@ -3072,7 +3073,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
                     uiUtil.insertBreakoutLink(determinedTheme);
                 }
-                checkToolbar();
                 // The content is ready : we can hide the spinner
                 setTab();
                 setTimeout(function() {
