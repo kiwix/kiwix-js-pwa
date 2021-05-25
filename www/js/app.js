@@ -1208,8 +1208,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             oldScrollY = iframe.contentWindow.pageYOffset;
             navbarDim = document.getElementById('navbar').getBoundingClientRect();
             footerDim = footer.getBoundingClientRect();
+            var doc = iframe.contentDocument.documentElement;
             header.style.transition = "transform 500ms";
             iframe.style.transition = "transform 500ms";
+            doc.style.transition = "transform 500ms";
             footer.style.transition = "transform 500ms";
             iframe.style.zIndex = 0;
 
@@ -1219,7 +1221,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 iframe.style.height = window.innerHeight + navbarDim +
                     (params.hideToolbars === true ? footerDim.height : 0) + 'px';
                 iframe.style.transform = 'translateY(-' + navbarDim.height + 'px)';
-                iframe.contentDocument.documentElement.style.transform = 'translateY(' + navbarDim.height + 'px)'; 
+                doc.style.transform = 'translateY(' + navbarDim.height + 'px)'; 
                 iframe.contentDocument.addEventListener('scroll', scrollFunction);
                 scrollFunction();
             } else {
@@ -1230,7 +1232,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     footer.style.transform = 'translateY(0)';
                     // DEV: Moving the iframe up by 1 pixel bizarrely solves the bug with the toolbar disappearing benath the iframe
                     iframe.style.transform = 'translateY(-1px)';
-                    iframe.contentDocument.documentElement.style.transform = 'translateY(0)';
+                    doc.style.transform = 'translateY(0)';
                     iframe.style.height = window.innerHeight + 'px';
                 }, 500);
             }
