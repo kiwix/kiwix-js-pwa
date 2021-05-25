@@ -3168,6 +3168,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                         maxPageWidthProcessed = false;
                                         loaded = false;
                                         var thisDirEntry = dirEntry;
+                                        // If loading the iframe, we can hide the frame (for UWP apps: for others, the doc should already be hidden)
+                                        if (appstate.target === 'iframe') articleContainer.style.display = 'none';
                                         articleContainer.onload = function() {
                                             articleLoadedSW(thisDirEntry);
                                         };
