@@ -3834,7 +3834,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     // The articleWindow has already been set in the click event of the ZIM link and the dummy article was loaded there
                     // (to avoid popup blockers). Firefox loads windows asynchronously, so we need to wait for onclick load to be fully
                     // cleared, or else Firefox overwrites the window immediately after we load the html content into it.
-                    setTimeout(windowLoaded, 250);
+                    setTimeout(windowLoaded, 400);
                 }
             } // End of injectHtml
 
