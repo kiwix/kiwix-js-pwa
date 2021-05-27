@@ -3181,7 +3181,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                         if (/UWP/.test(params.appType)) {
                                             setTimeout(function () {
                                                 articleContainer.style.display = 'block';
-                                            }, 500);
+                                            }, 800);
                                             setTimeout(function () {
                                                 $("#searchingArticles").hide();
                                             }, 2000);
