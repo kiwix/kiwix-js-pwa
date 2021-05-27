@@ -3190,11 +3190,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                         } else {
                                             setTimeout(function () {
                                                 if (!loaded) articleLoadedSW(thisDirEntry);
-                                            }, 250);
+                                            }, 400);
                                         }
                                         thisMessagePort.postMessage(thisMessage);
                                     } else {
-                                        setTimeout(postTransformedHTML, 400);
+                                        setTimeout(postTransformedHTML, 500);
                                     }
                                 }; 
                                 if (!params.transformedHTML) {
