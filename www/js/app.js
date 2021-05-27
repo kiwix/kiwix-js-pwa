@@ -4331,8 +4331,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             var urlParameters;
             var stateLabel;
             if (title && !("" === title)) {
-                // Prevents creating a double history for the same page
-                if (targetWin.history.state && targetWin.history.state.title === title) return;
+                // Prevents creating a double history for the same page (wrapped to prevent exception in IE and Edge Legacy for tabs)
+                try { if (targetWin.history.state && targetWin.history.state.title === title) return; }
+                catch (err) { console.error('Unable to access History for this window', err); return; }
                 stateObj.title = title;
                 urlParameters = "?title=" + title;
                 stateLabel = "Wikipedia Article : " + title;
