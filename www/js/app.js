@@ -1208,10 +1208,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             oldScrollY = iframe.contentWindow.pageYOffset;
             navbarDim = document.getElementById('navbar').getBoundingClientRect();
             footerDim = footer.getBoundingClientRect();
-            var doc = iframe.contentDocument.documentElement;
+            var doc = iframe.contentDocument ? iframe.contentDocument.documentElement : null;
             header.style.transition = "transform 500ms";
             iframe.style.transition = "transform 500ms";
-            doc.style.transition = "transform 500ms";
+            if (doc) doc.style.transition = "transform 500ms";
             footer.style.transition = "transform 500ms";
             iframe.style.zIndex = 0;
 
@@ -1221,8 +1221,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 iframe.style.height = window.innerHeight + navbarDim +
                     (params.hideToolbars === true ? footerDim.height : 0) + 'px';
                 iframe.style.transform = 'translateY(-' + navbarDim.height + 'px)';
-                doc.style.transform = 'translateY(' + navbarDim.height + 'px)'; 
-                iframe.contentDocument.addEventListener('scroll', scrollFunction);
+                if (doc) {
+                    doc.style.transform = 'translateY(' + navbarDim.height + 'px)'; 
+                    iframe.contentDocument.addEventListener('scroll', scrollFunction);
+                }
                 scrollFunction();
             } else {
                 // Ensure toolbar is restored
@@ -1232,7 +1234,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     footer.style.transform = 'translateY(0)';
                     // DEV: Moving the iframe up by 1 pixel bizarrely solves the bug with the toolbar disappearing benath the iframe
                     iframe.style.transform = 'translateY(-1px)';
-                    doc.style.transform = 'translateY(0)';
+                    if (doc) doc.style.transform = 'translateY(0)';
                     iframe.style.height = window.innerHeight + 'px';
                 }, 500);
             }
@@ -3832,7 +3834,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     // The articleWindow has already been set in the click event of the ZIM link and the dummy article was loaded there
                     // (to avoid popup blockers). Firefox loads windows asynchronously, so we need to wait for onclick load to be fully
                     // cleared, or else Firefox overwrites the window immediately after we load the html content into it.
-                    setTimeout(windowLoaded, 250);
+                    setTimeout(windowLoaded, 400);
                 }
             } // End of injectHtml
 
@@ -4331,8 +4333,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             var urlParameters;
             var stateLabel;
             if (title && !("" === title)) {
-                // Prevents creating a double history for the same page
-                if (targetWin.history.state && targetWin.history.state.title === title) return;
+                // Prevents creating a double history for the same page (wrapped to prevent exception in IE and Edge Legacy for tabs)
+                try { if (targetWin.history.state && targetWin.history.state.title === title) return; }
+                catch (err) { console.error('Unable to access History for this window', err); return; }
                 stateObj.title = title;
                 urlParameters = "?title=" + title;
                 stateLabel = "Wikipedia Article : " + title;
@@ -4404,11 +4407,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     uiUtil.systemAlert("Error finding random article.");
                 } else {
                     // We fall back to the old A namespace to support old ZIM files without a text/html MIME type for articles
-                // DEV: If articlePtrPos is defined in zimFile, then we are using a v1 article-only title listing. By definition,
-                // all dirEntries in an article-only listing must be articles.  
-                if (appstate.selectedArchive._file.articlePtrPos || dirEntry.getMimetype() === 'text/html' || dirEntry.namespace === 'A') {
+                    // DEV: If articlePtrPos is defined in zimFile, then we are using a v1 article-only title listing. By definition,
+                    // all dirEntries in an article-only listing must be articles.  
+                    if (appstate.selectedArchive._file.articlePtrPos || dirEntry.getMimetype() === 'text/html' || dirEntry.namespace === 'A') {
                         params.isLandingPage = false;
                         $('#activeContent').hide();
+                        $('#searchingArticles').show();
                         readArticle(dirEntry);
                     } else {
                         // If the random title search did not end up on an article,
