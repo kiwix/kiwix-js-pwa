@@ -4409,6 +4409,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     if (appstate.selectedArchive._file.articlePtrPos || dirEntry.getMimetype() === 'text/html' || dirEntry.namespace === 'A') {
                         params.isLandingPage = false;
                         $('#activeContent').hide();
+                        $('#searchingArticles').show();
                         readArticle(dirEntry);
                     } else {
                         // If the random title search did not end up on an article,
