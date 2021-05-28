@@ -3357,12 +3357,20 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             //Remove erroneous content frequently on front page
             htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, "");
             htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, "");
-
             //Put misplaced hatnote headers inside <h1> block back in correct position @TODO remove this when fixed in mw-offliner
-            var hatnote = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?((?:<div\s+[^>]+\b(?:hatnote|homonymie)\b[\s\S]+?<\/div>\s*)+)/i);
-            if (hatnote && hatnote.length > 1) {
-                htmlArticle = htmlArticle.replace(hatnote[1], "");
-                htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnote[1].replace(/(<div\s+)/i, '$1style="padding-top:10px;" '));
+            var hatnote;
+            var hatnotes = [];
+            do {
+                hatnote = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?((?:<div\s+[^>]+\b(?:hatnote|homonymie)\b[\s\S]+?<\/div>\s*)+)/i);
+                if (hatnote) {
+                    htmlArticle = htmlArticle.replace(hatnote[1], '');
+                    hatnotes.push(hatnote[1]);
+                }
+            } while (hatnote);
+            if (hatnotes.length) {
+                hatnotes.forEach(function (hnt) {
+                    htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hnt.replace(/(<div\s+)/i, '$1style="padding-top:10px;" '));
+                });
             }
             //Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
             var noexcerpt = htmlArticle.match(/<dl\b(?:[^<]|<(?!\/dl>))+?(?:For other places with the same name|Not to be confused with)(?:[^<]|<(?!\/dl>))+?<\/dl>\s*/i);
