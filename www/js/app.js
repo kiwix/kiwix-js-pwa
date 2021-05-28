@@ -1039,7 +1039,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
                             uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
                             window.location.href = 'ms-appx-web:///www/index.html' + uriParams;
-                            beamMeDownScotty();
+                            throw 'Beam me down, Scotty!';
                         };
                         uiUtil.systemAlert(message, 'Warning!', 'Reload app', launchLocal, 'Cancel', function () {
                             this.checked = true;
@@ -1712,7 +1712,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     // Signal failure of PWA until it has successfully launched (in init.js it will be changed to 'success')
                                     params.localUWPSettings.PWA_launch = 'fail';
                                     window.location.href = params.PWAServer + 'www/index.html' + uriParams;
-                                    beamMeUpScotty();
+                                    throw 'Beam me up, Scotty!';
                                 };
                                 var checkPWAIsOnline = function () {
                                     uiUtil.checkServerIsAccessible(params.PWAServer + 'www/img/icons/kiwix-32.png', launchPWA, function () {

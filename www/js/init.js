@@ -150,7 +150,7 @@ if (/^http/i.test(window.location.protocol) && /UWP\|PWA/.test(params.appType)) 
     // set params.reboot = true and then continue. App will reboot to local code.
     if (params.reboot) {
         window.location.href = 'ms-appx-web:///www/index.html';
-        beamMeDownScotty();
+        throw 'Beam me down, Scotty!';
     }
 }
 
@@ -166,7 +166,7 @@ if (!/^http/i.test(window.location.protocol) && params.localUWPSettings &&
         params.localUWPSettings.PWA_launch = 'fail';
         window.location.href = params.PWAServer + 'www/index.html' + uriParams;
         // This will trigger the error catching above, cleanly dematerialize this script and transport us swiftly to PWA land
-        window.beamMeUpScotty();
+        throw 'Beam me up, Scotty!';
     } else if (params.localUWPSettings.PWA_launch === 'fail') {
         console.error('PWA failed to launch correctly last time! Setting failsafe to avoid boot-loop...');
     }
