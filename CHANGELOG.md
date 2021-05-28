@@ -1,11 +1,12 @@
 # Changelog
 
-## In-progress log 1.3.3-RC2
+## In-progress log 1.3.3-RC3
 
 * UPDATE: Sample ZIM updated to `wikipedia_en_100_maxi_2021-05.zim`
 * ENHANCEMENT: Pre-calculate position and size of article namespace in legacy ZIMs (speeds up binary search)
 * FIX: Hide jump in page position during article load in Service Worker mode
 * FIX: Adjusted timing of hiding and showing the article during page compositon
+* FIX: Reposition multiple displaced hatnotes 
 
 ## Release 1.3.0-Wikivoyage
 
