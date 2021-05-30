@@ -285,6 +285,30 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       }
     }
   } else {
+    # We need assets for the MS Store - check the release has been built
+    $ReleaseBundle = dir "$PSScriptRoot/../AppPackages/*_$base_tag*_Test/*_$base_tag*.appx*"
+    # Check the file exists and it's of the right type
+    if ($ReleaseBundle -and ($ReleaseBundle.count -eq 1) -and (Test-Path $ReleaseBundle -PathType leaf) -and 
+      ($ReleaseBundle -imatch '\.(?:appx|appxbundle|appxupload)$')) {
+      "`nUWP app packages were found."
+    } else {
+      "`nBuilding UWP app..."
+      $appxmanifest = Get-Content -Raw $PSScriptRoot/../package.appxmanifest
+      if (-Not ($appxmanifest -match "Version=['`"]$numeric_tag\.0['`"]")) {
+        "The requested release version does not match the version in package.appxmanifest"
+        "Updating..."
+        $appxmanifest = $appxmanifest -replace "(Version=['`"])\d+\.\d+\.\d+(\.0['`"])", "`${1}$numeric_tag`${2}"
+        if (-Not $dryrun) {
+          Set-Content $PSScriptRoot/../package.appxmanifest $appxmanifest
+        } else {
+          "[DRYRUN] Would have written package.appxmanifest:"
+          "$appxmanifest"
+        }
+      }
+      if (-Not $dryrun) {
+        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && msbuild.exe -p:Configuration=Release"
+      }
+    }
     # If we are releasing the MS Store version we have to copy it from a different location
     if ($usestorerelease) {
       "Using Store release becuase usestorerelease flag was set."
@@ -314,7 +338,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         return
     } else {
         "No package matching that tag was found. Aborting."
-        "Tag yielded $ReleaseBundle"
+        "Tag yielded: $ReleaseBundle"
         return
     }
     # ZIP the remaining assets
