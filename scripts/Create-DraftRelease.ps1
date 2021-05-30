@@ -295,12 +295,16 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       "`nBuilding UWP app..."
       $appxmanifest = Get-Content -Raw $PSScriptRoot/../package.appxmanifest
       if (-Not ($appxmanifest -match "Publisher=['`"]CN=Association\sKiwix")) {
-        "PLEASE NOTE: You are building a Store version which is not valid for release on GitHub!"
+        "`n** PLEASE NOTE: You are building a Store version which is not valid for release on GitHub!"
         if (-Not $buildonly) {
-          "You can use the appxupload to submit to the Store, but we won't release..."
+          "** You can use the appxupload to submit to the Store, but we won't release...`n"
           $buildonly = $true
+          $forced_buildonly = $true
         }
-      }
+      } else {
+        "`nBe aware that the version you are building is good for public release on GitHub, but not for upload to the Microsoft Store."
+        "To create a valid appxupload, please associate the app with the Store in Visual Studio.`n"
+      } 
       if (-Not ($appxmanifest -match "Version=['`"]$numeric_tag\.0['`"]")) {
         "The requested release version does not match the version in package.appxmanifest"
         "Updating..."
@@ -344,7 +348,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     } elseif ($ReleaseBundle.count -ge 2) {
         "More than one file matches that tag!"
         return
-    } else {
+    } elseif (-Not $dryrun) {
         "No package matching that tag was found. Aborting."
         "Tag yielded: $ReleaseBundle " + ($ReleaseBundle -or $false)
         return
@@ -366,7 +370,14 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     "There was an error compressing assets."
     return
   }
-  if ($buildonly) {
+  if ($forced_buildonly) {
+    "`nBecause your app package was not valid for release on GitHub, we have not uploaded it."
+    "Please change the Certificate to kiwix.pfx in Visual Studio and re-run."
+    "You will need to delete any draft release that was created and aborted as part of this run."
+    "Your appxupload is valid for release on the Microsoft Store."
+    "`nDone."
+    return
+  } elseif ($buildonly) {
     "`nThe buildonly option was set, so no draft release was created."
     "Please upload and release your packages manually, or re-run this script without the buildonly switch."
     "`nDone."
