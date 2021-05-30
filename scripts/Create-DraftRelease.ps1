@@ -297,7 +297,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       if (-Not ($appxmanifest -match "Version=['`"]$numeric_tag\.0['`"]")) {
         "The requested release version does not match the version in package.appxmanifest"
         "Updating..."
-        $appxmanifest = $appxmanifest -replace "(Version=['`"])\d+\.\d+\.\d+(\.0['`"])", "`${1}$numeric_tag`${2}"
+        $appxmanifest = $appxmanifest -replace "(\sVersion=['`"])\d+\.\d+\.\d+(\.0['`"])", "`${1}$numeric_tag`${2}"
         if (-Not $dryrun) {
           Set-Content $PSScriptRoot/../package.appxmanifest $appxmanifest
         } else {
@@ -338,7 +338,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         return
     } else {
         "No package matching that tag was found. Aborting."
-        "Tag yielded: $ReleaseBundle"
+        "Tag yielded: $ReleaseBundle " + ($ReleaseBundle -or $false)
         return
     }
     # ZIP the remaining assets
