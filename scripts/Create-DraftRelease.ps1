@@ -294,6 +294,13 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     } else {
       "`nBuilding UWP app..."
       $appxmanifest = Get-Content -Raw $PSScriptRoot/../package.appxmanifest
+      if (-Not ($appxmanifest -match "Publisher=['`"]CN=Association\sKiwix")) {
+        "PLEASE NOTE: You are building a Store version which is not valid for release on GitHub!"
+        if (-Not $buildonly) {
+          "You can use the appxupload to submit to the Store, but we won't release..."
+          $buildonly = $true
+        }
+      }
       if (-Not ($appxmanifest -match "Version=['`"]$numeric_tag\.0['`"]")) {
         "The requested release version does not match the version in package.appxmanifest"
         "Updating..."
