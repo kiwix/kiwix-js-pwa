@@ -1,0 +1,37 @@
+{
+  "dir": "ltr",
+  "lang": "en",
+  "name": "Kiwix JS PWA Edition",
+  "display": "standalone",
+  "start_url": ".",
+  "short_name": "Kiwix PWA",
+  "theme_color": "black",
+  "description": "Offline Wikipedia reader",
+  "orientation": "any",
+  "background_color": "transparent",
+  "relatedapplications": "",
+  "preferrelated_applications": "false",
+  "generated": "true",
+  "icons": [
+    {
+      "src": "www/img/icons/kiwix-48.png",
+      "sizes": "48x48 96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "www/img/icons/kiwix-64.ico",
+      "sizes": "64x64 128x128",
+      "type": "image/ico"
+    },
+    {
+      "src": "www/img/icons/kiwix-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "www/img/icons/kiwix-256.png",
+      "sizes": "256x256 512x512",
+      "type": "image/png"
+    }
+  ]
+}

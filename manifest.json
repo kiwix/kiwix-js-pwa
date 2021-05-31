@@ -1,37 +1,42 @@
 {
-  "dir": "ltr",
-  "lang": "en",
-  "name": "Kiwix JS PWA Edition",
-  "display": "standalone",
-  "start_url": ".",
-  "short_name": "Kiwix PWA",
-  "theme_color": "black",
-  "description": "Offline Wikipedia reader",
-  "orientation": "any",
-  "background_color": "transparent",
-  "relatedapplications": "",
-  "preferrelated_applications": "false",
-  "generated": "true",
-  "icons": [
-    {
-      "src": "www/img/icons/kiwix-48.png",
-      "sizes": "48x48 96x96",
-      "type": "image/png"
+    "manifest_version": 2,
+    "name": "Kiwix JS PWA",
+    "version": "1.3.3",
+
+    "description": "Kiwix Offline Wikipedia Reader",
+    
+    "icons": {
+        "16": "www/img/icons/kiwix-16.png",
+        "19": "www/img/icons/kiwix-19.png",
+        "32": "www/img/icons/kiwix-32.png",
+        "38": "www/img/icons/kiwix-38.png",
+        "48": "www/img/icons/kiwix-48.png",
+        "64": "www/img/icons/kiwix-64.png",
+        "90": "www/img/icons/kiwix-90.png",
+        "128": "www/img/icons/kiwix-128.png"
     },
-    {
-      "src": "www/img/icons/kiwix-64.ico",
-      "sizes": "64x64 128x128",
-      "type": "image/ico"
+
+    "browser_action": {
+        "default_icon": {
+            "16": "www/img/icons/kiwix-16.png",
+            "19": "www/img/icons/kiwix-19.png",
+            "32": "www/img/icons/kiwix-32.png",
+            "38": "www/img/icons/kiwix-38.png",
+            "64": "www/img/icons/kiwix-64.png"
+        },
+        "default_title": "Kiwix PWA"
     },
-    {
-      "src": "www/img/icons/kiwix-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+    
+    "applications": {
+        "gecko": {
+            "id": "kiwix-js-pwa@kiwix.org"
+        }
     },
-    {
-      "src": "www/img/icons/kiwix-256.png",
-      "sizes": "256x256 512x512",
-      "type": "image/png"
-    }
-  ]
+
+    "background": {
+        "scripts": ["webextension/backgroundscript.js"]
+    },
+    
+    "author": "jaifroid",
+    "homepage_url": "https://www.kiwix.org"
 }
