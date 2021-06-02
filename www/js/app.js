@@ -3649,7 +3649,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 $('#downloadAlert').hide();
 
                 // Code below will run after we have written the new article to the articleContainer
-                var windowLoaded = function() {
+                var articleLoaded = function() {
                     // Set a global error handler for articleWindow
                     articleWindow.onerror = function (msg, url, line, col, error) {
                         console.error('Error caught in ZIM contents [' + url + ':' + line + ']:\n' + msg, error);
@@ -3678,8 +3678,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     articleWindow.scrollTo(0,0);
                     articleDocument = articleWindow.document.documentElement;
                     // Hide the document before injecting to avoid display flash before stylesheets are loaded; also improves performance
-                    // during loading of assets in most browsers
-                    articleDocument.hidden = true; 
+                    // during loading of assets in most browsers, but UWP mnobile (at least) cannot build the DOM if hidden
+                    if ('serviceWorker' in navigator) articleDocument.hidden = true; 
 
                     // ** Write article html to the new article container **
                     articleDocument.innerHTML = htmlArticle;
@@ -3773,7 +3773,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         articleDocument.hidden = false;
                         // articleContainer.hidden = false;
                         articleWindow.document.body.hidden = false;
-                    }, 200);
+                    }, 400);
                     
                 };
 
@@ -3834,7 +3834,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     // Store the frame article's target in the top-level window, so that when we retrieve the window with
                     // history manipulation, we'll know where to place the iframe contentWindow
                     window.kiwixType = appstate.target;
-                    articleContainer.onload = windowLoaded;
+                    articleContainer.onload = articleLoaded;
                     articleContainer.src = 'article.html';
                 } else { 
                     // Attempt to establish an independent history record for windows (jQuery / window-tab mode)
@@ -3842,7 +3842,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     // The articleWindow has already been set in the click event of the ZIM link and the dummy article was loaded there
                     // (to avoid popup blockers). Firefox loads windows asynchronously, so we need to wait for onclick load to be fully
                     // cleared, or else Firefox overwrites the window immediately after we load the html content into it.
-                    setTimeout(windowLoaded, 400);
+                    setTimeout(articleLoaded, 400);
                 }
             } // End of injectHtml
 
@@ -4084,16 +4084,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 appstate.target = kiwixTarget;
                 articleWindow = thisWindow;
                 articleContainer = thisContainer;
-                if (params.windowOpener) {
-                    if (a.tagName === 'BODY') {
-                        // We have registered a click on the document
-                        if (!a.newcontainer) return; // A new tab wasn't requested, so ignore
-                        // If we're not clicking within the scope of an H1, H2, etc., ignore the click
-                        if (!uiUtil.getClosestMatchForTagname(e.target, /H\d/)) {
-                            setTimeout(reset, 1400);
-                            return;
-                        }
+                if (a.tagName === 'BODY') {
+                    // We have registered a click on the document
+                    if (!a.newcontainer) return; // A new tab wasn't requested, so ignore
+                    // If we're not clicking within the scope of an H1, H2, etc., ignore the click
+                    if (!uiUtil.getClosestMatchForTagname(e.target, /H\d/)) {
+                        setTimeout(reset, 1400);
+                        return;
                     }
+                }
+                if (params.windowOpener) {
                     // This processes Ctrl-click, Command-click, the long-press event, and middle-click
                     if (a.newcontainer) {
                         // We open the new window immediately so that it is a direct result of user action (click)
