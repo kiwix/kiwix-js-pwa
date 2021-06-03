@@ -3437,8 +3437,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
             //MathJax detection:
             params.containsMathTexRaw = params.useMathJax &&
-                /stackexchange|askubuntu|superuser|stackoverflow|mathoverflow|serverfault|stackapps/i.test(params.storedFile) ?
+                /stackexchange|askubuntu|superuser|stackoverflow|mathoverflow|serverfault|stackapps|proofwiki/i.test(params.storedFile) ?
                 /[^\\](\$\$?)((?:\\\$|(?!\1)[\s\S])+)\1/.test(htmlArticle) : false;
+            //if (params.containsMathTexRaw) {
+            //    //Replace undefined \size controlscript with \normalsize (found on proofwiki)
+            //    htmlArticle = htmlArticle.replace(/(\\)size\b/g, '$1normalsize');
+            //}
             //Replace all TeX SVGs with MathJax scripts
             if (params.useMathJax) {
                 // Deal with any newer MathML blocks
