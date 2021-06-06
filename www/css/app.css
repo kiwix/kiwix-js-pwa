@@ -230,15 +230,25 @@ div:not(.panel-success, .alert-message) {
 }
 
 nav a.btn-primary, .input-group-addon {
-    background: #d9edf7 !important;
+    background: #d9edf7;
     border-color: #d9edf7 !important;
     margin-top: 3px;
     padding: 5px 1em !important;
 }
 
+.btn:hover, .btn:active, .btn-primary:active, .btn-primary.active {
+    background: lightsteelblue !important;
+    background-color: lightsteelblue !important;
+}
+
 .dark nav a.btn-primary, .dark .navbar-inverse {
     background: #222 !important;
     border-color: #222 !important;
+}
+
+.dark .btn:hover, .dark .btn:active, .dark .btn-primary:active, .dark .btn-primary.active {
+    background: darkslategray !important;
+    background-color: darkslategray !important;
 }
 
 footer .btn-xs {
