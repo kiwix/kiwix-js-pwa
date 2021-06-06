@@ -1246,9 +1246,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
         function initializeUISettings() {
             var checkAuto = params.cssUITheme == 'auto' || params.cssTheme == 'auto';
+            // Support for UWP
             if (checkAuto && typeof Windows !== 'undefined' && Windows.UI && Windows.UI.ViewManagement) {
                 uiSettings = new Windows.UI.ViewManagement.UISettings();
                 uiSettings.oncolorvalueschanged = function () {
+                    if (params.cssUITheme == 'auto') cssUIThemeGetOrSet('auto');
+                    if (params.cssTheme == 'auto') switchCSSTheme();
+                };
+            }
+            // Support for other contexts (Firefox, Chromium, Electron, NWJS)
+            if (checkAuto && window.matchMedia('(prefers-color-scheme)').media !== 'not all') {
+                uiSettings = window.matchMedia('(prefers-color-scheme:dark)');
+                uiSettings.onchange = function () {
                     if (params.cssUITheme == 'auto') cssUIThemeGetOrSet('auto');
                     if (params.cssTheme == 'auto') switchCSSTheme();
                 };
@@ -1300,15 +1309,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         });
 
         function cssUIThemeGetOrSet(value, getOnly) {
-            if (value == 'auto') {
+            if (value === 'auto') {
+                value = 'light'; // Default that most people expect
                 if (uiSettings) {
                     // We need to check the system theme
-                    // Value 0 below is the 'background' constant in array Windows.UI.ViewManagement.UIColorType
-                    var colour = uiSettings.getColorValue(0);
-                    value = (colour.b + colour.g + colour.r) <= 382 ? 'dark' : 'light';
-                } else {
-                    // There is no system default, so use light, as it is what most people will expect
-                    value = 'light';
+                    if (uiSettings.getColorValue) {
+                        // Value 0 below is the 'background' constant in array Windows.UI.ViewManagement.UIColorType
+                        var colour = uiSettings.getColorValue(0);
+                        value = (colour.b + colour.g + colour.r) <= 382 ? 'dark' : 'light';
+                    } else {
+                        // Generic support for modern browser contexts
+                        value = uiSettings.matches ? 'dark' : 'light';
+                    }
                 }
             }
             if (getOnly) return value;
