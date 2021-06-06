@@ -1561,7 +1561,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 var packagedFileStub = params.packagedFile.replace(/_[\d-]+\.zim\w?\w?$/, '');
                 if (~params.storedFile.indexOf(packagedFileStub)) {
                     params.lastPageVisit = '';
-                    params.storedFile = '';
+                    params.storedFile = params.packagedFile;
                 }
 
                 //  Update the installed version
