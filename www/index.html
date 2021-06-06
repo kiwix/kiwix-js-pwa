@@ -239,6 +239,8 @@
                                         <!-- button id="btnHome" type="button" class="btn btn-default" -->
                                         <a id="btnHome" title="Home" class="btn btn-primary"><img id="kiwixIcon" style="margin-left:5px;" src="./img/icons/kiwix-blue-32.png" /></a>
                                         <!--button -->
+                                        <a class="btn btn-primary" style="display:none;" title="Back" id="btnBackAlt"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>
+                                        <a class="btn btn-primary" style="display:none;" title="Forward" id="btnForwardAlt"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
                                     </span>
                                     <input type="search" id="prefix" placeholder="Search or type a space..."
                                            class="form-control" style="z-index: 0; width: 99.5%" />
@@ -656,6 +658,11 @@
                                             <span class="radiobtn"></span>
                                             <b>Use Wikimedia mobile style</b> (and transform if necessary)
                                         </label>
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="cssCacheMode" id="cssCacheModeCheck">
+                                            <span class="checkmark"></span>
+                                            <b>Use locally cached display styles</b> (<i>recommended</i> for Wikipedia ZIM)
+                                        </label>
                                         <label class="checkbox" title="Tap three times for always | auto | never">
                                             <input name="pageMaxWidth" id="removePageMaxWidthCheck" type="checkbox" value="false">
                                             <span class="checkmark"></span>
@@ -678,9 +685,9 @@
                                             (to change <b>article</b> font size, tap <span class="glyphicon glyphicon-zoom-in"></span> and <span class="glyphicon glyphicon-zoom-out"></span>)
                                         </label>
                                         <label class="checkbox">
-                                            <input type="checkbox" name="cssCacheMode" id="cssCacheModeCheck">
+                                            <input type="checkbox" name="navButtonsPos" id="navButtonsPosCheck">
                                             <span class="checkmark"></span>
-                                            <b>Use locally cached display styles</b> (<i>recommended</i> for Wikipedia ZIM)
+                                            <b>Move navigation buttons to top toolbar</b> (note that Kiwix icon acts as Home button)
                                         </label>
                                         <label class="checkbox">
                                             <input type="checkbox" name="imageDisplayMode" id="imageDisplayModeCheck">
@@ -838,6 +845,7 @@
                     <a class="btn btn-default col-xs-2" id="btnHomeBottom" title="Home"><span class="glyphicon glyphicon-home"></span></a>
                     <a class="btn btn-default col-xs-1" id="btnBack" title="Back"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>
                     <a class="btn btn-default col-xs-1" id="btnForward" title="Forward"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
+                    <a class="btn btn-default col-xs-2" style="display:none;" id="btnRandomArticleAlt" title="Random Article"><span class="glyphicon glyphicon-random"></span></a>
                     <div class="dropup">
                         <a href="#" class="btn btn-default dropdown-toggle col-xs-4" role="button" id="dropup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <b>&nbsp;ToC&nbsp;</b>
