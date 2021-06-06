@@ -13,6 +13,7 @@
 * FIX: Intermittent failure to compose page in UWP app on mobile
 * FIX: Reposition multiple displaced hatnotes
 * FIX: Click on document reloads article when open new window feature is off
+* FIX: Bug which prevented auto launch of packaged file on first install
 
 ## Release 1.3.2
 
