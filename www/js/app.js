@@ -126,6 +126,29 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         });
 
         // Define behavior of HTML elements
+
+        if (params.navButtonsPos === 'top') {
+            // User has requested navigation buttons should be at top, so we need to swap them
+            var btnBack = document.getElementById('btnBack');
+            var btnBackAlt = document.getElementById('btnBackAlt');
+            btnBack.id = 'btnBackAlt';
+            btnBackAlt.id = 'btnBack';
+            btnBackAlt.style.display = 'inline';
+            btnBack.style.display = 'none';
+            var btnForward = document.getElementById('btnForward');
+            var btnForwardAlt = document.getElementById('btnForwardAlt');
+            btnForward.id = 'btnForwardAlt';
+            btnForwardAlt.id = 'btnForward';
+            btnForwardAlt.style.display = 'inline';
+            btnForward.style.display = 'none';
+            var btnRandom = document.getElementById('btnRandomArticle');
+            var btnRandomAlt = document.getElementById('btnRandomArticleAlt');
+            btnRandom.id = 'btnRandomArticleAlt';
+            btnRandomAlt.id = 'btnRandomArticle';
+            btnRandom.style.display = 'none';
+            btnRandomAlt.style.display = 'inline';
+        }
+
         var searchArticlesFocused = false;
         document.getElementById('searchArticles').addEventListener('click', function () {
             var prefix = document.getElementById('prefix').value;
@@ -1055,6 +1078,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             params.cssCache = this.checked ? true : false;
             settingsStore.setItem('cssCache', params.cssCache, Infinity);
             params.themeChanged = true;
+        });
+        document.getElementById('navButtonsPosCheck').addEventListener('change', function(e) {
+            params.navButtonsPos = e.target.checked ? 'top' : 'bottom';
+            settingsStore.setItem('navButtonsPos', params.navButtonsPos, Infinity);
+            uiUtil.systemAlert('This setting will be applied on next app launch');           
         });
         $('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
             params.imageDisplay = this.checked ? true : false;
