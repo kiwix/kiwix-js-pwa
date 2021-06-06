@@ -6,6 +6,7 @@
 * UPDATE: Sample ZIM updated to `wikipedia_en_100_maxi_2021-05.zim`
 * UPDATE: KaTeX to v0.13.11
 * UPDATE: System dark/light mode now used for "auto" setting in modern browsers (as well as UWP)
+* FIX: Double-clicking on archive failed to launch it in UWP app running in SW mode
 * FIX: Hide jump in page position during article load in Service Worker mode
 * FIX: Adjusted timing of hiding and showing the article during page composition
 * FIX: Intermittent failure to compose page in UWP app on mobile
