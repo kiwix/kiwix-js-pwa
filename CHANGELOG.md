@@ -1,8 +1,9 @@
 # Changelog
 
-## In-progress log 1.3.3-RC4
+## In-progress log 1.4.0-RC1
 
 * ENHANCEMENT: Pre-calculate position and size of article namespace in legacy ZIMs (speeds up binary search)
+* ENHANCEMENT: New option to move navigation buttons to the top toolbar
 * UPDATE: Sample ZIM updated to `wikipedia_en_100_maxi_2021-05.zim`
 * UPDATE: KaTeX to v0.13.11
 * UPDATE: System dark/light mode now used for "auto" setting in modern browsers (as well as UWP)
