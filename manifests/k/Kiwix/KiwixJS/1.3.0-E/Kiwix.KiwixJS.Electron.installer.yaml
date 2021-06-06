@@ -1,0 +1,18 @@
+# Created using wingetcreate
+
+PackageIdentifier: Kiwix.KiwixJS.Electron
+PackageVersion: 1.3.0-E
+InstallModes:
+  - interactive
+  - silent
+  - silentWithProgress
+Installers:
+- Architecture: x86
+  InstallerType: nullsoft
+  InstallerUrl: https://github.com/kiwix/kiwix-js-windows/releases/download/v1.3.0E/Kiwix.JS.PWA.Setup.1.3.0-E.exe
+  InstallerSha256: E091416165E02802D44D7EB6D27D24260BC4C0645FB28471A9575CA922C65504
+  InstallerSwitches:
+    Silent: /S
+    SilentWithProgress: /CurrentUser
+ManifestType: installer
+ManifestVersion: 1.0.0
