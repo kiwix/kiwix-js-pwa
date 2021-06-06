@@ -89,6 +89,7 @@ params['omegaChar'] = getSetting('omegaChar') || 'Z'; //Set default end of alpha
 params['contentInjectionMode'] = getSetting('contentInjectionMode') || 'jquery'; // Defaults to jquery mode (widest compatibility)
 params['allowInternetAccess'] = getSetting('allowInternetAccess');
 params['windowOpener'] = getSetting('windowOpener'); // 'tab|window|false' A setting that determines whether right-click/long-press of a ZIM link opens a new window/tab
+params['navButtonsPos'] = getSetting('navButtonsPos') || 'bottom'; // 'top|bottom' A setting that determines where the back-forward nav buttons appear
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['imageDisplayMode'] = params.imageDisplay ? 'progressive' : 'manual';
@@ -193,6 +194,7 @@ if (getSetting('lastPageLoad') === 'failed') {
 
 // Initialize checkbox, radio and other values
 document.getElementById('cssCacheModeCheck').checked = params.cssCache;
+document.getElementById('navButtonsPosCheck').checked = params.navButtonsPos === 'top';
 document.getElementById('imageDisplayModeCheck').checked = params.imageDisplay;
 document.getElementById('removePageMaxWidthCheck').checked = params.removePageMaxWidth === true; // Will be false if false or auto
 document.getElementById('removePageMaxWidthCheck').indeterminate = params.removePageMaxWidth == "auto";
