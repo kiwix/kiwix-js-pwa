@@ -49,7 +49,7 @@ var params = {};
  */
 var appstate = {};
 /******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******/
-params['version'] = "1.3.3-RC4"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "1.3.3-RC5"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************/
 params['packagedFile'] = getSetting('packagedFile') || "wikivoyage_en_all_maxi_2021-05.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)
