@@ -164,6 +164,13 @@ if (!/^http/i.test(window.location.protocol) && params.localUWPSettings &&
         uriParams += params.fileVersion ? '&fileVersion=' + encodeURIComponent(params.fileVersion) : '';
         // Signal failure of PWA until it has successfully launched (in init.js it will be changed to 'success')
         params.localUWPSettings.PWA_launch = 'fail';
+        if (launchArguments && typeof Windows.Storage !== 'undefined') {
+            // We have to ensure the PWA will have access to the file with which the app was launched
+            var futureAccessList = Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList;
+            futureAccessList.addOrReplace(params.falFileToken, launchArguments.files[0]);
+            if (futureAccessList.containsItem(params.falFolderToken)) futureAccessList.remove(params.falFolderToken);
+            uriParams += '&lastSelectedArchive=' + encodeURIComponent(launchArguments.files[0].name);
+        }
         window.location.href = params.PWAServer + 'www/index.html' + uriParams;
         // This will trigger the error catching above, cleanly dematerialize this script and transport us swiftly to PWA land
         throw 'Beam me up, Scotty!';
