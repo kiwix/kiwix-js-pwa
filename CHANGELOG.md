@@ -1,12 +1,12 @@
 # Changelog
 
-## In-progress log 1.4.0-RC2 WikiMed
+## Release 1.4.0 WikiMed
 
 * ENHANCEMENT: Pre-calculate position and size of article namespace in legacy ZIMs (speeds up binary search)
 * ENHANCEMENT: New option to move navigation buttons to the top toolbar
 * UPDATE: Packaged archive updated to `wikipedia_en_medicine-app_maxi_2021-06.zim`
-* UPDATE: KaTeX to v0.13.11
 * UPDATE: System dark/light mode now used for "auto" setting in modern browsers (as well as UWP)
+* UPDATE: KaTeX to v0.13.11
 * FIX: Double-clicking on archive failed to launch it in UWP app running in SW mode
 * FIX: Hide jump in page position during article load in Service Worker mode
 * FIX: Adjusted timing of hiding and showing the article during page composition
@@ -19,6 +19,7 @@
 * FIX: Bug affecting middle-click when opening a new window or tab
 * FIX: Bug which hid the file selectors when the app could not get a handle on a file or directory
 * FIX: Bug preventing touch navigation
+* FIX: Issue preventing the article window from receiving focus for keyboard input
 
 ## Release 1.3.0 WikiMed
 
