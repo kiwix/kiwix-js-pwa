@@ -2149,7 +2149,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 if (fileset.length) {
                                     setLocalArchiveFromFileList(fileset);
                                 } else {
-                                    console.error("The picked file could not be found in the selected folder!");
+                                    console.error("The picked file could not be found in the selected folder!\n" + params.pickedFile);
                                     var archiveList = [];
                                     for (i = 0; i < files.length; i++) {
                                         if (/\.zima?a?$/i.test(files[i].name)) {
