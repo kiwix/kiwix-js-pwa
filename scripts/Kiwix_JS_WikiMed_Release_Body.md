@@ -1,14 +1,22 @@
-## This is the WikiMed UWP release (for Store or manual installation)
+## This is the WikiMed UWP release for Windows desktop/mobile/ARM
 
-It contains the <<date>> release of the WikiMed ZIM together with the changes detailed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-WikiMed/CHANGELOG.md). **If you are running an older version of Windows (7/8), or Linux (Ubuntu, Debian), then you can use the [WikiMed Electron version](https://kiwix.github.io/kiwix-js-windows/wikimed-electron.html) instead.** For Windows XP or Vista, we have the [NWJS release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html) (separate archive download required for NWJS version). If you are running **Windows 10**, then it is easiest to install this app from the Store here:
+### Major new feature: multiple browsing windows for desktop users (see screenshot)!
+
+Please choose the correct version:
+
+* For **Windows 10**: install from the Microsoft Store: https://www.microsoft.com/store/apps/9PHJSNP1CZ8J (it will self-update automatically), or you can sideload it (see instructions below)
+* For **Windows 7/8/10** or **Linux (Ubuntu, Debian)** 32bit/64bit desktop only: use the portable or installable [Electron version](https://kiwix.github.io/kiwix-js-windows/wikimed-electron.html) (NB the Electron version does not self-update yet)
+* For **Windows XP** or **Windows Vista**: use the [NWJS release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html) and download the WikiMed archive separately from within the app
+
+This UWP app contains the <<date>> release of the WikiMed ZIM together with the changes detailed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-WikiMed/CHANGELOG.md). **If you are running an older version of Windows (7/8), or Linux (Ubuntu, Debian), then you can use the [WikiMed Electron version](https://kiwix.github.io/kiwix-js-windows/wikimed-electron.html) instead.** For Windows XP or Vista, we have the [NWJS release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html) (separate archive download required for NWJS version). If you are running **Windows 10**, then it is easiest to install this app from the Store here:
 
 **Status of store app: IN CERTIFICATION**
 
 https://www.microsoft.com/store/apps/9PHJSNP1CZ8J
 
-The Store version will keep itself up-to-date, but if you prefer not to use the Microsoft Store or wish to test a different build, please follow the instructions below the screenshot.
+If you prefer not to use the Microsoft Store or wish to test a different build, please follow the instructions below the screenshot.
 
-![image](https://user-images.githubusercontent.com/4304337/107876789-192ba900-6ec0-11eb-8dcc-c1f7bc12b6f6.png)
+![image](https://user-images.githubusercontent.com/4304337/118086831-78646100-b3bc-11eb-951d-d6621e5f5ee3.png)
 
 ## Manual Installation: Windows 10 Tablet / PC
 
