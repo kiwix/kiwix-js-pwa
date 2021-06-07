@@ -363,6 +363,7 @@
   <ProductReservedInfo>
     <MainPackageIdentityName>Kiwix.WikiMed</MainPackageIdentityName>
     <ReservedNames>
+      <ReservedName>WikiMed</ReservedName>
       <ReservedName>WikiMed by Kiwix</ReservedName>
     </ReservedNames>
   </ProductReservedInfo>
@@ -376,27 +377,27 @@
       <PackageInfo>
         <OsMinVersion>0.0.0.0</OsMinVersion>
         <PackageArchitecture>Neutral</PackageArchitecture>
-        <PackageMaxArchitectureVersion>0.9.9990.0</PackageMaxArchitectureVersion>
+        <PackageMaxArchitectureVersion>1.4.0.0</PackageMaxArchitectureVersion>
       </PackageInfo>
       <PackageInfo>
         <OsMinVersion>0.0.0.0</OsMinVersion>
         <PackageArchitecture>Neutral</PackageArchitecture>
-        <PackageMaxArchitectureVersion>0.9.9990.0</PackageMaxArchitectureVersion>
+        <PackageMaxArchitectureVersion>1.4.0.0</PackageMaxArchitectureVersion>
       </PackageInfo>
       <PackageInfo>
         <OsMinVersion>0.0.0.0</OsMinVersion>
         <PackageArchitecture>Neutral</PackageArchitecture>
-        <PackageMaxArchitectureVersion>0.9.9990.0</PackageMaxArchitectureVersion>
+        <PackageMaxArchitectureVersion>1.4.0.0</PackageMaxArchitectureVersion>
       </PackageInfo>
       <PackageInfo>
         <OsMinVersion>0.0.0.0</OsMinVersion>
         <PackageArchitecture>Neutral</PackageArchitecture>
-        <PackageMaxArchitectureVersion>0.9.9990.0</PackageMaxArchitectureVersion>
+        <PackageMaxArchitectureVersion>1.4.0.0</PackageMaxArchitectureVersion>
       </PackageInfo>
       <PackageInfo>
         <OsMinVersion>0.0.0.0</OsMinVersion>
         <PackageArchitecture>Neutral</PackageArchitecture>
-        <PackageMaxArchitectureVersion>0.9.9990.0</PackageMaxArchitectureVersion>
+        <PackageMaxArchitectureVersion>1.4.0.0</PackageMaxArchitectureVersion>
       </PackageInfo>
     </BundleInfo>
   </PackageInfoList>
