@@ -9,7 +9,7 @@ if ($filename -eq "") {
     $filename = Read-Host "Enter the directory for processing: "
 }
 " "
-ls -r -name $filename *.js
+ls -r -name $filename -Include @('*.js','*.css','*.html')
 if ($nobom) {
     $input = Read-Host "`nAll the above files will have the BOM (if any) removed!`nProceed? (Y/N)"
 } else {
@@ -18,10 +18,10 @@ if ($nobom) {
 if ($input -eq "Y") {
     if ($nobom) {
         "Removing Byte Order Mark ..."
-        ls -r $filename *.js | % { [System.IO.File]::WriteAllLines($_.FullName, ((Get-Content $_.FullName) -replace "^\xEF\xBB\xBF", ""))}
+        ls -r $filename -Include @('*.js','*.css','*.html') | % { [System.IO.File]::WriteAllLines($_.FullName, ((Get-Content $_.FullName) -replace "^\xEF\xBB\xBF", ""))}
     } else {
         "Adding Byte Order Mark ..."
-        ls -r $filename *.js | % {
+        ls -r $filename -Include @('*.js','*.css','*.html') | % {
             $document = Get-Content -encoding "UTF8" $_.FullName
             if ($document -match "^(?!\xEF\xBB\xBF)") { 
                 $document | Set-Content -encoding "utf8BOM" $_.FullName 
