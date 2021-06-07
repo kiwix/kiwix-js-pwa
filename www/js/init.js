@@ -167,9 +167,9 @@ if (!/^http/i.test(window.location.protocol) && params.localUWPSettings &&
         params.localUWPSettings.PWA_launch = 'fail';
         if (launchArguments && typeof Windows.Storage !== 'undefined') {
             // We have to ensure the PWA will have access to the file with which the app was launched
-            var futureAccessList = Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList;
-            futureAccessList.addOrReplace(params.falFileToken, launchArguments.files[0]);
-            if (futureAccessList.containsItem(params.falFolderToken)) futureAccessList.remove(params.falFolderToken);
+            var fal = Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList;
+            fal.addOrReplace(params.falFileToken, launchArguments.files[0]);
+            if (fal.containsItem(params.falFolderToken)) fal.remove(params.falFolderToken);
             uriParams += '&lastSelectedArchive=' + encodeURIComponent(launchArguments.files[0].name);
         }
         window.location.href = params.PWAServer + 'www/index.html' + uriParams;
