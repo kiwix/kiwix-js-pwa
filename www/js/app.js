@@ -4083,8 +4083,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     addListenersToLink(anchor, href, baseUrl);
                 }
             });
-            // Add event listeners to the main document so user can open current document in new tab or window
-            if (articleWindow.document.body) addListenersToLink(articleWindow.document.body, encodeURIComponent(dirEntry.url.replace(/[^/]+\//g, '')), baseUrl);
+            // Add event listeners to the main heading so user can open current document in new tab or window by clicking on it
+            if (articleWindow.document.body) {
+                var h1 = articleWindow.document.body.querySelector('h1');
+                if (h1) addListenersToLink(h1, encodeURIComponent(dirEntry.url.replace(/[^/]+\//g, '')), baseUrl);
+            }
         }
 
         /**
@@ -4128,14 +4131,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 appstate.target = kiwixTarget;
                 articleWindow = thisWindow;
                 articleContainer = thisContainer;
-                if (a.tagName === 'BODY') {
-                    // We have registered a click on the document
+                if (a.tagName === 'H1') {
+                    // We have registered a click on the header
                     if (!a.newcontainer) return; // A new tab wasn't requested, so ignore
                     // If we're not clicking within the scope of an H1, H2, etc., ignore the click
-                    if (!uiUtil.getClosestMatchForTagname(e.target, /H\d/)) {
-                        setTimeout(reset, 1400);
-                        return;
-                    }
+                    // if (!uiUtil.getClosestMatchForTagname(e.target, /H\d/)) {
+                    //     setTimeout(reset, 1400);
+                    //     return;
+                    // }
                 }
                 if (params.windowOpener) {
                     // This processes Ctrl-click, Command-click, the long-press event, and middle-click
