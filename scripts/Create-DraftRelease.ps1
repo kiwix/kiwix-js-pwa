@@ -317,7 +317,8 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         }
       }
       if (-Not $dryrun) {
-        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && msbuild.exe -p:Configuration=Release  "
+        $projstub = ($text_tag -eq "Windows") ? "" : $text_tag
+        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && msbuild.exe KiwixWebApp$projstub.jsproj -p:Configuration=Release "
         # "SignTool sign /fd SHA256 /a /f ..\..\kiwix.pfx /p yeahright KiwixWebApp_1.3.3.0_AnyCPU.appxbundle"
       }
     }
