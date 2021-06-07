@@ -757,6 +757,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 document.getElementById('search-article').style.overflowY = 'hidden';
                 setTimeout(function() {
                     document.getElementById('articleContent').style.display = 'block';
+                    document.getElementById('articleContent').focus();
                 }, 50);
             }
             $("#articleList").empty();
