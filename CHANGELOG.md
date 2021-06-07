@@ -1,12 +1,12 @@
 # Changelog
 
-## In-progress log 1.4.0-RC2
+## In-progress log 1.4.0-RC5
 
 * ENHANCEMENT: Pre-calculate position and size of article namespace in legacy ZIMs (speeds up binary search)
 * ENHANCEMENT: New option to move navigation buttons to the top toolbar
 * UPDATE: Sample ZIM updated to `wikipedia_en_100_maxi_2021-05.zim`
-* UPDATE: KaTeX to v0.13.11
 * UPDATE: System dark/light mode now used for "auto" setting in modern browsers (as well as UWP)
+* UPDATE: KaTeX to v0.13.11
 * FIX: Double-clicking on archive failed to launch it in UWP app running in SW mode
 * FIX: Hover and active colours on buttons
 * FIX: Hide jump in page position during article load in Service Worker mode
@@ -15,6 +15,7 @@
 * FIX: Reposition multiple displaced hatnotes
 * FIX: Click on document reloads article when open new window feature is off
 * FIX: Bug which prevented auto launch of packaged file on first install
+* FIX: Issue preventing the article window from receiving focus for keyboard input
 
 ## Release 1.3.0-Wikivoyage
 
