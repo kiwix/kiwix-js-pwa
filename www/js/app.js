@@ -756,8 +756,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 document.getElementById('scrollbox').style.height = 0;
                 document.getElementById('search-article').style.overflowY = 'hidden';
                 setTimeout(function() {
-                    document.getElementById('articleContent').style.display = 'block';
-                    document.getElementById('articleContent').focus();
+                    if (appstate.target === 'iframe') {
+                        if (articleContainer) articleContainer.style.display = 'block';
+                        if (articleWindow) articleWindow.focus();
+                    }
                 }, 50);
             }
             $("#articleList").empty();
