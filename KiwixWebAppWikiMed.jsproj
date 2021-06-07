@@ -71,7 +71,7 @@
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="archives\wikipedia_en_medicine-app_maxi_2021-05.zim" />
+    <Content Include="archives\wikipedia_en_medicine-app_maxi_2021-06.zim" />
     <Content Include="images\Kiwix_midnightblue_icon_transparent_530.png" />
     <Content Include="images\LargeTile.scale-100.png" />
     <Content Include="images\LargeTile.scale-125.png" />
