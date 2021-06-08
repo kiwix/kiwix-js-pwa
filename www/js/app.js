@@ -596,22 +596,24 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             var doc = document.getElementById('articleContent').contentDocument;
             doc.body.style.fontSize = /-\/static\/main\.css/.test(doc.head.innerHTML) ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
             document.getElementById('lblZoom').innerHTML = params.relativeFontSize + "%";
-            document.getElementById('lblZoom').style = "position:absolute;right: " + window.innerWidth / 3 + "px;bottom:5px;z-index:50;";
+            document.getElementById('lblZoom').style = "position:absolute;right: " + window.innerWidth / 5 + "px;bottom:50px;z-index:50;";
             setTimeout(function () {
                 document.getElementById('lblZoom').innerHTML = "";
             }, 1000);
             settingsStore.setItem('relativeFontSize', params.relativeFontSize, Infinity);
+            document.getElementById('articleContent').contentWindow.focus();
         });
         document.getElementById('btnZoomout').addEventListener('click', function () {
             params.relativeFontSize -= 5;
             var doc = document.getElementById('articleContent').contentDocument;
             doc.body.style.fontSize = /-\/static\/main\.css/.test(doc.head.innerHTML) ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
             document.getElementById('lblZoom').innerHTML = params.relativeFontSize + "%";
-            document.getElementById('lblZoom').style = "position:absolute;left: " + window.innerWidth / 3 + "px;bottom:5px;z-index:50;";
+            document.getElementById('lblZoom').style = "position:absolute;right: " + window.innerWidth / 4 + "px;bottom:50px;z-index:50;";
             setTimeout(function () {
                 document.getElementById('lblZoom').innerHTML = "";
             }, 1000);
             settingsStore.setItem('relativeFontSize', params.relativeFontSize, Infinity);
+            document.getElementById('articleContent').contentWindow.focus();
         });
         setRelativeUIFontSize(params.relativeUIFontSize);
         document.getElementById('relativeUIFontSizeSlider').addEventListener('change', function () {
@@ -664,6 +666,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 });
                 document.getElementById('search-article').scrollTop = 0;
             }
+            iframe.contentWindow.focus();
         });
         // Top menu :
         document.getElementById('btnHome').addEventListener('click', function () {
@@ -4278,6 +4281,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     iframe.contentWindow.scrollBy(0, -5);
                     setTimeout(function () {
                         iframe.contentWindow.scrollBy(0, 5);
+                        iframe.contentWindow.focus();
                     }, 250);
                 });
             });
