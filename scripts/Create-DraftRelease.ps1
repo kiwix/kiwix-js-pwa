@@ -3,7 +3,8 @@ param (
     [switch]$dryrun = $false,
     [switch]$usestorerelease = $false,
     [switch]$draftonly = $false,
-    [switch]$buildonly = $false
+    [switch]$buildonly = $false,
+    [switch]$updatewinget = $false
 )
 # DEV: To build Electron packages for all platforms and NWJS for XP and Vista in a single release, use, e.g., "v1.3.0E+N" (Electron + NWJS)
 # DEV: To build new icons, use
@@ -23,7 +24,7 @@ if ($tag_name -eq "") {
       "Initiating dry run..."
     }
   }
-  if (-Not ($buildonly -or $dryrun)) {
+  if (-Not ($buildonly -or $dryrun -or $updatewinget)) {
     $buildonly_check = Read-Host "Do you wish to Build only, or build and Release? [B/R]"
     $buildonly = -Not ( $buildonly_check -imatch 'r' )
     If ($buildonly) {
@@ -35,7 +36,11 @@ if ($tag_name -NotMatch '^v\d+\.\d+\.\d+([EN-]|$)') {
   "`nTag name must be in the format " + '"v0.0.0[E][N][-text]"!' + "`n"
   exit
 }
-"`nCreating release for $tag_name..."
+if ($updatewinget) {
+  "`nUpdating winget repository only..."
+} else {
+  "`nCreating release for $tag_name..."
+}
 $base_tag = $tag_name -replace '^v([\d.EN]+).*', '$1'
 $text_tag = $tag_name -replace '^v[\d.EN+]+-?(.*)$', '$1'
 $numeric_tag = $base_tag -replace "([\d.]+)[EN]", '$1'
@@ -106,10 +111,30 @@ $release_params = @{
 }
 
 # Post to the release server
-if (-Not ($dryrun -or $buildonly)) { 
+if (-Not ($dryrun -or $buildonly -or $updatewinget)) { 
   $release = Invoke-RestMethod @release_params 
-} else {
+} elseif (-Not $updatewinget) {
   "[DRYRUN] Release Body:`n$release_body"
+}
+
+# We should have enough information to find the release URL
+if ($updatewinget) {
+  if ($release_body -match 'https:[^)]+?\.appxbundle') {
+    $package_url = $matches[0]
+  } else {
+    "`nUnable to find the package URL!"
+    return
+  }
+  "`nThe package URL is: $package_url"
+  $package_id = 'Kiwix.' + ($text_tag -eq 'Windows' ? 'KiwixJS' : $text_tag)
+  if (-Not $dryrun) {
+    "Submitting to winget-pkg repository..."
+    & wingetcreate.exe update -i $package_id -v "$numeric_tag.0" -u $package_url -s $true -t $github_token
+  } else {
+    "[DRYRUN:] & wingetcreate.exe update -i $package_id -v $numeric_tag.0 -u $package_url -s -t $github_token"
+  }
+  "`nDone."
+  return
 }
 
 # Check that we appear to have created a release
