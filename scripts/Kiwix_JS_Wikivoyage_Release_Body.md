@@ -1,16 +1,18 @@
 ## This is the Wikivoyage UWP release (for Store or Manual installation)
 
-It contains the <<date>> release of the Wikivoyage archive `<<zim>>` together with the changes detailed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-Wikivoyage/CHANGELOG.md). **If you are running an older version of Windows (XP/Vista/7/8)** then we recommend the [NWJS release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html) (separate archive download required for NWJS version). If you are running **Windows 10**, then it is easiest to install this app from the Store here:
+It contains the <<date>> release of the Wikivoyage archive `<<zim>>` together with the changes detailed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-Wikivoyage/CHANGELOG.md). **If you are running an older version of Windows (XP/Vista/7/8)** then we recommend the [NWJS release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html) (separate archive download required for NWJS version). If you are running **Windows 10**, then install this app from the Store here:
 
 https://www.microsoft.com/store/apps/9N5SB90Q4JBJ
 
 **Status of Store App: IN CERTIFICATION**
 
-The Store version will keep itself up-to-date, but if you prefer not to use the Microsoft Store or wish to test a different build, please follow the instructions below the screenshot.
+Alternatively, open a Command Prompt (or PowerShell) and type `winget install wikivoyage`. The Store version will keep itself up-to-date, but if you prefer not to use the Microsoft Store or wish to test a different build, please follow the instructions below the screenshot.
 
 ![image](https://user-images.githubusercontent.com/4304337/118415611-46484d00-b6a3-11eb-8586-11b23e3391be.png)
 
 ## Manual Installation: Windows 10 Tablet / PC
+
+**New!** You can easily sideload this app by opening a terminal and typing `winget install wikivoyage`. If you don't yet have `winget`, then follow these manual instructions:
 
 **Uninstall any previous installation of Wikivoyage by Kiwix before you follow this procedure**:
 
