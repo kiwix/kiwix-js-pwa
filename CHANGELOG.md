@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress log 1.4.0-RC5
+## Release 1.4.0
 
 * ENHANCEMENT: Pre-calculate position and size of article namespace in legacy ZIMs (speeds up binary search)
 * ENHANCEMENT: New option to move navigation buttons to the top toolbar
