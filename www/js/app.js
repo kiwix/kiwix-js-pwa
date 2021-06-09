@@ -1564,11 +1564,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 firstRun = true;
                 
                 // If we have an update and the last selected archive is the packaged file, it is best not to preserve last read article
-                var packagedFileStub = params.packagedFile.replace(/_[\d-]+\.zim\w?\w?$/, '');
-                if (~params.storedFile.indexOf(packagedFileStub)) {
-                    params.lastPageVisit = '';
-                    params.storedFile = params.packagedFile;
-                }
+                // var packagedFileStub = params.packagedFile.replace(/_[\d-]+\.zim\w?\w?$/, '');
+                // if (~params.storedFile.indexOf(packagedFileStub)) {
+                //     params.lastPageVisit = '';
+                //     params.storedFile = params.packagedFile;
+                // } // THIS IS NOW DONE IN init.js
 
                 //  Update the installed version
                 if (settingsStore.getItem('PWAInstalled')) {
