@@ -49,7 +49,7 @@ var params = {};
  */
 var appstate = {};
 /******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******/
-params['version'] = "1.4.0-RC5"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "1.4.0-Wikivoyage"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************/
 params['packagedFile'] = getSetting('packagedFile') || "wikivoyage_en_all_maxi_2021-06.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)
@@ -101,9 +101,9 @@ params['storedFilePath'] = getSetting('lastSelectedArchivePath');
 params.storedFilePath = params.storedFilePath ? decodeURIComponent(params.storedFilePath) : params.archivePath + '/' + params.packagedFile;
 params.storedFilePath = launchArguments ? launchArguments.files[0].path || '' : params.storedFilePath;
 params.originalPackagedFile = params.packagedFile;
-params['localStorage'] = params['localStorage'] || "";
+params['localStorage'] = "";
 params['pickedFile'] = launchArguments ? launchArguments.files[0] : "";
-params['pickedFolder'] = params['pickedFolder'] || "";
+params['pickedFolder'] = "";
 params['themeChanged'] = params['themeChanged'] || false;
 params['printIntercept'] = false;
 params['printInterception'] = false;
@@ -253,6 +253,14 @@ function getAppType() {
 }
 
 // Set up storage types
+// First check that we have not simply upgraded the app and the packaged file
+params.packagedFileStub = params.packagedFile ? params.packagedFile.replace(/_[\d-]+\.zim\w?\w?$/, ''): null;
+if (params.packagedFileStub && params.version !== getSetting('version') && ~params.storedFile.indexOf(params.packagedFileStub)) {
+    console.log('The packaged archive has been upgraded: resetting file pointers to point to ' + params.packagedFile);
+    params.lastPageVisit = '';
+    params.storedFile = params.packagedFile;
+    params.storedFilePath = params.archivePath + '/' + params.packagedFile;
+}
 if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') { //UWP
     Windows.ApplicationModel.Package.current.installedLocation.getFolderAsync(params.archivePath).done(function (folder) {
         params.localStorage = folder;
