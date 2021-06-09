@@ -57,6 +57,7 @@ params['fileVersion'] = getSetting('fileVersion') || "wikivoyage_en_all_maxi_202
 // List of known start pages cached in the FS:
 params['cachedStartPages'] = {
     'wikipedia_en_medicine-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine',
+    'wikipedia_en_medicine_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine',
     'wikivoyage_en_all_maxi': 'A/Main_Page'
 };
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/wikivoyage/"; //Include final slash
@@ -254,7 +255,7 @@ function getAppType() {
 
 // Set up storage types
 // First check that we have not simply upgraded the app and the packaged file
-params.packagedFileStub = params.packagedFile ? params.packagedFile.replace(/_[\d-]+\.zim\w?\w?$/, ''): null;
+params.packagedFileStub = params.packagedFile ? params.packagedFile.replace(/(?:-app_maxi)?_[\d-]+\.zim\w?\w?$/, ''): null;
 if (params.packagedFileStub && params.version !== getSetting('version') && ~params.storedFile.indexOf(params.packagedFileStub)) {
     console.log('The packaged archive has been upgraded: resetting file pointers to point to ' + params.packagedFile);
     params.lastPageVisit = '';
