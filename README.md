@@ -30,17 +30,11 @@ It can also be installed (in Windows 10) by opening a Command Prompt or PowerShe
 
 You will need a ZIM file to work with this app. For testing, the Store version comes packaged with an archive of the top 100 Wikipedia pages in English
 (with pictures) as a starter ZIM, while packaged aps of WikiMed and Wikivoyage are also available in the Store or from [Releases](https://github.com/kiwix/kiwix-js-windows/releases/). You can download other ZIM archives from the Configuration page in the app (the download completes in the browser).
-Place the file in an accessible location on your device, and use the Select Storage button in the app to display buttons that
-let you pick the file or the file's folder (if you do not see such buttons, look under Expert Settings in Config to enable the file picking UI).
 
 Alternatively, you can download files from the [Kiwix repository](http://wiki.kiwix.org/wiki/Content_in_all_languages)
 on a regular PC. If you plan to store your ZIM file on an SD card formatted as FAT32, and you wish to use an archive larger than 4GB, then you will need
 to split the ZIM: see [file splitting instructions](https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#download-a-zim-archive-all-platforms).
 If your SD card is formatted as exFAT or NTFS, you do not need to split the ZIM archive.
-
-You can also run the app from your own File system, either from the file:// protocol (in some browsers) or from your own local server. Some functionality is limited
-in these contexts (e.g. you have to authorize access to a file each time you access the app in browser context). The PWA version in Chromium browsers (including Edge) uses the
-File System Access API which means you only have to give permission with a single click.
 
 A lot of development for this app happens upstream in the [Kiwix JS repository](https://kiwix.github.io/kiwix-js/) to which I ontribute actively.
 Without Kiwix JS, this app would be impossible, and huge thanks goes to the original developers of first the Evopedia app and then Kiwix HTML5, which
