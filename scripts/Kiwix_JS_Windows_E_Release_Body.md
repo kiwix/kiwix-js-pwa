@@ -8,8 +8,8 @@ Choose the correct build:
 
 * **Windows**:
   - **Portable** (just unzip, no install needed)
-    + Windows 7/8/10 - [kiwix-js-windows-<<base_tag>>-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-<<base_tag>>-win-ia32.zip) (NWJS) - _recommended_
-    + Windows XP/Vista - [kiwix_js_windows-XP-<<base_tag>>-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-XP-<<base_tag>>-win-ia32.zip) (NWJS)
+    + Windows 7/8/10 - [kiwix_js_windows-<<numeric_tag>>N-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-<<numeric_tag>>N-win-ia32.zip) (NWJS) - _recommended_
+    + Windows XP/Vista - [kiwix_js_windows-XP-<<numeric_tag>>N-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-XP-<<numeric_tag>>N-win-ia32.zip) (NWJS)
   - **Installable** (signed NSIS installer)
     + Windows 7/8/10 - [Kiwix JS Windows Setup <<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix.JS.PWA.Setup.<<numeric_tag>>-E.exe) (Electron)
 * **Linux**:
@@ -18,7 +18,7 @@ Choose the correct build:
     + AppImage 32bit (Ubuntu, Debian) - [Kiwix JS PWA-<<numeric_tag>>-E-i386.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix.JS.PWA-<<numeric_tag>>-E-i386.AppImage) (Electron)
   - **Installable**
     + Deb package 64bit (Ubuntu, Debian) - [kiwix-js-pwa_<<numeric_tag>>-E_amd64.deb](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix-js-pwa_<<numeric_tag>>-E_amd64.deb) (Electron)
-    + Deb package 32bit (Ubuntu, Debian) - [kiwix-js-pwa_<<numeric_tag>>-E_i386.deb](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix-js-pwa_<<numeric_tag>>-E_i386.deb)
+    + Deb package 32bit (Ubuntu, Debian) - [kiwix-js-pwa_<<numeric_tag>>-E_i386.deb](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix-js-pwa_<<numeric_tag>>-E_i386.deb) (Electron)
 
 There is no installation required for the Portable versions. NONE of these builds auto-update (yet). Installation instructions are after the screenshot.
 
@@ -26,7 +26,7 @@ There is no installation required for the Portable versions. NONE of these build
 
 ### Instructions:
 
-* For the Windows Portable build, unzip the contents of the [kiwix_js_windows-<<base_tag>>-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-<<base_tag>>-win-ia32.zip) archive to any folder, or to a flash drive / thumb drive, and double click on `Start Kiwix JS Windows` or `Start Kiwix JS Windows via batch file.bat`, or open the `kiwix-js-windows-win32-ia32` folder and double click on `nw.exe`;
+* For the Windows Portable build, unzip the contents of the [kiwix_js_windows-<<base_tag>>-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-<<numeric_tag>>N-win-ia32.zip) archive to any folder, or to a flash drive / thumb drive, and double click on `Start Kiwix JS Windows` or `Start Kiwix JS Windows via batch file.bat`, or open the `kiwix-js-windows-win32-ia32` folder and double click on `nw.exe`;
 * For the Windows Setup (installable) build, simply download and launch. It will install itself, together with a shortcut in your shortcut menu, and run. When you want to update the app, just install a new version over it (it will uninstall the old one for you).
 * For the Linux portable builds, download and save the correct AppImage file anywhere (e.g. your Desktop), and double-click it. If it doesn't work, open Terminal and run `chmod a+x Kiwix.JS.PWA*.AppImage` and then `./Kiwix.JS.PWA*.AppImage --no-sandbox`. You might be able to run without `--no-sandbox` (see https://github.com/electron/electron/issues/17972#issuecomment-516957971).
 * For the Linux installable builds, download the correct `.deb` package and double-click to see if your graphical package manager can install it. If not, open a terminal, `cd` to the directory containing the package, and type `sudo apt install ./kiwix-js-pwa*.deb`. Once installed, on Debian, you may have to run the app by opening terminal and typing `kiwix-js-pwa --no-sandbox`. On Ubuntu, you should be able to run it from its installed icon.
