@@ -4,21 +4,24 @@ The easiest way to install Kiwix JS Windows is from the Microsoft Store:
 
 https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j
 
-If you prefer not to (or cannot) use the Microsoft Store or wish to test a different build, please follow the instructions below. _Uninstall any previous installation of Kiwix JS Windows before you follow this procedure_.
+The second easiest way is to open a Command Prompt (Win key -> type "Command" or "Terminal" or "PowerShell") and at the commandline type `winget install kiwix`. If you don't
+have [`winget`](https://docs.microsoft.com/en-us/windows/package-manager/winget/) yet, or wish to test a different build, then follow the instructions below. _Uninstall any
+previous installation of Kiwix JS Windows before you follow this procedure_.
 
 ## Windows 10 Tablet / PC
 
 Starting in Windows 10 version 2004, **sideloading is enabled by default** and you can install apps by double-clicking signed app packages.
-On Windows 10 version 1909 and earlier, sideloading requires some additional configuration.
+On Windows 10 version 1909 and earlier, sideloading requires some additional configuration, as does sideloading unsigned packages.
 
-* **Simple procedure**: Just launch your package! The Kiwix JS Windows packages downloadable from [Releases](https://github.com/kiwix/kiwix-js-windows/releases/) are signed. Download the `.appxbundle` from the Assets section of a Release and launch it by double-clicking.
+* **Simple procedure**: Just try launching your package! The Kiwix JS Windows packages downloadable from [Releases](https://github.com/kiwix/kiwix-js-windows/releases/) are signed. Download the `.appxbundle` from the Assets section of a Release and launch it by double-clicking.
 * If you wish to test an unsigned package, find an `.appxbundle` above inside `AppPackages/KiwixWebApp_x.x.x.x_[AnyCPU]_Test/` folders, and try to launch it by double-clicking.
 * You may be prompted to allow sideloading, or you may need to enable it first on version 1909 or earlier: go to Settings -> Update and security -> For developers. If this doesn't work, follow procedure below.
 * **You will need a ZIM archive to use the full features of this app** - [see below](#download-a-zim-archive-all-platforms).
 
 **_If above procedure fails_**, the package may not be a signed one, or else you have an even older version of Windows 10. In this case, follow the more complex procedure below:
 
-* Put your PC in Developer mode: Settings / Update and security / For developers (it is not enough to select "Sideload" for unsigned packages). Your device may need to download a developer package, install it, and restart.
+* Put your PC in Developer mode: Settings / Update and security / For developers (it is not enough to select "Sideload" for unsigned packages). Your device may need to download
+*  a developer package, install it, and restart.
 * Then, launch a PowerShell command window: press Windows key and type PowerShell, right-click and "Run as Administrator".
 * Type the following command: `Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser`
 * Accept the warnings and ensure the script finished correctly. (The above steps are one-time only: you shouldn't need to repeat them to install future builds.)
@@ -39,4 +42,9 @@ You will need a ZIM file to work with this app. For testing, it comes packaged e
 
 Alternatively, you can download files from http://wiki.kiwix.org/wiki/Content_in_all_languages on a regular PC. Some ZIM files are very large (full English Wikipedia with images is over 90GB) -- we suggest you use BitTorrent to download these files: the app will provide you with a BitTorrent link for large files - just open the download Library in Configuration, browse for your ZIM and click on it: an information page with links will be shown.
 
-If you plan to store your ZIM file on an SD card formatted as **FAT32**, you may need to use a programme like [File Splitter and Joiner](http://www.fastfilejoiner.com/) to split the file into 4GiB-1 chunks (chunks must be exactly 4,294,967,295 bytes or less). You will need to give a file extension to each chunk in the right order following this pattern: `*.zimaa`, `*.zimab`, `*.zimac`, `...`, etc.). However, if your SD card is formatted as exFAT or NTFS, you *do not need to do this*.
+### Splitting your ZIM archive (for FAT32 storage)
+
+If you plan to store your ZIM file on an SD card or other drive formatted as **FAT32**, you may need to use a programme like
+[File Splitter and Joiner](http://www.fastfilejoiner.com/) to split the file into 4GiB-1 chunks (chunks must be exactly 4,294,967,295 bytes **or less**). You will need to give a
+file extension to each chunk in the right order following this pattern: `*.zimaa`, `*.zimab`, `*.zimac`, `...`, etc.). However, if your SD card is formatted as exFAT or NTFS,
+you *do not need to do this*.
