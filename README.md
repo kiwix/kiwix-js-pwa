@@ -4,20 +4,21 @@
 https://pwa.kiwix.org/, but you will need a ZIM file for testing. A [development deployment](https://kiwix.github.io/kiwix-js-windows/)
 is also available, but code may be buggy and change rapidly, and it is not recommended to install this as a PWA.*
 
-This repository is for development of the Kiwix JS app for Windows 10 Universal Windows Platform, PWA, Electron and NWJS.
-Latest development code is usually on the [master-dev](https://github.com/kiwix/kiwix-js-windows/tree/master-dev/) branch.
+**Kiwix is an offline reader for multilingual content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, etc. It makes knowledge available to people with limited or no Internet access. The software as well as the content is free for anyone to use. It requires a ZIM offline archive (which can be downloaded in the app).**
 
-This is a port of the Kiwix Offline Wikipedia (and other Wiki) reader for UWP and related app technologies on Windows 10.
-The NWJS and Electron versions of the app also run on earlier Windows (see the respective [releases](https://github.com/kiwix/kiwix-js-windows/releases/)
-for more information). The app enables offline reading of a ZIM file downloaded from the Kiwix repository, including full
-Wikipedia versions with or without images in many different languages. It is regularly tested fully on Wikimedia ZIM files,
-though a number of other ZIM file types work (e.g. Stackexchange ZIMs).
+This repository is for development of the Kiwix JS app for Windows 10 Universal Windows Platform (UWP), PWA, Electron and NWJS.
+The latest code is usually on the master branch, but this is used for active development and may be several commits ahead of releases.
 
-This began as a simple port of Kiwix JS, the HTML5 web app provided upstream at https://github.com/kiwix/kiwix-js, although
-significant development has been undertaken to add functionality and to make the app sit happily
-with the Universal Windows Platform, and more recently Electron and NWJS, as well as to work as an installable PWA.
+This is a lightweight HTML/JavaScript port of the Kiwix Offline Wikipedia (and other Wiki) reader. The UWP version targets Windows 10 (x86, x64, ARM, mobile, tablet, Xbox,
+Surface Hub, Holographic) while the NWJS and Electron versions also run on earlier Windows and Linux (see the respective
+[releases](https://github.com/kiwix/kiwix-js-windows/releases/) for more information). The app enables offline reading of a ZIM file downloaded from the Kiwix repository,
+including full Wikipedia versions with or without images in many different languages. It is regularly tested fully on Wikimedia ZIM files, though a number of other ZIM file
+types work.
+
+This began as a simple port of Kiwix JS, the HTML5 web app provided upstream at https://github.com/kiwix/kiwix-js, although significant development has been undertaken to add
+functionality and to make the app sit happily with the Universal Windows Platform, and more recently Electron and NWJS, as well as to work as an installable PWA.
 The port runs as a UWP Store App on Windows 10 and Windows 10 Mobile, but it should also run on any Windows 10 platform: x86, x64, ARM, on Mobile, tablets, Xbox,
-Surface Hub, Holographic and PC. It has only been tested on Lumia 950XL (Mobile), Tablet/PC x64 (Windows 10), and a Windows 10 Mobile VM.
+Surface Hub, Holographic and PC.
 
 The UWP app is currently installable from the Microsoft Store at:
 
