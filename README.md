@@ -1,8 +1,8 @@
 # Kiwix JS for PWA and Universal Windows Platform
 
-*There is a browser-based deployment and **[installable Progressive Web App (PWA)](https://pwa.kiwix.org/)** version of this app at
-https://pwa.kiwix.org/, but you will need a ZIM file for testing. A [development deployment](https://kiwix.github.io/kiwix-js-windows/)
-is also available, but code may be buggy and change rapidly, and it is not recommended to install the development version.*
+*There is a browser-based deployment and **[installable Progressive Web App (PWA)](https://pwa.kiwix.org/)** version of this app at https://pwa.kiwix.org/, but you will need a
+[ZIM file](https://wiki.kiwix.org/wiki/Content_in_all_languages) for testing. A [development deployment](https://kiwix.github.io/kiwix-js-windows/) is also available, but code
+may be buggy and change rapidly.*
 
 **Kiwix is an offline reader for multilingual content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, etc. It makes knowledge available to people with limited or no Internet access. The software as well as the content is free for anyone to use. It requires a ZIM offline archive (which can be downloaded in the app).**
 
@@ -14,37 +14,33 @@ Surface Hub, Holographic) while the NWJS and Electron versions also run on earli
 [releases](https://github.com/kiwix/kiwix-js-windows/releases/) for more information). The PWA should work with any browser that supports Service Workers, but has only been
 tested on Edge Legacy, Edge Chromium and Firefox. The PWA can be installed from a browser without visiting a Store (using Chromium-based browsers) and will work offline.
 
-The app enables offline reading of a ZIM file downloaded from the Kiwix repository, including full Wikipedia versions with or without images in many different languages.
-It is regularly tested fully on Wikimedia ZIM files, though a number of other ZIM file types work.
+Offline ZIM archives are available from the [Kiwix repository](https://wiki.kiwix.org/wiki/Content_in_all_languages), including full Wikipedia versions with or without images
+in many different languages. This app is regularly tested fully on Wikimedia ZIM files, though a number of other ZIM file types work.
 
-This began as a simple port of Kiwix JS, the HTML5 web app provided upstream at https://github.com/kiwix/kiwix-js, although significant development has been undertaken to add
-functionality and to make the app sit happily with the Universal Windows Platform, and more recently Electron and NWJS, as well as to work as an installable PWA.
-The port runs as a UWP Store App on Windows 10 and Windows 10 Mobile, but it should also run on any Windows 10 platform: x86, x64, ARM, on Mobile, tablets, Xbox,
-Surface Hub, Holographic and PC.
+This began as a simple port of [Kiwix JS](https://github.com/kiwix/kiwix-js), the HTML5 web app provided upstream at https://github.com/kiwix/kiwix-js, although significant
+development has been undertaken to add functionality and to make the app sit happily with the Universal Windows Platform, and more recently Electron and NWJS, as well as to work
+as an installable PWA. The port runs as a UWP Store App on Windows 10 and Windows 10 Mobile, but it should also run on any Windows 10 platform: x86, x64, ARM, on Mobile,
+tablets, Xbox, Surface Hub, Holographic and PC.
 
 The UWP app is currently installable from the Microsoft Store at:
 
 [https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j](https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j)
 
-However, if you prefer not to use the Store, or want to test a specific release, available packages are located under
-Releases: https://github.com/kiwix/kiwix-js-windows/releases/. Installation instructions for the standalone app (Kiwix JS)
-are provided on the Master branch: https://github.com/kiwix/kiwix-js-windows/tree/master. Electron and NWJS versions are also available from Releases,
-and a PWA version can be installed by visiting https://pwa.kiwix.org/.
+It can also be installed (in Windows 10) by opening a Command Prompt or PowerShell terminal and typing `winget install kiwix`. Electron and NWJS versions, compatible with older Windows and Linux, are available from [Releases](https://github.com/kiwix/kiwix-js-windows/releases/). The PWA version can be installed by visiting https://pwa.kiwix.org/. The easiest way to sideload the UWP app is with `winget install kiwix`, but alternative sideloading instructions are available at https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages.
 
 You will need a ZIM file to work with this app. For testing, the Store version comes packaged with an archive of the top 100 Wikipedia pages in English
-(with pictures) as a starter ZIM, while packaged aps of WikiMed and Wikivoyage are also available in the Store or from [Releases](https://github.com/kiwix/kiwix-js-windows/releases/). You can download other ZIM archives from the setup page in the app (the download completes in the browser).
-Place the file in an accessible location on your device, and use the Rescan Storage button in the app to display buttons that
+(with pictures) as a starter ZIM, while packaged aps of WikiMed and Wikivoyage are also available in the Store or from [Releases](https://github.com/kiwix/kiwix-js-windows/releases/). You can download other ZIM archives from the Configuration page in the app (the download completes in the browser).
+Place the file in an accessible location on your device, and use the Select Storage button in the app to display buttons that
 let you pick the file or the file's folder (if you do not see such buttons, look under Expert Settings in Config to enable the file picking UI).
 
-Alternatively, you can download files from [https://wiki.kiwix.org/wiki/Content_in_all_languages](http://wiki.kiwix.org/wiki/Content_in_all_languages)
+Alternatively, you can download files from the [Kiwix repository](http://wiki.kiwix.org/wiki/Content_in_all_languages)
 on a regular PC. If you plan to store your ZIM file on an SD card formatted as FAT32, and you wish to use an archive larger than 4GB, then you will need
 to split the ZIM: see [file splitting instructions](https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#download-a-zim-archive-all-platforms).
 If your SD card is formatted as exFAT or NTFS, you do not need to split the ZIM archive.
 
-You can also run the app in your browser if you prefer, either from the file:// protocol or from your own local server. There is a release deployment at:
-[https://pwa.kiwix.org/](https://pwa.kiwix.org/), but note that you will need a ZIM file, and some functionality is limited (e.g. you have to authorize
-access to a file each time you access the app in browser context). If you install the PWA from that page and you are using Chrome or new Edge
-(Chromium), then you will not need to pick a file each time you start the app, but you will be prompted to authorize file access with a simple click.
+You can also run the app from your own File system, either from the file:// protocol (in some browsers) or from your own local server. Some functionality is limited
+in these contexts (e.g. you have to authorize access to a file each time you access the app in browser context). The PWA version in Chromium browsers (including Edge) uses the
+File System Access API which means you only have to give permission with a single click.
 
 A lot of development for this app happens upstream in the [Kiwix JS repository](https://kiwix.github.io/kiwix-js/) to which I ontribute actively.
 Without Kiwix JS, this app would be impossible, and huge thanks goes to the original developers of first the Evopedia app and then Kiwix HTML5, which
