@@ -71,8 +71,12 @@ if ($base_tag -match '[EN]$') {
   if ($flavour -eq '_N') { 
     $title_flavour = 'NWJS'
     $branch = 'nwjs-en-top' 
-  } 
-  $release_title = $release_title -replace '([^\s]+)\sUWP$', ("$title_flavour Edition (Windows/Linux) " + '$1')
+  }
+  if ($tag_name -match 'E\+N') {
+    $title_flavour = 'Electron and NWJS'
+    $release_title = $release_title -replace 'Windows\s', ''
+  }
+  $release_title = $release_title -replace '([^\s]+)\sUWP$', ("$title_flavour (Windows/Linux) " + '$1')
   if ($flavour -eq '_N') { $release_title = $release_title -replace 'Edition\s(for\s)', '$1XP/Vista/' } 
 }
 # Get package name
@@ -241,8 +245,17 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       $nwjs_archives = dir $nwjs_archives_path
       if (-Not ($nwjs_archives.count -eq 2)) {
         "`nBuilding portable 32bit NWJS archives to add to Electron release for XP and Vista..."
-        "Updating Build-NWJS script with required tag..."
+        "Updating Build-NWJS script with required tags..."
+        $nw_json = Get-Content -Raw "$nwjs_base/package.json"
         $script_body = Get-Content -Raw ("$nwjs_base/scripts/Build-NWJS.ps1")
+        $json_nwVersion = ''
+        if ($nw_json -match '"build":\s*\{[^"]*"nwVersion":\s*"([^"]+)') {
+          $json_nwVersion = $matches[1]
+        }
+        if ($json_nwVersion) {
+          "Updating Build-NWJS with NWJS version from package.json: $json_nwVersion"
+          $script_body = $script_body -ireplace '(\$version\s*=\s*")[^"]+', "`${1}$json_nwVersion" 
+        }
         $script_body = $script_body -ireplace '(appBuild\s*=\s*")[^"]+', ("`${1}$numeric_tag" + "N")
         $script_body = $script_body -replace '\s*$', "`n"
         if ($dryrun) {
