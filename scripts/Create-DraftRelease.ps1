@@ -101,7 +101,7 @@ $release_params = @{
     'Accept' = 'application/vnd.github.everest-preview+json'
   }
   Body = @{
-    'tag_name' = $tag_name
+    'tag_name' = "v$base_tag"
     'target_commitish' = $branch
     'name' = $release_title
     'draft' = $true
@@ -468,7 +468,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   if ($flavour -eq '_E') { $permalinkFile = $permalinkFile -replace 'uwp', 'electron' }
   "Looking for: $permalinkFile"
   $permalink = Get-Content -Raw $permalinkFile
-  $permalink = $permalink -replace 'v[\d.EN]{5,}[^"'']*', $tag_name
+  $permalink = $permalink -replace 'v[\d.EN]{5,}[^"'']*', "v$base_tag"
   $permalink = $permalink -replace '\s*$', "`n"
   if (-Not $dryrun) { Set-Content $permalinkFile $permalink }
   else { "`n[DRYRUN] would have written:`n$permalink`n" }
