@@ -21,11 +21,13 @@ jobs:
       - name: Build and push
         uses: openzim/docker-publish-action@v5
         with:
-          image-path: kiwix/kiwix-pwa
+          image-name: kiwix/kiwix-pwa
+            DOCKERIO_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+            DOCKERIO_TOKEN=${{ secrets.DOCKERHUB_PASSWORD }}
           tag-pattern: /^v([0-9.]+).*$/
           latest-on-tag: true
           dockerfile: Dockerfile.pwa
           restrict-to: kiwix/kiwix-js-windows
           registries: docker.io
-          hub-username: ${{ secrets.DOCKERHUB_USERNAME }}
-          hub-password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          # hub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          # hub-password: ${{ secrets.DOCKERHUB_PASSWORD }}
