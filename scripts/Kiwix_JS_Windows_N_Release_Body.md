@@ -8,7 +8,7 @@ For Windows 7,8,10 64bit: [`kiwix_js_windows-<<base_tag>>-win-x64.zip`](https://
 
 If you have a modern Windows and do not know if your system is 64bit or 32bit, choose the 32bit (ia32) build.
 
-The non-XP builds are based on NWJS 0.53.0 x64 or ia32 (x86).
+The non-XP builds are based on NWJS 0.54.0 x64 or ia32 (x86).
 
 The XP/Vista build is based on a legacy LTS release of NWJS 0.14.7 ia32.
 
