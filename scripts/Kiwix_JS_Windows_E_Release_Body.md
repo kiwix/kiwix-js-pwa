@@ -1,6 +1,6 @@
 ## Portable and installable builds of Kiwix JS for Windows XP/Vista/7/8/10 and Linux
 
-This is **not** the UWP/Microsoft Store build. If you are using Windows 10, we strongly recommend [the Kiwix JS UWP release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html), which will keep itself up-to-date automatically. These portable and installable versions run on the included [Electron platform](https://www.electronjs.org/) version 10.4.0 and [NWJS](https://nwjs.io/) 0.53.0 (Win7/8/10) or 0.14.7 (XP/Vista).
+This is **not** the UWP/Microsoft Store build. If you are using Windows 10, we strongly recommend [the Kiwix JS UWP release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html), which will keep itself up-to-date automatically. These portable and installable versions run on the included [Electron platform](https://www.electronjs.org/) version 10.4.0 and [NWJS](https://nwjs.io/) 0.54.0 (Win7/8/10) or 0.14.7 (XP/Vista).
 
 They are packaged with the <<date>> sample ZIM of the top 100 Wikipedia articles in English, `<<zim>>`. These builds will run on 32bit and 64bit editions of Windows or Linux (tested on Ubuntu and Debian).
 
