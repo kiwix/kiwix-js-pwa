@@ -257,7 +257,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
           $script_body = $script_body -ireplace '(\$version\s*=\s*")[^"]+', "`${1}$json_nwVersion" 
         }
         $script_body = $script_body -ireplace '(appBuild\s*=\s*")[^"]+', ("`${1}$numeric_tag" + "N")
-        $script_body = $script_body -replace '\s*$', "`n"
+        $script_body = $script_body -replace '\s+$', "`n"
         if ($dryrun) {
           "[DRYRUN] would have written:`n"
           $script_body
@@ -311,7 +311,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         "Updating Build-NWJS with NWJS version from package.json: $json_nwVersion"
         $script_body = $script_body -ireplace '(\$version\s*=\s*")[^"]+', "`${1}$json_nwVersion" 
       }
-      $script_body = $script_body -replace '\s*$', "`n"
+      $script_body = $script_body -replace '\s+$', "`n"
       if ($dryrun) {
         "[DRYRUN] would have written:`n"
         $script_body

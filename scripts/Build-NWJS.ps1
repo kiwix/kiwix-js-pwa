@@ -8,9 +8,9 @@ if (-Not $only32bit) {
 } else {
     "Caller requested 32bitonly build"
 }
-$version = "0.53.1" # <<< value updated automatically from package.json if launched from Create-DraftRelease
+$version = "0.54.0" # <<< value updated automatically from package.json if launched from Create-DraftRelease
 $versionXP = "0.14.7"
-$appBuild = "1.3.0N" # <<< value updated auotmatically from package.json if launched form Create-DraftRelease
+$appBuild = "1.4.0N" # <<< value updated auotmatically from package.json if launched form Create-DraftRelease
 $ZIMbase = "wikipedia_en_100_maxi"
 foreach ($build in $builds) {
     $OBuild = $build
@@ -78,3 +78,4 @@ foreach ($build in $builds) {
     Compress-Archive "$PSScriptRoot\..\bld\nwjs\$build-$version\*" "$PSScriptRoot\..\bld\nwjs\$foldername.zip" -Force
     "Build $OBuild finished.`n"
 }
+
