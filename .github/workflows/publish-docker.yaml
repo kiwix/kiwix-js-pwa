@@ -8,11 +8,14 @@ on:
   release:
     types: [ published ]
 
-  # Call this for testing from the REST API with '{"ref":"{tag}"}'
+  # Call this for testing from the REST API with '{"version":"{tag}"}'
   # 'https://api.github.com/repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches'
   workflow_dispatch:
     inputs:
-      ref:
+      version:
+        description: Specific version to build (overrides on-master and tag-pattern)
+        required: false
+        default: ''
 
 jobs:
   build-and-push:
@@ -32,3 +35,4 @@ jobs:
           dockerfile: Dockerfile.pwa
           restrict-to: kiwix/kiwix-js-windows
           registries: docker.io
+          manual-tag: ${{ github.event.inputs.version }}
