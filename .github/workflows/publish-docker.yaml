@@ -8,7 +8,8 @@ on:
   release:
     types: [ published ]
 
-  # Allows you to run this workflow manually from the Actions tab
+  # Call this for testing from the REST API with '{"ref":"{tag}"}'
+  # 'https://api.github.com/repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches'
   workflow_dispatch:
 
 jobs:
