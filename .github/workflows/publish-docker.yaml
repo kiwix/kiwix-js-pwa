@@ -1,0 +1,31 @@
+# Workflow to update docker image for pwa.kiwix.org (since docker autobuild has been disabled)
+
+name: Docker
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    name: Deploy Docker Image
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and push
+        uses: openzim/docker-publish-action@v5
+        with:
+          image-path: kiwix/kiwix-pwa
+          tag-pattern: /^v([0-9.]+).*$/
+          latest-on-tag: true
+          dockerfile: Dockerfile.pwa
+          restrict-to: kiwix/kiwix-js-windows
+          registries: docker.io
+          hub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          hub-password: ${{ secrets.DOCKERHUB_PASSWORD }}
