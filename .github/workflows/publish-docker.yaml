@@ -22,6 +22,7 @@ jobs:
         uses: openzim/docker-publish-action@v5
         with:
           image-name: kiwix/kiwix-pwa
+          credentials: |
             DOCKERIO_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
             DOCKERIO_TOKEN=${{ secrets.DOCKERHUB_PASSWORD }}
           tag-pattern: /^v([0-9.]+).*$/
@@ -29,5 +30,3 @@ jobs:
           dockerfile: Dockerfile.pwa
           restrict-to: kiwix/kiwix-js-windows
           registries: docker.io
-          # hub-username: ${{ secrets.DOCKERHUB_USERNAME }}
-          # hub-password: ${{ secrets.DOCKERHUB_PASSWORD }}
