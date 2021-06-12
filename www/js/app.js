@@ -3190,6 +3190,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             // UWP apps with windows need to allow all images in all throughput
                             if (/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting) && 
                                 params.imageDisplay) { imageDisplayMode = 'all'; }
+                            // We need to do the same for Gutenberg and PHET ZIMs
+                            if (/gutenberg|phet/i.test(appstate.selectedArchive._file._files[0].name)) {
+                                imageDisplayMode = 'all';
+                            }
                             if (/\bhtml\b/i.test(mimetype)) {
                                 // Intercept files of type html and apply transformations   
                                 var message = {
@@ -3204,10 +3208,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 var postTransformedHTML = function() {
                                     clearTimeout(timer);
                                     if (params.transformedHTML && /<html[^>]*>/.test(params.transformedHTML)) {
-                                        // Because UWP app window can only be controlled from the Service Worker, we have to allow all images
-                                        // to be called from any external windows
-                                        if (/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting) &&
-                                            params.imageDisplay) { imageDisplayMode = 'all'; }
+                                        // // Because UWP app window can only be controlled from the Service Worker, we have to allow all images
+                                        // // to be called from any external windows
+                                        // if (/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting) &&
+                                        //     params.imageDisplay) { imageDisplayMode = 'all'; }
+                                        // // We need to do the same for Gutenberg and PHET ZIMs
+                                        // if (/gutenberg|phet/i.test(appstate.selectedArchive._file._files[0].name)) {
+                                        //     imageDisplayMode = 'all';
+                                        // }
                                         appstate.messageChannelWaiting = false;
                                         // Let's send the content to the ServiceWorker
                                         thisMessage.content = params.transformedHTML;
@@ -4351,7 +4359,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (params.preloadingAllImages !== true) {
                 $('#searchingArticles').show();
                 params.preloadingAllImages = true;
-                if (params.imageDisplay) params.contentInjectionMode == 'jquery' ?
+                if (params.imageDisplay) params.contentInjectionMode === 'jquery' ?
                     images.prepareImagesJQuery(articleWindow, true) : images.prepareImagesServiceWorker(articleWindow, true);
                 return;
             }
