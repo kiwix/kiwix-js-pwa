@@ -1,5 +1,10 @@
 # Changelog
 
+## In-progress log 1.4.1-RC1
+
+* FIX: Issues with dark mode in Gutenberg ZIMs using SW mode
+* FIX: Missing images from book lists in Gutenberg ZIMs
+
 ## Release 1.4.0
 
 * ENHANCEMENT: Pre-calculate position and size of article namespace in legacy ZIMs (speeds up binary search)
