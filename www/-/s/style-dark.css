@@ -38,7 +38,7 @@ blockquote {
     background-color: transparent !important;
 }
 
-  td[style*="color"], td span[style*="color"] {
+  td[style*="color"], td span[style*="color"], .table-author {
       color: lightslategray !important;
   }
 
@@ -143,8 +143,14 @@ tr[style*="background: antiquewhite"], tr[style*="background-color:#ee"], tr[sty
 .mw-ui-button[style*="background"], .mw-ui-button[style*="background"] *, .wikiEditor-ui,
 table.navbox.collapsible tr:nth-child(2) > td, div.menu, .oo-ui-popupWidget-popup,
 .oo-ui-buttonElement-button, .mw-notification, .mwe-popups, .mwe-popups-is-not-tall, .mwe-popups-is-tall,
-.ui-widget-content, .oo-ui-window-body, #pagehistory li.selected, .tracklist tr {
+.ui-widget-content, .oo-ui-window-body, #pagehistory li.selected, .tracklist tr, .dataTable tr {
     background-color: #222 !important;
+}
+
+table.dataTable.display tbody tr:hover,
+table.dataTable.display tbody tr.odd:hover,
+table.dataTable.display tbody tr.even:hover {
+    background-color: darkslategray !important;
 }
 
 #hauptseite > table {
@@ -351,7 +357,7 @@ span[style*="color:#555"], span[style*="background-color:#EE"] {
     padding: 0 1em 0.1em !important;
   }
 
-ul, .portlet li {x
+ul, .portlet li {
     list-style-image: none !important;
     background-color: #000010 !important;
 }
