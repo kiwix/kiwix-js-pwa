@@ -9,8 +9,14 @@ param (
 $release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-windows/actions/workflows/publish-docker.yaml/dispatches'
 $github_token = Get-Content -Raw "$PSScriptRoot/github_token"
 
+$suggested_build = ''
+if ((sls 'params..version' $PSScriptRoot/../www/js/init.js) -match('"([\d.]+)"')) {
+    $suggested_build = "v" + $matches[1]
+}
+
 if ($tag_name -eq "") {
-    $tag_name = Read-Host "`nEnter the existing tag name to use for the manual docker build (e.g. 'v1.4.0')"
+    if (!($tag_name = Read-Host "`nGive the tag name to use for the docker build or Enter to accept default of [$suggested_build]")) { $tag_name = $suggested_build }
+    # $tag_name = Read-Host "`nEnter the existing tag name to use for the manual docker build (e.g. 'v1.4.0')"
     if (-Not $dryrun) {
       $dryrun_check = Read-Host "Is this a dry run? [Y/N]"
       $dryrun = -Not ( $dryrun_check -imatch 'n' )
@@ -37,13 +43,13 @@ $dispatch_params = @{
       'inputs' = @{ 'version' = $tag_name }
     } | ConvertTo-Json
     ContentType = "application/json"
-  }
+}
   
-  # Post to the release server
-  if (-Not ($dryrun -or $buildonly -or $updatewinget)) { 
+# Post to the release server
+if (-Not ($dryrun -or $buildonly -or $updatewinget)) { 
     $dispatch = Invoke-RestMethod @dispatch_params 
-  } elseif (-Not $updatewinget) {
+} elseif (-Not $updatewinget) {
     "[DRYRUN] Dispatch parameters:`n$dispatch_params`n$tag_name"
     return
-  }
+}
 "`nServer returned:`n$dispatch"
