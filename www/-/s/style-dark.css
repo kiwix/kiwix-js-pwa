@@ -69,7 +69,7 @@ td[style*="background"]:not([class*="translations"]):not([style*="transparent"])
     text-decoration: underline !important;
   }
 
-#content .qb .qbHeader {
+#content .qb .qbHeader, .pure-input-rounded {
     background: #1d3030;
     color: whitesmoke;
 }
