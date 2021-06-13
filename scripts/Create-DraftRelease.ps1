@@ -494,7 +494,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     if ($respondtowingetprompt) {
       $wingetcreate_check = $respondtowingetprompt
     } else {
-      $wingetcreate_check = Read-Host "Would you like to update the WinGet repository with this new build? [Y/N]"
+      $wingetcreate_check = Read-Host "Would you like to update the WinGet repository with this new build?`nWARNING: be sure you have published the draft release (if in doubt answer N)! [Y/N]"
     }
     $wingetcreate_check = -Not ( $wingetcreate_check -imatch 'n' )
     if ($wingetcreate_check) {
