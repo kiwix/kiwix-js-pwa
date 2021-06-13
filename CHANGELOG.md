@@ -1,7 +1,8 @@
 # Changelog
 
-## In-progress log 1.4.1-RC1
+## Critical bugix release 1.4.1
 
+* FIX: Critical bug where article is not unhidden in time on slow systems in jQuery mode
 * FIX: Issues with dark mode in Gutenberg ZIMs using SW mode
 * FIX: Missing images from book lists in Gutenberg ZIMs
 
