@@ -3829,9 +3829,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     setTimeout(function() {
                         articleDocument.bgcolor = "";
                         articleDocument.hidden = false;
-                        // articleContainer.hidden = false;
                         articleWindow.document.body.hidden = false;
-                    }, 400);
+                    }, 0);
                     
                 };
 
