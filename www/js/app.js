@@ -3826,11 +3826,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     // Make sure the article area is displayed
                     setTab();
                     checkToolbar();
-                    setTimeout(function() {
+                    // setTimeout(function() {
                         articleDocument.bgcolor = "";
                         articleDocument.hidden = false;
                         articleWindow.document.body.hidden = false;
-                    }, 0);
+                    // }, 0);
                     
                 };
 
