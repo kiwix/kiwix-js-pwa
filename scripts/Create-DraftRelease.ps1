@@ -4,7 +4,8 @@ param (
     [switch]$usestorerelease = $false,
     [switch]$draftonly = $false,
     [switch]$buildonly = $false,
-    [switch]$updatewinget = $false
+    [switch]$updatewinget = $false,
+    [string]$respondtowingetprompt = "" # Provide an override response (Y/N) to the winget prompt at the end of the script - for automation
 )
 # DEV: To build Electron packages for all platforms and NWJS for XP and Vista in a single release, use, e.g., "v1.3.0E+N" (Electron + NWJS)
 # DEV: To build new icons, use
@@ -487,7 +488,28 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   else { "`n[DRYRUN] would have written:`n$permalink`n" }
   "Cleaning up..."
   if ((-Not ($dryrun -or $old_windows_support)) -and $compressed_archive ) { del $compressed_archive }
-  "`nDone."
+  "`nDone.`n"
+  # Now update winget manifest if we are not building NWJS or Electron
+  if ($flavour -eq '') {
+    if ($respondtowingetprompt) {
+      $wingetcreate_check = $respondtowingetprompt
+    } else {
+      $wingetcreate_check = Read-Host "Would you like to update the WinGet repository with this new build? [Y/N]"
+    }
+    $wingetcreate_check = -Not ( $wingetcreate_check -imatch 'n' )
+    if ($wingetcreate_check) {
+      "`nUpdating WinGet repository..."
+      cd $PSScriptRoot\..
+      pwd
+      if (-Not $dryrun) { 
+        & .\scripts\Create-DraftRelease.ps1 -updatewinget -tag_name $tag_name
+      } else {
+        "[DRYRUN:] & .\scripts\Create-DraftRelease.ps1 -updatewinget -tag_name $tag_name"
+      }
+    } else {
+      "You can update the WinGet repository manually by running 'Create-DraftRelease -updatewinget'"
+    }
+  }
 } else {
   "There was an error setting up the release!"
   if ($release) {
