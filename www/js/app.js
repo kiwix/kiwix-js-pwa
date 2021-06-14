@@ -3826,12 +3826,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     // Make sure the article area is displayed
                     setTab();
                     checkToolbar();
-                    // setTimeout(function() {
+                    var showArticle = function () {
                         articleDocument.bgcolor = "";
                         articleDocument.hidden = false;
                         articleWindow.document.body.hidden = false;
-                    // }, 0);
-                    
+                    };
+                    if ('MSBlobBuilder' in window) {
+                        // For legacy MS browsers, including UWP, delay causes blank screen on slow systems
+                        showArticle();
+                    } else {
+                        // For Chromium browsers a small delay greatly improves composition
+                        setTimeout(showArticle, 80);
+                    }
                 };
 
                 // For articles loaded in the iframe, we need to set the articleWindow (but if the user is opening a new tab/window,
