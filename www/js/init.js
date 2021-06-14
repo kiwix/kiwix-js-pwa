@@ -261,21 +261,25 @@ if (params.packagedFileStub && params.version !== getSetting('version') && ~para
     params.lastPageVisit = '';
     params.storedFile = params.packagedFile;
     params.storedFilePath = params.archivePath + '/' + params.packagedFile;
+    deleteSetting('lastSelectedArchive');
+    deleteSetting('lastSelectedArchivePath');
+    deleteSetting('listOfArchives');
+    params.localStorageUpgradeNeeded = true;
 }
 if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') { //UWP
-    Windows.ApplicationModel.Package.current.installedLocation.getFolderAsync(params.archivePath).done(function (folder) {
-        params.localStorage = folder;
+    var futureAccessList = Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList;
+    Windows.ApplicationModel.Package.current.installedLocation.getFolderAsync(params.archivePath).done(function (appFolder) {
+        params.localStorage = appFolder;
+        if (futureAccessList.containsItem(params.falFolderToken)) {
+            futureAccessList.getFolderAsync(params.falFolderToken).done(function (pickedFolder) {
+                params.pickedFolder = params.localStorageUpgradeNeeded ? params.localStorage : pickedFolder;
+            }, function (err) {
+                console.error("The previously picked folder is no longer accessible: " + err.message);
+            });
+        }
     }, function (err) {
         console.error("This app doesn't appear to have access to local storage!");
     });
-    var futureAccessList = Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList;
-    if (futureAccessList.containsItem(params.falFolderToken)) {
-        futureAccessList.getFolderAsync(params.falFolderToken).done(function (folder) {
-            params.pickedFolder = folder;
-        }, function (err) {
-            console.error("The previously picked folder is no longer accessible: " + err.message);
-        });
-    }
     //If we don't already have a picked file (e.g. by launching app with click on a ZIM file), then retrieve it from futureAccessList if possible
     var listOfArchives = getSetting('listOfArchives');
     // But don't get the picked file if we already have access to the folder and the file is in it!
@@ -325,11 +329,7 @@ window.addEventListener('beforeinstallprompt', function(e) {
         });
     }
     // The app hasn't actually been installed or user has uninstalled, so we need to reset any setting
-    if (params.storeType === 'cookie') {
-        document.cookie = 'PWAInstalled=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    } else if (params.storeType === 'local_storage') {
-        localStorage.removeItem(params.keyPrefix + 'PWAInstalled');
-    }
+    deleteSetting('PWAInstalled');
 });
 
 function installApp(e) {
@@ -374,6 +374,15 @@ function getSetting(name) {
         result = localStorage.getItem(params.keyPrefix + name);
     }
     return result === null || result === "undefined" ? null : result === "true" ? true : result === "false" ? false : result;
+}
+
+// NB This only deals with simple names that don't need to be URI-encoded
+function deleteSetting(name) {
+    if (params.storeType === 'cookie') {
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict';
+    } else if (params.storeType === 'local_storage') {
+        localStorage.removeItem(params.keyPrefix + name);
+    }
 }
 
  // Tests for available Storage APIs (document.cookie or localStorage) and returns the best available of these
