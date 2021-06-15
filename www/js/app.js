@@ -60,6 +60,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         cache.test(function(){});
         // Unique identifier of the article expected to be displayed
         var expectedArticleURLToBeDisplayed = "";
+        // Check if we have managed to switch to PWA mode (if running UWP app)
+        // DEV: we do this in init.js, but sometimes it doesn't seem to register, so we do it again once the app has fully launched
+        if (/UWP\|PWA/.test(params.appType) && /^http/i.test(window.location.protocol)) {
+            // We are in a PWA, so signal success
+            params.localUWPSettings.PWA_launch = 'success';
+        }
     
         /**
          * Resize the IFrame height, so that it fills the whole available height in the window
