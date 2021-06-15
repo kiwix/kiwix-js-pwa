@@ -1,6 +1,13 @@
 # Changelog
 
-## Critical bugix release 1.4.1
+## In progress log for 1.4.2-RC1
+
+* ENHANCEMENT: Add a Content Security Policy preventing contents of a page from connecting to online resourcs
+* FIX: Crash in UWP app after updating a ZIM archive
+* FIX: Improve handover from local code to PWA code to prevent rogue error message
+* FIX: Improve page composition timing for non-MS browsers
+
+## Release 1.4.1
 
 * FIX: Critical bug where article is not unhidden in time on slow systems in jQuery mode
 * FIX: Issues with dark mode in Gutenberg ZIMs using SW mode
