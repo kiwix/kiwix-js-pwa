@@ -3555,6 +3555,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>';
             });
 
+            // If there is no CSP, add one to prevent external scripts and content
+            if (!/<meta\b[^>]+Content-Security-Policy/i.test(htmlArticle)) {
+                htmlArticle = htmlArticle.replace(/(\s*<\/head>)/, '\n    <meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: blob: \'unsafe-inline\' \'unsafe-eval\';"></meta>$1');
+            }
+
             //Preload stylesheets [kiwix-js #149]
             //Set up blobArray of promises
             var prefix = (window.location.protocol + '//' + window.location.host + window.location.pathname).replace(/\/[^/]*$/, '');
