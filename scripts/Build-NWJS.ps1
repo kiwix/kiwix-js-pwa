@@ -8,11 +8,12 @@ if (-Not $only32bit) {
 } else {
     "Caller requested 32bitonly build"
 }
-$version = "0.54.0" # <<< value updated automatically from package.json if launched from Create-DraftRelease
+$version10 = "0.54.0" # <<< value updated automatically from package.json if launched from Create-DraftRelease
 $versionXP = "0.14.7"
-$appBuild = "1.4.0N" # <<< value updated auotmatically from package.json if launched form Create-DraftRelease
+$appBuild = "1.4.2N" # <<< value updated auotmatically from package.json if launched form Create-DraftRelease
 $ZIMbase = "wikipedia_en_100_maxi"
 foreach ($build in $builds) {
+    $version = $version10
     $OBuild = $build
     $sep = '-'
     if ($build -eq "win-xp") {
