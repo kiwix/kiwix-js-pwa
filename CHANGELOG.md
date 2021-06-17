@@ -1,9 +1,9 @@
 # Changelog
 
-## In progress log for 1.4.2-RC2
+## Release 1.4.2
 
-* ENHANCEMENT: Add a Content Security Policy preventing contents of a page from connecting to online resourcs
 * ENHANCEMENT: Improve zooming and re-flowing the article contents in browsers that support the `zoom` style property
+* ENHANCEMENT: Add a Content Security Policy preventing contents of a page from connecting to online resources
 * FIX: Crash in UWP app after updating a ZIM archive
 * FIX: Improve handover from local code to PWA code to prevent rogue error message
 * FIX: Improve page composition timing for non-MS browsers
