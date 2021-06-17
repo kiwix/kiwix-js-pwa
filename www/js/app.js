@@ -596,11 +596,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             clearFindInArticle();
             history.forward();
         });
-        document.getElementById('articleContent').contentDocument.body.style.fontSize = params.relativeFontSize + "%";
         document.getElementById('btnZoomin').addEventListener('click', function () {
             params.relativeFontSize += 5;
             var doc = document.getElementById('articleContent').contentDocument;
-            doc.body.style.fontSize = /-\/static\/main\.css/.test(doc.head.innerHTML) ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
+            var docElStyle = doc.documentElement.style;
+            var zoomProp = 'zoom' in docElStyle ? 'zoom' : 'fontSize';
+            docElStyle = zoomProp === 'fontSize' ? doc.body.style : docElStyle; 
+            docElStyle[zoomProp] = /-\/static\/main\.css/.test(doc.head.innerHTML) && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
             document.getElementById('lblZoom').innerHTML = params.relativeFontSize + "%";
             document.getElementById('lblZoom').style = "position:absolute;right: " + window.innerWidth / 5 + "px;bottom:50px;z-index:50;";
             setTimeout(function () {
@@ -612,7 +614,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         document.getElementById('btnZoomout').addEventListener('click', function () {
             params.relativeFontSize -= 5;
             var doc = document.getElementById('articleContent').contentDocument;
-            doc.body.style.fontSize = /-\/static\/main\.css/.test(doc.head.innerHTML) ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
+            var docElStyle = doc.documentElement.style;
+            var zoomProp = 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
+            docElStyle = zoomProp === 'fontSize' ? doc.body.style : docElStyle; 
+            docElStyle[zoomProp] = /-\/static\/main\.css/.test(doc.head.innerHTML) && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
             document.getElementById('lblZoom').innerHTML = params.relativeFontSize + "%";
             document.getElementById('lblZoom').style = "position:absolute;right: " + window.innerWidth / 4 + "px;bottom:50px;z-index:50;";
             setTimeout(function () {
@@ -766,7 +771,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 document.getElementById('search-article').style.overflowY = 'hidden';
                 setTimeout(function() {
                     if (appstate.target === 'iframe') {
-                        if (articleContainer) articleContainer.style.display = 'block';
+                        if (articleContainer && articleContainer.style) articleContainer.style.display = 'block';
                         if (articleWindow) articleWindow.focus();
                     }
                 }, 50);
@@ -3113,7 +3118,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 var zimType = /-\/s\/style\.css/i.test(doc.head.innerHTML) ? "desktop" : "mobile";
                 zimType = /-\/static\/main\.css/i.test(doc.head.innerHTML) ? "desktop-stx" : zimType; //Support stackexchange
                 zimType = /minerva|mobile[^"']*\.css/i.test(doc.head.innerHTML) ? "mobile" : zimType;
-                docBody.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
+                var docElStyle = articleDocument.style;
+                var zoomProp = 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
+                docElStyle = zoomProp === 'fontSize' ? docBody.style : docElStyle; 
+                docElStyle[zoomProp] = ~zimType.indexOf("stx") && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
                 checkToolbar();
                 //Set page width according to user preference
                 removePageMaxWidth();
@@ -3772,7 +3780,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         }
                     }
                     //Set relative font size + Stackexchange-family multiplier
-                    docBody.style.fontSize = ~zimType.indexOf("stx") ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
+                    var docElStyle = articleDocument.style;
+                    var zoomProp = 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
+                    docElStyle = zoomProp === 'fontSize' ? docBody.style : docElStyle;
+                    docElStyle[zoomProp] = ~zimType.indexOf("stx") && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
                     //Set page width according to user preference
                     removePageMaxWidth();
                     setupHeadings();
