@@ -467,7 +467,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       InFile = $asset
       ContentType = 'application/octet-stream'
     }
-    "`nUpploading $asset..."
+    "`nUploading $asset..."
     # Upload asset to the release server
     # $upload = [System.IO.File]::ReadAllBytes($upload_file) | Invoke-RestMethod @upload_params
     if (-Not $dryrun) { $upload = Invoke-RestMethod @upload_params }
