@@ -26,10 +26,10 @@ There is no installation required for the Portable versions. NONE of these build
 
 ### Instructions:
 
-* For the Windows Portable build, unzip the contents of the [kiwix_js_windows-<<base_tag>>-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-<<numeric_tag>>N-win-ia32.zip) archive to any folder, or to a flash drive / thumb drive, and double click on `Start Kiwix JS Windows` or `Start Kiwix JS Windows via batch file.bat`, or open the `kiwix-js-windows-win32-ia32` folder and double click on `nw.exe`;
+* For the Windows Portable build, unzip the contents of the [kiwix_js_windows-<<base_tag>>-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-<<numeric_tag>>N-win-ia32.zip) archive (or the XP version if you're using that) to any folder, or to a flash drive / thumb drive, and double click on `Start Kiwix JS Windows` or `Start Kiwix JS Windows via batch file.bat`, or open the `kiwix_js_windows-...` folder and double click on `nw.exe`;
 * For the Windows Setup (installable) build, simply download and launch. It will install itself, together with a shortcut in your shortcut menu, and run. When you want to update the app, just install a new version over it (it will uninstall the old one for you).
 * For the Linux portable builds, download and save the correct AppImage file anywhere (e.g. your Desktop), and double-click it. If it doesn't work, open Terminal and run `chmod a+x Kiwix.JS.PWA*.AppImage` and then `./Kiwix.JS.PWA*.AppImage --no-sandbox`. You might be able to run without `--no-sandbox` (see https://github.com/electron/electron/issues/17972#issuecomment-516957971).
-* For the Linux installable builds, download the correct `.deb` package and double-click to see if your graphical package manager can install it. If not, open a terminal, `cd` to the directory containing the package, and type `sudo apt install ./kiwix-js-pwa*.deb`. Once installed, on Debian, you may have to run the app by opening terminal and typing `kiwix-js-pwa --no-sandbox`. On Ubuntu, you should be able to run it from its installed icon.
+* For the Linux installable builds, download the correct `.deb` package. Open a terminal, `cd` to the directory containing the package, and type `sudo apt install ./kiwix-js-pwa*.deb`. Once installed, on Debian, you may have to run the app by opening terminal and typing `kiwix-js-pwa --no-sandbox`. On Ubuntu, you should be able to run it from its installed icon. When you want to update, just install the new version, and it will install over the old version.
 * Windows: **Because the portable archive may not be commonly downloaded, you may face Windows SmartScreen issues** on first launch. Follow instructions to "Run anyway" if you trust this site. If you prefer, use the installable version [Kiwix JS Windows Setup <<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix.JS.PWA.Setup.<<numeric_tag>>-E.exe) which is digitally signed.
 
 ### Release Notes
@@ -42,7 +42,6 @@ There is no installation required for the Portable versions. NONE of these build
 
 ### Known Issues
 
-* FIRST LAUNCH BUG: If you install over a previous build, you may get a message "Unable to locate picked archive" when you first launch. Simply relaunch the app and it should be able to find its updated packaged archive second time;
 * REGRESSION: Due to a change in format, headings are always open in jQuery mode regardless of the "Open all sections" option in Configuration (the setting is respected in Service Worker mode);
 * INCONSISTENCY: When printing in jQuery mode, all sections are opened before printing (if the user had closed any), whereas in SW mode, closed sections are not opened before printing;
 * On the XP build with some recent ZIMs (not the packaged one), __there is a CSS error in rendering the landing page of this ZIM__, due to the age of the Chromium build included in the runtime package. However, you can access all articles by __pressing a space in the search box__;
