@@ -16,8 +16,24 @@ param (
 $release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-windows/releases'
 $github_token = Get-Content -Raw "$PSScriptRoot/github_token"
 
+$init_params = Get-Content -Raw "$PSScriptRoot\..\www\js\init.js"
+$file_tag = ''
+if ($init_params -match 'params\[[''"]version[''"]]\s*=\s*[''"]([^''"]+)') {
+  $file_tag = 'v' + $matches[1] 
+}
+
+
 if ($tag_name -eq "") {
-  $tag_name = Read-Host "`nEnter the tag name to use for this release"
+  $tag_name = Read-Host "`nEnter the tag name for this release, or Enter to accept suggested tag, or add any suffix to suggested tag [$file_tag]"
+  if ($tag_name -match '^[EN-]|^$') {
+    $split = $file_tag -imatch '^([v\d.]+)(.*)$'
+    if ($split) {
+      $tag_name = $matches[1] + $tag_name + $matches[2]
+      # Clean up in case there was already a WikiMed or Wikivoyage suffix and we added one
+      $tag_name = $tag_name -replace '(\-[^\d.-]+)\-[^\d.]+$', '$1'
+    }
+    "Tag name set to: $tag_name"
+  }
   if (-Not $dryrun) {
     $dryrun_check = Read-Host "Is this a dry run? [Y/N]"
     $dryrun = -Not ( $dryrun_check -imatch 'n' )
@@ -50,7 +66,6 @@ if ($text_tag -eq '') { $text_tag = 'Windows' }
 $release_title = "Kiwix JS $text_tag $base_tag UWP"
 if ($text_tag -eq "Wikivoyage") { $release_title = "Wikivoyage by Kiwix $base_tag UWP" }
 $flavour = ''
-$init_params = Get-Content -Raw "$PSScriptRoot\..\www\js\init.js"
 $file_version = ''
 if ($init_params -match 'params\[[''"]fileVersion[''"]]\s*=\s*(?:getSetting\([''"]fileVersion[''"]\)\s*\|\|\s*)?[''"]([^''"]+)') {
   $file_version = $matches[1] 
