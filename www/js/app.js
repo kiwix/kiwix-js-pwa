@@ -3886,11 +3886,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
 
                 if (params.contentInjectionMode === 'serviceworker') {
-                    // Add doctype if missing so that scripts run in standards mode 
+                    // Remove page max width restriction if required
+                    if (params.removePageMaxWidth) htmlArticle = removePageMaxWidth(htmlArticle);
+                    // For UWP apps, we need to add the Zoom level to the HTML if we are opening in external window
+                    if (/UWP/.test(params.appType) && appstate.target === 'window') {
+                        htmlArticle = htmlArticle.replace(/(<html\b[^>]+?style=['"])/i, '$1zoom:' + params.relativeFontSize + '%; ');
+                        htmlArticle = htmlArticle.replace(/(<html\b(?![^>]+?style=['"])\s)/i, '$1style="zoom:' + params.relativeFontSize + '%;" ');
+                    }
+                    // Add doctype if missing so that scripts run in standards mode
                     // (quirks mode prevents katex from running, and is incompatible with jQuery)
                     params.transformedHTML = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(htmlArticle) ? '<!DOCTYPE html>\n' + htmlArticle : htmlArticle;
-                    // Remove page max width restriction if required
-                    if (params.removePageMaxWidth) params.transformedHTML = removePageMaxWidth(params.transformedHTML);
                     // We will need the encoded URL on article load so that we can set the iframe's src correctly,
                     // but we must not encode the '/' character or else relative links may fail [kiwix-js #498]
                     var encodedUrl = dirEntry.url.replace(/[^/]+/g, function (matchedSubstring) {
