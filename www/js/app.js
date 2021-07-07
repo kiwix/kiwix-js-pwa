@@ -1927,6 +1927,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
             } else if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 processPickedFileUWP(params.pickedFile);
+            } else if (launchArguments && 'launchQueue' in window) {
+                // The app was launched with a file
+                processNativeFileHandle(params.pickedFile); 
             } else {
                 // We're in an Electron or NWJS app with a packaged file that we need to read from the node File System
                 console.log("Loading packaged ZIM or last selected archive for Electron...");
