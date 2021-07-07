@@ -33,5 +33,14 @@
       "sizes": "256x256 512x512",
       "type": "image/png"
     }
+  ],
+  "file_handlers": [
+    {
+      "action": "www/",
+      "name": "ZIM Archive",
+      "accept": {
+        "application/octet-stream": [ ".zim" ]
+      }
+    }
   ]
 }
