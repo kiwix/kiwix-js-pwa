@@ -39,13 +39,22 @@
     -->
     <link rel="manifest" href="../manifest.json" />
     <link rel="stylesheet" href="css/app.css" />
+    <meta http-equiv="origin-trial" content="Arnv6Dpvw32+gIU8oM8yiU6ZWhcTvPa3QjmbO2e+TWT7+t53LD0s2KRowUtljbmqNXuB+XlDcld5P/60jcHbMgIAAABVeyJvcmlnaW4iOiJodHRwczovL2tpd2l4LmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiRmlsZUhhbmRsaW5nIiwiZXhwaXJ5IjoxNjM0MDgzMTk5fQ==">
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen" />
     <!-- link href="css/bootstrap-theme.min.css" rel="stylesheet" media="screen" /-->
     <script type="text/javascript">
         // This script is needed to retrieve launch arguments when the app is started by double-clicking on a file
         var launchArguments = null;
-        if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.UI.WebUI.WebUIApplication) {
+        if ('launchQueue' in window) {
+            launchQueue.setConsumer(function (launchParams) {
+                // Nothing to do when the queue is empty.
+                if (!launchParams.files.length) {
+                    return;
+                }
+                launchArguments = launchParams;
+            });
+        } else if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.UI.WebUI.WebUIApplication) {
             Windows.UI.WebUI.WebUIApplication.addEventListener('activated', function (eventArgs) {
                 if (eventArgs.kind === Windows.ApplicationModel.Activation.ActivationKind.file) {
                     console.log("App was activated with a file: " + eventArgs.files[0].name);
@@ -116,14 +125,12 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in version <span class="version">1.0</span></h3>
                         <ul style="padding-left: 15px;">
+                            <li>New! PWA is participating in File Handling API Origin Trial to act as a file opener for ZIM archives</li>
                             <li>Improve zooming and re-flowing the article contents in browsers that support the zoom style property</li>
                             <li>Add a Content Security Policy preventing contents of a page from connecting to online resources</li>
                             <li>Fix crash in UWP app after updating a ZIM archive</li>
                             <li>Improve handover from local code to PWA code in UWP app to prevent rogue error message</li>
                             <li>Improve page composition timing for non-MS browsers</li>
-                            <li>Fix critical bug where article is not unhidden in time on slow systems in jQuery mode</li>
-                            <li>Fix issues with dark mode in Gutenberg ZIMs using SW mode</li>
-                            <li>Fix missing images from book lists in Gutenberg ZIMs</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md" target="_blank">Full changelog...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>
