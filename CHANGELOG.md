@@ -1,5 +1,9 @@
 # Changelog
 
+## In progress release 1.4.3
+
+* FEATURE: (Experimental) PWA is paritcipating in File Handling API origin trial
+
 ## Release 1.4.2
 
 * ENHANCEMENT: Improve zooming and re-flowing the article contents in browsers that support the `zoom` style property
