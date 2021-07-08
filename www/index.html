@@ -47,15 +47,7 @@
     <script type="text/javascript">
         // This script is needed to retrieve launch arguments when the app is started by double-clicking on a file
         var launchArguments = null;
-        if ('launchQueue' in window) {
-            launchQueue.setConsumer(function (launchParams) {
-                // Nothing to do when the queue is empty.
-                if (!launchParams.files.length) {
-                    return;
-                }
-                launchArguments = launchParams;
-            });
-        } else if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.UI.WebUI.WebUIApplication) {
+        if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.UI.WebUI.WebUIApplication) {
             Windows.UI.WebUI.WebUIApplication.addEventListener('activated', function (eventArgs) {
                 if (eventArgs.kind === Windows.ApplicationModel.Activation.ActivationKind.file) {
                     console.log("App was activated with a file: " + eventArgs.files[0].name);
