@@ -1895,6 +1895,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
         }
 
+        if ('launchQueue' in window) {
+            launchQueue.setConsumer(function (launchParams) {
+                // Nothing to do when the queue is empty.
+                if (!launchParams.files.length) {
+                    return;
+                }
+                // User launched app by double-clicking on file
+                processNativeFileHandle(launchParams.files[0]);
+            });
+        } 
+
         // @STORAGE AUTOLOAD STARTS HERE
         if ($.isFunction(navigator.getDeviceStorages)) {
             // The method getDeviceStorages is available (FxOS>=1.1)
