@@ -40,6 +40,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         
         // Define global state:
 
+        // Placeholders for the article container, the article window and the article DOM
+        var articleContainer = document.getElementById('articleContent');
+        var articleWindow = articleContainer.contentWindow;
+        var articleDocument;
+
         /**
          * @type ZIMArchive
          */
@@ -217,7 +222,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         activeElement.classList.remove('hover');
                         activeElement = activeElement.nextElementSibling || activeElement;
                         var nextElement = activeElement.nextElementSibling || activeElement;
-                        if (!uiUtil.isElementInView(nextElement, true)) nextElement.scrollIntoView(false);
+                        if (!uiUtil.isElementInView(window, nextElement, true)) nextElement.scrollIntoView(false);
                     }
                 }
                 // If user presses ArrowUp...
@@ -225,7 +230,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     activeElement.classList.remove('hover');
                     activeElement = activeElement.previousElementSibling || activeElement;
                     var previousElement = activeElement.previousElementSibling || activeElement;
-                    if (!uiUtil.isElementInView(previousElement, true)) previousElement.scrollIntoView();
+                    if (!uiUtil.isElementInView(window, previousElement, true)) previousElement.scrollIntoView();
                     if (previousElement === activeElement) {
                         document.getElementById('articleListWithHeader').scrollIntoView();
                         document.getElementById('top').scrollIntoView();
@@ -3366,10 +3371,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         // Currently happens only in setLocalArchiveFromFileList and setLocalArchiveFromArchiveList.
         //var cssDirEntryCache = new Map(); //This one is never hit!
         var cssBlobCache = new Map();
-
-        // Placeholders for the article container, the article window and the article DOM
-        var articleContainer = document.getElementById('articleContent');
-        var articleWindow, articleDocument;
 
         /**
          * Display the the given HTML article in the web page,
