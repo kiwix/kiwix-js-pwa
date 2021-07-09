@@ -3,6 +3,7 @@
 ## In progress release 1.4.3
 
 * FEATURE: (Experimental) PWA is paritcipating in File Handling API origin trial
+* FIX: Bug which failed to detect images correctly in a new tab
 
 ## Release 1.4.2
 
