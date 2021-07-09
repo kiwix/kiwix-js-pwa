@@ -24,6 +24,11 @@
 define(['uiUtil'], function (uiUtil) {
 
     /**
+     * The Window on which to operate
+     */
+    var container;
+
+    /**
      * A variable to keep track of how many images are being extracted by the extractor
      */
     var extractorBusy = 0;
@@ -96,7 +101,8 @@ define(['uiUtil'], function (uiUtil) {
      * extraction when user taps the indicated area
      * 
      */
-    function prepareManualExtraction(container) {
+    function prepareManualExtraction(win) {
+        container = win;
         var doc = container.document;
         var documentImages = doc.querySelectorAll('img');
         for (var i = 0, l = documentImages.length; i < l; i++) {
@@ -140,8 +146,9 @@ define(['uiUtil'], function (uiUtil) {
     /**
      * Sorts an array or collection of image nodes, returning a list of those that are inside the visible viewport 
      * 
+     * @param {Array} docImgs The array of images to process
      * @param {String} action If null, imageStore only will be processed; if 'extract', documentImages in viewport will be 
-*                  extracted; if 'poll', will just return the visible and remaining image arrays
+     *     extracted; if 'poll', will just return the visible and remaining image arrays
      * @param {Number} margin An extra margin to add to the top (-) or bottom (+) of windows.innerHeight
      * @param {Function} callback Function to call when last image has been extracted (only called if <extract> is true)
      * @returns {Object} An object with two arrays of images, visible and remaining
@@ -165,7 +172,7 @@ define(['uiUtil'], function (uiUtil) {
         //console.log('Images requested...');
         for (var i = 0, l = docImgs.length; i < l; i++) {
             if (docImgs[i].queued || !docImgs[i].dataset.kiwixurl) continue;
-            if (uiUtil.isElementInView(docImgs[i], null, margin)) {
+            if (uiUtil.isElementInView(container, docImgs[i], null, margin)) {
                 visible.push(docImgs[i]);
                 if (action !== 'extract') continue;
                 docImgs[i].queued = true;
@@ -194,15 +201,16 @@ define(['uiUtil'], function (uiUtil) {
     /**
      * Prepares the article container in order to process the image nodes that have been disabled in Service Worker
      * 
-     * @param {Window} container The iframe or the window that contains the document
+     * @param {Window} win The Window of the iframe tab that contains the document
      * @param {Boolean} forPrinting If true, extracts all images
      */
-    function prepareImagesServiceWorker (container, forPrinting) {
+    function prepareImagesServiceWorker (win, forPrinting) {
+        container = win;
         var doc = container.document;
         var documentImages = doc.querySelectorAll('img');
         // Schedule loadMathJax here in case next line aborts this function
         setTimeout(function() {
-            loadMathJax(container);
+            loadMathJax();
         }, 1000);
         if (!forPrinting && !documentImages.length) return;
         var imageHtml;
@@ -233,7 +241,7 @@ define(['uiUtil'], function (uiUtil) {
             } else {
                 // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
                 setTimeout(function() {
-                    lazyLoad(container, documentImages);
+                    lazyLoad(documentImages);
                 }, 300);
             }
         }
@@ -242,15 +250,16 @@ define(['uiUtil'], function (uiUtil) {
     /**
      * Prepares the article container in order to process the image nodes that have been disabled in the DOM
      * 
-     * @param {Window} container The iframe or the window that contains the document
+     * @param {Window} win The Window of the iframe or tab that contains the document
      * @param {Boolean} forPrinting If true, extracts all images
      */
-    function prepareImagesJQuery (container, forPrinting) {
+    function prepareImagesJQuery (win, forPrinting) {
+        container = win;
         var doc = container.document;
         var documentImages = doc.querySelectorAll('img[data-kiwixurl]');
         // In case there are no images in the doc, we need to schedule the loadMathJax function here
         setTimeout(function() {
-            loadMathJax(container);
+            loadMathJax();
         }, 1000);
         if (!forPrinting && !documentImages.length) return;
         if (forPrinting) {
@@ -264,7 +273,7 @@ define(['uiUtil'], function (uiUtil) {
             }
             // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
             setTimeout(function() {
-                lazyLoad(container, documentImages);
+                lazyLoad(documentImages);
             }, 500);
         } else {
             // User wishes to extract images manually
@@ -275,11 +284,10 @@ define(['uiUtil'], function (uiUtil) {
     /**
      * Processes an array or collection of image nodes so that they will be lazy loaded (progressive extraction)
      * 
-     * @param {Window} cont The iframe or window that contains the images
      * @param {Object} documentImages An array or collection of DOM image nodes which will be processed for 
      *        progressive image extraction 
      */
-    function lazyLoad(cont, documentImages) {
+    function lazyLoad(documentImages) {
         // The amount by which to offset the second reading of the viewport
         var offset = window.innerHeight * 2;
         // Perform an immediate extraction of visible images so as not to disconcert the user
@@ -294,10 +302,10 @@ define(['uiUtil'], function (uiUtil) {
         var rate = 80; // DEV: Set the milliseconds to wait before allowing another iteration of the image stack
         var timeout;
         // NB we add the event listener this way so we can access it in app.js
-        cont.onscroll = function () {
+        container.onscroll = function () {
             abandon = true;
             clearTimeout(timeout);
-            var velo = cont.pageYOffset - scrollPos;
+            var velo = container.pageYOffset - scrollPos;
             timeout = setTimeout(function() {
                 // We have stopped scrolling
                 //console.log("Stopped scrolling; velo=" + velo);
@@ -307,13 +315,13 @@ define(['uiUtil'], function (uiUtil) {
                     queueImages(documentImages, 'extract', velo >= 0 ? offset : -offset);
                 });
             }, rate);
-            scrollPos = cont.pageYOffset;
+            scrollPos = container.pageYOffset;
         };
     }
 
-    function loadMathJax(cont) {
+    function loadMathJax() {
         if (!params.useMathJax) return;
-        var doc = cont.document;
+        var doc = container.document;
         var prefix = '';
         if (params.contentInjectionMode === 'serviceworker') {
             params.containsMathSVG = /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(doc.body.innerHTML);
@@ -339,7 +347,7 @@ define(['uiUtil'], function (uiUtil) {
                 script3.type = "text/javascript";
                 script3.src = prefix + "js/katex/contrib/auto-render.min.js";
                 script3.onload = function() {
-                    cont.renderMathInElement(doc.body, { 
+                    container.renderMathInElement(doc.body, { 
                         delimiters: [{
                             left: "$$",
                             right: "$$",
