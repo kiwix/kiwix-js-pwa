@@ -86,8 +86,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             header.style.transform = 'translateY(0)';
             document.getElementById('footer').style.transform = 'translateY(0)';
             iframe.style.transform = 'translateY(-1px)';
-            //iframe.style.height = window.innerHeight - navbarHeight + "px";
-            iframe.style.height = window.innerHeight + 'px';
+            // iframe.style.height = window.innerHeight + 'px';
+            // DEV: if we set the iframe with clientHeight, then it takes into account any zoom
+            iframe.style.height = document.documentElement.clientHeight + 'px';
 
             //Re-enable top-level scrolling
             scrollbox.style.height = window.innerHeight - navbarHeight + 'px';
@@ -127,7 +128,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
             checkToolbar();
         }
-        $(document).ready(resizeIFrame);
+        $(document).ready(function() {
+            resizeIFrame();
+            // uiUtil.initTouchZoom();
+        });
         $(window).resize(function () {
             resizeIFrame();
             // We need to load any images exposed by the resize
@@ -605,14 +609,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             params.relativeFontSize += 5;
             var doc = document.getElementById('articleContent').contentDocument;
             var docElStyle = doc.documentElement.style;
-            var zoomProp = 'zoom' in docElStyle ? 'zoom' : 'fontSize';
+            // IE11 and Firefox need to use fontSize on the body style
+            var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
             docElStyle = zoomProp === 'fontSize' ? doc.body.style : docElStyle; 
             docElStyle[zoomProp] = /-\/static\/main\.css/.test(doc.head.innerHTML) && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
-            document.getElementById('lblZoom').innerHTML = params.relativeFontSize + "%";
-            document.getElementById('lblZoom').style = "position:absolute;right: " + window.innerWidth / 5 + "px;bottom:50px;z-index:50;";
+            var lblZoom = document.getElementById('lblZoom');
+            lblZoom.innerHTML = params.relativeFontSize + "%";
+            lblZoom.style.cssText = "position:absolute;right:" + window.innerWidth / 5 + "px;bottom:50px;z-index:50;";
             setTimeout(function () {
-                document.getElementById('lblZoom').innerHTML = "";
-            }, 1000);
+                lblZoom.innerHTML = "";
+            }, 2000);
             settingsStore.setItem('relativeFontSize', params.relativeFontSize, Infinity);
             document.getElementById('articleContent').contentWindow.focus();
         });
@@ -620,14 +626,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             params.relativeFontSize -= 5;
             var doc = document.getElementById('articleContent').contentDocument;
             var docElStyle = doc.documentElement.style;
-            var zoomProp = 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
+            var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
             docElStyle = zoomProp === 'fontSize' ? doc.body.style : docElStyle; 
             docElStyle[zoomProp] = /-\/static\/main\.css/.test(doc.head.innerHTML) && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
-            document.getElementById('lblZoom').innerHTML = params.relativeFontSize + "%";
-            document.getElementById('lblZoom').style = "position:absolute;right: " + window.innerWidth / 4 + "px;bottom:50px;z-index:50;";
+            var lblZoom = document.getElementById('lblZoom');
+            lblZoom.innerHTML = params.relativeFontSize + "%";
+            lblZoom.style.cssText = "position:absolute;right:" + window.innerWidth / 4 + "px;bottom:50px;z-index:50;";
             setTimeout(function () {
-                document.getElementById('lblZoom').innerHTML = "";
-            }, 1000);
+                lblZoom.innerHTML = "";
+            }, 2000);
             settingsStore.setItem('relativeFontSize', params.relativeFontSize, Infinity);
             document.getElementById('articleContent').contentWindow.focus();
         });
@@ -1260,7 +1267,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             footerDim = footer.getBoundingClientRect();
             var doc = iframe.contentDocument ? iframe.contentDocument.documentElement : null;
             header.style.transition = "transform 500ms";
-            iframe.style.transition = "transform 500ms";
+            // iframe.style.transition = "transform 500ms";
             if (doc) doc.style.transition = "transform 500ms";
             footer.style.transition = "transform 500ms";
             iframe.style.zIndex = 0;
@@ -3138,9 +3145,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 zimType = /-\/static\/main\.css/i.test(doc.head.innerHTML) ? "desktop-stx" : zimType; //Support stackexchange
                 zimType = /minerva|mobile[^"']*\.css/i.test(doc.head.innerHTML) ? "mobile" : zimType;
                 var docElStyle = articleDocument.style;
-                var zoomProp = 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
+                var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
                 docElStyle = zoomProp === 'fontSize' ? docBody.style : docElStyle; 
                 docElStyle[zoomProp] = ~zimType.indexOf("stx") && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
+                if (appstate.target === 'iframe') uiUtil.initTouchZoom(articleDocument, docBody);
                 checkToolbar();
                 //Set page width according to user preference
                 removePageMaxWidth();
@@ -3796,13 +3804,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     }
                     //Set relative font size + Stackexchange-family multiplier
                     var docElStyle = articleDocument.style;
-                    var zoomProp = 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
+                    var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
                     docElStyle = zoomProp === 'fontSize' ? docBody.style : docElStyle;
                     docElStyle[zoomProp] = ~zimType.indexOf("stx") && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
                     //Set page width according to user preference
                     removePageMaxWidth();
                     setupHeadings();
                     listenForNavigationKeys();
+                    if (appstate.target === 'iframe') uiUtil.initTouchZoom(articleDocument, docBody);
                     // Process endnote references (so they open the reference block if closed)
                     var refs = docBody.getElementsByClassName("mw-reflink-text");
                     if (refs) {
@@ -4230,7 +4239,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 var event = e;
                 // The link will be clicked if the user long-presses for more than 800ms (if the option is enabled)
                 setTimeout(function () {
-                    if (!a.touched || a.newcontainer) return;
+                    // DEV: appstate.startVector indicates that the app is processing a touch zoom event, so we cancel any new windows
+                    // see uiUtil.pointermove_handler
+                    if (!a.touched || a.newcontainer || appstate.startVector) return;
                     e.preventDefault();
                     a.newcontainer = true;
                     onDetectedClick(event);
