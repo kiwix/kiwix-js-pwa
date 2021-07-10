@@ -4,6 +4,8 @@
 
 * FEATURE: (Experimental) PWA is paritcipating in File Handling API origin trial
 * FIX: Bug which failed to detect images correctly in a new tab
+* FIX: Touch-zoom of contents of iframe no longer blanks part of the display
+* FIX: Broken zoom of contents of iframe (with UI buttons) in Internet Explorer
 
 ## Release 1.4.2
 

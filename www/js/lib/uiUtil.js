@@ -626,6 +626,107 @@ define(rqDef, function() {
         return string;
     }
 
+    /**
+     * Initiates pointer touch events on the given element in order to set the zoom level
+     * 
+     * @param {Element} element The element to which the pointer events should be attached 
+     * @param {Node} container The node to which the pointer events should be applied, if different
+     */
+    function initTouchZoom(element, container) {
+        container = container || element;
+        // Global vars to cache event state
+        appstate.evCache = new Array();
+        appstate.prevDiff = -1;
+        // Set initial element transforms
+        var contentWin = element.ownerDocument.defaultView || element.ownerDocument.parentWindow;
+        container.style.transformOrigin = 'left top'; // DEV: To support RTL languages, this should be 'right top'
+        appstate.windowScale = 1;
+        appstate.sessionScale = 1;
+        appstate.startVector = null;
+        // Install event handlers for the pointer target
+        element.onpointerdown = pointerdown_handler;
+        element.onpointermove = function(event) {
+            pointermove_handler(event, container, contentWin);
+        };
+        // Use same handler for pointer{up,cancel,out,leave} events since
+        // the semantics for these events - in this app - are the same.
+        element.onpointerup = pointerup_handler;
+        element.onpointercancel = pointerup_handler;
+        element.onpointerout = pointerup_handler;
+        element.onpointerleave = pointerup_handler;
+    }
+
+    function pointerdown_handler(ev) {
+        // The pointerdown event signals the start of a touch interaction.
+        // This event is cached to support 2-finger gestures
+        appstate.evCache.push(ev);
+        // console.debug('pointerDown', ev);
+    }
+
+    function pointermove_handler(ev, cont, win) {
+        // This function implements a 2-pointer horizontal pinch/zoom gesture.
+        // console.debug('pointerMove', ev);
+        // Find this event in the cache and update its record with this event
+        for (var i = 0; i < appstate.evCache.length; i++) {
+            if (ev.pointerId == appstate.evCache[i].pointerId) {
+                appstate.evCache[i] = ev;
+                break;
+            }
+        }
+
+        // If two pointers are down, check for pinch gestures
+        if (appstate.evCache.length == 2) {
+            ev.preventDefault();
+            // Calculate the distance between the two pointers
+            var x0 = appstate.evCache[0].clientX;
+            var y0 = appstate.evCache[0].clientY;
+            var x1 = appstate.evCache[1].clientX;
+            var y1 = appstate.evCache[1].clientY;
+            var curDiff = Math.abs(Math.sqrt(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2)));
+            // console.debug('Current difference: ' + curDiff);
+            if (appstate.prevDiff > 0) {
+                if (appstate.startVector === null) {
+                    appstate.startVector = curDiff;
+                    appstate.scrollYStart = win.scrollY / appstate.windowScale;
+                    // console.debug('scrollYStart: ' + appstate.scrollYStart);
+                }
+                appstate.windowScale = appstate.sessionScale * curDiff / appstate.startVector;
+                // console.debug('winScrollY: ' + win.scrollY);
+                // console.debug('winScrollX: ' + win.scrollX);
+                // console.debug('x0x1 mean: ' + (x0 + x1)/2);
+                // console.debug('y0y1 mean: ' + (y0 + y1)/2);
+                cont.style.transform = 'scale(' + appstate.windowScale + ')';
+                win.scrollTo(win.scrollX, appstate.scrollYStart * appstate.windowScale);
+            }
+
+            // Cache the distance for the next move event
+            appstate.prevDiff = curDiff;
+        }
+    }
+
+    function pointerup_handler(ev) {
+        // console.debug(ev.type, ev);
+        // Remove this pointer from the cache
+        remove_event(ev);
+
+        // If the number of pointers down is less than two then reset diff tracker
+        if (appstate.evCache.length < 2) {
+            appstate.prevDiff = -1;
+        }
+    }
+
+    function remove_event(ev) {
+        // Remove this event from the target's cache
+        for (var i = 0; i < appstate.evCache.length; i++) {
+            if (appstate.evCache[i].pointerId == ev.pointerId) {
+                appstate.evCache.splice(i, 1);
+                break;
+            }
+        }
+        appstate.startVector = null;
+        appstate.sessionScale = appstate.windowScale;
+    }
+
     // If global variable webpMachine was defined, then we need to initialize the WebP Polyfill
     if (webpMachine) webpMachine = new webpHero.WebpMachine();
 
@@ -651,6 +752,7 @@ define(rqDef, function() {
         extractHTML: extractHTML,
         systemAlert: systemAlert,
         checkServerIsAccessible: checkServerIsAccessible,
-        htmlEscapeChars: htmlEscapeChars
+        htmlEscapeChars: htmlEscapeChars,
+        initTouchZoom: initTouchZoom
     };
 });
