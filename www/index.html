@@ -125,6 +125,8 @@
                             <li>Improve handover from local code to PWA code in UWP app to prevent rogue error message</li>
                             <li>Improve page composition timing for non-MS browsers</li>
                             <li>Fix bug which failed to detect images correctly in new tab</li>
+                            <li>Touch-zoom of contents of iframe no longer blanks part of the display</li>
+                            <li>Fixed broken zoom of contents of iframe (with UI buttons) in Internet Explorer</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md" target="_blank">Full changelog...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>
@@ -830,7 +832,7 @@
             <!-- Bootstrap alert box -->
             <div id="alertBoxHeader" style="text-align: center; position: relative; z-index: 1; display: none;"></div>
             <!-- Attribute nwdisable prevents scripts in iframe accessing the nwjs node APIs -->
-            <iframe id="articleContent" class="articleIFrame" nwdisable></iframe>
+            <iframe id="articleContent" class="articleIFrame" style="touch-action:none" nwdisable></iframe>
         </article>
         <footer id="footer">
             <!-- Bootstrap alert box -->
