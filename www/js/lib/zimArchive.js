@@ -182,6 +182,14 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
         // results much more quickly if we do this (and the user can click on a result before the rarer patterns complete)
         // NB duplicates are removed before processing search array
         var startArray = [];
+        // Regex below breaks the string into the pattern: group 1: alphanumericsearch; group 2: regex beginning with .* or .+, or contained in (?:regex)
+        var isPrefixRegExp = search.prefix.match(/^((?:[^(.]|\((?!\?:)|\.(?![*+]))+)(\(\?:.+\)|\.[*+].+)$/);
+        search.rgxPrefix = null;
+        if (isPrefixRegExp) {
+            // User has initiated a regular expression search - note the only regexp special character allowed in the alphanumeric part is \s
+            search.prefix = isPrefixRegExp[1].replace(/\\s/g, ' ');
+            search.rgxPrefix = new RegExp(isPrefixRegExp[1] + isPrefixRegExp[2], 'i');
+        } 
         // Ensure a search is done on the string exactly as typed
         startArray.push(search.prefix);
         // Normalize any spacing and make string all lowercase
@@ -217,16 +225,21 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
             // Dynamically populate list of articles
             search.status = 'interim';
             if (!noInterim) callback(dirEntries, search.status);
+            search.found = dirEntries.length;
             var prefix = prefixVariants[0];
             prefixVariants = prefixVariants.slice(1);
-            that.findDirEntriesWithPrefixCaseSensitive(prefix, resultSize - dirEntries.length, search,
+            search.resultSize = resultSize - dirEntries.length;
+            // Search window sets an upper limit on how many matching dirEntries will be scanned in a full index search
+            var searchWindow = search.rgxPrefix ? 250000 : resultSize;
+            that.findDirEntriesWithPrefixCaseSensitive(prefix, searchWindow, search,
                 function (newDirEntries, idx, interim) {
                     if (search.status === 'cancelled') return callback([], search.status);
                     if (interim) {// Only push interim results (else results will be pushed again at end of variant loop)                    
                         [].push.apply(dirEntries, newDirEntries);
+                        search.found = dirEntries.length;
                         if (!noInterim && newDirEntries.length) callback(dirEntries, search.status);
                     } else searchNextVariant();
-                    }
+                }
             );
         }
         searchNextVariant();
@@ -260,12 +273,12 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
      * Look for dirEntries with title starting with the given prefix (case-sensitive)
      * 
      * @param {String} prefix The case-sensitive value against which dirEntry titles (or url) will be compared
-     * @param {Integer} resultSize The maximum number of results to return
+     * @param {Integer} searchWindow The maximum number of dirEntries to scan in a single variant pass
      * @param {Object} search The appstate.search object (for comparison, so that we can cancel long binary searches)
      * @param {Function} callback The function to call with the array of dirEntries with titles that begin with prefix
      * @param {Integer} startIndex The index number with which to commence the search, or null
      */
-    ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function(prefix, resultSize, search, callback, startIndex) {
+    ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function(prefix, searchWindow, search, callback, startIndex) {
         // Save the value of startIndex because value of null has a special meaning in combination with prefix: 
         // produces a list of matches starting with first match and then next x dirEntries thereafter
         var saveStartIndex = startIndex;
@@ -288,8 +301,11 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
             });
         }, true).then(function(firstIndex) {
             var dirEntries = [];
-            var addDirEntries = function(index) {
-                if (search.status === 'cancelled' || index >= firstIndex + resultSize || index >= articleCount) {
+            console.debug('Scanning for "' + prefix + '"...');
+            var addDirEntries = function(index, lastTitle) {
+                if (search.status === 'cancelled' || index >= firstIndex + searchWindow || index >= articleCount
+                || lastTitle && !~lastTitle.indexOf(prefix) || search.found >= search.resultSize) {
+                    console.debug('Sacnned ' + (index - firstIndex) + ' titles.' );
                     return {
                         'dirEntries': dirEntries,
                         'nextStart': index
@@ -299,11 +315,13 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
                     var title = dirEntry.getTitleOrUrl();
                     // Only return dirEntries with titles that actually begin with prefix
                     if (saveStartIndex === null || dirEntry.namespace === cns && title.indexOf(prefix) === 0) {
-                        dirEntries.push(dirEntry);
-                        // Report interim result
-                        if (typeof saveStartIndex === 'undefined') callback([dirEntry], index, true);
+                        if (!search.rgxPrefix || search.rgxPrefix && search.rgxPrefix.test(title)) { 
+                            dirEntries.push(dirEntry);
+                            // Report interim result
+                            if (typeof saveStartIndex === 'undefined') callback([dirEntry], index, true);
+                        }
                     }
-                    return addDirEntries(index + 1);
+                    return addDirEntries(index + 1, title);
                 });
             };
             return addDirEntries(firstIndex);
