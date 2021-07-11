@@ -121,7 +121,7 @@ $release_params = @{
     'Accept' = 'application/vnd.github.everest-preview+json'
   }
   Body = @{
-    'tag_name' = "v$base_tag"
+    'tag_name' = "$tag_name"
     'target_commitish' = $branch
     'name' = $release_title
     'draft' = $true
