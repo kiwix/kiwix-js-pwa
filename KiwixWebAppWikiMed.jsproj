@@ -65,14 +65,13 @@
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>2652387DA00B49F5D635DEBCDB170734CCA8A448</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>5A76EAF3DF52F0B9A1A933C0A1C0DA78D207FDA6</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
-    <PackageCertificateKeyFile>KiwixWebAppWikiMed_StoreKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="archives\wikipedia_en_medicine-app_maxi_2021-06.zim" />
+    <Content Include="archives\wikipedia_en_medicine-app_maxi_2021-07.zim" />
     <Content Include="images\Kiwix_midnightblue_icon_transparent_530.png" />
     <Content Include="images\LargeTile.scale-100.png" />
     <Content Include="images\LargeTile.scale-125.png" />
