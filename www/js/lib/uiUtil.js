@@ -687,8 +687,9 @@ define(rqDef, function() {
             if (appstate.prevDiff > 0) {
                 if (appstate.startVector === null) {
                     appstate.startVector = curDiff;
+                    appstate.scrollXStart = win.scrollX / appstate.windowScale;
                     appstate.scrollYStart = win.scrollY / appstate.windowScale;
-                    // console.debug('scrollYStart: ' + appstate.scrollYStart);
+                    // console.debug('scrollXStart: ' + appstate.scrollXStart);
                 }
                 appstate.windowScale = appstate.sessionScale * curDiff / appstate.startVector;
                 // console.debug('winScrollY: ' + win.scrollY);
@@ -696,7 +697,7 @@ define(rqDef, function() {
                 // console.debug('x0x1 mean: ' + (x0 + x1)/2);
                 // console.debug('y0y1 mean: ' + (y0 + y1)/2);
                 cont.style.transform = 'scale(' + appstate.windowScale + ')';
-                win.scrollTo(win.scrollX, appstate.scrollYStart * appstate.windowScale);
+                win.scrollTo(appstate.scrollXStart * appstate.windowScale, appstate.scrollYStart * appstate.windowScale);
             }
 
             // Cache the distance for the next move event
