@@ -267,16 +267,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         });
         // Hide the search results if user moves out of prefix field
         document.getElementById('prefix').addEventListener('blur', function () {
-        if (!searchArticlesFocused) {
-            appstate.search.state = 'cancelled';
-        }
-        // We need to wait one tick for the activeElement to receive focus
-            setTimeout(function () {
-                if (!(/^articleList/.test(document.activeElement.id) || /^list-group/.test(document.activeElement.className))) {
-                    document.getElementById('scrollbox').style.height = 0;
-                    document.getElementById('articleListWithHeader').style.display = 'none';
-                }
-            }, 1);
+            if (!searchArticlesFocused) {
+                appstate.search.state = 'cancelled';
+            }
+            // We need to wait one tick for the activeElement to receive focus
+                setTimeout(function () {
+                    if (!(/^articleList/.test(document.activeElement.id) || /^list-group/.test(document.activeElement.className))) {
+                        document.getElementById('scrollbox').style.height = 0;
+                        document.getElementById('articleListWithHeader').style.display = 'none';
+                        appstate.tempPrefix = '';
+                    }
+                }, 1);
         });
 
         //Add keyboard shortcuts
@@ -2749,6 +2750,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
             window.timeoutKeyUpPrefix = window.setTimeout(function () {
                 var prefix = document.getElementById('prefix').value;
+                // console.debug(appstate.tempPrefix);
+                // console.debug(appstate.search.prefix);
                 if (prefix === appstate.tempPrefix) return;
                 if (prefix && prefix.length > 0 && prefix !== appstate.search.prefix) {
                     appstate.tempPrefix = prefix;
