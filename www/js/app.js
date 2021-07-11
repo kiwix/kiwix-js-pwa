@@ -3588,9 +3588,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
             //Setup endnote backlinks if the ZIM doesn't have any
             htmlArticle = htmlArticle.replace(/<li\b[^>]+id=["']cite[-_]note[-_]([^"']+)[^>]+>(?![^/]+?[↑^])/ig, function (match, id) {
-                var fnSearchRegxp = new RegExp('id=["' + "'](cite[-_]ref[-_]" + id.replace(/[-_()+]/g, "[-_()]+") + '[^"' + "']*)", 'i');
-                var fnReturnMatch = htmlArticle.match(fnSearchRegxp);
-                var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : "";
+                var fnReturnMatch = '';
+                try {
+                    var fnSearchRegxp = new RegExp('id=["' + "'](cite[-_]ref[-_]" + id.replace(/[-_()+?]/g, "[-_()]+?") + '[^"' + "']*)", 'i');
+                    fnReturnMatch = htmlArticle.match(fnSearchRegxp);
+                } catch (err) {
+                    console.error('Error constructiong regular expression in app.js', err);
+                }
+                var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : '';
                 return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>';
             });
 
@@ -3823,8 +3828,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 reference.addEventListener("click", function (obj) {
                                     var refID = obj.target.hash || obj.target.parentNode.hash;
                                     if (!refID) return;
-                                    refID = refID.replace(/#/, "");
-                                    var refLocation = articleDocument.getElementById(refID);
+                                    var refLocation = docBody.querySelector(refID);
+                                    if (!refLocation) return;
                                     // In some ZIMs the id is in the parent node or in the parent of the parent
                                     var returnID = obj.target.id || obj.target.parentNode.id || obj.target.parentNode.parentNode.id;
                                     // Add backlink to refLocation if missing
