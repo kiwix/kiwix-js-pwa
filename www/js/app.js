@@ -4319,7 +4319,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 else if (/^h2$/i.test(heading.tagName))
                     dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.9) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
                 else if (/^h3$/i.test(heading.tagName))
-                    dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.75) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                    dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.8) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+                else if (/^h4$/i.test(heading.tagName))
+                    dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.7) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
                 //Skip smaller headings (if there are any) to avoid making list too long
             });
             var ToCList = document.getElementById('ToCList');
