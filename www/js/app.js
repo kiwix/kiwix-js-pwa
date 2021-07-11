@@ -2748,9 +2748,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 window.clearTimeout(window.timeoutKeyUpPrefix);
             }
             window.timeoutKeyUpPrefix = window.setTimeout(function () {
-                var prefix = $("#prefix").val();
-            if (prefix && prefix.length > 0 && prefix !== appstate.search.prefix) {
-                document.getElementById('searchArticles').click();
+                var prefix = document.getElementById('prefix').value;
+                if (prefix === appstate.tempPrefix) return;
+                if (prefix && prefix.length > 0 && prefix !== appstate.search.prefix) {
+                    appstate.tempPrefix = prefix;
+                    document.getElementById('searchArticles').click();
                 }
             }, 1000);
         }
