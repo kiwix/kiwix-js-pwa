@@ -30,7 +30,7 @@ In case you are still unable to sideload, try the [Electron or NWJS releases](ht
 
 ## Manual Installation: Windows 10 Mobile
 
- **Uninstall any previous installation of Kiwix JS Windows (UWP) before you follow this procedure**.
+**Uninstall any previous installation of Kiwix JS Windows (UWP) before you follow this procedure**.
 
 Download [KiwixWebApp_<<base_tag>>.0_AnyCPU.appxbundle](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/KiwixWebApp_<<base_tag>>.0_AnyCPU.appxbundle) to your downloads folder, or other accessible folder, on the phone. Enable Developer mode on your device (Settings / Updates and security / For developers). 
 
