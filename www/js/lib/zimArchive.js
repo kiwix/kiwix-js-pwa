@@ -230,7 +230,7 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
             prefixVariants = prefixVariants.slice(1);
             search.resultSize = resultSize - dirEntries.length;
             // Search window sets an upper limit on how many matching dirEntries will be scanned in a full index search
-            var searchWindow = search.rgxPrefix ? 250000 : resultSize;
+            var searchWindow = search.rgxPrefix ? 10000 * resultSize : resultSize;
             that.findDirEntriesWithPrefixCaseSensitive(prefix, searchWindow, search,
                 function (newDirEntries, idx, interim) {
                     if (search.status === 'cancelled') return callback([], search.status);
