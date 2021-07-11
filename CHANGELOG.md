@@ -1,6 +1,6 @@
 # Changelog
 
-## In progress release 1.4.3
+## In progress release 1.5.0-rc1
 
 * FEATURE: (Experimental) PWA is paritcipating in File Handling API origin trial
 * FEATURE: Search with wildcards `.*`, `.+` or regex syntax `(?:my_regular_expression)` so long as search begins with normal alphanumeric string
