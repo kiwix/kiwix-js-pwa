@@ -173,7 +173,7 @@ function intercept(event) {
   // DEV: Electron uses the file:// protocol and hacks it to work with SW, but it has CORS issues when using the Fetch API to fetch local files,
   // so we must bypass it here if we're fetching a local file
   if (/^file:/i.test(event.request.url) && ! (regexpZIMUrlWithNamespace.test(event.request.url) && /\.zim\w{0,2}\//i.test(event.request.url))) return;
-  console.debug('[SW] Service Worker ' + (event.request.method === "GET" ? 'intercepted ' : 'noted ') + event.request.url, event.request.method);
+  // console.debug('[SW] Service Worker ' + (event.request.method === "GET" ? 'intercepted ' : 'noted ') + event.request.url, event.request.method);
   if (event.request.method !== "GET") return;
   event.respondWith(
     fromCache(event.request).then(function (response) {
