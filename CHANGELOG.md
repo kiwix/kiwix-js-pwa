@@ -3,9 +3,12 @@
 ## In progress release 1.4.3
 
 * FEATURE: (Experimental) PWA is paritcipating in File Handling API origin trial
+* FEATURE: Search with wildcards '.*', '.+' or regex syntax '(?:my_regular_expression)' so long as search begins with normal alphanumeric string
 * FIX: Bug which failed to detect images correctly in a new tab
 * FIX: Touch-zoom of contents of iframe no longer blanks part of the display
 * FIX: Broken zoom of contents of iframe (with UI buttons) in Internet Explorer
+* FIX: Bug setting up backlinks which caused some pages not to load
+* FIX: Unhandled exception when cite ref was not found
 
 ## Release 1.4.2
 
