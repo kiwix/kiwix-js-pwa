@@ -183,17 +183,18 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
         // NB duplicates are removed before processing search array
         var startArray = [];
         // Regex below breaks the string into the pattern: group 1: alphanumericsearch; group 2: regex beginning with .* or .+, or contained in (?:regex)
-        var isPrefixRegExp = search.prefix.match(/^((?:[^(.]|\((?!\?:)|\.(?![*+]))+)(\(\?:.+\)|\.[*+].+)$/);
+        var isPrefixRegExp = search.prefix.match(/^((?:[^(.]|\((?!\?:)|\.(?![*+]))+)(\(\?:.*\)|\.[*+].*)$/);
         search.rgxPrefix = null;
+        var prefix = search.prefix;
         if (isPrefixRegExp) {
             // User has initiated a regular expression search - note the only regexp special character allowed in the alphanumeric part is \s
-            search.prefix = isPrefixRegExp[1].replace(/\\s/g, ' ');
+            prefix = isPrefixRegExp[1].replace(/\\s/g, ' ');
             search.rgxPrefix = new RegExp(isPrefixRegExp[1] + isPrefixRegExp[2], 'i');
         } 
         // Ensure a search is done on the string exactly as typed
-        startArray.push(search.prefix);
+        startArray.push(prefix);
         // Normalize any spacing and make string all lowercase
-        var prefix = search.prefix.replace(/\s+/g, ' ').toLocaleLowerCase();
+        prefix = prefix.replace(/\s+/g, ' ').toLocaleLowerCase();
         // Add lowercase string with initial uppercase (this is a very common pattern)
         startArray.push(prefix.replace(/^./, function (m) {
             return m.toLocaleUpperCase();
@@ -301,11 +302,11 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
             });
         }, true).then(function(firstIndex) {
             var dirEntries = [];
-            console.debug('Scanning for "' + prefix + '"...');
             var addDirEntries = function(index, lastTitle) {
                 if (search.status === 'cancelled' || index >= firstIndex + searchWindow || index >= articleCount
                 || lastTitle && !~lastTitle.indexOf(prefix) || search.found >= search.resultSize) {
-                    console.debug('Sacnned ' + (index - firstIndex) + ' titles.' );
+                    var cnt = index - firstIndex;
+                    if (cnt) console.debug('Sacnned ' + cnt + ' titles for "' + prefix + '"');
                     return {
                         'dirEntries': dirEntries,
                         'nextStart': index
