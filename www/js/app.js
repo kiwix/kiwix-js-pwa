@@ -2810,7 +2810,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // Cancel the old search (zimArchive search object will receive this change)
                 appstate.search.status = 'cancelled';
                 // Initiate a new search object and point appstate.search to it (the zimAcrhive search object will continue to point to the old object)
-                appstate.search = {'prefix': prefix, 'status': 'init', 'type': ''};
+                appstate.search = {'prefix': prefix, 'status': 'init', 'type': '', 'size': params.maxResults};
                 $('#activeContent').hide();
                 if (!prefix || /^\s/.test(prefix)) {
                     var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
@@ -2821,7 +2821,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     }
                     showZIMIndex(null, sel);
                 } else {
-                    appstate.selectedArchive.findDirEntriesWithPrefix(appstate.search, params.maxResults, populateListOfArticles);
+                    appstate.selectedArchive.findDirEntriesWithPrefix(appstate.search, populateListOfArticles);
                 }
             } else {
                 $('#searchingArticles').hide();
@@ -2844,9 +2844,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             } else {
                 prefix = start > 0 ? '' : prefix;
             }
-            var search = {'prefix': prefix, 'state': ''}; // Dummy search object because expected by callee
+            var search = {'prefix': prefix, 'state': '', 'size': params.maxResults, 'window': params.maxResults};
             if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
-                appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, params.maxResults, search, function (dirEntryArray, nextStart) {
+                appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntryArray, nextStart) {
                     var docBody = document.getElementById('largeModal');
                     var newHtml = "";
                     for (var i = 0; i < dirEntryArray.length; i++) {
