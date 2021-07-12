@@ -188,9 +188,9 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       $base_dir = "$PSScriptRoot/../bld/electron/"
       $compressed_archive = $base_dir + "Kiwix.JS.$text_tag.$base_tag.zip"
       "Creating launchers..."
-      $launcherStub = "$base_dir\Start Kiwix JS Windows"
+      $launcherStub = "$base_dir\Start Kiwix JS $text_tag"
       # Batch file
-      $batch = '@cd "' + $foldername + '"' + "`r`n" + '@start "Kiwix JS Windows" "kiwix-js-windows.exe"' + "`r`n"
+      $batch = '@cd "' + $foldername + '"' + "`r`n" + '@start "Kiwix JS $text_tag" "kiwix-js-windows.exe"' + "`r`n"
       if (-Not $dryrun) {
         $batch > "$launcherStub.bat"
         # Shortcut
@@ -204,7 +204,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         "Would have written batch file:"
         "$batch"
       }
-      $AddAppPackage = $base_dir + "Start*.*"
+      $AddAppPackage = $base_dir + "Start*$text_tag.*"
       "Compressing: $AddAppPackage, $compressed_assets_dir to $compressed_archive"
       if (-Not $dryrun) { "$AddAppPackage", "$compressed_assets_dir" | Compress-Archive -DestinationPath $compressed_archive -Force }
     }
