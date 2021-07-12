@@ -306,7 +306,7 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
                 if (search.status === 'cancelled' || index >= firstIndex + searchWindow || index >= articleCount
                 || lastTitle && !~lastTitle.indexOf(prefix) || search.found >= search.resultSize) {
                     var cnt = index - firstIndex;
-                    if (cnt) console.debug('Sacnned ' + cnt + ' titles for "' + prefix + '"');
+                    if (cnt) console.debug('Scanned ' + cnt + ' titles for "' + prefix + '"');
                     return {
                         'dirEntries': dirEntries,
                         'nextStart': index
