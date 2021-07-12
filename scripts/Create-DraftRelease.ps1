@@ -122,6 +122,8 @@ $release_body_json = @{
   'draft' = $true
   'body' = $release_body
 } | ConvertTo-Json
+# Explicitly encode as UTF8 (or else it will fail with UTF8 characters)
+$release_body_json = ([System.Text.Encoding]::UTF8.GetBytes($release_body_json))
 $release_params = @{
   Uri = $release_uri
   Method = 'POST'
@@ -129,13 +131,7 @@ $release_params = @{
     'Authorization' = "token $github_token"
     'Accept' = 'application/vnd.github.v3+json'
   }
-  Body = @{
-    'tag_name' = "$tag_name"
-    'target_commitish' = $branch
-    'name' = $release_title
-    'draft' = $true
-    'body' = $release_body
-  } | ConvertTo-Json
+  Body = $release_body_json
   ContentType = "application/json"
 }
 
