@@ -41,7 +41,9 @@ if ($tag_name -eq "") {
       "Initiating dry run..."
     }
   }
-  if (-Not ($buildonly -or $dryrun -or $updatewinget)) {
+  if ($draftonly) {
+    "Creating a draft release only with no assets attached."
+  } elseif (-Not ($buildonly -or $dryrun -or $updatewinget)) {
     $buildonly_check = Read-Host "Do you wish to Build only, or build and Release? [B/R]"
     $buildonly = -Not ( $buildonly_check -imatch 'r' )
     If ($buildonly) {
@@ -113,12 +115,19 @@ $release_body = $release_body -replace '<<numeric_tag>>', "$numeric_tag"
 $release_body = $release_body -replace '<<zim>>', "$zim"
 $release_body = $release_body -replace '<<date>>', "$date"
 # Set up release_params object - for API see https://docs.github.com/en/rest/reference/repos#releases
+$release_body_json = @{
+  'tag_name' = "$tag_name"
+  'target_commitish' = $branch
+  'name' = $release_title
+  'draft' = $true
+  'body' = $release_body
+} | ConvertTo-Json
 $release_params = @{
   Uri = $release_uri
   Method = 'POST'
   Headers = @{
     'Authorization' = "token $github_token"
-    'Accept' = 'application/vnd.github.everest-preview+json'
+    'Accept' = 'application/vnd.github.v3+json'
   }
   Body = @{
     'tag_name' = "$tag_name"
@@ -531,6 +540,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     "The server returned:"
     echo $release
   } else {
-    "The server did not respond."
+    "The server did not respond or could not process the command correctly."
+    "$release_body_json"
   }
 }
