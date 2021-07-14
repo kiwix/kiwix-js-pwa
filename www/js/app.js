@@ -268,14 +268,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         // Hide the search results if user moves out of prefix field
         document.getElementById('prefix').addEventListener('blur', function () {
             if (!searchArticlesFocused) {
-                appstate.search.state = 'cancelled';
+                appstate.search.status = 'cancelled';
             }
             // We need to wait one tick for the activeElement to receive focus
                 setTimeout(function () {
-                    if (!(/^articleList/.test(document.activeElement.id) || /^list-group/.test(document.activeElement.className))) {
+                    if (!(/^articleList|searchSyntaxLink/.test(document.activeElement.id)
+                    || /^list-group/.test(document.activeElement.className))) {
                         document.getElementById('scrollbox').style.height = 0;
                         document.getElementById('articleListWithHeader').style.display = 'none';
                         appstate.tempPrefix = '';
+                        document.getElementById('searchingArticles').style.display = 'none';
                     }
                 }, 1);
         });
@@ -1220,7 +1222,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             settingsStore.setItem('hideToolbars', params.hideToolbars, Infinity);
             checkToolbar();
         });
-        document.querySelectorAll('.aboutLink').forEach(function (link) {
+        Array.prototype.slice.call(document.querySelectorAll('.aboutLink')).forEach(function (link) {
             link.addEventListener('click', function () {
                 document.getElementById('btnAbout').click();
             });
@@ -2962,9 +2964,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             var message;
             if (stillSearching) {
                 message = 'Searching [' + appstate.search.type + ']... found: ' + nbDirEntry + '...' +
-                (reportingSearch.scanCount ? ' [scanning ' + reportingSearch.scanCount + ' titles]' : '');
+                (reportingSearch.scanCount ? ' [scanning ' + reportingSearch.scanCount + ' titles] <a href="#">stop</a>' : '');
             } else if (nbDirEntry >= params.maxSearchResultsSize) {
                 message = 'First ' + params.maxSearchResultsSize + ' articles found: refine your search.';
+            } else if (reportingSearch.status === 'error') {
+                message = 'Incorrect search syntax! See <a href="#searchSyntaxError" id="searchSyntaxLink">Search syntax</a> in About!'; 
             } else {
                 message = 'Finished. ' + (nbDirEntry ? nbDirEntry : 'No') + ' articles found' +
                 (appstate.search.type === 'basic' ? ': try fewer words for full search.' : '.');
@@ -2996,6 +3000,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             });
             if (!stillSearching) $('#searchingArticles').hide();
             $('#articleListWithHeader').show();
+            if (reportingSearch.status === 'error') {
+                document.getElementById('searchSyntaxLink').addEventListener('click', function () {
+                    setTab('about');
+                    document.getElementById('btnAbout').click();
+                });
+            }
         }
         /**
          * Handles the click on the title of an article in search results
@@ -4200,7 +4210,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 contentType = a.getAttribute('type');
             }
             // DEV: We need to use the '#' location trick here for cross-browser compatibility with opening a new tab/window
-            a.setAttribute('href', '#');
+            a.setAttribute('href', '#' + href);
             // Store the current values, as they may be changed if user switches to another tab before returning to this one
             var kiwixTarget = appstate.target;
             var thisWindow = articleWindow;
