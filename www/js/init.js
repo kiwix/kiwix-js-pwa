@@ -49,7 +49,7 @@ var params = {};
  */
 var appstate = {};
 /******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******/
-params['version'] = "1.5.0-rc1"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
+params['version'] = "1.5.0-rc2"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************/
 params['packagedFile'] = getSetting('packagedFile') || "wikipedia_en_100_maxi_2021-06.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
@@ -68,7 +68,8 @@ params['PWAMode'] = getSetting('PWAMode'); // Set to true if the app should alwa
 
 params['storeType'] = getBestAvailableStorageAPI();
 params['keyPrefix'] = 'kiwixjs-'; // Prefix to use for localStorage keys
-params['maxResults'] = ~~(getSetting('maxResults') || 25); //Number of search results to display
+// Maximum number of article titles to return (range is 5 - 100, default 30)
+params['maxSearchResultsSize'] = ~~(getSetting('maxSearchResultsSize') || 30);
 params['relativeFontSize'] = ~~(getSetting('relativeFontSize') || 100); //Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
 params['relativeUIFontSize'] = ~~(getSetting('relativeUIFontSize') || 100); //Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
 params['cssSource'] = getSetting('cssSource') || "auto"; //Set default to "auto", "desktop" or "mobile"
@@ -218,7 +219,8 @@ document.getElementById('displayFileSelectorsCheck').checked = params.showFileSe
 document.getElementById('hideActiveContentWarningCheck').checked = params.hideActiveContentWarning;
 document.getElementById('alphaCharTxt').value = params.alphaChar;
 document.getElementById('omegaCharTxt').value = params.omegaChar;
-document.getElementById('maxResults').value = params.maxResults;
+document.getElementById('titleSearchRange').value = params.maxSearchResultsSize;
+document.getElementById('titleSearchRangeVal').innerHTML = params.maxSearchResultsSize;
 document.getElementById('hideToolbarsCheck').checked = params.hideToolbars === true; // Will be false if false or 'top'
 document.getElementById('hideToolbarsCheck').indeterminate = params.hideToolbars === "top";
 document.getElementById('hideToolbarsCheck').readOnly = params.hideToolbars === "top";

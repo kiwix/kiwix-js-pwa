@@ -188,7 +188,7 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
         if (isPrefixRegExp) {
             // User has initiated a regular expression search - note the only regexp special character allowed in the alphanumeric part is \s
             prefix = isPrefixRegExp[1].replace(/\\s/g, ' ');
-            search.rgxPrefix = new RegExp(isPrefixRegExp[1] + isPrefixRegExp[2], 'i');
+            search.rgxPrefix = new RegExp(isPrefixRegExp[2], 'i');
         } 
         // Ensure a search is done on the string exactly as typed
         startArray.push(prefix);
@@ -319,7 +319,7 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
                     var title = dirEntry.getTitleOrUrl();
                     // Only return dirEntries with titles that actually begin with prefix
                     if (saveStartIndex === null || dirEntry.namespace === cns && title.indexOf(prefix) === 0) {
-                        if (!search.rgxPrefix || search.rgxPrefix && search.rgxPrefix.test(title)) { 
+                        if (!search.rgxPrefix || search.rgxPrefix && search.rgxPrefix.test(title.replace(prefix, ''))) { 
                             vDirEntries.push(dirEntry);
                             // Report interim result
                             if (typeof saveStartIndex === 'undefined') callback([dirEntry], false, true);
