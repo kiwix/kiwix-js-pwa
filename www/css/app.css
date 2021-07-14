@@ -203,6 +203,10 @@ div:not(.panel-success, .alert-message) {
     border: 1px solid dimgrey;
 }
 
+.dark code {
+    background-color: lightsteelblue;
+}
+
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }

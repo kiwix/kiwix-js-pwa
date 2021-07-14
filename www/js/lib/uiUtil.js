@@ -319,7 +319,7 @@ define(rqDef, function() {
                 '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
                 '<strong>Unable to display active content:</strong> To use Archive Index <b><i>type a space</b></i> in the box above, or else ' +
                 '<a id="swModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to Service Worker mode</a> ' +
-                'if your platform supports it. &nbsp;[<a id="stop" href="#displaySettingsDiv" class="alert-link">Permanently hide</a>]' +
+                'if your platform supports it. &nbsp;[<a id="stop" href="#otherSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
         var alertBoxHeader = document.getElementById('alertBoxHeader');
         alertBoxHeader.innerHTML = alertHTML;
