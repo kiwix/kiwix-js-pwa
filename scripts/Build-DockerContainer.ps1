@@ -9,21 +9,30 @@ param (
 $release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-windows/actions/workflows/publish-docker.yaml/dispatches'
 $github_token = Get-Content -Raw "$PSScriptRoot/github_token"
 
+$init_params = Get-Content -Raw "$PSScriptRoot\..\www\js\init.js"
 $suggested_build = ''
-if ((sls 'params..version' $PSScriptRoot/../www/js/init.js) -match('"([\d.]+)"')) {
-    $suggested_build = "v" + $matches[1]
+if ($init_params -match 'params\[[''"]version[''"]]\s*=\s*[''"]([^''"]+)') {
+  $suggested_build = 'v' + $matches[1] 
 }
 
 if ($tag_name -eq "") {
-    if (!($tag_name = Read-Host "`nGive the tag name to use for the docker build or Enter to accept default of [$suggested_build]")) { $tag_name = $suggested_build }
-    # $tag_name = Read-Host "`nEnter the existing tag name to use for the manual docker build (e.g. 'v1.4.0')"
-    if (-Not $dryrun) {
-      $dryrun_check = Read-Host "Is this a dry run? [Y/N]"
-      $dryrun = -Not ( $dryrun_check -imatch 'n' )
-      If ($dryrun) {
-        "Initiating dry run..."
-      }
+  $tag_name = Read-Host "`nGive the tag name to use for the docker build, or Enter to accept suggested tag, or add any suffix to suggested tag [$suggested_build]"
+  if ($tag_name -match '^[EN-]|^$') {
+    $split = $suggested_build -imatch '^([v\d.]+)(.*)$'
+    if ($split) {
+      $tag_name = $matches[1] + $tag_name + $matches[2]
+      # Clean up in case there was already a WikiMed or Wikivoyage suffix and we added one
+      $tag_name = $tag_name -replace '(\-[^\d.-]+)\-[^\d.]+$', '$1'
     }
+    "Tag name set to: $tag_name"
+  }
+  if (-Not $dryrun) {
+    $dryrun_check = Read-Host "Is this a dry run? [Y/N]"
+    $dryrun = -Not ( $dryrun_check -imatch 'n' )
+    If ($dryrun) {
+      "Initiating dry run..."
+    }
+  }
 }
 if ($tag_name -NotMatch '^v\d+\.\d+\.\d+([EN-]|$)') {
     "`nTag name must be in the format " + '"v0.0.0[E][N][-text]"!' + "`n"
@@ -53,3 +62,4 @@ if (-Not ($dryrun -or $buildonly -or $updatewinget)) {
     return
 }
 "`nServer returned:`n$dispatch"
+"An empty dispatch is normal, and indicates that the command was accepted."
