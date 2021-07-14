@@ -182,7 +182,7 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
         // NB duplicates are removed before processing search array
         var startArray = [];
         // Regex below breaks the string into the pattern: group 1: alphanumericsearch; group 2: regex beginning with .* or .+, or contained in (?:regex)
-        var isPrefixRegExp = search.prefix.match(/^((?:[^(.]|\((?!\?:)|\.(?![*+]))+)(\(\?:.*\)|\.[*+].*)$/);
+        var isPrefixRegExp = search.prefix.match(/^((?:[^(.]|\((?!\?:)|\.(?![*+]))*)(\(\?:.*\)|\.[*+].*)$/);
         search.rgxPrefix = null;
         var prefix = search.prefix;
         if (isPrefixRegExp) {
@@ -200,8 +200,8 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
         }));
         // Get the full array of combinations to check number of combinations
         var fullCombos = util.removeDuplicateStringsInSmallArray(util.allCaseFirstLetters(prefix, 'full'));
-        // Put cap on exponential number of combinations (five words = 3^5 = 243 combinations)
-        search.type = fullCombos.length < 200 ? 'full' : 'basic';
+        // Put cap on exponential number of combinations (five words = 3^6 = 243 combinations)
+        search.type = fullCombos.length < 250 ? 'full' : 'basic';
         // We have to remove duplicate string combinations because util.allCaseFirstLetters() can return some combinations
         // where uppercase and lowercase combinations are exactly the same, e.g. where prefix begins with punctuation
         // or currency signs, for languages without case, or where user-entered case duplicates calculated case
@@ -214,30 +214,34 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
             )
         );
         var dirEntries = [];
+        search.scanCount = 0;
 
         function searchNextVariant() {
             // If user has initiated a new search, cancel this one
-            if (search.status === 'cancelled') return callback([], search.status);
+            if (search.status === 'cancelled') return callback([], search);
             if (prefixVariants.length === 0 || dirEntries.length >= search.size) {
                 search.status = 'complete';
-                return callback(dirEntries, search.status);
+                return callback(dirEntries, search);
             }
             // Dynamically populate list of articles
             search.status = 'interim';
-            if (!noInterim) callback(dirEntries, search.status);
+            if (!noInterim) callback(dirEntries, search);
             search.found = dirEntries.length;
             var prefix = prefixVariants[0];
+            // console.debug('Searching for: ' + prefixVariants[0]);
             prefixVariants = prefixVariants.slice(1);
             // Search window sets an upper limit on how many matching dirEntries will be scanned in a full index search
             search.window = search.rgxPrefix ? 10000 * search.size : search.size;
             that.findDirEntriesWithPrefixCaseSensitive(prefix, search,
-                function (newDirEntries, idx, interim) {
-                    if (search.status === 'cancelled') return callback([], search.status);
+                function (newDirEntries, countReport, interim) {
+                    search.countReport = countReport;
+                    if (search.status === 'cancelled') return callback([], search);
+                    if (!noInterim && countReport === true) return callback(dirEntries, search);
                     if (interim) {// Only push interim results (else results will be pushed again at end of variant loop)                    
                         [].push.apply(dirEntries, newDirEntries);
                         search.found = dirEntries.length;
-                        if (!noInterim && newDirEntries.length) callback(dirEntries, search.status);
-                    } else searchNextVariant();
+                        if (!noInterim && newDirEntries.length) return callback(dirEntries, search);
+                    } else return searchNextVariant();
                 }
             );
         }
@@ -311,21 +315,24 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
                     };
                 }
                 return that._file.dirEntryByTitleIndex(index).then(function(dirEntry) {
+                    search.scanCount++;
                     var title = dirEntry.getTitleOrUrl();
                     // Only return dirEntries with titles that actually begin with prefix
                     if (saveStartIndex === null || dirEntry.namespace === cns && title.indexOf(prefix) === 0) {
                         if (!search.rgxPrefix || search.rgxPrefix && search.rgxPrefix.test(title)) { 
                             vDirEntries.push(dirEntry);
                             // Report interim result
-                            if (typeof saveStartIndex === 'undefined') callback([dirEntry], index, true);
+                            if (typeof saveStartIndex === 'undefined') callback([dirEntry], false, true);
                         }
                     }
+                    // Report number of titles scanned every 5000 titles
+                    if (!(search.scanCount % 5000)) callback([], true, true);
                     return addDirEntries(index + 1, title);
                 });
             };
             return addDirEntries(firstIndex);
         }).then(function(objWithIndex) {
-            callback(objWithIndex.dirEntries, objWithIndex.nextStart);
+            return callback(objWithIndex.dirEntries, objWithIndex.nextStart);
         });
     };
     
