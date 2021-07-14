@@ -188,7 +188,18 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
         if (isPrefixRegExp) {
             // User has initiated a regular expression search - note the only regexp special character allowed in the alphanumeric part is \s
             prefix = isPrefixRegExp[1].replace(/\\s/g, ' ');
-            search.rgxPrefix = new RegExp(isPrefixRegExp[2], 'i');
+            var regexCorrect = true;
+            try {
+                search.rgxPrefix = new RegExp(isPrefixRegExp[2], 'i');
+            } catch (err) {
+                // User has incorrect regular expression syntax
+                regexCorrect = false;
+            }
+            if (!regexCorrect) {
+                search.status = 'error';
+                callback([], search);
+                return;
+            }
         } 
         // Ensure a search is done on the string exactly as typed
         startArray.push(prefix);
