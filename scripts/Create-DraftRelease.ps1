@@ -22,7 +22,6 @@ if ($init_params -match 'params\[[''"]version[''"]]\s*=\s*[''"]([^''"]+)') {
   $file_tag = 'v' + $matches[1] 
 }
 
-
 if ($tag_name -eq "") {
   $tag_name = Read-Host "`nEnter the tag name for this release, or Enter to accept suggested tag, or add any suffix to suggested tag [$file_tag]"
   if ($tag_name -match '^[EN-]|^$') {
