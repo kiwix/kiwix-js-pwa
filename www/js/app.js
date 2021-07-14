@@ -1200,11 +1200,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             this.value = params.omegaChar;
             settingsStore.setItem('omegaChar', params.omegaChar, Infinity);
         });
-        $('input:text[name=maxResults]').on('change', function (e) {
-            params.maxResults = this.value > 5 ? this.value : 5;
-            params.maxResults = params.maxResults < 50 ? params.maxResults : 50;
-            this.value = params.maxResults;
-            settingsStore.setItem('maxResults', params.maxResults, Infinity);
+        document.getElementById('titleSearchRange').addEventListener('change', function(e) {
+            settingsStore.setItem('maxSearchResultsSize', e.target.value, Infinity);
+            params.maxSearchResultsSize = e.target.value;
+        });
+        document.getElementById('titleSearchRange').addEventListener('input', function(e) {
+            document.getElementById('titleSearchRangeVal').innerHTML = e.target.value;
         });
         document.getElementById('hideToolbarsCheck').addEventListener('click', function () {
             // This code implements a tri-state checkbox
@@ -1219,8 +1220,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             settingsStore.setItem('hideToolbars', params.hideToolbars, Infinity);
             checkToolbar();
         });
-        document.getElementById('modesLink').addEventListener('click', function () {
-            document.getElementById('btnAbout').click();
+        document.querySelectorAll('.aboutLink').forEach(function (link) {
+            link.addEventListener('click', function () {
+                document.getElementById('btnAbout').click();
+            });
         });
 
 
@@ -2810,7 +2813,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // Cancel the old search (zimArchive search object will receive this change)
                 appstate.search.status = 'cancelled';
                 // Initiate a new search object and point appstate.search to it (the zimAcrhive search object will continue to point to the old object)
-                appstate.search = {'prefix': prefix, 'status': 'init', 'type': '', 'size': params.maxResults};
+                appstate.search = {'prefix': prefix, 'status': 'init', 'type': '', 'size': params.maxSearchResultsSize};
                 $('#activeContent').hide();
                 if (!prefix || /^\s/.test(prefix)) {
                     var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
@@ -2833,7 +2836,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
         }
         /**
-         * Extracts and displays in htmlArticle the first params.maxResults articles beginning with start
+         * Extracts and displays in htmlArticle the first params.maxSearchResultsSize articles beginning with start
          * @param {String} start Optional index number to begin the list with
          * @param {String} prefix Optional search prefix from which to start an alphabetical search
          */
@@ -2844,7 +2847,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             } else {
                 prefix = start > 0 ? '' : prefix;
             }
-            var search = {'prefix': prefix, 'state': '', 'size': params.maxResults, 'window': params.maxResults};
+            var search = {'prefix': prefix, 'state': '', 'size': params.maxSearchResultsSize, 'window': params.maxSearchResultsSize};
             if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
                 appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntryArray, nextStart) {
                     var docBody = document.getElementById('largeModal');
@@ -2855,10 +2858,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             "'>" + (dirEntry.getTitleOrUrl()) + "</a>";
                     }
                     start = start ? start : 0;
-                    var back = start ? '<a href="#" data-start="' + (start - params.maxResults) +
-                        '" class="continueAnchor">&lt;&lt; Previous ' + params.maxResults + '</a>' : '';
-                    var next = dirEntryArray.length === params.maxResults ? '<a href="#" data-start="' + nextStart +
-                        '" class="continueAnchor">Next ' + params.maxResults + ' &gt;&gt;</a>' : '';
+                    var back = start ? '<a href="#" data-start="' + (start - params.maxSearchResultsSize) +
+                        '" class="continueAnchor">&lt;&lt; Previous ' + params.maxSearchResultsSize + '</a>' : '';
+                    var next = dirEntryArray.length === params.maxSearchResultsSize ? '<a href="#" data-start="' + nextStart +
+                        '" class="continueAnchor">Next ' + params.maxSearchResultsSize + ' &gt;&gt;</a>' : '';
                     var backNext = back ? next ? back + ' | ' + next : back : next;
                     backNext = '<div style="float:right;">' + backNext + '</div>\n';
                     var alphaSelector = [];
@@ -2892,7 +2895,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 });
                                 $('#myModal').modal('hide');
                                 document.getElementById('btnConfigure').click();
-                                window.location.href = "#displaySettingsDiv";
+                                window.location.href = "#otherSettingsDiv";
                             });
                         }
                     }
@@ -2960,8 +2963,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (stillSearching) {
                 message = 'Searching [' + appstate.search.type + ']... found: ' + nbDirEntry + '...' +
                 (reportingSearch.scanCount ? ' [scanning ' + reportingSearch.scanCount + ' titles]' : '');
-            } else if (nbDirEntry >= params.maxResults) {
-                message = 'First ' + params.maxResults + ' articles found: refine your search.';
+            } else if (nbDirEntry >= params.maxSearchResultsSize) {
+                message = 'First ' + params.maxSearchResultsSize + ' articles found: refine your search.';
             } else {
                 message = 'Finished. ' + (nbDirEntry ? nbDirEntry : 'No') + ' articles found' +
                 (appstate.search.type === 'basic' ? ': try fewer words for full search.' : '.');
@@ -2973,7 +2976,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
             var articleListDiv = document.getElementById('articleList');
             var articleListDivHtml = '';
-            var listLength = dirEntryArray.length < params.maxResults ? dirEntryArray.length : params.maxResults;
+            var listLength = dirEntryArray.length < params.maxSearchResultsSize ? dirEntryArray.length : params.maxSearchResultsSize;
             for (var i = 0; i < listLength; i++) {
                 var dirEntry = dirEntryArray[i];
                 var dirEntryStringId = uiUtil.htmlEscapeChars(dirEntry.toStringId());
