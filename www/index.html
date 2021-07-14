@@ -120,7 +120,7 @@
                         <ul style="padding-left: 15px;">
                             <li>New feature! Enabled title search with wildcards <code>.*</code>, <code>.+</code> or regex syntax <code>(?:my_regular_expression)</code>
                                 - wildcards make Gutenberg and Stackexchange ZIMs much more useable</li>
-                            <li>Added full syntax/usage notes on title search and the Alphabetical Title Index in About</li>
+                            <li>Added full syntax/usage notes on title search and the alphabetical ZIM Archive Index in About</li>
                             <li>New! PWA is participating in File Handling API Origin Trial to act as a file opener for ZIM archives</li>
                             <li>Improve zooming and re-flowing the article contents in browsers that support the zoom style property</li>
                             <li>Report number of titles scanned for long title searches</li>
@@ -248,7 +248,7 @@
                                         <a class="btn btn-primary" style="display:none;" title="Back" id="btnBackAlt"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>
                                         <a class="btn btn-primary" style="display:none;" title="Forward" id="btnForwardAlt"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
                                     </span>
-                                    <input type="search" id="prefix" placeholder="Search or type a space, .* or .+ ..."
+                                    <input type="search" id="prefix" placeholder="Search, type a space, or use .* ..."
                                            class="form-control" style="z-index: 0; width: 99.5%" />
                                     <span class="input-group-btn">
                                         <a class="btn btn-primary" title="Article Search" id="searchArticles" style="display:none;"><span class="glyphicon glyphicon-book"></span></a>
@@ -286,7 +286,7 @@
                     <ul style="padding-left:1em;">
                         <li><a href="#addingArchives">Adding archives and languages</a></li>
                         <li><a href="#changelog">Changelog and Features</a></li>
-                        <li><a href="#searchSyntax">Title search syntax and Alphabetical Title Index</a></li>
+                        <li><a href="#searchSyntax">Title search syntax and alphabetical ZIM Archive Index</a></li>
                         <li><a href="#expert">Expert or Experimental Settings</a></li>
                         <li><a href="#privacy">Privacy Policy</a></li>
                         <li><a href="#feedback">Feedback and Support</a></li>
@@ -415,7 +415,7 @@
                             <li><a href="https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html">NWJS version</a> - this version is completely standalone and will never self-update.</li>
                         </ul>
                     </p>
-                    <h3 id="searchSyntax">Title search syntax and Alphabetical Index</h3>
+                    <h3 id="searchSyntax">Title search syntax and alphabetical ZIM Archive Index</h3>
                     <p>
                         Basic title search matches the start of an article title, so if you search for 'France' you will get 'France (country)', 'France (disambiguation)',
                         'France (film)', etc. This kind of search tries to be <b>case-insensitive</b>, but the number of case variants tried is necessarily limited, e.g. if you
@@ -423,8 +423,9 @@
                         etc., but it won't try 'uNesCO' and other non-obvious case combinations. If you want to search for 'uNesCO', then you must type it exactly like that.
                     </p>
                     <p>
-                        You can also use the <b>wildcards</b> <code>.*</code> or <code>.+</code> as part of your title search (these are regular expression syntax). For example, you can
-                        search for 'list.*medieval', and you will get (in full English Wikipedia) 'List of Medieval bestiaries', 'List of Medieval topics', etc.
+                        You can also use the <b>wildcards</b> <code>.*</code> or <code>.+</code> as part of your title search (these follow regular expression syntax: you
+                        probably want <code>.*</code>). For example, you can search for 'list.*medieval', and you will get (in full English Wikipedia) 'List of Medieval bestiaries',
+                        'List of Medieval topics', etc.
                     </p>
                     <p id="searchSyntaxError">
                         <b>Incorrect search syntax!</b> If you get this message, it's because you used a wildcard but the syntax was incorrect. <i>Everything after
@@ -433,20 +434,21 @@
                         use wildcards with them. You might be able to correct an error by placing a backslash before each reserved character, e.g. <code>list.*\(france</code>.
                     </p>
                     <p>Wildcards can come anywhere in a string, including at the beginning. This works fine for Stackexchange, Gutenberg, PhET and similar ZIMs, and it is the only way to get
-                        all the Stackexchange questions on 'Kant', for example (in the Philosophy ZIM). For Wikipedia, <b>wildcards work best when they come after a simple string</b>.
+                        all the Stackexchange questions on topics/words that don't have a tag. For Wikipedia, <b>wildcards work best when they come after a simple string</b>.
                         If your search text starts with a wildcard in full English Wikipedia, it will start searching at the very beginning of the index and try to search through everything
                         (there are millions of titles)! It will give up after somewhere between 250,000 and 1,000,000 searches (this is 10,000 x the value you set in Configuration for max
                         search results).
                     </p>
                     <p>
-                        You can see the full <b>Alphabetical Title Index</b> of a ZIM by typing a space in the title search box. This is useful for ZIMs that have specifically worded titles
-                        where you don't know the title you are searching for (e.g. Gutenberg or TED Talks, especially in jQuery mode, or for browsing Stackexchange or PhET). You can change
+                        You can see the full alphabetical <b>ZIM Archive Index</b> by typing a space in the title search box. This is useful for ZIMs that have descriptive titles where
+                        you don't know the exact title you are searching for (e.g. Gutenberg or TED Talks, especially in jQuery mode, or for browsing Stackexchange or PhET). You can change
                         your alphabet in Configuration for non-Roman alphabets. 
                     </p>
                     <p>
                         <i>For the geeks</i>, you can also use full regular expressions enclosed in non-capturing parentheses, like <code>(?:My\sCrazy\sSearch(es)?$)</code>. Alternatively, you
                         can use full regex syntax after a wildcard (not before, except that '\s' will be converted to a space). Regex syntax will match titles in a case-insensitive manner.
-                        Long searches will give up after maxSearchResultsSize * 10^4 title scans.
+                        You can search for different diacritics with a regex like 'discours.*m[eé]thode' or `Gonz.*[áa]lez I[nñ][áa]rrit[uùú]`. Long searches will give up after
+                        maxSearchResultsSize * 10^4 title scans.
                     </p>
                     <h3 id="expert">Expert or experimental settings</h3>
                     <p>
