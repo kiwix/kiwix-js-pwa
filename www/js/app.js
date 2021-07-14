@@ -2947,27 +2947,29 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         /**
          * Display the list of articles with the given array of DirEntry
          * @param {Array} dirEntryArray The array of dirEntries returned from the binary search
-         * @param {Object} reportingSearchStatus The status of the reporting search
+         * @param {Object} reportingSearch The the reporting search object
          */
-        function populateListOfArticles(dirEntryArray, reportingSearchStatus) {
+        function populateListOfArticles(dirEntryArray, reportingSearch) {
             // Do not allow cancelled searches to report
-            if (reportingSearchStatus === 'cancelled') return;
+            if (reportingSearch.status === 'cancelled') return;
             var stillSearching = appstate.search.status === 'interim';
-            var articleListHeaderMessageDiv = $('#articleListHeaderMessage');
+            var articleListHeaderMessageDiv = document.getElementById('articleListHeaderMessage');
             var nbDirEntry = dirEntryArray ? dirEntryArray.length : 0;
 
             var message;
             if (stillSearching) {
-                message = 'Searching [' + appstate.search.type + ']... found: ' + nbDirEntry;
+                message = 'Searching [' + appstate.search.type + ']... found: ' + nbDirEntry + '...' +
+                (reportingSearch.scanCount ? ' [scanning ' + reportingSearch.scanCount + ' titles]' : '');
             } else if (nbDirEntry >= params.maxResults) {
-                message = 'First ' + params.maxResults + ' articles found (refine your search).';
+                message = 'First ' + params.maxResults + ' articles found: refine your search.';
             } else {
-                message = 'Finished. ' + (nbDirEntry ? nbDirEntry : 'No') + ' articles found' + (
-                appstate.search.type === 'basic' ? ': try fewer words for full search.' : '.'
-                );
+                message = 'Finished. ' + (nbDirEntry ? nbDirEntry : 'No') + ' articles found' +
+                (appstate.search.type === 'basic' ? ': try fewer words for full search.' : '.');
             }
+            if (!stillSearching && reportingSearch.scanCount) message += ' [scanned ' + reportingSearch.scanCount + ' titles]';
 
-            articleListHeaderMessageDiv.html(message);
+            articleListHeaderMessageDiv.innerHTML = message;
+            if (stillSearching && reportingSearch.countReport) return;
 
             var articleListDiv = document.getElementById('articleList');
             var articleListDivHtml = '';
