@@ -421,8 +421,7 @@ require.config({
         //'jquery': 'jquery-3.2.1',
         //'bootstrap': 'bootstrap'
         'bootstrap': 'bootstrap.min',
-        'webpHeroBundle': 'webpHeroBundle_0.0.0-dev.27',
-        'webpHeroPolyfills': 'webpHeroPolyfills_0.0.0-dev.27'
+        'webpHeroBundle': 'webpHeroBundle_0.0.0-dev.27'
     },
     shim: {
         'jquery': {
@@ -431,13 +430,11 @@ require.config({
         'bootstrap': {
             deps: ['jquery']
         },
-        'webpHeroBundle': {
-            deps: ['webpHeroPolyfills']
-        }
+        'webpHeroBundle': ''
     }
 });
 
-requirejs(['bootstrap', 'promisePolyfill'], function () {
+requirejs(['bootstrap', 'promisePolyfill', 'arrayFromPolyfill'], function () {
     requirejs(['../app']);
 });
 
