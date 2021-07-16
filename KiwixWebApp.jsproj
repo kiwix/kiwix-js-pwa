@@ -162,9 +162,9 @@
     <Content Include="www\I\AviationHistoryBanner3.jpg" />
     <Content Include="www\I\Hand_sanitizer_banner.jpg" />
     <Content Include="www\I\IriomoteBanner1.jpg" />
+    <Content Include="www\js\lib\arrayFromPolyfill.js" />
     <Content Include="www\js\lib\promisePolyfill.js" />
     <Content Include="www\js\lib\webpHeroBundle_0.0.0-dev.27.js" />
-    <Content Include="www\js\lib\webpHeroPolyfills_0.0.0-dev.27.js" />
     <Content Include="www\js\lib\zstddec.js" />
     <Content Include="www\js\lib\zstddec_wrapper.js" />
     <None Include="Package.StoreAssociation.xml" />

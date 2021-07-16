@@ -94,7 +94,7 @@ define(['zstddec'], function() {
      * Is the decompressor already working?
      * @type Boolean
      */
-    var busy = false;
+    appstate.zdBusy = false;
     
     /**
      * @typedef Decompressor
@@ -121,7 +121,7 @@ define(['zstddec'], function() {
      * @returns {Promise<ArrayBuffer>} Promise for an ArrayBuffer with decoded data
      */
     Decompressor.prototype.readSlice = function(offset, length) {
-        busy = true;
+        appstate.zdBusy = true;
         this._inStreamPos = 0;
         this._inStreamChunkedPos = 0;
         this._outStreamPos = 0;
@@ -139,7 +139,7 @@ define(['zstddec'], function() {
             // Should you need to free the decoder stream handle, use command below, but be sure to create a new stream control object
             // before attempting further decompression
             // zd._ZSTD_freeDStream(zd._decHandle);
-            busy = false;
+            appstate.zdBusy = false;
             return data;
         });
     };
@@ -152,7 +152,7 @@ define(['zstddec'], function() {
      * @returns {Promise} A Promise for the readSlice() function
      */
     Decompressor.prototype.readSliceSingleThread = function (offset, length) {
-        if (!busy) {
+        if (!appstate.zdBusy) {
             return this.readSlice(offset, length);
         } else {
             // The decompressor is already in progress.
