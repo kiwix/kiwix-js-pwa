@@ -60,6 +60,7 @@ const precacheFiles = [
   "www/article.html",
   "www/js/app.js",
   "www/js/init.js",
+  "www/js/lib/arrayFromPolyfill.js",
   "www/js/lib/bootstrap.js",
   "www/js/lib/bootstrap.min.js",
   "www/js/lib/cache.js",
