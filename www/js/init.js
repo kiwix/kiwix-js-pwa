@@ -437,7 +437,7 @@ require.config({
     }
 });
 
-requirejs(['bootstrap'], function (bootstrap) {
+requirejs(['bootstrap', 'promisePolyfill'], function () {
     requirejs(['../app']);
 });
 
