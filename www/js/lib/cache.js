@@ -21,7 +21,7 @@
  */
 
 'use strict';
-define(['q', 'settingsStore', 'uiUtil'], function(Q, settingsStore, uiUtil) {
+define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
 
     const CACHEAPI = 'kiwix-precache-' + params.version; // Set the database or cache name here
     const CACHEIDB = 'kiwix-assetsCache'; // For idxDB we don't want the name to change
@@ -443,7 +443,7 @@ define(['q', 'settingsStore', 'uiUtil'], function(Q, settingsStore, uiUtil) {
             var readFile = regexpKeyTypes.test(title) ? 
                 selectedArchive.readUtf8File : selectedArchive.readBinaryFile;
             // Bypass getting dirEntry if we already have it
-            var getDirEntry = dirEntry ? Q.Promise.resolve() :
+            var getDirEntry = dirEntry ? Promise.Promise.resolve() :
                 selectedArchive.getDirEntryByPath(title);
             // Read data from ZIM
             getDirEntry.then(function(resolvedDirEntry) {
@@ -677,7 +677,7 @@ define(['q', 'settingsStore', 'uiUtil'], function(Q, settingsStore, uiUtil) {
      * @returns {Promise} A promise that resolves when assetsCache[semaphor] is true    
      */  
     function wait(semaphor, value) {
-        var p = Q.Promise(function (resolve) {
+        var p = new Promise(function (resolve) {
             setTimeout(function awaitCache() {
                 if (assetsCache[semaphor]) {
                     return resolve(value);
