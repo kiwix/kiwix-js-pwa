@@ -248,8 +248,8 @@
                                         <a class="btn btn-primary" style="display:none;" title="Back" id="btnBackAlt"><span class="glyphicon glyphicon-circle-arrow-left"></span></a>
                                         <a class="btn btn-primary" style="display:none;" title="Forward" id="btnForwardAlt"><span class="glyphicon glyphicon-circle-arrow-right"></span></a>
                                     </span>
-                                    <input type="search" id="prefix" placeholder="Search, type a space, or use .* ..."
-                                           class="form-control" style="z-index: 0; width: 99.5%" />
+                                    <input type="search" id="prefix" placeholder="Search [with .*] or type a space..."
+                                        class="form-control" style="z-index: 0; width: 99.5%" />
                                     <span class="input-group-btn">
                                         <a class="btn btn-primary" title="Article Search" id="searchArticles" style="display:none;"><span class="glyphicon glyphicon-book"></span></a>
                                         <a class="btn btn-primary" title="Alt-F: Find and highlight text in article..." id="findText"><span class="glyphicon glyphicon-search"></span></a>
@@ -417,15 +417,15 @@
                     </p>
                     <h3 id="searchSyntax">Title search syntax and alphabetical ZIM Archive Index</h3>
                     <p>
-                        Basic title search matches the start of an article title, so if you search for 'France' you will get 'France (country)', 'France (disambiguation)',
+                        Basic title search matches the <b>start</b> of an article title, so if you search for 'France' you will get 'France (country)', 'France (disambiguation)',
                         'France (film)', etc. This kind of search tries to be <b>case-insensitive</b>, but the number of case variants tried is necessarily limited, e.g. if you
                         search for 'unesco world heritiage', it will try 'Unesco world heritage', 'UNESCO world heritage', 'unesco World heritage', 'Unesco WORLD heritage',
                         etc., but it won't try 'uNesCO' and other non-obvious case combinations. If you want to search for 'uNesCO', then you must type it exactly like that.
                     </p>
                     <p>
-                        You can also use the <b>wildcards</b> <code>.*</code> or <code>.+</code> as part of your title search (these follow regular expression syntax: you
-                        probably want <code>.*</code>). For example, you can search for 'list.*medieval', and you will get (in full English Wikipedia) 'List of Medieval bestiaries',
-                        'List of Medieval topics', etc.
+                        You can also use the <b>wildcards</b> <code>.*</code> or <code>.+</code> as part of your title search (these follow regular expression syntax: if you
+                        don't know the difference then use <code>.*</code>). For example, you can search for 'list.*medieval', and you will get (in full English Wikipedia)
+                        'List of Medieval bestiaries', 'List of Medieval topics', etc.
                     </p>
                     <p id="searchSyntaxError">
                         <b>Incorrect search syntax!</b> If you get this message, it's because you used a wildcard but the syntax was incorrect. <i>Everything after
@@ -445,7 +445,11 @@
                         your alphabet in Configuration for non-Roman alphabets. 
                     </p>
                     <p>
-                        <i>For the geeks</i>, you can also use full regular expressions enclosed in non-capturing parentheses, like <code>(?:My\sCrazy\sSearch(es)?$)</code>. Alternatively, you
+                        If not enough results are returned in your searches, you can increase the maximum number of search results using the slider in Configuration. Please note that we are
+                        currently unable to support full text search of articles, though we have plans to do so in the future if it becomes technically possible.
+                    </p>
+                    <p>
+                        <i>For the geeks</i>, you can also use <b>full regular expressions</b> enclosed in non-capturing parentheses, like <code>(?:My\sCrazy\sSearch(es)?$)</code>. Alternatively, you
                         can use full regex syntax after a wildcard (not before, except that '\s' will be converted to a space). Regex syntax will match titles in a case-insensitive manner.
                         You can search for different diacritics with a regex like 'discours.*m[eé]thode' or `Gonz.*[áa]lez I[nñ][áa]rrit[uùú]`. Long searches will give up after
                         maxSearchResultsSize * 10^4 title scans.
@@ -665,12 +669,29 @@
                                 <div id="displaySettingsDiv" class="panel panel-info" style="clear: left;">
                                     <div class="panel-heading">Display options:</div>
                                     <div class="panel-body">
-                                        <label oninput="document.getElementById('spinnerVal').innerHTML = relativeUIFontSizeSlider.value + '%';" style="width: 80%;">
-                                            <b>Change font size for the User Interface:</b>
-                                            <input type="range" name="relativeUIFontSize" id="relativeUIFontSizeSlider" min="60" max="200" step="1" value="100">
-                                            Current value: <b><span id="spinnerVal">100%</span></b><br />
-                                            (to change <b>article</b> font size, tap <span class="glyphicon glyphicon-zoom-in"></span> and <span class="glyphicon glyphicon-zoom-out"></span>)
-                                        </label>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <b>Change font size for the User Interface:</b>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <label oninput="document.getElementById('spinnerVal').innerHTML = relativeUIFontSizeSlider.value + '%';" style="width: 80%;">
+                                                <div class="col-sm-12">
+                                                    (to change <b>article</b> font size, tap <span class="glyphicon glyphicon-zoom-in"></span> and <span class="glyphicon glyphicon-zoom-out"></span>)
+                                                </div>
+                                                <div class="col-sm-10">
+                                                    <input type="range" name="relativeUIFontSize" id="relativeUIFontSizeSlider" min="60" max="200" step="1" value="100">
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <b><span id="spinnerVal">100%</span></b>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                
+                                            </div>
+                                        </div>
                                         <label class="checkbox" title="Tap three times for dark | auto | light">
                                             <input type="checkbox" name="cssUIDarkTheme" id="cssUIDarkThemeCheck">
                                             <span class="checkmark"></span>
@@ -742,35 +763,43 @@
                                             <b>Permanently hide active content warning</b> (for experienced users)
                                         </label>
                                         <div class="row">
-                                            <div class="col-sm-6">
-                                                <b>Start character</b> of alphabet:
-                                                <input type="text" name="alphaChar" id="alphaCharTxt" value="A" style="width:2em;color:steelblue;">
-                                                (use capital letters if they exist in your locale)<br />
+                                            <div class="col-sm-12">
+                                                <b>Alphabetical ZIM Archive Index:</b>
                                             </div>
-                                            <div class="col-sm-6">
-                                                <b>End character</b> of alphabet:&nbsp;&nbsp;
-                                                <input type="text" name="omegaChar" id="omegaCharTxt" value="Z" style="width:2em;color:steelblue;">
-                                                (these are used to set appropriate alphabet for the Archive Index)
-                                            </div>
+                                            <label title="ZIM Archive Index">
+                                                <div class="col-sm-6">
+                                                    <b>Start character</b> of alphabet:
+                                                    <input type="text" name="alphaChar" id="alphaCharTxt" value="A" style="width:2em;color:steelblue;">
+                                                    (use capital letters if they exist in your locale)<br />
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <b>End character</b> of alphabet:&nbsp;&nbsp;
+                                                    <input type="text" name="omegaChar" id="omegaCharTxt" value="Z" style="width:2em;color:steelblue;">
+                                                    (these are used to set appropriate alphabet for the Archive Index)
+                                                </div>
+                                            </label>
                                         </div>
                                         <div class="row" style="padding-top: 10px">
-                                            <div class="col-sm-12"><b>Title search:</b>
-                                                <label>Wildcards <code>.*</code> or <code>.+</code> are permitted, e.g. <code>list.+medieval</code>, but
-                                                    <a href="#searchSyntax" class="aboutLink">see usage</a></label>
+                                            <div class="col-sm-12">
+                                                <b>Title search:</b>
                                             </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-sm-4">
-                                                <label>Select max number of title search results:</label>
-                                            </div>
-                                            <div class="col-sm-8">
-                                                <div class="range">
-                                                    <label>
-                                                        <input type="range" class="form-control-range" min="5" max="100" id="titleSearchRange" value="25">
-                                                        <span>Value: <span id="titleSearchRangeVal"></span> (<i>default 30, higher values increase search time</i>)</span>
-                                                    </label>
+                                            <label title="Max number title search results">
+                                                <div class="col-sm-12">
+                                                    <p>Wildcards <code>.*</code> or <code>.+</code> are permitted, e.g. <code>list.+medieval</code>, but
+                                                    <a href="#searchSyntax" class="aboutLink">see usage</a></p>
                                                 </div>
-                                            </div>
+                                                <div class="col-sm-12">
+                                                    <p><b>Select max number of title search results:</b> (<i>default 30, higher values increase search time</i>)</p>
+                                                </div>
+                                                <div class="col-sm-10">
+                                                    <div class="range">
+                                                        <input type="range" class="form-control-range" min="5" max="100" id="titleSearchRange" value="30">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <b><span id="titleSearchRangeVal"></span></b>
+                                                </div>
+                                            </label>
                                         </div>
                                         <label class="checkbox" id="openInNewTab" title="Open article in new tab">
                                             <input type="checkbox" name="tabOpener" id="tabOpenerCheck">
