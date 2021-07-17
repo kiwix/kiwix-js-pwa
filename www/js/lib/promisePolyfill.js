@@ -1,1177 +1,880 @@
-﻿/*!
- * @overview es6-promise - a tiny implementation of Promises/A+.
- * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
- * @license   Licensed under MIT license
- *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
- * @version   v4.2.8+1e68dce6
- */
-
-(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-        typeof define === 'function' && define.amd ? define(factory) :
-            (global.ES6Promise = factory());
-}(this, (function () {
-    'use strict';
-
-    function objectOrFunction(x) {
-        var type = typeof x;
-        return x !== null && (type === 'object' || type === 'function');
-    }
-
-    function isFunction(x) {
-        return typeof x === 'function';
-    }
-
-
-
-    var _isArray = void 0;
-    if (Array.isArray) {
-        _isArray = Array.isArray;
-    } else {
-        _isArray = function (x) {
-            return Object.prototype.toString.call(x) === '[object Array]';
-        };
-    }
-
-    var isArray = _isArray;
-
-    var len = 0;
-    var vertxNext = void 0;
-    var customSchedulerFn = void 0;
-
-    var asap = function asap(callback, arg) {
-        queue[len] = callback;
-        queue[len + 1] = arg;
-        len += 2;
-        if (len === 2) {
-            // If len is 2, that means that we need to schedule an async flush.
-            // If additional callbacks are queued before the queue is flushed, they
-            // will be processed by this flush that we are scheduling.
-            if (customSchedulerFn) {
-                customSchedulerFn(flush);
-            } else {
-                scheduleFlush();
-            }
-        }
-    };
-
-    function setScheduler(scheduleFn) {
-        customSchedulerFn = scheduleFn;
-    }
-
-    function setAsap(asapFn) {
-        asap = asapFn;
-    }
-
-    var browserWindow = typeof window !== 'undefined' ? window : undefined;
-    var browserGlobal = browserWindow || {};
-    var BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
-    var isNode = typeof self === 'undefined' && typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
-
-    // test for web worker but not in IE10
-    var isWorker = typeof Uint8ClampedArray !== 'undefined' && typeof importScripts !== 'undefined' && typeof MessageChannel !== 'undefined';
-
-    // node
-    function useNextTick() {
-        // node version 0.10.x displays a deprecation warning when nextTick is used recursively
-        // see https://github.com/cujojs/when/issues/410 for details
-        return function () {
-            return process.nextTick(flush);
-        };
-    }
-
-    // vertx
-    function useVertxTimer() {
-        if (typeof vertxNext !== 'undefined') {
-            return function () {
-                vertxNext(flush);
-            };
-        }
-
-        return useSetTimeout();
-    }
-
-    function useMutationObserver() {
-        var iterations = 0;
-        var observer = new BrowserMutationObserver(flush);
-        var node = document.createTextNode('');
-        observer.observe(node, { characterData: true });
-
-        return function () {
-            node.data = iterations = ++iterations % 2;
-        };
-    }
-
-    // web worker
-    function useMessageChannel() {
-        var channel = new MessageChannel();
-        channel.port1.onmessage = flush;
-        return function () {
-            return channel.port2.postMessage(0);
-        };
-    }
-
-    function useSetTimeout() {
-        // Store setTimeout reference so es6-promise will be unaffected by
-        // other code modifying setTimeout (like sinon.useFakeTimers())
-        var globalSetTimeout = setTimeout;
-        return function () {
-            return globalSetTimeout(flush, 1);
-        };
-    }
-
-    var queue = new Array(1000);
-    function flush() {
-        for (var i = 0; i < len; i += 2) {
-            var callback = queue[i];
-            var arg = queue[i + 1];
-
-            callback(arg);
-
-            queue[i] = undefined;
-            queue[i + 1] = undefined;
-        }
-
-        len = 0;
-    }
-
-    function attemptVertx() {
-        try {
-            var vertx = Function('return this')().require('vertx');
-            vertxNext = vertx.runOnLoop || vertx.runOnContext;
-            return useVertxTimer();
-        } catch (e) {
-            return useSetTimeout();
-        }
-    }
-
-    var scheduleFlush = void 0;
-    // Decide what async method to use to triggering processing of queued callbacks:
-    if (isNode) {
-        scheduleFlush = useNextTick();
-    } else if (BrowserMutationObserver) {
-        scheduleFlush = useMutationObserver();
-    } else if (isWorker) {
-        scheduleFlush = useMessageChannel();
-    } else if (browserWindow === undefined && typeof require === 'function') {
-        scheduleFlush = attemptVertx();
-    } else {
-        scheduleFlush = useSetTimeout();
-    }
-
-    function then(onFulfillment, onRejection) {
-        var parent = this;
-
-        var child = new this.constructor(noop);
-
-        if (child[PROMISE_ID] === undefined) {
-            makePromise(child);
-        }
-
-        var _state = parent._state;
-
-
-        if (_state) {
-            var callback = arguments[_state - 1];
-            asap(function () {
-                return invokeCallback(_state, child, callback, parent._result);
-            });
-        } else {
-            subscribe(parent, child, onFulfillment, onRejection);
-        }
-
-        return child;
-    }
-
-    /**
-      `Promise.resolve` returns a promise that will become resolved with the
-      passed `value`. It is shorthand for the following:
-    
-      ```javascript
-      let promise = new Promise(function(resolve, reject){
-        resolve(1);
-      });
-    
-      promise.then(function(value){
-        // value === 1
-      });
-      ```
-    
-      Instead of writing the above, your code now simply becomes the following:
-    
-      ```javascript
-      let promise = Promise.resolve(1);
-    
-      promise.then(function(value){
-        // value === 1
-      });
-      ```
-    
-      @method resolve
-      @static
-      @param {Any} value value that the returned promise will be resolved with
-      Useful for tooling.
-      @return {Promise} a promise that will become fulfilled with the given
-      `value`
-    */
-    function resolve$1(object) {
-        /*jshint validthis:true */
-        var Constructor = this;
-
-        if (object && typeof object === 'object' && object.constructor === Constructor) {
-            return object;
-        }
-
-        var promise = new Constructor(noop);
-        resolve(promise, object);
-        return promise;
-    }
-
-    var PROMISE_ID = Math.random().toString(36).substring(2);
-
-    function noop() { }
-
-    var PENDING = void 0;
-    var FULFILLED = 1;
-    var REJECTED = 2;
-
-    function selfFulfillment() {
-        return new TypeError("You cannot resolve a promise with itself");
-    }
-
-    function cannotReturnOwn() {
-        return new TypeError('A promises callback cannot return that same promise.');
-    }
-
-    function tryThen(then$$1, value, fulfillmentHandler, rejectionHandler) {
-        try {
-            then$$1.call(value, fulfillmentHandler, rejectionHandler);
-        } catch (e) {
-            return e;
-        }
-    }
-
-    function handleForeignThenable(promise, thenable, then$$1) {
-        asap(function (promise) {
-            var sealed = false;
-            var error = tryThen(then$$1, thenable, function (value) {
-                if (sealed) {
-                    return;
-                }
-                sealed = true;
-                if (thenable !== value) {
-                    resolve(promise, value);
-                } else {
-                    fulfill(promise, value);
-                }
-            }, function (reason) {
-                if (sealed) {
-                    return;
-                }
-                sealed = true;
-
-                reject(promise, reason);
-            }, 'Settle: ' + (promise._label || ' unknown promise'));
-
-            if (!sealed && error) {
-                sealed = true;
-                reject(promise, error);
-            }
-        }, promise);
-    }
-
-    function handleOwnThenable(promise, thenable) {
-        if (thenable._state === FULFILLED) {
-            fulfill(promise, thenable._result);
-        } else if (thenable._state === REJECTED) {
-            reject(promise, thenable._result);
-        } else {
-            subscribe(thenable, undefined, function (value) {
-                return resolve(promise, value);
-            }, function (reason) {
-                return reject(promise, reason);
-            });
-        }
-    }
-
-    function handleMaybeThenable(promise, maybeThenable, then$$1) {
-        if (maybeThenable.constructor === promise.constructor && then$$1 === then && maybeThenable.constructor.resolve === resolve$1) {
-            handleOwnThenable(promise, maybeThenable);
-        } else {
-            if (then$$1 === undefined) {
-                fulfill(promise, maybeThenable);
-            } else if (isFunction(then$$1)) {
-                handleForeignThenable(promise, maybeThenable, then$$1);
-            } else {
-                fulfill(promise, maybeThenable);
-            }
-        }
-    }
-
-    function resolve(promise, value) {
-        if (promise === value) {
-            reject(promise, selfFulfillment());
-        } else if (objectOrFunction(value)) {
-            var then$$1 = void 0;
-            try {
-                then$$1 = value.then;
-            } catch (error) {
-                reject(promise, error);
-                return;
-            }
-            handleMaybeThenable(promise, value, then$$1);
-        } else {
-            fulfill(promise, value);
-        }
-    }
-
-    function publishRejection(promise) {
-        if (promise._onerror) {
-            promise._onerror(promise._result);
-        }
-
-        publish(promise);
-    }
-
-    function fulfill(promise, value) {
-        if (promise._state !== PENDING) {
-            return;
-        }
-
-        promise._result = value;
-        promise._state = FULFILLED;
-
-        if (promise._subscribers.length !== 0) {
-            asap(publish, promise);
-        }
-    }
-
-    function reject(promise, reason) {
-        if (promise._state !== PENDING) {
-            return;
-        }
-        promise._state = REJECTED;
-        promise._result = reason;
-
-        asap(publishRejection, promise);
-    }
-
-    function subscribe(parent, child, onFulfillment, onRejection) {
-        var _subscribers = parent._subscribers;
-        var length = _subscribers.length;
-
-
-        parent._onerror = null;
-
-        _subscribers[length] = child;
-        _subscribers[length + FULFILLED] = onFulfillment;
-        _subscribers[length + REJECTED] = onRejection;
-
-        if (length === 0 && parent._state) {
-            asap(publish, parent);
-        }
-    }
-
-    function publish(promise) {
-        var subscribers = promise._subscribers;
-        var settled = promise._state;
-
-        if (subscribers.length === 0) {
-            return;
-        }
-
-        var child = void 0,
-            callback = void 0,
-            detail = promise._result;
-
-        for (var i = 0; i < subscribers.length; i += 3) {
-            child = subscribers[i];
-            callback = subscribers[i + settled];
-
-            if (child) {
-                invokeCallback(settled, child, callback, detail);
-            } else {
-                callback(detail);
-            }
-        }
-
-        promise._subscribers.length = 0;
-    }
-
-    function invokeCallback(settled, promise, callback, detail) {
-        var hasCallback = isFunction(callback),
-            value = void 0,
-            error = void 0,
-            succeeded = true;
-
-        if (hasCallback) {
-            try {
-                value = callback(detail);
-            } catch (e) {
-                succeeded = false;
-                error = e;
-            }
-
-            if (promise === value) {
-                reject(promise, cannotReturnOwn());
-                return;
-            }
-        } else {
-            value = detail;
-        }
-
-        if (promise._state !== PENDING) {
-            // noop
-        } else if (hasCallback && succeeded) {
-            resolve(promise, value);
-        } else if (succeeded === false) {
-            reject(promise, error);
-        } else if (settled === FULFILLED) {
-            fulfill(promise, value);
-        } else if (settled === REJECTED) {
-            reject(promise, value);
-        }
-    }
-
-    function initializePromise(promise, resolver) {
-        try {
-            resolver(function resolvePromise(value) {
-                resolve(promise, value);
-            }, function rejectPromise(reason) {
-                reject(promise, reason);
-            });
-        } catch (e) {
-            reject(promise, e);
-        }
-    }
-
-    var id = 0;
-    function nextId() {
-        return id++;
-    }
-
-    function makePromise(promise) {
-        promise[PROMISE_ID] = id++;
-        promise._state = undefined;
-        promise._result = undefined;
-        promise._subscribers = [];
-    }
-
-    function validationError() {
-        return new Error('Array Methods must be provided an Array');
-    }
-
-    var Enumerator = function () {
-        function Enumerator(Constructor, input) {
-            this._instanceConstructor = Constructor;
-            this.promise = new Constructor(noop);
-
-            if (!this.promise[PROMISE_ID]) {
-                makePromise(this.promise);
-            }
-
-            if (isArray(input)) {
-                this.length = input.length;
-                this._remaining = input.length;
-
-                this._result = new Array(this.length);
-
-                if (this.length === 0) {
-                    fulfill(this.promise, this._result);
-                } else {
-                    this.length = this.length || 0;
-                    this._enumerate(input);
-                    if (this._remaining === 0) {
-                        fulfill(this.promise, this._result);
-                    }
-                }
-            } else {
-                reject(this.promise, validationError());
-            }
-        }
-
-        Enumerator.prototype._enumerate = function _enumerate(input) {
-            for (var i = 0; this._state === PENDING && i < input.length; i++) {
-                this._eachEntry(input[i], i);
-            }
-        };
-
-        Enumerator.prototype._eachEntry = function _eachEntry(entry, i) {
-            var c = this._instanceConstructor;
-            var resolve$$1 = c.resolve;
-
-
-            if (resolve$$1 === resolve$1) {
-                var _then = void 0;
-                var error = void 0;
-                var didError = false;
-                try {
-                    _then = entry.then;
-                } catch (e) {
-                    didError = true;
-                    error = e;
-                }
-
-                if (_then === then && entry._state !== PENDING) {
-                    this._settledAt(entry._state, i, entry._result);
-                } else if (typeof _then !== 'function') {
-                    this._remaining--;
-                    this._result[i] = entry;
-                } else if (c === Promise$2) {
-                    var promise = new c(noop);
-                    if (didError) {
-                        reject(promise, error);
-                    } else {
-                        handleMaybeThenable(promise, entry, _then);
-                    }
-                    this._willSettleAt(promise, i);
-                } else {
-                    this._willSettleAt(new c(function (resolve$$1) {
-                        return resolve$$1(entry);
-                    }), i);
-                }
-            } else {
-                this._willSettleAt(resolve$$1(entry), i);
-            }
-        };
-
-        Enumerator.prototype._settledAt = function _settledAt(state, i, value) {
-            var promise = this.promise;
-
-
-            if (promise._state === PENDING) {
-                this._remaining--;
-
-                if (state === REJECTED) {
-                    reject(promise, value);
-                } else {
-                    this._result[i] = value;
-                }
-            }
-
-            if (this._remaining === 0) {
-                fulfill(promise, this._result);
-            }
-        };
-
-        Enumerator.prototype._willSettleAt = function _willSettleAt(promise, i) {
-            var enumerator = this;
-
-            subscribe(promise, undefined, function (value) {
-                return enumerator._settledAt(FULFILLED, i, value);
-            }, function (reason) {
-                return enumerator._settledAt(REJECTED, i, reason);
-            });
-        };
-
-        return Enumerator;
-    }();
-
-    /**
-      `Promise.all` accepts an array of promises, and returns a new promise which
-      is fulfilled with an array of fulfillment values for the passed promises, or
-      rejected with the reason of the first passed promise to be rejected. It casts all
-      elements of the passed iterable to promises as it runs this algorithm.
-    
-      Example:
-    
-      ```javascript
-      let promise1 = resolve(1);
-      let promise2 = resolve(2);
-      let promise3 = resolve(3);
-      let promises = [ promise1, promise2, promise3 ];
-    
-      Promise.all(promises).then(function(array){
-        // The array here would be [ 1, 2, 3 ];
-      });
-      ```
-    
-      If any of the `promises` given to `all` are rejected, the first promise
-      that is rejected will be given as an argument to the returned promises's
-      rejection handler. For example:
-    
-      Example:
-    
-      ```javascript
-      let promise1 = resolve(1);
-      let promise2 = reject(new Error("2"));
-      let promise3 = reject(new Error("3"));
-      let promises = [ promise1, promise2, promise3 ];
-    
-      Promise.all(promises).then(function(array){
-        // Code here never runs because there are rejected promises!
-      }, function(error) {
-        // error.message === "2"
-      });
-      ```
-    
-      @method all
-      @static
-      @param {Array} entries array of promises
-      @param {String} label optional string for labeling the promise.
-      Useful for tooling.
-      @return {Promise} promise that is fulfilled when all `promises` have been
-      fulfilled, or rejected if any of them become rejected.
-      @static
-    */
-    function all(entries) {
-        return new Enumerator(this, entries).promise;
-    }
-
-    /**
-      `Promise.race` returns a new promise which is settled in the same way as the
-      first passed promise to settle.
-    
-      Example:
-    
-      ```javascript
-      let promise1 = new Promise(function(resolve, reject){
-        setTimeout(function(){
-          resolve('promise 1');
-        }, 200);
-      });
-    
-      let promise2 = new Promise(function(resolve, reject){
-        setTimeout(function(){
-          resolve('promise 2');
-        }, 100);
-      });
-    
-      Promise.race([promise1, promise2]).then(function(result){
-        // result === 'promise 2' because it was resolved before promise1
-        // was resolved.
-      });
-      ```
-    
-      `Promise.race` is deterministic in that only the state of the first
-      settled promise matters. For example, even if other promises given to the
-      `promises` array argument are resolved, but the first settled promise has
-      become rejected before the other promises became fulfilled, the returned
-      promise will become rejected:
-    
-      ```javascript
-      let promise1 = new Promise(function(resolve, reject){
-        setTimeout(function(){
-          resolve('promise 1');
-        }, 200);
-      });
-    
-      let promise2 = new Promise(function(resolve, reject){
-        setTimeout(function(){
-          reject(new Error('promise 2'));
-        }, 100);
-      });
-    
-      Promise.race([promise1, promise2]).then(function(result){
-        // Code here never runs
-      }, function(reason){
-        // reason.message === 'promise 2' because promise 2 became rejected before
-        // promise 1 became fulfilled
-      });
-      ```
-    
-      An example real-world use case is implementing timeouts:
-    
-      ```javascript
-      Promise.race([ajax('foo.json'), timeout(5000)])
-      ```
-    
-      @method race
-      @static
-      @param {Array} promises array of promises to observe
-      Useful for tooling.
-      @return {Promise} a promise which settles in the same way as the first passed
-      promise to settle.
-    */
-    function race(entries) {
-        /*jshint validthis:true */
-        var Constructor = this;
-
-        if (!isArray(entries)) {
-            return new Constructor(function (_, reject) {
-                return reject(new TypeError('You must pass an array to race.'));
-            });
-        } else {
-            return new Constructor(function (resolve, reject) {
-                var length = entries.length;
-                for (var i = 0; i < length; i++) {
-                    Constructor.resolve(entries[i]).then(resolve, reject);
-                }
-            });
-        }
-    }
-
-    /**
-      `Promise.reject` returns a promise rejected with the passed `reason`.
-      It is shorthand for the following:
-    
-      ```javascript
-      let promise = new Promise(function(resolve, reject){
-        reject(new Error('WHOOPS'));
-      });
-    
-      promise.then(function(value){
-        // Code here doesn't run because the promise is rejected!
-      }, function(reason){
-        // reason.message === 'WHOOPS'
-      });
-      ```
-    
-      Instead of writing the above, your code now simply becomes the following:
-    
-      ```javascript
-      let promise = Promise.reject(new Error('WHOOPS'));
-    
-      promise.then(function(value){
-        // Code here doesn't run because the promise is rejected!
-      }, function(reason){
-        // reason.message === 'WHOOPS'
-      });
-      ```
-    
-      @method reject
-      @static
-      @param {Any} reason value that the returned promise will be rejected with.
-      Useful for tooling.
-      @return {Promise} a promise rejected with the given `reason`.
-    */
-    function reject$1(reason) {
-        /*jshint validthis:true */
-        var Constructor = this;
-        var promise = new Constructor(noop);
-        reject(promise, reason);
-        return promise;
-    }
-
-    function needsResolver() {
-        throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
-    }
-
-    function needsNew() {
-        throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
-    }
-
-    /**
-      Promise objects represent the eventual result of an asynchronous operation. The
-      primary way of interacting with a promise is through its `then` method, which
-      registers callbacks to receive either a promise's eventual value or the reason
-      why the promise cannot be fulfilled.
-    
-      Terminology
-      -----------
-    
-      - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
-      - `thenable` is an object or function that defines a `then` method.
-      - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
-      - `exception` is a value that is thrown using the throw statement.
-      - `reason` is a value that indicates why a promise was rejected.
-      - `settled` the final resting state of a promise, fulfilled or rejected.
-    
-      A promise can be in one of three states: pending, fulfilled, or rejected.
-    
-      Promises that are fulfilled have a fulfillment value and are in the fulfilled
-      state.  Promises that are rejected have a rejection reason and are in the
-      rejected state.  A fulfillment value is never a thenable.
-    
-      Promises can also be said to *resolve* a value.  If this value is also a
-      promise, then the original promise's settled state will match the value's
-      settled state.  So a promise that *resolves* a promise that rejects will
-      itself reject, and a promise that *resolves* a promise that fulfills will
-      itself fulfill.
-    
-    
-      Basic Usage:
-      ------------
-    
-      ```js
-      let promise = new Promise(function(resolve, reject) {
-        // on success
-        resolve(value);
-    
-        // on failure
-        reject(reason);
-      });
-    
-      promise.then(function(value) {
-        // on fulfillment
-      }, function(reason) {
-        // on rejection
-      });
-      ```
-    
-      Advanced Usage:
-      ---------------
-    
-      Promises shine when abstracting away asynchronous interactions such as
-      `XMLHttpRequest`s.
-    
-      ```js
-      function getJSON(url) {
-        return new Promise(function(resolve, reject){
-          let xhr = new XMLHttpRequest();
-    
-          xhr.open('GET', url);
-          xhr.onreadystatechange = handler;
-          xhr.responseType = 'json';
-          xhr.setRequestHeader('Accept', 'application/json');
-          xhr.send();
-    
-          function handler() {
-            if (this.readyState === this.DONE) {
-              if (this.status === 200) {
-                resolve(this.response);
-              } else {
-                reject(new Error('getJSON: `' + url + '` failed with status: [' + this.status + ']'));
-              }
-            }
-          };
-        });
-      }
-    
-      getJSON('/posts.json').then(function(json) {
-        // on fulfillment
-      }, function(reason) {
-        // on rejection
-      });
-      ```
-    
-      Unlike callbacks, promises are great composable primitives.
-    
-      ```js
-      Promise.all([
-        getJSON('/posts'),
-        getJSON('/comments')
-      ]).then(function(values){
-        values[0] // => postsJSON
-        values[1] // => commentsJSON
-    
-        return values;
-      });
-      ```
-    
-      @class Promise
-      @param {Function} resolver
-      Useful for tooling.
-      @constructor
-    */
-
-    var Promise$2 = function () {
-        function Promise(resolver) {
-            this[PROMISE_ID] = nextId();
-            this._result = this._state = undefined;
-            this._subscribers = [];
-
-            if (noop !== resolver) {
-                typeof resolver !== 'function' && needsResolver();
-                this instanceof Promise ? initializePromise(this, resolver) : needsNew();
-            }
-        }
-
-        /**
-        The primary way of interacting with a promise is through its `then` method,
-        which registers callbacks to receive either a promise's eventual value or the
-        reason why the promise cannot be fulfilled.
-         ```js
-        findUser().then(function(user){
-          // user is available
-        }, function(reason){
-          // user is unavailable, and you are given the reason why
-        });
-        ```
-         Chaining
-        --------
-         The return value of `then` is itself a promise.  This second, 'downstream'
-        promise is resolved with the return value of the first promise's fulfillment
-        or rejection handler, or rejected if the handler throws an exception.
-         ```js
-        findUser().then(function (user) {
-          return user.name;
-        }, function (reason) {
-          return 'default name';
-        }).then(function (userName) {
-          // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
-          // will be `'default name'`
-        });
-         findUser().then(function (user) {
-          throw new Error('Found user, but still unhappy');
-        }, function (reason) {
-          throw new Error('`findUser` rejected and we're unhappy');
-        }).then(function (value) {
-          // never reached
-        }, function (reason) {
-          // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
-          // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
-        });
-        ```
-        If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
-         ```js
-        findUser().then(function (user) {
-          throw new PedagogicalException('Upstream error');
-        }).then(function (value) {
-          // never reached
-        }).then(function (value) {
-          // never reached
-        }, function (reason) {
-          // The `PedgagocialException` is propagated all the way down to here
-        });
-        ```
-         Assimilation
-        ------------
-         Sometimes the value you want to propagate to a downstream promise can only be
-        retrieved asynchronously. This can be achieved by returning a promise in the
-        fulfillment or rejection handler. The downstream promise will then be pending
-        until the returned promise is settled. This is called *assimilation*.
-         ```js
-        findUser().then(function (user) {
-          return findCommentsByAuthor(user);
-        }).then(function (comments) {
-          // The user's comments are now available
-        });
-        ```
-         If the assimliated promise rejects, then the downstream promise will also reject.
-         ```js
-        findUser().then(function (user) {
-          return findCommentsByAuthor(user);
-        }).then(function (comments) {
-          // If `findCommentsByAuthor` fulfills, we'll have the value here
-        }, function (reason) {
-          // If `findCommentsByAuthor` rejects, we'll have the reason here
-        });
-        ```
-         Simple Example
-        --------------
-         Synchronous Example
-         ```javascript
-        let result;
-         try {
-          result = findResult();
-          // success
-        } catch(reason) {
-          // failure
-        }
-        ```
-         Errback Example
-         ```js
-        findResult(function(result, err){
-          if (err) {
-            // failure
-          } else {
-            // success
-          }
-        });
-        ```
-         Promise Example;
-         ```javascript
-        findResult().then(function(result){
-          // success
-        }, function(reason){
-          // failure
-        });
-        ```
-         Advanced Example
-        --------------
-         Synchronous Example
-         ```javascript
-        let author, books;
-         try {
-          author = findAuthor();
-          books  = findBooksByAuthor(author);
-          // success
-        } catch(reason) {
-          // failure
-        }
-        ```
-         Errback Example
-         ```js
-         function foundBooks(books) {
-         }
-         function failure(reason) {
-         }
-         findAuthor(function(author, err){
-          if (err) {
-            failure(err);
-            // failure
-          } else {
-            try {
-              findBoooksByAuthor(author, function(books, err) {
-                if (err) {
-                  failure(err);
-                } else {
-                  try {
-                    foundBooks(books);
-                  } catch(reason) {
-                    failure(reason);
-                  }
-                }
-              });
-            } catch(error) {
-              failure(err);
-            }
-            // success
-          }
-        });
-        ```
-         Promise Example;
-         ```javascript
-        findAuthor().
-          then(findBooksByAuthor).
-          then(function(books){
-            // found books
-        }).catch(function(reason){
-          // something went wrong
-        });
-        ```
-         @method then
-        @param {Function} onFulfilled
-        @param {Function} onRejected
-        Useful for tooling.
-        @return {Promise}
-        */
-
-        /**
-        `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
-        as the catch block of a try/catch statement.
-        ```js
-        function findAuthor(){
-        throw new Error('couldn't find that author');
-        }
-        // synchronous
-        try {
-        findAuthor();
-        } catch(reason) {
-        // something went wrong
-        }
-        // async with promises
-        findAuthor().catch(function(reason){
-        // something went wrong
-        });
-        ```
-        @method catch
-        @param {Function} onRejection
-        Useful for tooling.
-        @return {Promise}
-        */
-
-
-        Promise.prototype.catch = function _catch(onRejection) {
-            return this.then(null, onRejection);
-        };
-
-        /**
-          `finally` will be invoked regardless of the promise's fate just as native
-          try/catch/finally behaves
-        
-          Synchronous example:
-        
-          ```js
-          findAuthor() {
-            if (Math.random() > 0.5) {
-              throw new Error();
-            }
-            return new Author();
-          }
-        
-          try {
-            return findAuthor(); // succeed or fail
-          } catch(error) {
-            return findOtherAuther();
-          } finally {
-            // always runs
-            // doesn't affect the return value
-          }
-          ```
-        
-          Asynchronous example:
-        
-          ```js
-          findAuthor().catch(function(reason){
-            return findOtherAuther();
-          }).finally(function(){
-            // author was either found, or not
-          });
-          ```
-        
-          @method finally
-          @param {Function} callback
-          @return {Promise}
-        */
-
-
-        Promise.prototype.finally = function _finally(callback) {
-            var promise = this;
-            var constructor = promise.constructor;
-
-            if (isFunction(callback)) {
-                return promise.then(function (value) {
-                    return constructor.resolve(callback()).then(function () {
-                        return value;
-                    });
-                }, function (reason) {
-                    return constructor.resolve(callback()).then(function () {
-                        throw reason;
-                    });
-                });
-            }
-
-            return promise.then(callback, callback);
-        };
-
-        return Promise;
-    }();
-
-    Promise$2.prototype.then = then;
-    Promise$2.all = all;
-    Promise$2.race = race;
-    Promise$2.resolve = resolve$1;
-    Promise$2.reject = reject$1;
-    Promise$2._setScheduler = setScheduler;
-    Promise$2._setAsap = setAsap;
-    Promise$2._asap = asap;
-
-    /*global self*/
-    function polyfill() {
-        var local = void 0;
-
-        if (typeof global !== 'undefined') {
-            local = global;
-        } else if (typeof self !== 'undefined') {
-            local = self;
-        } else {
-            try {
-                local = Function('return this')();
-            } catch (e) {
-                throw new Error('polyfill failed because global object is unavailable in this environment');
-            }
-        }
-
-        var P = local.Promise;
-
-        if (P) {
-            var promiseToString = null;
-            try {
-                promiseToString = Object.prototype.toString.call(P.resolve());
-            } catch (e) {
-                // silently ignored
-            }
-
-            if (promiseToString === '[object Promise]' && !P.cast) {
-                return;
-            }
-        }
-
-        local.Promise = Promise$2;
-    }
-
-    // Strange compat..
-    Promise$2.polyfill = polyfill;
-    Promise$2.Promise = Promise$2;
-
-    Promise$2.polyfill();
-
-    return Promise$2;
-
-})));
-
-
-
-//# sourceMappingURL=es6-promise.auto.map
+﻿/*
+	Yaku v0.19.3
+	(c) 2015 Yad Smood. http://ysmood.org
+	License MIT
+*/
+/*
+	Yaku v0.17.9
+	(c) 2015 Yad Smood. http://ysmood.org
+	License MIT
+*/
+
+(function () {
+	'use strict';
+
+	if ('Promise' in self) return;
+
+	var $undefined
+	, $null = null
+	, isBrowser = typeof self === 'object'
+	, root = self
+	, nativePromise = root.Promise
+	, process = root.process
+	, console = root.console
+	, isLongStackTrace = true
+	, Arr = Array
+	, Err = Error
+
+	, $rejected = 1
+	, $resolved = 2
+	, $pending = 3
+
+	, $Symbol = 'Symbol'
+	, $iterator = 'iterator'
+	, $species = 'species'
+	, $speciesKey = $Symbol + '(' + $species + ')'
+	, $return = 'return'
+
+	, $unhandled = '_uh'
+	, $promiseTrace = '_pt'
+	, $settlerTrace = '_st'
+
+	, $invalidThis = 'Invalid this'
+	, $invalidArgument = 'Invalid argument'
+	, $fromPrevious = '\nFrom previous '
+	, $promiseCircularChain = 'Chaining cycle detected for promise'
+	, $unhandledRejectionMsg = 'Uncaught (in promise)'
+	, $rejectionHandled = 'rejectionHandled'
+	, $unhandledRejection = 'unhandledRejection'
+
+	, $tryCatchFn
+	, $tryCatchThis
+	, $tryErr = { e: $null }
+	, $noop = function () {}
+	, $cleanStackReg = /^.+\/node_modules\/yaku\/.+\n?/mg
+	;
+
+	/**
+	* This class follows the [Promises/A+](https://promisesaplus.com) and
+	* [ES6](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects) spec
+	* with some extra helpers.
+	* @param  {Function} executor Function object with two arguments resolve, reject.
+	* The first argument fulfills the promise, the second argument rejects it.
+	* We can call these functions, once our operation is completed.
+	*/
+	var Yaku = function (executor) {
+	var self = this,
+		err;
+
+	// "this._s" is the internao state of: pending, resolved or rejected
+	// "this._v" is the internal value
+
+	if (!isObject(self) || self._s !== $undefined)
+		throw genTypeError($invalidThis);
+
+	self._s = $pending;
+
+	if (isLongStackTrace) self[$promiseTrace] = genTraceInfo();
+
+	if (executor !== $noop) {
+		if (!isFunction(executor))
+			throw genTypeError($invalidArgument);
+
+		err = genTryCatcher(executor)(
+			genSettler(self, $resolved),
+			genSettler(self, $rejected)
+		);
+
+		if (err === $tryErr)
+			settlePromise(self, $rejected, err.e);
+	}
+	};
+
+	Yaku['default'] = Yaku;
+
+	extend(Yaku.prototype, {
+	/**
+		* Appends fulfillment and rejection handlers to the promise,
+		* and returns a new promise resolving to the return value of the called handler.
+		* @param  {Function} onFulfilled Optional. Called when the Promise is resolved.
+		* @param  {Function} onRejected  Optional. Called when the Promise is rejected.
+		* @return {Yaku} It will return a new Yaku which will resolve or reject after
+		* @example
+		* the current Promise.
+		* ```js
+		* var Promise = require('yaku');
+		* var p = Promise.resolve(10);
+		*
+		* p.then((v) => {
+		*     console.log(v);
+		* });
+		* ```
+		*/
+	then: function (onFulfilled, onRejected) {
+		if (this._s === undefined) throw genTypeError();
+
+		return addHandler(
+			this,
+			newCapablePromise(Yaku.speciesConstructor(this, Yaku)),
+			onFulfilled,
+			onRejected
+		);
+	},
+
+	/**
+		* The `catch()` method returns a Promise and deals with rejected cases only.
+		* It behaves the same as calling `Promise.prototype.then(undefined, onRejected)`.
+		* @param  {Function} onRejected A Function called when the Promise is rejected.
+		* This function has one argument, the rejection reason.
+		* @return {Yaku} A Promise that deals with rejected cases only.
+		* @example
+		* ```js
+		* var Promise = require('yaku');
+		* var p = Promise.reject(new Error("ERR"));
+		*
+		* p['catch']((v) => {
+		*     console.log(v);
+		* });
+		* ```
+		*/
+	'catch': function (onRejected) {
+		return this.then($undefined, onRejected);
+	},
+
+	/**
+		* Register a callback to be invoked when a promise is settled (either fulfilled or rejected).
+		* Similar with the try-catch-finally, it's often used for cleanup.
+		* @param  {Function} onFinally A Function called when the Promise is settled.
+		* It will not receive any argument.
+		* @return {Yaku} A Promise that will reject if onFinally throws an error or returns a rejected promise.
+		* Else it will resolve previous promise's final state (either fulfilled or rejected).
+		* @example
+		* ```js
+		* var Promise = require('yaku');
+		* var p = Math.random() > 0.5 ? Promise.resolve() : Promise.reject();
+		* p.finally(() => {
+		*     console.log('finally');
+		* });
+		* ```
+		*/
+	'finally': function (onFinally) {
+		return this.then(function (val) {
+			return Yaku.resolve(onFinally()).then(function () {
+				return val;
+			});
+		}, function (err) {
+			return Yaku.resolve(onFinally()).then(function () {
+				throw err;
+			});
+		});
+	},
+
+	// The number of current promises that attach to this Yaku instance.
+	_c: 0,
+
+	// The parent Yaku.
+	_p: $null
+	});
+
+	/**
+	* The `Promise.resolve(value)` method returns a Promise object that is resolved with the given value.
+	* If the value is a thenable (i.e. has a then method), the returned promise will "follow" that thenable,
+	* adopting its eventual state; otherwise the returned promise will be fulfilled with the value.
+	* @param  {Any} value Argument to be resolved by this Promise.
+	* Can also be a Promise or a thenable to resolve.
+	* @return {Yaku}
+	* @example
+	* ```js
+	* var Promise = require('yaku');
+	* var p = Promise.resolve(10);
+	* ```
+	*/
+	Yaku.resolve = function (val) {
+	return isYaku(val) ? val : settleWithX(newCapablePromise(this), val);
+	};
+
+	/**
+	* The `Promise.reject(reason)` method returns a Promise object that is rejected with the given reason.
+	* @param  {Any} reason Reason why this Promise rejected.
+	* @return {Yaku}
+	* @example
+	* ```js
+	* var Promise = require('yaku');
+	* var p = Promise.reject(new Error("ERR"));
+	* ```
+	*/
+	Yaku.reject = function (reason) {
+	return settlePromise(newCapablePromise(this), $rejected, reason);
+	};
+
+	/**
+	* The `Promise.race(iterable)` method returns a promise that resolves or rejects
+	* as soon as one of the promises in the iterable resolves or rejects,
+	* with the value or reason from that promise.
+	* @param  {iterable} iterable An iterable object, such as an Array.
+	* @return {Yaku} The race function returns a Promise that is settled
+	* the same way as the first passed promise to settle.
+	* It resolves or rejects, whichever happens first.
+	* @example
+	* ```js
+	* var Promise = require('yaku');
+	* Promise.race([
+	*     123,
+	*     Promise.resolve(0)
+	* ])
+	* .then((value) => {
+	*     console.log(value); // => 123
+	* });
+	* ```
+	*/
+	Yaku.race = function (iterable) {
+	var self = this
+		, p = newCapablePromise(self)
+
+		, resolve = function (val) {
+			settlePromise(p, $resolved, val);
+		}
+
+		, reject = function (val) {
+			settlePromise(p, $rejected, val);
+		}
+
+		, ret = genTryCatcher(each)(iterable, function (v) {
+			self.resolve(v).then(resolve, reject);
+		});
+
+	if (ret === $tryErr) return self.reject(ret.e);
+
+	return p;
+	};
+
+	/**
+	* The `Promise.all(iterable)` method returns a promise that resolves when
+	* all of the promises in the iterable argument have resolved.
+	*
+	* The result is passed as an array of values from all the promises.
+	* If something passed in the iterable array is not a promise,
+	* it's converted to one by Promise.resolve. If any of the passed in promises rejects,
+	* the all Promise immediately rejects with the value of the promise that rejected,
+	* discarding all the other promises whether or not they have resolved.
+	* @param  {iterable} iterable An iterable object, such as an Array.
+	* @return {Yaku}
+	* @example
+	* ```js
+	* var Promise = require('yaku');
+	* Promise.all([
+	*     123,
+	*     Promise.resolve(0)
+	* ])
+	* .then((values) => {
+	*     console.log(values); // => [123, 0]
+	* });
+	* ```
+	* @example
+	* Use with iterable.
+	* ```js
+	* var Promise = require('yaku');
+	* Promise.all((function * () {
+	*     yield 10;
+	*     yield new Promise(function (r) { setTimeout(r, 1000, "OK") });
+	* })())
+	* .then((values) => {
+	*     console.log(values); // => [123, 0]
+	* });
+	* ```
+	*/
+	Yaku.all = function (iterable) {
+	var self = this
+		, p1 = newCapablePromise(self)
+		, res = []
+		, ret
+	;
+
+	function reject (reason) {
+		settlePromise(p1, $rejected, reason);
+	}
+
+	ret = genTryCatcher(each)(iterable, function (item, i) {
+		self.resolve(item).then(function (value) {
+			res[i] = value;
+			if (!--ret) settlePromise(p1, $resolved, res);
+		}, reject);
+	});
+
+	if (ret === $tryErr) return self.reject(ret.e);
+
+	if (!ret) settlePromise(p1, $resolved, []);
+
+	return p1;
+	};
+
+	/**
+	* The ES6 Symbol object that Yaku should use, by default it will use the
+	* global one.
+	* @type {Object}
+	* @example
+	* ```js
+	* var core = require("core-js/library");
+	* var Promise = require("yaku");
+	* Promise.Symbol = core.Symbol;
+	* ```
+	*/
+	Yaku.Symbol = root[$Symbol] || {};
+
+	// To support browsers that don't support `Object.defineProperty`.
+	genTryCatcher(function () {
+	Object.defineProperty(Yaku, getSpecies(), {
+		get: function () { return this; }
+	});
+	})();
+
+	/**
+	* Use this api to custom the species behavior.
+	* https://tc39.github.io/ecma262/#sec-speciesconstructor
+	* @param {Any} O The current this object.
+	* @param {Function} defaultConstructor
+	*/
+	Yaku.speciesConstructor = function (O, D) {
+	var C = O.constructor;
+
+	return C ? (C[getSpecies()] || D) : D;
+	};
+
+	/**
+	* Catch all possibly unhandled rejections. If you want to use specific
+	* format to display the error stack, overwrite it.
+	* If it is set, auto `console.error` unhandled rejection will be disabled.
+	* @param {Any} reason The rejection reason.
+	* @param {Yaku} p The promise that was rejected.
+	* @example
+	* ```js
+	* var Promise = require('yaku');
+	* Promise.unhandledRejection = (reason) => {
+	*     console.error(reason);
+	* };
+	*
+	* // The console will log an unhandled rejection error message.
+	* Promise.reject('my reason');
+	*
+	* // The below won't log the unhandled rejection error message.
+	* Promise.reject('v')["catch"](() => {});
+	* ```
+	*/
+	Yaku.unhandledRejection = function (reason, p) {
+	console && console.error(
+		$unhandledRejectionMsg,
+		isLongStackTrace ? p.longStack : genStackInfo(reason, p)
+	);
+	};
+
+	/**
+	* Emitted whenever a Promise was rejected and an error handler was
+	* attached to it (for example with `["catch"]()`) later than after an event loop turn.
+	* @param {Any} reason The rejection reason.
+	* @param {Yaku} p The promise that was rejected.
+	*/
+	Yaku.rejectionHandled = $noop;
+
+	/**
+	* It is used to enable the long stack trace.
+	* Once it is enabled, it can't be reverted.
+	* While it is very helpful in development and testing environments,
+	* it is not recommended to use it in production. It will slow down
+	* application and eat up memory.
+	* It will add an extra property `longStack` to the Error object.
+	* @example
+	* ```js
+	* var Promise = require('yaku');
+	* Promise.enableLongStackTrace();
+	* Promise.reject(new Error("err"))["catch"]((err) => {
+	*     console.log(err.longStack);
+	* });
+	* ```
+	*/
+	Yaku.enableLongStackTrace = function () {
+	isLongStackTrace = true;
+	};
+
+	/**
+	* Only Node has `process.nextTick` function. For browser there are
+	* so many ways to polyfill it. Yaku won't do it for you, instead you
+	* can choose what you prefer. For example, this project
+	* [next-tick](https://github.com/medikoo/next-tick).
+	* By default, Yaku will use `process.nextTick` on Node, `setTimeout` on browser.
+	* @type {Function}
+	* @example
+	* ```js
+	* var Promise = require('yaku');
+	* Promise.nextTick = require('next-tick');
+	* ```
+	* @example
+	* You can even use sync resolution if you really know what you are doing.
+	* ```js
+	* var Promise = require('yaku');
+	* Promise.nextTick = fn => fn();
+	* ```
+	*/
+	Yaku.nextTick = isBrowser ?
+	function (fn) {
+		nativePromise ?
+			new nativePromise(function (resolve) { resolve(); }).then(fn) :
+			setTimeout(fn);
+	} :
+	process.nextTick;
+
+	// ********************** Private **********************
+
+	Yaku._s = 1;
+
+	/**
+	* All static variable name will begin with `$`. Such as `$rejected`.
+	* @private
+	*/
+
+	// ******************************* Utils ********************************
+
+	function getSpecies () {
+	return Yaku[$Symbol][$species] || $speciesKey;
+	}
+
+	function extend (src, target) {
+	for (var k in target) {
+		src[k] = target[k];
+	}
+	}
+
+	function isObject (obj) {
+	return obj && typeof obj === 'object';
+	}
+
+	function isFunction (obj) {
+	return typeof obj === 'function';
+	}
+
+	function isInstanceOf (a, b) {
+	return a instanceof b;
+	}
+
+	function isError (obj) {
+	return isInstanceOf(obj, Err);
+	}
+
+	function ensureType (obj, fn, msg) {
+	if (!fn(obj)) throw genTypeError(msg);
+	}
+
+	/**
+	* Wrap a function into a try-catch.
+	* @private
+	* @return {Any | $tryErr}
+	*/
+	function tryCatcher () {
+	try {
+		return $tryCatchFn.apply($tryCatchThis, arguments);
+	} catch (e) {
+		$tryErr.e = e;
+		return $tryErr;
+	}
+	}
+
+	/**
+	* Generate a try-catch wrapped function.
+	* @private
+	* @param  {Function} fn
+	* @return {Function}
+	*/
+	function genTryCatcher (fn, self) {
+	$tryCatchFn = fn;
+	$tryCatchThis = self;
+	return tryCatcher;
+	}
+
+	/**
+	* Generate a scheduler.
+	* @private
+	* @param  {Integer}  initQueueSize
+	* @param  {Function} fn `(Yaku, Value) ->` The schedule handler.
+	* @return {Function} `(Yaku, Value) ->` The scheduler.
+	*/
+	function genScheduler (initQueueSize, fn) {
+	/**
+		* All async promise will be scheduled in
+		* here, so that they can be execute on the next tick.
+		* @private
+		*/
+	var fnQueue = Arr(initQueueSize)
+		, fnQueueLen = 0;
+
+	/**
+		* Run all queued functions.
+		* @private
+		*/
+	function flush () {
+		var i = 0;
+		while (i < fnQueueLen) {
+			fn(fnQueue[i], fnQueue[i + 1]);
+			fnQueue[i++] = $undefined;
+			fnQueue[i++] = $undefined;
+		}
+
+		fnQueueLen = 0;
+		if (fnQueue.length > initQueueSize) fnQueue.length = initQueueSize;
+	}
+
+	return function (v, arg) {
+		fnQueue[fnQueueLen++] = v;
+		fnQueue[fnQueueLen++] = arg;
+
+		if (fnQueueLen === 2) Yaku.nextTick(flush);
+	};
+	}
+
+	/**
+	* Generate a iterator
+	* @param  {Any} obj
+	* @private
+	* @return {Object || TypeError}
+	*/
+	function each (iterable, fn) {
+	var len
+		, i = 0
+		, iter
+		, item
+		, ret
+	;
+
+	if (!iterable) throw genTypeError($invalidArgument);
+
+	var gen = iterable[Yaku[$Symbol][$iterator]];
+	if (isFunction(gen))
+		iter = gen.call(iterable);
+	else if (isFunction(iterable.next)) {
+		iter = iterable;
+	}
+	else if (isInstanceOf(iterable, Arr)) {
+		len = iterable.length;
+		while (i < len) {
+			fn(iterable[i], i++);
+		}
+		return i;
+	} else
+		throw genTypeError($invalidArgument);
+
+	while (!(item = iter.next()).done) {
+		ret = genTryCatcher(fn)(item.value, i++);
+		if (ret === $tryErr) {
+			isFunction(iter[$return]) && iter[$return]();
+			throw ret.e;
+		}
+	}
+
+	return i;
+	}
+
+	/**
+	* Generate type error object.
+	* @private
+	* @param  {String} msg
+	* @return {TypeError}
+	*/
+	function genTypeError (msg) {
+	return new TypeError(msg);
+	}
+
+	function genTraceInfo (noTitle) {
+	return (noTitle ? '' : $fromPrevious) + new Err().stack;
+	}
+
+
+	// *************************** Promise Helpers ****************************
+
+	/**
+	* Resolve the value returned by onFulfilled or onRejected.
+	* @private
+	* @param {Yaku} p1
+	* @param {Yaku} p2
+	*/
+	var scheduleHandler = genScheduler(999, function (p1, p2) {
+	var x, handler;
+
+	// 2.2.2
+	// 2.2.3
+	handler = p1._s !== $rejected ? p2._onFulfilled : p2._onRejected;
+
+	// 2.2.7.3
+	// 2.2.7.4
+	if (handler === $undefined) {
+		settlePromise(p2, p1._s, p1._v);
+		return;
+	}
+
+	// 2.2.7.1
+	x = genTryCatcher(callHanler)(handler, p1._v);
+	if (x === $tryErr) {
+		// 2.2.7.2
+		settlePromise(p2, $rejected, x.e);
+		return;
+	}
+
+	settleWithX(p2, x);
+	});
+
+	var scheduleUnhandledRejection = genScheduler(9, function (p) {
+	if (!hashOnRejected(p)) {
+		p[$unhandled] = 1;
+		emitEvent($unhandledRejection, p);
+	}
+	});
+
+	function emitEvent (name, p) {
+	var browserEventName = 'on' + name.toLowerCase()
+		, browserHandler = root[browserEventName];
+
+	if (process && process.listeners(name).length)
+		name === $unhandledRejection ?
+			process.emit(name, p._v, p) : process.emit(name, p);
+	else if (browserHandler)
+		browserHandler({ reason: p._v, promise: p });
+	else
+		Yaku[name](p._v, p);
+	}
+
+	function isYaku (val) { return val && val._s; }
+
+	function newCapablePromise (Constructor) {
+	if (isYaku(Constructor)) return new Constructor($noop);
+
+	var p, r, j;
+	p = new Constructor(function (resolve, reject) {
+		if (p) throw genTypeError();
+
+		r = resolve;
+		j = reject;
+	});
+
+	ensureType(r, isFunction);
+	ensureType(j, isFunction);
+
+	return p;
+	}
+
+	/**
+	* It will produce a settlePromise function to user.
+	* Such as the resolve and reject in this `new Yaku (resolve, reject) ->`.
+	* @private
+	* @param  {Yaku} self
+	* @param  {Integer} state The value is one of `$pending`, `$resolved` or `$rejected`.
+	* @return {Function} `(value) -> undefined` A resolve or reject function.
+	*/
+	function genSettler (self, state) {
+	var isCalled = false;
+	return function (value) {
+		if (isCalled) return;
+		isCalled = true;
+
+		if (isLongStackTrace)
+			self[$settlerTrace] = genTraceInfo(true);
+
+		if (state === $resolved)
+			settleWithX(self, value);
+		else
+			settlePromise(self, state, value);
+	};
+	}
+
+	/**
+	* Link the promise1 to the promise2.
+	* @private
+	* @param {Yaku} p1
+	* @param {Yaku} p2
+	* @param {Function} onFulfilled
+	* @param {Function} onRejected
+	*/
+	function addHandler (p1, p2, onFulfilled, onRejected) {
+	// 2.2.1
+	if (isFunction(onFulfilled))
+		p2._onFulfilled = onFulfilled;
+	if (isFunction(onRejected)) {
+		if (p1[$unhandled]) emitEvent($rejectionHandled, p1);
+
+		p2._onRejected = onRejected;
+	}
+
+	if (isLongStackTrace) p2._p = p1;
+	p1[p1._c++] = p2;
+
+	// 2.2.6
+	if (p1._s !== $pending)
+		scheduleHandler(p1, p2);
+
+	// 2.2.7
+	return p2;
+	}
+
+	// iterate tree
+	function hashOnRejected (node) {
+	// A node shouldn't be checked twice.
+	if (node._umark)
+		return true;
+	else
+		node._umark = true;
+
+	var i = 0
+		, len = node._c
+		, child;
+
+	while (i < len) {
+		child = node[i++];
+		if (child._onRejected || hashOnRejected(child)) return true;
+	}
+	}
+
+	function genStackInfo (reason, p) {
+	var stackInfo = [];
+
+	function push (trace) {
+		return stackInfo.push(trace.replace(/^\s+|\s+$/g, ''));
+	}
+
+	if (isLongStackTrace) {
+		if (p[$settlerTrace])
+			push(p[$settlerTrace]);
+
+		// Hope you guys could understand how the back trace works.
+		// We only have to iterate through the tree from the bottom to root.
+		(function iter (node) {
+			if (node && $promiseTrace in node) {
+				iter(node._next);
+				push(node[$promiseTrace] + '');
+				iter(node._p);
+			}
+		})(p);
+	}
+
+	return (reason && reason.stack ? reason.stack : reason) +
+		('\n' + stackInfo.join('\n')).replace($cleanStackReg, '');
+	}
+
+	function callHanler (handler, value) {
+	// 2.2.5
+	return handler(value);
+	}
+
+	/**
+	* Resolve or reject a promise.
+	* @private
+	* @param  {Yaku} p
+	* @param  {Integer} state
+	* @param  {Any} value
+	*/
+	function settlePromise (p, state, value) {
+	var i = 0
+		, len = p._c;
+
+	// 2.1.2
+	// 2.1.3
+	if (p._s === $pending) {
+		// 2.1.1.1
+		p._s = state;
+		p._v = value;
+
+		if (state === $rejected) {
+			if (isLongStackTrace && isError(value)) {
+				value.longStack = genStackInfo(value, p);
+			}
+
+			scheduleUnhandledRejection(p);
+		}
+
+		// 2.2.4
+		while (i < len) {
+			scheduleHandler(p, p[i++]);
+		}
+	}
+
+	return p;
+	}
+
+	/**
+	* Resolve or reject promise with value x. The x can also be a thenable.
+	* @private
+	* @param {Yaku} p
+	* @param {Any | Thenable} x A normal value or a thenable.
+	*/
+	function settleWithX (p, x) {
+	// 2.3.1
+	if (x === p && x) {
+		settlePromise(p, $rejected, genTypeError($promiseCircularChain));
+		return p;
+	}
+
+	// 2.3.2
+	// 2.3.3
+	if (x !== $null && (isFunction(x) || isObject(x))) {
+		// 2.3.2.1
+		var xthen = genTryCatcher(getThen)(x);
+
+		if (xthen === $tryErr) {
+			// 2.3.3.2
+			settlePromise(p, $rejected, xthen.e);
+			return p;
+		}
+
+		if (isFunction(xthen)) {
+			if (isLongStackTrace && isYaku(x))
+				p._next = x;
+
+			// Fix https://bugs.chromium.org/p/v8/issues/detail?id=4162
+			if (isYaku(x))
+				settleXthen(p, x, xthen);
+			else
+				Yaku.nextTick(function () {
+					settleXthen(p, x, xthen);
+				});
+		} else
+			// 2.3.3.4
+			settlePromise(p, $resolved, x);
+	} else
+		// 2.3.4
+		settlePromise(p, $resolved, x);
+
+	return p;
+	}
+
+	/**
+	* Try to get a promise's then method.
+	* @private
+	* @param  {Thenable} x
+	* @return {Function}
+	*/
+	function getThen (x) { return x.then; }
+
+	/**
+	* Resolve then with its promise.
+	* @private
+	* @param  {Yaku} p
+	* @param  {Thenable} x
+	* @param  {Function} xthen
+	*/
+	function settleXthen (p, x, xthen) {
+	// 2.3.3.3
+	var err = genTryCatcher(xthen, x)(function (y) {
+		// 2.3.3.3.3
+		// 2.3.3.3.1
+		x && (x = $null, settleWithX(p, y));
+	}, function (r) {
+		// 2.3.3.3.3
+		// 2.3.3.3.2
+		x && (x = $null, settlePromise(p, $rejected, r));
+	});
+
+	// 2.3.3.3.4.1
+	if (err === $tryErr && x) {
+		// 2.3.3.3.4.2
+		settlePromise(p, $rejected, err.e);
+		x = $null;
+	}
+	}
+
+	root.Promise = Yaku;
+})();
