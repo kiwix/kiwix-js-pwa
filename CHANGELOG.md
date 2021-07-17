@@ -8,6 +8,7 @@
 * ENHANCEMENT: Added full usage/syntax notes for title search and Alphabetical Title Index
 * ENHANCEMENT: Include `h4` headings in Table of Contents
 * ENHANCEMENT: Report number of titles scanned for long title searches
+* UPDATE: Sample ZIM updated to `wikipedia_en_100_maxi_2021-06.zim`
 * FIX: Display of ZIM Archive Index
 * FIX: Bug which failed to detect images correctly in a new tab
 * FIX: Touch-zoom of contents of iframe no longer blanks part of the display
