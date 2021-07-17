@@ -337,7 +337,7 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
                         }
                     }
                     // Report number of titles scanned every 5000 titles
-                    if (!(search.scanCount % 5000)) callback([], true, true);
+                    if (!(search.scanCount % 5000) && typeof saveStartIndex === 'undefined') callback([], true, true);
                     return addDirEntries(index + 1, title);
                 });
             };
