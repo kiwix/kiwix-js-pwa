@@ -1,12 +1,14 @@
 # Changelog
 
-## In progress release 1.5.0-rc2
+## In progress release 1.5.0-rc4
 
-* FEATURE: (Experimental) PWA is paritcipating in File Handling API origin trial
 * FEATURE: Search with wildcards `.*`, `.+` or regex syntax `(?:my_regular_expression)`
+* FEATURE: (Experimental) PWA is paritcipating in File Handling API origin trial
+* ENHANCEMENT: Significant speed-up by using native Promise API, or modern polyfill where needed
 * ENHANCEMENT: Added full usage/syntax notes for title search and Alphabetical Title Index
 * ENHANCEMENT: Include `h4` headings in Table of Contents
 * ENHANCEMENT: Report number of titles scanned for long title searches
+* FIX: Display of ZIM Archive Index
 * FIX: Bug which failed to detect images correctly in a new tab
 * FIX: Touch-zoom of contents of iframe no longer blanks part of the display
 * FIX: Broken zoom of contents of iframe (with UI buttons) in Internet Explorer
