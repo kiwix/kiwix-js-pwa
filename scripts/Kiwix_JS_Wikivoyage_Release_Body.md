@@ -3,7 +3,7 @@
 Please choose the correct version:
 
 * For **Windows 10/11**: install from the Microsoft Store: https://www.microsoft.com/store/apps/9N5SB90Q4JBJ (it will self-update automatically), or open a command prompt and run `winget install wikivoyage`; you can also sideload it (see instructions below)
-* For **Windows 7/8/10/11** or **Linux (Ubuntu, Debian)** 32bit/64bit desktop only: use the portable or installable [NWJS/Electron versions](https://kiwix.github.io/kiwix-js-windows/wikivoyage-electron.html) (NB these do not self-update yet)
+* For **Windows 7/8/10/11** or **Linux (Ubuntu, Debian, OpenSUSE)** 32bit/64bit desktop only: use the portable or installable [NWJS/Electron versions](https://kiwix.github.io/kiwix-js-windows/wikivoyage-electron.html) (NB these do not self-update yet)
 * For **Windows XP** or **Windows Vista**: use the older [NWJS release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html) and download the Wikivoyage archive separately from within the app
 
 This UWP app contains the <<date>> release of the Wikivoyage ZIM together with the changes detailed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-Wikivoyage/CHANGELOG.md).
