@@ -1205,7 +1205,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         var titleSearchRangeVal = document.getElementById('titleSearchRangeVal');
         document.getElementById('titleSearchRange').addEventListener('change', function(e) {
             settingsStore.setItem('maxSearchResultsSize', e.target.value, Infinity);
-            params.maxSearchResultsSize = e.target.value;
+            params.maxSearchResultsSize = ~~e.target.value;
             titleSearchRangeVal.innerHTML = e.target.value;
         });
         document.getElementById('titleSearchRange').addEventListener('input', function(e) {
@@ -2758,7 +2758,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // console.debug(appstate.tempPrefix);
                 // console.debug(appstate.search.prefix);
                 if (prefix === appstate.tempPrefix) return;
-                if (prefix && prefix.length > 0 && prefix !== appstate.search.prefix) {
+                if (prefix && prefix.length > 0 && (prefix !== appstate.search.prefix || /^\s/.test(prefix))) {
                     appstate.tempPrefix = prefix;
                     document.getElementById('searchArticles').click();
                 }
