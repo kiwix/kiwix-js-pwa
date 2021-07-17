@@ -1,9 +1,9 @@
-## This is the Windows 10 UWP app for Windows desktop/mobile/ARM
+## This is the Windows 10/11 UWP app for Windows desktop/mobile/ARM
 
 Please choose the correct version:
 
-* For **Windows 10**: install it from the Microsoft Store: https://www.microsoft.com/store/apps/9P8SLZ4J979J (it will self-update automatically), or open a command prompt and run `winget install kiwix`; you can also sideload it (see instructions below)
-* For **Windows 7/8/10** or **Linux (Ubuntu, Debian)** 32bit/64bit desktop only: use the portable or installable [NWJS/Electron versions](https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html) (NB these do not self-update yet)
+* For **Windows 10/11**: install from the Microsoft Store: https://www.microsoft.com/store/apps/9P8SLZ4J979J (it will self-update automatically), or open a command prompt and run `winget install kiwix`; you can also sideload it (see instructions below)
+* For **Windows 7/8/10/11** or **Linux (Ubuntu, Debian, OpenSUSE)** 32bit/64bit desktop only: use the portable or installable [NWJS/Electron versions](https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html) (NB these do not self-update yet)
 * For **Windows XP** or **Windows Vista**: use the older [NWJS release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html)
 
 This UWP app includes a small sample ZIM archve with a collection of the 100 most popular Wikipedia articles `<<zim>>` (<<date>>) together with the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md).
@@ -14,7 +14,7 @@ If you prefer not to use the Microsoft Store or wish to test a [different build]
 
 ![image](https://user-images.githubusercontent.com/4304337/119402976-99d71e00-bcd5-11eb-8bf4-dfa6c12e68aa.png)
 
-## Manual Installation: Windows 10 Tablet / PC
+## Manual Installation: Windows 10/11 Tablet / PC
 
 **New!** You can sideload the app easily by typing `winget install kiwix` in a Command Prompt or PowerShell terminal. If you don't yet have [`winget`](https://docs.microsoft.com/en-us/windows/package-manager/winget/), use these manual instructions:
 
