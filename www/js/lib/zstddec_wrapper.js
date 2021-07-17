@@ -152,7 +152,7 @@ define(['zstddec'], function() {
      * @returns {Promise} A Promise for the readSlice() function
      */
     Decompressor.prototype.readSliceSingleThread = function (offset, length) {
-        if (!appstate.zdBusy) {
+        if (zd && !appstate.zdBusy) {
             return this.readSlice(offset, length);
         } else {
             // The decompressor is already in progress.

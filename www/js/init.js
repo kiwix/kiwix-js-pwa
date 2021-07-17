@@ -429,8 +429,7 @@ require.config({
         },
         'bootstrap': {
             deps: ['jquery']
-        },
-        'webpHeroBundle': ''
+        }
     }
 });
 
