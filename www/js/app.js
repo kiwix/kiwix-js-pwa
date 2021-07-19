@@ -3767,8 +3767,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 //Inject htmlArticle into iframe
                 uiUtil.clear(); //Void progress messages
                 // Extract any css classes from the html tag (they will be stripped when injected in iframe with .innerHTML)
-                if (params.contentInjectionMode === 'jquery') var htmlCSS = htmlArticle.match(/<html[^>]*class\s*=\s*["']\s*([^"']+)/i);
-                htmlCSS = htmlCSS ? htmlCSS[1] : '';
+                var htmlCSS;
+                if (params.contentInjectionMode === 'jquery') htmlCSS = htmlArticle.match(/<html[^>]*class\s*=\s*["']\s*([^"']+)/i);
+                htmlCSS = htmlCSS ? htmlCSS[1].replace(/\s+/g, ' ').split(' ') : '';
 
                 // Hide any alert box that was activated in uiUtil.displayFileDownloadAlert function
                 $('#downloadAlert').hide();
@@ -3812,7 +3813,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     var docBody = articleDocument.querySelector('body');
                     if (articleWindow.kiwixType === 'iframe') {
                         // Add any missing classes stripped from the <html> tag
-                        if (htmlCSS) docBody.classList.add(htmlCSS);
+                        if (htmlCSS) htmlCSS.forEach(function (cl) {
+                            docBody.classList.add(cl);
+                        });
                         // Deflect drag-and-drop of ZIM file on the iframe to Config
                         docBody.addEventListener('dragover', handleIframeDragover);
                         docBody.addEventListener('drop', handleIframeDrop);
