@@ -20,7 +20,20 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
-define(['zstddec'], function() {
+
+// DEV: Put your RequireJS definition in the rqDef array below, and any function exports in the function parenthesis of the define statement
+// We need to do it this way in order to load the wasm or asm versions of zstddec conditionally. Older browsers can only use the asm version
+// because they cannot interpret WebAssembly.
+var rqDef = [];
+
+// Select asm or wasm conditionally
+if ('WebAssembly' in self) {
+    rqDef.push('zstddec-wasm');
+} else {
+    rqDef.push('zstddec-asm');
+}
+
+define(rqDef, function() {
     // DEV: zstddec.js has been compiled with `-s EXPORT_NAME="ZD" -s MODULARIZE=1` to avoid a clash with xzdec which uses "Module" as its exported object
     // Note that we include zstddec above in requireJS definition, but we cannot change the name in the function list
     // There is no longer any need to load it in index.html

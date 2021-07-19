@@ -15,7 +15,7 @@ const regexpKiwixDownloadLinks = /download\.kiwix\.org/i;
 const regexpZIMUrlWithNamespace = /(?:^|\/)([^\/]+\/)([-ABCIJMUVWX])\/(.+)/;
 
 const CACHE = "kiwix-precache-" + appVersion;
-const precacheFiles = [
+let precacheFiles = [
   ".",
   "www",
   "www/",
@@ -77,7 +77,6 @@ const precacheFiles = [
   "www/js/lib/util.js",
   "www/js/lib/xzdec.js",
   "www/js/lib/xzdec_wrapper.js",
-  "www/js/lib/zstddec.js",
   "www/js/lib/zstddec_wrapper.js",
   "www/js/lib/zimArchive.js",
   "www/js/lib/zimArchiveLoader.js",
@@ -94,6 +93,12 @@ const precacheFiles = [
   "www/js/katex/fonts/KaTeX_Size3-Regular.woff2",
   "www/js/katex/fonts/KaTeX_Size4-Regular.woff2"
 ];
+
+if ('WebAssembly' in self) {
+  precacheFiles.push("www/js/lib/zstddec-wasm.js", "www/js/lib/zstddec.wasm");
+} else {
+  precacheFiles.push("www/js/lib/zstddec-asm.js");
+}
 
 // DEV: add any URL schemata that should be excluded from caching with the Cache API to the regex below
 // As of 08-2019 the chrome-extension: schema is incompatible with the Cache API

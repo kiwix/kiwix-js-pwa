@@ -165,7 +165,9 @@
     <Content Include="www\js\lib\arrayFromPolyfill.js" />
     <Content Include="www\js\lib\promisePolyfill.js" />
     <Content Include="www\js\lib\webpHeroBundle_0.0.0-dev.27.js" />
-    <Content Include="www\js\lib\zstddec.js" />
+    <Content Include="www\js\lib\zstddec-asm.js" />
+    <Content Include="www\js\lib\zstddec-wasm.js" />
+    <Content Include="www\js\lib\zstddec.wasm" />
     <Content Include="www\js\lib\zstddec_wrapper.js" />
     <None Include="Package.StoreAssociation.xml" />
     <None Include="kiwix.pfx" />
