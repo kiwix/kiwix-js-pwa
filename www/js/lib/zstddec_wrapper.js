@@ -33,6 +33,16 @@ if ('WebAssembly' in self) {
     rqDef.push('zstddec-asm');
 }
 
+// Add required Polyfill for IE11
+if (!String.prototype.startsWith) {
+    Object.defineProperty(String.prototype, 'startsWith', {
+        value: function(search, rawPos) {
+            var pos = rawPos > 0 ? rawPos|0 : 0;
+            return this.substring(pos, pos + search.length) === search;
+        }
+    });
+}
+
 define(rqDef, function() {
     // DEV: zstddec.js has been compiled with `-s EXPORT_NAME="ZD" -s MODULARIZE=1` to avoid a clash with xzdec which uses "Module" as its exported object
     // Note that we include zstddec above in requireJS definition, but we cannot change the name in the function list
