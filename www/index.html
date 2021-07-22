@@ -118,22 +118,10 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in version <span class="version">1.0</span></h3>
                         <ul style="padding-left: 15px;">
-                            <li>New feature! Enabled title search with wildcards <code>.*</code>, <code>.+</code> or regex syntax <code>(?:my_regular_expression)</code>
-                                - wildcards make Gutenberg and Stackexchange ZIMs much more useable</li>
-                            <li>Added full syntax/usage notes on title search and the alphabetical ZIM Archive Index in About</li>
-                            <li>Significant speed-up by using native Promise API, or modern polyfill where needed</li>
-                            <li>New! PWA is participating in File Handling API Origin Trial to act as a file opener for ZIM archives</li>
-                            <li>Improve zooming and re-flowing the article contents in browsers that support the zoom style property</li>
-                            <li>Report number of titles scanned for long title searches</li>
-                            <li>Fix broken display of ZIM Archive Index</li>
-                            <li>Add a Content Security Policy preventing contents of a page from connecting to online resources</li>
-                            <li>Include h4 headings in Table of Contents</li>
-                            <li>Sample ZIM updated to wikipedia_en_100_maxi_2021-06.zim</li>
-                            <li>Fix crash in UWP app after updating a ZIM archive</li>
-                            <li>Fix bug which failed to detect images correctly in new tab</li>
-                            <li>Touch-zoom of contents of iframe no longer blanks part of the display</li>
-                            <li>Fixed broken zoom of contents of iframe (with UI buttons) in Internet Explorer</li>
-                            <li>Fixed bug setting up backlinks which caused some pages not to load</li>
+                            <li>The app can now take advantage of native Promises, speeding up intensive searches considerably</li>
+                            <li>Decompressors now loaded as fast binary WASM modules if the brower supports WebAssembly</li>
+                            <li>More displaced hatnotes are now corrected</li>
+                            <li>Fixed style injection code that would (rarely) cause an exception on some ZIM types</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md" target="_blank">Full changelog...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>
