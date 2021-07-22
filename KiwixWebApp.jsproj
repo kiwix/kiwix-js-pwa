@@ -165,7 +165,12 @@
     <Content Include="www\js\lib\arrayFromPolyfill.js" />
     <Content Include="www\js\lib\promisePolyfill.js" />
     <Content Include="www\js\lib\webpHeroBundle_0.0.0-dev.27.js" />
-    <Content Include="www\js\lib\zstddec.js" />
+    <Content Include="www\js\lib\xzdec-asm.js" />
+    <Content Include="www\js\lib\xzdec-wasm.js" />
+    <Content Include="www\js\lib\xzdec-wasm.wasm" />
+    <Content Include="www\js\lib\zstddec-asm.js" />
+    <Content Include="www\js\lib\zstddec-wasm.js" />
+    <Content Include="www\js\lib\zstddec-wasm.wasm" />
     <Content Include="www\js\lib\zstddec_wrapper.js" />
     <None Include="Package.StoreAssociation.xml" />
     <None Include="kiwix.pfx" />
@@ -316,7 +321,6 @@
     <Content Include="www\js\lib\uiUtil.js" />
     <Content Include="www\js\lib\utf8.js" />
     <Content Include="www\js\lib\util.js" />
-    <Content Include="www\js\lib\xzdec.js" />
     <Content Include="www\js\lib\xzdec_wrapper.js" />
     <Content Include="www\js\lib\zimArchive.js" />
     <Content Include="www\js\lib\zimArchiveLoader.js" />
