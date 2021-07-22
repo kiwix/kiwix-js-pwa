@@ -22,6 +22,7 @@
  * along with Kiwix JS (file LICENSE).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
+
 define([], function() {
     /**
      * Set maximum number of cache blocks of BLOCK_SIZE bytes each
@@ -117,7 +118,6 @@ define([], function() {
     var cache = new LRUCache();
     
     /** CACHE TUNING **/ 
-
     // DEV: Uncomment this block and blocks below marked 'CACHE TUNING' to measure Cache hit and miss rates for different Cache sizes
     // var hits = 0;
     // var misses = 0;
