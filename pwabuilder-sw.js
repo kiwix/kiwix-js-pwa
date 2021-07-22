@@ -68,14 +68,13 @@ let precacheFiles = [
   "www/js/lib/images.js",
   "www/js/lib/jquery-3.2.1.slim.js",
   "www/js/lib/kiwixServe.js",
-  "www/js/lib/promisPolyfill.js",
+  "www/js/lib/promisePolyfill.js",
   "www/js/lib/require.js",
   "www/js/lib/settingsStore.js",
   "www/js/lib/transformStyles.js",
   "www/js/lib/uiUtil.js",
   "www/js/lib/utf8.js",
   "www/js/lib/util.js",
-  "www/js/lib/xzdec.js",
   "www/js/lib/xzdec_wrapper.js",
   "www/js/lib/zstddec_wrapper.js",
   "www/js/lib/zimArchive.js",
@@ -95,9 +94,17 @@ let precacheFiles = [
 ];
 
 if ('WebAssembly' in self) {
-  precacheFiles.push("www/js/lib/zstddec-wasm.js", "www/js/lib/zstddec.wasm");
+  precacheFiles.push(
+    "www/js/lib/xzdec-wasm.js",
+    "www/js/lib/xzdec-wasm.wasm",
+    "www/js/lib/zstddec-wasm.js",
+    "www/js/lib/zstddec-wasm.wasm"
+  );
 } else {
-  precacheFiles.push("www/js/lib/zstddec-asm.js");
+  precacheFiles.push(
+    "www/js/lib/xzdec-asm.js",
+    "www/js/lib/zstddec-asm.js"
+  );
 }
 
 // DEV: add any URL schemata that should be excluded from caching with the Cache API to the regex below
