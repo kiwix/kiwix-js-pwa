@@ -25,7 +25,7 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
-define(['jquery'], function(jQuery) {
+define([], function() {
     
     /**
      * Storage implemented by Firefox OS
@@ -50,11 +50,12 @@ define(['jquery'], function(jQuery) {
      *         rejected with an error message.
      */
     StorageFirefoxOS.prototype.get = function(path) {
-        var deferred = q.defer();
-        var request = this._storage.get(path);
-        request.onsuccess = function() { deferred.resolve(this.result); };
-        request.onerror = function() { deferred.reject(this.error.name); };
-        return deferred.promise;
+        var that = this;
+        return new Promise(function (resolve, reject){
+            var request = that._storage.get(path);
+            request.onsuccess = function() { resolve(this.result); };
+            request.onerror = function() { reject(this.error.name); };
+        });
     };
     
     // We try to match both a standalone ZIM file (.zim) or
@@ -67,15 +68,16 @@ define(['jquery'], function(jQuery) {
      *         paths and rejected with an error message.
      */
     StorageFirefoxOS.prototype.scanForArchives = function() {
-        var deferred = jQuery.Deferred();
+        var that = this;
+        return new Promise(function (resolve, reject){
         var directories = [];
-        var cursor = this._storage.enumerate();
+            var cursor = that._storage.enumerate();
         cursor.onerror = function() {
-            deferred.reject(cursor.error);
+                reject(cursor.error);
         };
         cursor.onsuccess = function() {
             if (!cursor.result) {
-                deferred.resolve(directories);
+                    resolve(directories);
                 return;
             }
             var file = cursor.result;
@@ -86,7 +88,7 @@ define(['jquery'], function(jQuery) {
 
             cursor.continue();
         };
-        return deferred.promise();
+        });
     };
     
     /**
