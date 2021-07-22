@@ -1,5 +1,12 @@
 # Changelog
 
+## In-progress release 1.6.0-rc1
+
+* ENHANCEMENT: The app can now take advantage of native Promises (faster than Q)
+* ENHANCEMENT: Decompressors now loaded as fast binary WASM modules if the brower supports WebAssembly
+* FIX: More displaced hatnotes corrected
+* FIX: Style injection code that would (rarely) cause an exception on some ZIM types
+
 ## Release 1.5.0
 
 * FEATURE: Search with wildcards `.*`, `.+` or regex syntax `(?:my_regular_expression)`
