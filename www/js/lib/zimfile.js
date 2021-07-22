@@ -20,6 +20,21 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
+
+/**
+ * Add Polyfill currently required by IE11 to run zstddec-asm and xzdec-asm
+ * See https://github.com/emscripten-core/emscripten/issues/14700
+ * If this is resolved upstream, remove this polyfill
+ */
+    if (!String.prototype.startsWith) {
+    Object.defineProperty(String.prototype, 'startsWith', {
+        value: function(search, rawPos) {
+            var pos = rawPos > 0 ? rawPos|0 : 0;
+            return this.substring(pos, pos + search.length) === search;
+        }
+    });
+}
+
 define(['xzdec_wrapper', 'zstddec_wrapper', 'util', 'utf8', 'zimDirEntry', 'filecache'], function(xz, zstd, util, utf8, zimDirEntry, FileCache) {
 
     /**

@@ -28,25 +28,16 @@ var rqDef = [];
 
 // Select asm or wasm conditionally
 if ('WebAssembly' in self) {
+    console.debug('Using WASM zstandard decoder')
     rqDef.push('zstddec-wasm');
 } else {
+    console.debug('Using ASM zstandard decoder')
     rqDef.push('zstddec-asm');
 }
 
-// Add required Polyfill for IE11
-if (!String.prototype.startsWith) {
-    Object.defineProperty(String.prototype, 'startsWith', {
-        value: function(search, rawPos) {
-            var pos = rawPos > 0 ? rawPos|0 : 0;
-            return this.substring(pos, pos + search.length) === search;
-        }
-    });
-}
-
 define(rqDef, function() {
-    // DEV: zstddec.js has been compiled with `-s EXPORT_NAME="ZD" -s MODULARIZE=1` to avoid a clash with xzdec which uses "Module" as its exported object
-    // Note that we include zstddec above in requireJS definition, but we cannot change the name in the function list
-    // There is no longer any need to load it in index.html
+    // DEV: zstddec.js has been compiled with `-s EXPORT_NAME="ZD" -s MODULARIZE=1` to avoid a clash with xzdec.js
+    // Note that we include zstddec-wasm or zstddec-asm above in requireJS definition, but we cannot change the name in the function list
     // For explanation of loading method below to avoid conflicts, see https://github.com/emscripten-core/emscripten/blob/master/src/settings.js
     
     /**
@@ -117,7 +108,7 @@ define(rqDef, function() {
      * Is the decompressor already working?
      * @type Boolean
      */
-    appstate.zdBusy = false;
+    var busy = false;
     
     /**
      * @typedef Decompressor
@@ -136,6 +127,7 @@ define(rqDef, function() {
     function Decompressor(reader) {
         this._reader = reader;
     }
+
     /**
      * Set up the decompression stream, and initiate a read loop to decompress from the beginning of the cluster
      * until we reach <offset> in the decompressed byte stream
@@ -144,7 +136,7 @@ define(rqDef, function() {
      * @returns {Promise<ArrayBuffer>} Promise for an ArrayBuffer with decoded data
      */
     Decompressor.prototype.readSlice = function(offset, length) {
-        appstate.zdBusy = true;
+        busy = true;
         this._inStreamPos = 0;
         this._inStreamChunkedPos = 0;
         this._outStreamPos = 0;
@@ -162,7 +154,7 @@ define(rqDef, function() {
             // Should you need to free the decoder stream handle, use command below, but be sure to create a new stream control object
             // before attempting further decompression
             // zd._ZSTD_freeDStream(zd._decHandle);
-            appstate.zdBusy = false;
+            busy = false;
             return data;
         });
     };
@@ -175,7 +167,7 @@ define(rqDef, function() {
      * @returns {Promise} A Promise for the readSlice() function
      */
     Decompressor.prototype.readSliceSingleThread = function (offset, length) {
-        if (zd && !appstate.zdBusy) {
+        if (zd && !busy) {
             return this.readSlice(offset, length);
         } else {
             // The decompressor is already in progress.
