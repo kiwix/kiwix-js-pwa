@@ -433,13 +433,21 @@ require.config({
     }
 });
 
-requirejs(['bootstrap', 'promisePolyfill', 'arrayFromPolyfill'], function () {
+var req = ['bootstrap']; // Baseline Require array
+
+// Add polyfills to the Require array only if needed
+if (!('Promise' in self)) req.push('promisePolyfill');
+if (!('from' in Array)) req.push('arrayFromPolyfill');
+
+requirejs(req, function () {
     requirejs(['../app']);
 });
 
-// Load the WebP Polyfills only if needed
+// Test if WebP is natively supported, and if not, set webpMachine to true. The value of webpMachine
+// will determine whether the WebP Polyfills will be loaded (currently only used in uiUtil.js)
 var webpMachine = false;
-// Using self-invoking function to avoid defining global functions and variables
+
+// We use a self-invoking function here to avoid defining unnecessary global functions and variables
 (function (callback) {
     // Tests for native WebP support
     var webP = new Image();
