@@ -21,21 +21,21 @@
  */
 'use strict';
 
-// DEV: Put your RequireJS definition in the rqDef array below, and any function exports in the function parenthesis of the define statement
+// DEV: Put your RequireJS definition in the rqDefZD array below, and any function exports in the function parenthesis of the define statement
 // We need to do it this way in order to load the wasm or asm versions of zstddec conditionally. Older browsers can only use the asm version
 // because they cannot interpret WebAssembly.
-var rqDef = [];
+var rqDefZD = [];
 
 // Select asm or wasm conditionally
 if ('WebAssembly' in self) {
-    console.debug('Using WASM zstandard decoder')
-    rqDef.push('zstddec-wasm');
+    console.debug('Using WASM zstandard decoder');
+    rqDefZD.push('zstddec-wasm');
 } else {
-    console.debug('Using ASM zstandard decoder')
-    rqDef.push('zstddec-asm');
+    console.debug('Using ASM zstandard decoder');
+    rqDefZD.push('zstddec-asm');
 }
 
-define(rqDef, function() {
+define(rqDefZD, function() {
     // DEV: zstddec.js has been compiled with `-s EXPORT_NAME="ZD" -s MODULARIZE=1` to avoid a clash with xzdec.js
     // Note that we include zstddec-wasm or zstddec-asm above in requireJS definition, but we cannot change the name in the function list
     // For explanation of loading method below to avoid conflicts, see https://github.com/emscripten-core/emscripten/blob/master/src/settings.js
@@ -53,7 +53,8 @@ define(rqDef, function() {
      * @type EMSInstanceExt
      */
     var zd;
-    ZD().then(function(instance) {
+
+    var instantiateDecoder = function (instance) {
         // Instantiate the zd object
         zd = instance;
         // Create JS API by wrapping C++ functions
@@ -96,6 +97,21 @@ define(rqDef, function() {
         zd._outBuffer.ptr = mallocOrDie(3 << 2); // 3 x 32bit bytes
         // Reserve w/asm memory for the outBuffer data steam
         zd._outBuffer.dst = mallocOrDie(zd._outBuffer.size);
+    };
+
+    ZD().then(instantiateDecoder)
+    .catch(function (err) {
+        console.debug(err);
+        if (/CompileError.+?WASM/i.test(err.message)) {
+            console.log("WASM failed to load, falling back to ASM...", err);
+            ZD = null;
+            require(['zstddec-asm'], function() {
+                ZD().then(instantiateDecoder)
+                .catch(function (err) {
+                    console.error('Could not instantiate any decoder!', err);
+                });
+            });
+        }
     });
     
     /**
@@ -167,6 +183,7 @@ define(rqDef, function() {
      * @returns {Promise} A Promise for the readSlice() function
      */
     Decompressor.prototype.readSliceSingleThread = function (offset, length) {
+        // Tests whether the decompressor is ready (initiated) and not busy
         if (zd && !busy) {
             return this.readSlice(offset, length);
         } else {

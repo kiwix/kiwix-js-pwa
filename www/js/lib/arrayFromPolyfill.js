@@ -1,9 +1,7 @@
 ﻿/**
- * Simple Array.from polyfi8ll (with Set support) from https://stackoverflow.com/a/62682524/9727685
+ * Simple Array.from polyfill (with Set support) from https://stackoverflow.com/a/62682524/9727685
  */
 (function () {
-	// Detection
-	if ('from' in Array) return;
 
 	function arrayFrom(arr, callbackFn, thisArg) {
 		//if you need you can uncomment the following line
@@ -31,5 +29,5 @@
 		return arNew;
 	}
 	//You could also use it without the following line, but it is not recommended because native function is faster.
-	Array.from = arrayFrom; //We set it as polyfill
+	Array.from = Array.from || arrayFrom; //We set it as polyfill
 }());

@@ -21,21 +21,21 @@
  */
 'use strict';
 
-// DEV: Put your RequireJS definition in the rqDef array below, and any function exports in the function parenthesis of the define statement
+// DEV: Put your RequireJS definition in the rqDefXZ array below, and any function exports in the function parenthesis of the define statement
 // We need to do it this way in order to load the wasm or asm versions of xzdec conditionally. Older browsers can only use the asm version
 // because they cannot interpret WebAssembly.
-var rqDef = [];
+var rqDefXZ = [];
 
 // Select asm or wasm conditionally
 if ('WebAssembly' in self) {
-    console.debug('Using WASM xz decoder')
-    rqDef.push('xzdec-wasm');
+    console.debug('Using WASM xz decoder');
+    rqDefXZ.push('xzdec-wasm');
 } else {
-    console.debug('Using ASM xz decoder')
-    rqDef.push('xzdec-asm');
+    console.debug('Using ASM xz decoder');
+    rqDefXZ.push('xzdec-asm');
 }
 
-define(rqDef, function() {
+define(rqDefXZ, function() {
     // DEV: xzdec.js has been compiled with `-s EXPORT_NAME="XZ" -s MODULARIZE=1` to avoid a clash with zstddec.js
     // Note that we include xzdec-asm or xzdec-wasm above in requireJS definition, but we cannot change the name in the function list
     // There is no longer any need to load it in index.html
@@ -50,9 +50,24 @@ define(rqDef, function() {
      * @type EMSInstance
      */
      var xzdec;
-     XZ().then(function (instance) {
-         // Instantiate the xzdec object
+
+     var instantiateDecoder = function (instance) {
          xzdec = instance;
+     };
+
+     XZ().then(instantiateDecoder)
+     .catch(function (err) {
+         console.debug(err);
+         if (/CompileError.+?WASM/i.test(err.message)) {
+             console.log("WASM failed to load, falling back to ASM...", err);
+             XZ = null;
+             require(['xzdec-asm'], function() {
+                 XZ().then(instantiateDecoder)
+                 .catch(function (err) {
+                     console.error('Could not instantiate any decoder!', err);
+                 });
+             });
+         }
      });
     
     /**
@@ -116,6 +131,7 @@ define(rqDef, function() {
      * @returns {Promise} A Promise for the read data
      */
     Decompressor.prototype.readSliceSingleThread = function(offset, length) {
+        // Tests whether the decompressor is ready (initiated) and not busy
         if (xzdec && !busy) {
             return this.readSlice(offset, length);
         } else {
@@ -178,7 +194,6 @@ define(rqDef, function() {
      */
     Decompressor.prototype._fillInBufferIfNeeded = function() {
         if (!xzdec._input_empty(this._decHandle)) {
-            // DEV: When converting to Promise/A+, use Promise.resolve(0) here
             return Promise.resolve(0);
         }
         var that = this;
