@@ -3699,7 +3699,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     injectCSS(); //DO NOT move this: it must run within .then function to pass correct values
                                 });
                         }).catch(function (e) {
-                            console.error("could not find DirEntry for CSS : " + title, e);
+                            console.error("could not find DirEntry for CSS : %s", title, e);
                             //@TODO Change this to push an array of [title, title] afters simplified code in injectCSS()
                             blobArray.push(title);
                             injectCSS();
