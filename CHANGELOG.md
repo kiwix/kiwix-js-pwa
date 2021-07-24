@@ -4,6 +4,7 @@
 
 * ENHANCEMENT: The app can now take advantage of native Promises (faster than Q)
 * ENHANCEMENT: Decompressors now loaded as fast binary WASM modules if the brower supports WebAssembly
+* EXPERIMENTAL: Intalled PWA can now be opened offline when double-clicking ZIM archive (depends on File Handling API) 
 * FIX: More displaced hatnotes corrected
 * FIX: Style injection code that would (rarely) cause an exception on some ZIM types
 
