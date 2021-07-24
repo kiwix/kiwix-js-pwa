@@ -376,7 +376,11 @@ define([], function () {
                 if (this.status == 200) {
                     clearTimeout(xhttpTimeout);
                     serverResponse.innerHTML = "Server response: " + this.status + " " + this.statusText + " (data received)";
-                    processXhttpData(this.responseText);
+                    if (/\.meta4$/i.test(URL)) {
+                        processMetaLink(this.responseText);
+                    } else {
+                        processXhttpData(this.responseText);
+                    }
                 } else if (this.status == 0 && window.location.protocol == "file:") {
                     document.getElementById('serverResponse').innerHTML = 'Cannot use XMLHttpRequest with file:// protocol';
                     document.getElementById('serverResponse').style.display = "inline";
@@ -419,71 +423,81 @@ define([], function () {
             downloadLinks.style.display = "block";
         }
 
-        function processXhttpData(doc) {
-            if (/\.meta4$/i.test(URL)) {
-                //It's the metalink with download links
-                var linkArray = doc.match(/<url\b[^>]*>[^<]*<\/url>/ig);
-                var size = doc.match(/<size>(\d+)<\/size>/i);
-                //Filter value (add comma separators if required)
-                size = size.length ? size[1] : "";
-                var megabytes = size ? Math.round(size * 10 / (1024 * 1024)) / 10 : size;
-                //Use the lookbehind reversal trick to add commas....
-                size = size.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
-                var megabytes$ = megabytes.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
-                doc = "";
-                //var mirrorservice = false;
-                for (var i = 1; i < linkArray.length; i++) { //NB we'ere intentionally discarding first link to kiwix.org (not to zim)
-                    //DEV: Mirrorservice download bug now fixed [kiwix-js-windows #28] @TODO: remove this after period of stable downloads fully tested
-                    //ZIP files work fine with mirrorservice, so test for ZIM type only
-                    //if (/\.zim\.meta4$/i.test(URL) && /mirrorservice\.org/i.test(linkArray[i])) {
-                    //    mirrorservice = true;
-                    //    doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li>*** Server has download bug, see note ***<br />$1</li>\r\n');
-                    //} else {
-                        doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li><a href="$1" target="_blank">$1</a></li>\r\n');
-                    //}
-                }
-                var headerDoc = 'We found the following links to your file:';
-                var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^\/]*\.meta4$/i, "\/") + '">&lt;&lt; Back to list of files</a></p>\r\n';
-                bodyDoc += /\/ted\//i.test(URL) ? '<h4 style="color:red">IMPORTANT: <b>TED TALKS</b> videos can be played in the UWP app on Windows 10, but on Windows 10 Mobile you may need to play the videos with an external app such as VLC Media Player (from the Store).</h4>\r\n<p>Please note you will need to search for the talks using standard ZIM search, because the ZIM\'s proprietary UI does not yet work in this app.' : ""; 
-                bodyDoc += "<h5";
-                bodyDoc += megabytes > 2000 ? ' style="color:red;"> WARNING: ' : '>';
-                bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unknown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
-                if (megabytes > 200) bodyDoc += '<p><b>Consider using BitTorrent to download file:</b></p>\r\n' + 
-                    '<p><b>BitTorrent link</b>: <a href="' + URL.replace(/\.meta4$/, ".torrent") + '" target="_blank">' +
-                    URL.replace(/\.meta4$/, ".torrent") + '</a></p>';
-                if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
-                    bodyDoc += '<p style="color:red;">This archive is larger than the maximum file size permitted on an SD card formatted as FAT32 (max size is approx. 4GB). On Windows, this is not normally a problem. However, if your card or other storage area is formatted in this way, you will need to download the file on a PC and split it into chunks less than 4GB: see <a href="https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#download-a-zim-archive-all-platforms" target="_blank">Download a ZIM archive</a>.</p>\r\n';
-                    // bodyDoc += '<p><b>To browse for a split version of this archive click here: <a id="portable" href="#" data-kiwix-dl="' +
-                    //    URL.replace(/\/zim\/([^/]+\/).*$/m, "/portable/$1") + '">' + URL.replace(/\/zim\/([^/]+\/).*$/m, "/portable/$1") +
-                    //    '</a>.</b></p>\r\n';
-                }
-                if (/\.zip\.meta4$/i.test(URL)) {
-                    if (megabytes > 4000) bodyDoc += '<p style="color:red;">This ZIP file contains a split version of the archive, but the ZIP itself is larger than the maximum file size permitted on an SD card formatted as FAT32. Be sure to save it in a non-FAT32 location (e.g. a PC hard drive).</p>\r\n';
-                    bodyDoc += '<p>INSTRUCTIONS: You may need to open this ZIP file on a regular computer. After you have downloaded it, open the ZIP in\r\n' +
-                        'File Explorer. You will need to extract the contents of the folder <span style="font-family: monospace;"><b>&gt; data &gt; content</b></span>,\r\n' +
-                        'and transfer ALL of the files there to an accessible folder on your device. After that, you can search for the folder in this app (see above).</p>\r\n';
-                }
-                bodyDoc += '<p><i>Links will open in a new browser window</i></p><ol>\r\n' + doc + '</ol>\r\n';
-                //if (mirrorservice) bodyDoc += '*** Note: mirrorservice.org currently has a download bug with ZIM archives: on some browsers it will download the ZIM file as plain text in browser window';
-                bodyDoc += '<br /><br />';
-                var header = document.getElementById('dl-panel-heading');
-                header.outerHTML = header.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + headerDoc + '</div>');
-                var body = document.getElementById('dl-panel-body');
-                body.outerHTML = body.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + bodyDoc + '</div>');
-                downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, "File in");
-                if (megabytes > 4000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, "panel-danger");
-                if (megabytes > 2000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, "panel-warning");
+        function processMetaLink(doc) {
+            //It's the metalink with download links
+            var linkArray = doc.match(/<url\b[^>]*>[^<]*<\/url>/ig);
+            var size = doc.match(/<size>(\d+)<\/size>/i);
+            //Filter value (add comma separators if required)
+            size = size.length ? size[1] : "";
+            var megabytes = size ? Math.round(size * 10 / (1024 * 1024)) / 10 : size;
+            //Use the lookbehind reversal trick to add commas....
+            size = size.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
+            var megabytes$ = megabytes.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
+            doc = "";
+            //var mirrorservice = false;
+            for (var i = 1; i < linkArray.length; i++) { //NB we'ere intentionally discarding first link to kiwix.org (not to zim)
+                //DEV: Mirrorservice download bug now fixed [kiwix-js-windows #28] @TODO: remove this after period of stable downloads fully tested
+                //ZIP files work fine with mirrorservice, so test for ZIM type only
+                //if (/\.zim\.meta4$/i.test(URL) && /mirrorservice\.org/i.test(linkArray[i])) {
+                //    mirrorservice = true;
+                //    doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li>*** Server has download bug, see note ***<br />$1</li>\r\n');
+                //} else {
+                    doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li><a href="$1" target="_blank">$1</a></li>\r\n');
+                //}
+            }
+            var headerDoc = 'We found the following links to your file:';
+            var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^\/]*\.meta4$/i, "\/") + '">&lt;&lt; Back to list of files</a></p>\r\n';
+            bodyDoc += /\/ted\//i.test(URL) ? '<h4 style="color:red">IMPORTANT: <b>TED TALKS</b> videos can be played in the UWP app on Windows 10, but on Windows 10 Mobile you may need to play the videos with an external app such as VLC Media Player (from the Store).</h4>\r\n<p>Please note you will need to search for the talks using standard ZIM search, because the ZIM\'s proprietary UI does not yet work in this app.' : ""; 
+            bodyDoc += "<h5";
+            bodyDoc += megabytes > 2000 ? ' style="color:red;"> WARNING: ' : '>';
+            bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unknown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
+            if (megabytes > 200) bodyDoc += '<p><b>Consider using BitTorrent to download file:</b></p>\r\n' + 
+                '<p><b>BitTorrent link</b>: <a href="' + URL.replace(/\.meta4$/, ".torrent") + '" target="_blank">' +
+                URL.replace(/\.meta4$/, ".torrent") + '</a></p>';
+            if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
+                bodyDoc += '<p style="color:red;">This archive is larger than the maximum file size permitted on an SD card formatted as FAT32 (max size is approx. 4GB). On Windows, this is not normally a problem. However, if your card or other storage area is formatted in this way, you will need to download the file on a PC and split it into chunks less than 4GB: see <a href="https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#download-a-zim-archive-all-platforms" target="_blank">Download a ZIM archive</a>.</p>\r\n';
+                // bodyDoc += '<p><b>To browse for a split version of this archive click here: <a id="portable" href="#" data-kiwix-dl="' +
+                //    URL.replace(/\/zim\/([^/]+\/).*$/m, "/portable/$1") + '">' + URL.replace(/\/zim\/([^/]+\/).*$/m, "/portable/$1") +
+                //    '</a>.</b></p>\r\n';
+            }
+            if (/\.zip\.meta4$/i.test(URL)) {
+                if (megabytes > 4000) bodyDoc += '<p style="color:red;">This ZIP file contains a split version of the archive, but the ZIP itself is larger than the maximum file size permitted on an SD card formatted as FAT32. Be sure to save it in a non-FAT32 location (e.g. a PC hard drive).</p>\r\n';
+                bodyDoc += '<p>INSTRUCTIONS: You may need to open this ZIP file on a regular computer. After you have downloaded it, open the ZIP in\r\n' +
+                    'File Explorer. You will need to extract the contents of the folder <span style="font-family: monospace;"><b>&gt; data &gt; content</b></span>,\r\n' +
+                    'and transfer ALL of the files there to an accessible folder on your device. After that, you can search for the folder in this app (see above).</p>\r\n';
+            }
+            bodyDoc += '<p><i>Links will open in a new browser window</i></p><ol>\r\n' + doc + '</ol>\r\n';
+            //if (mirrorservice) bodyDoc += '*** Note: mirrorservice.org currently has a download bug with ZIM archives: on some browsers it will download the ZIM file as plain text in browser window';
+            bodyDoc += '<br /><br />';
+            var header = document.getElementById('dl-panel-heading');
+            header.outerHTML = header.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + headerDoc + '</div>');
+            var body = document.getElementById('dl-panel-body');
+            body.outerHTML = body.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + bodyDoc + '</div>');
+            downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, "File in");
+            if (megabytes > 4000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, "panel-danger");
+            if (megabytes > 2000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, "panel-warning");
+            var langSel = document.getElementById("langs");
+            var dateSel = document.getElementById("dates");
+            //Set chosen value in language selector (really this is for return)
+            if (langSel) {
+                langs.value = lang;
+            }
+            if (dateSel) {
+                dates.value = kiwixDate;
+            }
+            //Add event listener for click on return link, to go back to list of archives
+            document.getElementById('returnLink').addEventListener('click', function (e) {
                 var langSel = document.getElementById("langs");
+                var langID = langSel ? langs.value : "";
+                langID = langID == "All" ? "" : langID;
                 var dateSel = document.getElementById("dates");
-                //Set chosen value in language selector (really this is for return)
-                if (langSel) {
-                    langs.value = lang;
-                }
-                if (dateSel) {
-                    dates.value = kiwixDate;
-                }
-                //Add event listener for click on return link, to go back to list of archives
-                document.getElementById('returnLink').addEventListener('click', function (e) {
+                var dateID = dateSel ? dates.value : "";
+                dateID = dateID == "All" ? "" : dateID;
+                requestXhttpData(this.dataset.kiwixDl, langID, dateID);
+            });
+            //Add event listener for split archive link, if necessary
+            if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
+                document.getElementById('portable').addEventListener('click', function (e) {
                     var langSel = document.getElementById("langs");
                     var langID = langSel ? langs.value : "";
                     langID = langID == "All" ? "" : langID;
@@ -492,20 +506,11 @@ define([], function () {
                     dateID = dateID == "All" ? "" : dateID;
                     requestXhttpData(this.dataset.kiwixDl, langID, dateID);
                 });
-                //Add event listener for split archive link, if necessary
-                if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
-                    document.getElementById('portable').addEventListener('click', function (e) {
-                        var langSel = document.getElementById("langs");
-                        var langID = langSel ? langs.value : "";
-                        langID = langID == "All" ? "" : langID;
-                        var dateSel = document.getElementById("dates");
-                        var dateID = dateSel ? dates.value : "";
-                        dateID = dateID == "All" ? "" : dateID;
-                        requestXhttpData(this.dataset.kiwixDl, langID, dateID);
-                    });
-                }
-                return;
             }
+            return;
+        }
+
+        function processXhttpData(doc) {
             //Remove images
             doc = doc.replace(/<img\b[^>]*>\s*/ig, "");
             //Reduce size of header
@@ -523,13 +528,15 @@ define([], function () {
                 doc = doc.replace(/(<a\b[^>]*>last\s+modified<\/a>\s*)(<a\b[^>]*>size<\/a>)\s*/ig, " $2    $1");
                 doc = doc.replace(/(\d{4}-\d\d-\d\d\s\d\d\:\d\d)\s\s([\s\d.\w-]{7})$/img, " $2 $1");
             }
+            var stDoc; // Placeholder for standardized doc to be used to get arrays
             if (/^[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$/m.test(doc)) {
                 //Delete lines that do not match regexpFilter (this ensures packaged apps only show ZIMs appropriate to the package)
                 doc = regexpFilter ? doc.replace(regexpFilter, "") : doc;
+                stDoc = getStandardizedDoc(doc);
 
                 //Get language and date arrays
-                var langArray = getLangArray(doc);
-                var dateArray = getDateArray(doc);
+                var langArray = getLangArray(stDoc);
+                var dateArray = getDateArray(stDoc);
 
                 //Create dropdown language and date selectors
                 if (langArray) {
@@ -593,7 +600,7 @@ define([], function () {
                         }
 
                         // Rebuild date selector
-                        dateArray = getDateArray(langPanel.innerHTML);
+                        // dateArray = getDateArray(langPanel.innerHTML);
                         var dateList = dateArray.join('\r\n');
                         dateList = dateList.replace(/^(.*)[\r\n]*/img, function (p0, p1) {
                             return '<option value="' + p1 + '"' + (dateID === p1 ? ' selected' : '') + '>' + p1 + '</option>';
@@ -601,7 +608,7 @@ define([], function () {
                         dateSel.innerHTML = dateList;
 
                         //Rebuild lang selector
-                        langArray = getLangArray(langPanel.innerHTML);
+                        // langArray = getLangArray(langPanel.innerHTML);
                         var langList = langArray.join('\r\n');
                         langList = langList.replace(/^(.*)[\r\n]*/img, function (p0, p1) {
                             return '<option value="' + p1 + '"' + (langID === p1 ? ' selected' : '') + '>' + p1 + (p1 === 'All' ? '' : ' : ' + langCodes[p1]) + '</option>';
@@ -628,7 +635,7 @@ define([], function () {
                         }
 
                         //Rebuild lang selector
-                        langArray = getLangArray(langPanel.innerHTML);
+                        // langArray = getLangArray(langPanel.innerHTML);
                         var langList = langArray.join('\r\n');
                         langList = langList.replace(/^(.*)[\r\n]*/img, function (p0, p1) {
                             return '<option value="' + p1 + '"' + (langID === p1 ? ' selected' : '' ) + '>' + p1 + (p1 === 'All' ? '' : ' : ' + langCodes[p1]) + '</option>';
@@ -636,7 +643,7 @@ define([], function () {
                         langSel.innerHTML = langList;
 
                         // Rebuild date selector
-                        dateArray = getDateArray(langPanel.innerHTML);
+                        // dateArray = getDateArray(langPanel.innerHTML);
                         var dateList = dateArray.join('\r\n');
                         dateList = dateList.replace(/^(.*)[\r\n]*/img, function (p0, p1) {
                             return '<option value="' + p1 + '"' + (dateID === p1 ? ' selected' : '') + '>' + p1 + '</option>';
@@ -673,16 +680,21 @@ define([], function () {
             document.getElementById('indexHeader').scrollIntoView();
             document.getElementById('scrollbox').scrollTop += 65;
 
+            // Standardize the document for array extraction
+            function getStandardizedDoc(fromDoc) {
+                //Add back any missing carriage returns
+                var std = fromDoc.replace(/<\/span><span\b/ig, "\n");
+                //Delete all lines without a wiki pattern from language list
+                std = std.replace(/^(?![^_\n\r]+_(\w+)_.+$).*[\r\n]*/mg, "");
+                //Delete any hidden lines
+                std = std.replace(/^.*?display:\s*none;.*[\r\n]*/mg, "");
+                return std;
+            }
+
             //Get list of languages
             function getLangArray(fromDoc) {
-                //Add back any missing carriage returns
-                var langList = fromDoc.replace(/<\/span><span\b/ig, "\r\n");
-                //Delete all lines without a wiki pattern from language list
-                langList = langList.replace(/^(?![^_\n\r]+_(\w+)_.+$).*[\r\n]*/mg, "");
-                //Delete any hidden lines
-                langList = langList.replace(/^.*?display:\s*none;.*[\r\n]*/mg, "");
                 //Get list of all languages
-                langList = langList.replace(/^[^_]+_([^_]+)_.+[\r\n]*/mg, "$1\n");
+                var langList = fromDoc.replace(/^[^_]+_([^_]+)_.+[\r\n]*/mg, "$1\n");
                 //Delete recurrences
                 langList = langList.replace(/\b(\w+\n)(?=[\s\S]*\b\1\n?)/g, "");
                 langList = "All\n" + langList;
@@ -694,14 +706,8 @@ define([], function () {
 
             //Get list of dates
             function getDateArray(fromDoc) {
-                //Add back any missing carriage returns
-                var dateList = fromDoc.replace(/<\/span><span\b/ig, "\r\n");
-                //Delete all lines without a wiki pattern from language list
-                dateList = dateList.replace(/^(?![^_\n\r]+_[\w-]+_.+$).*[\r\n]*/mg, "");
-                //Delete any hidden lines
-                dateList = dateList.replace(/^.*?display:\s*none;.*[\r\n]*/mg, "");
                 //Get list of all dates
-                dateList = dateList.replace(/^.*?(\d+[-]\d+)\.zi[mp].+[\r\n]*/mig, "$1\n");
+                var dateList = fromDoc.replace(/^.*?(\d+[-]\d+)\.zi[mp].+[\r\n]*/mig, "$1\n");
                 //Delete recurrences
                 dateList = dateList.replace(/(\b\d+[-]\d+)\n(?=[\s\S]*\b\1\n?)/g, "");
                 dateList = "All\n" + dateList;
