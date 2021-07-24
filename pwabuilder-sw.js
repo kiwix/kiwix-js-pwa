@@ -188,15 +188,17 @@ function intercept(event) {
   if (/^file:/i.test(event.request.url) && ! (regexpZIMUrlWithNamespace.test(event.request.url) && /\.zim\w{0,2}\//i.test(event.request.url))) return;
   // console.debug('[SW] Service Worker ' + (event.request.method === "GET" ? 'intercepted ' : 'noted ') + event.request.url, event.request.method);
   if (event.request.method !== "GET") return;
+  // Remove any querystring except 'kiwix-display'
+  var rqUrl = event.request.url.replace(/\?(?!kiwix-display)[^?]+$/i, '');
   event.respondWith(
-    fromCache(event.request).then(function (response) {
-        console.debug('[SW] Supplying ' + event.request.url + ' from CACHE...');
+    fromCache(rqUrl).then(function (response) {
+        console.debug('[SW] Supplying ' + rqUrl + ' from CACHE...');
         return response;
       },
       function () {
         // The response was not found in the cache so we look for it on the server
-        if (/\.zim\w{0,2}\//i.test(event.request.url) && regexpZIMUrlWithNamespace.test(event.request.url)) {
-          if (imageDisplay !== 'all' && /(^|\/)[IJ]\/.*\.(jpe?g|png|svg|gif|webp)($|[?#])(?!kiwix-display)/i.test(event.request.url)) {
+        if (/\.zim\w{0,2}\//i.test(rqUrl) && regexpZIMUrlWithNamespace.test(rqUrl)) {
+          if (imageDisplay !== 'all' && /(^|\/)[IJ]\/.*\.(jpe?g|png|svg|gif|webp)($|[?#])(?!kiwix-display)/i.test(rqUrl)) {
             // If the user has disabled the display of images, and the browser wants an image, respond with empty SVG
             // A URL with "?kiwix-display" query string acts as a passthrough so that the regex will not match and
             // the image will be fetched by app.js  
@@ -218,7 +220,7 @@ function intercept(event) {
             var nameSpace;
             var title;
             var titleWithNameSpace;
-            var regexpResult = regexpZIMUrlWithNamespace.exec(event.request.url);
+            var regexpResult = regexpZIMUrlWithNamespace.exec(rqUrl);
             var prefix = regexpResult[1];
             nameSpace = regexpResult[2];
             title = regexpResult[3];
@@ -261,7 +263,7 @@ function intercept(event) {
                 var httpResponse = new Response(msgEvent.data.content, responseInit);
 
                 // Add or update css or javascript assets to the cache
-                if (!excludedURLSchema.test(event.request.url) && /(text|application)\/(css|javascript)/i.test(contentType)) {
+                if (!excludedURLSchema.test(rqUrl) && /(text|application)\/(css|javascript)/i.test(contentType)) {
                   updateCache(event.request, httpResponse.clone());
                 }
 
@@ -283,7 +285,7 @@ function intercept(event) {
           // It's not a ZIM URL
           return fetch(event.request).then(function (response) {
             // If request was success, add or update it in the cache
-            if (!excludedURLSchema.test(event.request.url) && !/\.zim\w{0,2}$/i.test(event.request.url)) {
+            if (!excludedURLSchema.test(rqUrl) && !/\.zim\w{0,2}$/i.test(rqUrl)) {
               event.waitUntil(updateCache(event.request, response.clone()));
             }
             return response;
@@ -311,7 +313,7 @@ function fromCache(request) {
 }
 
 function updateCache(request, response) {
-  if (!excludedURLSchema.test(request.url)) {
+  if (!excludedURLSchema.test(request.url||request)) {
     return caches.open(CACHE).then(function (cache) {
       return cache.put(request, response);
     });
