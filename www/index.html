@@ -295,38 +295,39 @@
                     <br>
                     <p>
                         Kiwix aspires to make the world's knowledge available to everyone for free. If your Internet access is expensive, slow, unreliable, insecure or censored,
-                        with Kiwix software and archives, you can still gain offline access to a huge repository of knowledge and culture in almost every language.
+                        you can still gain access to a huge repository of knowledge and culture in almost every language using Kiwix offline archives.
                     </p>
                     <p>
                         To use this app, you will need to obtain/download one or more archives (called ZIM archives). You can download them in the app, or if you know someone with
-                        an archive you want, you can also share archives, e.g. on a USB stick. You will then have offline access to the resource contained in the archive: Wikipedia,
-                        Wiktionary, Wikivoyage, Project Gutenberg, TED Talks and many other sources. You can access this virtual offline encyclopaedia even if you are undertaking a
-                        long plane journey, hiking, and travelling or living in areas with weak or non-existent Internet access.
+                        an archive you want, you can also share archives, e.g. on a USB stick. Archives are available in many different languages for resources such as Wikipedia,
+                        WikiMed, Wiktionary, Wikivoyage, Project Gutenberg, TED Talks, Stackexchange, etc. You can access this virtual offline encyclopaedia even if you are
+                        undertaking a long plane journey, hiking, and travelling or living in areas with weak or non-existent Internet access.
                     </p>
                     <p>
                         Offline archives use the <a href="https://www.openzim.org//wiki/OpenZIM" target="_blank">OpenZIM format</a>. This app is regularly tested with a range of
-                        different archives, and works with almost all of them -- but note that our main focus is on Wikipedia-related archives (e.g., Wikipedia, Wikivoyage, WikiMed,
+                        different archives, and works with almost all of them -- but note that our main focus is on Wikipedia-related archives (Wikipedia, Wikivoyage, WikiMed,
                         Wiktionary).
                     </p>
                     <p>
                         You can search through the titles of articles in each archive to find the one you want, or view all the article titles with the ZIM Archive Index (see 
-                        <a href="#searchSyntax">Title search</a>). <b><i>Note that this app cannot (yet) do full text search of the contents of articles.</i></b>
+                        <a href="#searchSyntax">Title search</a>). <b><i>Note that this app cannot (yet) do full text search of the contents of all articles in a ZIM.</i></b>
                     </p>
                     <p>
-                        On some Wikivoyage (English and German) pages you will see a map location marker: <img src="img/icons/map_marker-18px.png" />. On Windows 10/11, you can tap this
-                        icon to open the <b>Maps app</b> at the selected location. In the UWP version of this app, this will work offline if you have downloaded the map for the relevant country
-                        in the Settings for <b>Offline Maps</b>.
+                        On some Wikivoyage (English and German) pages you will see a map location marker: <img src="img/icons/map_marker-18px.png" />. On Windows 10/11, you can
+                        tap this icon to open the <b>Maps app</b> at the selected location. In the UWP and PWA versions of this app, this will work offline if you have downloaded
+                        the map for the relevant country or region in the Settings for <b>Offline Maps</b>.
                     </p>
 
                     <h3 id="addingArchives">Usage</h3>
-                    <h4>Step 1: download some content</h4>
+                    <h4>Step 1: Download some content</h4>
                     <p>
-                        You can browse the Kiwix repository on the <a href="#downloads" onclick="document.getElementById('btnConfigure').click();">Configuration</a> page, and it will provide
-                        instructions according to the type of file you download. Alternatively, visit <a href="https://download.kiwix.org/zim" target="_blank">https://download.kiwix.org/zim/</a>
-                        using a regular computer. To use all the features of ZIM archives that have dynamic content (e.g. PhET), you may need to switch the app to the experimental PWA/ServiceWorker
-                        mode (see Expert Settings in configuration) -- but this mode is not available on Windows Mobile or on old browsers.
+                        You can browse the Kiwix repository on the <a href="#downloads" onclick="document.getElementById('btnConfigure').click();">Configuration</a> page,
+                        and the app will provide instructions according to the type of file you download. Alternatively, visit
+                        <a href="https://download.kiwix.org/zim" target="_blank">https://download.kiwix.org/zim/</a> using a regular computer. To use all the features of
+                        ZIM archives that have dynamic content (e.g. PhET), you may need to switch the app to the experimental PWA/ServiceWorker mode (see Expert Settings in
+                        configuration, but this mode is not available on Windows Mobile or on old browsers).
                     </p>
-                    <h4>Step 2: copy the content onto your device</h4>
+                    <h4>Step 2: Copy the content onto your device</h4>
                     <p>
                         If you have enough space, you can put several archives on your device storage. If you download the content
                         directly in the app, note the location of the saved file when you get the notification that it has
@@ -335,7 +336,7 @@
                         archive(s) to an accessible location on your device, such as the SD card or the main storage area if
                         there is enough space there.
                     </p>
-                    <h4>Step 3: go to the "Configure" menu and select your ZIM file (or double-click / drag-and-drop your file into the app)</h4>
+                    <h4>Step 3: Go to the "Configure" menu and select your ZIM file (or double-click / drag-and-drop your file into the app)</h4>
                     <p>
                         On the Configuration page, tap the "Select storage" button. If you have downloaded more than one archive, or you have a
                         split ZIM archive consisting of several 2GB files, then you will need to pick the <b>folder</b> that contains these files
@@ -350,7 +351,7 @@
                         file to launch it in the app, even if the app is closed (your choice will be remembered on next launch). You can also
                         <b>drag-and-drop</b> your ZIM file into the app, but it may not be remembered on next launch in all contexts (try it if this method interests you!).
                     </p>
-                    <h4>Step 4: enjoy your content offline!</h4>
+                    <h4>Step 4: Enjoy your content offline!</h4>
                     <h3 id="changelog">Changes in <span class="version">1.0</span></h3>
                     <div id="logUpdate" class="update"></div>
                     <div id="logFeatures"></div>
@@ -471,7 +472,7 @@
                     </p>
                     <h3 id="feedback">Feedback / helping / contributing</h3>
                     <p>
-                        This application is still a work in progress. There are bugs that still need fixing and improvements that
+                        This application is still a work in progress. There are bugs that need fixing and improvements that
                         need to be implemented. Suggestions and patches/pull requests are welcome: the source code is on
                         <a href="https://github.com/kiwix/kiwix-js-windows" target="_blank">github</a>.
                         The <a href="https://github.com/kiwix/kiwix-js-windows/issues" target="_blank">Kiwix JS <span class="identity">Windows</span> issue tracker</a>
