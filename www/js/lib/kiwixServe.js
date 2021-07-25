@@ -36,6 +36,7 @@ define([], function () {
         ay: 'Aymar (Aymara)',
         az: 'Azərbaycanca / آذربايجان (Azerbaijani)',
         ba: 'Башҡорт (Bashkir)',
+        ban: 'Bhāṣa Bali (Balinese)',
         bar: 'Boarisch (Bavarian)',
         batSmg: 'Žemaitėška (Samogitian)',
         sgs: 'Žemaitėška (Samogitian)',
@@ -343,7 +344,7 @@ define([], function () {
     var regexpFilter = /_medicine/.test(params.packagedFile) ? /^(?!.+_medicine_)[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$\s+/mig : null;
     regexpFilter = /wikivoyage/.test(params.packagedFile) ? /^(?!.+wikivoyage_)[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$\s+/mig : regexpFilter;
     
-    function requestXhttpData(URL, lang, kiwixDate) {
+    function requestXhttpData(URL, lang, subj, kiwixDate) {
         if (!params.allowInternetAccess) {
             document.getElementById('serverResponse').innerHTML = "Blocked: select 'Allow Internet access'";
             document.getElementById('serverResponse').style.display = "inline";
@@ -476,38 +477,21 @@ define([], function () {
             downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, "File in");
             if (megabytes > 4000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, "panel-danger");
             if (megabytes > 2000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, "panel-warning");
-            var langSel = document.getElementById("langs");
-            var dateSel = document.getElementById("dates");
-            //Set chosen value in language selector (really this is for return)
-            if (langSel) {
-                langs.value = lang;
-            }
-            if (dateSel) {
-                dates.value = kiwixDate;
-            }
+            var langSel = document.getElementById('langs');
+            var subjSel = document.getElementById('subjects');
+            var dateSel = document.getElementById('dates');
+            var submitSelectValues = function () {
+                var langID = langSel ? langSel.value === 'All' ? '' : langSel.value : '';
+                var subjID = subjSel ? subjSel.value === 'All' ? '' : subjSel.value : '';
+                var dateID = dateSel ? dateSel.value === 'All' ? '' : dateSel.value : '';
+                requestXhttpData(this.dataset.kiwixDl, langID, subjID, dateID);
+            };
             //Add event listener for click on return link, to go back to list of archives
-            document.getElementById('returnLink').addEventListener('click', function (e) {
-                var langSel = document.getElementById("langs");
-                var langID = langSel ? langs.value : "";
-                langID = langID == "All" ? "" : langID;
-                var dateSel = document.getElementById("dates");
-                var dateID = dateSel ? dates.value : "";
-                dateID = dateID == "All" ? "" : dateID;
-                requestXhttpData(this.dataset.kiwixDl, langID, dateID);
-            });
+            document.getElementById('returnLink').addEventListener('click', submitSelectValues);
             //Add event listener for split archive link, if necessary
             if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
-                document.getElementById('portable').addEventListener('click', function (e) {
-                    var langSel = document.getElementById("langs");
-                    var langID = langSel ? langs.value : "";
-                    langID = langID == "All" ? "" : langID;
-                    var dateSel = document.getElementById("dates");
-                    var dateID = dateSel ? dates.value : "";
-                    dateID = dateID == "All" ? "" : dateID;
-                    requestXhttpData(this.dataset.kiwixDl, langID, dateID);
-                });
+                document.getElementById('portable').addEventListener('click', submitSelectValues);
             }
-            return;
         }
 
         function processXhttpData(doc) {
@@ -536,6 +520,7 @@ define([], function () {
 
                 //Get language and date arrays
                 var langArray = getLangArray(stDoc);
+                var subjectArray = getSubjectArray(stDoc);
                 var dateArray = getDateArray(stDoc);
 
                 //Create dropdown language and date selectors
@@ -548,44 +533,51 @@ define([], function () {
                     }
                     dropdownLang += '</select>\r\n';
                 }
+                if (subjectArray) {
+                    var dropdownSubj = '<select class="dropdown" id="subjects">\r\n';
+                    for (var r = 0; r < subjectArray.length; r++) {
+                        dropdownSubj += '<option value="' + subjectArray[r] + '">' +
+                            subjectArray[r] + '</option>\r\n';
+                    }
+                    dropdownSubj += '</select>\r\n';
+                }
                 if (dateArray) {
                     var dropdownDate = '<select class="dropdown" id="dates">\r\n';
-                    for (var q = 0; q < dateArray.length; q++) {
-                        dropdownDate += '<option value="' + dateArray[q] + '">' +
-                            dateArray[q] + '</option>\r\n';
+                    for (var s = 0; s < dateArray.length; s++) {
+                        dropdownDate += '<option value="' + dateArray[s] + '">' +
+                            dateArray[s] + '</option>\r\n';
                     }
                     dropdownDate += '</select>\r\n';
                 }
-                doc = dropdownDate ? doc.replace(/<\/h3>/i, '</h3>' + (dropdownLang ? '' : '\r\n<div class="row">\r\n') + '<div class="col-xs-6">Filter by date:&nbsp;&nbsp;' + dropdownDate + '</div>\r\n</div>\r\n') : doc;
-                doc = dropdownLang ? doc.replace(/<\/h3>/i, '</h3>\r\n<div class="row">\r\n<div class="col-xs-6">Filter by lang code:&nbsp;&nbsp;' + dropdownLang + '</div>\r\n' + (dropdownDate ? '' : '</div>\r\n')) : doc;
+                doc = dropdownDate ? doc.replace(/<\/h3>/i, '</h3>' + (dropdownLang || dropdownSubj ? '' : '\r\n<div class="row">\r\n') + '<div class="col-xs-4">Date:&nbsp;&nbsp;' + dropdownDate + '</div>\r\n</div>\r\n') : doc;
+                doc = dropdownSubj ? doc.replace(/<\/h3>/i, '</h3>' + (dropdownLang ? '' : '\r\n<div class="row">\r\n') + '<div class="col-xs-4">Subject:&nbsp;&nbsp;' + dropdownSubj + '</div>\r\n' + (dropdownDate ? '' : '</div>\r\n')) : doc;
+                doc = dropdownLang ? doc.replace(/<\/h3>/i, '</h3>\r\n<div class="row">\r\n<div class="col-xs-4">Language:&nbsp;&nbsp;' + dropdownLang + '</div>\r\n' + (dropdownSubj || dropdownDate ? '' : '</div>\r\n')) : doc;
                 //Add language and date spans to doc
-                doc = doc.replace(/^([^_\n\r]+_([^_\n\r]+)_.*?(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2" data-kiwixdate="$3">$1<br /></span>');
+                doc = doc.replace(/^([^_\n\r]+_([^_\n\r]+)_([^_\n\r]+)_.*?(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2" data-kiwixsubject="$3" data-kiwixdate="$4">$1<br /></span>');
             }
             downloadLinks.innerHTML = doc;
-            if (lang || kiwixDate) {
-                var selectEntries = document.querySelectorAll(".wikiLang");
-                //Hide all entries except specified language or date
-                for (i = 0; i < selectEntries.length; i++) {
-                    if (lang && lang !== "All" && selectEntries[i].lang !== lang) selectEntries[i].style.display = "none";
-                    if (kiwixDate && kiwixDate !== "All" && selectEntries[i].dataset.kiwixdate !== kiwixDate) selectEntries[i].style.display = "none";
+            var langSel = document.getElementById('langs');
+            var subjSel = document.getElementById('subjects');
+            var dateSel = document.getElementById('dates');
+            var langPanel = document.getElementById('dl-panel-body');    
+            if (lang || subj || kiwixDate) {
+                var selectEntries = document.querySelectorAll('.wikiLang');
+                //Hide all entries except specified language, subject, or date
+                for (var i = 0; i < selectEntries.length; i++) {
+                    if (lang && lang !== 'All' && selectEntries[i].lang !== lang) selectEntries[i].style.display = 'none';
+                    if (subj && subj !== 'All' && selectEntries[i].dataset.kiwixsubject !== subj) selectEntries[i].style.display = 'none';
+                    if (kiwixDate && kiwixDate !== 'All' && selectEntries[i].dataset.kiwixdate !== kiwixDate) selectEntries[i].style.display = 'none';
                 }
-                langSel = document.getElementById("langs");
-                if (langSel) {
-                    langs.value = lang||"All";
-                }
-                dateSel = document.getElementById("dates");
-                if (dateSel) {
-                    dates.value = kiwixDate||"All";
-                }
+                if (langSel) langSel.value = lang || 'All';
+                if (subjSel) subjSel.value = subj || 'All';
+                if (dateSel) dateSel.value = kiwixDate || 'All';
             }
             if (typeof langArray !== "undefined") {
                 //Set up event listener for language selector
-                document.getElementById("langs").addEventListener("change", function () {
-                    var dateSel = document.getElementById("dates");
-                    var dateID = dateSel ? dateSel.options[dateSel.selectedIndex].value : "";
-                    var langSel = document.getElementById("langs");
-                    var langID = langSel ? langSel.options[langSel.selectedIndex].value : "";
-                    var langPanel = document.getElementById('dl-panel-body');
+                langSel.addEventListener("change", function () {
+                    var dateID = dateSel ? dateSel.options[dateSel.selectedIndex].value : '';
+                    var subjID = subjSel ? subjSel.options[subjSel.selectedIndex].value : '';
+                    var langID = langSel ? langSel.options[langSel.selectedIndex].value : '';
                     //Reset any hidden entries
                     //langPanel.innerHTML = langPanel.innerHTML.replace(/(display:\s*)none\b/mig, 'inline');
                     var langEntries = langPanel.querySelectorAll(".wikiLang");
@@ -593,38 +585,89 @@ define([], function () {
                     if (langID) {
                         for (var i = 0; i < langEntries.length; i++) {
                             if (langEntries[i].lang == langID || langID == "All") langEntries[i].style.display = "inline";
-                            if (langEntries[i].lang != langID && langID != "All") {
-                                langEntries[i].style.display = "none";
-                            }
-                            if (dateID && langEntries[i].dataset.kiwixdate != dateID && dateID != "All") langEntries[i].style.display = "none";
+                            if (langEntries[i].lang != langID && langID != "All") langEntries[i].style.display = "none";
+                            if (subjID && langEntries[i].dataset.kiwixsubject !== subjID && subjID !== "All") langEntries[i].style.display = "none";
+                            if (dateID && langEntries[i].dataset.kiwixdate !== dateID && dateID !== "All") langEntries[i].style.display = "none";
                         }
-
-                        // Rebuild date selector
-                        // dateArray = getDateArray(langPanel.innerHTML);
-                        var dateList = dateArray.join('\r\n');
-                        dateList = dateList.replace(/^(.*)[\r\n]*/img, function (p0, p1) {
-                            return '<option value="' + p1 + '"' + (dateID === p1 ? ' selected' : '') + '>' + p1 + '</option>';
-                        });
-                        dateSel.innerHTML = dateList;
-
-                        //Rebuild lang selector
-                        // langArray = getLangArray(langPanel.innerHTML);
+                        // Prune date list
+                        if (dateID === 'All') {
+                            var dateList = dateArray.join('\r\n');
+                            dateList = dateList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
+                                // DEV: innerText doesn't include hidden items
+                                if (p1 !== 'All' && !~langPanel.innerText.indexOf('_' + p1)) return '';
+                                return '<option value="' + p1 + '"' + (dateID === p1 ? ' selected' : '') + '>' + p1 + '</option>';
+                            });
+                            dateSel.innerHTML = dateList;
+                        }
+                        // Prune subject list
+                        if (subjID === 'All') {
+                            var subjList = subjectArray.join('\r\n');
+                            subjList = subjList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
+                                // DEV: innerText doesn't include hidden items
+                                if (p1 !== 'All' && !~langPanel.innerText.indexOf('_' + p1 + '_')) return '';
+                                return '<option value="' + p1 + '"' + (subjID === p1 ? ' selected' : '') + '>' + p1 + '</option>';
+                            });
+                            subjSel.innerHTML = subjList;
+                        }
+                        // Rebuild lang selector
                         var langList = langArray.join('\r\n');
-                        langList = langList.replace(/^(.*)[\r\n]*/img, function (p0, p1) {
+                        langList = langList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
                             return '<option value="' + p1 + '"' + (langID === p1 ? ' selected' : '') + '>' + p1 + (p1 === 'All' ? '' : ' : ' + langCodes[p1]) + '</option>';
                         });
                         langSel.innerHTML = langList;
                     }
                 });
             }
+            if (typeof subjectArray !== "undefined") {
+                //Set up event listener for subject selector
+                subjSel.addEventListener("change", function () {
+                    var langID = langSel ? langSel.options[langSel.selectedIndex].value : '';
+                    var subjID = subjSel ? subjSel.options[subjSel.selectedIndex].value : '';
+                    var dateID = dateSel ? dateSel.options[dateSel.selectedIndex].value : '';
+                    var subjEntries = document.querySelectorAll(".wikiLang");
+                    //Hide all entries except specified subject
+                    if (subjID) {
+                        for (var i = 0; i < subjEntries.length; i++) {
+                            if (subjEntries[i].dataset.kiwixsubject === subjID || subjID === "All") subjEntries[i].style.display = "inline";
+                            if (subjEntries[i].dataset.kiwixsubject !== subjID && subjID !== "All") subjEntries[i].style.display = "none";
+                            if (langID && subjEntries[i].lang !== langID && langID !== "All") subjEntries[i].style.display = "none";
+                            if (dateID && subjEntries[i].dataset.kiwixdate !== dateID && dateID !== "All") subjEntries[i].style.display = "none";
+                        }
+                        // Prune the language list
+                        if (langID === 'All') {
+                            var langList = langArray.join('\r\n');
+                            langList = langList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
+                                // DEV: innerText doesn't include hidden items
+                                if (p1 !== 'All' && !~langPanel.innerText.indexOf('_' + p1 + '_')) return '';
+                                return '<option value="' + p1 + '"' + (langID === p1 ? ' selected' : '' ) + '>' + p1 + (p1 === 'All' ? '' : ' : ' + langCodes[p1]) + '</option>';
+                            });
+                            langSel.innerHTML = langList;
+                        }
+                        // Prune date list
+                        if (dateID === 'All') {
+                            var dateList = dateArray.join('\r\n');
+                            dateList = dateList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
+                                // DEV: innerText doesn't include hidden items
+                                if (p1 !== 'All' && !~langPanel.innerText.indexOf('_' + p1)) return '';
+                                return '<option value="' + p1 + '"' + (dateID === p1 ? ' selected' : '') + '>' + p1 + '</option>';
+                            });
+                            dateSel.innerHTML = dateList;
+                        }
+                        // Rebuild subject selector
+                        var subjList = subjectArray.join('\r\n');
+                        subjList = subjList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
+                            return '<option value="' + p1 + '"' + (subjID === p1 ? ' selected' : '') + '>' + p1 + '</option>';
+                        });
+                        subjSel.innerHTML = subjList;
+                    }
+                });
+            }
             if (typeof dateArray !== "undefined") {
                 //Set up event listener for date selector
-                document.getElementById("dates").addEventListener("change", function () {
-                    var langSel = document.getElementById("langs");
-                    var langID = langSel ? langSel.options[langSel.selectedIndex].value : "";
-                    var dateSel = document.getElementById("dates");
-                    var dateID = dateSel ? dateSel.options[dateSel.selectedIndex].value : "";
-                    var langPanel = document.getElementById('dl-panel-body');
+                dateSel.addEventListener("change", function () {
+                    var langID = langSel ? langSel.options[langSel.selectedIndex].value : '';
+                    var subjID = subjSel ? subjSel.options[subjSel.selectedIndex].value : '';
+                    var dateID = dateSel ? dateSel.options[dateSel.selectedIndex].value : '';
                     var dateEntries = document.querySelectorAll(".wikiLang");
                     //Hide all entries except specified date
                     if (dateID) {
@@ -632,20 +675,31 @@ define([], function () {
                             if (dateEntries[i].dataset.kiwixdate == dateID || dateID == "All") dateEntries[i].style.display = "inline";
                             if (dateEntries[i].dataset.kiwixdate != dateID && dateID != "All") dateEntries[i].style.display = "none";
                             if (langID && dateEntries[i].lang != langID && langID != "All") dateEntries[i].style.display = "none";
+                            if (subjID && dateEntries[i].dataset.kiwixsubject !== subjID && subjID !== "All") dateEntries[i].style.display = "none";
                         }
-
-                        //Rebuild lang selector
-                        // langArray = getLangArray(langPanel.innerHTML);
-                        var langList = langArray.join('\r\n');
-                        langList = langList.replace(/^(.*)[\r\n]*/img, function (p0, p1) {
-                            return '<option value="' + p1 + '"' + (langID === p1 ? ' selected' : '' ) + '>' + p1 + (p1 === 'All' ? '' : ' : ' + langCodes[p1]) + '</option>';
-                        });
-                        langSel.innerHTML = langList;
-
+                        // Prune the language list
+                        if (langID === 'All') {
+                            var langList = langArray.join('\r\n');
+                            langList = langList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
+                                // DEV: innerText doesn't include hidden items
+                                if (p1 !== 'All' && !~langPanel.innerText.indexOf('_' + p1 + '_')) return '';
+                                return '<option value="' + p1 + '"' + (langID === p1 ? ' selected' : '' ) + '>' + p1 + (p1 === 'All' ? '' : ' : ' + langCodes[p1]) + '</option>';
+                            });
+                            langSel.innerHTML = langList;
+                        }
+                        // Prune subject list
+                        if (subjID === 'All') {
+                            var subjList = subjectArray.join('\r\n');
+                            subjList = subjList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
+                                // DEV: innerText doesn't include hidden items
+                                if (p1 !== 'All' && !~langPanel.innerText.indexOf('_' + p1 + '_')) return '';
+                                return '<option value="' + p1 + '"' + (subjID === p1 ? ' selected' : '') + '>' + p1 + '</option>';
+                            });
+                            subjSel.innerHTML = subjList;
+                        }
                         // Rebuild date selector
-                        // dateArray = getDateArray(langPanel.innerHTML);
                         var dateList = dateArray.join('\r\n');
-                        dateList = dateList.replace(/^(.*)[\r\n]*/img, function (p0, p1) {
+                        dateList = dateList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
                             return '<option value="' + p1 + '"' + (dateID === p1 ? ' selected' : '') + '>' + p1 + '</option>';
                         });
                         dateSel.innerHTML = dateList;
@@ -691,26 +745,44 @@ define([], function () {
                 return std;
             }
 
-            //Get list of languages
+            // Get list of languages
             function getLangArray(fromDoc) {
                 //Get list of all languages
-                var langList = fromDoc.replace(/^[^_]+_([^_]+)_.+[\r\n]*/mg, "$1\n");
+                var langList = fromDoc.replace(/^[^_]+_([^_]+)_.+[\r\n]*/mg, '$1\n');
                 //Delete recurrences
-                langList = langList.replace(/\b(\w+\n)(?=[\s\S]*\b\1\n?)/g, "");
-                langList = "All\n" + langList;
+                langList = langList.replace(/\b(\w+\n)(?=[\s\S]*\b\1\n?)/g, '');
+                langList = 'All\n' + langList;
                 var langArray = langList.match(/^\w+$/mg);
                 //Sort list alphabetically
                 langArray.sort();
                 return langArray;
             }
 
+            // Get list of subjects
+            function getSubjectArray(fromDoc) {
+                //Get list of all subjects
+                var subList = fromDoc.replace(/^[^_]+_[^_]+_([^_]+).+[\r\n]*/mg, '$1\n');
+                //Delete recurrences
+                subList = subList.replace(/\b(\w+\n)(?=[\s\S]*\b\1\n?)/g, '');
+                //Remove 'all'
+                subList = subList.replace(/^all$/mi, '');
+                var subArray = subList.match(/^\w+$/mg);
+                if (subArray) {
+                    //Sort list alphabetically
+                    subArray.sort();
+                    // Add 'All' at astart
+                    subArray.unshift('All');
+                }
+                return subArray;
+            }
+
             //Get list of dates
             function getDateArray(fromDoc) {
                 //Get list of all dates
-                var dateList = fromDoc.replace(/^.*?(\d+[-]\d+)\.zi[mp].+[\r\n]*/mig, "$1\n");
+                var dateList = fromDoc.replace(/^.*?(\d+[-]\d+)\.zi[mp].+[\r\n]*/mig, '$1\n');
                 //Delete recurrences
-                dateList = dateList.replace(/(\b\d+[-]\d+)\n(?=[\s\S]*\b\1\n?)/g, "");
-                dateList = "All\n" + dateList;
+                dateList = dateList.replace(/(\b\d+[-]\d+)\n(?=[\s\S]*\b\1\n?)/g, '');
+                dateList = 'All\n' + dateList;
                 var dateArray = dateList.match(/^.+$/mg);
                 //Sort list alphabetically
                 dateArray.sort();
