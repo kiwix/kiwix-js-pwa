@@ -552,13 +552,15 @@ define([], function () {
                     dropdownDate += '</select>\r\n';
                 }
                 //Add language, subject and date spans to doc
-                if (/^(?:[^._]+\.stack(?:exchange|overflow)|askubuntu|stackapps|stackoverflow|superuser|serverfault)/mi.test(doc)) {
+                if (/\/(mooc|phet|other)\b/i.test(URL)) {
+                    doc = doc.replace(/^([^_\n\r]+_([^_\n\r]+)_.*?(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2" data-kiwixdate="$3">$1<br /></span>');
+                } else if (/\/stack_exchange\b/i.test(URL)) {
                     doc = doc.replace(/^([^>\n\r]+>(?:.+(stackoverflow)|([^.\n\r]+))\.([^_\n\r]+)_([^_\n\r]+)_.*?(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$5" data-kiwixsubject="$2$3" data-kiwixdate="$6">$1<br /></span>');
                 } else {
                     doc = doc.replace(/^([^_\n\r]+_([^_\n\r]+)_((?:[^_]|_(?!maxi|mini|nopic|\d\d\d\d))+)_.*?(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2" data-kiwixsubject="$3" data-kiwixdate="$4">$1<br /></span>');
                 }
                 // Normalize languages with a - (from Stackexchange)
-                doc = doc.replace(/(lang="\w+)-(\w+")/, '$1$2');
+                doc = doc.replace(/(lang="\w+)-(\w+")/ig, '$1$2');
                 doc = dropdownDate ? doc.replace(/<\/h3>/i, '</h3>' + (dropdownLang || dropdownSubj ? '' : '\r\n<div class="row">\r\n') + '<div class="col-xs-4">Date:&nbsp;&nbsp;' + dropdownDate + '</div>\r\n</div>\r\n') : doc;
                 doc = dropdownSubj ? doc.replace(/<\/h3>/i, '</h3>' + (dropdownLang ? '' : '\r\n<div class="row">\r\n') + '<div class="col-xs-4">Subject:&nbsp;&nbsp;' + dropdownSubj + '</div>\r\n' + (dropdownDate ? '' : '</div>\r\n')) : doc;
                 doc = dropdownLang ? doc.replace(/<\/h3>/i, '</h3>\r\n<div class="row">\r\n<div class="col-xs-4">Language:&nbsp;&nbsp;' + dropdownLang + '</div>\r\n' + (dropdownSubj || dropdownDate ? '' : '</div>\r\n')) : doc;
@@ -766,7 +768,7 @@ define([], function () {
                 //Delete recurrences
                 langList = langList.replace(/\b([\w-]+\n)(?=[\s\S]*\b\1\n?)/g, '');
                 langList = 'All\n' + langList;
-                langList = langList.replace(/-/, '');
+                langList = langList.replace(/-/g, '');
                 var langArray = langList.match(/^\w+$/mg);
                 //Sort list alphabetically
                 langArray.sort();
@@ -777,13 +779,15 @@ define([], function () {
             function getSubjectArray(fromDoc) {
                 //Get list of all subjects
                 var subList;
-                if (/^(?:[^._]+\.stack(?:exchange|overflow)|askubuntu|stackapps|stackoverflow|superuser|serverfault)/mi.test(fromDoc)) {
+                if (/\/(mooc|phet|other)\b/i.test(URL)) {
+                    return null;
+                } else if (/\/stack_exchange\b/i.test(URL)) {
                     subList = fromDoc.replace(/^(?:.+(stackoverflow)|[^"]+"([^.]+)).+[\r\n]/img, '$1$2\n');
                 } else {
                     subList = fromDoc.replace(/^[^>]+>[^_]+_[^_]+_((?:[^_]|_(?!maxi|mini|nopic|\d\d\d\d))+).+[\r\n]*/mg, '$1\n');
                 }
                 //Delete recurrences
-                subList = subList.replace(/^([\w_-]+)$[\r\n]*(?=^\1$)/gm, '');
+                subList = subList.replace(/^([\w_-]+)$[\r\n]*(?=[\s\S]*^\1$)/gm, '');
                 //Remove 'all'
                 subList = subList.replace(/^all$/mi, '');
                 var subArray = subList.match(/^.+$/mg);
