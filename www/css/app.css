@@ -415,6 +415,10 @@ pre {
     margin-bottom: 15% !important;
 }
 
+#dl-panel-body::before, #dl-panel-body::after {
+    content: '' !important;
+}
+
   /*********************************/
  /******* Custom checkboxes *******/
 /*********************************/

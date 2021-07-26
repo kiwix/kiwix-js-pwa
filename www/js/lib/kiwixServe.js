@@ -208,6 +208,7 @@ define([], function () {
         pms: 'Piemontèis (Piedmontese)',
         ps: 'پښتو (Pashto)',
         pt: 'Português (Portuguese)',
+        ptbr: 'Português brasileiro (Brazilian Portuguese)',
         qu: 'Runa Simi (Quechua)',
         rm: 'Rumantsch (Raeto Romance)',
         rmy: 'Romani / रोमानी (Romani)',
@@ -549,11 +550,17 @@ define([], function () {
                     }
                     dropdownDate += '</select>\r\n';
                 }
+                //Add language, subject and date spans to doc
+                if (/^(?:[^._]+\.stack(?:exchange|overflow)|askubuntu|stackapps|stackoverflow|superuser|serverfault)/mi.test(doc)) {
+                    doc = doc.replace(/^([^>\n\r]+>(?:.+(stackoverflow)|([^.\n\r]+))\.([^_\n\r]+)_([^_\n\r]+)_.*?(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$5" data-kiwixsubject="$2$3" data-kiwixdate="$6">$1<br /></span>');
+                } else {
+                    doc = doc.replace(/^([^_\n\r]+_([^_\n\r]+)_((?:[^_]|_(?!maxi|mini|nopic|\d\d\d\d))+)_.*?(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2" data-kiwixsubject="$3" data-kiwixdate="$4">$1<br /></span>');
+                }
+                // Normalize languages with a - (from Stackexchange)
+                doc = doc.replace(/(lang="\w+)-(\w+")/, '$1$2');
                 doc = dropdownDate ? doc.replace(/<\/h3>/i, '</h3>' + (dropdownLang || dropdownSubj ? '' : '\r\n<div class="row">\r\n') + '<div class="col-xs-4">Date:&nbsp;&nbsp;' + dropdownDate + '</div>\r\n</div>\r\n') : doc;
                 doc = dropdownSubj ? doc.replace(/<\/h3>/i, '</h3>' + (dropdownLang ? '' : '\r\n<div class="row">\r\n') + '<div class="col-xs-4">Subject:&nbsp;&nbsp;' + dropdownSubj + '</div>\r\n' + (dropdownDate ? '' : '</div>\r\n')) : doc;
                 doc = dropdownLang ? doc.replace(/<\/h3>/i, '</h3>\r\n<div class="row">\r\n<div class="col-xs-4">Language:&nbsp;&nbsp;' + dropdownLang + '</div>\r\n' + (dropdownSubj || dropdownDate ? '' : '</div>\r\n')) : doc;
-                //Add language and date spans to doc
-                doc = doc.replace(/^([^_\n\r]+_([^_\n\r]+)_([^_\n\r]+)_.*?(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2" data-kiwixsubject="$3" data-kiwixdate="$4">$1<br /></span>');
             }
             downloadLinks.innerHTML = doc;
             var langSel = document.getElementById('langs');
@@ -572,7 +579,7 @@ define([], function () {
                 if (subjSel) subjSel.value = subj || 'All';
                 if (dateSel) dateSel.value = kiwixDate || 'All';
             }
-            if (typeof langArray !== "undefined") {
+            if (langArray && langSel) {
                 //Set up event listener for language selector
                 langSel.addEventListener("change", function () {
                     var dateID = dateSel ? dateSel.options[dateSel.selectedIndex].value : '';
@@ -604,7 +611,8 @@ define([], function () {
                             var subjList = subjectArray.join('\r\n');
                             subjList = subjList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
                                 // DEV: innerText doesn't include hidden items
-                                if (p1 !== 'All' && !~langPanel.innerText.indexOf('_' + p1 + '_')) return '';
+                                var rgxSubject = new RegExp('_?' + p1 + '[._]', 'i');
+                                if (p1 !== 'All' && !rgxSubject.test(langPanel.innerText)) return '';
                                 return '<option value="' + p1 + '"' + (subjID === p1 ? ' selected' : '') + '>' + p1 + '</option>';
                             });
                             subjSel.innerHTML = subjList;
@@ -618,7 +626,7 @@ define([], function () {
                     }
                 });
             }
-            if (typeof subjectArray !== "undefined") {
+            if (subjectArray && subjSel) {
                 //Set up event listener for subject selector
                 subjSel.addEventListener("change", function () {
                     var langID = langSel ? langSel.options[langSel.selectedIndex].value : '';
@@ -636,9 +644,11 @@ define([], function () {
                         // Prune the language list
                         if (langID === 'All') {
                             var langList = langArray.join('\r\n');
+                            // We need to normalize language codes in langPanel (for Stackexchange)
+                            // DEV: innerText doesn't include hidden items
+                            var langTestPanel = langPanel.innerText.replace(/(_\w+)-(\w+_)/, '$1$2');
                             langList = langList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
-                                // DEV: innerText doesn't include hidden items
-                                if (p1 !== 'All' && !~langPanel.innerText.indexOf('_' + p1 + '_')) return '';
+                                if (p1 !== 'All' && !~langTestPanel.indexOf('_' + p1 + '_')) return '';
                                 return '<option value="' + p1 + '"' + (langID === p1 ? ' selected' : '' ) + '>' + p1 + (p1 === 'All' ? '' : ' : ' + langCodes[p1]) + '</option>';
                             });
                             langSel.innerHTML = langList;
@@ -662,7 +672,7 @@ define([], function () {
                     }
                 });
             }
-            if (typeof dateArray !== "undefined") {
+            if (dateArray && dateSel) {
                 //Set up event listener for date selector
                 dateSel.addEventListener("change", function () {
                     var langID = langSel ? langSel.options[langSel.selectedIndex].value : '';
@@ -680,9 +690,11 @@ define([], function () {
                         // Prune the language list
                         if (langID === 'All') {
                             var langList = langArray.join('\r\n');
+                            // We need to normalize language codes in langPanel (for Stackexchange)
+                            // DEV: innerText doesn't include hidden items
+                            var langTestPanel = langPanel.innerText.replace(/(_\w+)-(\w+_)/, '$1$2');
                             langList = langList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
-                                // DEV: innerText doesn't include hidden items
-                                if (p1 !== 'All' && !~langPanel.innerText.indexOf('_' + p1 + '_')) return '';
+                                if (p1 !== 'All' && !~langTestPanel.indexOf('_' + p1 + '_')) return '';
                                 return '<option value="' + p1 + '"' + (langID === p1 ? ' selected' : '' ) + '>' + p1 + (p1 === 'All' ? '' : ' : ' + langCodes[p1]) + '</option>';
                             });
                             langSel.innerHTML = langList;
@@ -692,7 +704,8 @@ define([], function () {
                             var subjList = subjectArray.join('\r\n');
                             subjList = subjList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
                                 // DEV: innerText doesn't include hidden items
-                                if (p1 !== 'All' && !~langPanel.innerText.indexOf('_' + p1 + '_')) return '';
+                                var rgxSubject = new RegExp('_?' + p1 + '[._]', 'i');
+                                if (p1 !== 'All' && !rgxSubject.test(langPanel.innerText)) return '';
                                 return '<option value="' + p1 + '"' + (subjID === p1 ? ' selected' : '') + '>' + p1 + '</option>';
                             });
                             subjSel.innerHTML = subjList;
@@ -707,7 +720,7 @@ define([], function () {
                 });
             }
             var links = downloadLinks.getElementsByTagName("a");
-            for (var i = 0; i < links.length; i++) {
+            for (i = 0; i < links.length; i++) {
                 //Store the href - seems it's not useful?
                 //links[i].setAttribute("data-kiwix-dl", links[i].href);
                 links[i].href = "#";
@@ -737,11 +750,11 @@ define([], function () {
             // Standardize the document for array extraction
             function getStandardizedDoc(fromDoc) {
                 //Add back any missing carriage returns
-                var std = fromDoc.replace(/<\/span><span\b/ig, "\n");
+                var std = fromDoc.replace(/<\/span><span\b/ig, '\n');
                 //Delete all lines without a wiki pattern from language list
-                std = std.replace(/^(?![^_\n\r]+_(\w+)_.+$).*[\r\n]*/mg, "");
+                std = std.replace(/^(?![^_\n\r]+_([\w-]+)_.+$).*[\r\n]*/mg, '');
                 //Delete any hidden lines
-                std = std.replace(/^.*?display:\s*none;.*[\r\n]*/mg, "");
+                std = std.replace(/^.*?display:\s*none;.*[\r\n]*/mg, '');
                 return std;
             }
 
@@ -750,8 +763,9 @@ define([], function () {
                 //Get list of all languages
                 var langList = fromDoc.replace(/^[^_]+_([^_]+)_.+[\r\n]*/mg, '$1\n');
                 //Delete recurrences
-                langList = langList.replace(/\b(\w+\n)(?=[\s\S]*\b\1\n?)/g, '');
+                langList = langList.replace(/\b([\w-]+\n)(?=[\s\S]*\b\1\n?)/g, '');
                 langList = 'All\n' + langList;
+                langList = langList.replace(/-/, '');
                 var langArray = langList.match(/^\w+$/mg);
                 //Sort list alphabetically
                 langArray.sort();
@@ -761,12 +775,17 @@ define([], function () {
             // Get list of subjects
             function getSubjectArray(fromDoc) {
                 //Get list of all subjects
-                var subList = fromDoc.replace(/^[^_]+_[^_]+_([^_]+).+[\r\n]*/mg, '$1\n');
+                var subList;
+                if (/^(?:[^._]+\.stack(?:exchange|overflow)|askubuntu|stackapps|stackoverflow|superuser|serverfault)/mi.test(fromDoc)) {
+                    subList = fromDoc.replace(/^(?:.+(stackoverflow)|[^"]+"([^.]+)).+[\r\n]/img, '$1$2\n');
+                } else {
+                    subList = fromDoc.replace(/^[^_]+_[^_]+_((?:[^_]|_(?!maxi|mini|nopic|\d\d\d\d))+).+[\r\n]*/mg, '$1\n');
+                }
                 //Delete recurrences
-                subList = subList.replace(/\b(\w+\n)(?=[\s\S]*\b\1\n?)/g, '');
+                subList = subList.replace(/\b([\w_-]+\n)(?=[\s\S]*\b\1\n?)/g, '');
                 //Remove 'all'
                 subList = subList.replace(/^all$/mi, '');
-                var subArray = subList.match(/^\w+$/mg);
+                var subArray = subList.match(/^.+$/mg);
                 if (subArray) {
                     //Sort list alphabetically
                     subArray.sort();
