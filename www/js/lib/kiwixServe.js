@@ -780,10 +780,10 @@ define([], function () {
                 if (/^(?:[^._]+\.stack(?:exchange|overflow)|askubuntu|stackapps|stackoverflow|superuser|serverfault)/mi.test(fromDoc)) {
                     subList = fromDoc.replace(/^(?:.+(stackoverflow)|[^"]+"([^.]+)).+[\r\n]/img, '$1$2\n');
                 } else {
-                    subList = fromDoc.replace(/^[^_]+_[^_]+_((?:[^_]|_(?!maxi|mini|nopic|\d\d\d\d))+).+[\r\n]*/mg, '$1\n');
+                    subList = fromDoc.replace(/^[^>]+>[^_]+_[^_]+_((?:[^_]|_(?!maxi|mini|nopic|\d\d\d\d))+).+[\r\n]*/mg, '$1\n');
                 }
                 //Delete recurrences
-                subList = subList.replace(/\b([\w_-]+\n)(?=[\s\S]*\b\1\n?)/g, '');
+                subList = subList.replace(/^([\w_-]+)$[\r\n]*(?=^\1$)/gm, '');
                 //Remove 'all'
                 subList = subList.replace(/^all$/mi, '');
                 var subArray = subList.match(/^.+$/mg);
