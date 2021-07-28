@@ -150,7 +150,8 @@ if ($updatewinget) {
     return
   }
   "`nThe package URL is: $package_url"
-  $package_id = 'Kiwix.' + ($text_tag -eq 'Windows' ? 'KiwixJS' : $text_tag)
+  $package_id = 'Kiwix.' + $text_tag
+  if ($text_tag -eq 'Windows') { $package_id = 'Kiwix.' +  'KiwixJS' }
   if (-Not $dryrun) {
     "Submitting to winget-pkg repository..."
     & wingetcreate.exe update -i $package_id -v "$numeric_tag.0" -u $package_url -s $true -t $github_token
@@ -375,7 +376,8 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         }
       }
       if (-Not $dryrun) {
-        $projstub = ($text_tag -eq "Windows") ? "" : $text_tag
+        $projstub = $text_tag
+        if ($text_tag -eq "Windows") { $projstub = "" }
         cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && msbuild.exe KiwixWebApp$projstub.jsproj -p:Configuration=Release "
         # "SignTool sign /fd SHA256 /a /f ..\..\kiwix.pfx /p yeahright KiwixWebApp_1.3.3.0_AnyCPU.appxbundle"
       }
