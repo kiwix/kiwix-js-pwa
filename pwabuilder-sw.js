@@ -4,7 +4,7 @@
 // App version number - ENSURE IT MATCHES VALUE IN init.js
 // DEV: Changing this will cause the browser to recognize that the Service Worker has changed, and it will download and
 // install a new copy
-const appVersion = '1.6.0-rc3';
+const appVersion = '1.6.0-rc4';
 
 // Kiwix ZIM Archive Download Server in regex form
 // DEV: The server URL is defined in init.js, but is not available to us in SW
@@ -188,6 +188,8 @@ function intercept(event) {
   if (/^file:/i.test(event.request.url) && ! (regexpZIMUrlWithNamespace.test(event.request.url) && /\.zim\w{0,2}\//i.test(event.request.url))) return;
   // console.debug('[SW] Service Worker ' + (event.request.method === "GET" ? 'intercepted ' : 'noted ') + event.request.url, event.request.method);
   if (event.request.method !== "GET") return;
+  // Don't cache download links
+  if (regexpKiwixDownloadLinks.test(event.request.url)) return;
   // Remove any querystring except 'kiwix-display'
   var rqUrl = event.request.url.replace(/\?(?!kiwix-display)[^?]+$/i, '');
   event.respondWith(
