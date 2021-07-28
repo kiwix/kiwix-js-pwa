@@ -1,8 +1,9 @@
 # Changelog
 
-## In-progress release 1.6.0-rc3
+## In-progress release 1.6.0-rc4
 
 * FEATURE: New dropdown in Download Library allows filtering the list of archives by subject (for some ZIM types)
+* ENHANCEMENT: Sorting the Download Library list by clicking on the Size / Last modified / Name headers
 * ENHANCEMENT: The app can now take advantage of native Promises (faster than Q)
 * ENHANCEMENT: Decompressors now loaded as fast binary WASM modules if the brower supports WebAssembly
 * EXPERIMENTAL: Intalled PWA can now be opened offline when double-clicking ZIM archive (depends on File Handling API) 
