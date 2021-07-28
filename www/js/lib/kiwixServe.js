@@ -345,6 +345,14 @@ define([], function () {
     var regexpFilter = /_medicine/.test(params.packagedFile) ? /^(?!.+_medicine_)[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$\s+/mig : null;
     regexpFilter = /wikivoyage/.test(params.packagedFile) ? /^(?!.+wikivoyage_)[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$\s+/mig : regexpFilter;
     
+    /**
+     * Makes a request to the Kiwix Download server and processes the output for ease of user selection
+     * 
+     * @param {String} URL The URL of the download server 
+     * @param {String} lang The selected language code (optional helper value used internally) 
+     * @param {String} subj The selected subject (optional helper value) 
+     * @param {String} kiwixDate The selected date (optional helper value) 
+     */
     function requestXhttpData(URL, lang, subj, kiwixDate) {
         if (!params.allowInternetAccess) {
             document.getElementById('serverResponse').innerHTML = "Blocked: select 'Allow Internet access'";
@@ -378,6 +386,8 @@ define([], function () {
                 if (this.status == 200) {
                     clearTimeout(xhttpTimeout);
                     serverResponse.innerHTML = "Server response: " + this.status + " " + this.statusText + " (data received)";
+                    // Strip sorting querystring
+                    URL = URL.replace(/\?.*/, '');
                     if (/\.meta4$/i.test(URL)) {
                         processMetaLink(this.responseText);
                     } else {
@@ -393,6 +403,7 @@ define([], function () {
                 serverResponse.innerHTML = "Server response: " + this.status + "/" + this.readyState + " " + this.statusText + " Waiting...";
             }
         };
+        // var urlArr = URL.split('?');
         xhttp.open("GET", URL, true);
         xhttp.send(null);
 
@@ -513,6 +524,8 @@ define([], function () {
                 //Swap size and date fields to make file size more prominent on narrow screens
                 doc = doc.replace(/(<a\b[^>]*>last\s+modified<\/a>\s*)(<a\b[^>]*>size<\/a>)\s*/ig, " $2    $1");
                 doc = doc.replace(/(\d{4}-\d\d-\d\d\s\d\d\:\d\d)\s\s([\s\d.\w-]{7})$/img, " $2 $1");
+                // Remove unused README file
+                doc = doc.replace(/^<a\s+href\b[^<]+README.+$[\r\n]*/m, '');
             }
             var stDoc; // Placeholder for standardized doc to be used to get arrays
             if (/^[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$/m.test(doc)) {
@@ -726,23 +739,30 @@ define([], function () {
             for (i = 0; i < links.length; i++) {
                 //Store the href - seems it's not useful?
                 //links[i].setAttribute("data-kiwix-dl", links[i].href);
-                links[i].href = "#";
-                links[i].addEventListener('click', function () {
-                    var langSel = document.getElementById("langs");
-                    var dateSel = document.getElementById("dates");
-                    var langID = langSel ? langs.value : "";
-                    var dateID = dateSel ? dates.value : "";
+                // Preserve sort order
+                if (!/\?C=\w;O=\w/.test(links[i].href)) links[i].href = "#";
+                links[i].addEventListener('click', function (e) {
+                    e.preventDefault();
+                    var langSel = document.getElementById('langs');
+                    var subjSel = document.getElementById('subjects');
+                    var dateSel = document.getElementById('dates');
+                    var langID = langSel ? langSel.value : '';
+                    var dateID = dateSel ? dateSel.value : '';
+                    var subjID = subjSel ? subjSel.value : '';
                     var replaceURL = URL + this.text;
                     //Allow both zim and zip format
                     if (/\.zi[mp]$/i.test(this.text)) {
                         replaceURL = replaceURL + ".meta4";
                     } else if (/parent\s*directory/i.test(this.text)) {
-                        replaceURL = URL.replace(/\/[^\/]*\/$/i, "\/");
+                        replaceURL = URL.replace(/\/[^\/]*\/$/i, '\/');
+                    } else if (/Name|Size|Last\smodified|Description/.test(this.text)) {
+                        replaceURL = this.getAttribute('href').replace(/;/g, '&');
+                        replaceURL = URL + replaceURL;
                     } else if (!/\/$/.test(this.text)) {
                         //Unrecognized filetype and it's not a directory, so prevent potentially harmful download
                         replaceURL = "";
                     }
-                    requestXhttpData(replaceURL, langID, dateID);
+                    requestXhttpData(replaceURL, langID, subjID, dateID);
                 });
             }
             //Display the finished panel
