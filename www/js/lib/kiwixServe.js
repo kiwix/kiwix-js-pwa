@@ -612,12 +612,13 @@ define([], function () {
                             if (subjID && langEntries[i].dataset.kiwixsubject !== subjID && subjID !== "All") langEntries[i].style.display = "none";
                             if (dateID && langEntries[i].dataset.kiwixdate !== dateID && dateID !== "All") langEntries[i].style.display = "none";
                         }
+                        var visibleZIMs = langPanel.innerText.match(/^.*?\.zi[mp]/mgi);
                         // Prune date list
                         if (dateID === 'All') {
                             var dateList = dateArray.join('\r\n');
                             dateList = dateList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
-                                // DEV: innerText doesn't include hidden items
-                                if (p1 !== 'All' && !~langPanel.innerText.indexOf('_' + p1)) return '';
+                                var rgxDate = new RegExp('_' + p1 + '\\.zi', 'i');
+                                if (p1 !== 'All' && !rgxDate.test(visibleZIMs)) return '';
                                 return '<option value="' + p1 + '"' + (dateID === p1 ? ' selected' : '') + '>' + p1 + '</option>';
                             });
                             dateSel.innerHTML = dateList;
@@ -628,7 +629,7 @@ define([], function () {
                             subjList = subjList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
                                 // DEV: innerText doesn't include hidden items
                                 var rgxSubject = new RegExp('_?' + p1 + '[._]', 'i');
-                                if (p1 !== 'All' && !rgxSubject.test(langPanel.innerText)) return '';
+                                if (p1 !== 'All' && !rgxSubject.test(visibleZIMs)) return '';
                                 return '<option value="' + p1 + '"' + (subjID === p1 ? ' selected' : '') + '>' + p1 + '</option>';
                             });
                             subjSel.innerHTML = subjList;
@@ -657,6 +658,7 @@ define([], function () {
                             if (langID && subjEntries[i].lang !== langID && langID !== "All") subjEntries[i].style.display = "none";
                             if (dateID && subjEntries[i].dataset.kiwixdate !== dateID && dateID !== "All") subjEntries[i].style.display = "none";
                         }
+                        var visibleZIMs = langPanel.innerText.match(/^.*?\.zi[mp]/mgi);
                         // Prune the language list
                         if (langID === 'All') {
                             var langList = langArray.join('\r\n');
@@ -673,8 +675,8 @@ define([], function () {
                         if (dateID === 'All') {
                             var dateList = dateArray.join('\r\n');
                             dateList = dateList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
-                                // DEV: innerText doesn't include hidden items
-                                if (p1 !== 'All' && !~langPanel.innerText.indexOf('_' + p1)) return '';
+                                var rgxDate = new RegExp('_' + p1 + '\\.zi', 'i');
+                                if (p1 !== 'All' && !rgxDate.test(visibleZIMs)) return '';
                                 return '<option value="' + p1 + '"' + (dateID === p1 ? ' selected' : '') + '>' + p1 + '</option>';
                             });
                             dateSel.innerHTML = dateList;
@@ -703,6 +705,7 @@ define([], function () {
                             if (langID && dateEntries[i].lang != langID && langID != "All") dateEntries[i].style.display = "none";
                             if (subjID && dateEntries[i].dataset.kiwixsubject !== subjID && subjID !== "All") dateEntries[i].style.display = "none";
                         }
+                        var visibleZIMs = langPanel.innerText.match(/^.*?\.zi[mp]/mgi);
                         // Prune the language list
                         if (langID === 'All') {
                             var langList = langArray.join('\r\n');
@@ -721,7 +724,7 @@ define([], function () {
                             subjList = subjList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
                                 // DEV: innerText doesn't include hidden items
                                 var rgxSubject = new RegExp('_?' + p1 + '[._]', 'i');
-                                if (p1 !== 'All' && !rgxSubject.test(langPanel.innerText)) return '';
+                                if (p1 !== 'All' && !rgxSubject.test(visibleZIMs)) return '';
                                 return '<option value="' + p1 + '"' + (subjID === p1 ? ' selected' : '') + '>' + p1 + '</option>';
                             });
                             subjSel.innerHTML = subjList;
