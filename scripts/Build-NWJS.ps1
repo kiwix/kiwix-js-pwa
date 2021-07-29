@@ -8,7 +8,7 @@ if (-Not $only32bit) {
 } else {
     "Caller requested 32bitonly build"
 }
-$version10 = "0.54.0" # <<< value updated automatically from package.json if launched from Create-DraftRelease
+$version10 = "0.54.1" # <<< value updated automatically from package.json if launched from Create-DraftRelease
 $versionXP = "0.14.7"
 $appBuild = "1.6.0N" # <<< value updated auotmatically from package.json if launched form Create-DraftRelease
 $ZIMbase = "wikipedia_en_100_maxi"
