@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 1.6.0
+## Release 1.6.0
 
 * FEATURE: New dropdown in Download Library allows filtering the list of archives by subject (for some ZIM types)
 * ENHANCEMENT: Sorting the Download Library list by clicking on the Size / Last modified / Name headers
