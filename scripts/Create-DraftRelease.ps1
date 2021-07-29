@@ -275,7 +275,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         }
         if ($json_nwVersion) {
           "Updating Build-NWJS with NWJS version from package.json: $json_nwVersion"
-          $script_body = $script_body -ireplace '(\$version\s*=\s*")[^"]+', "`${1}$json_nwVersion" 
+          $script_body = $script_body -ireplace '(\$version10\s*=\s*")[^"]+', "`${1}$json_nwVersion" 
         }
         $script_body = $script_body -ireplace '(appBuild\s*=\s*")[^"]+', ("`${1}$numeric_tag" + "N")
         $script_body = $script_body -replace '\s+$', "`n"
@@ -330,7 +330,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       }
       if ($json_nwVersion) {
         "Updating Build-NWJS with NWJS version from package.json: $json_nwVersion"
-        $script_body = $script_body -ireplace '(\$version\s*=\s*")[^"]+', "`${1}$json_nwVersion" 
+        $script_body = $script_body -ireplace '(\$version10\s*=\s*")[^"]+', "`${1}$json_nwVersion" 
       }
       $script_body = $script_body -replace '\s+$', "`n"
       if ($dryrun) {
