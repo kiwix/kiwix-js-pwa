@@ -2,11 +2,12 @@
 
 Please choose the correct version:
 
-* For **Windows 10/11**: install from the Microsoft Store: https://www.microsoft.com/store/apps/9P8SLZ4J979J (it will self-update automatically), or open a command prompt and run `winget install kiwix`; you can also sideload it (see instructions below)
-* For **Windows 7/8/10/11** or **Linux (Ubuntu, Debian, OpenSUSE)** 32bit/64bit desktop only: use the portable or installable [NWJS/Electron versions](https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html) (NB these do not self-update yet)
-* For **Windows XP** or **Windows Vista**: use the older [NWJS release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html)
+* For **Windows 10/11**: install from the Microsoft Store: https://www.microsoft.com/store/apps/9P8SLZ4J979J (it will self-update automatically), or open a command prompt and run `winget install kiwix`; you can also sideload it (see instructions below).
+* For **Windows 7/8/10/11** or **Linux (Ubuntu, Debian, OpenSUSE)** 32bit/64bit desktop only: use the portable or installable [NWJS/Electron versions](https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html) (NB these do not self-update yet).
+* **Any modern OS**: Try out our new **installable PWA** (Progressive Web App) simply by visiting https://pwa.kiwix.org. It works offline, and in Chrome/Edge/Chromium, you can install it right from within the app (in Firefox you can bookmark it).  
+* For **Windows XP** or **Windows Vista**: use the older [NWJS release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html).
 
-This UWP app includes a small sample ZIM archve with a collection of the 100 most popular Wikipedia articles `<<zim>>` (<<date>>) together with the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md).
+This UWP app includes a small sample ZIM archve with a collection of the top 100 Wikipedia articles `<<zim>>` (<<date>>) together with the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md).
 
 **Status of Store App: IN CERTIFICATION**
 
