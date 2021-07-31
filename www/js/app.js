@@ -1626,7 +1626,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
          */
         function refreshAPIStatus() {
             var apiStatusPanel = document.getElementById('apiStatusDiv');
-            apiStatusPanel.classList.remove('panel-success', 'panel-warning');
+            apiStatusPanel.classList.remove('panel-success', 'panel-warning', 'panel-danger');
             var apiPanelClass = 'panel-success';
             if (isMessageChannelAvailable()) {
                 $('#messageChannelStatus').html("MessageChannel API available");
@@ -1655,7 +1655,28 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 $('#serviceWorkerStatus').removeClass("apiAvailable apiUnavailable")
                     .addClass("apiUnavailable");
             }
-            apiStatusPanel.classList.add(apiPanelClass);
+
+            // Update Settings Store section of API panel with API name
+            var settingsStoreStatusDiv = document.getElementById('settingsStoreStatus');
+            var apiName = params.storeType === 'cookie' ? 'Cookie' : params.storeType === 'local_storage' ? 'Local Storage' : 'None';
+            settingsStoreStatusDiv.innerHTML = 'Settings Storage API in use: ' + apiName;
+            settingsStoreStatusDiv.classList.remove('apiAvailable', 'apiUnavailable');
+            settingsStoreStatusDiv.classList.add(params.storeType === 'none' ? 'apiUnavailable' : 'apiAvailable');
+            apiPanelClass = params.storeType === 'none' ? 'panel-warning' : apiPanelClass;
+            
+            // Update Decompressor API section of panel
+            var decompAPIStatusDiv = document.getElementById('decompressorAPIStatus');
+            apiName = params.decompressorAPI.assemblerMachineType;
+            if (apiName && params.decompressorAPI.decompressorLastUsed) {
+                apiName += ' [&nbsp;' + params.decompressorAPI.decompressorLastUsed + '&nbsp;]';
+            }
+            apiPanelClass = params.decompressorAPI.errorStatus ? 'panel-danger' : apiName ? apiPanelClass : 'panel-warning';
+            decompAPIStatusDiv.className = apiName ? params.decompressorAPI.errorStatus ? 'apiBroken' : 'apiAvailable' : 'apiUnavailable';
+            apiName = params.decompressorAPI.errorStatus || apiName || 'Not initialized';
+            decompAPIStatusDiv.innerHTML = 'Decompressor API: ' + apiName;
+
+            // Add a warning colour to the API Status Panel if any of the above tests failed
+                apiStatusPanel.classList.add(apiPanelClass);
         }
 
         var keepAliveServiceWorkerHandle;
@@ -2230,6 +2251,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                                 }
                                             }
                                             if (fileHandle) {
+                                                // Deal with split archives
                                                 if (/\.zim\w\w$/i.test(fileHandle.name)) {
                                                     var genericFileName = fileHandle.name.replace(/(\.zim)\w\w$/i, '$1');
                                                     var testFileName = new RegExp(genericFileName + '\\w\\w$');
@@ -2242,11 +2264,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                                         }
                                                     }
                                                 } else {
+                                                    // Deal with single unslpit archive
                                                     fileset.push(fileHandle.getFile().then(function(file) {
                                                         return file;
                                                     }));
                                                 }
                                                 if (fileset.length) {
+                                                    // Wait for all getFile Promises to resolve
                                                     Promise.all(fileset).then(function (resolvedFiles) {
                                                         setLocalArchiveFromFileList(resolvedFiles);
                                                     });
