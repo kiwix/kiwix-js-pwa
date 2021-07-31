@@ -24,22 +24,24 @@
 // DEV: Put your RequireJS definition in the rqDefZD array below, and any function exports in the function parenthesis of the define statement
 // We need to do it this way in order to load the wasm or asm versions of zstddec conditionally. Older browsers can only use the asm version
 // because they cannot interpret WebAssembly.
-var rqDefZD = [];
+var rqDefZD = ['uiUtil'];
 
 // Select asm or wasm conditionally
 if ('WebAssembly' in self) {
-    console.debug('Using WASM zstandard decoder');
+    console.debug('Instantiating WASM zstandard decoder');
+    params.decompressorAPI.assemblerMachineType = 'WASM';
     rqDefZD.push('zstddec-wasm');
 } else {
-    console.debug('Using ASM zstandard decoder');
+    console.debug('Instantiating ASM zstandard decoder');
+    params.decompressorAPI.assemblerMachineType = 'ASM';
     rqDefZD.push('zstddec-asm');
 }
 
-define(rqDefZD, function() {
+define(rqDefZD, function(uiUtil) {
     // DEV: zstddec.js has been compiled with `-s EXPORT_NAME="ZD" -s MODULARIZE=1` to avoid a clash with xzdec.js
     // Note that we include zstddec-wasm or zstddec-asm above in requireJS definition, but we cannot change the name in the function list
     // For explanation of loading method below to avoid conflicts, see https://github.com/emscripten-core/emscripten/blob/master/src/settings.js
-    
+
     /**
      * @typedef EMSInstanceExt An object type representing an Emscripten instance with extended properties
      * @property {Integer} _decHandle The decoder stream context object in asm memory (to be re-used for each decoder operation)
@@ -47,7 +49,7 @@ define(rqDefZD, function() {
      * @property {Object} _outBuffer A JS copy of the outBuffer structure to be set in asm memory (malloc)
      * @property {Integer} _chunkSize The number of compressed bytes to feed to the decompressor in any one read loop
      */
-     
+
     /**
      * The ZSTD Decoder instance
      * @type EMSInstanceExt
@@ -68,7 +70,7 @@ define(rqDefZD, function() {
         // Change _chunkSize if you need a more conservative memory environment, but you may need to experiment with INITIAL_MEMORY
         // in zstddec.js (see below) for this to make any difference
         // zd._chunkSize = 5 * 1024;
-        
+
         // Initialize inBuffer
         zd._inBuffer = {
             ptr: null,              /* pointer to this inBuffer structure in w/asm memory */
@@ -80,7 +82,7 @@ define(rqDefZD, function() {
         zd._inBuffer.ptr = mallocOrDie(3 << 2); // 3 x 32bit bytes
         // Reserve w/asm memory for the inBuffer data stream
         zd._inBuffer.src = mallocOrDie(zd._inBuffer.size);
-                
+
         // DEV: Size of outBuffer is currently set as recommended by zd._ZSTD_DStreamOutSize() below; if you are running into
         // memory issues, it may be possible to reduce memory consumption by setting a smaller outBuffer size here and
         // reompiling zstddec.js with lower TOTAL_MEMORY (or just search for INITIAL_MEMORY in zstddec.js and change it)
@@ -99,33 +101,42 @@ define(rqDefZD, function() {
         zd._outBuffer.dst = mallocOrDie(zd._outBuffer.size);
     };
 
-    ZD().then(instantiateDecoder)
-    .catch(function (err) {
-        console.debug(err);
-        if (/CompileError.+?WASM/i.test(err.message)) {
-            console.log("WASM failed to load, falling back to ASM...", err);
+    ZD().then(function (inst) {
+        // TEST ERROR CODE: UNCOMMENT TO TEST AND REMOVE BEFORE MERGE
+        // throw params.decompressorAPI.assemblerMachineType + ' broken!';
+        instantiateDecoder(inst);
+    }).catch(function (err) {
+        if (params.decompressorAPI.assemblerMachineType === 'ASM') {
+            // There is no fallback, because we were attempting to load the ASM machine, so report error immediately
+            uiUtil.reportAssemblerErrorToAPIStatusPanel('ZSTD', err);
+        } else {
+            console.warn('WASM failed to load, falling back to ASM...', err);
+            params.decompressorAPI.assemblerMachineType = 'ASM';
             ZD = null;
-            require(['zstddec-asm'], function() {
-                ZD().then(instantiateDecoder)
-                .catch(function (err) {
-                    console.error('Could not instantiate any decoder!', err);
+            require(['zstddec-asm'], function () {
+                ZD().then(function (inst) {
+                    // TEST ERROR CODE: UNCOMMENT TO TEST AND REMOVE BEFORE MERGE
+                    // throw params.decompressorAPI.assemblerMachineType + ' broken!';
+                    instantiateDecoder(inst);
+                }).catch(function (err) {
+                    uiUtil.reportAssemblerErrorToAPIStatusPanel('ZSTD', err);
                 });
             });
         }
     });
-    
+
     /**
      * Number of milliseconds to wait for the decompressor to be available for another chunk
      * @type Integer
      */
     var DELAY_WAITING_IDLE_DECOMPRESSOR = 50;
-    
+
     /**
      * Is the decompressor already working?
      * @type Boolean
      */
     var busy = false;
-    
+
     /**
      * @typedef Decompressor
      * @property {FileReader} _reader The filereader to use (uses plain blob reader defined in zimfile.js)
@@ -135,12 +146,13 @@ define(rqDefZD, function() {
      * @property {Array} _outDataBuf The buffer that stores decoded bytes (it is set to the requested blob's length, and when full, the data are returned)
      * @property {Integer} _outDataBufPos The number of bytes of the requested blob decoded so far
      */
-    
+
     /**
      * @constructor
      * @param {FileReader} reader The reader used to extract file slices (defined in zimfile.js)
      */
     function Decompressor(reader) {
+        params.decompressorAPI.decompressorLastUsed = 'ZSTD';
         this._reader = reader;
     }
 
@@ -151,7 +163,7 @@ define(rqDefZD, function() {
      * @param {Integer} length Number of decompressed bytes to read
      * @returns {Promise<ArrayBuffer>} Promise for an ArrayBuffer with decoded data
      */
-    Decompressor.prototype.readSlice = function(offset, length) {
+    Decompressor.prototype.readSlice = function (offset, length) {
         busy = true;
         this._inStreamPos = 0;
         this._inStreamChunkedPos = 0;
@@ -163,7 +175,7 @@ define(rqDefZD, function() {
             return Promise.reject('Failed to initialize ZSTD decompression');
         }
 
-        return this._readLoop(offset, length).then(function(data) {
+        return this._readLoop(offset, length).then(function (data) {
             // DEV: We are re-using all the allocated w/asm memory, so we do not need to free any of structures assigned wiht _malloc
             // However, should you need to free assigned structures use, e.g., zd._free(zd._inBuffer.src);
             // Additionally, freeing zd._decHandle is not needed, and actually increases memory consumption (crashing zstddeclib)
@@ -217,7 +229,7 @@ define(rqDefZD, function() {
             // Get updated outbuffer values
             var obxPtr32Bit = zd._outBuffer.ptr >> 2;
             var outPos = zd.HEAP32[obxPtr32Bit + 2];
-            
+
             // If data have been decompressed, check to see whether the data are in the offset range we need
             if (outPos > 0 && that._outStreamPos + outPos >= offset) {
                 var copyStart = offset - that._outStreamPos;
@@ -247,14 +259,14 @@ define(rqDefZD, function() {
             console.error(err);
         });
     };
-    
+
     /**
      * Fills in the instream buffer
      * @returns {Promise<0>} A Promise for 0 when all data have been added to the stream
      */
-    Decompressor.prototype._fillInBuffer = function() {
+    Decompressor.prototype._fillInBuffer = function () {
         var that = this;
-        return this._reader(this._inStreamPos, zd._chunkSize).then(function(data) {
+        return this._reader(this._inStreamPos, zd._chunkSize).then(function (data) {
             // Populate inBuffer and assign asm/wasm memory if not already assigned
             zd._inBuffer.size = data.length;
             // Reset inBuffer
@@ -265,7 +277,7 @@ define(rqDefZD, function() {
             var outBufferStruct = new Int32Array([zd._outBuffer.dst, zd._outBuffer.size, zd._outBuffer.pos]);
             // Write outBuffer structure to w/asm memory
             zd.HEAP32.set(outBufferStruct, zd._outBuffer.ptr >> 2);
-            
+
             // Transfer the (new) data to be read to the inBuffer
             zd.HEAPU8.set(data, zd._inBuffer.src);
             that._inStreamChunkedPos += data.length;
