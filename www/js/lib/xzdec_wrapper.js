@@ -24,18 +24,20 @@
 // DEV: Put your RequireJS definition in the rqDefXZ array below, and any function exports in the function parenthesis of the define statement
 // We need to do it this way in order to load the wasm or asm versions of xzdec conditionally. Older browsers can only use the asm version
 // because they cannot interpret WebAssembly.
-var rqDefXZ = [];
+var rqDefXZ = ['uiUtil'];
 
 // Select asm or wasm conditionally
 if ('WebAssembly' in self) {
-    console.debug('Using WASM xz decoder');
+    console.debug('Instantiating WASM xz decoder');
+    params.decompressorAPI.assemblerMachineType = 'WASM';
     rqDefXZ.push('xzdec-wasm');
 } else {
-    console.debug('Using ASM xz decoder');
+    console.debug('Instantiating ASM xz decoder');
+    params.decompressorAPI.assemblerMachineType = 'ASM';
     rqDefXZ.push('xzdec-asm');
 }
 
-define(rqDefXZ, function() {
+define(rqDefXZ, function(uiUtil) {
     // DEV: xzdec.js has been compiled with `-s EXPORT_NAME="XZ" -s MODULARIZE=1` to avoid a clash with zstddec.js
     // Note that we include xzdec-asm or xzdec-wasm above in requireJS definition, but we cannot change the name in the function list
     // There is no longer any need to load it in index.html
@@ -49,27 +51,32 @@ define(rqDefXZ, function() {
      * The XZ Decoder instance
      * @type EMSInstance
      */
-     var xzdec;
+    var xzdec;
 
-     var instantiateDecoder = function (instance) {
-         xzdec = instance;
-     };
-
-     XZ().then(instantiateDecoder)
-     .catch(function (err) {
-         console.debug(err);
-         if (/CompileError.+?WASM/i.test(err.message)) {
-             console.log("WASM failed to load, falling back to ASM...", err);
-             XZ = null;
-             require(['xzdec-asm'], function() {
-                 XZ().then(instantiateDecoder)
-                 .catch(function (err) {
-                     console.error('Could not instantiate any decoder!', err);
-                 });
-             });
-         }
-     });
-    
+    XZ().then(function (instance) {
+        // TEST ERROR CODE: UNCOMMENT TO TEST AND REMOVE BEFORE MERGE
+        // throw params.decompressorAPI.assemblerMachineType + ' broken!';
+        xzdec = instance;
+    }).catch(function (err) {
+        if (params.decompressorAPI.assemblerMachineType === 'ASM') {
+            // There is no fallback, because we were attempting to load the ASM machine, so report error immediately
+            uiUtil.reportAssemblerErrorToAPIStatusPanel('XZ', err);
+        } else {
+            console.warn('WASM failed to load, falling back to ASM...', err);
+            params.decompressorAPI.assemblerMachineType = 'ASM';
+            XZ = null;
+            require(['xzdec-asm'], function () {
+                XZ().then(function (instance) {
+                    // TEST ERROR CODE: UNCOMMENT TO TEST AND REMOVE BEFORE MERGE
+                    // throw params.decompressorAPI.assemblerMachineType + ' broken!';
+                    xzdec = instance;
+                }).catch(function (err) {
+                    uiUtil.reportAssemblerErrorToAPIStatusPanel('XZ', err);
+                });
+            });
+        }
+    });
+     
     /**
      * Number of milliseconds to wait for the decompressor to be available for another chunk
      * @type Integer
@@ -99,9 +106,11 @@ define(rqDefXZ, function() {
      * @returns {Decompressor}
      */
     function Decompressor(reader, chunkSize) {
+        params.decompressorAPI.decompressorLastUsed = 'XZ';
         this._chunkSize = chunkSize || 1024 * 5;
         this._reader = reader;
     };
+
     /**
      * Read length bytes, offset into the decompressed stream. Consecutive calls may only
      * advance in the stream and may not overlap.
@@ -122,7 +131,7 @@ define(rqDefXZ, function() {
             return data;
         });
     };
-
+    
     /**
      * Reads stream of data from file offset for length of bytes to send to the decompresor
      * This function ensures that only one decompression runs at a time
@@ -130,7 +139,7 @@ define(rqDefXZ, function() {
      * @param {Integer} length The amount of data to read
      * @returns {Promise} A Promise for the read data
      */
-    Decompressor.prototype.readSliceSingleThread = function(offset, length) {
+    Decompressor.prototype.readSliceSingleThread = function (offset, length) {
         // Tests whether the decompressor is ready (initiated) and not busy
         if (xzdec && !busy) {
             return this.readSlice(offset, length);
@@ -140,9 +149,9 @@ define(rqDefXZ, function() {
             // before using it for another decompression
             var that = this;
             return new Promise(function (resolve, reject) {
-            setTimeout(function(){
+                setTimeout(function () {
                     that.readSliceSingleThread(offset, length).then(resolve, reject);
-            }, DELAY_WAITING_IDLE_DECOMPRESSOR);
+                }, DELAY_WAITING_IDLE_DECOMPRESSOR);
             });
         }
     };
