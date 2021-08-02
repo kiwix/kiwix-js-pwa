@@ -413,6 +413,17 @@ sub {
                 flex-flow: row nowrap
             }
 
+.infobox .infobox-header,.infobox .infobox-subheader,.infobox .infobox-image,.infobox .infobox-full-data,.infobox .infobox-below {
+    text-align: center !important
+}
+
+.infobox .infobox-above,.infobox .infobox-title,.infobox caption {
+    font-size: 125%;
+    font-weight: bold;
+    padding: 0.2em;
+    text-align: center !important
+}
+
 #filetoc, .mw-editsection {
     display: none
 }
