@@ -1,5 +1,9 @@
 # Changelog
 
+## In-progress release 1.6.1-rc1
+
+* FIX: Better replication of infobox mobile and desktop styles
+
 ## Release 1.6.0
 
 * FEATURE: New dropdown in Download Library allows filtering the list of archives by subject (for some ZIM types)

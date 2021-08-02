@@ -343,13 +343,17 @@ tr + tr > .navbox-abovebelow,tr + tr > .navbox-group,tr + tr > .navbox-image,tr 
     clear: right;
     font-size: 88%;
     line-height: 1.5em;
-    max-width: 320px
+    width: 22em;
 }
 
-.infobox caption {
+.infobox .infobox-above,.infobox .infobox-title,.infobox caption {
     font-size: 125%;
     font-weight: bold;
     padding: 0.2em;
+    text-align: center
+}
+
+.infobox .infobox-header,.infobox .infobox-subheader,.infobox .infobox-image,.infobox .infobox-full-data,.infobox .infobox-below {
     text-align: center
 }
 
