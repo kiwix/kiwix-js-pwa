@@ -1,7 +1,7 @@
 param (
     [string]$tag_name = "",
     [switch]$dryrun = $false,
-    [switch]$usestorerelease = $false,
+    [switch]$buildstorerelease = $false,
     [switch]$draftonly = $false,
     [switch]$buildonly = $false,
     [switch]$updatewinget = $false,
@@ -344,7 +344,15 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       }
     }
   } else {
-    # We need assets for the MS Store - check the release has been built
+    # We need to check for UWP assets - let's see what type the user last built
+    $appxmanifest = Get-Content -Raw $PSScriptRoot/../package.appxmanifest
+    if (-Not ($appxmanifest -match "Publisher=['`"]CN=Association\sKiwix")) {
+      "`n** App manifest is correctly associated with the MS Store..."
+    } else {
+      "`nBe aware that the version you are building is good for public release on GitHub, but not for upload to the Microsoft Store."
+      "To create a valid appxupload, please associate the app with the Store in Visual Studio.`n"
+    } 
+    # Let's check if we have the assets
     $ReleaseBundle = dir "$PSScriptRoot/../AppPackages/*_$base_tag*_Test/*_$base_tag*.appx*"
     # Check the file exists and it's of the right type
     if ($ReleaseBundle -and ($ReleaseBundle.count -eq 1) -and (Test-Path $ReleaseBundle -PathType leaf) -and 
@@ -352,18 +360,6 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       "`nUWP app packages were found."
     } else {
       "`nBuilding UWP app..."
-      $appxmanifest = Get-Content -Raw $PSScriptRoot/../package.appxmanifest
-      if (-Not ($appxmanifest -match "Publisher=['`"]CN=Association\sKiwix")) {
-        "`n** PLEASE NOTE: You are building a Store version which is not valid for release on GitHub!"
-        if (-Not $buildonly) {
-          "** You can use the appxupload to submit to the Store, but we won't release...`n"
-          $buildonly = $true
-          $forced_buildonly = $true
-        }
-      } else {
-        "`nBe aware that the version you are building is good for public release on GitHub, but not for upload to the Microsoft Store."
-        "To create a valid appxupload, please associate the app with the Store in Visual Studio.`n"
-      } 
       if (-Not ($appxmanifest -match "Version=['`"]$numeric_tag\.0['`"]")) {
         "The requested release version does not match the version in package.appxmanifest"
         "Updating..."
@@ -383,20 +379,31 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       }
     }
     # If we are releasing the MS Store version we have to copy it from a different location
-    if ($usestorerelease) {
-      "Using Store release becuase usestorerelease flag was set."
-      $UploadBundle = dir "$PSScriptRoot/../bin/Release/Upload/*_$base_tag.0/*_$base_tag*.appx*"
-      "$UploadBundle"
-      if ($UploadBundle -and ($UploadBundle.count -eq 1) -and (Test-Path $UploadBundle -PathType leaf) -and ($UploadBundle -imatch '\.(?:appx|appxbundle|appxupload)$')) {
-        $ReleaseFolder = dir "$PSScriptRoot/../AppPackages/*_$base_tag*_Test"
-        if ($ReleaseFolder -and (Test-Path $ReleaseFolder -PathType Container)) {
-          "Copying signed archive $UploadBundle to release folder..."
-          if (-Not $dryrun) { cp $UploadBundle $ReleaseFolder }
+    if ($buildstorerelease) {
+      if (-Not ($appxmanifest -match "Publisher=['`"]CN=Association\sKiwix")) {
+        "Using Store release becuase buildstorerelease flag was set."
+        $UploadBundle = dir "$PSScriptRoot/../bin/Release/Upload/*_$base_tag.0/*_$base_tag*.appx*"
+        "$UploadBundle"
+        if ($UploadBundle -and ($UploadBundle.count -eq 1) -and (Test-Path $UploadBundle -PathType leaf) -and ($UploadBundle -imatch '\.(?:appx|appxbundle|appxupload)$')) {
+          $ReleaseFolder = dir "$PSScriptRoot/../AppPackages/*_$base_tag*_Test"
+          if ($ReleaseFolder -and (Test-Path $ReleaseFolder -PathType Container)) {
+            "Copying signed archive $UploadBundle to release folder..."
+            if (-Not $dryrun) { cp $UploadBundle $ReleaseFolder }
+          } else {
+            "WARNING: Could not find release folder!"
+          }
         } else {
-          "WARNING: Could not find release folder!"
+          "WARNING: Could not find the upload bundle, so we will use the test release..."
         }
       } else {
-        "WARNING: Could not find the upload bundle, so we will use the test release..."
+        "WARNING: You requested a release valid for the MS Store, but the app manifest is not associated with the Store! We cannot build a Store release."
+        "Please associate the app with the MS Store in Visual Studio, save the manifest, and try again."
+        return
+      }
+      if (-Not $buildonly) {
+        "** You can use the appxupload to submit to the Store, but we won't release..."
+        $buildonly = $true
+        $forced_buildonly = $true
       }
     } else {
       "Using locally signed release."
@@ -414,8 +421,17 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         "Tag yielded: $ReleaseBundle " + ($ReleaseBundle -or $false)
         return
     }
+    if (-Not $buildstorerelease) {
+      "Signing app package for release on GitHub..."
+      $pfxpwd = Get-Content -Raw $PSScriptRoot\secret_kiwix.p12.pass
+      if (-Not $dryrun) {
+        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && SignTool sign /fd SHA256 /a /f `"$PSScriptRoot\..\kiwix2021-5.pfx`" /p $pfxpwd /tr http://timestamp.digicert.com /td SHA256 `"$ReleaseBundle`" "
+      } else {
+        'cmd.exe /c " "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" && SignTool sign /fd SHA256 /a /f ' + $PSScriptRoot + '\..\kiwix2021-5.pfx /p ' + $pfxpwd + ' /tr http://timestamp.digicert.com  /td SHA256 ' + $ReleaseBundle + ' "'
+      }
+    }
     # ZIP the remaining assets
-    "Compressing remaining assets..."
+    "`nCompressing remaining assets..."
     $compressed_assets_dir = $ReleaseBundle -replace '[^/\\]+$', ''
     $compressed_assets_base = $compressed_assets_dir -replace '^.*[\\/]([^\\/]+)[\\/]', '$1'
     $compressed_archive = $compressed_assets_dir + "PowerShell.Installation.Script.$compressed_assets_base.zip"
@@ -433,7 +449,6 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   }
   if ($forced_buildonly) {
     "`nBecause your app package was not valid for release on GitHub, we have not uploaded it."
-    "Please change the Certificate to kiwix.pfx in Visual Studio and re-run."
     "You will need to delete any draft release that was created and aborted as part of this run."
     "Your appxupload is valid for release on the Microsoft Store."
     "`nDone."
