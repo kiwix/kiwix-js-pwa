@@ -375,7 +375,6 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         $projstub = $text_tag
         if ($text_tag -eq "Windows") { $projstub = "" }
         cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && msbuild.exe KiwixWebApp$projstub.jsproj -p:Configuration=Release "
-        # "SignTool sign /fd SHA256 /a /f ..\..\kiwix.pfx /p yeahright KiwixWebApp_1.3.3.0_AnyCPU.appxbundle"
       }
     }
     # If we are releasing the MS Store version we have to copy it from a different location
@@ -406,7 +405,12 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         $forced_buildonly = $true
       }
     } else {
-      "Using locally signed release."
+      if ($appxmanifest -match "Publisher=['`"]CN=Association\sKiwix") {
+        "Using locally signed release."
+      } else {
+        "**WARNING: The app manifest is not correct for building an app for release on GitHub! Please associate the app with 'Association Kiwix' in Visual Studio and try again."
+        return
+      }
     }
     $ReleaseBundle = dir "$PSScriptRoot/../AppPackages/*_$base_tag*_Test/*_$base_tag*.appx*"
     # Check the file exists and it's of the right type
@@ -532,7 +536,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     } else {
       $wingetcreate_check = Read-Host "Would you like to update the WinGet repository with this new build?`nWARNING: be sure you have published the draft release (if in doubt answer N)! [Y/N]"
     }
-    $wingetcreate_check = -Not ( $wingetcreate_check -imatch 'n' )
+    $wingetcreate_check = $wingetcreate_check -imatch 'y'
     if ($wingetcreate_check) {
       "`nUpdating WinGet repository..."
       cd $PSScriptRoot\..
