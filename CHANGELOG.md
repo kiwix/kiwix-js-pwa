@@ -1,7 +1,8 @@
 # Changelog
 
-## In-progress release 1.6.1-rc1
+## In-progress release 1.6.1-rc2
 
+* ENNHNCEMENT: Added more diagnostic APIs to the API panel in Configuration
 * FIX: Better replication of infobox mobile and desktop styles
 
 ## Release 1.6.0
