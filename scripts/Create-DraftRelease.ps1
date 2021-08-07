@@ -347,7 +347,13 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     # We need to check for UWP assets - let's see what type the user last built
     $appxmanifest = Get-Content -Raw $PSScriptRoot/../package.appxmanifest
     if (-Not ($appxmanifest -match "Publisher=['`"]CN=Association\sKiwix")) {
+      if ($buildstorerelease) {
       "`n** App manifest is correctly associated with the MS Store..."
+      } else {
+        "`n**WARNING: The app manifest is not correct for building an app for release on GitHub! Please associate the app with 'Association Kiwix' in Visual Studio and try again"
+        "or else run this script with the flag -buildstorerelease`n"
+        return
+      }
     } else {
       "`nBe aware that the version you are building is good for public release on GitHub, but not for upload to the Microsoft Store."
       "To create a valid appxupload, please associate the app with the Store in Visual Studio.`n"
