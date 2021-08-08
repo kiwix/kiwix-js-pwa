@@ -250,6 +250,8 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
           "Using docker command:"
           "docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux"
           docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux
+          # Alternatively build with wsl
+          # wsl . ~/.bashrc; npm run dist-linux
           # docker $build_command
         }
       } else {
