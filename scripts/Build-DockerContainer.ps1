@@ -61,5 +61,5 @@ if (-Not ($dryrun -or $buildonly -or $updatewinget)) {
     "[DRYRUN] Dispatch parameters:`n$dispatch_params`n$tag_name"
     return
 }
-"`nServer returned:`n$dispatch"
-"An empty dispatch is normal, and indicates that the command was accepted."
+"`nServer returned: $dispatch"
+"`nAn empty dispatch is normal, and indicates that the command was accepted.`n"
