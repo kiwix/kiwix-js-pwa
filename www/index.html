@@ -345,11 +345,12 @@
                     <p>
                         On the Configuration page, tap the "Select storage" button. If you have downloaded more than one archive, or you have a
                         split ZIM archive consisting of several 2GB files, then you will need to pick the <b>folder</b> that contains these files
-                        or else (in older browsers) you will need to select all the split parts. If you have just one unsplit ZIM archive, you
+                        or else (in older browsers or Electron) you will need to select all the split parts. If you have just one unsplit ZIM archive, you
                         can instead pick the <b>file</b> directly, using the respective buttons on the
                         <a href="#" onclick="document.getElementById('btnConfigure').click();">Configuration</a> page (note that these buttons
                         only appear after you tap "Select Storage"). In most modern contexts the archive will be remembered on next launch
-                        (Firefox and IE11 are exceptions).
+                        (Firefox and IE11 are exceptions). If in the future you add more files to a folder you have selected, then you can use the rescan
+                        button <span class="glyphicon glyphicon-refresh"></span> to refresh the list of archives in the folder.
                     </p>
                     <p>
                         Alternatively, in the UWP app, and experimentally in an installed PWA on the PC, you can simply <b>double-click</b> the ZIM
@@ -618,13 +619,12 @@
                                 </div>
                             </div>
                             <div id="rescanStorage" style="display:none;" class="row">
-                                <div class="col-xs-12">
-                                    <table>
-                                        <tr>
-                                            <td><input style="float:left; margin-right:1em;" type="button" class="btn btn-primary" value="Select storage" id="btnRescanDeviceStorage" /></td>
-                                            <td style="width:100%;">Tap to select app's local storage or to select a file or folder. <b>You can also drag and drop a ZIM file into the app.</b></td>
-                                        </tr>
-                                    </table>
+                                <div class="col-xs-11">
+                                    <input style="float:left; margin-right:1em;" type="button" class="btn btn-primary" value="Select storage" id="btnRescanDeviceStorage" />
+                                    Tap to select app's local storage or to select a file or folder. <b>You can also drag and drop a ZIM file into the app.</b>
+                                </div>
+                                <div class="col-xs-1">
+                                    <a href="#" title="Refresh archive list" id="btnRefresh"><span class="glyphicon glyphicon-refresh"></span></a>
                                 </div>
                             </div>
                         </div>
