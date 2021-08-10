@@ -584,7 +584,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 returnDivs[i].innerHTML = "";
             }
             params.rescan = true;
-            //Reload any ZIM files in local storage (whcih the usar can't otherwise select with the filepicker)
+            //Reload any ZIM files in local storage (which the usar can't otherwise select with the filepicker)
             loadPackagedArchive();
             if (storages.length) {
                 searchForArchivesInStorage();
@@ -896,13 +896,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
             if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker === 'undefined') {
                 //If not UWP, display legacy File Select
-                document.getElementById('archiveFile').style.display = "none";
-                document.getElementById('archiveFiles').style.display = "none";
-                document.getElementById('UWPInstructions').style.display = "none";
-                document.getElementById('archivesFound').style.display = "none";
-                document.getElementById('instructions').style.display = "block";
-                document.getElementById('archiveFilesLegacy').style.display = "inline";
+                document.getElementById('archiveFile').style.display = 'none';
+                document.getElementById('archiveFiles').style.display = 'none';
+                document.getElementById('UWPInstructions').style.display = 'none';
+                document.getElementById('archivesFound').style.display = 'none';
+                document.getElementById('instructions').style.display = 'block';
+                document.getElementById('archiveFilesLegacy').style.display = 'inline';
                 document.getElementById('archiveFilesLegacy').addEventListener('change', setLocalArchiveFromFileSelect);
+                document.getElementById('btnRefresh').style.display = 'none';
             }
             document.getElementById('chooseArchiveFromLocalStorage').style.display = "block";
             // If user had previously picked a file using Native FS, offer to re-open
@@ -1043,6 +1044,19 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             } else if (typeof window.showOpenFilePicker !== 'undefined') {
                 // Native File System API folder picker
                 pickFolderNativeFS();
+            }
+        });
+        document.getElementById('btnRefresh').addEventListener('click', function () {
+            // Refresh list of archives
+            if (params.pickedFolder) {
+                params.rescan = true;
+                if (typeof window.showOpenFilePicker !== 'undefined') {
+                    processNativeDirHandle(params.pickedFolder);
+                } else if (typeof Windows !== 'undefined') {
+                    scanUWPFolderforArchives(params.pickedFolder)
+                }
+            } else {
+                uiUtil.systemAlert('You need to pick a folder in order to rescan it!');
             }
         });
         document.getElementById('downloadTrigger').addEventListener('click', function () {
