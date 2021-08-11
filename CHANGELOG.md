@@ -1,9 +1,10 @@
 # Changelog
 
-## In-progress release 1.6.2-rc1
+## In-progress release 1.6.2-rc2
 
 * ENNHNCEMENT: Added more diagnostic APIs to the API panel in Configuration
 * ENHANCEMENT: Added refresh button for picked folder in Configuration (UWP or File System Access API)
+* ENHANCEMENT: Added some extra directories of useful ZIM archives to Donwload library
 * FIX: Better replication of infobox mobile and desktop styles
 
 ## Release 1.6.0
