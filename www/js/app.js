@@ -1055,6 +1055,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 } else if (typeof Windows !== 'undefined') {
                     scanUWPFolderforArchives(params.pickedFolder)
                 }
+            } else if (typeof window.showOpenFilePicker !== 'undefined' && !params.pickedFile) {
+                getNativeFSHandle(function (fsHandle) {
+                    if (fsHandle && fsHandle.kind === 'directory') {
+                        processNativeDirHandle(fsHandle);
+                    } else {
+                        uiUtil.systemAlert('You need to pick a folder in order to rescan it!');        
+                    }
+                });
             } else {
                 uiUtil.systemAlert('You need to pick a folder in order to rescan it!');
             }
