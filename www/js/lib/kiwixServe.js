@@ -527,6 +527,11 @@ define([], function () {
                 // Remove unused README file
                 doc = doc.replace(/^<a\s+href\b[^<]+README.+$[\r\n]*/m, '');
             }
+            // Add in some directories from hidden
+            if (/wikipedia\//.test(doc)) {
+                doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>\s\s)([^<]+)/m, '<a href="#">custom_apps/</a>$3$1$2$3');
+                doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>)([^<]+)/m, '<a href="#">endless/$2  $3$1$2$3');
+            }
             var stDoc; // Placeholder for standardized doc to be used to get arrays
             if (/^[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$/m.test(doc)) {
                 //Delete lines that do not match regexpFilter (this ensures packaged apps only show ZIMs appropriate to the package)
@@ -753,11 +758,14 @@ define([], function () {
                     var dateID = dateSel ? dateSel.value : '';
                     var subjID = subjSel ? subjSel.value : '';
                     var replaceURL = URL + this.text;
+                    replaceURL = /custom_apps\//.test(this.text) ? URL + '.hidden/' + this.text : replaceURL;
+                    replaceURL = /endless\//.test(this.text) ? URL + '.hidden/' + this.text : replaceURL;
                     //Allow both zim and zip format
                     if (/\.zi[mp]$/i.test(this.text)) {
                         replaceURL = replaceURL + ".meta4";
                     } else if (/parent\s*directory/i.test(this.text)) {
                         replaceURL = URL.replace(/\/[^\/]*\/$/i, '\/');
+                        replaceURL = replaceURL.replace(/\.hidden\//, '');
                     } else if (/Name|Size|Last\smodified|Description/.test(this.text)) {
                         replaceURL = this.getAttribute('href').replace(/;/g, '&');
                         replaceURL = URL + replaceURL;
