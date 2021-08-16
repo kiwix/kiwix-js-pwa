@@ -484,7 +484,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
 
         function clearFindInArticle() {
-            if (document.getElementById('row2').style.display == "none") return;
+            if (document.getElementById('row2').style.display === "none") return;
             if (typeof localSearch !== "undefined" && localSearch.remove) {
                 localSearch.remove();
             }
@@ -497,11 +497,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
         document.getElementById('findText').addEventListener('click', function () {
             var searchDiv = document.getElementById('row2');
-            if (searchDiv.style.display != "none") {
+            if (searchDiv.style.display !== "none") {
                 setTab();
                 // Return params.hideToolbars to its original state
-                params.hideToolbars = settingsStore.getItem('hideToolbars');
-                params.hideToolbars = params.hideToolbars === 'true' ? true : params.hideToolbars === 'false' ? false : params.hideToolbars;
                 checkToolbar();
                 return;
             }
@@ -1292,6 +1290,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         };
 
         function checkToolbar() {
+            if (document.getElementById('row2').style.display === "none") {
+                // Check state of toolbar (this returns it to its original state if it was changed by find-in-article)
+                params.hideToolbars = settingsStore.getItem('hideToolbars');
+                params.hideToolbars = params.hideToolbars === null ? true : params.hideToolbars === 'true' ? true : params.hideToolbars === 'false' ? false : params.hideToolbars;
+            }
             oldScrollY = iframe.contentWindow.pageYOffset;
             navbarDim = document.getElementById('navbar').getBoundingClientRect();
             footerDim = footer.getBoundingClientRect();
