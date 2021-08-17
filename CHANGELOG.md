@@ -1,26 +1,17 @@
 # Changelog
 
-## In-progress release 1.6.2-rc3
-
-* ENNHNCEMENT: Added more diagnostic APIs to the API panel in Configuration
-* ENHANCEMENT: Added refresh button for picked folder in Configuration (UWP or File System Access API)
-* ENHANCEMENT: Added some extra directories of useful ZIM archives to Donwload library
-* FIX: Issues with toolbars getting stuck on after searching for text in article
-* FIX: Better replication of infobox mobile and desktop styles
-
-## Release 1.6.0
+## Release 1.6.2-Wikivoyage
 
 * FEATURE: New dropdown in Download Library allows filtering the list of archives by subject (for some ZIM types)
 * ENHANCEMENT: Sorting the Download Library list by clicking on the Size / Last modified / Name headers
-* ENHANCEMENT: The app can now take advantage of native Promises (faster than Q)
+* ENHANCEMENT: Significant speed-up by using native Promise API, or modern polyfill where needed
 * ENHANCEMENT: Decompressors now loaded as fast binary WASM modules if the brower supports WebAssembly
-* EXPERIMENTAL: Intalled PWA can now be opened offline when double-clicking ZIM archive (depends on File Handling API) 
+* ENNHNCEMENT: Added more diagnostic APIs to the API panel in Configuration
+* ENHANCEMENT: Added refresh button for picked folder in Configuration (UWP or File System Access API)
+* FIX: Issues with toolbars getting stuck on after searching for text in article
+* FIX: Better replication of infobox mobile and desktop styles
 * FIX: More displaced hatnotes corrected
 * FIX: Style injection code that would (rarely) cause an exception on some ZIM types
-
-## Release 1.5.0
-
-* ENHANCEMENT: Significant speed-up by using native Promise API, or modern polyfill where needed
 
 ## Release 1.5.0-Wikivoyage
 
@@ -32,8 +23,6 @@
 * ENHANCEMENT: Report number of titles scanned for long title searches
 * ENHANCEMENT: Add a Content Security Policy preventing contents of a page from connecting to online resources
 * FIX: Critical bug where article is not unhidden in time on slow systems in jQuery mode
-* FIX: Issues with dark mode in Gutenberg ZIMs using SW mode
-* FIX: Missing images from book lists in Gutenberg ZIMs
 * FIX: Crash in UWP app after updating a ZIM archive
 * FIX: Improve handover from local code to PWA code to prevent rogue error message
 * FIX: Improve page composition timing for non-MS browsers
