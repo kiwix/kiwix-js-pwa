@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-wikimed",
   "productName": "Kiwix JS WikiMed",
-  "version": "1.6.1E",
+  "version": "1.6.2",
   "description": "Kiwix JS WikiMed Electron Edition",
   "main": "main.js",
   "build": {
