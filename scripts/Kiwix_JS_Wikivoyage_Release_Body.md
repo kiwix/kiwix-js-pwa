@@ -3,7 +3,7 @@
 Please choose the correct version:
 
 * For **Windows 10/11**: install from the Microsoft Store: https://www.microsoft.com/store/apps/9N5SB90Q4JBJ (it will self-update automatically), or open a command prompt and run `winget install wikivoyage`; you can also sideload it (see instructions below)
-* For **Windows 7/8/10/11** or **Linux (Ubuntu, Debian, OpenSUSE)** 32bit/64bit desktop only: use the portable or installable [NWJS/Electron versions](https://kiwix.github.io/kiwix-js-windows/wikivoyage-electron.html) (NB these do not self-update yet)
+* For **Windows 7/8/10/11** or **Linux (Ubuntu, Debian, OpenSUSE)** 32bit/64bit desktop only: use the portable or installable [NWJS/Electron versions](https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html) and download the Wikivoyage archive separately from within the app
 * For **Windows XP** or **Windows Vista**: use the older [NWJS release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html) and download the Wikivoyage archive separately from within the app
 
 This UWP app contains the <<date>> release of the Wikivoyage ZIM together with the changes detailed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-Wikivoyage/CHANGELOG.md).
@@ -26,7 +26,7 @@ On slightly older versions of Windows 10, you may need to enable sideloading of 
 
 If the above procedures fail, or the App Installer is not available, then download and unzip into a folder the `PowerShell.Installation.Script...` from Assets, place the `.appxbundle` in the same folder, and follow PowerShell Installation instructions [here](https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#windows-10-tablet--pc) (except that you don't need to download further files, all the needed ones are included in the zip file `PowerShell.Installation.Script...`).
 
-In case you are still unable to sideload, try the [Electron or NWJS releases](https://kiwix.github.io/kiwix-js-windows/wikivoyage-electron.html).
+In case you are still unable to sideload, try the [Electron or NWJS releases](https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html) and download Wikivoyage separately from within the app.
 
 ## Manual Installation: Windows 10 Mobile
 
