@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 1.6.2-rc3
+## In-progress release 1.6.2-rc4
 
 * ENNHNCEMENT: Added more diagnostic APIs to the API panel in Configuration
 * ENHANCEMENT: Added refresh button for picked folder in Configuration (UWP or File System Access API)
