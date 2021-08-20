@@ -10,9 +10,21 @@ $release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-windows/actions/work
 $github_token = Get-Content -Raw "$PSScriptRoot/github_token"
 
 $init_params = Get-Content -Raw "$PSScriptRoot\..\www\js\init.js"
+$pwabuilder = Get-Content -Raw "$PSScriptRoot\..\pwabuilder-sw.js"
 $suggested_build = ''
+$init_tag = ''
 if ($init_params -match 'params\[[''"]version[''"]]\s*=\s*[''"]([^''"]+)') {
-  $suggested_build = 'v' + $matches[1] 
+  $init_tag = $matches[1]
+  $suggested_build = 'v' + $init_tag 
+}
+$pwabuilder_tag = ''
+if ($pwabuilder -match 'appVersion\s*=\s*[''"]([^''"]+)') {
+  $pwabuilder_tag = $matches[1]
+  if ($pwabuilder_tag -ne $init_tag) {
+    "`n*** WARNING: The tag in init.js [$init_tag] does not match the tag in pwabuilder-sw.js [$pwabuilder_tag]! ***"
+    "Please correct before continuing.`n"
+    exit
+  }
 }
 
 if ($tag_name -eq "") {
