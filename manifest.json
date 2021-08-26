@@ -3,6 +3,7 @@
   "lang": "en",
   "name": "Kiwix JS PWA Edition",
   "display": "standalone",
+  "display_override": ["tabbed"],
   "start_url": ".",
   "short_name": "Kiwix PWA",
   "theme_color": "black",
