@@ -211,8 +211,8 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
         }));
         // Get the full array of combinations to check number of combinations
         var fullCombos = util.removeDuplicateStringsInSmallArray(util.allCaseFirstLetters(prefix, 'full'));
-        // Put cap on exponential number of combinations (five words = 3^6 = 243 combinations)
-        search.type = fullCombos.length < 250 ? 'full' : 'basic';
+        // Put cap on exponential number of combinations (five words = 3^5 = 243 combinations)
+        search.type = fullCombos.length < 300 ? 'full' : 'basic';
         // We have to remove duplicate string combinations because util.allCaseFirstLetters() can return some combinations
         // where uppercase and lowercase combinations are exactly the same, e.g. where prefix begins with punctuation
         // or currency signs, for languages without case, or where user-entered case duplicates calculated case
@@ -288,7 +288,7 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
      * 
      * @param {String} prefix The case-sensitive value against which dirEntry titles (or url) will be compared
      * @param {Object} search The appstate.search object (for comparison, so that we can cancel long binary searches)
-     * @param {Function} callback The function to call with the array of dirEntries with titles that begin with prefix
+     * @param {callbackDirEntryList} callback The function to call with the array of dirEntries with titles that begin with prefix
      * @param {Integer} startIndex The index number with which to commence the search, or null
      */
     ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function(prefix, search, callback, startIndex) {
