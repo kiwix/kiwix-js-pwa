@@ -1173,26 +1173,38 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             settingsStore.setItem('windowOpener', params.windowOpener, Infinity);
             setWindowOpenerUI();
         });
+        document.getElementById('dblRightClickCheck').addEventListener('click', function () {
+            var tabCheck = document.getElementById('tabOpenerCheck');
+            params.rightClickType = this.checked ? 'double' : tabCheck.checked ? 'single' : false;
+            settingsStore.setItem('rightClickType', params.rightClickType, Infinity);
+            setWindowOpenerUI();
+        });
         function setWindowOpenerUI() {
             var woHelp = document.getElementById('winOpenerHelp');
             var newWin = document.getElementById('openInNewWindow');
             var tabCheck = document.getElementById('tabOpenerCheck');
             var winCheck = document.getElementById('winOpenerCheck');
+            var rtClickType = document.getElementById('dblRightClickCheck');
+            if (params.rightClickType === 'double') rtClickType.checked = true;    
             if (params.windowOpener === 'window') {
                 newWin.style.display = 'block';
                 woHelp.style.display = 'block';
                 tabCheck.checked = true;
                 winCheck.checked = true;
                 woHelp.innerHTML = 'If blocked, allow popups permanently for this app and try again. May not work in mobile contexts.';
+                if (params.rightClickType === 'double') woHelp.innerHTML += '<br />Single right-click will open context menu, double right-click will open new window.';
             } else if (params.windowOpener === 'tab') {
                 tabCheck.checked = true;
                 winCheck.checked = false;
                 newWin.style.display = 'block';
                 woHelp.style.display = 'block';
+                woHelp.innerHTML = '';
                 woHelp.innerHTML = 'In some cases a window may open regardless of this setting. May not work in mobile contexts.';
+                if (params.rightClickType === 'double') woHelp.innerHTML += '<br />Single right-click will open context menu, double right-click will open new tab.';
             } else { // The options are turned off
                 tabCheck.checked = false;
                 winCheck.checked = false;
+                rtClickType.checked = false;
                 woHelp.style.display = 'none';
                 newWin.style.display = 'none';
             }
@@ -4331,17 +4343,25 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             });
             // This detects right-click in all browsers (only if the option is enabled)
             a.addEventListener('contextmenu', function (e) {
-                console.log('contextmenu');
+                console.debug('contextmenu');
                 if (!params.windowOpener) return;
-                e.preventDefault();
-                e.stopPropagation();
-                if (a.touched || a.newcontainer) return; // Prevent double activation
-                a.newcontainer = true;
-                onDetectedClick(e);
+                if (params.rightClickType === 'double' && !a.touched) {
+                    a.touched = true;
+                    setTimeout(function () {
+                        a.touched = false;
+                    }, 400);
+                } else {
+                    if (a.newcontainer) return; // Prevent accidental double activation
+                    e.preventDefault();
+                    e.stopPropagation();
+                    a.newcontainer = true;
+                    a.touched = false;
+                    onDetectedClick(e);
+                }
             });
             // This traps the middle-click event before tha auxclick event fires
             a.addEventListener('mousedown', function (e) {
-                console.log('mosuedown');
+                console.debug('mosuedown');
                 if (!params.windowOpener) return;
                 e.preventDefault();
                 e.stopPropagation();
@@ -4356,7 +4376,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // This detects the middle-click event that opens a new tab in recent Firefox and Chrome
             // See https://developer.mozilla.org/en-US/docs/Web/API/Element/auxclick_event
             a.addEventListener('auxclick', function (e) {
-                console.log('auxclick');
+                console.debug('auxclick');
                 if (!params.windowOpener) return;
                 e.preventDefault();
                 e.stopPropagation();
