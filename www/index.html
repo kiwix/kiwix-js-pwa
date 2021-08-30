@@ -691,12 +691,12 @@
                                             <span class="checkmark"></span>
                                             <b>Set dark mode for User Interface</b>: [ <b><span id="cssUIDarkThemeState"></span></b> ] (<i>auto</i> mode uses OS Settings if available)
                                         </label>
-                                        <label class="checkbox" title="Tap three times for dark | auto | light">
+                                        <label class="checkbox" title="Tap three times for dark | auto | light. This is tuned to work with Wikimedia ZIMs, but will also work with some other common ZIM types.">
                                             <input type="checkbox" name="cssWikiDarkTheme" id="cssWikiDarkThemeCheck">
                                             <span class="checkmark"></span>
                                             <b>Set dark theme for articles</b>: [ <b><span id="cssWikiDarkThemeState"></span></b> ]  (<i>experimental</i>: tested with Wikimedia ZIMs)
                                         </label>
-                                        <label id="darkInvert" style="display:none;" class="checkbox">
+                                        <label id="darkInvert" style="display:none;" class="checkbox" title="This is a generic inversion style, and should work with all ZIM types. It tries not to invert images, but transparent images sometimes fail to show against the background.">
                                             <input type="checkbox" name="cssWikiDarkThemeInvert" id="cssWikiDarkThemeInvertCheck">
                                             <span class="checkmark"></span>
                                             <b>Use simple inversion for dark theme</b> (should work with all archive types)
@@ -706,27 +706,27 @@
                                 <div class="panel panel-info" id="cssSettingsDiv">
                                     <div class="panel-heading">Display style:</div>
                                     <div class="panel-body">
-                                        <label class="radio">
+                                        <label class="radio" title="The uses the style that is the default for the ZIM file you load. For Wikimedia ZIMs, this is now usually a 'mobile' display style. Note that 'mobile' hides certain elements, like some navigation boxes. If you want to see these in Wikimedia ZIMs, switch to 'desktop' style below.">
                                             <input name="cssInjectionMode" id="cssModeAutoRadio" type="radio" value="auto">
                                             <span class="radiobtn"></span>
-                                            <b>Select style automatically</b> (<i>recommended</i>: matches the ZIM style)
+                                            <b>Default ZIM style</b> (in recent WikiMedia ZIMs, this is usually mobile)
                                         </label>
-                                        <label class="radio">
+                                        <label class="radio" title="This is only relevant for Wikimedia ZIMs. It simulates the Wikipedia 'desktop' display style even for ZIMs with an embedded mobile style. Please note that this simulation involves adding in our own stylesheets and moving some elements, so it may not be 100% accurate.">
                                             <input name="cssInjectionMode" id="cssModeDesktopRadio" type="radio" value="desktop">
                                             <span class="radiobtn"></span>
                                             <b>Use Wikimedia desktop style</b> (and transform if necessary)
                                         </label>
-                                        <label class="radio">
+                                        <label class="radio" title="This is only relevant for Wikimedia ZIMs. If the ZIM is coded with a 'desktop' display style, then this setting transforms it to 'mobile'. Only older ZIMs have a 'desktop' style.">
                                             <input name="cssInjectionMode" id="cssModeMobileRadio" type="radio" value="mobile">
                                             <span class="radiobtn"></span>
                                             <b>Use Wikimedia mobile style</b> (and transform if necessary)
                                         </label>
-                                        <label class="checkbox">
+                                        <label class="checkbox" title="This speeds up the display of articles for some ZIM types by using our own copies of common stylesheets. Note that our copies may not be 100% correct for all languages. We also do some optimizations that may result in minor infidelities. If you want to use the ZIM's own styles for full fidelity, turn this off.">
                                             <input type="checkbox" name="cssCacheMode" id="cssCacheModeCheck">
                                             <span class="checkmark"></span>
                                             <b>Use locally cached display styles</b> (<i>recommended</i> for Wikipedia ZIM)
                                         </label>
-                                        <label class="checkbox" title="Tap three times for always | auto | never">
+                                        <label class="checkbox" title="Tap three times for always | auto | never. This is only relevant when you maximize the app window (e.g. on a PC). It ensures the article uses the full screen width.">
                                             <input name="pageMaxWidth" id="removePageMaxWidthCheck" type="checkbox" value="false">
                                             <span class="checkmark"></span>
                                             <b>Remove max page width restriction</b>: [ <b><span id="pageMaxWidthState"></span></b> ] (useful for recent Wikipedia archives)
@@ -736,8 +736,8 @@
                                 <div class="panel panel-info" id="otherSettingsDiv">
                                     <div class="panel-heading">Other settings:</div>
                                     <div class="panel-body">
-                                        <label class="checkbox">
-                                            <input type="checkbox" name="hideToolbars" id="hideToolbarsCheck" title="Tap three times for both | top | never">
+                                        <label class="checkbox" title="Tap three times for both | top | never">
+                                            <input type="checkbox" name="hideToolbars" id="hideToolbarsCheck">
                                             <span class="checkmark"></span>
                                             <b>Hide toolbars while scrolling:</b> [ <b><span id="hideToolbarsState"></span></b> ] (scroll slightly up to reveal)
                                         </label>
@@ -760,7 +760,7 @@
                                             <div class="col-sm-12">
                                                 <b>Alphabetical ZIM Archive Index:</b>
                                             </div>
-                                            <label title="ZIM Archive Index">
+                                            <label title="Press space bar in search field to show the ZIM Archive Index.">
                                                 <div class="col-sm-6">
                                                     <b>Start character</b> of alphabet:
                                                     <input type="text" name="alphaChar" id="alphaCharTxt" value="A" style="width:2em;color:steelblue;">
@@ -777,7 +777,7 @@
                                             <div class="col-sm-12">
                                                 <b>Title search:</b>
                                             </div>
-                                            <label title="Max number title search results">
+                                            <label title="Set the maximum number of title search results">
                                                 <div class="col-sm-12">
                                                     <p>Wildcards <code>.*</code> or <code>.+</code> are permitted, e.g. <code>list.+medieval</code>, but
                                                     <a href="#searchSyntax" class="aboutLink">see usage</a></p>
@@ -800,11 +800,22 @@
                                             <span class="checkmark"></span>
                                             <strong>Open ZIM links in new tab</strong> with right-click, ctrl-click, middle-click or long-press
                                         </label>
-                                        <label class="checkbox" id="openInNewWindow" hidden title="Open article in new window">
-                                            <input type="checkbox" name="windowOpener" id="winOpenerCheck">
-                                            <span class="checkmark"></span>
-                                            <strong>Open in new window instead</strong>
-                                        </label>
+                                        <div class="row" id="openInNewWindow" hidden>
+                                            <div class="col-sm-6">
+                                                <label class="checkbox" title="Open article in new window">
+                                                    <input type="checkbox" name="windowOpener" id="winOpenerCheck">
+                                                    <span class="checkmark"></span>
+                                                    <strong>Open in new window instead</strong>
+                                                </label>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label class="checkbox" title="Use double right-click to open window/tab">
+                                                    <input type="checkbox" name="dblRightClick" id="dblRightClickCheck">
+                                                    <span class="checkmark"></span>
+                                                    <strong>Use <i>double</i> right-click to open window/tab</strong>
+                                                </label>
+                                            </div>
+                                        </div>
                                         <div id="winOpenerHelp" style="padding-bottom:1em;"></div>
                                         <label class="checkbox">
                                             <input type="checkbox" name="allowHTMLExtraction" id="allowHTMLExtractionCheck">
@@ -818,9 +829,9 @@
                                         </label>
                                     </div> 
                                 </div>
-                                    </div>
-                                </div>
                             </div>
+                        </div>
+                    </div>
                     <div class="returntoArticle" style="text-align:center;"></div>
                     <div>
                         <div class="row">
@@ -872,12 +883,12 @@
                                     <div class="panel-heading">Content injection mode</div>
                                     <div class="panel-body">
                                         <p>See <a href="#expert" class="aboutLink">About (Expert Settings)</a> for an explanation of the difference between these modes:</p>
-                                        <label class="radio">
+                                        <label class="radio" title="This mode tends to be faster, and works well with Wikimedia ZIMs, but active/dynamic content doesn't work.">
                                             <input type="radio" name="contentInjectionMode" value="jquery" id="jQueryModeRadio" checked>
                                             <span class="radiobtn"></span>
                                             <strong>JQuery</strong> (stable and safe)
                                         </label>
-                                        <label class="radio">
+                                        <label class="radio" title="This mode can run JavaScript in the ZIM, so if it's available, use it for ZIMs with active content.">
                                             <input type="radio" name="contentInjectionMode" value="serviceworker" id="serviceworkerModeRadio">
                                             <span class="radiobtn"></span>
                                             <strong>ServiceWorker</strong> (not available on all platforms, but supports more ZIM files)
