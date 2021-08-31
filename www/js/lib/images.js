@@ -67,7 +67,7 @@ define(['uiUtil'], function (uiUtil) {
             else { image.setAttribute('data-kiwixsrc', imageUrl); } 
             image.removeAttribute('data-kiwixurl');
             var title = decodeURIComponent(imageUrl);
-            if (params.contentInjectionMode === 'serviceworker') {
+            if (params.contentInjectionMode === 'serviceworker' && !params.manipulateImages) {
                 image.addEventListener('load', function () {
                     image.style.transition = 'opacity 0.5s ease-in';
                     image.style.opacity = '1';
@@ -83,7 +83,7 @@ define(['uiUtil'], function (uiUtil) {
                 return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                     image.style.background = '';
                     var mimetype = dirEntry.getMimetype();
-                    uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.allowHTMLExtraction, function () {
+                    uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.manipulateImages, function () {
                         checkBatch();
                     });
                     image.style.transition = 'opacity 0.5s ease-in';
@@ -205,6 +205,10 @@ define(['uiUtil'], function (uiUtil) {
      * @param {Boolean} forPrinting If true, extracts all images
      */
     function prepareImagesServiceWorker (win, forPrinting) {
+        if (params.manipulateImages) {
+            prepareImagesJQuery(win, forPrinting);
+            return;
+        }
         container = win;
         var doc = container.document;
         var documentImages = doc.querySelectorAll('img');
@@ -226,7 +230,7 @@ define(['uiUtil'], function (uiUtil) {
                 });
             }
             // DEV: make sure list of file types here is the same as the list in Service Worker code
-            if (/(^|\/)[IJ]\/.*\.(jpe?g|png|svg|gif|webp)($|[?#])/i.test(documentImages[i].src)) {
+            if (/(^|\/).+\.(jpe?g|png|svg|gif|webp)($|[?#])/i.test(documentImages[i].src)) {
                 documentImages[i].dataset.kiwixurl = documentImages[i].getAttribute('src');
                 if (params.imageDisplayMode === 'progressive') {
                     documentImages[i].style.opacity = '0';
