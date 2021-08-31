@@ -1145,6 +1145,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         document.getElementById('manipulateImagesCheck').addEventListener('click', function () {
             params.manipulateImages = this.checked;
             settingsStore.setItem('manipulateImages', params.manipulateImages, Infinity);
+            params.themeChanged = true;
         });
         $('input:checkbox[name=hideActiveContentWarning]').on('change', function () {
             params.hideActiveContentWarning = this.checked ? true : false;
@@ -3482,7 +3483,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             console.log("Loading stylesheets...");
             
             // Display Bootstrap warning alert if the landing page contains active content
-            if (!params.hideActiveContentWarning && params.isLandingPage && params.contentInjectionMode === 'jquery') {
+            if (!params.hideActiveContentWarning && params.isLandingPage && (params.contentInjectionMode === 'jquery' || params.manipulateImages)) {
                 if (regexpActiveContent.test(htmlArticle)) uiUtil.displayActiveContentWarning();
             }
 
