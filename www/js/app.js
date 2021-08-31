@@ -1142,7 +1142,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             params.themeChanged = params.imageDisplay; //Only reload page if user asked for all images to be displayed
             settingsStore.setItem('imageDisplay', params.imageDisplay, Infinity);
         });
-        $('input:checkbox[name=hideActiveContentWarning]').on('change', function (e) {
+        document.getElementById('manipulateImagesCheck').addEventListener('click', function () {
+            params.manipulateImages = this.checked;
+            settingsStore.setItem('manipulateImages', params.manipulateImages, Infinity);
+        });
+        $('input:checkbox[name=hideActiveContentWarning]').on('change', function () {
             params.hideActiveContentWarning = this.checked ? true : false;
             settingsStore.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
         });
@@ -3500,7 +3504,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // Replaces ZIM-style URLs of img, script, link and media tags with a data-kiwixurl to prevent 404 errors [kiwix-js #272 #376]
             // This replacement also processes the URL relative to the page's ZIM URL so that we can find the ZIM URL of the asset
             // with the correct namespace (this works for old-style -,I,J namespaces and for new-style C namespace)
-            if (params.contentInjectionMode == 'jquery') {
+            if (params.contentInjectionMode == 'jquery' || params.manipulateImages) {
                 htmlArticle = htmlArticle.replace(regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl) {
                     var assetZIMUrl = uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, baseUrl);
                     // DEV: Note that deriveZimUrlFromRelativeUrl produces a *decoded* URL (and incidentally would remove any URI component
@@ -4538,7 +4542,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     } else {
                         appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                             // TODO : JavaScript support not yet functional [kiwix-js #152]
-                            uiUtil.feedNodeWithBlob(script, 'src', content, 'text/javascript', params.allowHTMLExtraction);
+                            uiUtil.feedNodeWithBlob(script, 'src', content, 'text/javascript', params.manipulateImages);
                         });
                     }
                 }).catch(function (e) {
