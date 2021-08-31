@@ -118,18 +118,13 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in version <span class="version">1.0</span></h3>
                         <ul style="padding-left: 15px;">
-                            <li>New dropdown in Download Library allows filtering the list of archives by subject (for wikimedia, stackexchange, TED)</li>
-                            <li>You can now sort the Download Library list by clicking on the Size / Last modified / Name headers</li>
                             <li>Added refresh button for picked folder in Configuration</li>
                             <li>Added some extra directories of useful ZIM archives to Donwload library</li>
-                            <li>Sample ZIM updated to wikipedia_en_100_maxi_2021-07.zim</li>
+                            <li>Sample ZIM updated to wikipedia_en_100_maxi_2021-08.zim</li>
                             <li>Added more diagnostic APIs to the API panel in Configuration</li>
-                            <li>The app can now take advantage of native Promises, speeding up intensive searches considerably</li>
-                            <li>Decompressors now loaded as fast binary WASM modules if the brower supports WebAssembly</li>
-                            <li>Intalled PWA can now be opened offline when double-clicking ZIM archive (depends on File Handling API)</li>
-                            <li>More displaced hatnotes are now corrected</li>
+                            <li>Provide option for image manipulation (saving to disk or opening in new tab via right-click)</li>
+                            <li>New option to change single right click to double right click for opening new window or tab</li>
                             <li>Fixed issues with toolbars getting stuck on after searching for text in article</li>
-                            <li>Fixed style injection code that would (rarely) cause an exception on some ZIM types</li>
                             <li>Better replication of infobox mobile and desktop styles</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md" target="_blank">Full changelog...<img src="I/s/Icon_External_Link.png"></a></p>
@@ -754,7 +749,7 @@
                                                     <b>Display images if any</b> (if hidden, tap the <span style="background-color:lightblue; color:black;">&nbsp;blue area&nbsp;</span> to display one-by-one)
                                                 </label>
                                             </div>
-                                            <div class="col-sm-6">
+                                            <div class="col-sm-6" id="imageManipulationDiv">
                                                 <label class="checkbox" title="This allows saving images to disk (with right-click/long-press), or opening them in a new tab, but uses slightly more memory because images are stored in the document as dataURIs. WARNING: setting may interfere with dynamic content in non-Wikimedia ZIMs.">
                                                     <input type="checkbox" name="manipulateImages" id="manipulateImagesCheck">
                                                     <span class="checkmark"></span>
