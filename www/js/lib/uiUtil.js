@@ -321,14 +321,24 @@ define(rqDef, function() {
                 '<a id="swModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to Service Worker mode</a> ' +
                 'if your platform supports it. &nbsp;[<a id="stop" href="#otherSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
+        if (params.contentInjectionMode === 'serviceworker' && params.manipulateImages) {
+            alertHTML =
+            '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
+                '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
+                '<strong>Active content may be disrupted:</strong> To use Archive Index <b><i>type a space</b></i> in the box above, and you may need to ' +
+                '<a id="imModeLink" href="#imageManipulationDiv" class="alert-link">disable Image manipulation</a>.' +
+                '&nbsp;[<a id="stop" href="#otherSettingsDiv" class="alert-link">Permanently hide</a>]' +
+            '</div>';
+        }
         var alertBoxHeader = document.getElementById('alertBoxHeader');
         alertBoxHeader.innerHTML = alertHTML;
         alertBoxHeader.style.display = 'block';
-        ['swModeLink', 'stop'].forEach(function(id) {
+        ['swModeLink', 'imModeLink', 'stop'].forEach(function(id) {
             // Define event listeners for both hyperlinks in alert box: these take the user to the Config tab and highlight
             // the options that the user needs to select
-            document.getElementById(id).addEventListener('click', function () {
-                var elementID = id === 'stop' ? 'hideActiveContentWarningCheck' : 'serviceworkerModeRadio';
+            var modeLink = document.getElementById(id);
+            if (modeLink) modeLink.addEventListener('click', function () {
+                var elementID = id === 'stop' ? 'hideActiveContentWarningCheck' : id === 'swModeLink' ? 'serviceworkerModeRadio' : 'manipulateImagesCheck';
                 var thisLabel = document.getElementById(elementID).parentNode;
                 thisLabel.style.borderColor = 'red';
                 thisLabel.style.borderStyle = 'solid';
