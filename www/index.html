@@ -746,11 +746,22 @@
                                             <span class="checkmark"></span>
                                             <b>Move navigation buttons to top toolbar</b> (note that Kiwix icon acts as Home button)
                                         </label>
-                                        <label class="checkbox">
-                                            <input type="checkbox" name="imageDisplayMode" id="imageDisplayModeCheck">
-                                            <span class="checkmark"></span>
-                                            <b>Display images if any</b> (if hidden, tap the <span style="background-color:lightblue; color:black;">&nbsp;blue area&nbsp;</span> to display one-by-one)
-                                        </label>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label class="checkbox" title="This is useful for very low-memory devices, or to increase page rendering speed.">
+                                                    <input type="checkbox" name="imageDisplayMode" id="imageDisplayModeCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Display images if any</b> (if hidden, tap the <span style="background-color:lightblue; color:black;">&nbsp;blue area&nbsp;</span> to display one-by-one)
+                                                </label>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label class="checkbox" title="This allows saving images to disk (with right-click/long-press), or opening them in a new tab, but uses slightly more memory because images are stored in the document as dataURIs. WARNING: setting may interfere with dynamic content in non-Wikimedia ZIMs.">
+                                                    <input type="checkbox" name="manipulateImages" id="manipulateImagesCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Allow image manipulation</b> (increases app memory usage and may interfere with dynamic content)
+                                                </label>
+                                            </div>
+                                        </div>
                                         <label class="checkbox">
                                             <input type="checkbox" name="hideActiveContentWarning" id="hideActiveContentWarningCheck">
                                             <span class="checkmark"></span>

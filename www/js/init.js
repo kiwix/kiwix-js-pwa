@@ -79,6 +79,7 @@ params['cssCache'] = getSetting('cssCache') != null ? getSetting('cssCache') : t
 params['cssTheme'] = getSetting('cssTheme') || 'light'; //Set default to 'auto', 'light', 'dark' or 'invert' to use respective themes for articles
 params['cssUITheme'] = getSetting('cssUITheme') || 'light'; //Set default to 'auto', 'light' or 'dark' to use respective themes for UI
 params['imageDisplay'] = getSetting('imageDisplay') != null ? getSetting('imageDisplay') : true; //Set default to display images from Zim
+params['manipulateImages'] = getSetting('manipulateImages') != null ? getSetting('manipulateImages') : false; //Makes dataURIs by default instead of BLOB URIs for images
 params['hideToolbars'] = getSetting('hideToolbars') != null ? getSetting('hideToolbars') : true; //Set default to true (hides both), 'top' (hides top only), or false (no hiding)
 params['rememberLastPage'] = getSetting('rememberLastPage') != null ? getSetting('rememberLastPage') : true; //Set default option to remember the last visited page between sessions
 params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
@@ -199,6 +200,7 @@ if (getSetting('lastPageLoad') === 'failed') {
 document.getElementById('cssCacheModeCheck').checked = params.cssCache;
 document.getElementById('navButtonsPosCheck').checked = params.navButtonsPos === 'top';
 document.getElementById('imageDisplayModeCheck').checked = params.imageDisplay;
+document.getElementById('manipulateImagesCheck').checked = params.manipulateImages;
 document.getElementById('removePageMaxWidthCheck').checked = params.removePageMaxWidth === true; // Will be false if false or auto
 document.getElementById('removePageMaxWidthCheck').indeterminate = params.removePageMaxWidth == "auto";
 document.getElementById('removePageMaxWidthCheck').readOnly = params.removePageMaxWidth == "auto";
