@@ -6,7 +6,7 @@
 * ENHANCEMENT: Added refresh button for picked folder in Configuration (UWP or File System Access API)
 * ENHANCEMENT: Added some extra directories of useful ZIM archives to Donwload library
 * ENHANCEMENT: Provide option to allow image manipulation (saving to disk or opening in new tab)
-* UPDATE: Sample ZIM updated to `wikipedia_en_100_maxi_2021-08.zim`
+* UPDATE: Sample ZIM changed to `wikipedia_en_100_nopic_2021-08.zim` in order to reduce app size
 * UPDATE: New option to change right click to double right click for opening new window or tab
 * FIX: Issues with toolbars getting stuck on after searching for text in article
 * FIX: Better replication of infobox mobile and desktop styles
