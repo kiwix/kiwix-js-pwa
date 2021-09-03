@@ -1084,10 +1084,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     'If you wish to exit the PWA, you will need to turn off "Allow Internet access?" above.'
                 );
             }
-            if (this.value === 'serviceworker' && params.manipulateImages === true) {
-                document.getElementById('manipulateImagesCheck').click();
+            if (this.value === 'serviceworker') {
+                if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
+                if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
                 uiUtil.systemAlert(
-                    'Please note that we have disabled Image manipulation as it can interfere with ZIMs that have active content. You may turn it back on, but be aware that it is only recommended for use with Wikimedia ZIMs.'
+                    'Please note that we have disabled Image manipulation and/or Breakout link as these options can interfere with ZIMs that have active content. You may turn them back on, but be aware that they are only recommended for use with Wikimedia ZIMs.'
                 );
             }
             params.themeChanged = true; // This will reload the page
@@ -1168,7 +1169,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 'If your system does not support SW mode, then use the more basic "breakout link" feature below.');
             }
             if (params.windowOpener && params.allowHTMLExtraction) {
-                uiUtil.systemAlert('Enabling this option disables the more basic breakout link option below');
+                uiUtil.systemAlert('Enabling this option disables the more basic breakout link option below.');
                 document.getElementById('allowHTMLExtractionCheck').click();
             }
             if (params.windowOpener && /UWP$/.test(params.appType)) {
@@ -1229,8 +1230,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         }
         document.getElementById('allowHTMLExtractionCheck').addEventListener('change', function (e) {
             params.allowHTMLExtraction = e.target.checked;
-            if (params.windowOpener && params.allowHTMLExtraction) {
-                uiUtil.systemAlert('Enabling this option disables the more advanced tab/window opening option above');
+            var alertMessage = '';
+            if (params.windowOpener && params.allowHTMLExtraction) alertMessage = 'Enabling this option disables the more advanced tab/window opening option above.';
+            if (params.allowHTMLExtraction) {
+                if (params.contentInjectionMode === 'serviceworker') {
+                    alertMessage = 'WARNING: This option can interfere badly with non-Wikimedia ZIMs that have active content: turn it off if affected. ' + alertMessage;
+                } else if (/PWA/.test(params.appType)) {
+                    alertMessage += ' Be aware that this option may interfere with active content if you switch to Service Worker mode.';
+                }
+                uiUtil.systemAlert(alertMessage);
                 params.windowOpener = false;
                 settingsStore.setItem('windowOpener', params.windowOpener, Infinity);
                 setWindowOpenerUI();
@@ -1852,7 +1860,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     var uriParams = '?allowInternetAccess=true';
                                     // We are using allowInternetAccess as a passthrough, so we don't force a switch to SW mode on the server
                                     // except on first launch of SW mode
-                                    uriParams += params.allowInternetAccess ? '' : '&contentInjectionMode=serviceworker&manipulateImages=false';
+                                    uriParams += params.allowInternetAccess ? '' : '&contentInjectionMode=serviceworker&manipulateImages=false&allowHTMLExtraction=false';
                                     uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
                                     uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
                                     uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
