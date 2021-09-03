@@ -1084,6 +1084,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     'If you wish to exit the PWA, you will need to turn off "Allow Internet access?" above.'
                 );
             }
+            if (this.value === 'serviceworker' && params.manipulateImages === true) {
+                document.getElementById('manipulateImagesCheck').click();
+                uiUtil.systemAlert(
+                    'Please note that we have disabled Image manipulation as it can interfere with ZIMs that have active content. You may turn it back on, but be aware that it is only recommended for use with Wikimedia ZIMs.'
+                );
+            }
             params.themeChanged = true; // This will reload the page
         });
         $('input:checkbox[name=allowInternetAccess]').on('change', function (e) {
@@ -1145,6 +1151,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         document.getElementById('manipulateImagesCheck').addEventListener('click', function () {
             params.manipulateImages = this.checked;
             settingsStore.setItem('manipulateImages', params.manipulateImages, Infinity);
+            if (this.checked && params.contentInjectionMode === 'serviceworker') {
+                uiUtil.systemAlert('Please be aware that image manipulation can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). If you cannot access the articles in such a ZIM, please turn this setting off.');
+            }
             params.themeChanged = true;
         });
         $('input:checkbox[name=hideActiveContentWarning]').on('change', function () {
@@ -1808,7 +1817,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     // Create the MessageChannel
                                     // and send the 'init' message to the ServiceWorker
                                     initOrKeepAliveServiceWorker();
-		                            setWindowOpenerUI();
+                                    setWindowOpenerUI();
                                 }
                             });
                             if (serviceWorker.state === 'activated') {
@@ -1843,7 +1852,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     var uriParams = '?allowInternetAccess=true';
                                     // We are using allowInternetAccess as a passthrough, so we don't force a switch to SW mode on the server
                                     // except on first launch of SW mode
-                                    uriParams += params.allowInternetAccess ? '' : '&contentInjectionMode=serviceworker';
+                                    uriParams += params.allowInternetAccess ? '' : '&contentInjectionMode=serviceworker&manipulateImages=false';
                                     uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
                                     uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
                                     uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
