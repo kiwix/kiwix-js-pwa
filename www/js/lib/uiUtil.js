@@ -321,11 +321,11 @@ define(rqDef, function() {
                 '<a id="swModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to Service Worker mode</a> ' +
                 'if your platform supports it. &nbsp;[<a id="stop" href="#otherSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
-        if (params.contentInjectionMode === 'serviceworker' && params.manipulateImages) {
+        if (params.contentInjectionMode === 'serviceworker' && (params.manipulateImages || params.allowHTMLExtraction)) {
             alertHTML =
             '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
                 '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
-                '<strong>Active content may be disrupted:</strong> Please <a id="imModeLink" href="#imageManipulationDiv" class="alert-link">disable Image manipulation</a> ' +
+                '<strong>Active content may be disrupted:</strong> Please <a id="imModeLink" href="#imageManipulationDiv" class="alert-link">disable Image manipulation</a> and/or disable Breakout link ' +
                 'for this content to work properly. To use Archive Index <b><i>type a space</i></b> in the box above.&nbsp;[<a id="stop" href="#otherSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
         }
@@ -554,6 +554,10 @@ define(rqDef, function() {
         iframe.head.innerHTML = headHtml;
         itemsCount = false;
         params.preloadingAllImages = false;
+        var assetsMsg = document.getElementById('cachingAssets');
+        assetsMsg.innerHTML = '';
+        assetsMsg.style.display = 'none';
+        document.getElementById('searchingArticles').style.display = 'none';
     }
 
     /** 

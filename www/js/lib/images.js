@@ -39,6 +39,12 @@ define(['uiUtil'], function (uiUtil) {
     var abandon = false;
 
     /**
+     * A regular expression to find or transform image URLs in an article
+     * DEV: make sure list of file types here is the same as the list in Service Worker code
+     */
+     var imageURLRegexp =  /(^|\/).+\.(jpe?g|png|svg|gif|webp)($|[?#])/i;
+
+    /**
      * A regular expression to find MathTex in an image
      */
     var transformMathTextRegexp = /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*(['"])((?:[^"']|(?!\1)[\s\S])+)[^>]+>/ig;
@@ -67,7 +73,7 @@ define(['uiUtil'], function (uiUtil) {
             else { image.setAttribute('data-kiwixsrc', imageUrl); } 
             image.removeAttribute('data-kiwixurl');
             var title = decodeURIComponent(imageUrl);
-            if (params.contentInjectionMode === 'serviceworker' && !params.manipulateImages) {
+            if (params.contentInjectionMode === 'serviceworker' && !(params.manipulateImages || params.allowHTMLExtraction)) {
                 image.addEventListener('load', function () {
                     image.style.transition = 'opacity 0.5s ease-in';
                     image.style.opacity = '1';
@@ -83,7 +89,7 @@ define(['uiUtil'], function (uiUtil) {
                 return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                     image.style.background = '';
                     var mimetype = dirEntry.getMimetype();
-                    uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.manipulateImages, function () {
+                    uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.manipulateImages || params.allowHTMLExtraction, function () {
                         checkBatch();
                     });
                     image.style.transition = 'opacity 0.5s ease-in';
@@ -205,10 +211,6 @@ define(['uiUtil'], function (uiUtil) {
      * @param {Boolean} forPrinting If true, extracts all images
      */
     function prepareImagesServiceWorker (win, forPrinting) {
-        if (params.manipulateImages) {
-            prepareImagesJQuery(win, forPrinting);
-            return;
-        }
         container = win;
         var doc = container.document;
         var documentImages = doc.querySelectorAll('img');
@@ -219,25 +221,41 @@ define(['uiUtil'], function (uiUtil) {
         if (!forPrinting && !documentImages.length) return;
         var imageHtml;
         for (var i = 0, l = documentImages.length; i < l; i++) {
-            // Process Wikimedia MathML
-            imageHtml = documentImages[i].outerHTML;
-            if (params.useMathJax && /\bmath\/tex\b/i.test(imageHtml)) {
-                params.containsMathTex = true;
-                documentImages[i].outerHTML = imageHtml.replace(transformMathTextRegexp, function (p0, p1, math) {
-                    // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
-                    math = math.replace(/&amp;/g, '&');
-                    return '<script type="math/tex">' + math + '</script>';
-                });
+            // Process Wikimedia MathML, but not if we'll be using the jQuery routine later
+            if (!(params.manipulateImages || params.allowHTMLExtraction)) {
+                imageHtml = documentImages[i].outerHTML;
+                if (params.useMathJax && /\bmath\/tex\b/i.test(imageHtml)) {
+                    params.containsMathTex = true;
+                    documentImages[i].outerHTML = imageHtml.replace(transformMathTextRegexp, function (p0, p1, math) {
+                        // Remove any rogue ampersands in MathJax due to double escaping (by Wikipedia)
+                        math = math.replace(/&amp;/g, '&');
+                        return '<script type="math/tex">' + math + '</script>';
+                    });
+                }
             }
-            // DEV: make sure list of file types here is the same as the list in Service Worker code
-            if (/(^|\/).+\.(jpe?g|png|svg|gif|webp)($|[?#])/i.test(documentImages[i].src)) {
+            if (imageURLRegexp.test(documentImages[i].src)) {
                 documentImages[i].dataset.kiwixurl = documentImages[i].getAttribute('src');
                 if (params.imageDisplayMode === 'progressive') {
                     documentImages[i].style.opacity = '0';
                 }
+                if (params.manipulateImages || params.allowHTMLExtraction) {
+                    documentImages[i].outerHTML = documentImages[i].outerHTML.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl) {
+                        var assetZIMUrl = uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseUrl);
+                        // DEV: Note that deriveZimUrlFromRelativeUrl produces a *decoded* URL (and incidentally would remove any URI component
+                        // if we had captured it). We therefore re-encode the URI with encodeURI (which does not encode forward slashes) instead
+                        // of encodeURIComponent.
+                        return blockStart + 'data-kiwixurl' + equals + encodeURI(assetZIMUrl);
+                    });
+                }
             }
         }
+        if (params.manipulateImages || params.allowHTMLExtraction) {
+            prepareImagesJQuery(win, forPrinting);
+            return;
+        }
+
         if (forPrinting) {
+            if (params.preloadAllImages) document.getElementById('searchingArticles').style.display = 'block';
             extractImages(documentImages, params.preloadingAllImages ? params.preloadAllImages : params.printImagesLoaded);
         } else {
             if (params.imageDisplayMode === 'manual') {
