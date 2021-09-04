@@ -378,12 +378,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             params.printInterception = false;
             // Immediately restore temporarily changed values
             params.allowHTMLExtraction = settingsStore.getItem('allowHTMLExtraction') == "true";
-            //params.contentInjectionMode = settingsStore.getItem('contentInjectionMode');
-            //goToArticle(decodeURIComponent(params.lastPageVisit.replace(/@kiwixKey@.+/, "")));
-            if (history.state !== null) {
-                var thisURL = decodeURIComponent(history.state.title);
-                goToArticle(thisURL);
-            }
+            goToArticle(params.lastPageVisit.replace(/@kiwixKey@.+/, ''));
             setTimeout(function () { //Restore temporarily changed value after page has reloaded
                 params.rememberLastPage = settingsStore.getItem('rememberLastPage') === 'true';
                 if (!params.rememberLastPage) {
