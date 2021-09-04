@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 1.7.0
+## Release 1.7.0
 
 * ENNHNCEMENT: Added more diagnostic APIs to the API panel in Configuration
 * ENHANCEMENT: Added refresh button for picked folder in Configuration (UWP or File System Access API)
@@ -11,6 +11,7 @@
 * UPDATE: New option to change right click to double right click for opening new window or tab
 * FIX: Some app crashes when switching the UWP app to SW mode
 * FIX: Printing in SW mode (load all images correctly before printing)
+* FIX: Restoring DOM after printing in SW mode
 * FIX: Issues with toolbars getting stuck on after searching for text in article
 * FIX: Better replication of infobox mobile and desktop styles
 
