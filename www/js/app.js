@@ -455,7 +455,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     if (params.contentInjectionMode == 'jquery') {
                         images.prepareImagesJQuery(articleWindow, true);
                     } else {
-                        images.prepareImagesServiceWorker(true);
+                        images.prepareImagesServiceWorker(articleWindow, true);
                     }
                 }
             } else {
@@ -1152,8 +1152,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         document.getElementById('manipulateImagesCheck').addEventListener('click', function () {
             params.manipulateImages = this.checked;
             settingsStore.setItem('manipulateImages', params.manipulateImages, Infinity);
-            if (this.checked && params.contentInjectionMode === 'serviceworker') {
-                uiUtil.systemAlert('Please be aware that image manipulation can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). If you cannot access the articles in such a ZIM, please turn this setting off.');
+            if (this.checked) {
+                if (/UWP/.test(params.appType)) {
+                    uiUtil.systemAlert('This option does not work in UWP apps. WORKAROUND: To save an image to disk, please select the "Add breakout link ..." option below, load the article you require, and export it to a browser window by clicking the breakout link. You will then be able to right-click or long-press images in the exported page and save them.');
+                } else if (params.contentInjectionMode === 'serviceworker') {
+                    uiUtil.systemAlert('Please be aware that Image manipulation can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). If you cannot access the articles in such a ZIM, please turn this setting off.');
+                } else if (/PWA/.test(params.appType)) {
+                    uiUtil.systemAlert('Be aware that this option may interfere with active content if you switch to Service Worker mode.');
+                }
             }
             params.themeChanged = true;
         });
@@ -1231,12 +1237,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         document.getElementById('allowHTMLExtractionCheck').addEventListener('change', function (e) {
             params.allowHTMLExtraction = e.target.checked;
             var alertMessage = '';
-            if (params.windowOpener && params.allowHTMLExtraction) alertMessage = 'Enabling this option disables the more advanced tab/window opening option above.';
+            if (params.windowOpener && params.allowHTMLExtraction) alertMessage = 'Enabling this option disables the more advanced tab/window opening option above. ';
             if (params.allowHTMLExtraction) {
                 if (params.contentInjectionMode === 'serviceworker') {
-                    alertMessage = 'WARNING: This option can interfere badly with non-Wikimedia ZIMs that have active content: turn it off if affected. ' + alertMessage;
+                    alertMessage = 'Please be aware that Image manipulation can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). ' + 
+                    'If you cannot access the articles in such a ZIM, please turn this setting off. ' + alertMessage;
                 } else if (/PWA/.test(params.appType)) {
-                    alertMessage += ' Be aware that this option may interfere with active content if you switch to Service Worker mode.';
+                    alertMessage += 'Be aware that this option may interfere with active content if you switch to Service Worker mode.';
                 }
                 uiUtil.systemAlert(alertMessage);
                 params.windowOpener = false;
@@ -3455,7 +3462,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         // URLs that begin 'http' (i.e. non-relative URLs). It then captures the whole of the URL up until either the opening delimiter
         // (" or ', which is capture group \3) or a querystring or hash character (? or #). When the regex is used below, it will be further
         // processed to calculate the ZIM URL from the relative path. This regex can cope with legitimate single quote marks (') in the URL.
-        var regexpTagsWithZimUrl = /(<(?:img|script|link)\b[^>]*?\s)(?:src|href)(\s*=\s*(["']))(?!http|app:)(.+?)(?=\3|\?|#)/ig;
+        params.regexpTagsWithZimUrl = /(<(?:img|script|link)\b[^>]*?\s)(?:src|href)(\s*=\s*(["']))(?!http|app:)(.+?)(?=\3|\?|#)/ig;
         // Regex below tests the html of an article for active content [kiwix-js #466]
         // It inspects every <script> block in the html and matches in the following cases: 1) the script loads a UI application called app.js;
         // 2) the script block has inline content that does not contain "importScript()", "toggleOpenSection" or an "articleId" assignment
@@ -3500,7 +3507,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             console.log("Loading stylesheets...");
             
             // Display Bootstrap warning alert if the landing page contains active content
-            if (!params.hideActiveContentWarning && params.isLandingPage && (params.contentInjectionMode === 'jquery' || params.manipulateImages)) {
+            if (!params.hideActiveContentWarning && params.isLandingPage && (params.contentInjectionMode === 'jquery' || params.manipulateImages || params.allowHTMLExtraction)) {
                 if (regexpActiveContent.test(htmlArticle)) uiUtil.displayActiveContentWarning();
             }
 
@@ -3510,7 +3517,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             params.isLandingPage = false;
 
             // Calculate the current article's ZIM baseUrl to use when processing relative links
-            var baseUrl = dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, '');
+            params.baseUrl = dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, '');
 
             //Since page has been successfully loaded, store it in the browser history
             if (params.contentInjectionMode === 'jquery') pushBrowserHistoryState(dirEntry.namespace + '/' + dirEntry.url);
@@ -3522,9 +3529,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // Replaces ZIM-style URLs of img, script, link and media tags with a data-kiwixurl to prevent 404 errors [kiwix-js #272 #376]
             // This replacement also processes the URL relative to the page's ZIM URL so that we can find the ZIM URL of the asset
             // with the correct namespace (this works for old-style -,I,J namespaces and for new-style C namespace)
-            if (params.contentInjectionMode == 'jquery' || params.manipulateImages) {
-                htmlArticle = htmlArticle.replace(regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl) {
-                    var assetZIMUrl = uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, baseUrl);
+            if (params.contentInjectionMode == 'jquery') {
+                htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl) {
+                    var assetZIMUrl = uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseURL);
                     // DEV: Note that deriveZimUrlFromRelativeUrl produces a *decoded* URL (and incidentally would remove any URI component
                     // if we had captured it). We therefore re-encode the URI with encodeURI (which does not encode forward slashes) instead
                     // of encodeURIComponent.
@@ -4045,7 +4052,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
 
                 // Calculate the current article's encoded ZIM baseUrl to use when processing relative links
-                baseUrl = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
+                params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
                     // URI-encode anything that is not a '/'
                     .replace(/[^/]+/g, function(m) {
                         return encodeURIComponent(m);
@@ -4076,7 +4083,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 var media = articleDocument.querySelectorAll('video, audio, source');
                 Array.prototype.slice.call(media).forEach(function (mediaSource) {
                     var source = mediaSource.getAttribute('src');
-                    source = source ? uiUtil.deriveZimUrlFromRelativeUrl(source, baseUrl) : null;
+                    source = source ? uiUtil.deriveZimUrlFromRelativeUrl(source, params.baseURL) : null;
                     if (!source || !regexpZIMUrlWithNamespace.test(source)) {
                         if (source) console.error('No usable media source was found for: ' + source);
                         return;
@@ -4182,7 +4189,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 for (var i = currentTracks.length; i--;) {
                     langs = currentTracks[i].label + ' [' + currentTracks[i].srclang + ']';
                     src = currentTracks[i].getAttribute('src');
-                    src = src ? uiUtil.deriveZimUrlFromRelativeUrl(src, baseUrl) : null;
+                    src = src ? uiUtil.deriveZimUrlFromRelativeUrl(src, params.baseURL) : null;
                     if (src && regexpZIMUrlWithNamespace.test(src)) {
                         optionList.unshift('<option value="' + currentTracks[i].srclang + '" data-kiwixsrc="' +
                             src + '" data-kiwixkind="' + currentTracks[i].kind + '">' + langs + '</option>');
@@ -4229,12 +4236,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             var currentProtocol = articleWindow.location.protocol;
             currentProtocol === 'about:' ? currentProtocol = ':' : currentProtocol;
             var currentHost = articleWindow.location.host;
-            // Calculate the current article's encoded ZIM baseUrl to use when processing relative links
-            var baseUrl = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
-                // URI-encode anything that is not a '/'
-                .replace(/[^/]+/g, function(m) {
-                    return encodeURIComponent(m);
-            });
             // Percent-encode dirEntry.url and add regex escape character \ to the RegExp special characters - see https://www.regular-expressions.info/characters.html;
             // NB dirEntry.url can also contain path separator / in some ZIMs (Stackexchange). } and ] do not need to be escaped as they have no meaning on their own. 
             var escapedUrl = encodeURIComponent(dirEntry.url).replace(/([\\$^.|?*+/()[{])/g, '\\$1');
@@ -4261,13 +4262,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     anchor.target = '_blank';
                 } else {
                     // It's a link to an article or file in the ZIM
-                    addListenersToLink(anchor, href, baseUrl);
+                    addListenersToLink(anchor, href, params.baseURL);
                 }
             });
             // Add event listeners to the main heading so user can open current document in new tab or window by clicking on it
             if (articleWindow.document.body) {
                 var h1 = articleWindow.document.body.querySelector('h1');
-                if (h1) addListenersToLink(h1, encodeURIComponent(dirEntry.url.replace(/[^/]+\//g, '')), baseUrl);
+                if (h1) addListenersToLink(h1, encodeURIComponent(dirEntry.url.replace(/[^/]+\//g, '')), params.baseURL);
             }
         }
 
@@ -4536,13 +4537,21 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
         params.preloadAllImages = function () {
             if (params.preloadingAllImages !== true) {
-                $('#searchingArticles').show();
+                setTimeout(function () {
+                    if (params.preloadingAllImages) {
+                        var assetsMsg = document.getElementById('cachingAssets');
+                        document.getElementById('searchingArticles').style.display = 'block';
+                        assetsMsg.style.display = 'block';
+                        assetsMsg.innerHTML = 'Extracting images...';
+                    }
+                }, 1000);
                 params.preloadingAllImages = true;
                 if (params.imageDisplay) params.contentInjectionMode === 'jquery' ?
                     images.prepareImagesJQuery(articleWindow, true) : images.prepareImagesServiceWorker(articleWindow, true);
                 return;
             }
             // All images should now be loaded, or else user did not request loading images
+            document.getElementById('searchingArticles').style.display = 'none';
             uiUtil.extractHTML();
             $('#searchingArticles').hide();
         };
@@ -4560,7 +4569,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     } else {
                         appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                             // TODO : JavaScript support not yet functional [kiwix-js #152]
-                            uiUtil.feedNodeWithBlob(script, 'src', content, 'text/javascript', params.manipulateImages);
+                            uiUtil.feedNodeWithBlob(script, 'src', content, 'text/javascript', params.manipulateImages || params.allowHTMLExtraction);
                         });
                     }
                 }).catch(function (e) {
