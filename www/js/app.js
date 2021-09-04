@@ -1087,7 +1087,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (this.value === 'serviceworker') {
                 if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
                 if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
-                uiUtil.systemAlert(
+                if (!window.location.protocol === 'ms-appx-web:') uiUtil.systemAlert(
                     'Please note that we have disabled Image manipulation and/or Breakout link as these options can interfere with ZIMs that have active content. You may turn them back on, but be aware that they are only recommended for use with Wikimedia ZIMs.'
                 );
             }
@@ -1240,7 +1240,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (params.windowOpener && params.allowHTMLExtraction) alertMessage = 'Enabling this option disables the more advanced tab/window opening option above. ';
             if (params.allowHTMLExtraction) {
                 if (params.contentInjectionMode === 'serviceworker') {
-                    alertMessage = 'Please be aware that Image manipulation can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). ' + 
+                    alertMessage = 'Please be aware that the Breakout link functionality can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). ' + 
                     'If you cannot access the articles in such a ZIM, please turn this setting off. ' + alertMessage;
                 } else if (/PWA/.test(params.appType)) {
                     alertMessage += 'Be aware that this option may interfere with active content if you switch to Service Worker mode.';
@@ -1804,7 +1804,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     setContentInjectionMode('jquery');
                     return;
                 }
-
                 if (!isServiceWorkerReady()) {
                     $('#serviceWorkerStatus').html("ServiceWorker API available : trying to register it...");
                     if (navigator.serviceWorker.controller) {
@@ -1816,6 +1815,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         // Create the MessageChannel and send 'init'
                         initOrKeepAliveServiceWorker();
                     } else {
+                        if (window.location.protocol === 'ms-appx-web:') {
+                            launchUWPServiceWorker();
+                            return;
+                        }
                         navigator.serviceWorker.register('../pwabuilder-sw.js').then(function (reg) {
                             // The ServiceWorker is registered
                             console.log('Service worker is registered with a scope of ' + reg.scope);
@@ -1852,54 +1855,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 message += "\nPlease vote for https://bugzilla.mozilla.org/show_bug.cgi?id=1344561 so that some future Firefox versions support it";
                             } else if (protocol === 'file:') {
                                 message += "\n\nYou seem to be opening kiwix-js with the file:// protocol. You should open it through a web server : either through a local one (http://localhost/...) or through a remote one (but you need SSL : https://webserver/...)";
-                            } else if (protocol === 'ms-appx-web:') {
-                                message = 'This UWP app uses locally packaged code by default. ' +
-                                    'To enable the Service Worker we need to switch to PWA mode, ' +
-                                    'which requires one-time access to our secure server to cache the PWA code.\n\n' +
-                                    'The app will be able to run offline in PWA mode, but will auto-update ' +
-                                    'periodically when online as per the Service Worker spec.\n\n' +
-                                    'You can switch back any time by toggling "Allow Internet access?" off.\n\n' +
-                                    'WARNING: This will attempt to access the following server: \n' + params.PWAServer;
-                                var launchPWA = function () {
-                                    settingsStore.setItem('contentInjectionMode', 'serviceworker', Infinity);
-                                    // This is needed so that we get passthrough on subsequent launches
-                                    settingsStore.setItem('allowInternetAccess', true, Infinity);
-                                    var uriParams = '?allowInternetAccess=true';
-                                    // We are using allowInternetAccess as a passthrough, so we don't force a switch to SW mode on the server
-                                    // except on first launch of SW mode
-                                    uriParams += params.allowInternetAccess ? '' : '&contentInjectionMode=serviceworker&manipulateImages=false&allowHTMLExtraction=false';
-                                    uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
-                                    uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
-                                    uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
-                                    uriParams += params.packagedFile ? '&packagedFile=' + encodeURIComponent(params.packagedFile) : '';
-                                    uriParams += params.fileVersion ? '&fileVersion=' + encodeURIComponent(params.fileVersion) : '';
-                                    // Signal failure of PWA until it has successfully launched (in init.js it will be changed to 'success')
-                                    params.localUWPSettings.PWA_launch = 'fail';
-                                    window.location.href = params.PWAServer + 'www/index.html' + uriParams;
-                                    throw 'Beam me up, Scotty!';
-                                };
-                                var checkPWAIsOnline = function () {
-                                    uiUtil.checkServerIsAccessible(params.PWAServer + 'www/img/icons/kiwix-32.png', launchPWA, function () {
-                                        uiUtil.systemAlert('The server is not currently accessible! ' +
-                                            '\n\n(Kiwix needs one-time access to the server to cache the PWA).' +
-                                            '\nPlease try again when you have a stable Internet connection.', 'Error!');
-                                    });
-                                };
-                                if (settingsStore.getItem('allowInternetAccess') === 'true' && params.localUWPSettings.PWA_launch !== 'fail') {
-                                    if (params.localUWPSettings.PWA_launch === 'success') launchPWA();
-                                    else checkPWAIsOnline();
-                                    return;
-                                } else {
-                                    if (params.localUWPSettings.PWA_launch === 'fail') {
-                                        message = 'The PWA MAY have failed to launch on the last attempt ' +
-                                            '(but this is usually a transitory error you can ignore).' +
-                                            '\n\nIn case it genuinely failed, try again by selecting Access server:';
-                                    }
-                                    uiUtil.systemAlert(message, 'Warning!', 'Access server', checkPWAIsOnline, 'Cancel', function () {
-                                        var allowAccessCheck = document.getElementById('allowInternetAccessCheck');
-                                        if (allowAccessCheck.checked) allowAccessCheck.click();
-                                    });
-                                }
                             } else {
                                 uiUtil.systemAlert(message, 'Information');
                             }
@@ -1961,6 +1916,58 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         function isServiceWorkerReady() {
             // Return true if the serviceWorkerRegistration is not null and not undefined
             return serviceWorkerRegistration;
+        }
+
+        function launchUWPServiceWorker () {
+            var message = 'This UWP app uses locally packaged code by default. ' +
+                'To enable the Service Worker we need to switch to PWA mode, ' +
+                'which requires one-time access to our secure server to cache the PWA code.\n\n' +
+                'The app will be able to run offline in PWA mode, but will auto-update ' +
+                'periodically when online as per the Service Worker spec.\n\n' +
+                'You can switch back any time by toggling "Allow Internet access?" off.\n\n' +
+                'WARNING: This will attempt to access the following server: \n' + params.PWAServer + '\n\n' +
+                '*** If the app crashes, please relaunch it, and choose "Access Server" when prompted. ***';
+            var launchPWA = function () {
+                settingsStore.setItem('contentInjectionMode', 'serviceworker', Infinity);
+                // This is needed so that we get passthrough on subsequent launches
+                settingsStore.setItem('allowInternetAccess', true, Infinity);
+                var uriParams = '?allowInternetAccess=true';
+                // We are using allowInternetAccess as a passthrough, so we don't force a switch to SW mode on the server
+                // except on first launch of SW mode
+                uriParams += params.allowInternetAccess ? '' : '&contentInjectionMode=serviceworker';
+                uriParams += '&manipulateImages=false&allowHTMLExtraction=false';
+                uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
+                uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
+                uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
+                uriParams += params.packagedFile ? '&packagedFile=' + encodeURIComponent(params.packagedFile) : '';
+                uriParams += params.fileVersion ? '&fileVersion=' + encodeURIComponent(params.fileVersion) : '';
+                // Signal failure of PWA until it has successfully launched (in init.js it will be changed to 'success')
+                params.localUWPSettings.PWA_launch = 'fail';
+                window.location.href = params.PWAServer + 'www/index.html' + uriParams;
+                // throw 'Beam me up, Scotty!';
+            };
+            var checkPWAIsOnline = function () {
+                uiUtil.checkServerIsAccessible(params.PWAServer + 'www/img/icons/kiwix-32.png', launchPWA, function () {
+                    uiUtil.systemAlert('The server is not currently accessible! ' +
+                        '\n\n(Kiwix needs one-time access to the server to cache the PWA).' +
+                        '\nPlease try again when you have a stable Internet connection.', 'Error!');
+                });
+            };
+            if (settingsStore.getItem('allowInternetAccess') === 'true' && params.localUWPSettings.PWA_launch !== 'fail') {
+                if (params.localUWPSettings.PWA_launch === 'success') launchPWA();
+                else checkPWAIsOnline();
+                return;
+            } else {
+                if (params.localUWPSettings.PWA_launch === 'fail') {
+                    message = 'The PWA MAY have failed to launch on the last attempt ' +
+                        '(we show this information to prevent a boot loop).' +
+                        '\n\nPlease try again by selecting "Access server":';
+                }
+                uiUtil.systemAlert(message, 'Warning!', 'Access server', launchPWA, 'Cancel', function () {
+                    var allowAccessCheck = document.getElementById('allowInternetAccessCheck');
+                    if (allowAccessCheck.checked) allowAccessCheck.click();
+                });
+            }
         }
 
         /**
