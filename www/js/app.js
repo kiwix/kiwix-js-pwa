@@ -1815,10 +1815,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         // Create the MessageChannel and send 'init'
                         initOrKeepAliveServiceWorker();
                     } else {
-                        if (window.location.protocol === 'ms-appx-web:') {
-                            launchUWPServiceWorker();
-                            return;
-                        }
                         navigator.serviceWorker.register('../pwabuilder-sw.js').then(function (reg) {
                             // The ServiceWorker is registered
                             console.log('Service worker is registered with a scope of ' + reg.scope);
@@ -1850,7 +1846,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             refreshAPIStatus();
                             var message = "The ServiceWorker could not be properly registered. Switching back to jQuery mode. Error message : " + err;
                             var protocol = window.location.protocol;
-                            if (protocol === 'moz-extension:') {
+                            if (protocol === 'ms-appx-web:') {
+                                launchUWPServiceWorker();
+                            } else if (protocol === 'moz-extension:') {
                                 message += "\n\nYou seem to be using kiwix-js through a Firefox extension : ServiceWorkers are disabled by Mozilla in extensions.";
                                 message += "\nPlease vote for https://bugzilla.mozilla.org/show_bug.cgi?id=1344561 so that some future Firefox versions support it";
                             } else if (protocol === 'file:') {
@@ -1938,7 +1936,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 uriParams += '&manipulateImages=false&allowHTMLExtraction=false';
                 uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
                 uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
-                uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
+                // DEV: Line below causes crash when switching to SW mode in UWP app!
+                // uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
                 uriParams += params.packagedFile ? '&packagedFile=' + encodeURIComponent(params.packagedFile) : '';
                 uriParams += params.fileVersion ? '&fileVersion=' + encodeURIComponent(params.fileVersion) : '';
                 // Signal failure of PWA until it has successfully launched (in init.js it will be changed to 'success')
