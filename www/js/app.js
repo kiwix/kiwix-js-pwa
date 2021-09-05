@@ -1080,11 +1080,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 );
             }
             if (this.value === 'serviceworker') {
+                if (window.location.protocol !== 'ms-appx-web:' && (params.manipulateImages || params.allowHTMLExtraction)) {
+                    uiUtil.systemAlert(
+                        'Please note that we are disabling Image manipulation and/or Breakout link as these options can interfere with ZIMs that have active content. You may turn them back on, but be aware that they are only recommended for use with Wikimedia ZIMs.'
+                    );
+                }
                 if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
                 if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
-                if (window.location.protocol !== 'ms-appx-web:') uiUtil.systemAlert(
-                    'Please note that we have disabled Image manipulation and/or Breakout link as these options can interfere with ZIMs that have active content. You may turn them back on, but be aware that they are only recommended for use with Wikimedia ZIMs.'
-                );
             }
             params.themeChanged = true; // This will reload the page
         });
