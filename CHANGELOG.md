@@ -1,6 +1,6 @@
 # Changelog
 
-## Release 1.7.1
+## Release 1.7.2
 
 * ENNHNCEMENT: Added more diagnostic APIs to the API panel in Configuration
 * ENHANCEMENT: Added refresh button for picked folder in Configuration (UWP or File System Access API)
@@ -17,6 +17,7 @@
 * FIX: Restoring DOM after printing in SW mode
 * FIX: Issues with toolbars getting stuck on after searching for text in article
 * FIX: Better replication of infobox mobile and desktop styles
+* FIX: Typo in code causing some pages to load assets incorrectly in jQuery mode
 
 ## Release 1.6.0
 
