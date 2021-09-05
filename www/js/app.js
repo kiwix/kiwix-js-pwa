@@ -4252,7 +4252,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     return;
                 }
                 var href = anchor.getAttribute('href');
-                if (href === null || href === undefined) return;
+                if (href === null || href === undefined || /^javascript:/i.test(anchor.protocol)) return;
                 if (href.length === 0) {
                     // It's a link with an empty href, pointing to the current page: do nothing.
                 } else if (regexpLocalAnchorHref.test(href)) {
@@ -4293,6 +4293,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // However, we cannot rely on the download attribute having been set, so we also need to test for known download file types
             var isDownloadableLink = a.hasAttribute('download') || regexpDownloadLinks.test(href);
             if (isDownloadableLink) {
+                if (params.contentInjectionMode === 'serviceworker') return;
                 downloadAttrValue = a.getAttribute('download');
                 // Normalize the value to a true Boolean or a filename string or true if there is no download attribute
                 downloadAttrValue = /^(download|true|\s*)$/i.test(downloadAttrValue) || downloadAttrValue || true;
