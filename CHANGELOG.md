@@ -7,6 +7,8 @@
 * ENHANCEMENT: Added some extra directories of useful ZIM archives to Donwload library
 * ENHANCEMENT: Provide option to allow image manipulation (saving to disk or opening in new tab)
 * ENHANCEMENT: Provide contextual warnings for features that do not work well with dynamic content
+* ENHANCEMENT: Added help section in About concerning link handling, dynamic content, new windows, etc.
+* ENHANCEMENT: Verbose tooltips provided for several options in Configuration
 * UPDATE: Sample ZIM changed to `wikipedia_en_100_nopic_2021-08.zim` in order to reduce app size
 * UPDATE: New option to change right click to double right click for opening new window or tab
 * FIX: Issue preventing correct parsing of ZIM archive path in some contexts in SW mode
