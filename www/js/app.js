@@ -3266,8 +3266,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 openAllSections();
                 setupHeadings();
                 listenForNavigationKeys();
-                // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality
-                if (params.windowOpener) parseAnchorsJQuery(dirEntry);
+                // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
+                // We need to set a timeout so that dynamically generated URLs are parsed as well (e.g. in Gutenberg ZIMs)
+                if (params.windowOpener) setTimeout(function () {
+                    parseAnchorsJQuery(dirEntry);
+                }, 1500);
                 if (/manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker(articleWindow);
                 if (params.allowHTMLExtraction && appstate.target === 'iframe') {
                     var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
