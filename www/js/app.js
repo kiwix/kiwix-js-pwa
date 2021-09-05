@@ -1955,7 +1955,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 return;
             } else {
                 if (params.localUWPSettings.PWA_launch === 'fail') {
-                    message = 'The PWA MAY have failed to launch on the last attempt ' +
+                    message = 'The PWA MAY have failed to launch on the last attempt\n' +
                         '(we show this information to prevent a boot loop).' +
                         '\n\nPlease try again by selecting "Access server":';
                 }
