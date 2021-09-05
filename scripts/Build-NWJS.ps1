@@ -10,7 +10,7 @@ if (-Not $only32bit) {
 }
 $version10 = "0.55.0" # <<< value updated automatically from package.json if launched from Create-DraftRelease
 $versionXP = "0.14.7"
-$appBuild = "1.6.1N" # <<< value updated auotmatically from package.json if launched form Create-DraftRelease
+$appBuild = "1.7.2N" # <<< value updated auotmatically from package.json if launched form Create-DraftRelease
 $ZIMbase = "wikipedia_en_100_maxi"
 foreach ($build in $builds) {
     $version = $version10
