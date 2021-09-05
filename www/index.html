@@ -287,6 +287,7 @@
                         <li><a href="#addingArchives">Adding archives and languages</a></li>
                         <li><a href="#changelog">Changelog and Features</a></li>
                         <li><a href="#searchSyntax">Title search syntax and alphabetical ZIM Archive Index</a></li>
+                        <li><a href="#linkHandling">Link handling, image download, tabs and windows</a></li>
                         <li><a href="#expert">Expert or Experimental Settings</a></li>
                         <li><a href="#privacy">Privacy Policy</a></li>
                         <li><a href="#feedback">Feedback and Support</a></li>
@@ -317,7 +318,7 @@
                         Wiktionary).
                     </p>
                     <p>
-                        You can search through the titles of articles in each archive to find the one you want, or view all the article titles with the ZIM Archive Index (see 
+                        You can search through the titles of articles in each archive to find the one you want, or view all the article titles with the ZIM Archive Index (see
                         <a href="#searchSyntax">Title search</a>). <b><i>Note that this app cannot (yet) do full text search of the contents of all articles in a ZIM.</i></b>
                     </p>
                     <p>
@@ -325,7 +326,6 @@
                         tap this icon to open the <b>Maps app</b> at the selected location. In the UWP and PWA versions of this app, this will work offline if you have downloaded
                         the map for the relevant country or region in the Settings for <b>Offline Maps</b>.
                     </p>
-
                     <h3 id="addingArchives">Usage</h3>
                     <h4>Step 1: Download some content</h4>
                     <p>
@@ -423,12 +423,15 @@
                         'List of Medieval bestiaries', 'List of Medieval topics', etc.
                     </p>
                     <p id="searchSyntaxError">
-                        <b>Incorrect search syntax!</b> If you get this message, it's because you used a wildcard but the syntax was incorrect. <i>Everything after
-                        the wildcard must be a valid regular expression or else the search will fail!</i> For simple text or numbers after a wildcard, don't worry, it'll work fine,
+                        <b>Incorrect search syntax!</b> If you get this message, it's because you used a wildcard but the syntax was incorrect. <i>
+                            Everything after
+                            the wildcard must be a valid regular expression or else the search will fail!
+                        </i> For simple text or numbers after a wildcard, don't worry, it'll work fine,
                         but you need to be aware that regular expressions reserve characters like '?', '(', '^', '$', '*', '+', so these (and others) must be used correctly if you
                         use wildcards with them. You might be able to correct an error by placing a backslash before each reserved character, e.g. <code>list.*\(france</code>.
                     </p>
-                    <p>Wildcards can come anywhere in a string, including at the beginning. This works fine for Stackexchange, Gutenberg, PhET and similar ZIMs, and it is the only way to get
+                    <p>
+                        Wildcards can come anywhere in a string, including at the beginning. This works fine for Stackexchange, Gutenberg, PhET and similar ZIMs, and it is the only way to get
                         all the Stackexchange questions on topics/words that don't have a tag. For Wikipedia, <b>wildcards work best when they come after a simple string</b>.
                         If your search text starts with a wildcard in full English Wikipedia, it will start searching at the very beginning of the index and try to search through everything
                         (there are millions of titles)! It will give up after somewhere between 250,000 and 1,000,000 searches (this is 10,000 x the value you set in Configuration for max
@@ -437,7 +440,7 @@
                     <p>
                         You can see the full alphabetical <b>ZIM Archive Index</b> by typing a space in the title search box. This is useful for ZIMs that have descriptive titles where
                         you don't know the exact title you are searching for (e.g. Gutenberg or TED Talks, especially in jQuery mode, or for browsing Stackexchange or PhET). You can change
-                        your alphabet in Configuration for non-Roman alphabets. 
+                        your alphabet in Configuration for non-Roman alphabets.
                     </p>
                     <p>
                         If not enough results are returned in your searches, you can increase the maximum number of search results using the slider in Configuration. Please note that we are
@@ -449,6 +452,43 @@
                         You can search for different diacritics with a regex like 'discours.*m[eé]thode' or `Gonz.*[áa]lez I[nñ][áa]rrit[uùú]`. Long searches will give up after
                         maxSearchResultsSize * 10^4 title scans.
                     </p>
+                    <h3 id="linkHandling">Link handling, image download, tabs and windows</h3>
+                    <p>
+                        This app does its best to handle links to special ZIM content, like active (dynamic) content, embedded videos, downladable content (EPUBs, PDFs) and images, but not everything
+                        works smoothly with every option.
+                    </p>
+                    <p>The app can usually operate in two modes: 'JQuery' (which manipulates the content of the article) and 'Service Worker' (which tries to get out of the way and let the ZIM do its
+                        thing - see below under <a href="#expert">Expert settings</a> for a fuller explanation). Some contexts, like mobile or old browsers, only support JQuery mode. Desktop systems
+                        and modern browsers support both modes. 'JQuery' mode doesn't support active or dynamic content. You will usually get an 'Active Content Warning' popping up at the top of the
+                        landing page if you open a ZIM that requires you to switch to 'Service Worker' mode. If you can't switch, you can often still access content in these archives by using title search
+                        or typing a space in title search to show the ZIM Archive Index (see above), but some things, especially any proprietary User Interface, won't work.
+                    </p>
+                    <p>
+                        You can download images (as long as they haven't been inserted dynamically) by turning on the option 'Allow image manipulation' in Configuration. Then you will be able to right-click
+                        an image and save it to disk or open it in a new tab (only tested in Wikimedia ZIMs). However, this doesn't work in the UWP app: instead, you can enable the 'Insert breakout link'
+                        option, export the article to a new browser tab (by clicking the Breakout link), and then you will be able to manipulate images in the browser tab. Please note that enabling Image
+                        manipulation or the Breakout link feature can interfere badly with some ZIMs that rely heavily on active content. So turn these options off if you are using such ZIMs.
+                    </p>
+                    <p>
+                        You can download EPUBs and PDFs, e.g. from Gutenberg ZIMs, in 'JQuery' mode, but the proprietary User Interface doesn't work (use title search instead). In the UWP Desktop app, in 'Service
+                        Worker' mode, you need to enable the option 'Open ZIM links in new tab' (or window) in Configuration to be able to download EPUBs and PDFs. This isn't necessary in the PWA/ Electron/
+                        NWJS apps. In 'JQuery' mode, the app will offer to download videos so you can view them in a different application. This is useful if your system doesn't support the video format
+                        (e.g. the mobile UWP app).
+                    </p>
+                    <p>
+                        You can open ZIM links in a new browsable tab (or window) by setting the options in Configuration. Right-click (or double right-click of you set that option), Ctrl-click, middle click
+                        and long press should all work. Somne contexts (e.g. mobile) don't support this option, or it works badly or very slowly. For those contexts, use the 'Insert breakout link' feature instead.
+                        With the Breakout link feature, the tab is non-browsable, but you can save the page to PDF or print it, etc., from that tab.
+                    </p>
+                    <p>
+                        Note that your browser's popup blocker may interfere with options that open new tabs or windows. When asked, enable popups always for the app (if you trust Kiwix), and then reload the app. 
+                    </p>
+                    <p>
+                        PhET ZIMs: These science and maths simulations only work in 'Service Worker' mode. There is currently a bug which causes the experiment/simulation to be shifted by a few pixels. To view 
+                    </p>
+                    <p>
+                        
+                    </p>
                     <h3 id="expert">Expert or experimental settings</h3>
                     <p>
                         Depending on your browser or framework, this app may be capable of running in two different modes, which we call
@@ -456,11 +496,11 @@
                         in Configuration. Here is an explanation of what these modes do:
                         <ul>
                             <li>
-                                <b>JQuery Mode</b>: This mode (which does not in fact require JQuery) is fine for everyday use with 
+                                <b>JQuery Mode</b>: This mode (which does not in fact require JQuery) is fine for everyday use with
                                 Wikipedia / WikiMedia archives, and is stable and safe. It is a way of inserting articles extracted from the
                                 ZIM into the DOM (browser document) by injecting the content into an iframe or tab. We then use
-                                native DOM methods, or sometimes JQuery, to parse the article's HTML and insert required assets 
-                                (images, stylesheets, event listeners for hyperlinks, etc.). On old devices DOM traversal can be slow, 
+                                native DOM methods, or sometimes JQuery, to parse the article's HTML and insert required assets
+                                (images, stylesheets, event listeners for hyperlinks, etc.). On old devices DOM traversal can be slow,
                                 but it is compensated for because we do not extract or run JavaScript assets (which would be technically
                                 extremely complicated). As a result, for WikiMedia archives this mode is usually quite fast. On the downside,
                                 ZIMs that have a proprietary dynamic UI (such as Gutenberg or TED talks) are only partially supported in this
@@ -477,7 +517,7 @@
                                 extensions). Note that this mode also cannot run under the file: protocol (but only IE11 and old Edge allow the
                                 app to run this way).
                             </li>
-                        </ul> 
+                        </ul>
                     </p>
                     <h3 id="feedback">Feedback / helping / contributing</h3>
                     <p>
@@ -486,7 +526,7 @@
                         <a href="https://github.com/kiwix/kiwix-js-windows" target="_blank">github</a>.
                         The <a href="https://github.com/kiwix/kiwix-js-windows/issues" target="_blank">Kiwix JS <span class="identity">Windows</span> issue tracker</a>
                         is on GitHub too, though also check the <a href="https://github.com/kiwix/kiwix-js/issues"
-                        target="_blank">tracker for Kiwix JS</a> as a lot of the development is done for both apps.
+                                                                   target="_blank">tracker for Kiwix JS</a> as a lot of the development is done for both apps.
                     </p>
                     <p>
                         Alternatively, you can send your feedback <a href="mailto:egk10@cam.ac.uk?subject=%5BKiwix%5D%20Feedback%20about%20Kiwix-JS-Windows">
@@ -546,7 +586,6 @@
                         <li>Emscripten to generate a XZ decompressor in javascript : <a href="https://github.com/kripken/emscripten" target="_blank">https://github.com/kripken/emscripten</a>, released under the <a href="https://github.com/kripken/emscripten" target="_blank">MIT Licence</a></li>
                         <li><a href="https://tukaani.org/xz/embedded.html" target="_blank">XZ Embedded</a> (the XZ library converted to Javascript with Emscripten), in public domain</li>
                         <li>The <a href="https://github.com/facebook/zstd" target="_blank">Zstandard library</a>, released under a <a href="https://github.com/facebook/zstd/blob/dev/LICENSE" target="_blank">BSD Licence</a> and a <a href="https://github.com/facebook/zstd/blob/dev/COPYING" target="_blank">GPLv2 Copying Licence</a></li>
-
                         <li><a href="https://katex.org/" target="_blank">KaTeX</a> for typesetting mathematical and chemical equations, released under the <a href="https://github.com/KaTeX/KaTeX/blob/master/LICENSE" target="_blank">MIT licence</a></li>
                         <li><a href="https://www.the-art-of-web.com/javascript/search-highlight/" target="_blank">Hilitor</a> for finding and hilighting text inside an article, released under <a href="https://www.the-art-of-web.com/copyright.html" target="_blank">this licence</a></li>
                     </ul>
@@ -806,7 +845,7 @@
                                                 </div>
                                             </label>
                                         </div>
-                                        <label class="checkbox" id="openInNewTab" title="Open article in new tab">
+                                        <label class="checkbox" id="openInNewTab" title="Opens articles in a new tab. In the UWP app (in Service Worker mode - see 'Expert settings' below), this also causes links to be parsed, which makes it possible to download EPUBs and PDFs from Gutenberg ZIMs, and possibly other ZIM types. This isn't necessary for the PWA app. N.B. This setting may interfere with some other ZIM types containing active content.">
                                             <input type="checkbox" name="tabOpener" id="tabOpenerCheck">
                                             <span class="checkmark"></span>
                                             <strong>Open ZIM links in new tab</strong> with right-click, ctrl-click, middle-click or long-press
