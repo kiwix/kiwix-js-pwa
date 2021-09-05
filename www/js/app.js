@@ -4028,6 +4028,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     if (!('MSBlobBuilder' in window)) htmlArticle = htmlArticle.replace(/(<body\b[^>]*)/i, '$1 hidden');
                 }
 
+                // Calculate the current article's encoded ZIM baseUrl to use when processing relative links (also needed for SW mode when params.windowOpener is set)
+                params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
+                    // URI-encode anything that is not a '/'
+                    .replace(/[^/]+/g, function(m) {
+                        return encodeURIComponent(m);
+                });
+
                 if (params.contentInjectionMode === 'serviceworker') {
                     // Remove page max width restriction if required
                     if (params.removePageMaxWidth) htmlArticle = removePageMaxWidth(htmlArticle);
@@ -4052,12 +4059,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     return;
                 }
 
-                // Calculate the current article's encoded ZIM baseUrl to use when processing relative links
-                params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
-                    // URI-encode anything that is not a '/'
-                    .replace(/[^/]+/g, function(m) {
-                        return encodeURIComponent(m);
-                });
                 // Write article html to the article container
                 // articleWindow.document.open('text/html', 'replace');
                 // articleWindow.document.write(htmlArticle);
@@ -4298,7 +4299,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 contentType = a.getAttribute('type');
             }
             // DEV: We need to use the '#' location trick here for cross-browser compatibility with opening a new tab/window
-            a.setAttribute('href', '#' + href);
+            if (params.windowOpener) a.setAttribute('href', '#' + href);
             // Store the current values, as they may be changed if user switches to another tab before returning to this one
             var kiwixTarget = appstate.target;
             var thisWindow = articleWindow;
