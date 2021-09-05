@@ -4293,7 +4293,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // However, we cannot rely on the download attribute having been set, so we also need to test for known download file types
             var isDownloadableLink = a.hasAttribute('download') || regexpDownloadLinks.test(href);
             if (isDownloadableLink) {
-                if (params.contentInjectionMode === 'serviceworker') return;
+                if (!/UWP/.test(params.appType) && params.contentInjectionMode === 'serviceworker') return;
                 downloadAttrValue = a.getAttribute('download');
                 // Normalize the value to a true Boolean or a filename string or true if there is no download attribute
                 downloadAttrValue = /^(download|true|\s*)$/i.test(downloadAttrValue) || downloadAttrValue || true;
