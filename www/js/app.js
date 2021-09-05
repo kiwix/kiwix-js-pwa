@@ -3523,7 +3523,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             params.isLandingPage = false;
 
             // Calculate the current article's ZIM baseUrl to use when processing relative links
-            params.baseUrl = dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, '');
+            params.baseURL = dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, '');
 
             //Since page has been successfully loaded, store it in the browser history
             if (params.contentInjectionMode === 'jquery') pushBrowserHistoryState(dirEntry.namespace + '/' + dirEntry.url);
