@@ -240,7 +240,7 @@ define(['uiUtil'], function (uiUtil) {
                 }
                 if (params.manipulateImages || params.allowHTMLExtraction) {
                     documentImages[i].outerHTML = documentImages[i].outerHTML.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl) {
-                        var assetZIMUrl = uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseUrl);
+                        var assetZIMUrl = uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseURL);
                         // DEV: Note that deriveZimUrlFromRelativeUrl produces a *decoded* URL (and incidentally would remove any URI component
                         // if we had captured it). We therefore re-encode the URI with encodeURI (which does not encode forward slashes) instead
                         // of encodeURIComponent.
