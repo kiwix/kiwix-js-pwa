@@ -7,6 +7,35 @@ const {
 } = require('electron');
 const path = require('path');
 
+const contextMenu = require('electron-context-menu');
+
+contextMenu({
+	labels: {
+		cut: 'Cut',
+		copy: 'Copy',
+		paste: 'Paste',
+		save: 'Save Image',
+		saveImageAs: 'Save Image As…',
+		copyLink: 'Copy Link',
+		saveLinkAs: 'Save Link As…',
+		inspect: 'Inspect Element'
+	},
+	prepend: () => { },
+	append: () => { },
+	showCopyImageAddress: true,
+	showSaveImageAs: true,
+	showInspectElement: true,
+	showSaveLinkAs: true,
+	cut: true,
+	copy: true,
+	paste: true,
+	save: true,
+	saveImageAs: true,
+	copyLink: true,
+	saveLinkAs: true,
+	inspect: true
+});
+
 // This is used to set capabilities of the app: protocol in onready event below
 // protocol.registerSchemesAsPrivileged([{
 //     scheme: 'app',
@@ -50,7 +79,7 @@ function createWindow() {
     mainWindow.loadFile('www/index.html');
 
     //mainWindow.autoHideMenuBar = true;
-
+    
     // mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     //     if (!/blob:/i.test(url)) {
     //         return { action: 'allow' };
