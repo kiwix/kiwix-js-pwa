@@ -1152,6 +1152,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (this.checked) {
                 if (/UWP/.test(params.appType)) {
                     uiUtil.systemAlert('This option does not work in UWP apps. WORKAROUND: To save an image to disk, please select the "Add breakout link ..." option below, load the article you require, and export it to a browser window by clicking the breakout link. You will then be able to right-click or long-press images in the exported page and save them.');
+                } else if (window.nw) {
+                    uiUtil.systemAlert('Unfortunately there is currently no way to save an image to disk in the NWJS version of this app. You can do this in the PWA version: please visit https://pwa.kiwix.org.');
                 } else if (params.contentInjectionMode === 'serviceworker') {
                     uiUtil.systemAlert('Please be aware that Image manipulation can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). If you cannot access the articles in such a ZIM, please turn this setting off.');
                 } else if (/PWA/.test(params.appType)) {
