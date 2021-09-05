@@ -70,9 +70,9 @@
                 navigator.serviceWorker.register("../pwabuilder-sw.js", {
                     scope: "../"
                 }).then(function (reg) {
-                    console.log("Service worker has been registered for scope: " + reg.scope);
+                    console.log("Service Worker has been registered for scope: " + reg.scope);
                 }).catch(function (err) {
-                    console.err('Service worker could not be registered', err);
+                    console.err('Service Worker could not be registered', err);
                 });
             }
         } else {
@@ -149,7 +149,7 @@
                             <li>Transform layout: Wikipedia mobile or desktop styles</li>
                             <li>Optionally disable images if device is slow</li>
                             <li>Export page to view in browser (using breakout link)</li>
-                            <li>Support for dynamic content in ZIMs with Service Worker mode</li>
+                            <li>Support for dynamic content in ZIMs with ServiceWorker mode</li>
                         </ul>
                     </div>
                 </div>
@@ -457,10 +457,10 @@
                         This app does its best to handle links to <b>special ZIM content</b>, like active (dynamic) content, embedded videos, downladable content (EPUBs, PDFs) and images, but not everything
                         works smoothly with every option.
                     </p>
-                    <p>The app can usually operate in two modes: 'JQuery' (which manipulates the content of the article) and 'Service Worker' (which tries to get out of the way and let the ZIM do its
+                    <p>The app can usually operate in two modes: 'JQuery' (which manipulates the content of the article) and 'ServiceWorker' (which tries to get out of the way and let the ZIM do its
                         thing - see below under <a href="#expert">Expert settings</a> for a fuller explanation). Some contexts, like mobile or old browsers, only support JQuery mode. Desktop systems
                         and modern browsers support both modes. <i>'JQuery' mode doesn't support active or dynamic content.</i> You will usually get an <b>'Active Content Warning'</b> popping up at the 
-                        top of the landing page (Home) if you open a ZIM that requires you to switch to 'Service Worker' mode. If you can't switch, you can often still access content in these archives
+                        top of the landing page (Home) if you open a ZIM that requires you to switch to 'ServiceWorker' mode. If you can't switch, you can often still access content in these archives
                         by using title search or typing a space in title search to show the <a href="#zimIndex">ZIM Archive Index</a> (see above), but some things, especially any proprietary User Interface,
                         won't work.
                     </p>
@@ -473,12 +473,12 @@
                     </p>
                     <p>
                         You can <b>download EPUBs and PDFs</b>, e.g. from Gutenberg ZIMs, in 'JQuery' mode, but the proprietary User Interface doesn't work (use title search instead). In the UWP Desktop app
-                        in 'Service Worker' mode, you need to enable the option <b>'Open ZIM links in new tab'</b> (or window) in Configuration to be able to download EPUBs and PDFs. This isn't necessary in
+                        in 'ServiceWorker' mode, you need to enable the option <b>'Open ZIM links in new tab'</b> (or window) in Configuration to be able to download EPUBs and PDFs. This isn't necessary in
                         'JQuery' mode or in the PWA/ Electron/ NWJS apps. In 'JQuery' mode, the app will offer to download videos so you can view them in a different application. This is useful if your system
                         doesn't support the WebP video format (e.g. the mobile UWP app).
                     </p>
                     <p>
-                        You can <b>open ZIM links in a new browsable tab (or window)</b> by setting the options in Configuration. Right-click (or double right-click of you set that option), ctrl-click, middle click
+                        You can <b>open ZIM links in a new browsable tab (or window)</b> by setting the options in Configuration. Right-click (or double right-click if you set that option), ctrl-click, middle click
                         and long press should all work. Somne contexts (e.g. mobile) don't support this option, or it works badly or very slowly. For those contexts, use the <b>'Insert breakout link'</b> feature
                         instead. With the Breakout link feature, the tab is non-browsable, but you can save the page to PDF or print it, etc., from that tab.
                     </p>
@@ -486,7 +486,7 @@
                         Note that your browser's <b>popup blocker</b> may interfere with options that open new tabs or windows. When asked, enable popups always for the app (if you trust Kiwix), and then reload the app. 
                     </p>
                     <p>
-                        <b>PhET ZIMs:</b> These science and maths simulations only work in 'Service Worker' mode. There is currently a bug which causes the experiment/ simulation to be shifted by a several pixels, making
+                        <b>PhET ZIMs:</b> These science and maths simulations only work in 'ServiceWorker' mode. There is currently a bug which causes the experiment/ simulation to be shifted by several pixels, making
                         it hard to click on the experiment's controls. WORKAROUND: Please switch the 'Hide toolbars while scrolling' option to 'never'. This eliminates the pixel shift. You may also have to use the title
                         search or <a href="#zimIndex">ZIM Archive Index</a> (press a space in title seaarch) to find the experiments, as there is an unresolved issue with displaying the ZIM's User Interface.
                     </p>
@@ -849,7 +849,7 @@
                                                 </div>
                                             </label>
                                         </div>
-                                        <label class="checkbox" id="openInNewTab" title="Opens articles in a new tab. In the UWP app (in Service Worker mode - see 'Expert settings' below), this also causes links to be parsed, which makes it possible to download EPUBs and PDFs from Gutenberg ZIMs, and possibly other ZIM types. This isn't necessary for the PWA app. N.B. This setting may interfere with some other ZIM types containing active content.">
+                                        <label class="checkbox" id="openInNewTab" title="Opens articles in a new tab. In the UWP app (in ServiceWorker mode - see 'Expert settings' below), this also causes links to be parsed, which makes it possible to download EPUBs and PDFs from Gutenberg ZIMs, and possibly other ZIM types. This isn't necessary for the PWA app. N.B. This setting may interfere with some other ZIM types containing active content.">
                                             <input type="checkbox" name="tabOpener" id="tabOpenerCheck">
                                             <span class="checkmark"></span>
                                             <strong>Open ZIM links in new tab</strong> with right-click, ctrl-click, middle-click or long-press
