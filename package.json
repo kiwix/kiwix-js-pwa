@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-pwa",
   "productName": "Kiwix JS PWA",
-  "version": "1.6.1E",
+  "version": "1.7.1E",
   "description": "Kiwix JS PWA packaged for the Electron framework",
   "main": "main.js",
   "build": {
