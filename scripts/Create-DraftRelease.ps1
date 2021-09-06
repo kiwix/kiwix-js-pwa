@@ -115,7 +115,7 @@ $release_body = $release_body -replace '<<zim>>', "$zim"
 $release_body = $release_body -replace '<<date>>', "$date"
 # Set up release_params object - for API see https://docs.github.com/en/rest/reference/repos#releases
 $release_body_json = @{
-  'tag_name' = "$tag_name"
+  'tag_name' = "$base_tag"
   'target_commitish' = $branch
   'name' = $release_title
   'draft' = $true
@@ -143,7 +143,7 @@ if (-Not ($dryrun -or $buildonly -or $updatewinget)) {
 
 # We should have enough information to find the release URL
 if ($updatewinget) {
-  if ($release_body -match 'https:[^)]+?\.appxbundle') {
+  if ($release_body -match 'https:[^)]+?\.(?:appxbundle|exe)') {
     $package_url = $matches[0]
   } else {
     "`nUnable to find the package URL!"
@@ -152,11 +152,14 @@ if ($updatewinget) {
   "`nThe package URL is: $package_url"
   $package_id = 'Kiwix.' + $text_tag
   if ($text_tag -eq 'Windows') { $package_id = 'Kiwix.' +  'KiwixJS' }
+  if ($base_tag -match 'E$') { $package_id = $package_id + '.Electron' }
+  $winget_version = $numeric_tag + $flavour
+  if ($flavour -eq '') { $winget_version = $winget_version + '.0' }  
   if (-Not $dryrun) {
     "Submitting to winget-pkg repository..."
-    & wingetcreate.exe update -i $package_id -v "$numeric_tag.0" -u $package_url -s $true -t $github_token
+    & wingetcreate.exe update -i $package_id -v "$winget_version" -u $package_url -s $true -t $github_token
   } else {
-    "[DRYRUN:] & wingetcreate.exe update -i $package_id -v $numeric_tag.0 -u $package_url -s -t $github_token"
+    "[DRYRUN:] & wingetcreate.exe update -i $package_id -v $winget_version -u $package_url -s -t $github_token"
   }
   "`nDone."
   return
@@ -538,7 +541,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   if ((-Not ($dryrun -or $old_windows_support)) -and $compressed_archive ) { del $compressed_archive }
   "`nDone.`n"
   # Now update winget manifest if we are not building NWJS or Electron
-  if ($flavour -eq '') {
+  if ($flavour -eq '' -or $flavour -eq '_E') {
     if ($respondtowingetprompt) {
       $wingetcreate_check = $respondtowingetprompt
     } else {
