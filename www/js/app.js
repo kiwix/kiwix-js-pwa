@@ -3525,7 +3525,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             params.isLandingPage = false;
 
             // Calculate the current article's ZIM baseUrl to use when processing relative links
-            params.baseURL = dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, '');
+            params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
+                // URI-encode anything that is not a '/'
+                .replace(/[^/]+/g, function(m) {
+                    return encodeURIComponent(m);
+            });
 
             //Since page has been successfully loaded, store it in the browser history
             if (params.contentInjectionMode === 'jquery') pushBrowserHistoryState(dirEntry.namespace + '/' + dirEntry.url);
