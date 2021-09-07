@@ -2156,7 +2156,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             $('#chooseArchiveFromLocalStorage').show();
             document.getElementById('rescanStorage').style.display = params.rescan ? "none" : "block";
             document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
+            var plural = 's';
+            plural = archiveDirectories.length === 1 ? '' : plural;
+            document.getElementById('archiveNumber').innerHTML = '<b>' + archiveDirectories.length + '</b> Archive' + plural + ' found in selected location (tap "Select storage" to change)';
             var comboArchiveList = document.getElementById('archiveList');
+            var instructions = document.getElementById('instructions');
             comboArchiveList.options.length = 0;
             for (var i = 0; i < archiveDirectories.length; i++) {
                 var archiveDirectory = archiveDirectories[i];
@@ -2173,8 +2177,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (comboArchiveList.length > 1) comboArchiveList.removeAttribute("multiple");
             if (comboArchiveList.length == 1) comboArchiveList.setAttribute("multiple", "1");
             if (comboArchiveList.options.length > 0) {
-                var plural = comboArchiveList.length > 1 ? "s" : "";
-                document.getElementById('archiveNumber').innerHTML = '<b>' + comboArchiveList.length + '</b> Archive' + plural + ' found in selected location (tap "Select storage" to change)';
                 // If we're doing a rescan, then don't attempt to jump to the last selected archive, but leave selectors open
                 var lastSelectedArchive = params.rescan ? '' : params.storedFile;
                 if (lastSelectedArchive !== null && lastSelectedArchive !== undefined && lastSelectedArchive !== "") {
@@ -2219,13 +2221,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         }
                     }
                 }
+                instructions.style.display = 'none';
             } else {
-                uiUtil.systemAlert("Welcome to Kiwix! This application needs at least a ZIM file in your SD-card (or internal storage). Please download one and put it on the device (see About section). Also check that your device is not connected to a computer through USB device storage (which often locks the SD-card content)");
-                $("#btnAbout").click();
-                var isAndroid = navigator.userAgent.indexOf("Android") !== -1;
-                if (isAndroid) {
-                    alert("You seem to be using an Android device. Be aware that there is a bug on Firefox, that prevents finding Wikipedia archives in a SD-card (at least on some devices. See about section). Please put the archive in the internal storage if the application can't find it.");
-                }
+                instructions.style.display = 'block';
+                // uiUtil.systemAlert("Welcome to Kiwix! This application needs at least one ZIM file in your storage. Please download one and put it on the device (see About section).");
+                // $("#btnAbout").click();
+                // var isAndroid = navigator.userAgent.indexOf("Android") !== -1;
+                // if (isAndroid) {
+                //     alert("You seem to be using an Android device. Be aware that there is a bug on Firefox, that prevents finding Wikipedia archives in a SD-card (at least on some devices. See about section). Please put the archive in the internal storage if the application can't find it.");
+                // }
             }
         }
 
@@ -2564,32 +2568,45 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         }
 
         function processNativeDirHandle(dirHandle, callback) {
-            // Serialize fileHandle to indexedDB
+            // Serialize dirHandle to indexedDB
             cache.idxDB('pickedFSHandle', dirHandle, function (val) {
                 console.log('IndexedDB responded with ' + val);
             });
             params.pickedFolder = dirHandle;
             params.pickedFile = '';
-            // We have to wrap async function because IE11 compiler throws error if unwrapped
-            eval(
-                "var processHandle = async function(handle, callback) {" +
-                    "var archiveList = [];" +
-                    "for await (const [name, entry] of handle) {" +
-                    "   if (/\\.zim(\\w\\w)?$/.test(entry.name)) {" +
-                            "if (callback) archiveList.push(entry);" +
-                            "else archiveList.push(entry.name);" +
-                    "   }" +
-                    "}" +
-                    "if (archiveList.length) {" +
-                        "if (callback) { callback(archiveList); return; }" +
-                        "document.getElementById('noZIMFound').style.display = 'none';" +
-                    "   populateDropDownListOfArchives(archiveList);" +
-                    "} else {" +
-                        "if (callback) { callback(null); return; }" +
-                    "}" +
-                "};" +
-                "processHandle(dirHandle, callback);"
-            );
+            // We have to iterate async function with Promise because IE11 compiler throws error if we use async
+            var archiveList = [];
+            var entryList = dirHandle.entries();
+            (function iterateAsyncDirEntryArray() {
+                return entryList.next().then(function (result) {
+                    if (!result.done) {
+                        var entry = result.value[1];
+                        if (/\.zim(\w\w)?$/.test(entry.name)) {
+                            if (callback) archiveList.push(entry);
+                            // Hide all parts of split file except first in UI
+                            else if (/\.zim(aa)?$/.test(entry.name)) archiveList.push(entry.name);
+                        }
+                        iterateAsyncDirEntryArray();
+                    } else {
+                        var noZIMFound = document.getElementById('noZIMFound');
+                        if (archiveList.length) {
+                            if (callback) {
+                                callback(archiveList);
+                            } else {
+                                noZIMFound.style.display = 'none';
+                                populateDropDownListOfArchives(archiveList);
+                            }
+                        } else {
+                            if (callback) {
+                                callback(null);
+                            } else {
+                                noZIMFound.style.display = 'block';
+                                populateDropDownListOfArchives(archiveList);
+                            }
+                        }
+                    }
+                });
+            })();
             var archiveDisplay = document.getElementById('chooseArchiveFromLocalStorage');
             archiveDisplay.style.display = 'block';
         }
