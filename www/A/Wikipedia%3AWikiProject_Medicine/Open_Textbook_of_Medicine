@@ -10,17 +10,24 @@
             return 1
         } // this is to avoid the error from site.js
     </script>
+    <script>
+        let articleId = 'Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine'
+    </script>
+    <link rel="canonical"
+        href="https://en.wikipedia.org/wiki/Wikipedia%3AWikiProject_Medicine%2FOpen_Textbook_of_Medicine">
+    <script src="../../-/masonry.min.js"></script>
+    <script src="../../-/article_list_home.js"></script>
+    <script src="../../-/images_loaded.min.js"></script>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob: 'unsafe-inline' 'unsafe-eval';">
     <link
-        href="../../-/s/css_modules/skins.minerva.base.reset|skins.minerva.content.styles|ext.cite.style|mobile.app.pagestyles.android|mediawiki.page.gallery.styles|mediawiki.skinning.content.parsoid.css"
-        rel="stylesheet" type="text/css" class="">
-    <link href="../../-/s/css_modules/style.css" rel="stylesheet" type="text/css" class="">
-    <link href="../../-/s/css_modules/content.parsoid.css" rel="stylesheet" type="text/css" class="">
-    <link href="../../-/s/css_modules/inserted_style.css" rel="stylesheet" type="text/css" class="">
-    <script src="../../-/j/js_modules/script.js" class=""></script>
-    <script src="../../-/j/js_modules/masonry.min.js" class=""></script>
-    <script src="../../-/j/js_modules/article_list_home.js" class=""></script>
-    <script src="../../-/j/js_modules/images_loaded.min.js" class=""></script>
-    <script src="../../-/j/js_modules/details_polyfill.js" class=""></script>
+        href="../../-/mw/skins.minerva.base.reset|skins.minerva.content.styles|ext.cite.style|site.styles|mobile.app.pagestyles.android|mediawiki.page.gallery.styles|mediawiki.skinning.content.parsoid.css"
+        data-kiwixhref="../../-/mw/skins.minerva.base.reset|skins.minerva.content.styles|ext.cite.style|site.styles|mobile.app.pagestyles.android|mediawiki.page.gallery.styles|mediawiki.skinning.content.parsoid.css"
+        rel="stylesheet" type="text/css">
+    <link href="../../-/style.css" data-kiwixhref="../../-/style.css" rel="stylesheet" type="text/css">
+    <link href="../../-/content.parsoid.css" data-kiwixhref="../../-/content.parsoid.css" rel="stylesheet"
+        type="text/css">
+    <link href="../../-/inserted_style.css" data-kiwixhref="../../-/inserted_style.css" rel="stylesheet"
+        type="text/css">
 </head>
 
 <body class="mediawiki mw-hide-empty-elt ns-0 ns-subject stable skin-minerva action-view animations">
