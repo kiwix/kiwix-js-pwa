@@ -746,11 +746,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 currentArchive.innerHTML = "Currently loaded archive: <b>" + params.storedFile.replace(/\.zim$/i, "") + "</b>";
                 currentArchive.style.display = "block";
                 document.getElementById('downloadLinksText').style.display = "none";
-                document.getElementById('moreInfo').style.display = "none";
+                document.getElementById('usage').style.display = "none";
             }
             if (params.storedFile && params.storedFile == params.packagedFile) {
-                document.getElementById('downloadLinksText').style.display = "block";
-                currentArchive.style.display = "none";
+                if (/wikipedia.en.(100|ray.charles)/i.test(params.packagedFile)) document.getElementById('usage').style.display = 'inline';
+                document.getElementById('downloadLinksText').style.display = 'block';
+                currentArchive.style.display = 'none';
             }
             // Populate version info
             var versionSpans = document.getElementsByClassName('version');
@@ -1015,7 +1016,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
             setTimeout(function () {
                 document.getElementById('openLocalFiles').style.display = 'none';
-                document.getElementById('moreInfo').style.display = 'none';
+                document.getElementById('usage').style.display = 'none';
                 selectFired = false;
             }, 0);
         }
@@ -1629,7 +1630,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             document.getElementById('openLocalFiles').style.display = "none";
             document.getElementById('hideFileSelectors').style.display = params.showFileSelectors ? "block" : "none";
             document.getElementById('downloadLinksText').style.display = params.showFileSelectors ? "none" : "inline";
-            document.getElementById('moreInfo').style.display = params.showFileSelectors ? "none" : "inline";
+            document.getElementById('usage').style.display = params.showFileSelectors ? "none" : "inline";
             if (params.packagedFile && params.storedFile && params.storedFile != params.packagedFile) {
                 var currentArchive = document.getElementById('currentArchive');
                 currentArchive.innerHTML = "Currently loaded archive: <b>" + params.storedFile.replace(/\.zim$/i, "") + "</b>";
@@ -2160,7 +2161,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             plural = archiveDirectories.length === 1 ? '' : plural;
             document.getElementById('archiveNumber').innerHTML = '<b>' + archiveDirectories.length + '</b> Archive' + plural + ' found in selected location (tap "Select storage" to change)';
             var comboArchiveList = document.getElementById('archiveList');
-            var instructions = document.getElementById('instructions');
+            var usage = document.getElementById('usage');
             comboArchiveList.options.length = 0;
             for (var i = 0; i < archiveDirectories.length; i++) {
                 var archiveDirectory = archiveDirectories[i];
@@ -2221,9 +2222,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         }
                     }
                 }
-                instructions.style.display = 'none';
+                usage.style.display = 'none';
             } else {
-                instructions.style.display = 'block';
+                usage.style.display = 'block';
                 // uiUtil.systemAlert("Welcome to Kiwix! This application needs at least one ZIM file in your storage. Please download one and put it on the device (see About section).");
                 // $("#btnAbout").click();
                 // var isAndroid = navigator.userAgent.indexOf("Android") !== -1;
@@ -2418,7 +2419,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         params.rescan = false;
                     } else {
                         $('#openLocalFiles').hide();
-                        document.getElementById('moreInfo').style.display = 'none';
+                        document.getElementById('usage').style.display = 'none';
                         document.getElementById('btnHome').click();
                     }
                 });
@@ -2481,7 +2482,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             } else {
                 var files = packet.dataTransfer.files;
                 document.getElementById('openLocalFiles').style.display = 'none';
-                document.getElementById('moreInfo').style.display = 'none';
+                document.getElementById('usage').style.display = 'none';
                 params.rescan = false;
                 setLocalArchiveFromFileList(files);
                 // This clears the display of any previously picked archive in the file selector
@@ -2700,11 +2701,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         reloadLink.style.display = "inline";
                         reloadLink.removeEventListener("click", loadPackagedArchive);
                         reloadLink.addEventListener("click", loadPackagedArchive);
-                        document.getElementById("moreInfo").style.display = "none";
+                        document.getElementById("usage").style.display = "none";
                     } else {
                         reloadLink.style.display = "none";
                         document.getElementById('currentArchive').style.display = "none";
-                        document.getElementById("moreInfo").style.display = "inline";
+                        document.getElementById("usage").style.display = "inline";
                     }
                 }
                 //This ensures the correct icon is set for the newly loaded archive
@@ -2717,7 +2718,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     }, 100);
                 } else {
                     $('#openLocalFiles').hide();
-                    document.getElementById('moreInfo').style.display = 'none';
+                    document.getElementById('usage').style.display = 'none';
                     if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile)) {
                         var lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, "");
                         goToArticle(lastPage);
@@ -3453,7 +3454,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     'content': content.buffer
                                 };
                                 // if (/\bjavascript$/i.test(mimetype)) {
-                                //     // Soome scripts need the doucment to be visible, but we must remove max page width first
+                                //     // Soome scripts need the document to be visible, but we must remove max page width first
                                 //     // if user has requested this, or we get ugly page redraws
                                 //     if (!maxPageWidthProcessed) removePageMaxWidth();
                                 //     document.getElementById('articleContent').style.display = 'block';
