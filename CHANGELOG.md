@@ -1,6 +1,6 @@
 # Changelog
 
-## Release 1.7.2
+## Release 1.7.3
 
 * ENNHNCEMENT: Added more diagnostic APIs to the API panel in Configuration
 * ENHANCEMENT: Added refresh button for picked folder in Configuration (UWP or File System Access API)
@@ -9,6 +9,7 @@
 * ENHANCEMENT: Provide contextual warnings for features that do not work well with dynamic content
 * ENHANCEMENT: Added help section in About concerning link handling, dynamic content, new windows, etc.
 * ENHANCEMENT: Verbose tooltips provided for several options in Configuration
+* ENHANCEMENT: Usage instructions more clearly highlighted on first run
 * UPDATE: Sample ZIM changed to `wikipedia_en_100_nopic_2021-08.zim` in order to reduce app size
 * UPDATE: New option to change right click to double right click for opening new window or tab
 * FIX: Issue preventing correct parsing of ZIM archive path in some contexts in SW mode
@@ -18,6 +19,7 @@
 * FIX: Issues with toolbars getting stuck on after searching for text in article
 * FIX: Better replication of infobox mobile and desktop styles
 * FIX: Typo in code causing some pages to load assets incorrectly in jQuery mode
+* FIX: Updated style locations for custom WikiMed landing page (fixes display issue)
 
 ## Release 1.6.0
 
