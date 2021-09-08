@@ -115,7 +115,7 @@ $release_body = $release_body -replace '<<zim>>', "$zim"
 $release_body = $release_body -replace '<<date>>', "$date"
 # Set up release_params object - for API see https://docs.github.com/en/rest/reference/repos#releases
 $release_body_json = @{
-  'tag_name' = "$base_tag"
+  'tag_name' = "v$base_tag"
   'target_commitish' = $branch
   'name' = $release_title
   'draft' = $true
@@ -153,8 +153,8 @@ if ($updatewinget) {
   $package_id = 'Kiwix.' + $text_tag
   if ($text_tag -eq 'Windows') { $package_id = 'Kiwix.' +  'KiwixJS' }
   if ($base_tag -match 'E$') { $package_id = $package_id + '.Electron' }
-  $winget_version = $numeric_tag + $flavour
-  if ($flavour -eq '') { $winget_version = $winget_version + '.0' }  
+  if ($flavour -eq '_E') { $winget_version = $numeric_tag + '-E' }  
+  if ($flavour -eq '') { $winget_version = $numeric_tag + '.0' }  
   if (-Not $dryrun) {
     "Submitting to winget-pkg repository..."
     & wingetcreate.exe update -i $package_id -v "$winget_version" -u $package_url -s $true -t $github_token
