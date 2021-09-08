@@ -749,8 +749,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 document.getElementById('usage').style.display = "none";
             }
             if (params.storedFile && params.storedFile == params.packagedFile) {
-                document.getElementById('downloadLinksText').style.display = "block";
-                currentArchive.style.display = "none";
+                if (/wikipedia.en.(100|ray.charles)/i.test(params.packagedFile)) document.getElementById('usage').style.display = 'inline';
+                document.getElementById('downloadLinksText').style.display = 'block';
+                currentArchive.style.display = 'none';
             }
             // Populate version info
             var versionSpans = document.getElementsByClassName('version');
@@ -3453,7 +3454,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     'content': content.buffer
                                 };
                                 // if (/\bjavascript$/i.test(mimetype)) {
-                                //     // Soome scripts need the doucment to be visible, but we must remove max page width first
+                                //     // Soome scripts need the document to be visible, but we must remove max page width first
                                 //     // if user has requested this, or we get ugly page redraws
                                 //     if (!maxPageWidthProcessed) removePageMaxWidth();
                                 //     document.getElementById('articleContent').style.display = 'block';
