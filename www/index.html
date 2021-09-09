@@ -129,21 +129,16 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in version <span class="version">1.0</span></h3>
                         <ul style="padding-left: 15px;">
-                            <li>Sample ZIM changed to no-picture version wikipedia_en_100_nopic_2021-08.zim to reduce download size of app</li>
-                            <li>Added refresh button for picked folder in Configuration</li>
+                            <li>Packaged ZIM archive updated to wikivoyage_en_all_maxi_2021-09</li>
                             <li>Added some extra directories of useful ZIM archives to Donwload library</li>
-                            <li>Added more diagnostic APIs to the API panel in Configuration</li>
-                            <li>Provide option for image manipulation (saving to disk or opening in new tab via right-click)</li>
+                            <li>Provide option for image manipulation in PWA, with a workaround for UWP</li>
                             <li>Provide contextual warnings for features that do not work well with active content</li>
                             <li>Added help section in About concerning link handling, dynamic content, new windows, etc.</li>
                             <li>Verbose tooltips provided for several options in Configuration</li>
                             <li>New option to change single right click to double right click for opening new window or tab</li>
                             <li>Fixed issue preventing correct parsing of ZIM archive links in some contexts in SW mode</li>
                             <li>Fixed printing in SW mode (all images are now loaded correctly before printing)</li>
-                            <li>Fixed restoring the DOM after printing in SW mode</li>
-                            <li>Fixed some app crashes when switching to SW mode</li>
-                            <li>Fixed issues with toolbars getting stuck on after searching for text in article</li>
-                            <li>Better replication of infobox mobile and desktop styles</li>
+                            <li>Fixed some app crashes when switching to SW mode</li>    
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-Wikivoyage/CHANGELOG.md" target="_blank">And there's more! ...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>
@@ -351,10 +346,9 @@
                     <h3 id="addingArchives">Adding Wikivoyage archives in other languages</h3>
                     <h4>Step 1: Download some content</h4>
                     <p>
-                        In the Configuration <span class="glyphicon glyphicon-wrench"></span> menu, go to <a href="#packagedAppFileSelectors" onclick="document.getElementById('btnConfigure').click();"><b>Expert settings</b></a> and check the option to <b>Display selectors</b>. Then check <b>Allow Internet access</b> and tap the <b>Open library</b> button. Locate your Wikivoyage ZIM file, and instructions will be provided to download the file on your device.
+                        In the Configuration <span class="glyphicon glyphicon-wrench"></span> menu, click <a href="#otherLangs" onclick="document.getElementById('btnConfigure').click();"><b>Download more archives from the Archive Library</b></a> near the top of the page. (Instead, you can go to <a href="#packagedAppFileSelectors" onclick="document.getElementById('btnConfigure').click();"><b>Expert settings</b></a> and check the option to <b>Display selectors</b>.) Select <b>Allow Internet access</b> and tap the <b>Open library</b> button. Locate your Wikivoyage ZIM file, and instructions will be provided to download the file on your device.
                         Alternatively, visit <a href="https://download.kiwix.org/zim" target="_blank">https://download.kiwix.org/zim/</a> using a regular computer.
                         <strong>This app is optimized for Wikivoyage archives only</strong>. If you wish to use regularly other archive types with this app, you should instead obtain our sister app, <b>Kiwix JS</b> from the Store and keep this as a dedicated Wikivoyage app.
-                        You may need to switch the app to the experimental PWA/ServiceWorker mode (see Expert Settings in configuration) to access dynamic content.
                     </p>
                     <h4>Step 2: Copy the content onto your device</h4>
                     <p>
@@ -475,15 +469,12 @@
                     </p>
                     <h3 id="linkHandling">Link handling, image download, tabs and windows</h3>
                     <p>
-                        This app does its best to handle links to <b>special ZIM content</b>, like active (dynamic) content, embedded videos, downladable content (EPUBs, PDFs) and images, but not everything
+                        This app does its best to handle links to <b>special ZIM content</b>, like active (dynamic) content, embedded videos, downladable content and images, but not everything
                         works smoothly with every option.
                     </p>
                     <p>The app can usually operate in two modes: "JQuery" (which manipulates the content of the article) and "ServiceWorker" (which tries to get out of the way and let the ZIM do its
                         thing - see below under <a href="#expert">Expert settings</a> for a fuller explanation). Some contexts, like mobile or old browsers, only support JQuery mode. Desktop systems
-                        and modern browsers support both modes. <b><i>JQuery mode doesn't support active or dynamic content.</i></b> You will usually get an <b>Active Content Warning</b> popping up at the 
-                        top of the landing page (Home) if you open a ZIM that requires you to switch to ServiceWorker mode. If you can't switch, you can often still access content in these archives
-                        by using title search or typing a space in title search to show the <a href="#zimIndex">ZIM Archive Index</a> (see above), but some things, especially any proprietary User Interface,
-                        won't work.
+                        and modern browsers support both modes. For Wikivoyage ZIMs you can use either mode. Only ServiceWorker mode supports active (dynamic) content, but this kind of content is not found in Wikivoyage ZIMs.
                     </p>
                     <p>
                         You can <b>download images</b> (as long as they haven't been inserted dynamically) by turning on the option <b>Allow image manipulation</b> in Configuration. Then you will be
@@ -491,12 +482,6 @@
                         for the UWP app: you can enable the <b>Insert breakout link</b> option, export the article to a new browser tab (by clicking the Breakout link), and then you will be able to manipulate
                         images in the browser tab. Please note that enabling Image manipulation or the Breakout link feature can interfere badly with some ZIMs that rely heavily on active content. So turn
                         these options off if you are using such ZIMs.
-                    </p>
-                    <p>
-                        You can <b>download EPUBs and PDFs</b>, e.g. from Gutenberg ZIMs, in JQuery mode, but the proprietary User Interface doesn't work (use title search instead). In the UWP Desktop app
-                        in ServiceWorker mode, you need to enable the option <b>Open ZIM links in new tab</b> (or window) in Configuration to be able to download EPUBs and PDFs. This isn't necessary in
-                        JQuery mode or in the PWA/ Electron/ NWJS apps. In JQuery mode, the app will offer to download videos so you can view them in a different application. This is useful if your system
-                        doesn't support the WebP video format (e.g. the mobile UWP app).
                     </p>
                     <p>
                         You can <b>open ZIM links in a new browsable tab (or window)</b> by setting the options in Configuration. Right-click (or double right-click if you set that option), ctrl-click, middle click
@@ -507,12 +492,6 @@
                         Note that your browser's <b>popup blocker</b> may interfere with options that open new tabs or windows. When asked, enable popups always for the app (if you trust Kiwix), and then reload the app. 
                     </p>
                     <p>
-                        <b>PhET ZIMs:</b> These science and maths simulations only work in ServiceWorker mode. There is currently a bug which causes the experiment/ simulation to be shifted by several pixels, making
-                        it hard to click on the experiment's controls. WORKAROUND: Please switch the <b>Hide toolbars while scrolling</b> option to <b>never</b>. This eliminates the pixel shift. You may also have to use the title
-                        search or <a href="#zimIndex">ZIM Archive Index</a> (press a space in title seaarch) to find the experiments, as there is an unresolved issue with displaying the ZIM's User Interface.
-                    </p>
-                    <p>
-                        
                     </p>
                     <h3 id="expert">Expert or experimental settings</h3>
                     <p>
@@ -522,7 +501,7 @@
                         <ul>
                             <li>
                                 <b>JQuery Mode</b>: This mode (which does not in fact require JQuery) is fine for everyday use with
-                                Wikipedia / WikiMedia archives, and is stable and safe. It is a way of inserting articles extracted from the
+                                Wikivoyage archives, and is stable and safe. It is a way of inserting articles extracted from the
                                 ZIM into the DOM (browser document) by injecting the content into an iframe or tab. We then use
                                 native DOM methods, or sometimes JQuery, to parse the article's HTML and insert required assets
                                 (images, stylesheets, event listeners for hyperlinks, etc.). On old devices DOM traversal can be slow,
