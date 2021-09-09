@@ -1,24 +1,28 @@
 # Changelog
 
-## Release 1.7.3
+## Release 1.7.3-Wikivoyage
 
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2021-09`
+* UPDATE: New option to change right click to double right click for opening new window or tab
+* ENHANCEMENT: Provide option to allow image manipulation (saving to disk or opening in new tab), with workaround for UWP
+* ENHANCEMENT: Provide contextual warnings for features that do not work well with dynamic content
+* ENHANCEMENT: Added help section in About concerning link handling, dynamic content, new windows, etc.
+* ENHANCEMENT: Verbose tooltips provided for several options in Configuration
+* ENHANCEMENT: Usage instructions more clearly highlighted on first run
+* FIX: Issue preventing correct parsing of ZIM archive path in some contexts in SW mode
+* FIX: Some app crashes when switching the UWP app to SW mode
+* FIX: Printing in SW mode (load all images correctly before printing)
+* FIX: Restoring DOM after printing in SW mode
+
+## Release 1.6.2-Wikivoyage
+
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2021-08`
 * FEATURE: New dropdown in Download Library allows filtering the list of archives by subject (for some ZIM types)
 * ENHANCEMENT: Sorting the Download Library list by clicking on the Size / Last modified / Name headers
 * ENHANCEMENT: Significant speed-up by using native Promise API, or modern polyfill where needed
 * ENHANCEMENT: Decompressors now loaded as fast binary WASM modules if the brower supports WebAssembly
 * ENNHNCEMENT: Added more diagnostic APIs to the API panel in Configuration
 * ENHANCEMENT: Added refresh button for picked folder in Configuration (UWP or File System Access API)
-* ENHANCEMENT: Provide option to allow image manipulation (saving to disk or opening in new tab)
-* ENHANCEMENT: Provide contextual warnings for features that do not work well with dynamic content
-* ENHANCEMENT: Added help section in About concerning link handling, dynamic content, new windows, etc.
-* ENHANCEMENT: Verbose tooltips provided for several options in Configuration
-* ENHANCEMENT: Usage instructions more clearly highlighted on first run
-* UPDATE: Sample ZIM changed to `wikipedia_en_100_nopic_2021-08.zim` in order to reduce app size
-* UPDATE: New option to change right click to double right click for opening new window or tab
-* FIX: Issue preventing correct parsing of ZIM archive path in some contexts in SW mode
-* FIX: Some app crashes when switching the UWP app to SW mode
-* FIX: Printing in SW mode (load all images correctly before printing)
-* FIX: Restoring DOM after printing in SW mode
 * FIX: Issues with toolbars getting stuck on after searching for text in article
 * FIX: Better replication of infobox mobile and desktop styles
 * FIX: More displaced hatnotes corrected
@@ -26,6 +30,7 @@
 
 ## Release 1.5.0-Wikivoyage
 
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2021-07`
 * FEATURE: (Experimental) PWA is paritcipating in File Handling API origin trial
 * FEATURE: Search with wildcards `.*`, `.+` or regex syntax `(?:my_regular_expression)`
 * ENHANCEMENT: Improve zooming and re-flowing the article contents in browsers that support the `zoom` style property
