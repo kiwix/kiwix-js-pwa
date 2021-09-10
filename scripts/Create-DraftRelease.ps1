@@ -57,7 +57,7 @@ if ($tag_name -NotMatch '^v\d+\.\d+\.\d+([EN-]|$)') {
 if ($updatewinget) {
   "`nUpdating winget repository only..."
 } else {
-  "`nCreating release for $tag_name..."
+  "`nCreating release for $tag_name...`n"
 }
 $base_tag = $tag_name -replace '^v([\d.EN]+).*', '$1'
 $text_tag = $tag_name -replace '^v[\d.EN+]+-?(.*)$', '$1'
@@ -81,6 +81,12 @@ if ($file_version) {
 "Zim: $zim"
 "Date: $date"
 $branch = "master"
+$release_tag_name = $tag_name
+if ($tag_name -match 'E\+N') {
+  $title_flavour = 'Electron and NWJS'
+  $release_title = $release_title -replace 'Windows\s', ''
+  $release_tag_name = $tag_name -replace '\+N', ''
+}
 if ($text_tag -ne "Windows") { $branch = "Kiwix-JS-$text_tag" }
 if ($base_tag -match '[EN]$') {
   $flavour = '_' + $matches[0]
@@ -88,10 +94,6 @@ if ($base_tag -match '[EN]$') {
   if ($flavour -eq '_N') { 
     $title_flavour = 'NWJS'
     $branch = 'nwjs-en-top' 
-  }
-  if ($tag_name -match 'E\+N') {
-    $title_flavour = 'Electron and NWJS'
-    $release_title = $release_title -replace 'Windows\s', ''
   }
   $release_title = $release_title -replace '([^\s]+)\sUWP$', ("$title_flavour (Windows/Linux) " + '$1')
   if ($flavour -eq '_N') { $release_title = $release_title -replace 'Edition\s(for\s)', '$1XP/Vista/' } 
@@ -102,6 +104,8 @@ $package_name = ''
 if ($json_object -imatch '"name":\s"([\w]+-[^"]+)') {
 	$package_name = $matches[1]
 }
+"Tag name: $tag_name"
+"Release tag name: $release_tag_name"
 "Text tag: $text_tag"
 "Base tag: $base_tag"
 "Numeric tag: $numeric_tag"
@@ -115,7 +119,7 @@ $release_body = $release_body -replace '<<zim>>', "$zim"
 $release_body = $release_body -replace '<<date>>', "$date"
 # Set up release_params object - for API see https://docs.github.com/en/rest/reference/repos#releases
 $release_body_json = @{
-  'tag_name' = "v$base_tag"
+  'tag_name' = "$release_tag_name"
   'target_commitish' = $branch
   'name' = $release_title
   'draft' = $true
@@ -553,9 +557,9 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       cd $PSScriptRoot\..
       pwd
       if (-Not $dryrun) { 
-        & .\scripts\Create-DraftRelease.ps1 -updatewinget -tag_name $tag_name
+        & .\scripts\Create-DraftRelease.ps1 -updatewinget -tag_name $release_tag_name
       } else {
-        "[DRYRUN:] & .\scripts\Create-DraftRelease.ps1 -updatewinget -tag_name $tag_name"
+        "[DRYRUN:] & .\scripts\Create-DraftRelease.ps1 -updatewinget -tag_name $release_tag_name"
       }
     } else {
       "You can update the WinGet repository manually by running 'Create-DraftRelease -updatewinget'"
