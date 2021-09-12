@@ -3568,8 +3568,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     return blockStart + 'data-kiwixurl' + equals + encodeURI(assetZIMUrl);
                 });
             }
-            // Remove any empty media containers on page
+            // Remove any empty media containers on page and add missing preload
             htmlArticle = htmlArticle.replace(/(<(audio|video)\b(?:[^<]|<(?!\/\2))+<\/\2>)/ig, function (p0) {
+                p0 = !/controls\s*=\s*['"]/i.test(p0) ? p0.replace(/^(<(audio|video))/i, '$1 controls="true"') : p0;
                 return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
             });
 
@@ -3637,8 +3638,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 htmlArticle = htmlArticle.replace(/(<table\s+class=["'][^"']*)sidebar\s/gi, '$1infobox ');
             }
 
-            //Remove empty div that causes layout issues in desktop style
-            htmlArticle = htmlArticle.replace(/<div\b[^>]*?>\s*<\/div>\s*/, '');
+            //Remove empty div that causes layout issues in desktop style (but don't remove in SW mode, as they are dynamically filled)
+            if (params.contentInjectionMode === 'jquery') htmlArticle = htmlArticle.replace(/<div\b[^>]*?>\s*<\/div>\s*/, '');
             // Deal with incorrectly sized masonry pages
             htmlArticle = htmlArticle.replace(/(<body\b[^<]+<div\b[^>]+?id=['"]container['"][^>]*)/i, '$1 style="height:auto;"');
 
