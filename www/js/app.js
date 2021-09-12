@@ -3567,13 +3567,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     // of encodeURIComponent.
                     return blockStart + 'data-kiwixurl' + equals + encodeURI(assetZIMUrl);
                 });
+                // Remove any empty media containers on page (they can cause layout issue in jQuery mode)
+                htmlArticle = htmlArticle.replace(/(<(audio|video)\b(?:[^<]|<(?!\/\2))+<\/\2>)/ig, function (p0) {
+                    return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
+                });
             }
-            // Remove any empty media containers on page and add missing preload
-            htmlArticle = htmlArticle.replace(/(<(audio|video)\b(?:[^<]|<(?!\/\2))+<\/\2>)/ig, function (p0) {
-                p0 = !/controls\s*=\s*['"]/i.test(p0) ? p0.replace(/^(<(audio|video))/i, '$1 controls="true"') : p0;
-                return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
-            });
-
+            
             //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
             //so add some whitespace at the end of the document
             htmlArticle = htmlArticle.replace(/(<\/body>)/i, "\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n$1");
@@ -4121,6 +4120,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         return;
                     }
                     var mediaElement = /audio|video/i.test(mediaSource.tagName) ? mediaSource : mediaSource.parentElement;
+                    // If the "controls" property is missing, we need to add it to ensure jQuery-only users can operate the video. See kiwix-js #760.
+                    if (/audio|video/i.test(mediaElement.tagName) && !mediaElement.hasAttribute('controls')) mediaElement.setAttribute('controls', '');
                     // Create custom subtitle / cc load menu if it doesn't already exist
                     if (!articleWindow.document.getElementById('kiwixCCMenu')) buildCustomCCMenu(articleWindow.document, mediaElement, function (ccBlob) {
                         trackBlob = ccBlob;
