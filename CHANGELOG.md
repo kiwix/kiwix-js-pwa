@@ -1,5 +1,10 @@
 # Changelog
 
+## Release 1.7.4-rc1
+
+* ENHANCEMENT: The app should now show dynamic content on landing pages in YouTube-based ZIMs (SW mode)
+* FIX: Video playback controls are now shown in Khan Acadeny ZIMs (and others based on YouTube)
+
 ## Release 1.7.3
 
 * ENNHNCEMENT: Added more diagnostic APIs to the API panel in Configuration
