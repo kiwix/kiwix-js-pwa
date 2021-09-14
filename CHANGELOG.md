@@ -1,6 +1,11 @@
 # Changelog
 
-## Release 1.7.3-Wikivoyage
+## Release 1.7.4-rc1
+
+* ENHANCEMENT: The app should now show dynamic content on landing pages in YouTube-based ZIMs (SW mode)
+* FIX: Video playback controls are now shown in Khan Acadeny ZIMs (and others based on YouTube)
+
+## Release 1.7.3
 
 * UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2021-09`
 * UPDATE: New option to change right click to double right click for opening new window or tab
