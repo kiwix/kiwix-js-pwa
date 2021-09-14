@@ -11,7 +11,23 @@ if (-Not $only32bit) {
 $version10 = "0.55.0" # <<< value updated automatically from package.json if launched from Create-DraftRelease
 $versionXP = "0.14.7"
 $appBuild = "1.7.2N" # <<< value updated auotmatically from package.json if launched form Create-DraftRelease
-$ZIMbase = "wikipedia_en_100_maxi"
+# $ZIMbase = "wikipedia_en_100"
+# Check that the dev has included the correct archive in this branch
+$init_params = Get-Content -Raw "$PSScriptRoot\..\www\js\init.js"
+$PackagedArchive = $init_params -imatch 'params\[.packagedFile.][^;]+?[''"]([^\s]+?\.zim)[''"];'
+$archiveExists = $false
+if ($PackagedArchive) { 
+    $PackagedArchive = $matches[1]
+    "`nSearching for packaged archive $PackagedArchive..."
+    $archiveExists = Test-Path "$PSScriptRoot\..\archives\$PackagedArchive" -PathType Leaf
+}
+if (-Not $archiveExists) {
+    "`n***** WARNING: PACKAGED ARCHIVE $PackagedArchive COULD NOT BE FOUND IN ARCHIVE FOLDER!!! *****"
+    "Please place the requested package in this folder and run script again.`n"
+    return
+}
+"Found."
+
 foreach ($build in $builds) {
     $version = $version10
     $OBuild = $build
@@ -55,7 +71,7 @@ foreach ($build in $builds) {
     cp $root\package.json, $root\pwabuilder-sw.js, $root\index.html, $root\CHANGELOG.md, $root\LICENSE, $root\www $fullTarget -Recurse
     "Copying archive..."
     md $archiveFolder
-    cp "$root\archives\$ZIMbase*.*", "$root\archives\README.md" $archiveFolder
+    cp "$root\archives\$PackagedArchive", "$root\archives\README.md" $archiveFolder
     "Creating launchers..."
     $launcherStub = $PSScriptRoot -replace 'scripts.*$', "bld\nwjs\$build-$version\Start Kiwix JS Windows"
     $foldername = "kiwix_js_windows$sep$appBuild-$build"
