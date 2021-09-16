@@ -71,7 +71,7 @@ foreach ($build in $builds) {
     cp $root\package.json, $root\pwabuilder-sw.js, $root\index.html, $root\CHANGELOG.md, $root\LICENSE, $root\www $fullTarget -Recurse
     "Copying archive..."
     md $archiveFolder
-    cp "$root\archives\$PackagedArchive", "$root\archives\README.md" $archiveFolder
+    cp ("$root\archives\$PackagedArchive" -ireplace '\.zim$', '.*'), "$root\archives\README.md" $archiveFolder
     "Creating launchers..."
     $launcherStub = $PSScriptRoot -replace 'scripts.*$', "bld\nwjs\$build-$version\Start Kiwix JS Windows"
     $foldername = "kiwix_js_windows$sep$appBuild-$build"
