@@ -3604,7 +3604,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 });
             }
             //Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
-            var noexcerpt = htmlArticle.match(/<dl\b(?:[^<]|<(?!\/dl>))+?(?:For other places with the same name|Not to be confused with|mw-redirect[^<]+travel topic|This article is a|See also:)(?:[^<]|<(?!\/dl>))+?<\/dl>\s*/i);
+            var noexcerpt = htmlArticle.match(/<dl\b(?:[^<]|<(?!\/dl>)){1,15}?(?:For other places with the same name|Not to be confused with|mw-redirect[^<]+travel topic|This article is a|See also:)(?:[^<]|<(?!\/dl>))+?<\/dl>\s*/i);
             if (noexcerpt && noexcerpt.length) {
                 htmlArticle = htmlArticle.replace(noexcerpt, "");
                 htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + noexcerpt);
