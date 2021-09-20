@@ -56,8 +56,8 @@ params['archivePath'] = "archives"; //The directory containing the packaged arch
 params['fileVersion'] = getSetting('fileVersion') || "wikivoyage_en_all_maxi_2021-09 (8-September-2021)"; //This will be displayed in the app - optionally include date of ZIM file
 // List of known start pages cached in the FS:
 params['cachedStartPages'] = {
-    'wikipedia_en_medicine-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine',
-    'wikipedia_en_medicine_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine',
+    'wikipedia_en_medicine-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
+    'wikipedia_en_medicine_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
     'wikivoyage_en_all_maxi': 'A/Main_Page'
 };
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/wikivoyage/"; //Include final slash
