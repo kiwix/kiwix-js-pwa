@@ -213,7 +213,7 @@ define(['uiUtil'], function (uiUtil) {
     function prepareImagesServiceWorker (win, forPrinting) {
         container = win;
         var doc = container.document;
-        var documentImages = doc.querySelectorAll('img');
+        var documentImages = doc.querySelectorAll('img:not([src^="data:"])');
         // Schedule loadMathJax here in case next line aborts this function
         setTimeout(function() {
             loadMathJax();
