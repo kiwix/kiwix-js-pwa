@@ -2793,9 +2793,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             var file = {};
             // For Electron, we need to set an absolute filepath in case the file was launched from a shortcut (and if it's not already absolute)
             if (filepath === params.archivePath + '/' + filename && /^file:/i.test(window.location.protocol)) {
-                filepath = window.location.protocol + window.location.pathname.replace(/www\/[^/]+$/, '') + filepath;
+                filepath = window.location.href.replace(/www\/[^/]+$/, '') + filepath;
             }
+            // DEV if you get pesky Electron error 'The "path" argument must be one of type string, Buffer, or URL', try commenting below
             if (/^file:/i.test(filepath)) filepath = new URL(filepath);
+            // and uncomment comment line below (seems to depend on node and fs versions) - this line conditionally turns the URL into a filepath string for Windows only
+            // filepath = /^file:\/+\w:/i.test(filepath) ? filepath.replace(/^file:\/+/i, '') : filepath = new URL(filepath);
             file.name = filename;
             file.path = filepath;
             file.readMode = 'electron';
