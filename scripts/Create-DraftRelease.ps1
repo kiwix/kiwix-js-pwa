@@ -190,36 +190,6 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   if ($flavour -eq '_E') {
     $base_dir = "$PSScriptRoot/../bld/electron/"
     $compressed_archive = $base_dir + "Kiwix.JS.$text_tag.$base_tag.zip"
-    if (-Not ($old_windows_support -or (Test-Path $compressed_archive -PathType Leaf))) {
-      # Package portable electron app for Windows
-      "Building portable Electron app for Windows"
-      if (-Not $dryrun) { npm run package-win }
-      "Compressing release package for Electron..."
-      $foldername = "kiwix-js-windows-win32-ia32"
-      $compressed_assets_dir = "$PSScriptRoot/../bld/electron/$foldername"
-      $base_dir = "$PSScriptRoot/../bld/electron/"
-      $compressed_archive = $base_dir + "Kiwix.JS.$text_tag.$base_tag.zip"
-      "Creating launchers..."
-      $launcherStub = "$base_dir\Start Kiwix JS $text_tag"
-      # Batch file
-      $batch = '@cd "' + $foldername + '"' + "`r`n" + '@start "Kiwix JS $text_tag" "kiwix-js-windows.exe"' + "`r`n"
-      if (-Not $dryrun) {
-        $batch > "$launcherStub.bat"
-        # Shortcut
-        $WshShell = New-Object -ComObject WScript.Shell
-        $Shortcut = $WshShell.CreateShortcut("$launcherStub.lnk")
-        $Shortcut.TargetPath = '%windir%\explorer.exe'
-        $Shortcut.Arguments = "$foldername\kiwix-js-windows.exe"
-        $Shortcut.IconLocation = '%windir%\explorer.exe,12'
-        $Shortcut.Save()
-      } else {
-        "Would have written batch file:"
-        "$batch"
-      }
-      $AddAppPackage = $base_dir + "Start*$text_tag.*"
-      "Compressing: $AddAppPackage, $compressed_assets_dir to $compressed_archive"
-      if (-Not $dryrun) { "$AddAppPackage", "$compressed_assets_dir" | Compress-Archive -DestinationPath $compressed_archive -Force }
-    }
     # Package installer electron app for Windows
     "`nChecking for installer package for Windows..."
     $alt_tag = $text_tag -ireplace 'Windows', 'PWA'
@@ -236,6 +206,49 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       }
     } else {
       "Package found."
+    }
+    if (-Not ($old_windows_support -or (Test-Path $compressed_archive -PathType Leaf))) {
+      # Package portable electron app for Windows
+      "Building portable Electron app for Windows"
+      # Line below uses electron-packager, but not necessary if we run the setup version first above
+      # if (-Not $dryrun) { npm run package-win }
+      "Compressing release package for Electron..."
+      $unpacked_folder = $base_dir + "win-ia32-unpacked"
+      $foldername = "kiwix-js-windows-win32-ia32"
+      $compressed_assets_dir = $base_dir + $foldername
+      # Find the executable filename in the folder
+      $executable = (ls "$unpacked_folder/*.exe") -replace '^.*[/\\]([^/\\]+)$', '$1' 
+      "Processing executable: $executable"
+      # Rename the compressed assets folder
+      if (-Not $dryrun) { 
+        if (Test-Path $compressed_assets_dir -PathType Container) {
+          rm -r $compressed_assets_dir
+        }
+        # PowerShell bug: you have to make the directory before you can cleanly copy another folder's contents into it!
+        mkdir $compressed_assets_dir
+        cp -r "$unpacked_folder\*" $compressed_assets_dir
+      }
+      $compressed_archive = $base_dir + "Kiwix.JS.$text_tag.$base_tag.zip"
+      "Creating launchers..."
+      $launcherStub = "$base_dir\Start Kiwix JS $text_tag"
+      # Batch file
+      $batch = '@cd "' + $foldername + '"' + "`r`n" + '@start "Kiwix JS ' + $text_tag + '" "' + $executable + '"' + "`r`n"
+      if (-Not $dryrun) {
+        $batch > "$launcherStub.bat"
+        # Shortcut
+        $WshShell = New-Object -ComObject WScript.Shell
+        $Shortcut = $WshShell.CreateShortcut("$launcherStub.lnk")
+        $Shortcut.TargetPath = '%windir%\explorer.exe'
+        $Shortcut.Arguments = "$foldername\$executable"
+        $Shortcut.IconLocation = '%windir%\explorer.exe,12'
+        $Shortcut.Save()
+      } else {
+        "Would have written batch file:"
+        "$batch"
+      }
+      $AddAppPackage = $base_dir + "Start*$text_tag.*"
+      "Compressing: $AddAppPackage, $compressed_assets_dir to $compressed_archive"
+      if (-Not $dryrun) { "$AddAppPackage", "$compressed_assets_dir" | Compress-Archive -DestinationPath $compressed_archive -Force }
     }
     # Package Electron app for Linux
     "`nChecking for Electron packages for Linux..."
