@@ -1,9 +1,11 @@
 # Changelog
 
-## Release 1.7.4-rc1
+## Release 1.7.4-PWA
 
 * ENHANCEMENT: The app should now show dynamic content on landing pages in YouTube-based ZIMs (SW mode)
 * FIX: Video playback controls are now shown in Khan Acadeny ZIMs (and others based on YouTube)
+* FIX: Bug relocating hatnotes which moved extraneous text blocks
+* FIX: Image rendering bug with substitute landing pages
 
 ## Release 1.7.3
 
