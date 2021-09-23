@@ -130,7 +130,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         }
         $(document).ready(function() {
             resizeIFrame();
-            // uiUtil.initTouchZoom();
         });
         $(window).resize(function () {
             resizeIFrame();
@@ -3284,7 +3283,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
                 docElStyle = zoomProp === 'fontSize' ? docBody.style : docElStyle; 
                 docElStyle[zoomProp] = ~zimType.indexOf("stx") && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
-                if (appstate.target === 'iframe') uiUtil.initTouchZoom(articleDocument, docBody);
+                // if (appstate.target === 'iframe') uiUtil.initTouchZoom(articleDocument, docBody);
                 checkToolbar();
                 //Set page width according to user preference
                 removePageMaxWidth();
@@ -3705,22 +3704,22 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             params.containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
 
             //Adapt German Wikivoyage POI data format
-            var regexpGeoLocationDE = /<span\s+class\s?=\s?"[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<span[^>]+listing-name[^>]+>([^<]+)<\/span>)/ig;
+            var regexpGeoLocationDE = /<span\s+class="[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<bdi\s[^>]+?listing-name[^>]+>(?:<a\b\s+href[^>]+>)?([^<]+))/ig;
             htmlArticle = htmlArticle.replace(regexpGeoLocationDE, function (match, latitude, longitude, href, id) {
-                return '<a href="bingmaps:?collection=point.' + latitude + '_' + longitude + '_' + encodeURIComponent(id.replace(/_/g, " ")) +
+                return '<a href="bingmaps://?collection=point.' + latitude + '_' + longitude + '_' + encodeURIComponent(id.replace(/_/g, " ")) +
                     '">\r\n<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="app:///www/img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;margin-top:5px !important" />\r\n</a>' + href;
             });
 
             //Adapt English Wikivoyage POI data format
             var regexpGeoLocationEN = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
             htmlArticle = htmlArticle.replace(regexpGeoLocationEN, function (match, p1, latitude, longitude, p4, p5, p6, id) {
-                return p1 + "bingmaps:?collection=point." + latitude + "_" + longitude + "_" +
+                return p1 + "bingmaps://?collection=point." + latitude + "_" + longitude + "_" +
                     encodeURIComponent(id.replace(/_/g, " ")).replace(/\.(\w\w)/g, "%$1") +
                     (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Map marker" title="Show this place on a map" src="app:///www/img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" />' + p6 + id;
             });
 
             //Clean up remaining geo: links
-            htmlArticle = htmlArticle.replace(/href\s*=\s*"\s*geo:([\d.-]+),([\d.-]+)/ig, 'href="bingmaps:?collection=point.$1_$2_' + encodeURIComponent(dirEntry.getTitleOrUrl()));
+            htmlArticle = htmlArticle.replace(/href\s*=\s*"\s*geo:([\d.-]+),([\d.-]+)/ig, 'href="bingmaps://?collection=point.$1_$2_' + encodeURIComponent(dirEntry.getTitleOrUrl()));
 
             // Process any app:// links (these are always from the app payload) to match the current protocol
             htmlArticle = htmlArticle.replace(/(['"])app:\/\//g, function (p0, p1) {
@@ -3743,7 +3742,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
             // If there is no CSP, add one to prevent external scripts and content
             if (!/<meta\b[^>]+Content-Security-Policy/i.test(htmlArticle)) {
-                htmlArticle = htmlArticle.replace(/(\s*<\/head>)/, '\n    <meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: blob: \'unsafe-inline\' \'unsafe-eval\';"></meta>$1');
+                htmlArticle = htmlArticle.replace(/(\s*<\/head>)/, '\n    <meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: blob: bingmaps: \'unsafe-inline\' \'unsafe-eval\';"></meta>$1');
             }
 
             //Preload stylesheets [kiwix-js #149]
@@ -3963,7 +3962,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     removePageMaxWidth();
                     setupHeadings();
                     listenForNavigationKeys();
-                    if (appstate.target === 'iframe') uiUtil.initTouchZoom(articleDocument, docBody);
+                    // if (appstate.target === 'iframe') uiUtil.initTouchZoom(articleDocument, docBody);
                     // Process endnote references (so they open the reference block if closed)
                     var refs = docBody.getElementsByClassName("mw-reflink-text");
                     if (refs) {
@@ -4297,6 +4296,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     anchor.host !== currentHost) {
                     // It's an external URL : we should open it in a new tab
                     anchor.target = '_blank';
+                    if (anchor.protocol === 'bingmaps:') {
+                        anchor.removeAttribute('href');
+                        anchor.removeAttribute('target');
+                        anchor.parentElement.addEventListener('click', function () {
+                            window.location = href;
+                        });
+                    }
                 } else {
                     // It's a link to an article or file in the ZIM
                     addListenersToLink(anchor, href, params.baseURL);
