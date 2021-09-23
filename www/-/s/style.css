@@ -3858,6 +3858,7 @@ div.infobox_v3 {
 .qbRightDiv {
     clear: right;
     float: right;
+    width: 294px;
     margin: 0 0 0.5em 1em;
 }
 
