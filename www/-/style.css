@@ -5380,6 +5380,7 @@ h3 .mw-headline {
 .qbDiv, .qbRightDiv {
     box-sizing: border-box;
     overflow: hidden;
+    width: 294px;
     border: 1px solid #6cc8f3;
     border-radius: 5px;
 }
