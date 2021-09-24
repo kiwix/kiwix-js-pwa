@@ -3727,6 +3727,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 return p1 + appRootDir;
             });
 
+            // Remove erroneous caption on maps that displaces the location marker in at least German Wikivoyage
+            htmlArticle = htmlArticle.replace(/(<table\b(?=[^>]+class=["']locationMap)(?:[^<]|<(?!\/table>))+?<img\b[^>]+>)<div\s+class=['"]thumbcaption(?:[^<]|<(?!\/div>))+<\/div>((?:[^<]|<(?!\/table>))+?<div\s+style=['"]position:\s*absolute)/ig, "$1$2");
+
             //Setup endnote backlinks if the ZIM doesn't have any
             htmlArticle = htmlArticle.replace(/<li\b[^>]+id=["']cite[-_]note[-_]([^"']+)[^>]+>(?![^/]+?[↑^])/ig, function (match, id) {
                 var fnReturnMatch = '';
