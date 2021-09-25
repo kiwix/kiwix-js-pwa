@@ -94,6 +94,7 @@ params['allowInternetAccess'] = getSetting('allowInternetAccess');
 params['windowOpener'] = getSetting('windowOpener'); // 'tab|window|false' A setting that determines whether right-click/long-press of a ZIM link opens a new window/tab
 params['rightClickType'] = getSetting('rightClickType'); // 'single|double|false' A setting that determines whether a single or double right-click is used to open a new window/tab
 params['navButtonsPos'] = getSetting('navButtonsPos') || 'bottom'; // 'top|bottom' A setting that determines where the back-forward nav buttons appear
+params['mapsURI'] = getSetting('mapsURI') || 'bingmaps:'; // Protocol with colon ('bingmaps:') or URL with final slash ('https://www.openstreetmap.org/')
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['imageDisplayMode'] = params.imageDisplay ? 'progressive' : 'manual';
@@ -206,6 +207,7 @@ document.getElementById('removePageMaxWidthCheck').indeterminate = params.remove
 document.getElementById('removePageMaxWidthCheck').readOnly = params.removePageMaxWidth == "auto";
 document.getElementById('pageMaxWidthState').innerHTML = (params.removePageMaxWidth == "auto" ? "auto" : params.removePageMaxWidth ? "always" : "never");
 document.getElementById('openAllSectionsCheck').checked = params.openAllSections;
+document.getElementById('useOSMCheck').checked = /openstreetmap/.test(params.mapsURI);
 document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme == "dark"; // Will be true, or false if light or auto
 document.getElementById('cssUIDarkThemeCheck').indeterminate = params.cssUITheme == "auto";
 document.getElementById('cssUIDarkThemeCheck').readOnly = params.cssUITheme == "auto";
