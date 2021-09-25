@@ -1608,6 +1608,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
             openAllSections();
         });
+        document.getElementById('useOSMCheck').addEventListener('click', function () {
+            params.mapsURI = this.checked ? 'https://www.openstreetmap.org/' : 'bingmaps:';
+            settingsStore.setItem('mapsURI', params.mapsURI, Infinity);
+            params.themeChanged = true;
+        });
         $('input:radio[name=useMathJax]').on('click', function (e) {
             params.useMathJax = /true/i.test(this.value);
             settingsStore.setItem('useMathJax', params.useMathJax, Infinity);
@@ -3706,20 +3711,36 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             //Adapt German Wikivoyage POI data format
             var regexpGeoLocationDE = /<span\s+class="[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<bdi\s[^>]+?listing-name[^>]+>(?:<a\b\s+href[^>]+>)?([^<]+))/ig;
             htmlArticle = htmlArticle.replace(regexpGeoLocationDE, function (match, latitude, longitude, href, id) {
-                return '<a href="bingmaps://?collection=point.' + latitude + '_' + longitude + '_' + encodeURIComponent(id.replace(/_/g, " ")) +
-                    '">\r\n<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="app:///www/img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;margin-top:5px !important" />\r\n</a>' + href;
+                var html;
+                if (/bingmaps/.test(params.mapsURI)) {
+                    html = '<a href="' + params.mapsURI + '?collection=point.' + latitude + '_' + longitude + '_' + encodeURIComponent(id.replace(/_/g, " ")) + '">\r\n';
+                }
+                if (/openstreetmap/.test(params.mapsURI)) {
+                    html = '<a href="' + params.mapsURI + '?mlat=' + latitude + '&mlon=' + longitude + '#map=18/' + latitude + '/' + longitude + '">\r\n';
+                }
+                html += '<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="app:///www/img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;margin-top:5px !important" />\r\n</a>' + href;
+                return html;
             });
 
             //Adapt English Wikivoyage POI data format
             var regexpGeoLocationEN = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
-            htmlArticle = htmlArticle.replace(regexpGeoLocationEN, function (match, p1, latitude, longitude, p4, p5, p6, id) {
-                return p1 + "bingmaps://?collection=point." + latitude + "_" + longitude + "_" +
-                    encodeURIComponent(id.replace(/_/g, " ")).replace(/\.(\w\w)/g, "%$1") +
-                    (p5 ? "\&lvl=" + p5 : "") + p4.replace(/style\s?="\s?background:[^"]+"\s?/i, "") + '<img alt="Map marker" title="Show this place on a map" src="app:///www/img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" />' + p6 + id;
+            htmlArticle = htmlArticle.replace(regexpGeoLocationEN, function (match, hrefAttr, latitude, longitude, p4, p5, p6, id) {
+                var html;
+                if (/bingmaps/.test(params.mapsURI)) {
+                    html = hrefAttr + params.mapsURI + '?collection=point.' + latitude + '_' + longitude + '_' +
+                    encodeURIComponent(id.replace(/_/g, ' ')).replace(/\.(\w\w)/g, '%$1') +
+                    (p5 ? '\&lvl=' + p5 : '') + p4.replace(/style=["']\s?background:[^"']+["']/i, '');
+                }
+                if (/openstreetmap/.test(params.mapsURI)) {
+                    html = hrefAttr + params.mapsURI + '?mlat=' + latitude + '&mlon=' + longitude + '#map=18/' + latitude + '/' + longitude + 
+                        p4.replace(/style=["']\s?background:[^"']+["']/i, '');
+                }
+                html += '<img alt="Map marker" title="Show this place on a map" src="app:///www/img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" />' + p6 + id;
+                return html;
             });
 
             //Clean up remaining geo: links
-            htmlArticle = htmlArticle.replace(/href\s*=\s*"\s*geo:([\d.-]+),([\d.-]+)/ig, 'href="bingmaps://?collection=point.$1_$2_' + encodeURIComponent(dirEntry.getTitleOrUrl()));
+            htmlArticle = htmlArticle.replace(/href=['"]geo:([\d.-]+),([\d.-]+)[^'"]*/ig, 'href="bingmaps://?collection=point.$1_$2_' + encodeURIComponent(dirEntry.getTitleOrUrl()));
 
             // Process any app:// links (these are always from the app payload) to match the current protocol
             htmlArticle = htmlArticle.replace(/(['"])app:\/\//g, function (p0, p1) {
