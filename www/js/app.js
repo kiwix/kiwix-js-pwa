@@ -3575,6 +3575,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     // of encodeURIComponent.
                     return blockStart + 'data-kiwixurl' + equals + encodeURI(assetZIMUrl);
                 });
+                // We also need to process data:image/webp if the browser needs the WebPMachine
+                if (webpMachine) htmlArticle = htmlArticle.replace(/(<img\b[^>]*?\s)src(\s*=\s*(["']))(?=data:image\/webp)(.+?)(?=\3|\?|#)/ig, '$1data-kiwixurl$2$4');
                 // Remove any empty media containers on page (they can cause layout issue in jQuery mode)
                 htmlArticle = htmlArticle.replace(/(<(audio|video)\b(?:[^<]|<(?!\/\2))+<\/\2>)/ig, function (p0) {
                     return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
