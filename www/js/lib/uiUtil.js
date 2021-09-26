@@ -24,14 +24,14 @@
 // DEV: Put your RequireJS definition in the rqDef array below, and any function exports in the function parenthesis of the define statement
 // We need to do it this way in order to load WebP polyfills conditionally. The WebP polyfills are only needed by a few old browsers, so loading them
 // only if needed saves approximately 1MB of memory.
-var rqDef = [];
+var rqDef = ['util'];
 
 // Add WebP polyfill only if webpHero was loaded in init.js
 if (webpMachine) {
     rqDef.push('webpHeroBundle');
 }
 
-define(rqDef, function() {
+define(rqDef, function(util) {
 
     /**
      * Global variables
@@ -54,6 +54,10 @@ define(rqDef, function() {
     function feedNodeWithBlob(node, nodeAttribute, content, mimeType, makeDataURI, callback) {
         // Decode WebP data if the browser does not support WebP and the mimeType is webp 
         if (webpMachine && /image\/webp/i.test(mimeType)) {
+            // If we're dealing with a dataURI, first convert to Uint8Array
+            if (/^data:/i.test(content)) {
+                content = util.dataURItoUint8Array(content);
+            }
             // DEV: Note that webpMachine is single threaded and will reject an image if it is busy
             // However, the loadImagesJQuery() function in app.js is sequential (it waits for a callback
             // before processing another image) so we do not need to queue WebP images here
