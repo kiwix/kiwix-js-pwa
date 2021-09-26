@@ -3720,7 +3720,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 if (/openstreetmap/.test(params.mapsURI)) {
                     html = '<a href="' + params.mapsURI + '?mlat=' + latitude + '&mlon=' + longitude + '#map=18/' + latitude + '/' + longitude + '">\r\n';
                 }
-                html += '<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="app:///www/img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;margin-top:5px !important" />\r\n</a>' + href;
+                html += '<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="app:///www/img/icons/map_marker-30px.png" width="18px" style="position:relative !important;top:-5px !important;margin-top:5px !important" />\r\n</a>' + href;
                 return html;
             });
 
@@ -3737,7 +3737,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     html = hrefAttr + params.mapsURI + '?mlat=' + latitude + '&mlon=' + longitude + '#map=18/' + latitude + '/' + longitude + 
                         p4.replace(/style=["']\s?background:[^"']+["']/i, '');
                 }
-                html += '<img alt="Map marker" title="Show this place on a map" src="app:///www/img/icons/map_marker-18px.png" style="position:relative !important;top:-5px !important;" />' + p6 + id;
+                html += '<img alt="Map marker" title="Show this place on a map" src="app:///www/img/icons/map_marker-30px.png" width="18px" style="position:relative !important;top:-5px !important;" />' + p6 + id;
                 return html;
             });
 
