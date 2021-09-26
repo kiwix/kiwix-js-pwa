@@ -303,6 +303,27 @@ define([], function() {
     }
 
     /**
+     * Converts a dataURI to Uint8Array - see https://stackoverflow.com/a/39101682/9727685
+     * @param {String} dataURI The data URI to convert
+     * @returns {Uint8Array} A Uint8Array with the converted buffer
+     */
+    function dataURItoUint8Array(dataURI) {
+        // convert base64 to raw binary data held in a string
+        // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+        dataURI = dataURI.split(',');
+        var byteString = atob(dataURI[1]);
+        // separate out the mime component
+        // var mimeString = dataURI[0].split(':')[1].split(';')[0];
+        // write the bytes of the string to an ArrayBuffer
+        var ab = new Uint8Array(byteString.length);
+        // var dw = new DataView(ab);
+        for(var i = 0; i < byteString.length; i++) {
+            ab[i] = byteString.charCodeAt(i);
+        }
+        return ab;
+    }
+
+    /**
      * Converts a UInt Array to a UTF-8 encoded string
      * source : http://michael-rushanan.blogspot.de/2014/03/javascript-uint8array-hacks-and-cheat.html
      * 
@@ -735,6 +756,7 @@ define([], function() {
         readFileSlice: readFileSlice,
         binarySearch: binarySearch,
         b64toBlob: b64toBlob,
+        dataURItoUint8Array: dataURItoUint8Array,
         uintToString: uintToString,
         leftShift: leftShift,
         matchOuter: matchOuter,
