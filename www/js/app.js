@@ -3726,6 +3726,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
             //Adapt English Wikivoyage POI data format
             var regexpGeoLocationEN = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
+            var mapPin = '<img alt="Map marker" title="Show this place on a map" src="app:///www/img/icons/map_marker-30px.png" width="18px" style="position:relative !important;top:-5px !important;" />';
             htmlArticle = htmlArticle.replace(regexpGeoLocationEN, function (match, hrefAttr, latitude, longitude, p4, p5, p6, id) {
                 var html;
                 if (/bingmaps/.test(params.mapsURI)) {
@@ -3737,12 +3738,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     html = hrefAttr + params.mapsURI + '?mlat=' + latitude + '&mlon=' + longitude + '#map=18/' + latitude + '/' + longitude + 
                         p4.replace(/style=["']\s?background:[^"']+["']/i, '');
                 }
-                html += '<img alt="Map marker" title="Show this place on a map" src="app:///www/img/icons/map_marker-30px.png" width="18px" style="position:relative !important;top:-5px !important;" />' + p6 + id;
+                html += mapPin + p6 + id;
                 return html;
             });
 
             //Clean up remaining geo: links
-            htmlArticle = htmlArticle.replace(/href=['"]geo:([\d.-]+),([\d.-]+)[^'"]*/ig, 'href="bingmaps://?collection=point.$1_$2_' + encodeURIComponent(dirEntry.getTitleOrUrl()));
+            if (/bingmaps:/.test(params.mapsURI)) {
+                htmlArticle = htmlArticle.replace(/href=['"]geo:([\d.-]+),([\d.-]+)[^"']*([^>]+>)/ig, 'href="' + params.mapsURI + '?collection=point.$1_$2_' + 
+                encodeURIComponent(dirEntry.getTitleOrUrl()) + '$3' + mapPin + '&nbsp;');
+            }
+            if (/openstreetmap/.test(params.mapsURI)) {
+                htmlArticle = htmlArticle.replace(/href=['"]geo:([\d.-]+),([\d.-]+)[^"']*([^>]+>)/ig, 'href="' + params.mapsURI + '?mlat=$1&mlon=$2#map=18/$1/$2$3' + mapPin + '&nbsp;');
+            }
 
             // Process any app:// links (these are always from the app payload) to match the current protocol
             htmlArticle = htmlArticle.replace(/(['"])app:\/\//g, function (p0, p1) {
