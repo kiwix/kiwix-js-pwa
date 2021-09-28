@@ -1,11 +1,16 @@
 # Changelog
 
-## Release 1.7.4-PWA
+## Release 1.7.5-rc1
 
 * ENHANCEMENT: The app should now show dynamic content on landing pages in YouTube-based ZIMs (SW mode)
+* ENHANCEMENT: Option for map pins to open OpenStreetMap instead of Windows Map app (mostly for Wikivoyage)
+* DEPRECATED: Disabled *indpenedent* resizing of content in iframe with touch: too slow, and worked only in Chromium
 * FIX: Video playback controls are now shown in Khan Acadeny ZIMs (and others based on YouTube)
 * FIX: Bug relocating hatnotes which moved extraneous text blocks
 * FIX: Image rendering bug with substitute landing pages
+* FIX: Fatal error loading the PWA in some circumstances
+* FIX: Data URIs with WebP images can now be rendered in old browsers
+* FIX: Style issues and rendering of map pins in German Wikimedia ZIMs
 
 ## Release 1.7.3
 
@@ -220,7 +225,7 @@
 * UPDATE: October 2019 update of Wikvoyage ZIM archive to wikivoyage_en_all_maxi_2019-10.zim
 * UPDATE: Improved support for stylesheets in latest Wikimedia ZIMs
 * UPDATE: Updated the [Privacy Policy](https://github.com/kiwix/kiwix-js-windows/tree/Kiwix-JS-Wikivoyage-dev#privacy-policy)
-* ENHANCEMENT: The base app (not UWP) can now be installed as a PWA (visit https://kiwix.github.io/kiwix-js-windows/www/index.html to try)
+* ENHANCEMENT: The base app (not UWP) can now be installed as a PWA (visit <https://kiwix.github.io/kiwix-js-windows/www/index.html> to try)
 * ENHANCEMENT: Assets are now cached in Service Worker mode
 * ENHANCEMENT: Support MathML in latest Wikimedia ZIMs
 * ENHANCEMENT: Provide an alert if a packaged or picked file cannot be found
@@ -324,7 +329,7 @@
 * FIX: Prevent app crash with malformed anchor hrefs
 * FIX: Support changed format of anchor references in latest English Wikipedia
 * FIX: Correctly apply mobile styles when one of the defaults is missing
-* FIX: Incorrect utf8 characters in mobile styles 
+* FIX: Incorrect utf8 characters in mobile styles
 
 ## Release 0.9.9.7 Wikivoyage (beta)
 
