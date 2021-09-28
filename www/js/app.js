@@ -4325,14 +4325,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 } else if (regexpLocalAnchorHref.test(href)) {
                     // It's a local anchor link : remove escapedUrl if any (see above)
                     anchor.setAttribute('href', href.replace(/^[^#]*/, ''));
-                } else if (anchor.protocol !== currentProtocol ||
-                    anchor.host !== currentHost) {
+                } else if (anchor.protocol !== currentProtocol || anchor.host !== currentHost) {
                     // It's an external URL : we should open it in a new tab
                     anchor.target = '_blank';
                     if (anchor.protocol === 'bingmaps:') {
-                        anchor.removeAttribute('href');
                         anchor.removeAttribute('target');
-                        anchor.parentElement.addEventListener('click', function () {
+                        anchor.parentElement.addEventListener('click', function (e) {
+                            e.preventDefault();
                             window.location = href;
                         });
                     }
