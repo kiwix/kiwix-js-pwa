@@ -17,8 +17,6 @@ const regexpZIMUrlWithNamespace = /(?:^|\/)([^\/]+\/)([-ABCIJMUVWX])\/(.+)/;
 const CACHE = "kiwix-precache-" + appVersion;
 let precacheFiles = [
   ".",
-  "www",
-  "www/",
   "manifest.json",
   "pwabuilder-sw.js",
   "www/-/style.css",
