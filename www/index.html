@@ -484,7 +484,10 @@
                         instead. With the Breakout link feature, the tab is non-browsable, but you can save the page to PDF or print it, etc., from that tab.
                     </p>
                     <p>
-                        Note that your browser's <b>popup blocker</b> may interfere with options that open new tabs or windows. When asked, enable popups always for the app (if you trust Kiwix), and then reload the app. 
+                        <b><i>Help! - when I click on an external link it gets blocked!</i></b> Don't panic, this is the Content Security Policy potecting you. You have probably activated Service Worker mode. To open
+                        external web sites, you need to turn on the option <b>Open links in a new tab</b> (in Service Worker mode). In JQuery mode, external links will open in a new tab/window regardliness of this
+                        setting. Additionally, please note that your browser's <b>popup blocker</b> may be interfering with options that open new tabs or windows. When asked, enable popups always for the app
+                        (if you trust Kiwix), and then reload the app. 
                     </p>
                     <p>
                     </p>
@@ -845,10 +848,10 @@
                                                 </div>
                                             </label>
                                         </div>
-                                        <label class="checkbox" id="openInNewTab" title="Opens articles in a new tab. In the UWP app (in ServiceWorker mode - see 'Expert settings' below), this also causes links to be parsed, which makes it possible to download EPUBs and PDFs from Gutenberg ZIMs, and possibly other ZIM types. This isn't necessary for the PWA app. N.B. This setting may interfere with some other ZIM types containing active content.">
+                                        <label class="checkbox" id="openInNewTab" title="Opens articles and external links in a new tab. In ServiceWorker mode (see 'Expert settings' below), this also causes links to be parsed, which (in the UWP app) makes it possible to download EPUBs and PDFs from Gutenberg ZIMs, and to open external links without them being blocked by the CSP. N.B. This setting may interfere with some other ZIM types containing active content.">
                                             <input type="checkbox" name="tabOpener" id="tabOpenerCheck">
                                             <span class="checkmark"></span>
-                                            <strong>Open ZIM links in new tab</strong> with right-click, ctrl-click, middle-click or long-press
+                                            <strong>Open links in a new tab</strong> with right-click, ctrl-click, middle-click or long-press
                                         </label>
                                         <div class="row" id="openInNewWindow" hidden>
                                             <div class="col-sm-6">
