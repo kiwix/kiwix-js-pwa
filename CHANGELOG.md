@@ -1,11 +1,16 @@
 # Changelog
 
-## Release 1.7.4-PWA
+## Release 1.7.5-rc1
 
 * ENHANCEMENT: The app should now show dynamic content on landing pages in YouTube-based ZIMs (SW mode)
+* ENHANCEMENT: Option for map pins to open OpenStreetMap instead of Windows Map app (mostly for Wikivoyage)
+* DEPRECATED: Disabled *indpenedent* resizing of content in iframe with touch: too slow, and worked only in Chromium
 * FIX: Video playback controls are now shown in Khan Acadeny ZIMs (and others based on YouTube)
 * FIX: Bug relocating hatnotes which moved extraneous text blocks
 * FIX: Image rendering bug with substitute landing pages
+* FIX: Fatal error loading the PWA in some circumstances
+* FIX: Data URIs with WebP images can now be rendered in old browsers
+* FIX: Style issues and rendering of map pins in German Wikimedia ZIMs
 
 ## Release 1.7.3
 
@@ -35,7 +40,7 @@
 * ENHANCEMENT: The app can now take advantage of native Promises (faster than Q)
 * ENHANCEMENT: Decompressors now loaded as fast binary WASM modules if the brower supports WebAssembly
 * UPDATE: Sample ZIM updated to `wikipedia_en_100_maxi_2021-07.zim`
-* EXPERIMENTAL: Intalled PWA can now be opened offline when double-clicking ZIM archive (depends on File Handling API) 
+* EXPERIMENTAL: Intalled PWA can now be opened offline when double-clicking ZIM archive (depends on File Handling API)
 * FIX: More displaced hatnotes corrected
 * FIX: Style injection code that would (rarely) cause an exception on some ZIM types
 
@@ -125,7 +130,7 @@
 
 ## Release 1.2.2
 
-* ENHANCEMENT: Use a list of customized start pages even if the app is generic 
+* ENHANCEMENT: Use a list of customized start pages even if the app is generic
 * FIX: Map markers not showing in Service Worker mode
 * FIX: Implement internal app:// links for app-based assets
 * FIX: Race condition in handover to PWA code
@@ -259,7 +264,7 @@
 
 * UPDATE: Improved support for stylesheets in latest Wikipedia ZIMs
 * UPDATE: Updated the Privacy Policy
-* ENHANCEMENT: The base app (not UWP) can now be installed as a PWA (visit https://kiwix.github.io/kiwix-js-windows/www/index.html to try)
+* ENHANCEMENT: The base app (not UWP) can now be installed as a PWA (visit <https://kiwix.github.io/kiwix-js-windows/www/index.html> to try)
 * ENHANCEMENT: Assets are now cached in Service Worker mode
 * ENHANCEMENT: Support MathML in latest Wikimedia ZIMs
 * FIX: Fixed broken drag-and-drop
@@ -320,14 +325,14 @@
 
 * FIX: Remembered last page is now properly blanked on new archive load
 * FIX: Number of stylesheets retrieved from ZIM was not being counted properly, causing some pages to load twice
-* FIX: The article content div is now hidden until the HTML for the requested article is injected 
+* FIX: The article content div is now hidden until the HTML for the requested article is injected
 
 ## Release 0.9.9.89 (beta)
 
 * FIX: Fixed regression preventing use of download library
 * FIX: Fixed problems searching for dirEntries with empty titles in new ZIMs
 * FIX: Correctly handle anchor links with a single #
-* ENHANCEMENT: Improved styling of checkboxes in light and dark modes 
+* ENHANCEMENT: Improved styling of checkboxes in light and dark modes
 
 ## Release 0.9.9.88 (beta)
 
@@ -343,7 +348,7 @@
 * FIX: Fixed regression caused by removal of timeout for find in article function
 * FIX: App detects a language that is predominantly ASCII and uses left-side word searching in that case (Chinese open-type search should be unaffected)
 * FIX: Prevent crash if changing language selector on "wrong" screen
-* FIX: Prevent timeout-related crashes on slower 
+* FIX: Prevent timeout-related crashes on slower
 * FIX: Prevent unusable app state after clicking non-Roman alphabet button in Archive Index
 
 ## Release 0.9.9.87 (beta)
@@ -380,7 +385,7 @@
 * FIX: Crash when previously picked archive has been moved or deleted
 * FIX: Support changed format of anchor references in latest English Wikipedia
 * FIX: Correctly apply mobile styles when one of the defaults is missing
-* FIX: Incorrect utf8 characters in mobile styles 
+* FIX: Incorrect utf8 characters in mobile styles
 
 ## Release 0.9.9.7 (beta)
 
