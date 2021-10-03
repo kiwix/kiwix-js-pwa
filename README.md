@@ -12,7 +12,7 @@ The latest code is usually on the master branch, but this is used for active dev
 This is a lightweight HTML/JavaScript port of the Kiwix Offline Wikipedia (and other Wiki) reader. The UWP version targets Windows 10 (x86, x64, ARM, mobile, tablet, Xbox,
 Surface Hub, Holographic) while the NWJS and Electron versions also run on earlier Windows and Linux (see the respective
 [releases](https://github.com/kiwix/kiwix-js-windows/releases/) for more information). The PWA should work with any browser that supports Service Workers, but has only been
-tested on Edge Legacy, Edge Chromium and Firefox. The PWA can be installed from a browser without visiting a Store (using Chromium-based browsers) and will work offline.
+tested on Edge Legacy, Edge Chromium, Firefox and Samsung Internet Browser. The PWA can be installed from a browser without visiting a Store (using Chromium-based browsers) and will work offline.
 
 Offline ZIM archives are available from the [Kiwix repository](https://wiki.kiwix.org/wiki/Content_in_all_languages), including full Wikipedia versions with or without images
 in many different languages. This app is regularly tested fully on Wikimedia ZIM files, though a number of other ZIM file types work.
