@@ -71,6 +71,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // We are in a PWA, so signal success
             params.localUWPSettings.PWA_launch = 'success';
         }
+        // Failsafe for Windows XP version
+        if (params.contentInjectionMode === 'serviceworker' && window.nw) {
+            // Reset app to jQuery mode because it cannot run in SW mode in Windows XP
+            if (nw.process.versions.nw === '0.14.7') setContentInjectionMode('jquery');
+        }
     
         /**
          * Resize the IFrame height, so that it fills the whole available height in the window
@@ -1805,6 +1810,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
                 if (!isMessageChannelAvailable()) {
                     uiUtil.systemAlert("The MessageChannel API is not available on your device. Falling back to JQuery mode");
+                    setContentInjectionMode('jquery');
+                    return;
+                }
+                if (window.nw && nw.process.versions.nw === '0.14.7') {
+                    uiUtil.systemAlert('Service Worker mode is not available in the XP version of this app, due to the age of the Chromium build. Falling back to JQuery mode...');
                     setContentInjectionMode('jquery');
                     return;
                 }
