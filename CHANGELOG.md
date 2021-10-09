@@ -1,7 +1,8 @@
 # Changelog
 
-## Release 1.7.5-rc1
+## Release 1.7.5
 
+* UPDATE: Sample archive updated to `wikipedia_en_100_nopic_2021-09`
 * ENHANCEMENT: The app should now show dynamic content on landing pages in YouTube-based ZIMs (SW mode)
 * ENHANCEMENT: Option for map pins to open OpenStreetMap instead of Windows Map app (mostly for Wikivoyage)
 * DEPRECATED: Disabled *indpenedent* resizing of content in iframe with touch: too slow, and worked only in Chromium
@@ -11,6 +12,8 @@
 * FIX: Fatal error loading the PWA in some circumstances
 * FIX: Data URIs with WebP images can now be rendered in old browsers
 * FIX: Style issues and rendering of map pins in German Wikimedia ZIMs
+* FIX: Error with offline Cache that prevented PWA from working fully offline
+* FIX: Prevented the NWJS app for Windows XP from attempting to switch to SW mode (which doesn't work)
 
 ## Release 1.7.3
 
