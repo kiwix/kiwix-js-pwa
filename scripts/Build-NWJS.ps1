@@ -8,9 +8,9 @@ if (-Not $only32bit) {
 } else {
     "Caller requested 32bitonly build"
 }
-$version10 = "0.55.0" # <<< value updated automatically from package.json if launched from Create-DraftRelease
+$version10 = "0.57.0" # <<< value updated automatically from package.json if launched from Create-DraftRelease
 $versionXP = "0.14.7"
-$appBuild = "1.7.2N" # <<< value updated auotmatically from package.json if launched form Create-DraftRelease
+$appBuild = "1.7.5N" # <<< value updated auotmatically from package.json if launched form Create-DraftRelease
 # $ZIMbase = "wikipedia_en_100"
 # Check that the dev has included the correct archive in this branch
 $init_params = Get-Content -Raw "$PSScriptRoot\..\www\js\init.js"
