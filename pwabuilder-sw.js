@@ -53,6 +53,7 @@ let precacheFiles = [
   "www/img/icons/wikivoyage-black-32.png",
   "www/img/icons/wikivoyage-white-32.png",
   "www/img/icons/map_marker-30px.png",
+  "www/img/icons/map_marker-18px.png",
   "www/img/spinner.gif",
   "www/index.html",
   "www/article.html",
