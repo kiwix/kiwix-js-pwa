@@ -94,7 +94,6 @@ params['allowInternetAccess'] = getSetting('allowInternetAccess');
 params['windowOpener'] = getSetting('windowOpener'); // 'tab|window|false' A setting that determines whether right-click/long-press of a ZIM link opens a new window/tab
 params['rightClickType'] = getSetting('rightClickType'); // 'single|double|false' A setting that determines whether a single or double right-click is used to open a new window/tab
 params['navButtonsPos'] = getSetting('navButtonsPos') || 'bottom'; // 'top|bottom' A setting that determines where the back-forward nav buttons appear
-params['mapsURI'] = getSetting('mapsURI') || 'bingmaps:'; // Protocol with colon ('bingmaps:') or URL with final slash ('https://www.openstreetmap.org/')
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['imageDisplayMode'] = params.imageDisplay ? 'progressive' : 'manual';
@@ -121,6 +120,7 @@ params['falFolderToken'] = "zimfilestore"; // UWP support
 params.pagesLoaded = 0; // Page counter used to show PWA Install Prompt only after user has played with the app for a while
 params.localUWPSettings = /UWP/.test(params.appType) ? Windows.Storage.ApplicationData.current.localSettings.values : null;
 appstate['target'] = 'iframe'; // The target for article loads (this should always be 'iframe' initially, and will only be changed as a result of user action)
+params['mapsURI'] = getSetting('mapsURI') || (/UWP|Windows/.test(params.appType) ? 'bingmaps:' : 'https://www.openstreetmap.org/'); // Protocol with colon ('bingmaps:') or URL with final slash ('https://www.openstreetmap.org/')
 
 // Apply any override parameters in querystring (done as a self-calling function to avoid creating global variables)
 (function overrideParams() {
@@ -257,6 +257,8 @@ function getAppType() {
     if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') type = 'UWP';
     if (window.fs || window.nw) type = 'Electron';
     if (navigator.serviceWorker) type += '|PWA';
+    if (~navigator.appVersion.indexOf('Win')) type += '|Windows';
+    else if (~navigator.appVersion.indexOf('Linux')) type += '|Linux';
     return type;
 }
 
