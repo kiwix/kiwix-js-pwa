@@ -1,10 +1,12 @@
 # Changelog
 
-## Release 1.7.5
+## Release 1.7.6
 
 * UPDATE: Sample archive updated to `wikipedia_en_100_nopic_2021-09`
 * ENHANCEMENT: The app should now show dynamic content on landing pages in YouTube-based ZIMs (SW mode)
-* ENHANCEMENT: Option for map pins to open OpenStreetMap instead of Windows Map app (mostly for Wikivoyage)
+* ENHANCEMENT: Option for map pins to open OpenStreetMap instead of Windows Maps App (mostly for Wikivoyage)
+* ENHANCEMENT: Select map type automatically: Maps App for Windows, OSM for Linux or other
+* ENHANCEMENT: Use smaller pins for Wikipedia pages vs Wikivoyage pages
 * DEPRECATED: Disabled *indpenedent* resizing of content in iframe with touch: too slow, and worked only in Chromium
 * FIX: Video playback controls are now shown in Khan Acadeny ZIMs (and others based on YouTube)
 * FIX: Bug relocating hatnotes which moved extraneous text blocks
