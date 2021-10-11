@@ -1,6 +1,6 @@
 # Changelog
 
-## Release 1.7.6
+## Release 1.7.6-Wikivoyage
 
 * UPDATE: Sample archive updated to `wikipedia_en_100_nopic_2021-09`
 * ENHANCEMENT: The app should now show dynamic content on landing pages in YouTube-based ZIMs (SW mode)
@@ -17,7 +17,7 @@
 * FIX: Error with offline Cache that prevented PWA from working fully offline
 * FIX: Prevented the NWJS app for Windows XP from attempting to switch to SW mode (which doesn't work)
 
-## Release 1.7.3
+## Release 1.7.3-Wikivoyage
 
 * UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2021-09`
 * UPDATE: New option to change right click to double right click for opening new window or tab
