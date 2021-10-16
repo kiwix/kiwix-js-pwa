@@ -4113,8 +4113,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
                 // Display any hidden block elements, with a timeout, so as not to interfere with image loading
                 setTimeout(function() {
-                    if (params.displayHiddenBlockElements) displayHiddenBlockElements();
-                }, 200);
+                    if (params.displayHiddenBlockElements) {
+                        displayHiddenBlockElements();
+                        articleWindow.scrollBy(0, 5);
+                        articleWindow.scrollBy(0, -5);
+                    }
+                }, 1000);
 
                 // Calculate the current article's encoded ZIM baseUrl to use when processing relative links (also needed for SW mode when params.windowOpener is set)
                 params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
