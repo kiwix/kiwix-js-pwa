@@ -1,6 +1,6 @@
 # Changelog
 
-## Release 1.7.7-rc1
+## Release 1.7.7-rc2
 
 * ENHANCEMENT: Added experimental option to display hidden block elements
 
