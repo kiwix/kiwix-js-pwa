@@ -74,6 +74,7 @@ params['relativeFontSize'] = ~~(getSetting('relativeFontSize') || 100); //Sets t
 params['relativeUIFontSize'] = ~~(getSetting('relativeUIFontSize') || 100); //Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
 params['cssSource'] = getSetting('cssSource') || "auto"; //Set default to "auto", "desktop" or "mobile"
 params['removePageMaxWidth'] = getSetting('removePageMaxWidth') != null ? getSetting('removePageMaxWidth') : "auto"; //Set default for removing max-width restriction on Wikimedia pages ("auto" = removed in desktop, not in mobile; true = always remove; false = never remove)
+params['displayHiddenBlockElements'] = getSetting('displayHiddenBlockElements') !== null ? getSetting('displayHiddenBlockElements') : false; //Set default for displaying hidden block elements
 params['openAllSections'] = getSetting('openAllSections') != null ? getSetting('openAllSections') : true; //Set default for opening all sections in ZIMs that have collapsible sections and headings ("auto" = let CSS decide according to screen width; true = always open until clicked by user; false = always closed until clicked by user)
 params['cssCache'] = getSetting('cssCache') != null ? getSetting('cssCache') : true; //Set default to true to use cached CSS, false to use Zim only
 params['cssTheme'] = getSetting('cssTheme') || 'light'; //Set default to 'auto', 'light', 'dark' or 'invert' to use respective themes for articles
@@ -206,6 +207,7 @@ document.getElementById('removePageMaxWidthCheck').checked = params.removePageMa
 document.getElementById('removePageMaxWidthCheck').indeterminate = params.removePageMaxWidth == "auto";
 document.getElementById('removePageMaxWidthCheck').readOnly = params.removePageMaxWidth == "auto";
 document.getElementById('pageMaxWidthState').innerHTML = (params.removePageMaxWidth == "auto" ? "auto" : params.removePageMaxWidth ? "always" : "never");
+document.getElementById('displayHiddenBlockElementsCheck').checked = params.displayHiddenBlockElements;
 document.getElementById('openAllSectionsCheck').checked = params.openAllSections;
 document.getElementById('useOSMCheck').checked = /openstreetmap/.test(params.mapsURI);
 document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme == "dark"; // Will be true, or false if light or auto
