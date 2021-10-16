@@ -1,5 +1,9 @@
 # Changelog
 
+## Release 1.7.7-rc1
+
+* ENHANCEMENT: Added experimental option to display hidden block elements
+
 ## Release 1.7.6
 
 * UPDATE: Sample archive updated to `wikipedia_en_100_nopic_2021-09`
