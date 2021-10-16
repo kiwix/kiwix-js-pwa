@@ -772,12 +772,17 @@
                                         <label class="checkbox" title="This speeds up the display of articles for some ZIM types by using our own copies of common stylesheets. Note that our copies may not be 100% correct for all languages. We also do some optimizations that may result in minor infidelities. If you want to use the ZIM's own styles for full fidelity, turn this off.">
                                             <input type="checkbox" name="cssCacheMode" id="cssCacheModeCheck">
                                             <span class="checkmark"></span>
-                                            <b>Use locally cached display styles</b> (<i>recommended</i> for Wikipedia ZIM)
+                                            <b>Use locally cached display styles</b> (<i>recommended</i> for Wikipedia ZIMs)
                                         </label>
                                         <label class="checkbox" title="Tap three times for always | auto | never. This is only relevant when you maximize the app window (e.g. on a PC). It ensures the article uses the full screen width.">
                                             <input name="pageMaxWidth" id="removePageMaxWidthCheck" type="checkbox" value="false">
                                             <span class="checkmark"></span>
                                             <b>Remove max page width restriction</b>: [ <b><span id="pageMaxWidthState"></span></b> ] (useful for recent Wikipedia archives)
+                                        </label>
+                                        <label class="checkbox" title="Show navboxes, tables and other elements that tend to be hidden in Wikipedia mobile style. Not needed if you select Desktop display style.">
+                                            <input name="displayHiddenBlockElements" id="displayHiddenBlockElementsCheck" type="checkbox" value="false">
+                                            <span class="checkmark"></span>
+                                            <b>Display hidden block elements</b> (<i>for Wikipedia ZIMs</i>: shows elements that are hidden in mobile style)
                                         </label>
                                     </div>
                                 </div>

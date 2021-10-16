@@ -1549,6 +1549,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             settingsStore.setItem('removePageMaxWidth', params.removePageMaxWidth, Infinity);
             removePageMaxWidth();
         });
+        document.getElementById('displayHiddenBlockElementsCheck').addEventListener('click', function () {
+            params.displayHiddenBlockElements = this.checked;
+            settingsStore.setItem('displayHiddenBlockElements', params.displayHiddenBlockElements, Infinity);
+            if (this.checked) displayHiddenBlockElements();
+            // Forces page reload if user no longer wants to display these elements
+            else params.themeChanged = true;
+        });
 
         /**
          * Removes the WikiMedia max-page-width restrictions either by operating on an HTML string, or by using
@@ -4104,6 +4111,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     if (!('MSBlobBuilder' in window)) htmlArticle = htmlArticle.replace(/(<body\b[^>]*)/i, '$1 hidden');
                 }
 
+                // Display any hidden block elements, with a timeout, so as not to interfere with image loading
+                setTimeout(function() {
+                    if (params.displayHiddenBlockElements) displayHiddenBlockElements();
+                }, 800);
+
                 // Calculate the current article's encoded ZIM baseUrl to use when processing relative links (also needed for SW mode when params.windowOpener is set)
                 params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
                     // URI-encode anything that is not a '/'
@@ -4500,6 +4512,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     e.stopPropagation();
                 } else {
                     onDetectedClick(e);
+                }
+            });
+        }
+
+        /**
+         * Unhides all hidden divs or tables, for use in Wikimedia mobile display style, which hides some crucial
+         * elements that users want optionally to be able to access
+         */
+        function displayHiddenBlockElements() {
+            Array.prototype.slice.call(articleDocument.querySelectorAll('table, div')).forEach(function (element) {
+                if (articleWindow.getComputedStyle(element).display === 'none') {
+                    element.style.setProperty('display', 'block', 'important');
                 }
             });
         }
