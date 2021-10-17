@@ -1154,7 +1154,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         document.getElementById('manipulateImagesCheck').addEventListener('click', function () {
             params.manipulateImages = this.checked;
             settingsStore.setItem('manipulateImages', params.manipulateImages, Infinity);
-            if (this.checked) {
+            if (this.checked && !params.displayHiddenBlockElements) {
                 if (/UWP/.test(params.appType)) {
                     uiUtil.systemAlert('This option does not work in UWP apps. WORKAROUND: To save an image to disk, please select the "Add breakout link ..." option below, load the article you require, and export it to a browser window by clicking the breakout link. You will then be able to right-click or long-press images in the exported page and save them.');
                 } else if (window.nw) {
@@ -1552,9 +1552,21 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         document.getElementById('displayHiddenBlockElementsCheck').addEventListener('click', function () {
             params.displayHiddenBlockElements = this.checked;
             settingsStore.setItem('displayHiddenBlockElements', params.displayHiddenBlockElements, Infinity);
-            if (this.checked) displayHiddenBlockElements();
-            // Forces page reload if user no longer wants to display these elements
-            else params.themeChanged = true;
+            if (params.contentInjectionMode === 'serviceworker') {
+                if (this.checked && !params.manipulateImages) {
+                    uiUtil.systemAlert('We need to turn on "Allow image manipulation" (below) in order to display hidden images inside hidden elements.\n\n' + 
+                    'Please be aware that image manipulation can interfere badly with non-Wikimedia ZIMs that contain active content.\n\n' + 
+                    'If you cannot access content in such ZIMs, please turn image manipulation off. You will still see hidden elements, but not all images within them.')
+                    document.getElementById('manipulateImagesCheck').click();
+                    uiUtil.systemAlert('Hidden elements will only be visible when you fully re-load the current article.');
+                    return;
+                } else if (!this.checked && params.manipulateImages) {
+                    uiUtil.systemAlert('We are turning off the image manipulation option because it is no longer needed to display hidden elements. You may turn it back on if you need it for another reason.')
+                    document.getElementById('manipulateImagesCheck').click();
+                }
+            }
+            // Forces page reload
+            params.themeChanged = true;
         });
 
         /**
@@ -4115,10 +4127,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 setTimeout(function() {
                     if (params.displayHiddenBlockElements) {
                         displayHiddenBlockElements();
-                        articleWindow.scrollBy(0, 5);
-                        articleWindow.scrollBy(0, -5);
                     }
-                }, 1000);
+                }, 1800);
 
                 // Calculate the current article's encoded ZIM baseUrl to use when processing relative links (also needed for SW mode when params.windowOpener is set)
                 params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
@@ -4530,6 +4540,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     element.style.setProperty('display', 'block', 'important');
                 }
             });
+            // Ensure images are picked up by lazy loading
+            articleWindow.scrollBy(0, 5);
+            articleWindow.scrollBy(0, -5);
         }
 
         function setupTableOfContents() {

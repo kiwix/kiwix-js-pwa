@@ -241,7 +241,7 @@ define(['uiUtil'], function (uiUtil) {
                     });
                 }
             }
-            if (imageURLRegexp.test(documentImages[i].src)) {
+            if (imageURLRegexp.test(documentImages[i].src) && !/map_marker-\d\dpx\.png$/.test(documentImages[i].src)) {
                 documentImages[i].dataset.kiwixurl = documentImages[i].getAttribute('src');
                 if (params.imageDisplayMode === 'progressive') {
                     documentImages[i].style.opacity = '0';
@@ -292,15 +292,23 @@ define(['uiUtil'], function (uiUtil) {
             loadMathJax();
         }, 1000);
         if (!forPrinting && !documentImages.length) return;
+        // Firefox squashes empty images, but we don't want to alter the vertical heights constantly as we scroll
+        // so substitute empty images with a plain svg
+        var image;
+        for (var i = documentImages.length; i--;) {
+            image = documentImages[i];
+            image.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
+            image.style.opacity = '0';
+            // Set a minimum width to avoid some images not rendering in squashed hidden tables
+            if (params.displayHiddenBlockElements && image.width && !image.style.minWidth) {
+                var imgX = image.width + '';
+                imgX = imgX.replace(/(\d+)$/, '$1px');
+                image.style.minWidth = imgX;
+            }
+        }
         if (forPrinting) {
             extractImages(documentImages, params.preloadingAllImages ? params.preloadAllImages : params.printImagesLoaded);
         } else if (params.imageDisplayMode === 'progressive') {
-            // Firefox squashes empty images, but we don't want to alter the vertical heights constantly as we scroll
-            // so substitute empty images with a plain svg
-            for (var i = documentImages.length; i--;) {
-                documentImages[i].src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
-                documentImages[i].style.opacity = '0';
-            }
             // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
             setTimeout(function() {
                 lazyLoad(documentImages);
