@@ -1087,10 +1087,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (this.value === 'serviceworker') {
                 if (window.location.protocol !== 'ms-appx-web:' && (params.manipulateImages || params.allowHTMLExtraction)) {
                     uiUtil.systemAlert(
-                        'Please note that we are disabling Image manipulation and/or Breakout link as these options can interfere with ZIMs that have active content. You may turn them back on, but be aware that they are only recommended for use with Wikimedia ZIMs.'
+                        'Please note that we are disabling Image manipulation, Breakout link and/or Display hidden block elements, as these options can interfere with ZIMs that have active content. You may turn them back on, but be aware that they are only recommended for use with Wikimedia ZIMs.'
                     );
                 }
                 if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
+                if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
                 if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
             }
             params.themeChanged = true; // This will reload the page
@@ -1558,7 +1559,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     'Please be aware that image manipulation can interfere badly with non-Wikimedia ZIMs that contain active content.\n\n' + 
                     'If you cannot access content in such ZIMs, please turn image manipulation off. You will still see hidden elements, but not all images within them.')
                     document.getElementById('manipulateImagesCheck').click();
-                    uiUtil.systemAlert('Hidden elements will only be visible when you fully re-load the current article.');
                     return;
                 } else if (!this.checked && params.manipulateImages) {
                     uiUtil.systemAlert('We are turning off the image manipulation option because it is no longer needed to display hidden elements. You may turn it back on if you need it for another reason.')
