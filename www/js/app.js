@@ -1085,7 +1085,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 );
             }
             if (this.value === 'serviceworker') {
-                if (window.location.protocol !== 'ms-appx-web:' && (params.manipulateImages || params.allowHTMLExtraction)) {
+                if (params.displayHiddenBlockElements || params.manipulateImages || params.allowHTMLExtraction) {
                     uiUtil.systemAlert(
                         'Please note that we are disabling Image manipulation, Breakout link and/or Display hidden block elements, as these options can interfere with ZIMs that have active content. You may turn them back on, but be aware that they are only recommended for use with Wikimedia ZIMs.'
                     );
