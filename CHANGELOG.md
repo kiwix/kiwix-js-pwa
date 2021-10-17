@@ -1,6 +1,6 @@
 # Changelog
 
-## Release 1.7.7-rc3
+## Release 1.7.7-rc4
 
 * ENHANCEMENT: Added experimental option to display hidden block elements
 * ENHANCEMENT: With display hidden elements opetion, force display of zero-width images also
