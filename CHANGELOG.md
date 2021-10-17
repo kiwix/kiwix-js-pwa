@@ -1,8 +1,10 @@
 # Changelog
 
-## Release 1.7.7-rc2
+## Release 1.7.7-rc3
 
 * ENHANCEMENT: Added experimental option to display hidden block elements
+* ENHANCEMENT: With display hidden elements opetion, force display of zero-width images also
+* FIX REGRESSION: Prevent incorrect parsing of map markers when image manipulation is on in SW mode
 
 ## Release 1.7.6
 
