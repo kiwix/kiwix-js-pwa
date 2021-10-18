@@ -4612,7 +4612,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         // Sets state of collapsible sections
         function openAllSections(override, node) {
             var open = override === false ? false : override || params.openAllSections;
-            var container = node || document.getElementById('articleContent');
+            var container = node || articleDocument;
             var blocks = container.querySelectorAll('details, section:not([data-mw-section-id="0"]), .collapsible-block, .collapsible-heading');
             if (node) processSection(open, node);
             for (var x = blocks.length; x--;) {
