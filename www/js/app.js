@@ -852,7 +852,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 setTab();
                 if (params.themeChanged) {
                     params.themeChanged = false;
-                    var archiveName = appstate.selectedArchive ? appstate.selectedArchive._file._files[0].name : null;
+                    var archiveName = appstate.selectedArchive ? appstate.selectedArchive._file.name : null;
                     if (archiveName && ~params.lastPageVisit.indexOf(archiveName)) {
                         goToArticle(params.lastPageVisit.replace(/@kiwixKey@.+$/, ''));
                     }
@@ -3232,7 +3232,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
                 //Load cached start page if it exists and we have loaded the packaged file
                 var htmlContent = 0;
-                var zimName = appstate.selectedArchive._file._files[0].name.replace(/\.[^.]+$/, '').replace(/_\d+-\d+$/, '');
+                var zimName = appstate.selectedArchive._file.name.replace(/\.[^.]+$/, '').replace(/_\d+-\d+$/, '');
                 if (params.isLandingPage && params.cachedStartPages[zimName]) {
                     htmlContent = -1;
                     var encURL = encodeURIComponent(encodeURIComponent(params.cachedStartPages[zimName]).replace(/%2F/g, '/')).replace(/%2F/g, '/');
@@ -3405,7 +3405,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             if (/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting) && 
                                 params.imageDisplay) { imageDisplayMode = 'all'; }
                             // We need to do the same for Gutenberg and PHET ZIMs
-                            if (/gutenberg|phet/i.test(appstate.selectedArchive._file._files[0].name)) {
+                            if (/gutenberg|phet/i.test(appstate.selectedArchive._file.name)) {
                                 imageDisplayMode = 'all';
                             }
                             if (/\bhtml\b/i.test(mimetype)) {
@@ -3590,8 +3590,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             //Since page has been successfully loaded, store it in the browser history
             if (params.contentInjectionMode === 'jquery') pushBrowserHistoryState(dirEntry.namespace + '/' + dirEntry.url);
             // Store for fast retrieval
-            params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive._file._files[0].name;
-            cache.setArticle(appstate.selectedArchive._file._files[0].name, dirEntry.namespace + '/' + dirEntry.url, htmlArticle, function(){});
+            params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive._file.name;
+            cache.setArticle(appstate.selectedArchive._file.name, dirEntry.namespace + '/' + dirEntry.url, htmlArticle, function(){});
             params.htmlArticle = htmlArticle;
 
             // Replaces ZIM-style URLs of img, script, link and media tags with a data-kiwixurl to prevent 404 errors [kiwix-js #272 #376]
@@ -4158,7 +4158,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     // If the request was not initiated by an existing controlled window, we instantiate the request here
                     if (!appstate.messageChannelWaiting) {
                         // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
-                        articleWindow.location.href = "../" + appstate.selectedArchive._file._files[0].name + "/" + dirEntry.namespace + "/" + encodedUrl;
+                        articleWindow.location.href = "../" + appstate.selectedArchive._file.name + "/" + dirEntry.namespace + "/" + encodedUrl;
                     }
                     return;
                 }
@@ -4755,7 +4755,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             //This removes any search highlighting
             clearFindInArticle();
             document.getElementById('searchingArticles').style.display = 'block';
-            var zimName = appstate.selectedArchive._file._files[0].name.replace(/\.[^.]+$/, '').replace('_\d+_\d+$', '');
+            var zimName = appstate.selectedArchive._file.name.replace(/\.[^.]+$/, '').replace('_\d+_\d+$', '');
             if (~path.indexOf(params.cachedStartPages[zimName])) {
                 goToMainArticle();
                 return;

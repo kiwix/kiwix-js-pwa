@@ -300,7 +300,8 @@ define(['uiUtil'], function (uiUtil) {
             image.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
             image.style.opacity = '0';
             // Set a minimum width to avoid some images not rendering in squashed hidden tables
-            if (params.displayHiddenBlockElements && image.width && !image.style.minWidth) {
+            if (params.displayHiddenBlockElements && image.width && !image.style.minWidth && 
+                /wiki|wiktionary/i.test(appstate.selectedArchive._file.name)) {
                 var imgX = image.width + '';
                 imgX = imgX.replace(/(\d+)$/, '$1px');
                 image.style.minWidth = imgX;
