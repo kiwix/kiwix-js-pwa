@@ -5,6 +5,7 @@
 * ENHANCEMENT: Added experimental option to display hidden block elements
 * ENHANCEMENT: With display hidden elements opetion, force display of zero-width images also
 * FIX REGRESSION: Prevent incorrect parsing of map markers when image manipulation is on in SW mode
+* FIX REGRESSION: Closing all sections (by deselecting "Open all sections") now works again in jQuery mode
 
 ## Release 1.7.6
 
