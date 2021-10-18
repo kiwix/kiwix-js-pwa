@@ -3321,7 +3321,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 checkToolbar();
                 //Set page width according to user preference
                 removePageMaxWidth();
-                openAllSections();
+                if (!params.isLandingPage) openAllSections();
                 setupHeadings();
                 listenForNavigationKeys();
                 // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
@@ -3344,6 +3344,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 $("#searchingArticles").hide();
                 // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
                 if (params.printIntercept) printIntercept();
+                params.isLandingPage = false;
             } else {
                 loaded = false;
             }
@@ -3577,7 +3578,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
             // App appears to have successfully launched
             params.appIsLaunching = false;
-            params.isLandingPage = false;
+            // params.isLandingPage = false;
 
             // Calculate the current article's ZIM baseUrl to use when processing relative links
             params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
@@ -4066,7 +4067,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             }
                         }
                     }
-                    openAllSections();
+                    if (!params.isLandingPage) openAllSections();
                     
                     parseAnchorsJQuery(dirEntry);
                     images.prepareImagesJQuery(articleWindow);
@@ -4098,6 +4099,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         // For Chromium browsers a small delay greatly improves composition
                         setTimeout(showArticle, 80);
                     }
+                    params.isLandingPage = false;
                 };
 
                 // For articles loaded in the iframe, we need to set the articleWindow (but if the user is opening a new tab/window,
