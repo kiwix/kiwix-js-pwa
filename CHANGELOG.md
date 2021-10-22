@@ -1,20 +1,17 @@
 # Changelog
 
-## Release 1.7.7-rc4
+## Release 1.7.7-WikiMed
 
+* UPDATE: Packaged archive updated to `wikipedia_en_medicine-app_maxi_2021-10.zim`
 * ENHANCEMENT: Added experimental option to display hidden block elements
 * ENHANCEMENT: With display hidden elements opetion, force display of zero-width images also
-* FIX REGRESSION: Prevent incorrect parsing of map markers when image manipulation is on in SW mode
-* FIX REGRESSION: Closing all sections (by deselecting "Open all sections") now works again in jQuery mode
-
-## Release 1.7.6
-
-* UPDATE: Sample archive updated to `wikipedia_en_100_nopic_2021-09`
 * ENHANCEMENT: The app should now show dynamic content on landing pages in YouTube-based ZIMs (SW mode)
 * ENHANCEMENT: Option for map pins to open OpenStreetMap instead of Windows Maps App (mostly for Wikivoyage)
 * ENHANCEMENT: Select map type automatically: Maps App for Windows, OSM for Linux or other
 * ENHANCEMENT: Use smaller pins for Wikipedia pages vs Wikivoyage pages
 * DEPRECATED: Disabled *indpenedent* resizing of content in iframe with touch: too slow, and worked only in Chromium
+* FIX REGRESSION: Prevent incorrect parsing of map markers when image manipulation is on in SW mode
+* FIX REGRESSION: Closing all sections (by deselecting "Open all sections") now works again in jQuery mode
 * FIX: Video playback controls are now shown in Khan Acadeny ZIMs (and others based on YouTube)
 * FIX: Bug relocating hatnotes which moved extraneous text blocks
 * FIX: Image rendering bug with substitute landing pages
@@ -24,11 +21,10 @@
 * FIX: Error with offline Cache that prevented PWA from working fully offline
 * FIX: Prevented the NWJS app for Windows XP from attempting to switch to SW mode (which doesn't work)
 
-## Release 1.7.3
+## Release 1.7.4 WikiMed
 
-* ENNHNCEMENT: Added more diagnostic APIs to the API panel in Configuration
-* ENHANCEMENT: Added refresh button for picked folder in Configuration (UWP or File System Access API)
-* ENHANCEMENT: Added some extra directories of useful ZIM archives to Donwload library
+* UPDATE: Packaged archive updated to `wikipedia_en_medicine-app_maxi_2021-09.zim`
+* UPDATE: New option to change right click to double right click for opening new window or tab
 * ENHANCEMENT: Provide option to allow image manipulation (saving to disk or opening in new tab)
 * ENHANCEMENT: Provide contextual warnings for features that do not work well with dynamic content
 * ENHANCEMENT: Added help section in About concerning link handling, dynamic content, new windows, etc.
