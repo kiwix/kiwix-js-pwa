@@ -3962,7 +3962,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 $('#downloadAlert').hide();
 
                 // Code below will run after we have written the new article to the articleContainer
-                var articleLoaded = function() {
+                var articleLoaded = params.contentInjectionMode === 'serviceworker' ? function() {} : function() {
                     // Set a global error handler for articleWindow
                     articleWindow.onerror = function (msg, url, line, col, error) {
                         console.error('Error caught in ZIM contents [' + url + ':' + line + ']:\n' + msg, error);
@@ -4126,11 +4126,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
 
                 // Display any hidden block elements, with a timeout, so as not to interfere with image loading
-                setTimeout(function() {
-                    if (params.displayHiddenBlockElements) {
-                        displayHiddenBlockElements();
-                    }
+                if (params.displayHiddenBlockElements) setTimeout(function () {
+                    displayHiddenBlockElements(articleWindow, articleDocument);
                 }, 1800);
+                // if (params.displayHiddenBlockElements) displayHiddenBlockElements();
 
                 // Calculate the current article's encoded ZIM baseUrl to use when processing relative links (also needed for SW mode when params.windowOpener is set)
                 params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
@@ -4536,15 +4535,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
          * Unhides all hidden divs or tables, for use in Wikimedia mobile display style, which hides some crucial
          * elements that users want optionally to be able to access
          */
-        function displayHiddenBlockElements() {
-            Array.prototype.slice.call(articleDocument.querySelectorAll('table, div')).forEach(function (element) {
-                if (articleWindow.getComputedStyle(element).display === 'none') {
+        function displayHiddenBlockElements(win, doc) {
+            Array.prototype.slice.call(doc.querySelectorAll('table, div')).forEach(function (element) {
+                if (win.getComputedStyle(element).display === 'none') {
                     element.style.setProperty('display', 'block', 'important');
                 }
             });
             // Ensure images are picked up by lazy loading
-            articleWindow.scrollBy(0, 5);
-            articleWindow.scrollBy(0, -5);
+            win.scrollBy(0, 5);
+            win.scrollBy(0, -5);
         }
 
         function setupTableOfContents() {
