@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-wikimed",
   "productName": "Kiwix JS WikiMed",
-  "version": "1.7.4E",
+  "version": "1.7.7E",
   "description": "Kiwix JS WikiMed Electron Edition",
   "main": "main.js",
   "build": {
@@ -90,3 +90,5 @@
     "electron-context-menu": "^3.1.1"
   }
 }
+
+
