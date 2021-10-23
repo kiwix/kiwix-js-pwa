@@ -4486,7 +4486,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     a.touched = true;
                     setTimeout(function () {
                         a.touched = false;
-                    }, 400);
+                    }, 700);
                 } else {
                     if (a.newcontainer) return; // Prevent accidental double activation
                     e.preventDefault();
