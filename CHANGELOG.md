@@ -10,6 +10,7 @@
 * ENHANCEMENT: Select map type automatically: Maps App for Windows, OSM for Linux or other
 * ENHANCEMENT: Use smaller pins for Wikipedia pages vs Wikivoyage pages
 * DEPRECATED: Disabled *indpenedent* resizing of content in iframe with touch: too slow, and worked only in Chromium
+* ENHANCEMENT: Allow more time between clicks to register a double-right-click
 * FIX REGRESSION: Prevent incorrect parsing of map markers when image manipulation is on in SW mode
 * FIX REGRESSION: Closing all sections (by deselecting "Open all sections") now works again in jQuery mode
 * FIX: Video playback controls are now shown in Khan Acadeny ZIMs (and others based on YouTube)
