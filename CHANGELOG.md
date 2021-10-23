@@ -1,11 +1,12 @@
 # Changelog
 
-## Release 1.7.7-rc4
+## Release 1.7.7
 
-* ENHANCEMENT: Added experimental option to display hidden block elements
+* EXPERIMENTAL: Added option to display hidden block elements, prinicipally for Wikimedia ZIMs
 * ENHANCEMENT: With display hidden elements opetion, force display of zero-width images also
 * FIX REGRESSION: Prevent incorrect parsing of map markers when image manipulation is on in SW mode
 * FIX REGRESSION: Closing all sections (by deselecting "Open all sections") now works again in jQuery mode
+* BACKEND: Use a safer way of determining the ZIM name and type
 
 ## Release 1.7.6
 
