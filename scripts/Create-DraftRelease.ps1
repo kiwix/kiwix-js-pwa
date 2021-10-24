@@ -523,7 +523,11 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     "`nUploading $asset..."
     # Upload asset to the release server
     # $upload = [System.IO.File]::ReadAllBytes($upload_file) | Invoke-RestMethod @upload_params
-    if (-Not $dryrun) { $upload = Invoke-RestMethod @upload_params }
+    if (-Not $dryrun) {
+      # Disable progress because it causes high CPU usage on large files, and slows down upload
+      $ProgressPreference = 'SilentlyContinue'
+      $upload = Invoke-RestMethod @upload_params
+    }
     if ($dryrun -or $upload.name -eq ($asset_name -replace '\s', '.')) {
       if (-Not $dryrun) {
         "Upload successfully posted as " + $upload.url
