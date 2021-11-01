@@ -2,6 +2,7 @@
 
 ## Release 1.7.7
 
+* UPDATE: Sample archive updated to `wikipedia_en_100_nopic_2021-10`
 * EXPERIMENTAL: Added option to display hidden block elements, prinicipally for Wikimedia ZIMs
 * ENHANCEMENT: With display hidden elements opetion, force display of zero-width images also
 * ENHANCEMENT: Allow more time between clicks to register a double-right-click
