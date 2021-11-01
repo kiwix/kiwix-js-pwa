@@ -74,6 +74,7 @@ let precacheFiles = [
   "www/js/lib/uiUtil.js",
   "www/js/lib/utf8.js",
   "www/js/lib/util.js",
+  "www/js/lib/webpHeroBundle_0.0.0-dev.27.js",
   "www/js/lib/xzdec_wrapper.js",
   "www/js/lib/zstddec_wrapper.js",
   "www/js/lib/zimArchive.js",
@@ -136,7 +137,7 @@ self.addEventListener("install", function (event) {
 });
 
 // Allow sw to control current page
-self.addEventListener("activate", function (event) {
+self.addEventListener('activate', function (event) {
   console.log("[SW] Claiming clients for current page");
   event.waitUntil(
     caches.keys().then(function (keyList) {
