@@ -1,19 +1,19 @@
 ## Portable and installable builds of Kiwix JS for Windows XP/Vista/7/8/10/11 and Linux
 
-This is **not** the UWP/Microsoft Store build. If you are using Windows 10 or 11, we strongly recommend [the Kiwix JS UWP release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html), which will keep itself up-to-date automatically. These portable and installable versions run on the included [Electron platform](https://www.electronjs.org/) version 10.4.0 and [NWJS](https://nwjs.io/) 0.57.0 (Win7/8/10/11) or 0.14.7 (XP/Vista).
+This is **not** the UWP/Microsoft Store build. If you are using Windows 10 or 11, we strongly recommend [the Kiwix JS UWP release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html), which will keep itself up-to-date automatically. These portable and installable versions run on the included [Electron platform](https://www.electronjs.org/) version 10.4.0 and [NWJS](https://nwjs.io/) 0.58.0 (Win7/8/10/11) or 0.14.7 (XP/Vista).
 
-They are packaged with the <<date>> sample ZIM of the top 100 Wikipedia articles in English, `<<zim>>`. These builds will run on 32bit and 64bit editions of Windows or Linux (tested on Ubuntu, Debian and OpenSUSE - but see instructions below).
+These builds are packaged with the <<date>> sample ZIM of the top 100 Wikipedia articles in English, `<<zim>>`. They will run on 32bit and 64bit editions of Windows or Linux (tested on Ubuntu, Debian and OpenSUSE - but see instructions below).
 
 Choose the correct build:
 
 * **Windows**:
   - **Portable** (just unzip, no install needed)
-    + Windows 7/8/10/11 - [kiwix_js_windows-<<numeric_tag>>N-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-<<numeric_tag>>N-win-ia32.zip) (NWJS) - _recommended_
+    + Windows 7/8/10/11 - [kiwix_js_windows-<<numeric_tag>>N-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-<<numeric_tag>>N-win-ia32.zip) (NWJS)
     + Windows XP/Vista - [kiwix_js_windows-XP-<<numeric_tag>>N-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-XP-<<numeric_tag>>N-win-ia32.zip) (NWJS)
   - **Installable** (signed NSIS installer)
     + Windows 7/8/10/11 - [Kiwix JS Windows Setup <<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix.JS.PWA.Setup.<<numeric_tag>>-E.exe) (Electron)
-    + Alternatively, run `winget install kiwix-electron` in a Windows 10/11 Terminal / Cmd / PowerShell prompt
-* **Linux**:
+    + Alternatively, run `winget install kiwix-electron` in a Windows 10/11 Terminal
+* **Linux** (please read instructions below screenshot):
   - **Portable**
     + AppImage 64bit (Ubuntu, Debian, OpenSUSE) - [Kiwix JS PWA-<<numeric_tag>>-E.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix.JS.PWA-<<numeric_tag>>-E.AppImage) (Electron)
     + AppImage 32bit (Ubuntu, Debian, OpenSUSE) - [Kiwix JS PWA-<<numeric_tag>>-E-i386.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix.JS.PWA-<<numeric_tag>>-E-i386.AppImage) (Electron)
@@ -46,7 +46,6 @@ There is no installation required for the Portable versions. NONE of these build
 
 ### Known Issues
 
-* REGRESSION: Due to a change in format, headings are always open in jQuery mode regardless of the "Open all sections" option in Configuration (the setting is respected in Service Worker mode);
 * INCONSISTENCY: When printing in jQuery mode, all sections are opened before printing (if the user had closed any), whereas in SW mode, closed sections are not opened before printing, if they were closed;
 * On the XP build with some recent ZIMs (not the packaged one), __there is a CSS error in rendering the landing page of this ZIM__, due to the age of the Chromium build included in the runtime package. However, you can access all articles by __pressing a space in the search box__;
 * If you download an archive from within the app (from Configuration), you will be able to pick a download directory, and the download will start, but then there will be no further indication that a download is in progress. You will need to check the chosen download directory to see if the download has completed;
