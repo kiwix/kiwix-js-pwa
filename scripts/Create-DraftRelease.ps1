@@ -548,16 +548,20 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   }
   "`nCreating permalink..."
   $permalinkFile = "$PSScriptRoot/../kiwix-js-uwp.html"
+  $permalinkFile2 = ""
   if ($tag_name -imatch 'WikiMed') { $permalinkFile = $permalinkFile -replace 'kiwix-js-uwp', 'wikimed-uwp' }
   if ($tag_name -imatch 'Wikivoyage') { $permalinkFile = $permalinkFile -replace 'kiwix-js-uwp', 'wikivoyage-uwp' }
   if ($flavour -eq '_N') { $permalinkFile = $permalinkFile -replace 'uwp', 'nwjs' }
+  if ($tag_name -match 'E\+N') { $permalinkFile2 = $permalinkFile -replace 'uwp', 'nwjs' }
   if ($flavour -eq '_E') { $permalinkFile = $permalinkFile -replace 'uwp', 'electron' }
   "Looking for: $permalinkFile"
-  $permalink = Get-Content -Raw $permalinkFile
-  $permalink = $permalink -replace 'v[\d.EN]{5,}', "v$base_tag"
-  $permalink = $permalink -replace '\s*$', "`n"
-  if (-Not $dryrun) { Set-Content $permalinkFile $permalink }
-  else { "`n[DRYRUN] would have written:`n$permalink`n" }
+  foreach ($file in @($permalinkFile, $permalinkFile2)) {
+    $permalink = Get-Content -Raw $file
+    $permalink = $permalink -replace 'v[\d.EN]{5,}', "v$base_tag"
+    $permalink = $permalink -replace '\s*$', "`n"
+    if (-Not $dryrun) { Set-Content $file $permalink }
+    else { "`n[DRYRUN] would have written:`n$permalink`n" }
+  }
   "Cleaning up..."
   if ((-Not ($dryrun -or $old_windows_support)) -and $compressed_archive ) { del $compressed_archive }
   "`nDone.`n"
