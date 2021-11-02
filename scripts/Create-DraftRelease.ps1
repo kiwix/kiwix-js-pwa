@@ -161,7 +161,7 @@ if ($updatewinget) {
   if ($flavour -eq '') { $winget_version = $numeric_tag + '.0' }  
   if (-Not $dryrun) {
     "Submitting to winget-pkg repository..."
-    & wingetcreate.exe update $package_id -u $package_url -v "$winget_version" -s -t $github_token
+    & wingetcreate.exe update -i $package_id -v "$winget_version" -u $package_url -s -t $github_token
   } else {
     "[DRYRUN:] & wingetcreate.exe update -i $package_id -v $winget_version -u $package_url -s -t $github_token"
   }
