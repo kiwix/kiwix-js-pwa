@@ -17,9 +17,29 @@ $release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-windows/releases'
 $github_token = Get-Content -Raw "$PSScriptRoot/github_token"
 
 $init_params = Get-Content -Raw "$PSScriptRoot\..\www\js\init.js"
+$serviceworker = Select-String 'appVersion' "$PSScriptRoot\..\pwabuilder-sw.js" -List
+
 $file_tag = ''
-if ($init_params -match 'params\[[''"]version[''"]]\s*=\s*[''"]([^''"]+)') {
+if ($init_params -match 'params\[[''"]appVersion[''"]]\s*=\s*[''"]([^''"]+)') {
   $file_tag = 'v' + $matches[1] 
+} else {
+  "*** WARNING: App version is incorrectly set in init.js.`nPlease correct before continuing.`n"
+  exit
+}
+$sw_tag = ''
+if ($serviceworker -match 'appVersion\s*=\s*[''"]([^''"]+)') {
+  $sw_tag = 'v' + $matches[1]
+  if ($sw_tag -ne $file_tag) {
+    "*** WARNING: The version in init.js [$file_tag] does not match the version in pwabuilder-sw.js [$sw_tag]! ***"
+    "Please correct before continuing.`n"
+    exit
+  } else {
+    "`nVersion in init.js: $file_tag"
+    "Version in pwabuilder-sw.js: $sw_tag"
+  }
+} else {
+  "*** WARNING: App version is incorrectly set in pwabuilder-sw.js.`nPlease correct before continuing.`n"
+  exit
 }
 
 if ($tag_name -eq "") {
@@ -556,11 +576,13 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   if ($flavour -eq '_E') { $permalinkFile = $permalinkFile -replace 'uwp', 'electron' }
   "Looking for: $permalinkFile"
   foreach ($file in @($permalinkFile, $permalinkFile2)) {
-    $permalink = Get-Content -Raw $file
-    $permalink = $permalink -replace 'v[\d.EN]{5,}', "v$base_tag"
-    $permalink = $permalink -replace '\s*$', "`n"
-    if (-Not $dryrun) { Set-Content $file $permalink }
-    else { "`n[DRYRUN] would have written:`n$permalink`n" }
+    if ($file) {
+      $permalink = Get-Content -Raw $file
+      $permalink = $permalink -replace 'v[\d.EN]{5,}', "v$base_tag"
+      $permalink = $permalink -replace '\s*$', "`n"
+      if (-Not $dryrun) { Set-Content $file $permalink }
+      else { "`n[DRYRUN] would have written:`n$permalink`n" }
+    }
   }
   "Cleaning up..."
   if ((-Not ($dryrun -or $old_windows_support)) -and $compressed_archive ) { del $compressed_archive }

@@ -20,22 +20,22 @@ if ($app_params -match 'params\[[''"]appVersion[''"]]\s*=\s*[''"]([^''"]+)') {
   $app_tag = $matches[1]
   $suggested_build = 'dev_' + $app_tag 
 } else {
-  "*** WARNING: App version is incorrectly set in init.js.`nPlease correct before continuing.`n"
+  "`n*** WARNING: App version is incorrectly set in init.js.`nPlease correct before continuing.`n"
   exit
 }
 $sw_tag = ''
 if ($serviceworker -match 'appVersion\s*=\s*[''"]([^''"]+)') {
   $sw_tag = $matches[1]
   if ($sw_tag -ne $app_tag) {
-    "*** WARNING: The version in init.js [$app_tag] does not match the version in pwabuilder-sw.js [$sw_tag]! ***"
+    "`n*** WARNING: The version in init.js [$app_tag] does not match the version in pwabuilder-sw.js [$sw_tag]! ***"
     "Please correct before continuing.`n"
     exit
   } else {
-    "Version in init.js: $app_tag"
-    "Version in pwabuilder-sw.js: $sw_tag`n"
+    "`nVersion in init.js: $app_tag"
+    "Version in pwabuilder-sw.js: $sw_tag"
   }
 } else {
-  "*** WARNING: App version is incorrectly set in pwabuilder-sw.js.`nPlease correct before continuing.`n"
+  "`n*** WARNING: App version is incorrectly set in pwabuilder-sw.js.`nPlease correct before continuing.`n"
   exit
 }
 
