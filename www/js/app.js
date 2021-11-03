@@ -1779,7 +1779,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 apiStatusPanel.classList.add(apiPanelClass);
         }
 
-        var keepAliveServiceWorkerHandle;
+        var keepAliveServiceWorkerHandle = null;
         var serviceWorkerRegistration = null;
 
         /**
@@ -1789,6 +1789,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
          * and the application
          */
         function initOrKeepAliveServiceWorker() {
+            var delay = DELAY_BETWEEN_KEEPALIVE_SERVICEWORKER;
             if (params.contentInjectionMode === 'serviceworker') {
                 // Create a new messageChannel
                 var tmpMessageChannel = new MessageChannel();
@@ -1802,14 +1803,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     console.error('The Service Worker is active but is not controlling the current page! We have to reload.');
                     window.location.reload();
                 } else {
-                    // App is launching, so we need to give it more time
-                    setTimeout(initOrKeepAliveServiceWorker, 1000);
+                    console.debug('The Service Worker needs more time to load...');
+                    delay = 1000;
                 }
                 messageChannel = tmpMessageChannel;
                 // Schedule to do it again regularly to keep the 2-way communication alive.
                 // See https://github.com/kiwix/kiwix-js/issues/145 to understand why
                 clearTimeout(keepAliveServiceWorkerHandle);
-                keepAliveServiceWorkerHandle = setTimeout(initOrKeepAliveServiceWorker, DELAY_BETWEEN_KEEPALIVE_SERVICEWORKER, false);
+                keepAliveServiceWorkerHandle = setTimeout(initOrKeepAliveServiceWorker, delay, false);
             }
         }
 
