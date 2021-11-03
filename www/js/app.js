@@ -1800,7 +1800,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     }, [tmpMessageChannel.port2]);
                 } else {
                     console.error('The Service Worker is active but is not controlling the current page! We have to reload.');
-                    window.location.reload();
+                    if (/UWP/.test(params.appType)) {
+                        window.location.href = params.PWAServer + 'www/index.html';
+                    } else {
+                        window.location.reload();
+                    }
                     return;
                 }
                 messageChannel = tmpMessageChannel;
