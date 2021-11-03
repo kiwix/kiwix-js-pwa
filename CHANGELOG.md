@@ -1,6 +1,6 @@
 # Changelog
 
-## Release 1.7.7
+## Release 1.7.8
 
 * UPDATE: Sample archive updated to `wikipedia_en_100_nopic_2021-10`
 * EXPERIMENTAL: Added option to display hidden block elements, prinicipally for Wikimedia ZIMs
