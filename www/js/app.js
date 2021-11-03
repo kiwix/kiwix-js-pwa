@@ -1801,11 +1801,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 } else {
                     console.error('The Service Worker is active but is not controlling the current page! We have to reload.');
                     if (/UWP/.test(params.appType)) {
-                        window.location.href = params.PWAServer + 'www/index.html';
+                        setTimeout(function() {
+                            window.location.href = params.PWAServer + 'www/index.html';
+                        }, 750);
                     } else {
                         window.location.reload();
                     }
-                    return;
                 }
                 messageChannel = tmpMessageChannel;
                 // Schedule to do it again regularly to keep the 2-way communication alive.
