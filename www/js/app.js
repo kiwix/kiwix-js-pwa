@@ -760,7 +760,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // Populate version info
             var versionSpans = document.getElementsByClassName('version');
             for (var i = 0; i < versionSpans.length; i++) {
-                versionSpans[i].innerHTML = i ? params.version : params.version.replace(/\s+.*$/, "");
+                versionSpans[i].innerHTML = i ? params.appVersion : params.appVersion.replace(/\s+.*$/, "");
             }
             if (params.fileVersion && /UWP|Electron/.test(params.appType)) {
                 var packagedInfoParas = document.getElementsByClassName('packagedInfo');
@@ -815,7 +815,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 caches.keys().then(function (keyList) {
                     if (keyList.length < 2) document.getElementById('alertBoxPersistent').innerHTML = '';
                     keyList.forEach(function(key) {
-                        if (key === 'kiwix-precache-' + params.version) return;
+                        if (key === 'kiwix-precache-' + params.appVersion) return;
                         // If we get here, then there is a cache key that does not match our version, i.e. a PWA-in-waiting
                         params.upgradeNeeded = true;
                         document.getElementById('alertBoxPersistent').innerHTML =
@@ -1563,7 +1563,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
                 if (this.checked && /UWP/.test(params.appType) && params.windowOpener && params.cssSource !== 'desktop') {
                     if (message) message += '\n\n';
-                    message += 'Please note that hidden elements will not be displayed in any NEW windows or tabs that you open in this UWP app. If you want to see hidden elements in new windows in <b>Wikimedia</b> ZIMs, please switch to Desktop style (above), where they are shown by default.';
+                    message += 'Please note that hidden elements will not be displayed in any NEW windows or tabs that you open in this UWP app. If you want to see hidden elements in new windows in *Wikimedia* ZIMs, please switch to Desktop style (above), where they are shown by default.';
                 }
                 if (!this.checked && params.manipulateImages) {
                     message += 'We are turning off the image manipulation option because it is no longer needed to display hidden elements. You may turn it back on if you need it for another reason.';
@@ -1691,7 +1691,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
             }
             //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
-            if (settingsStore.getItem('version') !== params.version) {
+            if (settingsStore.getItem('appVersion') !== params.appVersion) {
                 firstRun = true;
                 
                 // If we have an update and the last selected archive is the packaged file, it is best not to preserve last read article
@@ -1703,7 +1703,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
                 //  Update the installed version
                 if (settingsStore.getItem('PWAInstalled')) {
-                    params.PWAInstalled = params.version;
+                    params.PWAInstalled = params.appVersion;
                     settingsStore.setItem('PWAInstalled', params.PWAInstalled);
                 }
                 // One-time cleanup of idxDB files to delete deprecated databases if possible
@@ -1716,7 +1716,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     $('#myModal').modal({
                         backdrop: "static"
                     });
-                    settingsStore.setItem('version', params.version, Infinity);
+                    settingsStore.setItem('appVersion', params.appVersion, Infinity);
                 }, 1000);
             }
         });

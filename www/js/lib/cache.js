@@ -23,7 +23,7 @@
 'use strict';
 define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
 
-    const CACHEAPI = 'kiwix-precache-' + params.version; // Set the database or cache name here
+    const CACHEAPI = 'kiwix-precache-' + params.appVersion; // Set the database or cache name here
     const CACHEIDB = 'kiwix-assetsCache'; // For idxDB we don't want the name to change
     var objStore = 'kiwix-assets'; // Name of the object store
     
