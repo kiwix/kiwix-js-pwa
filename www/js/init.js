@@ -49,7 +49,7 @@ var params = {};
  */
 var appstate = {};
 /******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******/
-params['version'] = "1.7.7"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "version" in order to show first-time info, and the cookie is updated in app.js
+params['appVersion'] = "1.7.7"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************/
 params['packagedFile'] = getSetting('packagedFile') || "wikipedia_en_100_nopic_2021-10.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
@@ -267,7 +267,7 @@ function getAppType() {
 // Set up storage types
 // First check that we have not simply upgraded the app and the packaged file
 params.packagedFileStub = params.packagedFile ? params.packagedFile.replace(/(?:-app_maxi)?_[\d-]+\.zim\w?\w?$/, ''): null;
-if (params.packagedFileStub && params.version !== getSetting('version') && ~params.storedFile.indexOf(params.packagedFileStub)) {
+if (params.packagedFileStub && params.appVersion !== getSetting('appVersion') && ~params.storedFile.indexOf(params.packagedFileStub)) {
     console.log('The packaged archive has been upgraded: resetting file pointers to point to ' + params.packagedFile);
     params.lastPageVisit = '';
     params.storedFile = params.packagedFile;
@@ -366,7 +366,7 @@ function installApp(e) {
 }
 
 window.addEventListener('appinstalled', function(e) {
-    params.PWAInstalled = params.version;
+    params.PWAInstalled = params.appVersion;
     if (params.storeType === 'cookie') {
         document.cookie = 'PWAInstalled=' + encodeURIComponent(params.PWAInstalled) + '; expires=Fri, 31 Dec 9999 23:59:59 GMT';
     } else if (params.storeType === 'local_storage') {
