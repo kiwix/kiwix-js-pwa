@@ -1804,7 +1804,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     window.location.reload();
                 } else {
                     console.debug('The Service Worker needs more time to load...');
-                    delay = 0;
+                    delay = 500;
                 }
                 messageChannel = tmpMessageChannel;
                 // Schedule to do it again regularly to keep the 2-way communication alive.
