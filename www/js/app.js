@@ -1798,15 +1798,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     navigator.serviceWorker.controller.postMessage({
                         'action': 'init'
                     }, [tmpMessageChannel.port2]);
-                } else {
+                } else if (keepAliveServiceWorkerHandle) {
                     console.error('The Service Worker is active but is not controlling the current page! We have to reload.');
-                    if (/UWP/.test(params.appType)) {
-                        setTimeout(function() {
-                            window.location.href = params.PWAServer + 'www/index.html';
-                        }, 750);
-                    } else {
-                        window.location.reload();
-                    }
+                    window.location.reload();
+                } else {
+                    // App is launching, so we need to give it more time
+                    setTimeout(initOrKeepAliveServiceWorker, 1000);
                 }
                 messageChannel = tmpMessageChannel;
                 // Schedule to do it again regularly to keep the 2-way communication alive.
