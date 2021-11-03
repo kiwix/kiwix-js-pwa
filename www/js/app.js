@@ -1554,16 +1554,22 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             params.displayHiddenBlockElements = this.checked;
             settingsStore.setItem('displayHiddenBlockElements', params.displayHiddenBlockElements, Infinity);
             if (params.contentInjectionMode === 'serviceworker') {
+                var message = '';
                 if (this.checked && !params.manipulateImages) {
-                    uiUtil.systemAlert('We need to turn on "Allow image manipulation" (below) in order to display hidden images inside hidden elements.\n\n' + 
-                    'Please be aware that image manipulation can interfere badly with non-Wikimedia ZIMs that contain active content.\n\n' + 
-                    'If you cannot access content in such ZIMs, please turn image manipulation off. You will still see hidden elements, but not all images within them.')
-                    document.getElementById('manipulateImagesCheck').click();
-                    return;
-                } else if (!this.checked && params.manipulateImages) {
-                    uiUtil.systemAlert('We are turning off the image manipulation option because it is no longer needed to display hidden elements. You may turn it back on if you need it for another reason.')
+                    message += 'We need to turn on "Allow image manipulation" (below) in order to display hidden images. Please be aware that ' +
+                        'image manipulation can interfere badly with non-Wikimedia ZIMs that contain active content, so please turn it off if ' +
+                        'you experience problems.';
                     document.getElementById('manipulateImagesCheck').click();
                 }
+                if (this.checked && /UWP/.test(params.appType) && params.windowOpener && params.cssSource !== 'desktop') {
+                    if (message) message += '\n\n';
+                    message += 'Please note that hidden elements will not be displayed in any NEW windows or tabs that you open in this UWP app. If you want to see hidden elements in new windows in <b>Wikimedia</b> ZIMs, please switch to Desktop style (above), where they are shown by default.';
+                }
+                if (!this.checked && params.manipulateImages) {
+                    message += 'We are turning off the image manipulation option because it is no longer needed to display hidden elements. You may turn it back on if you need it for another reason.';
+                    document.getElementById('manipulateImagesCheck').click();
+                }
+                if (message) uiUtil.systemAlert(message);
             }
             // Forces page reload
             params.themeChanged = true;
