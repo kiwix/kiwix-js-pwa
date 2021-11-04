@@ -62,8 +62,8 @@ params['cachedStartPages'] = {
 };
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
 /******* DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
-// params['PWAServer'] = "https://pwa.kiwix.org/"; // Production server
-params['PWAServer'] = "https://kiwix.github.io/kiwix-js-windows/"; // Test server
+params['PWAServer'] = "https://pwa.kiwix.org/"; // Production server
+// params['PWAServer'] = "https://kiwix.github.io/kiwix-js-windows/"; // Test server
 params['PWAMode'] = getSetting('PWAMode'); // Set to true if the app should always operate in PWA mode 
 
 params['storeType'] = getBestAvailableStorageAPI();
