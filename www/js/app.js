@@ -1801,10 +1801,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     }, [tmpMessageChannel.port2]);
                 } else if (keepAliveServiceWorkerHandle) {
                     console.error('The Service Worker is active but is not controlling the current page! We have to reload.');
-                    window.location.reload();
+                    window.location.href = params.PWAServer + 'www/index.html';
                 } else {
                     console.debug('The Service Worker needs more time to load...');
-                    delay = 500;
+                    delay = 600;
                 }
                 messageChannel = tmpMessageChannel;
                 // Schedule to do it again regularly to keep the 2-way communication alive.
@@ -1959,14 +1959,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         }
 
         function launchUWPServiceWorker () {
-            var message = 'This UWP app uses locally packaged code by default. ' +
-                'To enable the Service Worker we need to switch to PWA mode, ' +
-                'which requires one-time access to our secure server to cache the PWA code.\n\n' +
-                'The app will be able to run offline in PWA mode, but will auto-update ' +
-                'periodically when online as per the Service Worker spec.\n\n' +
+            var message = 'To enable the Service Worker, we need one-time access to our secure server ' +
+                'so that the app can re-launch as a Progressive Web App (PWA).\n\n' +
+                'The PWA will be able to run offline, but will auto-update periodically when online ' +
+                'as per the Service Worker spec.\n\n' +
                 'You can switch back any time by toggling "Allow Internet access?" off.\n\n' +
                 'WARNING: This will attempt to access the following server: \n' + params.PWAServer + '\n\n' +
-                '*** If the app crashes, please relaunch it, and choose "Access Server" when prompted. ***';
+                '*** If the app crashes, please relaunch it, and choose "Access Server" if prompted. ***';
             var launchPWA = function () {
                 settingsStore.setItem('contentInjectionMode', 'serviceworker', Infinity);
                 // This is needed so that we get passthrough on subsequent launches
