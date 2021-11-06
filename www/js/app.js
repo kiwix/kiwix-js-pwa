@@ -991,7 +991,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (params.pickedFile && params.pickedFile.name !== selected) {
                 params.pickedFile = '';
             }
-            if (params.pickedFile.readMode !== 'electron' && typeof window.showOpenFilePicker !== 'undefined') {
+            if (typeof window.showOpenFilePicker !== 'undefined') {
                 getNativeFSHandle(function(handle) {
                     if (!handle) {
                         console.error('No handle was retrieved');
@@ -2627,6 +2627,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             if (callback) archiveList.push(entry);
                             // Hide all parts of split file except first in UI
                             else if (/\.zim(aa)?$/.test(entry.name)) archiveList.push(entry.name);
+                            if (!params.pickedFolder.path) entry.getFile().then(function(file) {
+                                params.pickedFolder.path = file.path;
+                            })
                         }
                         iterateAsyncDirEntryArray();
                     } else {
@@ -2837,9 +2840,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 filepath = window.location.href.replace(/www\/[^/]+$/, '') + filepath;
             }
             // DEV if you get pesky Electron error 'The "path" argument must be one of type string, Buffer, or URL', try commenting below
-            if (/^file:/i.test(filepath)) filepath = new URL(filepath);
+            // if (/^file:/i.test(filepath)) filepath = new URL(filepath);
             // and uncomment comment line below (seems to depend on node and fs versions) - this line conditionally turns the URL into a filepath string for Windows only
-            // filepath = /^file:\/+\w:/i.test(filepath) ? filepath.replace(/^file:\/+/i, '') : filepath = new URL(filepath);
+            filepath = /^file:\/+\w:/i.test(filepath) ? filepath.replace(/^file:\/+/i, '') : filepath = new URL(filepath);
             file.name = filename;
             file.path = filepath;
             file.readMode = 'electron';
