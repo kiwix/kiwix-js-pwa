@@ -1029,6 +1029,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 //UWP FilePicker
                 pickFileUWP();
+            } else if (window.fs) {
+                openDialogElectron('file');
             } else if (typeof window.showOpenFilePicker !== 'undefined') {
                 // Native File System API file picker
                 pickFileNativeFS();
@@ -1039,6 +1041,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 //UWP FolderPicker
                 pickFolderUWP();
+            } else if (window.fs) {
+                openDialogElectron('dir');
             } else if (typeof window.showOpenFilePicker !== 'undefined') {
                 // Native File System API folder picker
                 pickFolderNativeFS();
@@ -2546,6 +2550,39 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             });
         }
 
+        function openDialogElectron(type) {
+            if (type === 'file') dialog.openFile();
+            else if (type === 'dir') dialog.openDirectory();
+            dialog.on(type + '-dialog', function (fullPath) {
+                console.log('Path: ' + fullPath);
+                if (type === 'file') {
+                    fullPath = fullPath.replace(/\\/g, '/');
+                    var pathParts = fullPath.match(/^(.+[/\\])([^/\\]+)$/i);
+                    createFakeFileObjectElectron(pathParts[2], 'file://' + pathParts[1], processFakeFile);
+                }
+            });
+        }
+
+        function processFakeFile(fakeFile) {
+            if (fakeFile.size) {
+                params.pickedFile = fakeFile;
+                params.storedFile = params.packagedFile;
+                if (typeof window.showOpenFilePicker !== 'undefined') {
+                    populateDropDownListOfArchives([params.pickedFile.name]);
+                } else {
+                    setLocalArchiveFromFileList([params.pickedFile]);
+                }
+            } else {
+                // This shouldn't happen!
+                params.showFileSelectors = true;
+                document.getElementById('hideFileSelectors').style.display = 'inline';
+                document.getElementById('btnConfigure').click();
+                setTimeout(function () {
+                    uiUtil.systemAlert('The packaged file cannot be loaded!\nPlease check that it is in the "' + params.archivePath + '" folder\nor pick a new ZIM file.');
+                }, 10);
+            }
+        }
+
         function pickFolderNativeFS() {
             window.showDirectoryPicker().then(function (dirHandle) {
                 // Do not attempt to jump to file (we have to let user choose)
@@ -2794,25 +2831,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 settingsStore.removeItem('lastSelectedArchivePath');
                 params.lastPageVisit = '';
                 if (params.packagedFile && params.storedFile !== params.packagedFile) {
-                    createFakeFileObjectElectron(params.packagedFile, params.archivePath + '/' + params.packagedFile, function (fakeFile) {
-                        if (fakeFile.size) {
-                            params.pickedFile = fakeFile;
-                            params.storedFile = params.packagedFile;
-                            if (typeof window.showOpenFilePicker !== 'undefined') {
-                                populateDropDownListOfArchives([params.pickedFile.name]);
-                            } else {
-                                setLocalArchiveFromFileList([params.pickedFile]);
-                            }
-                        } else {
-                            // This shouldn't happen!
-                            params.showFileSelectors = true;
-                            document.getElementById('hideFileSelectors').style.display = 'inline';
-                            document.getElementById('btnConfigure').click();
-                            setTimeout(function () {
-                                uiUtil.systemAlert('The packaged file cannot be loaded!\nPlease check that it is in the "' + params.archivePath + '" folder\nor pick a new ZIM file.');
-                            }, 10);
-                        }
-                    });
+                    createFakeFileObjectElectron(params.packagedFile, params.archivePath + '/' + params.packagedFile, processFakeFile);
                 }
             }
         }
