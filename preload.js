@@ -26,7 +26,7 @@ contextBridge.exposeInMainWorld('dialog', {
         ipcRenderer.send('dir-dialog'); // adjust naming for your project
     },
     // Provide an easier way to listen to events
-    on: (channel, callback) => {
+    on: function (channel, callback) {
       ipcRenderer.on(channel, function (_, data) {
           callback(data);
         });

@@ -66,19 +66,22 @@ function createWindow() {
 function registerListeners() {
     ipcMain.on('file-dialog', function (event) {
         dialog.showOpenDialog(mainWindow, {
+            filters: [
+                { name: 'ZIM Archives', extensions: ['zim', 'zimaa'] }
+              ],
             properties: ['openFile']
-        }).then(function (filePaths) {
+        }).then(function ({ filePaths }) {
             if (filePaths.length) {
-                event.reply('fileSelect', filePaths[0]);
+                event.reply('file-dialog', filePaths[0]);
             }
         });
     });
     ipcMain.on('dir-dialog', function (event) {
         dialog.showOpenDialog(mainWindow, {
             properties: ['openDirectory']
-        }).then(function (filePaths) {
+        }).then(function ({ filePaths }) {
             if (filePaths.length) {
-                event.reply('dirSelect', filePaths);
+                event.reply('dir-dialog', filePaths);
             }
         });
     })
