@@ -4,8 +4,7 @@
 'use strict';
 
 // DEV: TO SUPPORT ELECTRON ^12 YOU WILL NEED THIS
-const { contextBridge } = require('electron');
-
+const { ipcRenderer, contextBridge } = require('electron');
 const { open, read, close, stat } = require('fs');
 
 console.log("Inserting required Electron functions into DOM...");
@@ -18,12 +17,22 @@ contextBridge.exposeInMainWorld('fs', {
     stat: stat
 });
 
-// window.fs = {
-//     open: open, 
-//     read: read,
-//     close: close, 
-//     stat: stat
-// };
+// Adapted from: https://stackoverflow.com/questions/69717365/using-electron-save-dialog-in-renderer-with-context-isolation
+contextBridge.exposeInMainWorld('dialog', {
+    openFile: function () {
+      ipcRenderer.send('file-dialog'); // adjust naming for your project
+    },
+    openDirectory: function () {
+        ipcRenderer.send('dir-dialog'); // adjust naming for your project
+    },
+    // Provide an easier way to listen to events
+    on: (channel, callback) => {
+      ipcRenderer.on(channel, function (_, data) {
+          callback(data);
+        });
+    },
+  });
+
 // window.Buffer = Buffer;
 
 // console.log(win.session.cookies);

@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require('electron');
+const { app, dialog, ipcMain, BrowserWindow } = require('electron');
 const path = require('path');
 
 const contextMenu = require('electron-context-menu');
@@ -42,9 +42,11 @@ contextMenu({
 //     }
 // }]);
 
+let mainWindow;
+
 function createWindow() {
     // Create the browser window.
-    const mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         // titleBarStyle: 'hidden',
         width: 1281,
         height: 800,
@@ -59,6 +61,27 @@ function createWindow() {
     });
 
     mainWindow.loadFile('www/index.html');
+}
+
+function registerListeners() {
+    ipcMain.on('file-dialog', function (event) {
+        dialog.showOpenDialog(mainWindow, {
+            properties: ['openFile']
+        }).then(function (filePaths) {
+            if (filePaths.length) {
+                event.reply('fileSelect', filePaths[0]);
+            }
+        });
+    });
+    ipcMain.on('dir-dialog', function (event) {
+        dialog.showOpenDialog(mainWindow, {
+            properties: ['openDirectory']
+        }).then(function (filePaths) {
+            if (filePaths.length) {
+                event.reply('dirSelect', filePaths);
+            }
+        });
+    })
 }
 
 app.whenReady().then(() => {
@@ -85,7 +108,8 @@ app.whenReady().then(() => {
     // });
     // Create the new window
     createWindow();
-
+    registerListeners();
+    
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
