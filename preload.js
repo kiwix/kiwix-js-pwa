@@ -5,7 +5,7 @@
 
 // DEV: TO SUPPORT ELECTRON ^12 YOU WILL NEED THIS
 const { ipcRenderer, contextBridge } = require('electron');
-const { open, read, close, stat } = require('fs');
+const { open, read, close, stat, readdir } = require('fs');
 
 console.log("Inserting required Electron functions into DOM...");
 
@@ -13,6 +13,7 @@ console.log("Inserting required Electron functions into DOM...");
 contextBridge.exposeInMainWorld('fs', {
     open: open, 
     read: read,
+    readdir: readdir,
     close: close, 
     stat: stat
 });

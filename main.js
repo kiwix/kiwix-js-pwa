@@ -81,7 +81,7 @@ function registerListeners() {
             properties: ['openDirectory']
         }).then(function ({ filePaths }) {
             if (filePaths.length) {
-                event.reply('dir-dialog', filePaths);
+                event.reply('dir-dialog', filePaths[0]);
             }
         });
     })
