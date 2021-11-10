@@ -2287,14 +2287,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         /**
          * Sets the localArchive from the selected archive in the drop-down list
          */
-        function setLocalArchiveFromArchiveList(archiveDirectory) {
+        function setLocalArchiveFromArchiveList(archive) {
             params.rescan = false;
-            archiveDirectory = archiveDirectory || [$('#archiveList').val()];
-            if (archiveDirectory && archiveDirectory.length > 0) {
+            archive = archive || [$('#archiveList').val()];
+            if (archive && archive.length > 0) {
                 // Now, try to find which DeviceStorage has been selected by the user
                 // It is the prefix of the archive directory
                 var regexpStorageName = /^\/([^\/]+)\//;
-                var regexpResults = regexpStorageName.exec(archiveDirectory);
+                var regexpResults = regexpStorageName.exec(archive);
                 var selectedStorage = null;
                 if (regexpResults && regexpResults.length > 0) {
                     var selectedStorageName = regexpResults[1];
@@ -2306,10 +2306,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         }
                     }
                     if (selectedStorage === null) {
-                        uiUtil.systemAlert("Unable to find which device storage corresponds to directory " + archiveDirectory);
+                        uiUtil.systemAlert("Unable to find which device storage corresponds to archive " + archive);
                     }
                 } else {
-                    // This happens when the archiveDirectory is not prefixed by the name of the storage
+                    // This happens when the archive is not prefixed by the name of the storage
                     // (in the Simulator, or with FxOs 1.0, or probably on devices that only have one device storage)
                     // In this case, we use the first storage of the list (there should be only one)
                     if (storages.length === 1) {
@@ -2323,7 +2323,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 var fileset = [];
                                 if (files) {
                                     for (var i = 0; i < files.length; i++) {
-                                        if (files[i].name == archiveDirectory) {
+                                        if (files[i].name == archive) {
                                             file = files[i];
                                             break;
                                         }
@@ -2371,7 +2371,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                         var fileset = [];
                                         if (fileHandles) {
                                             for (var i = 0; i < fileHandles.length; i++) {
-                                                if (fileHandles[i].name == archiveDirectory) {
+                                                if (fileHandles[i].name == archive) {
                                                     fileHandle = fileHandles[i];
                                                     break;
                                                 }
@@ -2422,8 +2422,56 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             });
                             return;
                         } else if (window.fs) {
-                            if (params.pickedFile) setLocalArchiveFromFileList([params.pickedFile]);
-                            else createFakeFileObjectElectron(archiveDirectory[0], params.pickedFolder + '/' + archiveDirectory[0], setLocalArchiveFromFileList);
+                            if (params.pickedFile) {
+                                setLocalArchiveFromFileList([params.pickedFile]);
+                            } else {
+                                var fileset = [];
+                                var count = 0;
+                                var fileHandle = archive ? archive[0] : null;
+                                if (params.pickedFolder) {
+                                    window.fs.readdir(params.pickedFolder, function (err, fileNames) {
+                                       // Deal with split archives
+                                        if (fileHandle && fileNames) {
+                                            if (/\.zim\w\w$/i.test(fileHandle)) {
+                                                var genericFileName = fileHandle.replace(/(\.zim)\w\w$/i, '$1');
+                                                var testFileName = new RegExp(genericFileName + '\\w\\w$');
+                                                for (i = 0; i < fileNames.length; i++) {
+                                                    if (testFileName.test(fileNames[i])) {
+                                                        count++;
+                                                        //This gets a pseudo File object from a file handle
+                                                        createFakeFileObjectElectron(fileNames[i],
+                                                            params.pickedFolder + '/' + fileNames[i], function (file) {
+                                                                fileset.push(file[0]);
+                                                        });
+                                                    }
+                                                }
+                                            } else {
+                                                // Deal with single unslpit archive
+                                                count++;
+                                                createFakeFileObjectElectron(fileHandle,
+                                                    params.pickedFolder + '/' + fileHandle, function (file) {
+                                                        fileset.push(file[0]);
+                                                });
+                                            }
+                                            if (count) {
+                                                // Wait for all file objects to resolve
+                                                var testIfReady = function () {
+                                                    if (fileset.length === count) {
+                                                        setLocalArchiveFromFileList(fileset);
+                                                    } else {
+                                                        setTimeout(testIfReady, 50);
+                                                    }
+                                                }
+                                                setTimeout(testIfReady, 50);
+                                            } else {
+                                                console.error("There was an error reading the picked file(s)!");
+                                            }
+                                        } else {
+                                            createFakeFileObjectElectron(fileHandle, params.pickedFolder + '/' + fileHandle, setLocalArchiveFromFileList);
+                                        } 
+                                    });
+                                }
+                            }
                             return;
                         } else { //Check if user previously picked a specific file rather than a folder
                             if (params.pickedFile && typeof MSApp !== 'undefined') {
@@ -2462,8 +2510,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     cssBlobCache = new Map();
                 //if (cssDirEntryCache)
                 //    cssDirEntryCache = new Map();
-                appstate.selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archiveDirectory, function (archive) {
-                    settingsStore.setItem("lastSelectedArchive", archiveDirectory, Infinity);
+                appstate.selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archive, function (archive) {
+                    settingsStore.setItem("lastSelectedArchive", archive, Infinity);
                     // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
                     // (this only affects jQuery mode)
                     appstate.target = 'iframe';
