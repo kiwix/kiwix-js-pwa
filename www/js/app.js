@@ -2766,6 +2766,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         }
 
         function setLocalArchiveFromFileList(files) {
+            if (!files.length) {
+                if (document.getElementById('configuration').style.display == 'none')
+                        document.getElementById('btnConfigure').click();
+                displayFileSelect();
+                return;
+            }
             // Check for usable file types
             for (var i = files.length; i--;) {
                 // DEV: you can support other file types by adding (e.g.) '|dat|idx' after 'zim\w{0,2}'
@@ -2900,6 +2906,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 if (err) {
                     file.size = null;
                     console.error('File cannot be found!', err);
+                    uiUtil.systemAlert('The archive you are attempting to load (' + file.path + ') cannot be found. Perhaps it has moved?');
+                    callback([]);
                 } else {
                     file.size = stats.size;
                     console.log("Stored file size is: " + file.size);
