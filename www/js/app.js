@@ -2289,7 +2289,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
          */
         function setLocalArchiveFromArchiveList(archive) {
             params.rescan = false;
-            archive = archive || [$('#archiveList').val()];
+            archive = archive || $('#archiveList').val();
             if (archive && archive.length > 0) {
                 // Now, try to find which DeviceStorage has been selected by the user
                 // It is the prefix of the archive directory
@@ -2573,7 +2573,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             packet.preventDefault();
             configDropZone.style.border = '';
             var items = packet.dataTransfer.items;
-            if (items && items[0].kind === 'file' && typeof items[0].getAsFileSystemHandle !== 'undefined') {
+            if (items && items.length === 1 && items[0].kind === 'file' && typeof items[0].getAsFileSystemHandle !== 'undefined') {
                 items[0].getAsFileSystemHandle().then(function (handle) {
                     if (handle.kind === 'file') {
                         processNativeFileHandle(handle);
