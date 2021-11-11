@@ -2464,12 +2464,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                                 }
                                                 setTimeout(testIfReady, 50);
                                             } else {
-                                                console.error("There was an error reading the picked file(s)!");
+                                                console.error('There was an error reading the picked file(s)!');
                                             }
                                         } else {
                                             createFakeFileObjectElectron(fileHandle, params.pickedFolder + '/' + fileHandle, setLocalArchiveFromFileList);
                                         } 
                                     });
+                                } else {
+                                    uiUtil.systemAlert('We could not find the location of the file ' + fileHandle + 
+                                        '. This can happen if you dragged and dropped a file into the app. Please use the file or folder pickers instead.');
+                                    if (document.getElementById('configuration').style.display == 'none')
+                                        document.getElementById('btnConfigure').click();
+                                    displayFileSelect();
                                 }
                             }
                             return;
