@@ -308,6 +308,10 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
     }
 }
 
+if (window.fs && !window.nw) {
+    params.pickedFolder = getSetting('pickedFolder') || '';
+}
+
 // Routine for installing the app adapted from https://pwa-workshop.js.org/
 
 var deferredPrompt;
