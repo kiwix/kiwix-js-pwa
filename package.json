@@ -1,12 +1,12 @@
 {
-  "name": "kiwix-js-electron",
-  "productName": "Kiwix JS Electron",
-  "version": "1.7.8",
-  "description": "Kiwix JS packaged for the Electron framework",
+  "name": "kiwix-js-wikivoyage",
+  "productName": "Wikivoyage by Kiwix",
+  "version": "1.7.9",
+  "description": "Wikivoyage by Kiwix packaged for the Electron framework",
   "main": "main.js",
   "build": {
-    "appId": "kiwix.js.electron",
-    "productName": "Kiwix JS Electron",
+    "appId": "kiwix.js.wikivoyage",
+    "productName": "Wikivoyage by Kiwix",
     "directories": {
       "output": "bld/Electron",
       "buildResources": "bld"
@@ -69,7 +69,11 @@
   "repository": "https://github.com/kiwix/kiwix-js-windows",
   "keywords": [
     "Kiwix",
+    "Wikivoyage",
     "offline",
+    "travel",
+    "guide",
+    "tourism",
     "Wikipedia",
     "ZIM",
     "reader"
