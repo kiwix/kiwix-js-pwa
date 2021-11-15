@@ -44,7 +44,7 @@ if ($serviceworker -match 'appVersion\s*=\s*[''"]([^''"]+)') {
 
 if ($tag_name -eq "") {
   $tag_name = Read-Host "`nEnter the tag name for this release, or Enter to accept suggested tag, or add any suffix to suggested tag [$file_tag]"
-  if ($tag_name -match '^[EN-]|^$') {
+  if ($tag_name -match '^[+EN-]|^$') {
     $split = $file_tag -imatch '^([v\d.]+)(.*)$'
     if ($split) {
       $tag_name = $matches[1] + $tag_name + $matches[2]
@@ -70,7 +70,7 @@ if ($tag_name -eq "") {
     }
   }
 }
-if ($tag_name -NotMatch '^v\d+\.\d+\.\d+([EN-]|$)') {
+if ($tag_name -NotMatch '^v\d+\.\d+\.\d+([+EN-]|$)') {
   "`nTag name must be in the format " + '"v0.0.0[E][N][-text]"!' + "`n"
   exit
 }
@@ -83,9 +83,10 @@ $base_tag = $tag_name -replace '^v([\d.EN]+).*', '$1'
 $text_tag = $tag_name -replace '^v[\d.EN+]+-?(.*)$', '$1'
 $numeric_tag = $base_tag -replace "([\d.]+)[EN]", '$1'
 $old_windows_support = $tag_name -match '\+N'
+$plus_electron = $tag_name -match '\+E'
 if ($text_tag -eq '') { $text_tag = 'Windows' }
 $release_title = "Kiwix JS $text_tag $base_tag UWP"
-if ($text_tag -eq "Wikivoyage") { $release_title = "Wikivoyage by Kiwix $base_tag UWP" }
+if ($text_tag -imatch 'Wikivoyage|WikiMed') { $release_title = "$text_tag by Kiwix $base_tag UWP" }
 $flavour = ''
 $file_version = ''
 if ($init_params -match 'params\[[''"]fileVersion[''"]]\s*=\s*(?:getSetting\([''"]fileVersion[''"]\)\s*\|\|\s*)?[''"]([^''"]+)') {
@@ -106,6 +107,11 @@ if ($tag_name -match 'E\+N') {
   $title_flavour = 'Electron and NWJS'
   $release_title = $release_title -replace 'Windows\s', ''
   $release_tag_name = $tag_name -replace '\+N', ''
+}
+if ($tag_name -match '\+E') {
+  $title_flavour = 'UWP/PWA/Electron'
+  $release_title = $release_title -replace 'Windows\s', ''
+  $release_tag_name = $tag_name -replace '\+E', ''
 }
 if ($text_tag -ne "Windows") { $branch = "Kiwix-JS-$text_tag" }
 if ($base_tag -match '[EN]$') {
@@ -207,146 +213,10 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     return
   }
   "Searching for assets..."
+  $AppImageArchives = @()
   if ($flavour -eq '_E') {
-    $base_dir = "$PSScriptRoot/../bld/electron/"
-    $compressed_archive = $base_dir + "Kiwix.JS.$text_tag.$base_tag.zip"
-    # Package installer electron app for Windows
-    "`nChecking for installer package for Windows..."
-    $alt_tag = $text_tag -ireplace 'Windows', 'PWA'
-    $WinInstaller = $base_dir + "Kiwix JS $alt_tag Setup $numeric_tag-E.exe"
-    if (-Not (Test-Path $WinInstaller -PathType Leaf)) {
-      "No package found: building $WinInstaller..."
-      if (-Not $dryrun) {
-        npm run dist-win
-        if (Test-Path $WinInstaller -PathType Leaf) {
-          "Successfully built."
-        } else {
-          "Oh no! The Windows installer build failed!"
-        }
-      }
-    } else {
-      "Package found."
-    }
-    if (-Not ($old_windows_support -or (Test-Path $compressed_archive -PathType Leaf))) {
-      # Package portable electron app for Windows
-      "Building portable Electron app for Windows"
-      # Line below uses electron-packager, but not necessary if we run the setup version first above
-      # if (-Not $dryrun) { npm run package-win }
-      "Compressing release package for Electron..."
-      $unpacked_folder = $base_dir + "win-ia32-unpacked"
-      $foldername = "kiwix-js-windows-win32-ia32"
-      $compressed_assets_dir = $base_dir + $foldername
-      # Find the executable filename in the folder
-      $executable = (ls "$unpacked_folder/*.exe") -replace '^.*[/\\]([^/\\]+)$', '$1' 
-      "Processing executable: $executable"
-      # Rename the compressed assets folder
-      if (-Not $dryrun) { 
-        if (Test-Path $compressed_assets_dir -PathType Container) {
-          rm -r $compressed_assets_dir
-        }
-        # PowerShell bug: you have to make the directory before you can cleanly copy another folder's contents into it!
-        mkdir $compressed_assets_dir
-        cp -r "$unpacked_folder\*" $compressed_assets_dir
-      }
-      $compressed_archive = $base_dir + "Kiwix.JS.$text_tag.$base_tag.zip"
-      "Creating launchers..."
-      $launcherStub = "$base_dir\Start Kiwix JS $text_tag"
-      # Batch file
-      $batch = '@cd "' + $foldername + '"' + "`r`n" + '@start "Kiwix JS ' + $text_tag + '" "' + $executable + '"' + "`r`n"
-      if (-Not $dryrun) {
-        $batch > "$launcherStub.bat"
-        # Shortcut
-        $WshShell = New-Object -ComObject WScript.Shell
-        $Shortcut = $WshShell.CreateShortcut("$launcherStub.lnk")
-        $Shortcut.TargetPath = '%windir%\explorer.exe'
-        $Shortcut.Arguments = "$foldername\$executable"
-        $Shortcut.IconLocation = '%windir%\explorer.exe,12'
-        $Shortcut.Save()
-      } else {
-        "Would have written batch file:"
-        "$batch"
-      }
-      $AddAppPackage = $base_dir + "Start*$text_tag.*"
-      "Compressing: $AddAppPackage, $compressed_assets_dir to $compressed_archive"
-      if (-Not $dryrun) { "$AddAppPackage", "$compressed_assets_dir" | Compress-Archive -DestinationPath $compressed_archive -Force }
-    }
-    # Package Electron app for Linux
-    "`nChecking for Electron packages for Linux..."
-    $LinuxBasePackage = $base_dir + "Kiwix JS $alt_tag-$numeric_tag-E"
-    $DebBasePackage = $base_dir + $package_name + "_$numeric_tag-E"
-    $AppImageArchives = @("$LinuxBasePackage.AppImage", ($LinuxBasePackage + "-i386.AppImage"),
-      ("$DebBasePackage" + "_i386.deb"), ("$DebBasePackage" + "_amd64.deb"))
-    "Processing $AppImageArchives"
-    foreach ($AppImageArchive in $AppImageArchives) {
-      if (-Not (Test-Path $AppImageArchive -PathType Leaf)) {
-        "No packages found: building $AppImageArchive..."
-        if (-Not $dryrun) {
-          # To get docker to start, you might need to run below commands as admin
-          # net stop com.docker.service
-          # taskkill /IM "Docker Desktop.exe" /F
-          # net start com.docker.service
-          # runas /noprofile /user:Administrator "net stop com.docker.service; taskkill /IM 'Docker Desktop.exe' /F; net start com.docker.service"
-          $repo_dir = ($PSScriptRoot -replace '[\\/]scripts[\\/]*$', '')
-          "Using docker command:"
-          "docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux"
-          docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux
-          # Alternatively build with wsl
-          # wsl . ~/.bashrc; npm run dist-linux
-          # docker $build_command
-        }
-      } else {
-        "Linux Electron package $AppImageArchive is available"
-      }
-    }
-    if ($old_windows_support) {
-      "`nSupport for XP and Vista was requested."
-      "Searching for archives..."
-      $nwjs_base = $PSScriptRoot -ireplace 'kiwix-js-windows.scripts.*$', 'kiwix-js-windows-nwjs'
-      "NWJS base directory: " + $nwjs_base
-      $nwjs_archives_path = "$nwjs_base/bld/nwjs/kiwix_js_windows*$numeric_tag" + "N-win-ia32.zip"
-      "NWJS archives path: " + $nwjs_archives_path
-      $nwjs_archives = dir $nwjs_archives_path
-      if (-Not ($nwjs_archives.count -eq 2)) {
-        "`nBuilding portable 32bit NWJS archives to add to Electron release for XP and Vista..."
-        "Updating Build-NWJS script with required tags..."
-        $nw_json = Get-Content -Raw "$nwjs_base/package.json"
-        $script_body = Get-Content -Raw ("$nwjs_base/scripts/Build-NWJS.ps1")
-        $json_nwVersion = ''
-        if ($nw_json -match '"build":\s*\{[^"]*"nwVersion":\s*"([^"]+)') {
-          $json_nwVersion = $matches[1]
-        }
-        if ($json_nwVersion) {
-          "Updating Build-NWJS with NWJS version from package.json: $json_nwVersion"
-          $script_body = $script_body -ireplace '(\$version10\s*=\s*")[^"]+', "`${1}$json_nwVersion" 
-        }
-        $script_body = $script_body -ireplace '(appBuild\s*=\s*")[^"]+', ("`${1}$numeric_tag" + "N")
-        $script_body = $script_body -replace '\s+$', "`n"
-        if ($dryrun) {
-          "[DRYRUN] would have written:`n"
-          $script_body
-        } else {
-          Set-Content "$nwjs_base/scripts/Build-NWJS.ps1" $script_body
-        }
-        if (-Not $dryrun) {
-          "Building..."
-          & $nwjs_base/scripts/Build-NWJS.ps1 -only32bit
-        } else {
-          "Build command: $nwjs_base/scripts/Build-NWJS.ps1 -only32bit"
-        }
-        "Verifying build..."
-        $nwjs_archives = dir $nwjs_archives_path
-        if ($nwjs_archives.count -eq 2) {
-          "NWJS packages were correclty built."
-          $found = $true
-        } else {
-          "Oh no! The NWJS package build failed."
-        }
-      } else {
-        "NWJS packages found."
-        $found = $true
-      }
-    }
-    $ReleaseBundle = ''
+    "Building Electron packages..."
+    & $PSScriptRoot/Build-Electron.ps1
   } elseif ($flavour -eq '_N') {
     # Package NWJS app if necessary
     $base_dir = "$PSScriptRoot/../bld/nwjs"
@@ -380,7 +250,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         $script_body
       } else {
         Set-Content "$PSScriptRoot/Build-NWJS.ps1" $script_body
-        "Building NWJS apps..."
+        "Building NWJS packages..."
         & $PSScriptRoot/Build-NWJS.ps1
         $found = $true
       }
@@ -511,16 +381,25 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     "`nDone."
     return
   }
+  # Build any extras requested
+  if ($plus_electron) {
+    "Building add-on: Electron packages..."
+    & $PSScriptRoot/Build-Electron.ps1
+  }
   # Upload the release
-  $upload_assets = @($compressed_archive, $ReleaseBundle)
+  if ($flavour -eq '') { $upload_assets = @($compressed_archive, $ReleaseBundle) }
   if ($flavour -eq '_N') { $upload_assets = $NWJSAssets }
   if ($flavour -eq '_E') { 
     if ($old_windows_support) {
       $upload_assets = ($AppImageArchives += $nwjs_archives)  
     } else {
-      $upload_assets = ($AppImageArchives += $compressed_archive)
+      $upload_assets = ($AppImageArchives += $comp_electron_archive)
     }
     $upload_assets += $WinInstaller
+  }
+  if ($plus_electron) {
+    $upload_assets += $AppImageArchives
+    $upload_assets += $comp_electron_archive
   }
   $upload_uri = $release.upload_url -ireplace '\{[^{}]+}', '' 
   "Uploading assets to: $upload_uri..."
@@ -574,6 +453,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   if ($flavour -eq '_N') { $permalinkFile = $permalinkFile -replace 'uwp', 'nwjs' }
   if ($tag_name -match 'E\+N') { $permalinkFile2 = $permalinkFile -replace 'uwp', 'nwjs' }
   if ($flavour -eq '_E') { $permalinkFile = $permalinkFile -replace 'uwp', 'electron' }
+  if ($plus_electron) { $permalinkFile2 = $permalinkFile -replace 'uwp', 'electron' }
   "Looking for: $permalinkFile"
   foreach ($file in @($permalinkFile, $permalinkFile2)) {
     if ($file) {
