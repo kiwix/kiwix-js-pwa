@@ -86,7 +86,7 @@ $old_windows_support = $tag_name -match '\+N'
 $plus_electron = $tag_name -match '\+E'
 if ($text_tag -eq '') { $text_tag = 'Windows' }
 $release_title = "Kiwix JS $text_tag $base_tag UWP"
-if ($text_tag -imatch 'Wikivoyage|WikiMed') { $release_title = "$text_tag by Kiwix $base_tag UWP" }
+if ($text_tag -imatch 'Wikivoyage|WikiMed') { $release_title = "$text_tag by Kiwix UWP $base_tag" }
 $flavour = ''
 $file_version = ''
 if ($init_params -match 'params\[[''"]fileVersion[''"]]\s*=\s*(?:getSetting\([''"]fileVersion[''"]\)\s*\|\|\s*)?[''"]([^''"]+)') {
@@ -111,6 +111,7 @@ if ($tag_name -match 'E\+N') {
 if ($tag_name -match '\+E') {
   $title_flavour = 'UWP/PWA/Electron'
   $release_title = $release_title -replace 'Windows\s', ''
+  $release_title = $release_title -replace 'UWP', '(Windows/Linux)'
   $release_tag_name = $tag_name -replace '\+E', ''
 }
 if ($text_tag -ne "Windows") { $branch = "Kiwix-JS-$text_tag" }
@@ -216,7 +217,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   $AppImageArchives = @()
   if ($flavour -eq '_E') {
     "Building Electron packages..."
-    & $PSScriptRoot/Build-Electron.ps1
+    . $PSScriptRoot/Build-Electron.ps1
   } elseif ($flavour -eq '_N') {
     # Package NWJS app if necessary
     $base_dir = "$PSScriptRoot/../bld/nwjs"
@@ -384,7 +385,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   # Build any extras requested
   if ($plus_electron) {
     "Building add-on: Electron packages..."
-    & $PSScriptRoot/Build-Electron.ps1
+    . $PSScriptRoot/Build-Electron.ps1
   }
   # Upload the release
   if ($flavour -eq '') { $upload_assets = @($compressed_archive, $ReleaseBundle) }
@@ -402,7 +403,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     $upload_assets += $comp_electron_archive
   }
   $upload_uri = $release.upload_url -ireplace '\{[^{}]+}', '' 
-  "Uploading assets to: $upload_uri..."
+  "`nUploading assets to: $upload_uri..."
   
   ForEach($asset in $upload_assets) {
     if (-Not $asset) { Continue }
