@@ -136,6 +136,7 @@ if ($json_object -imatch '"name":\s"([\w]+-[^"]+)') {
 "Text tag: $text_tag"
 "Base tag: $base_tag"
 "Numeric tag: $numeric_tag"
+"Flavour: $flavour"
 "Branch: $branch"
 "Release title: $release_title"
 "Package name: $package_name"
@@ -174,7 +175,9 @@ if (-Not ($dryrun -or $buildonly -or $updatewinget)) {
 
 # We should have enough information to find the release URL
 if ($updatewinget) {
-  if ($release_body -match 'https:[^)]+?\.(?:appxbundle|exe)') {
+  if (-Not $flavour -and $release_body -match 'https:[^)]+?\.(?:appxbundle)') {
+    $package_url = $matches[0]
+  } elseif ($release_body -match 'https:[^)]+?\.(?:exe)') {
     $package_url = $matches[0]
   } else {
     "`nUnable to find the package URL!"
