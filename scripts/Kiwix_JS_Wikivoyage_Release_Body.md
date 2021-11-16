@@ -7,11 +7,11 @@ Please choose the correct version (only the Store version will self update):
 * **Windows**:
   - **Windows 10/11 (UWP)**
     + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9N5SB90Q4JBJ (it will self-update automatically) - *recommended*
-    + Or, on a PC, open a command prompt and run `winget install wikivoyage`
+    + Or, on a PC, open a command prompt and run `winget install kiwix.wikivoyage`
   - **Windows 7/8/10/11 (Electron)**
     + Portable (just unzip, no install needed) - [Wikivoyage by Kiwix <<base_tag>>.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/Kiwix.JS.Wikivoyage.<<base_tag>>.zip)
     + Installable - [Wikivoyage by Kiwix Setup <<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage.by.Kiwix.Setup.<<numeric_tag>>-E.exe)
-    + Or, on a PC, open a command prompt and run `winget install wikivoyage-electron`
+    + Or, on a PC, open a command prompt and run `winget install kiwix.wikivoyage.electron`
 * **Linux** (read important instructions below screenshot):
   - **Portable (Electron)**
     + AppImage 64bit (Ubuntu, Debian, OpenSUSE) - [Wikivoyage by Kiwix-<<numeric_tag>>-E.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage.by.Kiwix-<<numeric_tag>>-E.AppImage)
@@ -26,7 +26,7 @@ Full installation instructions are after the screenshot.
 
 ![image](https://user-images.githubusercontent.com/4304337/118415611-46484d00-b6a3-11eb-8586-11b23e3391be.png)
 
-### Instructions
+## Installation Instructions - Electron
 
 * For the Windows Portable build, unzip the contents of the [Wikivoyage by Kiwix <<base_tag>>.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage.by.Kiwix.<<base_tag>>.zip) archive to any folder, or to a flash drive / thumb drive, and double click on `Start Wikivoyage by Kiwix` or `Start Wikivoyage by Kiwix.bat`, or open the `kiwix-js-windows-win32-ia32` folder and double click on `Wikivoyage by Kiwix.exe`.
 * For the Windows Setup (installable) build, simply download and launch. It will install itself, together with a shortcut in your shortcut menu, and run. When you want to update the app, just install a new version over it (it will uninstall the old one for you).
@@ -36,7 +36,7 @@ Full installation instructions are after the screenshot.
 
 ¹ With many thanks to Jay Midura for documenting the switches needed for OpenSUSE.
 
-### Release Notes
+## Release Notes
 
 * This app is packaged with the <<date>> English-language Wikivoyage archive `<<zim>>`. The packaged archive is located in the `archives` folder (only accessible in the portable Windows version). See the readme in that folder if you wish to add a different archive as the packaged ZIM;
 * You can download Wikivoyage in other languages from the Configuration page (see Known Issues below);
@@ -51,9 +51,11 @@ Full installation instructions are after the screenshot.
 * In the Electron version (not the UWP version): if you download an archive from within the app (from Configuration), you will be able to pick a download directory, and the download will start, but then there will be no further indication that a download is in progress. You will need to check the chosen download directory to see if the download has completed;
 * Please see https://github.com/kiwix/kiwix-js-windows/issues for further known issues. If you find a new issue, please open a new issue on that page.
 
-### Manual Installation of UWP app: Windows 10/11 Tablet / PC
+## Manual Installation - UWP
 
-**New!** You can sideload the app easily by typing `winget install wikivoyage` in a Command Prompt or PowerShell terminal. If you don't yet have [`winget`](https://docs.microsoft.com/en-us/windows/package-manager/winget/), use these manual instructions:
+### Windows 10/11 Desktop/Tablet
+
+**New!** You can sideload the app easily by typing `winget install kiwix.wikivoyage` in a Command Prompt or PowerShell terminal. If you don't yet have [`winget`](https://docs.microsoft.com/en-us/windows/package-manager/winget/), use these manual instructions:
 
 **Uninstall any previous installation of Wikivoyage by Kiwix before you follow this procedure**.
 
@@ -65,7 +67,7 @@ If the above procedures fail, or the App Installer is not available, then downlo
 
 In case you are still unable to sideload, try the Electron version above.
 
-### Manual Installation of UWP app: Windows 10 Mobile
+### Windows 10 Mobile
 
 **Uninstall any previous installation of Wikivoyage by Kiwix before you follow this procedure**.
 
