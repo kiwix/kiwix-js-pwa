@@ -1,5 +1,11 @@
 # Changelog
 
+## In-progress release 1.7.9
+
+* UPDATE: App can now use the latest Electron release and APIs
+* ENHANCEMENT: Electron version can now read contents of a picked archive directory
+* FIX: Prevent most app crashes when switching to SW mode in UWP app
+
 ## Release 1.7.8
 
 * UPDATE: Sample archive updated to `wikipedia_en_100_nopic_2021-10`
