@@ -3747,14 +3747,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             //@TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
             htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, "$1");
 
-            //Remove erroneous content frequently on front page
+            // Remove erroneous content frequently on front page
             htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, "");
             htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, "");
-            //Put misplaced hatnote headers inside <h1> block back in correct position @TODO remove this when fixed in mw-offliner
+            // Put misplaced hatnote headers inside <h1> block back in correct position @TODO remove this when fixed in mw-offliner
             var hatnote;
             var hatnotes = [];
             do {
-                hatnote = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?((?:<div\s+[^>]+\b(?:hatnote|homonymie)\b[\s\S]+?<\/div>\s*)+)/i);
+                hatnote = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?((?:<div\s+[^>]+\b(?:hatnote|homonymie|dablink)\b[\s\S]+?<\/div>\s*)+)/i);
                 if (hatnote) {
                     htmlArticle = htmlArticle.replace(hatnote[1], '');
                     hatnotes.push(hatnote[1]);
@@ -3765,11 +3765,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hnt.replace(/(<div\s+)/i, '$1style="padding-top:10px;" '));
                 });
             }
-            //Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
-            var noexcerpt = htmlArticle.match(/<dl\b(?:[^<]|<(?!\/dl>)){1,15}?(?:For other places with the same name|Not to be confused with|mw-redirect[^<]+travel topic|This article is a|See also:)(?:[^<]|<(?!\/dl>))+?<\/dl>\s*/i);
-            if (noexcerpt && noexcerpt.length) {
-                htmlArticle = htmlArticle.replace(noexcerpt, "");
-                htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + noexcerpt);
+            // Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
+            var noexcerpt = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?(<dl\b(?:[^<]|<(?!\/dl>)){1,50}?(?:For\sother\splaces\swith\sthe\ssame\sname|Not\sto\sbe\sconfused\swith|mw-redirect[^<]+travel\stopic|This\sarticle\sis\sa|See\salso:)(?:[^<]|<(?!\/dl>))+<\/dl>\s*)/i);
+            if (noexcerpt && noexcerpt[1] && noexcerpt[1].length) {
+                htmlArticle = htmlArticle.replace(noexcerpt[1], '');
+                htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, '$1' + noexcerpt[1]);
             }
 
             //Remove white background colour (causes flashes in dark mode)
