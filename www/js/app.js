@@ -3754,16 +3754,20 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             var hatnote;
             var hatnotes = [];
             do {
-                hatnote = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?((?:<div\s+[^>]+\b(?:hatnote|homonymie|dablink)\b[\s\S]+?<\/div>\s*)+)/i);
-                if (hatnote) {
-                    htmlArticle = htmlArticle.replace(hatnote[1], '');
-                    hatnotes.push(hatnote[1]);
+                hatnote = util.matchOuter(htmlArticle, '<div\\b[^>]+\\b(?:hatnote|homonymie|dablink)\\b', '</div>\\s*', 'i');
+                if (hatnote && hatnote.length) {
+                    // Ensure the next matching hatnote is under h1
+                    if (/(?:<h1\b(?:[^<]|<(?!h2))+?)<div\s+[^>]+\bhatnote|homonymie|dablink\b/i.test(htmlArticle)) {
+                        htmlArticle = htmlArticle.replace(hatnote[0], '');
+                        hatnotes.push(hatnote[0]);
+                    } else {
+                        break;
+                    }
                 }
-            } while (hatnote);
-            if (hatnotes.length) {
-                hatnotes.forEach(function (hnt) {
-                    htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hnt.replace(/(<div\s+)/i, '$1style="padding-top:10px;" '));
-                });
+            } while (hatnote.length);
+            // Ensure we replace them in the right order
+            for (var i = hatnotes.length; i--;) {
+                htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnotes[i].replace(/(<div\s+)/i, '$1style="padding-top:10px;" '));
             }
             // Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
             var noexcerpt = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?(<dl\b(?:[^<]|<(?!\/dl>)){1,50}?(?:For\sother\splaces\swith\sthe\ssame\sname|Not\sto\sbe\sconfused\swith|mw-redirect[^<]+travel\stopic|This\sarticle\sis\sa|See\salso:)(?:[^<]|<(?!\/dl>))+<\/dl>\s*)/i);
