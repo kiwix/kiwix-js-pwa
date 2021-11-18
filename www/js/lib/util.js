@@ -408,16 +408,17 @@ define([], function() {
      * @param {string} left - Regex string of opening pattern to match, e.g. '<table\\b[^>]*>' matches <table> or <table ...>. 
      * @param {string} right - Regex string of closing pattern to match, e.g. '</table>'. Must not be equal to left.
      * @param {string} flags - Regex flags, if any, such as 'gi' (= match globally and case insensitive).
+     * @param {string} prefix - An optional Regex string that must be present before <left> for the regex to match
      * @returns {Array} An array of matches.
      */
-    function matchOuter(str, left, right, flags) {
+    function matchOuter(str, left, right, flags, prefix) {
         flags = flags || "";
         var f = flags.replace(/g/g, ""),
             g = flags.indexOf("g") > -1,
             l = new RegExp(left, f),
             //Creates a neutral middle value if left is a well-formed regex for an html tag with attributes
             mid = /^(<[^\\]+)\\/.test(left) ? left.replace(/^(<[^\\]+)[\S\s]+$/, "$1") + '\\b[^>]*>' : "",
-            x = new RegExp((mid ? mid : left) + "|" + right, "g" + f),
+            x = new RegExp((prefix ? prefix : '') + (mid ? mid : left) + "|" + right, "g" + f),
             a = [],
             t, s, m;
         mid = mid ? new RegExp(mid, f) : l;
