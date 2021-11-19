@@ -80,6 +80,26 @@ div:not(.panel-success, .alert-message) {
     user-select: none;
 }
 
+.dark ::-webkit-scrollbar {
+    height: 10px;
+}
+
+.dark ::-webkit-scrollbar-button:start:decrement,
+.dark ::-webkit-scrollbar-button:end:increment {
+    height: 30px;
+    background-color: transparent;
+}
+
+.dark ::-webkit-scrollbar-track-piece {
+    background-color: #3b3b3b;
+}
+
+.dark ::-webkit-scrollbar-thumb:vertical {
+    height: 50px;
+    background-color: #666;
+    border: 1px solid #eee;
+}
+
 .nopadding {
     padding-right: 1px !important;
     padding-left: 1px !important;
