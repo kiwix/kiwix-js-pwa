@@ -3757,7 +3757,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 hatnote = util.matchOuter(htmlArticle, '<div\\b[^>]+\\b(?:hatnote|homonymie|dablink)\\b', '</div>\\s*', 'i');
                 if (hatnote && hatnote.length) {
                     // Ensure the next matching hatnote is under h1
-                    if (/(?:<h1\b(?:[^<]|<(?!h2))+?)<div\s+[^>]+\bhatnote|homonymie|dablink\b/i.test(htmlArticle)) {
+                    if (/<h1\b(?:[^<]|<(?!h2))+<div\b[^>]+\b(?:hatnote|homonymie|dablink)\b/i.test(htmlArticle)) {
                         htmlArticle = htmlArticle.replace(hatnote[0], '');
                         hatnotes.push(hatnote[0]);
                     } else {
