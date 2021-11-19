@@ -4,6 +4,7 @@
 
 * UPDATE: App can now use the latest Electron release and APIs
 * ENHANCEMENT: Electron version can now read contents of a picked archive directory
+* ENHANCEMENT: Scrollbars are now styled (with darker colours) in dark mode
 * FIX: Prevent most app crashes when switching to SW mode in UWP app
 
 ## Release 1.7.8
