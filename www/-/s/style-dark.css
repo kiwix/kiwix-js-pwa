@@ -111,6 +111,24 @@ html, body {
     /*[[bg-options]];*/
 }
 
+::-webkit-scrollbar {
+  height: 10px;
+}
+
+::-webkit-scrollbar-button:start:decrement,
+::-webkit-scrollbar-button:end:increment  {
+    height: 30px;
+    background-color: transparent;
+}
+::-webkit-scrollbar-track-piece  {
+    background-color: #3b3b3b;
+}
+::-webkit-scrollbar-thumb:vertical {
+    height: 50px;
+    background-color: #666;
+    border: 1px solid #eee;
+}
+
 .mw-ui-button, .mw-ui-button * {
     background-color: lightgray !important;
     color: #fff !important;
@@ -398,4 +416,3 @@ div.tagsblob, .tagsblob ul, .tags li, .tags a {
 a.button {
     background-color: darkslateblue !important;
 }
-
