@@ -1,11 +1,34 @@
-﻿html, img, video {
+﻿html,
+img,
+video {
     filter: invert(1) hue-rotate(180deg);
 }
 
-img.mwe-math-fallback-image-inline, img.mwe-math-fallback-image-display {
+img.mwe-math-fallback-image-inline,
+img.mwe-math-fallback-image-display {
     filter: hue-rotate(180deg);
 }
 
 body {
     background: black !important;
+}
+
+::-webkit-scrollbar {
+    height: 10px;
+}
+
+::-webkit-scrollbar-button:start:decrement,
+::-webkit-scrollbar-button:end:increment {
+    height: 30px;
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-track-piece {
+    background-color: #3b3b3b;
+}
+
+::-webkit-scrollbar-thumb:vertical {
+    height: 50px;
+    background-color: #666;
+    border: 1px solid #eee;
 }
