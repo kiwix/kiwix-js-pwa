@@ -10,7 +10,7 @@ _pkginfo.txt
 /archives/*.zim
 /AppPackages/*wikivoyage*
 /AppPackages/*wikimed*
-/node_modules/
+/?ode_modules*/
 package-lock.json
 .vscode/launch.json
 null
