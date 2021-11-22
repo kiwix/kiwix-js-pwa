@@ -6,7 +6,7 @@ Please choose the correct version (only the Store version will self update):
 
 * **Windows**:
   - **Windows 10/11 (UWP)**
-    + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9N5SB90Q4JBJ (it will self-update automatically) - *recommended*
+    + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9PHJSNP1CZ8J (it will self-update automatically) - *recommended*
     + Or, on a PC, open a command prompt and run `winget install kiwix.wikimed`
   - **Windows 7/8/10/11 (Electron)**
     + Portable (just unzip, no install needed) - [WikiMed by Kiwix <<base_tag>>.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed.<<base_tag>>.zip)
@@ -24,7 +24,7 @@ Full installation instructions are after the screenshot.
 
 **Status of Store App: IN CERTIFICATION**
 
-![image](https://user-images.githubusercontent.com/4304337/118415611-46484d00-b6a3-11eb-8586-11b23e3391be.png)
+![image](https://user-images.githubusercontent.com/4304337/118086831-78646100-b3bc-11eb-951d-d6621e5f5ee3.png)
 
 ## Installation Instructions - Electron
 
