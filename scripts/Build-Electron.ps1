@@ -1,7 +1,7 @@
 # This script is intended to be run by Create-DraftRelease, and must be dot-sourced (run with `. ./Build-Electron.ps1`)
 # because it modifies variables needed in Create-DraftRelease
 $base_dir = "$PSScriptRoot/../bld/electron/"
-$comp_electron_archive = $base_dir + "Kiwix.JS.$text_tag.$base_tag.zip"
+$comp_electron_archive = $base_dir + "$text_tag.by.Kiwix.$base_tag.zip"
 # Package installer electron app for Windows
 "`nChecking for installer package for Windows..."
 $alt_tag = $text_tag -ireplace 'Windows', 'PWA'
@@ -43,11 +43,10 @@ if (-Not ($old_windows_support -or (Test-Path $comp_electron_archive -PathType L
     mkdir $compressed_assets_dir
     cp -r "$unpacked_folder\*" $compressed_assets_dir
   }
-  $comp_electron_archive = $base_dir + "Kiwix.JS.$text_tag.$base_tag.zip"
   "Creating launchers..."
-  $launcherStub = "$base_dir\Start Kiwix JS $text_tag"
+  $launcherStub = "$base_dir\Start $text_tag by Kiwix"
   # Batch file
-  $batch = '@cd "' + $foldername + '"' + "`r`n" + '@start "Kiwix JS ' + $text_tag + '" "' + $executable + '"' + "`r`n"
+  $batch = '@cd "' + $foldername + '"' + "`r`n" + '@start "' + $text_tag + ' by Kiwix" "' + $executable + '"' + "`r`n"
   if (-Not $dryrun) {
     $batch > "$launcherStub.bat"
     # Shortcut
@@ -61,7 +60,7 @@ if (-Not ($old_windows_support -or (Test-Path $comp_electron_archive -PathType L
     "Would have written batch file:"
     "$batch"
   }
-  $AddAppPackage = $base_dir + "Start*$text_tag.*"
+  $AddAppPackage = $base_dir + "Start*$text_tag*.*"
   "Compressing: $AddAppPackage, $compressed_assets_dir to $comp_electron_archive"
   if (-Not $dryrun) { "$AddAppPackage", "$compressed_assets_dir" | Compress-Archive -DestinationPath $comp_electron_archive -Force }
 }
