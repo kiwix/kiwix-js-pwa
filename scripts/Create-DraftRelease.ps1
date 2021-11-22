@@ -302,7 +302,10 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         if ($text_tag -eq "Windows") { $projstub = "" }
         $buildmode = "SideloadOnly"
         if ($buildstorerelease) { $buildmode = "StoreUpload" }
+        # We have to rename node_modules or else msbuild won't run due to rogue dependency versions
+        ren $PSScriptRoot/../node_modules $PSScriptRoot/../node_modules_electron
         cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && msbuild.exe KiwixWebApp$projstub.jsproj /p:Configuration=Release /p:UapAppxPackageBuildMode=$buildmode"
+        ren $PSScriptRoot/../node_modules_electron $PSScriptRoot/../node_modules
       }
     }
     # If we are releasing the MS Store version we have to copy it from a different location
