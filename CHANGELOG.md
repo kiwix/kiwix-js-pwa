@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 1.7.9
+## In-progress release 1.8.0
 
 * UPDATE: App can now use the latest Electron release and APIs
 * ENHANCEMENT: Electron version can now read contents of a picked archive directory
