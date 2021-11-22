@@ -2,6 +2,7 @@ param (
     [string]$tag_name = "",
     [switch]$dryrun = $false,
     [switch]$buildstorerelease = $false,
+    [switch]$skipsigning = $false,
     [switch]$draftonly = $false,
     [switch]$buildonly = $false,
     [switch]$updatewinget = $false,
@@ -204,6 +205,9 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   if (-Not $buildonly) { "The draft release details were successfully created." }
   "`nUpdating release version in package.json"
   $json_object = $json_object -replace '("version": ")[^"]+', "`${1}$base_tag"
+  if ($plus_electron) {
+    $json_object = $json_object -replace '("version": ")[^"]+', ("`${1}$base_tag" + "E")
+  }
   $json_object = $json_object -replace '\s*$', "`n"
   if ($dryrun) {
     "[DRYRUN] would have written:`n"
@@ -296,7 +300,9 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       if (-Not $dryrun) {
         $projstub = $text_tag
         if ($text_tag -eq "Windows") { $projstub = "" }
-        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && msbuild.exe KiwixWebApp$projstub.jsproj -p:Configuration=Release "
+        $buildmode = "SideloadOnly"
+        if ($buildstorerelease) { $buildmode = "StoreUpload" }
+        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && msbuild.exe KiwixWebApp$projstub.jsproj /p:Configuration=Release /p:UapAppxPackageBuildMode=$buildmode"
       }
     }
     # If we are releasing the MS Store version we have to copy it from a different location
@@ -347,7 +353,9 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         "Tag yielded: $ReleaseBundle " + ($ReleaseBundle -or $false)
         return
     }
-    if (-Not $buildstorerelease) {
+    if ($skipsigning) {
+      "`nWARNING: Signing was skipped because user specified the -skipsigning flag. Be sure the bundle is signed!"
+    } elseif (-Not $buildstorerelease) {
       "Signing app package for release on GitHub..."
       $pfxpwd = Get-Content -Raw $PSScriptRoot\secret_kiwix.p12.pass
       if (-Not $dryrun) {
@@ -373,6 +381,14 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     "There was an error compressing assets."
     return
   }
+  # Build any extras requested
+  if ($plus_electron) {
+    "Building add-on: Electron packages..."
+    $base_tag_origin = $base_tag
+    $base_tag = $base_tag -replace '^([\d.]+)', '$1E'
+    . $PSScriptRoot/Build-Electron.ps1
+    $base_tag = $base_tag_origin
+  } 
   if ($forced_buildonly) {
     "`nBecause your app package was not valid for release on GitHub, we have not uploaded it."
     "You will need to delete any draft release that was created and aborted as part of this run."
@@ -384,11 +400,6 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     "Please upload and release your packages manually, or re-run this script without the buildonly switch."
     "`nDone."
     return
-  }
-  # Build any extras requested
-  if ($plus_electron) {
-    "Building add-on: Electron packages..."
-    . $PSScriptRoot/Build-Electron.ps1
   }
   # Upload the release
   if ($flavour -eq '') { $upload_assets = @($compressed_archive, $ReleaseBundle) }
