@@ -1807,7 +1807,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     }, [tmpMessageChannel.port2]);
                 } else if (keepAliveServiceWorkerHandle) {
                     console.error('The Service Worker is active but is not controlling the current page! We have to reload.');
-                    window.location.href = params.PWAServer + 'www/index.html';
+                    window.location.reload();
                 } else {
                     console.debug('The Service Worker needs more time to load...');
                     delay = 600;
