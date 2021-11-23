@@ -41,3 +41,4 @@
 *.woff2	binary
 *.deb   binary
 *.wasm  binary
+*.appxbundle binary
