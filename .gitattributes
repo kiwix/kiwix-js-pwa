@@ -42,3 +42,4 @@
 *.deb   binary
 *.wasm  binary
 *.appxbundle binary
+*.appxupload binary
