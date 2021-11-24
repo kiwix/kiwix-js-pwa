@@ -3770,7 +3770,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnotes[i].replace(/(<div\s+)/i, '$1style="padding-top:10px;" '));
             }
             // Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
-            var noexcerpt = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?(<dl\b(?:[^<]|<(?!\/dl>)){1,50}?(?:For\sother\splaces\swith\sthe\ssame\sname|Not\sto\sbe\sconfused\swith|mw-redirect[^<]+travel\stopic|This\sarticle\sis\sa|See\salso:)(?:[^<]|<(?!\/dl>))+<\/dl>\s*)/i);
+            var noexcerpt = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?(<dl\b(?:[^<]|<(?!\/dl>)){1,50}?(?:For\sother\s.{5,20}\swith\s|Not\sto\sbe\sconfused\swith|mw-redirect[^<]+travel\stopic|This\sarticle\sis\sa|See\salso:)(?:[^<]|<(?!\/dl>))+<\/dl>\s*)/i);
             if (noexcerpt && noexcerpt[1] && noexcerpt[1].length) {
                 htmlArticle = htmlArticle.replace(noexcerpt[1], '');
                 htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, '$1' + noexcerpt[1]);
