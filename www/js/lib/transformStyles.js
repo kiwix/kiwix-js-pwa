@@ -48,7 +48,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
             //DEV: Although "." matches any character in regex, there is enough specificity in the patterns below
             //DEV: Add any local stylesheets you wish to include here
             if (cc &&
-                (/-\/(?:s\/css_modules\/|mw\/)?style.css/i.test(zl) ||
+                (/-\/(?:s\/|s\/css_modules\/|mw\/)?style.css/i.test(zl) ||
                     /\/mediawiki.toc.css/i.test(zl) ||
                     /\/ext.cite.styles.css/i.test(zl) ||
                     /\/ext.timeline.styles.css/i.test(zl) ||
