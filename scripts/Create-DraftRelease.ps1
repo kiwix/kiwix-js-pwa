@@ -272,7 +272,8 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       } else {
         "`n**WARNING: The app manifest is not correct for building an app for release on GitHub! Please associate the app with 'Association Kiwix' in Visual Studio and try again"
         "or else run this script with the flag -buildstorerelease`n"
-        return
+        if (-Not $dryrun) { return }
+        else { "App would exit now if not dryrun.`n" }
       }
     } else {
       "`nBe aware that the version you are building is good for public release on GitHub, but not for upload to the Microsoft Store."
@@ -328,7 +329,8 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       } else {
         "WARNING: You requested a release valid for the MS Store, but the app manifest is not associated with the Store! We cannot build a Store release."
         "Please associate the app with the MS Store in Visual Studio, save the manifest, and try again."
-        return
+        if (-Not $dryrun) { return }
+        else { "`nApp would exit now if not dryrun.`n" }
       }
       if (-Not $buildonly) {
         "** You can use the appxupload to submit to the Store, but we won't release..."
@@ -340,7 +342,8 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         "Using locally signed release."
       } else {
         "**WARNING: The app manifest is not correct for building an app for release on GitHub! Please associate the app with 'Association Kiwix' in Visual Studio and try again."
-        return
+        if (-Not $dryrun) { return }
+        else { "`nApp would exit now if not dryrun.`n" }
       }
     }
     $ReleaseBundle = dir "$PSScriptRoot/../AppPackages/*_$base_tag*_Test/*_$base_tag*.appx*"
