@@ -33,7 +33,7 @@ $sw_tag = ''
 if ($serviceworker -match 'appVersion\s*=\s*[''"]([^''"]+)') {
   $sw_tag = 'v' + $matches[1]
   if ($sw_tag -ne $file_tag) {
-    "*** WARNING: The version in init.js [$file_tag] does not match the version in pwabuilder-sw.js [$sw_tag]! ***"
+    "`n*** WARNING: The version in init.js [$file_tag] does not match the version in pwabuilder-sw.js [$sw_tag]! ***"
     "Please correct before continuing.`n"
     exit
   } else {
@@ -41,7 +41,7 @@ if ($serviceworker -match 'appVersion\s*=\s*[''"]([^''"]+)') {
     "Version in pwabuilder-sw.js: $sw_tag"
   }
 } else {
-  "*** WARNING: App version is incorrectly set in pwabuilder-sw.js.`nPlease correct before continuing.`n"
+  "`n*** WARNING: App version is incorrectly set in pwabuilder-sw.js.`nPlease correct before continuing.`n"
   exit
 }
 
