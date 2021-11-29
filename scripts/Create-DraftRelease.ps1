@@ -9,6 +9,8 @@ param (
     [string]$respondtowingetprompt = "" # Provide an override response (Y/N) to the winget prompt at the end of the script - for automation
 )
 # DEV: To build Electron packages for all platforms and NWJS for XP and Vista in a single release, use, e.g., "v1.3.0E+N" (Electron + NWJS)
+# DEV: To build UWP + Electron + NWJS packages in a single release, use "v1.3.0+E+N"
+
 # DEV: To build new icons, use
 # electron-icon-builder --input=C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\icon.png --output=./bld/
 # then move icons in png into /bld/icons/
@@ -114,6 +116,12 @@ if ($tag_name -match '\+E') {
   $release_title = $release_title -replace 'Windows\s', ''
   $release_title = $release_title -replace 'UWP', '(Windows/Linux)'
   $release_tag_name = $tag_name -replace '\+E', ''
+}
+if ($tag_name -match '\+E\+N') {
+  $title_flavour = 'UWP/PWA/Electron/NWJS'
+  $release_title = $release_title -replace 'Windows\s', ''
+  $release_title = $release_title -replace 'UWP', '(Windows/Linux)'
+  $release_tag_name = $tag_name -replace '\+E\+N', ''
 }
 if ($text_tag -ne "Windows") { $branch = "Kiwix-JS-$text_tag" }
 if ($base_tag -match '[EN]$') {
@@ -337,14 +345,6 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         $buildonly = $true
         $forced_buildonly = $true
       }
-    } else {
-      if ($appxmanifest -match "Publisher=['`"]CN=Association\sKiwix") {
-        "Using locally signed release."
-      } else {
-        "**WARNING: The app manifest is not correct for building an app for release on GitHub! Please associate the app with 'Association Kiwix' in Visual Studio and try again."
-        if (-Not $dryrun) { return }
-        else { "`nApp would exit now if not dryrun.`n" }
-      }
     }
     $ReleaseBundle = dir "$PSScriptRoot/../AppPackages/*_$base_tag*_Test/*_$base_tag*.appx*"
     # Check the file exists and it's of the right type
@@ -420,7 +420,11 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   }
   if ($plus_electron) {
     $upload_assets += $AppImageArchives
-    $upload_assets += $comp_electron_archive
+    if ($old_windows_support) {
+      $upload_assets += $nwjs_archives
+    } else {
+      $upload_assets += $comp_electron_archive
+    }
   }
   $upload_uri = $release.upload_url -ireplace '\{[^{}]+}', '' 
   "`nUploading assets to: $upload_uri..."
@@ -469,14 +473,15 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   "`nCreating permalink..."
   $permalinkFile = "$PSScriptRoot/../kiwix-js-uwp.html"
   $permalinkFile2 = ""
+  $permalinkFile3 = ""
   if ($tag_name -imatch 'WikiMed') { $permalinkFile = $permalinkFile -replace 'kiwix-js-uwp', 'wikimed-uwp' }
   if ($tag_name -imatch 'Wikivoyage') { $permalinkFile = $permalinkFile -replace 'kiwix-js-uwp', 'wikivoyage-uwp' }
   if ($flavour -eq '_N') { $permalinkFile = $permalinkFile -replace 'uwp', 'nwjs' }
   if ($tag_name -match 'E\+N') { $permalinkFile2 = $permalinkFile -replace 'uwp', 'nwjs' }
   if ($flavour -eq '_E') { $permalinkFile = $permalinkFile -replace 'uwp', 'electron' }
-  if ($plus_electron) { $permalinkFile2 = $permalinkFile -replace 'uwp', 'electron' }
+  if ($plus_electron) { $permalinkFile3 = $permalinkFile -replace 'uwp', 'electron' }
   "Looking for: $permalinkFile"
-  foreach ($file in @($permalinkFile, $permalinkFile2)) {
+  foreach ($file in @($permalinkFile, $permalinkFile2, $permalinkFile3)) {
     if ($file) {
       $permalink = Get-Content -Raw $file
       $permalink = $permalink -replace 'v[\d.EN]{5,}', "v$base_tag"
