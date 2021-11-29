@@ -1,12 +1,13 @@
-# This script is intended to be run by Create-DraftRelease, and must be dot-sourced (run with `. ./Build-Electron.ps1`)
+# This script is intended to be run by Create-DraftRelease, and must be dot-sourced (run with `. ./Build-Electron.ps1` or `. /path/to/Build-Electron.ps1`)
 # because it modifies variables needed in Create-DraftRelease
 $base_dir = "$PSScriptRoot/../bld/electron/"
-$comp_electron_archive = $base_dir + "$text_tag.by.Kiwix.$base_tag.zip"
 # Package installer electron app for Windows
 "`nChecking for installer package for Windows..."
-$alt_tag = $text_tag -ireplace 'Windows', 'PWA'
+$alt_tag = $text_tag -ireplace 'Windows', 'Electron'
+$comp_electron_archive = $base_dir + "Kiwix.JS.Electron.$base_tag.zip"
 $WinInstaller = $base_dir + "Kiwix JS $alt_tag Setup $numeric_tag-E.exe"
 if ($alt_tag -imatch 'WikiMed|Wikivoyage') {
+  $comp_electron_archive = $base_dir + "$text_tag.by.Kiwix.$base_tag.zip"
   $WinInstaller = $base_dir + "$alt_tag by Kiwix Setup $numeric_tag-E.exe"
 }
 if (-Not (Test-Path $WinInstaller -PathType Leaf)) {
@@ -44,9 +45,13 @@ if (-Not ($old_windows_support -or (Test-Path $comp_electron_archive -PathType L
     cp -r "$unpacked_folder\*" $compressed_assets_dir
   }
   "Creating launchers..."
-  $launcherStub = "$base_dir\Start $text_tag by Kiwix"
+  $launcherStub = "$base_dir\Start Kiwix JS Electron"
   # Batch file
-  $batch = '@cd "' + $foldername + '"' + "`r`n" + '@start "' + $text_tag + ' by Kiwix" "' + $executable + '"' + "`r`n"
+  $batch = '@cd "' + $foldername + '"' + "`r`n" + '@start "Kiwix JS Electron" "' + $executable + '"' + "`r`n"
+  if ($text_tag -match 'WikiMed|Wikivoyage') {
+    $launcherStub = "$base_dir\Start $text_tag by Kiwix"
+    $batch = '@cd "' + $foldername + '"' + "`r`n" + '@start "' + $text_tag + ' by Kiwix" "' + $executable + '"' + "`r`n"
+  }
   if (-Not $dryrun) {
     $batch > "$launcherStub.bat"
     # Shortcut
@@ -60,7 +65,7 @@ if (-Not ($old_windows_support -or (Test-Path $comp_electron_archive -PathType L
     "Would have written batch file:"
     "$batch"
   }
-  $AddAppPackage = $base_dir + "Start*$text_tag*.*"
+  $AddAppPackage = $base_dir + "Start*Kiwix*.*"
   "Compressing: $AddAppPackage, $compressed_assets_dir to $comp_electron_archive"
   if (-Not $dryrun) { "$AddAppPackage", "$compressed_assets_dir" | Compress-Archive -DestinationPath $comp_electron_archive -Force }
 }
