@@ -78,7 +78,8 @@ params['displayHiddenBlockElements'] = getSetting('displayHiddenBlockElements') 
 params['openAllSections'] = getSetting('openAllSections') != null ? getSetting('openAllSections') : true; //Set default for opening all sections in ZIMs that have collapsible sections and headings ("auto" = let CSS decide according to screen width; true = always open until clicked by user; false = always closed until clicked by user)
 params['cssCache'] = getSetting('cssCache') != null ? getSetting('cssCache') : true; //Set default to true to use cached CSS, false to use Zim only
 params['cssTheme'] = getSetting('cssTheme') || 'light'; //Set default to 'auto', 'light', 'dark' or 'invert' to use respective themes for articles
-params['cssUITheme'] = getSetting('cssUITheme') || 'light'; //Set default to 'auto', 'light' or 'dark' to use respective themes for UI
+params['cssUITheme'] = getSetting('cssUITheme') || 'light'; //Set default to 'auto', 'light' or 'dark' to use respective themes for UI'
+params['resetDisplayOnResize'] = getSetting('resetDisplayOnResize') != null ? getSetting('resetDisplayOnResize') : false; // Default for the display reset feature that fixes bugs with secondary displays
 params['imageDisplay'] = getSetting('imageDisplay') != null ? getSetting('imageDisplay') : true; //Set default to display images from Zim
 params['manipulateImages'] = getSetting('manipulateImages') != null ? getSetting('manipulateImages') : false; //Makes dataURIs by default instead of BLOB URIs for images
 params['hideToolbars'] = getSetting('hideToolbars') != null ? getSetting('hideToolbars') : true; //Set default to true (hides both), 'top' (hides top only), or false (no hiding)
@@ -220,6 +221,7 @@ document.getElementById('cssWikiDarkThemeCheck').readOnly = params.cssTheme == "
 document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
 document.getElementById('darkInvert').style.display = /dark|invert/i.test(params.cssTheme) ? "inline" : "none";
 document.getElementById('cssWikiDarkThemeInvertCheck').checked = params.cssTheme == 'invert';
+document.getElementById('resetDisplayOnResizeCheck').checked = params.resetDisplayOnResize;
 document.getElementById('useMathJaxRadio' + (params.useMathJax ? 'True' : 'False')).checked = true;
 document.getElementById('rememberLastPageCheck').checked = params.rememberLastPage;
 document.getElementById('displayFileSelectorsCheck').checked = params.showFileSelectors;
@@ -250,6 +252,9 @@ if (/^http/i.test(window.location.protocol)) {
     Array.prototype.slice.call(document.querySelectorAll('span.identity')).forEach(function (ele) {
         ele.innerHTML = 'PWA';
     });
+}
+if (/UWP/.test(params.appType)) {
+    document.getElementById('resetDisplayOnResize').style.display = 'block';
 }
 
 

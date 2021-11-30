@@ -132,14 +132,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 document.getElementById('dropup').classList.remove('col-xs-3');
                 document.getElementById('dropup').classList.add('col-xs-4');
             }
-            if (/UWP/.test(params.appType)) {
+            if (params.resetDisplayOnResize) {
                 if (settingsStore.getItem('reloadDispatched') === 'true') {
-                    settingsStore.setItem('reloadDispatched', false, Infinity);
+                    setTimeout(function () {
+                        settingsStore.removeItem('reloadDispatched');
+                    }, 2400);
                 } else if (reload) {
                     setTimeout(function () {
                         settingsStore.setItem('reloadDispatched', true, Infinity);
                         window.location.reload();
-                    }, 1000);
+                    }, 800);
                 }
             }
             checkToolbar();
@@ -1542,6 +1544,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
             document.getElementById('darkInvert').style.display = determinedWikiTheme == 'light' ? 'none' : 'inline';
         }
+        document.getElementById('resetDisplayOnResizeCheck').addEventListener('click', function () {
+            params.resetDisplayOnResize = this.checked;
+            settingsStore.setItem('resetDisplayOnResize', this.checked, Infinity);
+            resizeIFrame(this.checked);
+        });
         $('input:checkbox[name=rememberLastPage]').on('change', function (e) {
             if (params.rememberLastPage && this.checked) document.getElementById('rememberLastPageCheck').checked = true;
             params.rememberLastPage = this.checked ? true : false;

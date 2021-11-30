@@ -726,7 +726,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-sm-12">
-                                                
+
                                             </div>
                                         </div>
                                         <label class="checkbox" title="Tap three times for dark | auto | light">
@@ -743,6 +743,11 @@
                                             <input type="checkbox" name="cssWikiDarkThemeInvert" id="cssWikiDarkThemeInvertCheck">
                                             <span class="checkmark"></span>
                                             <b>Use simple inversion for dark theme</b> (should work with all archive types)
+                                        </label>
+                                        <label id="resetDisplayOnResize" style="display:none;" class="checkbox" title="This fixes a bug in the UWP app when it is opened on a secondary display or dragged to an external monitor. It resets the display on app launch and when the app is resized. This increases load time, so turn it off if you do not work with a secondary display.">
+                                            <input type="checkbox" name="resetDisplayOnResize" id="resetDisplayOnResizeCheck">
+                                            <span class="checkmark"></span>
+                                            <b>Fix UI bug with secondary displays</b> (increases load and resize time, turn off if not needed)
                                         </label>
                                     </div>
                                 </div>
