@@ -168,6 +168,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             btnRandomAlt.style.display = 'inline';
         }
 
+        window.addEventListener('click', function (e) {
+            if (typeof e === 'object') {
+                if (e.button === 3) {
+                    document.getElementById('btnBack').click();
+                }
+                if (e.button === 4) {
+                    document.getElementById('btnForward').click();
+                }
+            }
+        });
+        
         var searchArticlesFocused = false;
         document.getElementById('searchArticles').addEventListener('click', function () {
             var prefix = document.getElementById('prefix').value;
