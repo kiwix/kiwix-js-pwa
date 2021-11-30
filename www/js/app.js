@@ -135,6 +135,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         }
         $(document).ready(function() {
             resizeIFrame();
+            var updatePixelRatio = function () {
+                var pr = window.devicePixelRatio;
+                var prString = '(resolution: ' + pr + 'dppx)';
+                matchMedia(prString).addListener('change', updatePixelRatio, { once: true });
+            };
+            updatePixelRatio();
         });
         $(window).resize(function () {
             resizeIFrame();
