@@ -79,8 +79,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
     
         /**
          * Resize the IFrame height, so that it fills the whole available height in the window
+         * @param {Boolean} reload Allows reload of the app on resize
          */
-        function resizeIFrame() {
+        function resizeIFrame(reload) {
             var scrollbox = document.getElementById('scrollbox');
             var header = document.getElementById('top');
             var iframe = document.getElementById('articleContent');
@@ -131,19 +132,23 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 document.getElementById('dropup').classList.remove('col-xs-3');
                 document.getElementById('dropup').classList.add('col-xs-4');
             }
+            if (/UWP/.test(params.appType)) {
+                if (settingsStore.getItem('reloadDispatched') === 'true') {
+                    settingsStore.setItem('reloadDispatched', false, Infinity);
+                } else if (reload) {
+                    setTimeout(function () {
+                        settingsStore.setItem('reloadDispatched', true, Infinity);
+                        window.location.reload();
+                    }, 1000);
+                }
+            }
             checkToolbar();
         }
         $(document).ready(function() {
-            resizeIFrame();
-            var updatePixelRatio = function () {
-                var pr = window.devicePixelRatio;
-                var prString = '(resolution: ' + pr + 'dppx)';
-                matchMedia(prString).addListener('change', updatePixelRatio, { once: true });
-            };
-            updatePixelRatio();
+            resizeIFrame(true);
         });
         $(window).resize(function () {
-            resizeIFrame();
+            resizeIFrame(true);
             // We need to load any images exposed by the resize
             var scrollFunc = document.getElementById('articleContent').contentWindow;
             scrollFunc = scrollFunc ? scrollFunc.onscroll : null;
