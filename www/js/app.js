@@ -132,17 +132,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 document.getElementById('dropup').classList.remove('col-xs-3');
                 document.getElementById('dropup').classList.add('col-xs-4');
             }
-            if (params.resetDisplayOnResize) {
-                if (settingsStore.getItem('reloadDispatched') === 'true') {
-                    setTimeout(function () {
-                        settingsStore.removeItem('reloadDispatched');
-                    }, 2400);
-                } else if (reload) {
-                    setTimeout(function () {
-                        settingsStore.setItem('reloadDispatched', true, Infinity);
-                        window.location.reload();
-                    }, 800);
-                }
+            if (settingsStore.getItem('reloadDispatched') === 'true') {
+                setTimeout(function () {
+                    settingsStore.removeItem('reloadDispatched');
+                }, 2400);
+            } else if (reload && params.resetDisplayOnResize) {
+                setTimeout(function () {
+                    settingsStore.setItem('reloadDispatched', true, Infinity);
+                    window.location.reload();
+                }, 800);
             }
             checkToolbar();
         }
