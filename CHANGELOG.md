@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 1.8.1
+## Release 1.8.1
 
 * UPDATE: Sample archive updated to `wikipedia_en_100_nopic_2021-11`
 * UPDATE: App can now use the latest Electron release and APIs
@@ -9,6 +9,7 @@
 * ENHANCEMENT: More app files are precached in the PWA for better offline experience
 * FIX: Prevent most app crashes when switching to SW mode in UWP app
 * FIX: More intelligent relocation of hatnote and noexcerpt blocks
+* FIX: UI bug when using the UWP app with a secondary display (via Config option)
 * META: Release of UWP/PWA and Electron/NWJS versions of the app are now unified
 
 ## Release 1.7.8
