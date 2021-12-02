@@ -909,7 +909,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 document.getElementById('UWPInstructions').style.display = 'none';
                 document.getElementById('archivesFound').style.display = 'none';
                 document.getElementById('instructions').style.display = 'block';
-                document.getElementById('archiveFilesLegacy').style.display = 'inline';
+                document.getElementById('archiveFilesLegacy').style.display = 'block';
                 document.getElementById('archiveFilesLegacy').addEventListener('change', setLocalArchiveFromFileSelect);
                 document.getElementById('btnRefresh').style.display = 'none';
             }
@@ -1417,7 +1417,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         }
         // Code below is needed on startup to show or hide the inverted dark theme checkbox; 
         // similar code also runs in switchCSSTheme(), but that is not evoked on startup
-        if (params.cssTheme == 'auto') document.getElementById('darkInvert').style.display = cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'inline';
+        if (params.cssTheme == 'auto') document.getElementById('darkInvert').style.display = cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'block';
         document.getElementById('cssUIDarkThemeCheck').addEventListener('click', function () {
             //This code implements a tri-state checkbox
             if (this.readOnly) this.checked = this.readOnly = false;
@@ -1443,7 +1443,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (determinedValue == "light") document.getElementById('footer').classList.remove("darkfooter");
             if (params.cssTheme == "light") document.getElementById('cssWikiDarkThemeInvertCheck').checked = false;
             if (determinedValue == "dark") document.getElementById('footer').classList.add("darkfooter");
-            document.getElementById('darkInvert').style.display = determinedValue == 'light' ? 'none' : 'inline';
+            document.getElementById('darkInvert').style.display = determinedValue == 'light' ? 'none' : 'block';
             params.cssTheme = document.getElementById('cssWikiDarkThemeInvertCheck').checked && determinedValue == 'dark' ? 'invert' : params.cssTheme;
             document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
             settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
@@ -1539,7 +1539,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             } else {
                 if (breakoutLink) breakoutLink.src = prefix + '/img/icons/new_window.svg';
             }
-            document.getElementById('darkInvert').style.display = determinedWikiTheme == 'light' ? 'none' : 'inline';
+            document.getElementById('darkInvert').style.display = determinedWikiTheme == 'light' ? 'none' : 'block';
         }
         document.getElementById('resetDisplayOnResizeCheck').addEventListener('click', function () {
             params.resetDisplayOnResize = this.checked;
