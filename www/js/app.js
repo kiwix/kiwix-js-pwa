@@ -135,17 +135,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (settingsStore.getItem('reloadDispatched') === 'true') {
                 setTimeout(function () {
                     settingsStore.removeItem('reloadDispatched');
-                }, 2400);
+                }, 1000);
             } else if (reload && params.resetDisplayOnResize) {
-                setTimeout(function () {
-                    settingsStore.setItem('reloadDispatched', true, Infinity);
-                    window.location.reload();
-                }, 800);
+                settingsStore.setItem('reloadDispatched', true, Infinity);
+                window.location.reload();
+                throw 'So long, and thanks for all the fish!';
             }
             checkToolbar();
         }
         $(document).ready(function() {
-            resizeIFrame(true);
+            resizeIFrame();
         });
         $(window).resize(function () {
             resizeIFrame(true);

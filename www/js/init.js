@@ -21,6 +21,7 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
+console.debug('Reboot...');
 
 // Set a global error handler to prevent app crashes
 window.onerror = function (msg, url, line, col, error) {
@@ -134,14 +135,7 @@ params['mapsURI'] = getSetting('mapsURI') || (/UWP|Windows/.test(params.appType)
             var paramVal = decodeURIComponent(matches[2]);
             if (paramKey !== 'title') {
                 // Store new values
-                if (params.storeType === 'cookie') {
-                    document.cookie = encodeUriComponent(paramKey) + '=' + encodeUriComponent(paramVal) + ';expires=Fri, 31 Dec 9999 23:59:59 GMT';
-                }
-                // Make Boolean value
-                paramVal = paramVal === 'false' ? false : paramVal === 'true' ? true : paramVal;
-                if (params.storeType === 'local_storage') {
-                    localStorage.setItem(params.keyPrefix + paramKey, paramVal);
-                }
+                setSetting(paramKey, paramVal);
                 paramKey = paramKey === 'lastSelectedArchive' ? 'storedFile' : paramKey;
                 params[paramKey] = paramVal;
             }
@@ -187,16 +181,23 @@ if (!/^http/i.test(window.location.protocol) && params.localUWPSettings &&
     }
 }
 
+if (/UWP/.test(params.appType)) {
+    if (params.resetDisplayOnResize && !getSetting('reloadDispatched')) {
+        // We need to reload the UWP app in order to get the new pixelRatio due to a bug in the UWP framework
+        setSetting('reloadDispatched', true);
+        window.location.reload();
+        throw 'So long, and thanks for all the fish!';
+    } else {
+        document.getElementById('resetDisplayOnResize').style.display = 'block';
+    }
+}
+
 // Prevent app boot loop with problematic pages that cause an app crash
 if (getSetting('lastPageLoad') === 'failed') {
     params.lastPageVisit = '';
 } else {
     // Cookie will signal failure until article is fully loaded
-    if (params.storeType === 'cookie') {
-        document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
-    } else if (params.storeType === 'local_storage') {
-        localStorage.setItem(params.keyPrefix + 'lastPageLoad', 'failed');
-    }
+    setSetting('lastPageLoad', 'failed');
 }
 
 // Initialize checkbox, radio and other values
@@ -253,10 +254,6 @@ if (/^http/i.test(window.location.protocol)) {
         ele.innerHTML = 'PWA';
     });
 }
-if (/UWP/.test(params.appType)) {
-    document.getElementById('resetDisplayOnResize').style.display = 'block';
-}
-
 
 // Get app type
 function getAppType() {
@@ -376,11 +373,7 @@ function installApp(e) {
 
 window.addEventListener('appinstalled', function(e) {
     params.PWAInstalled = params.appVersion;
-    if (params.storeType === 'cookie') {
-        document.cookie = 'PWAInstalled=' + encodeURIComponent(params.PWAInstalled) + '; expires=Fri, 31 Dec 9999 23:59:59 GMT';
-    } else if (params.storeType === 'local_storage') {
-        localStorage.setItem(params.keyPrefix + 'PWAInstalled', params.PWAInstalled);
-    }
+    setSetting('PWAInstalled', params.PWAInstalled);
 });
 
 function getSetting(name) {
@@ -388,12 +381,23 @@ function getSetting(name) {
     if (params.storeType === 'cookie') {
         var regexp = new RegExp('(?:^|;)\\s*' + name + '=([^;]+)(?:;|$)');
         result = document.cookie.match(regexp);
-        result = result && result.length > 1 ? result[1] : null;
+        result = result && result.length > 1 ? decodeURIComponent(result[1]) : null;
     } else if (params.storeType === 'local_storage') {
         // Use localStorage instead
         result = localStorage.getItem(params.keyPrefix + name);
     }
     return result === null || result === "undefined" ? null : result === "true" ? true : result === "false" ? false : result;
+}
+
+function setSetting(name, val) {
+    if (params.storeType === 'cookie') {
+        document.cookie = encodeUriComponent(name) + '=' + encodeUriComponent(val) + ';expires=Fri, 31 Dec 9999 23:59:59 GMT';
+    }
+    // Make Boolean value
+    val = val === 'false' ? false : val === 'true' ? true : val;
+    if (params.storeType === 'local_storage') {
+        localStorage.setItem(params.keyPrefix + name, val);
+    }
 }
 
 // NB This only deals with simple names that don't need to be URI-encoded
@@ -405,21 +409,21 @@ function deleteSetting(name) {
     }
 }
 
- // Tests for available Storage APIs (document.cookie or localStorage) and returns the best available of these
- // DEV: This function is replicated from settingsStore.js because RequireJS has not yet loaded it,
- // except that it returns 'cookie' if the always-present contentInjectionMode is still in cookie, which
- // means the store previously used cookies and hasn't upgraded yet: this won't be done till app.js is loaded
- function getBestAvailableStorageAPI() {
+// Tests for available Storage APIs (document.cookie or localStorage) and returns the best available of these
+// DEV: This function is replicated from settingsStore.js because RequireJS has not yet loaded it,
+// except that it returns 'cookie' if the always-present contentInjectionMode is still in cookie, which
+// means the store previously used cookies and hasn't upgraded yet: this won't be done till app.js is loaded
+function getBestAvailableStorageAPI() {
     var type = 'none';
     var localStorageTest;
     try {
-      localStorageTest = 'localStorage' in window && window['localStorage'] !== null;
-      if (localStorageTest) {
-        localStorage.setItem('tempKiwixStorageTest', '');
-        localStorage.removeItem('tempKiwixStorageTest');
-      }
+        localStorageTest = 'localStorage' in window && window['localStorage'] !== null;
+        if (localStorageTest) {
+            localStorage.setItem('tempKiwixStorageTest', '');
+            localStorage.removeItem('tempKiwixStorageTest');
+        }
     } catch (e) {
-      localStorageTest = false;
+        localStorageTest = false;
     }
     document.cookie = 'tempKiwixCookieTest=working; expires=Fri, 31 Dec 9999 23:59:59 GMT; SameSite=Strict';
     var kiwixCookieTest = /tempKiwixCookieTest=working/.test(document.cookie);
@@ -427,7 +431,7 @@ function deleteSetting(name) {
     if (kiwixCookieTest) type = 'cookie';
     if (localStorageTest && !/contentInjectionMode=(?:jquery|serviceworker)/.test(document.cookie)) type = 'local_storage';
     return type;
-  }
+}
 
 
 require.config({
