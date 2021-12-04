@@ -168,7 +168,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             btnRandomAlt.style.display = 'inline';
         }
 
-        window.addEventListener('click', function (e) {
+        // Process pointerup events (used for checking if mouse back / forward buttons have been clicked)
+        function onPointerUp(e) {
             if (typeof e === 'object') {
                 if (e.button === 3) {
                     document.getElementById('btnBack').click();
@@ -177,7 +178,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     document.getElementById('btnForward').click();
                 }
             }
-        });
+        }
+
+        if (/UWP/.test(params.appType)) document.body.addEventListener('pointerup', onPointerUp);
         
         var searchArticlesFocused = false;
         document.getElementById('searchArticles').addEventListener('click', function () {
@@ -4214,6 +4217,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     if (params.allowHTMLExtraction && appstate.target === 'iframe') {
                         uiUtil.insertBreakoutLink(determinedTheme);
                     }
+                    // Trap any clicks on the iframe to detect if mouse back or forward buttons have been pressed (Chromium does this natively)
+                    if (/UWP/.test(params.appType)) docBody.addEventListener('pointerup', onPointerUp);
                     // Document has loaded except for images, so we can now change the startup cookie (and delete) [see init.js]
                     // document.cookie = 'lastPageLoad=success;expires=Thu, 21 Sep 1979 00:00:01 UTC';
                     settingsStore.removeItem('lastPageLoad');
