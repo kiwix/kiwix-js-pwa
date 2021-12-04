@@ -3470,6 +3470,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
                     uiUtil.insertBreakoutLink(determinedTheme);
                 }
+                // Trap any clicks on the iframe to detect if mouse back or forward buttons have been pressed (Chromium does this natively)
+                if (/UWP/.test(params.appType)) docBody.addEventListener('pointerup', onPointerUp);
                 // The content is ready : we can hide the spinner
                 setTab();
                 setTimeout(function() {
