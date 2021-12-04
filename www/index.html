@@ -727,24 +727,29 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-sm-12">
-                                                
+                                                <label class="checkbox" title="Tap three times for dark | auto | light">
+                                                    <input type="checkbox" name="cssUIDarkTheme" id="cssUIDarkThemeCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Set dark mode for User Interface</b>: [ <b><span id="cssUIDarkThemeState"></span></b> ] (<i>auto</i> mode uses OS Settings if available)
+                                                </label>
+                                                <label class="checkbox" title="Tap three times for dark | auto | light. This is tuned to work with Wikimedia ZIMs, but will also work with some other common ZIM types.">
+                                                    <input type="checkbox" name="cssWikiDarkTheme" id="cssWikiDarkThemeCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Set dark theme for articles</b>: [ <b><span id="cssWikiDarkThemeState"></span></b> ]  (<i>experimental</i>: tested with Wikimedia ZIMs)
+                                                </label>
+                                                <label id="darkInvert" style="display:none;" class="checkbox" title="This is a generic inversion style, and should work with all ZIM types. It tries not to invert images, but transparent images sometimes fail to show against the background.">
+                                                    <input type="checkbox" name="cssWikiDarkThemeInvert" id="cssWikiDarkThemeInvertCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Use simple inversion for dark theme</b> (should work with all archive types)
+                                                </label>
+                                                <label id="resetDisplayOnResize" style="display:none;" class="checkbox" title="This resets the display on app launch or when the app is resized, to fix UI on excternal monitors. It increases load time, so turn off if you do not use a secondary display.">
+                                                    <input type="checkbox" name="resetDisplayOnResize" id="resetDisplayOnResizeCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Fix UI bug with secondary displays</b> (increases load and resize time, turn off if not needed)
+                                                </label>
+
                                             </div>
                                         </div>
-                                        <label class="checkbox" title="Tap three times for dark | auto | light">
-                                            <input type="checkbox" name="cssUIDarkTheme" id="cssUIDarkThemeCheck">
-                                            <span class="checkmark"></span>
-                                            <b>Set dark mode for User Interface</b>: [ <b><span id="cssUIDarkThemeState"></span></b> ] (<i>auto</i> mode uses OS Settings if available)
-                                        </label>
-                                        <label class="checkbox" title="Tap three times for dark | auto | light. This is tuned to work with Wikimedia ZIMs, but will also work with some other common ZIM types.">
-                                            <input type="checkbox" name="cssWikiDarkTheme" id="cssWikiDarkThemeCheck">
-                                            <span class="checkmark"></span>
-                                            <b>Set dark theme for articles</b>: [ <b><span id="cssWikiDarkThemeState"></span></b> ]  (<i>experimental</i>: tested with Wikimedia ZIMs)
-                                        </label>
-                                        <label id="darkInvert" style="display:none;" class="checkbox" title="This is a generic inversion style, and should work with all ZIM types. It tries not to invert images, but transparent images sometimes fail to show against the background.">
-                                            <input type="checkbox" name="cssWikiDarkThemeInvert" id="cssWikiDarkThemeInvertCheck">
-                                            <span class="checkmark"></span>
-                                            <b>Use simple inversion for dark theme</b> (should work with all archive types)
-                                        </label>
                                     </div>
                                 </div>
                                 <div class="panel panel-info" id="cssSettingsDiv">
