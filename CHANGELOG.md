@@ -1,12 +1,13 @@
 # Changelog
 
-## Release 1.8.1
+## Release 1.8.2
 
 * UPDATE: Sample archive updated to `wikipedia_en_100_nopic_2021-11`
 * UPDATE: App can now use the latest Electron release and APIs
 * ENHANCEMENT: Electron version can now read contents of a picked archive directory
-* ENHANCEMENT: Scrollbars are now styled (with darker colours) in dark mode
+* ENHANCEMENT: Scrollbars are now styled (with darker colours) in dark mode (in Chromium frameworks)
 * ENHANCEMENT: More app files are precached in the PWA for better offline experience
+* ENHANCEMENT: Hardware back and forward buttons on mouse now work with UWP app (natively supported in other contexts)
 * FIX: Prevent most app crashes when switching to SW mode in UWP app
 * FIX: More intelligent relocation of hatnote and noexcerpt blocks
 * FIX: UI bug when using the UWP app with a secondary display (via Config option)
