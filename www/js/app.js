@@ -3781,6 +3781,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // Remove erroneous content frequently on front page
             htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, "");
             htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, "");
+
+            // Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
+            var noexcerpt = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?(<dl\b(?:[^<]|<(?!\/dl>)){1,50}?(?:For\sother\s.{5,20}\swith\s|Not\sto\sbe\sconfused\swith|mw-redirect[^<]+travel\stopic|This\sarticle\sis\sa|See\salso:)(?:[^<]|<(?!\/dl>))+<\/dl>\s*)/i);
+            if (noexcerpt && noexcerpt[1] && noexcerpt[1].length) {
+                htmlArticle = htmlArticle.replace(noexcerpt[1], '');
+                htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, '$1' + noexcerpt[1]);
+            }
             // Put misplaced hatnote headers inside <h1> block back in correct position @TODO remove this when fixed in mw-offliner
             var hatnote;
             var hatnotes = [];
@@ -3799,12 +3806,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // Ensure we replace them in the right order
             for (var i = hatnotes.length; i--;) {
                 htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnotes[i].replace(/(<div\s+)/i, '$1style="padding-top:10px;" '));
-            }
-            // Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
-            var noexcerpt = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?(<dl\b(?:[^<]|<(?!\/dl>)){1,50}?(?:For\sother\s.{5,20}\swith\s|Not\sto\sbe\sconfused\swith|mw-redirect[^<]+travel\stopic|This\sarticle\sis\sa|See\salso:)(?:[^<]|<(?!\/dl>))+<\/dl>\s*)/i);
-            if (noexcerpt && noexcerpt[1] && noexcerpt[1].length) {
-                htmlArticle = htmlArticle.replace(noexcerpt[1], '');
-                htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, '$1' + noexcerpt[1]);
             }
 
             //Remove white background colour (causes flashes in dark mode)
