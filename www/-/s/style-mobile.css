@@ -3305,7 +3305,7 @@ sub, sup {
 }
 
 @media all and (min-width:720px) {
-    table.infobox {
+    table.infobox, table.sistersitebox {
         margin: 0.5em 0 1em 35px !important;
         max-width: 320px;
         width: auto !important;
