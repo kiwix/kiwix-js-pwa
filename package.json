@@ -81,8 +81,8 @@
   "maintainer": "Jaifroid",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^15.3.1",
-    "electron-builder": "^22.13.1",
+    "electron": "^16.0.2",
+    "electron-builder": "^22.14.5",
     "electron-packager": "^15.4.0"
   },
   "dependencies": {
@@ -90,5 +90,3 @@
     "electron-context-menu": "^3.1.1"
   }
 }
-
-
