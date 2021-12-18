@@ -9,7 +9,7 @@ Please choose the correct version (only the Store version will self update):
     + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9N5SB90Q4JBJ (it will self-update automatically) - *recommended*
     + Or, on a PC, open a command prompt and run `winget install kiwix.wikivoyage`; you can also sideload it (see instructions below)
   - **Portable (Electron) - just unzip, no install needed**
-    + Windows 7/8/10/11: [Wikivoyage by Kiwix <<base_tag>>E.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/Kiwix.JS.Wikivoyage.<<base_tag>>E.zip)
+    + Windows 7/8/10/11: [Wikivoyage by Kiwix <<base_tag>>E.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage.by.Kiwix.<<base_tag>>E.zip)
   - **Installable (Electron)**
     + Windows 7/8/10/11 - [Wikivoyage by Kiwix Setup <<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage.by.Kiwix.Setup.<<numeric_tag>>-E.exe)
     + Alternatively, run `winget install kiwix.wikivoyage.electron` in a Windows 10/11 Terminal
