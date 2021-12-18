@@ -1,5 +1,9 @@
 # Changelog
 
+## In-progress release 1.8.3
+
+* FIX: Stylesheet errors with sistersite boxes
+
 ## Release 1.8.2
 
 * UPDATE: Sample archive updated to `wikipedia_en_100_nopic_2021-11`
