@@ -1,3 +1,4 @@
+[CmdletBinding()]
 param (
     [string]$tag_name = "",
     [switch]$dryrun = $false,
@@ -9,6 +10,7 @@ param (
     [string]$respondtowingetprompt = "" # Provide an override response (Y/N) to the winget prompt at the end of the script - for automation
 )
 # DEV: To build Electron packages for all platforms and NWJS for XP and Vista in a single release, use, e.g., "v1.3.0E+N" (Electron + NWJS)
+# DEV: To build UWP + Electron in a single release (for WikiMed or Wikivoyage), use "v1.3.0+E" (plus Electron)
 # DEV: To build UWP + Electron + NWJS packages in a single release, use "v1.3.0+E+N"
 
 # DEV: To build new icons, use
@@ -46,7 +48,9 @@ if ($serviceworker -match 'appVersion\s*=\s*[''"]([^''"]+)') {
 }
 
 if ($tag_name -eq "") {
-  $tag_name = Read-Host "`nEnter the tag name for this release, or Enter to accept suggested tag, or add any suffix to suggested tag [$file_tag]"
+  "`nTip: You can type '-WikiMed' or '-Wikivoyage' to modify given tag, or simply add modifying suffixes:"
+  "E = Electron; N = NWJS; +E = UWP + Electron; E+N = Electron + NWJS; +E+N = UWP + Electron + NWJS"
+  $tag_name = Read-Host "`nEnter the tag name for this release, Enter to accept suggested tag, or use modifiers above [$file_tag]"
   if ($tag_name -match '^[+EN-]|^$') {
     $split = $file_tag -imatch '^([v\d.]+)(.*)$'
     if ($split) {
@@ -420,6 +424,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   }
   if ($plus_electron) {
     $upload_assets += $AppImageArchives
+    $upload_assets += $WinInstaller
     if ($old_windows_support) {
       $upload_assets += $nwjs_archives
     } else {
