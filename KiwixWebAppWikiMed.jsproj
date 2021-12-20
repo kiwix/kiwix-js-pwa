@@ -152,6 +152,7 @@
     <Content Include="www\img\icons\kiwix-midnightblue-90.png" />
     <Content Include="www\I\ArequipaBanner3.jpg" />
     <Content Include="www\I\AviationHistoryBanner3.jpg" />
+    <Content Include="www\I\COVID-19_lifecycle.jpg" />
     <Content Include="www\I\Hand_sanitizer_banner.jpg" />
     <Content Include="www\I\IriomoteBanner1.jpg" />
     <Content Include="www\js\lib\arrayFromPolyfill.js" />
