@@ -8,7 +8,7 @@
 * FIX: More intelligent relocation of hatnote and noexcerpt blocks
 * FIX: UI bug when using the UWP app with a secondary display (via Config option)
 * FIX: Stylesheet errors with sistersite boxes
-* META: Release of UWP/PWA and Electron/NWJS versions of the app are now unified
+* META: Release of UWP/PWA and Electron versions of the app are now unified
 
 ## Release 1.7.9-WikiMed
 

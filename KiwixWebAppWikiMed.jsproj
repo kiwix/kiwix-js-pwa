@@ -167,7 +167,6 @@
     <Content Include="www\js\lib\zstddec-wasm.wasm" />
     <Content Include="www\js\lib\zstddec_wrapper.js" />
     <None Include="Package.StoreAssociation.xml" />
-    <None Include="KiwixWebApp_StoreKey.pfx" />
     <Content Include="manifest.json" />
     <Content Include="pwabuilder-sw.js" />
     <Content Include="www\-\static\main.css" />
