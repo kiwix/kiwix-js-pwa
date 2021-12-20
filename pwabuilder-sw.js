@@ -54,6 +54,7 @@ let precacheFiles = [
   "www/-/s/style-dark-invert.css",
   "www/-/s/style-mobile.css",
   "www/-/s/vector.css",
+  "www/I/COVID-19_lifecycle.jpg",
   "www/I/s/Icon_External_Link.png",
   "www/I/s/Icons-mini-file_acrobat.gif",
   "www/css/app.css",
