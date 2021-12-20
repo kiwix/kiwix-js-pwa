@@ -1,13 +1,14 @@
 # Changelog
 
-## In-progress release 1.8.3
+## Release 1.8.4-WikiMed
 
+* UPDATE: Packaged archive updated to `wikipedia_en_medicine-app_maxi_2021-12.zim`
 * ENHANCEMENT: More app files are precached in the PWA for better offline experience
 * ENHANCEMENT: Hardware back and forward buttons on mouse now work with UWP app (natively supported in other contexts)
 * FIX: More intelligent relocation of hatnote and noexcerpt blocks
 * FIX: UI bug when using the UWP app with a secondary display (via Config option)
-* META: Release of UWP/PWA and Electron/NWJS versions of the app are now unified
 * FIX: Stylesheet errors with sistersite boxes
+* META: Release of UWP/PWA and Electron/NWJS versions of the app are now unified
 
 ## Release 1.7.9-WikiMed
 
