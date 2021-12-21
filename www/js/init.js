@@ -312,6 +312,9 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
 
 if (window.fs && !window.nw) {
     params.pickedFolder = getSetting('pickedFolder') || '';
+    if (!params.pickedFolder) {
+        params.pickedFile = getSetting('lastSelectedArchivePath') || '';
+    }
 }
 
 // Routine for installing the app adapted from https://pwa-workshop.js.org/
