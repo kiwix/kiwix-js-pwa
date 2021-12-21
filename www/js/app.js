@@ -2456,7 +2456,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             } else {
                                 var fileset = [];
                                 var count = 0;
-                                var fileHandle = archive ? archive[0] : null;
+                                var fileHandle = typeof archive === 'string' ? archive : archive[0];
                                 if (params.pickedFolder) {
                                     window.fs.readdir(params.pickedFolder, function (err, fileNames) {
                                        // Deal with split archives
