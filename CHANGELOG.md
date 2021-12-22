@@ -1,8 +1,10 @@
 # Changelog
 
-## In-progress release 1.8.3
+## In-progress release 1.8.5
 
 * FIX: Stylesheet errors with sistersite boxes
+* FIX: Regression with Electron file handling causing previously picked archive to be forgotten
+* FIX: NWJS file handling with legacy file picker (for XP and Vista builds)
 
 ## Release 1.8.2
 
