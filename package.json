@@ -35,6 +35,13 @@
             "x64",
             "ia32"
           ]
+        },
+        {
+          "target": "rpm",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
         }
       ],
       "category": "Education"
