@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 1.8.5
+## Release 1.8.5
 
 * FIX: Stylesheet errors with sistersite boxes
 * FIX: Regression with Electron file handling causing previously picked archive to be forgotten
