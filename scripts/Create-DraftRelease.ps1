@@ -189,25 +189,36 @@ if (-Not ($dryrun -or $buildonly -or $updatewinget)) {
 # We should have enough information to find the release URL
 if ($updatewinget) {
   if (-Not $flavour -and $release_body -match 'https:[^)]+?\.(?:appxbundle)') {
-    $package_url = $matches[0]
-  } elseif ($release_body -match 'https:[^)]+?\.(?:exe)') {
-    $package_url = $matches[0]
+    $package_urls = @($matches[0])
+  } 
+  if ($release_body -match 'https:[^)]+?\.(?:exe)') {
+    $package_urls += $matches[0]
   } else {
     "`nUnable to find the package URL!"
     return
   }
-  "`nThe package URL is: $package_url"
-  $package_id = 'Kiwix.' + $text_tag
-  if ($text_tag -eq 'Windows') { $package_id = 'Kiwix.' +  'KiwixJS' }
-  if ($base_tag -match 'E$') { $package_id = $package_id + '.Electron' }
-  if ($flavour -eq '_E') { $winget_version = $numeric_tag + '-E' }  
-  if ($flavour -eq '') { $winget_version = $numeric_tag + '.0' }  
-  if (-Not $dryrun) {
-    "Submitting to winget-pkg repository..."
-    & wingetcreate.exe update -i $package_id -v "$winget_version" -u $package_url -s -t $github_token
-  } else {
-    "[DRYRUN:] & wingetcreate.exe update -i $package_id -v $winget_version -u $package_url -s -t $github_token"
-  }
+  "`nThe package URLS are: $package_urls"
+  foreach ($package_url in $package_urls) {
+    if ($text_tag -notmatch 'Windows') {
+      $package_id = 'Kiwix.' + $text_tag
+    } else {
+      $package_id = 'Kiwix.' +  'KiwixJS'
+    }
+    if ($package_url -match '\.appxbundle') { 
+      $winget_version = $numeric_tag + '.0'
+    }
+    if ($package_url -match '\.exe') {
+      $package_id = $package_id + '.Electron'
+      $winget_version = $numeric_tag + '-E'
+    }
+    if (-Not $dryrun) {
+      "`nSubmitting to winget-pkg repository..."
+      & wingetcreate.exe update -i $package_id -v "$winget_version" -u $package_url -s -t $github_token
+    } else {
+      "`n[DRYRUN:] & wingetcreate.exe update -i $package_id -v $winget_version -u $package_url -s -t $github_token"
+    }
+}
+  
   "`nDone."
   return
 }
@@ -236,7 +247,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   $AppImageArchives = @()
   if ($flavour -eq '_E') {
     "Building Electron packages..."
-    . $PSScriptRoot/Build-Electron.ps1
+    . $PSScriptRoot/Build-Electron.ps1 # Note that we are dot-sourcing this, so that variables will be available in this scope
   } elseif ($flavour -eq '_N') {
     # Package NWJS app if necessary
     $base_dir = "$PSScriptRoot/../bld/nwjs"
@@ -503,7 +514,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     if ($respondtowingetprompt) {
       $wingetcreate_check = $respondtowingetprompt
     } else {
-      $wingetcreate_check = Read-Host "Would you like to update the WinGet repository with this new build?`nWARNING: be sure you have published the draft release (if in doubt answer N)! [Y/N]"
+      $wingetcreate_check = Read-Host "Would you like to update the WinGet repository with these new builds?`nWARNING: be sure you have published the draft release (if in doubt answer N)! [Y/N]"
     }
     $wingetcreate_check = $wingetcreate_check -imatch 'y'
     if ($wingetcreate_check) {
@@ -513,7 +524,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       if (-Not $dryrun) { 
         & .\scripts\Create-DraftRelease.ps1 -updatewinget -tag_name $release_tag_name
       } else {
-        "[DRYRUN:] & .\scripts\Create-DraftRelease.ps1 -updatewinget -tag_name $release_tag_name"
+        & .\scripts\Create-DraftRelease.ps1 -dryrun -updatewinget -tag_name $release_tag_name
       }
     } else {
       "You can update the WinGet repository manually by running 'Create-DraftRelease -updatewinget'"
