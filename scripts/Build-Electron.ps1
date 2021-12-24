@@ -78,7 +78,11 @@ if ($alt_tag -imatch 'Wikivoyage|WikiMed') {
 $DebBasePackage = $base_dir + $package_name + "_$numeric_tag-E"
 $AppImageArchives = @("$LinuxBasePackage.AppImage", ($LinuxBasePackage + "-i386.AppImage"),
   ("$DebBasePackage" + "_i386.deb"), ("$DebBasePackage" + "_amd64.deb"))
-"Processing $AppImageArchives"
+if ($alt_tag -notmatch 'WikiMed|Wikivoyage') {
+  $RPMArchives = @("$DebBasePackage.x86_64.rpm", "$DebBasePackage.i686.rpm");
+  $AppImageArchives += $RPMArchives  
+}
+  "Processing $AppImageArchives"
 foreach ($AppImageArchive in $AppImageArchives) {
   if (-Not (Test-Path $AppImageArchive -PathType Leaf)) {
     "No packages found: building $AppImageArchive..."
