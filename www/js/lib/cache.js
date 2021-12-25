@@ -23,10 +23,11 @@
 'use strict';
 define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
 
-    const CACHEAPI = 'kiwix-precache-' + params.appVersion; // Set the database or cache name here
-    const CACHEIDB = 'kiwix-assetsCache'; // For idxDB we don't want the name to change
+    const CACHEAPI = 'kiwixjs-assetsCache'; // Set the database or cache name here, and synchronize with Service Worker
+    const CACHEIDB = 'kiwix-assetsCache'; // Slightly different name to disambiguate
     var objStore = 'kiwix-assets'; // Name of the object store
-    
+    const APPCACHE = 'kiwixjs-appCache-' + params.appVersion; // Ensure this is the same as in Service Worker
+
     // DEV: Regex below defines the permitted key types for the cache; add further types as needed
     // NB: The key type of '.zim', or '.zimaa' (etc.) is used to store a ZIM's last-accessed article 
     var regexpKeyTypes = /(?:(?:^|\/)A\/.+|\.[Jj][Ss]|\.[Cc][Ss][Ss]|\.[Zz][Ii][Mm]\w{0,2})$/;
@@ -407,87 +408,87 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
      * 
      * @param {Object} selectedArchive The ZIM archive picked by the user 
      * @param {String} key The cache key of the item to retrieve 
-     * @param {Function} callback A function to call with the result 
      * @param {Object} dirEntry If the item's dirEntry has already been looked up, it can optionally be
      *   supplied here (saves a redundant dirEntry lookup) 
      */
-    function getItemFromCacheOrZIM(selectedArchive, key, callback, dirEntry) {
-        // First check if the item is already in the cache
-        var title = key.replace(/^[^/]+\//, '');
-        getItem(key, function(result) {
-            if (result !== null && result !== false && typeof result !== 'undefined') {
-                console.log("Cache supplied " + title);
-                if (/\.css$/.test(title)) {
-                    assetsCache.cssLoading--;
-                    if (assetsCache.cssLoading <= 0) {
-                        document.getElementById('articleContent').style.display = 'block';
+    function getItemFromCacheOrZIM(selectedArchive, key, dirEntry) {
+        return new Promise(function (resolve, reject) {
+            // First check if the item is already in the cache
+            var title = key.replace(/^[^/]+\//, '');
+            getItem(key, function (result) {
+                if (result !== null && result !== false && typeof result !== 'undefined') {
+                    console.log("Cache supplied " + title);
+                    if (/\.css$/.test(title)) {
+                        assetsCache.cssLoading--;
+                        if (assetsCache.cssLoading <= 0) {
+                            document.getElementById('articleContent').style.display = 'block';
+                            document.getElementById('cachingAssets').style.display = 'none';
+                            document.getElementById('searchingArticles').style.display = 'none';
+                        }
+                    }
+                    resolve(result);
+                    return;
+                }
+                // Since there was no result, post UI messages and look up asset in ZIM
+                if (regexpKeyTypes.test(key)) {
+                    if (!/\.css$|\.js$/.test(key)) {
                         document.getElementById('cachingAssets').style.display = 'none';
-                        document.getElementById('searchingArticles').style.display = 'none';
-                    }                
+                        document.getElementById('searchingArticles').style.display = 'block';
+                    } else if (params.useCache !== false) {
+                        var shortTitle = key.replace(/[^/]+\//g, '').substring(0, 18);
+                        document.getElementById('cachingAssets').innerHTML = 'Getting ' + shortTitle + '...';
+                        document.getElementById('cachingAssets').style.display = 'block';
+                    }
                 }
-                callback(result);
-                return;
-            }
-            // Since there was no result, post UI messages and look up asset in ZIM
-            if (regexpKeyTypes.test(key)) {
-                if (!/\.css$|\.js$/.test(key)) {
-                    document.getElementById('cachingAssets').style.display = 'none';
-                    document.getElementById('searchingArticles').style.display = 'block';
-                } else if (params.useCache !== false) {
-                    var shortTitle = key.replace(/[^/]+\//g, '').substring(0, 18);
-                    document.getElementById('cachingAssets').innerHTML = 'Getting ' + shortTitle + '...';
-                    document.getElementById('cachingAssets').style.display = 'block';
-                }
-            }
-            // Set the read function to use according to filetype
-            var readFile = regexpKeyTypes.test(title) ? 
-                selectedArchive.readUtf8File : selectedArchive.readBinaryFile;
-            // Bypass getting dirEntry if we already have it
-            var getDirEntry = dirEntry ? Promise.Promise.resolve() :
-                selectedArchive.getDirEntryByPath(title);
-            // Read data from ZIM
-            getDirEntry.then(function(resolvedDirEntry) {
-                if (dirEntry) resolvedDirEntry = dirEntry;
-                if (resolvedDirEntry === null) {
-                    console.log("Error: asset file not found: " + title);
-                    callback();
-                } else {
-                    readFile(resolvedDirEntry, function (fileDirEntry, content) {
-                        if (regexpKeyTypes.test(title)) {
-                            console.log('Cache retrieved ' + title + ' from ZIM');
-                            // Process any pre-cache transforms
-                            content = transform(content, title.replace(/^.*\.([^.]+)$/, '$1'));
-                        }
-                        // Hide article while it is rendering
-                        if (/^text\/html$/.test(fileDirEntry.getMimetype())) {
-                            // Count CSS so we can attempt to show article before JS/images are fully loaded
-                            var cssCount = content.match(/<(?:link)[^>]+?href=["']([^"']+)[^>]+>/ig);
-                            assetsCache.cssLoading = cssCount ? cssCount.length : 0;
-                            if (assetsCache.cssLoading) document.getElementById('articleContent').style.display = 'none';
-                        }
-                        if (/\.css$/.test(title)) {
-                            assetsCache.cssLoading--;
-                            if (assetsCache.cssLoading <= 0) {
-                                document.getElementById('articleContent').style.display = 'block';
-                                document.getElementById('cachingAssets').style.display = 'none';
-                                document.getElementById('searchingArticles').style.display = 'none';
+                // Set the read function to use according to filetype
+                var readFile = regexpKeyTypes.test(title) ?
+                    selectedArchive.readUtf8File : selectedArchive.readBinaryFile;
+                // Bypass getting dirEntry if we already have it
+                var getDirEntry = dirEntry ? Promise.Promise.resolve() :
+                    selectedArchive.getDirEntryByPath(title);
+                // Read data from ZIM
+                getDirEntry.then(function (resolvedDirEntry) {
+                    if (dirEntry) resolvedDirEntry = dirEntry;
+                    if (resolvedDirEntry === null) {
+                        console.log("Error: asset file not found: " + title);
+                        callback();
+                    } else {
+                        readFile(resolvedDirEntry, function (fileDirEntry, content) {
+                            if (regexpKeyTypes.test(title)) {
+                                console.log('Cache retrieved ' + title + ' from ZIM');
+                                // Process any pre-cache transforms
+                                content = transform(content, title.replace(/^.*\.([^.]+)$/, '$1'));
                             }
-                        }
-                        callback(content);
-                        setItem(key, content, function(result) {
-                            if (result === -1) {
-                                // Cache rejected item due to user settings
-                            } else if (result) {
-                                console.log('Cache: stored asset ' + title);
-                            } else {
-                                console.error('Cache: failed to store asset ' + title);
+                            // Hide article while it is rendering
+                            if (/^text\/html$/.test(fileDirEntry.getMimetype())) {
+                                // Count CSS so we can attempt to show article before JS/images are fully loaded
+                                var cssCount = content.match(/<(?:link)[^>]+?href=["']([^"']+)[^>]+>/ig);
+                                assetsCache.cssLoading = cssCount ? cssCount.length : 0;
+                                if (assetsCache.cssLoading) document.getElementById('articleContent').style.display = 'none';
                             }
+                            if (/\.css$/.test(title)) {
+                                assetsCache.cssLoading--;
+                                if (assetsCache.cssLoading <= 0) {
+                                    document.getElementById('articleContent').style.display = 'block';
+                                    document.getElementById('cachingAssets').style.display = 'none';
+                                    document.getElementById('searchingArticles').style.display = 'none';
+                                }
+                            }
+                            setItem(key, content, function (result) {
+                                if (result === -1) {
+                                    // Cache rejected item due to user settings
+                                } else if (result) {
+                                    console.log('Cache: stored asset ' + title);
+                                } else {
+                                    console.error('Cache: failed to store asset ' + title);
+                                }
+                            });
+                            resolve(content);
                         });
-                    });
-                }
-            }).fail(function (e) {
-                console.error("could not find DirEntry for asset : " + title, e);
-                callback();              
+                    }
+                }).catch(function (e) {
+                    reject("could not find DirEntry for asset : " + title, e);
+                });
             });
         });
     }
@@ -709,6 +710,8 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
      * Functions and classes exposed by this module
      */
     return {
+        APPCACHE: APPCACHE,
+        CACHEAPI: CACHEAPI,
         test: test,
         count: count,
         idxDB: idxDB,
