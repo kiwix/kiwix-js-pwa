@@ -67,7 +67,7 @@
                 console.log('Service Worker is already active');
             } else {
                 // Register the service worker
-                navigator.serviceWorker.register("../pwabuilder-sw.js", {
+                navigator.serviceWorker.register("../service-worker.js", {
                     scope: "../"
                 }).then(function (reg) {
                     console.log("Service Worker has been registered for scope: " + reg.scope);

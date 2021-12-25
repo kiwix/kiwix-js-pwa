@@ -68,7 +68,7 @@ foreach ($build in $builds) {
     # Copy latest binary x64
     cp $buildLocation\* $fullTarget -Recurse
     $root = $PSScriptRoot -replace 'scripts.*$', ''
-    cp $root\package.json, $root\pwabuilder-sw.js, $root\index.html, $root\CHANGELOG.md, $root\LICENSE, $root\www $fullTarget -Recurse
+    cp $root\package.json, $root\service-worker.js, $root\index.html, $root\CHANGELOG.md, $root\LICENSE, $root\www $fullTarget -Recurse
     "Copying archive..."
     md $archiveFolder
     cp "$root\archives\$PackagedArchive", "$root\archives\*.txt", "$root\archives\README.md" $archiveFolder
