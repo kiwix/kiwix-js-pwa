@@ -49,7 +49,7 @@ var params = {};
  * @type Object
  */
 var appstate = {};
-/******** UPDATE VERSION IN pwabuilder-sw.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******/
+/******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******/
 params['appVersion'] = "1.8.5"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************/
 params['packagedFile'] = getSetting('packagedFile') || "wikipedia_en_100_nopic_2021-11.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
@@ -394,7 +394,7 @@ function getSetting(name) {
 
 function setSetting(name, val) {
     if (params.storeType === 'cookie') {
-        document.cookie = encodeUriComponent(name) + '=' + encodeUriComponent(val) + ';expires=Fri, 31 Dec 9999 23:59:59 GMT';
+        document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(val) + ';expires=Fri, 31 Dec 9999 23:59:59 GMT';
     }
     // Make Boolean value
     val = val === 'false' ? false : val === 'true' ? true : val;

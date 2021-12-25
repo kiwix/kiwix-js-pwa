@@ -22,7 +22,7 @@ $release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-windows/releases'
 $github_token = Get-Content -Raw "$PSScriptRoot/github_token"
 
 $init_params = Get-Content -Raw "$PSScriptRoot\..\www\js\init.js"
-$serviceworker = Select-String 'appVersion' "$PSScriptRoot\..\pwabuilder-sw.js" -List
+$serviceworker = Select-String 'appVersion' "$PSScriptRoot\..\service-worker.js" -List
 
 $file_tag = ''
 if ($init_params -match 'params\[[''"]appVersion[''"]]\s*=\s*[''"]([^''"]+)') {
@@ -35,15 +35,15 @@ $sw_tag = ''
 if ($serviceworker -match 'appVersion\s*=\s*[''"]([^''"]+)') {
   $sw_tag = 'v' + $matches[1]
   if ($sw_tag -ne $file_tag) {
-    "`n*** WARNING: The version in init.js [$file_tag] does not match the version in pwabuilder-sw.js [$sw_tag]! ***"
+    "`n*** WARNING: The version in init.js [$file_tag] does not match the version in service-worker.js [$sw_tag]! ***"
     "Please correct before continuing.`n"
     exit
   } else {
     "`nVersion in init.js: $file_tag"
-    "Version in pwabuilder-sw.js: $sw_tag"
+    "Version in service-worker.js: $sw_tag"
   }
 } else {
-  "`n*** WARNING: App version is incorrectly set in pwabuilder-sw.js.`nPlease correct before continuing.`n"
+  "`n*** WARNING: App version is incorrectly set in service-worker.js.`nPlease correct before continuing.`n"
   exit
 }
 

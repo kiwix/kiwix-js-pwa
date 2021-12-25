@@ -837,9 +837,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // Check for upgrade of PWA
             if (!params.upgradeNeeded && /PWA/.test(params.appType) && activeBtn === 'btnConfigure') {
                 caches.keys().then(function (keyList) {
-                    if (keyList.length < 2) document.getElementById('alertBoxPersistent').innerHTML = '';
+                    if (keyList.length < 3) document.getElementById('alertBoxPersistent').innerHTML = '';
                     keyList.forEach(function(key) {
-                        if (key === 'kiwix-precache-' + params.appVersion) return;
+                        if (key === cache.APPCACHE) return;
+                        if (key === cache.CACHEAPI) return;
                         // If we get here, then there is a cache key that does not match our version, i.e. a PWA-in-waiting
                         params.upgradeNeeded = true;
                         document.getElementById('alertBoxPersistent').innerHTML =
@@ -848,7 +849,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             '    <span id="persistentMessage"></span>\n' +
                             '</div>\n';
                         var loadOrInstall = params.PWAInstalled ? 'install' : 'load';
-                        document.getElementById('persistentMessage').innerHTML = 'Version ' + key.replace(/kiwix-precache-/, '') + ' is ready to '
+                        var cachePrefix = cache.APPCACHE.replace(/[\d.]+$/, '');
+                        document.getElementById('persistentMessage').innerHTML = 'Version ' + key.replace(cachePrefix, '') + ' is ready to '
                             + loadOrInstall + '! (Re-launch app to ' + loadOrInstall + '.)';
                     });
                 });
@@ -1892,7 +1894,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         // Create the MessageChannel and send 'init'
                         initOrKeepAliveServiceWorker();
                     } else {
-                        navigator.serviceWorker.register('../pwabuilder-sw.js').then(function (reg) {
+                        navigator.serviceWorker.register('../service-worker.js').then(function (reg) {
                             // The ServiceWorker is registered
                             console.log('Service worker is registered with a scope of ' + reg.scope);
                             serviceWorkerRegistration = reg;
@@ -4027,28 +4029,21 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     blobArray.push([title, cssBlobCache.get(title)]);
                     injectCSS();
                 } else {
-                    appstate.selectedArchive.getDirEntryByPath(title)
-                        .then(function (dirEntry) {
-                            uiUtil.poll("Resolving CSS [" + title.replace(/[^/]+\//g, '').substring(0, 18) + "]...");
-                            return appstate.selectedArchive.readBinaryFile(dirEntry,
-                                function (fileDirEntry, content) {
-                                    //DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
-                                    //var cssContent = util.uintToString(content);
-                                    var cssBlob = new Blob([content], {
-                                        type: 'text/css'
-                                    });
-                                    var newURL = [fileDirEntry.namespace + "/" + fileDirEntry.url, URL.createObjectURL(cssBlob)];
-                                    blobArray.push(newURL);
-                                    if (cssBlobCache)
-                                        cssBlobCache.set(newURL[0], newURL[1]);
-                                    injectCSS(); //DO NOT move this: it must run within .then function to pass correct values
-                                });
-                        }).catch(function (e) {
-                            console.error("could not find DirEntry for CSS : %s", title, e);
-                            //@TODO Change this to push an array of [title, title] afters simplified code in injectCSS()
-                            blobArray.push(title);
-                            injectCSS();
+                    var cacheKey = appstate.selectedArchive._file.name + '/' + title;
+                    cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey).then(function (content) {
+                        //DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
+                        //var cssContent = util.uintToString(content);
+                        var cssBlob = new Blob([content], {
+                            type: 'text/css'
                         });
+                        var newURL = [title, URL.createObjectURL(cssBlob)];
+                        blobArray.push(newURL);
+                        if (cssBlobCache)
+                            cssBlobCache.set(newURL[0], newURL[1]);
+                        injectCSS(); //DO NOT move this: it must run within .then function to pass correct values
+                    }).catch(function (err) {
+                        console.error(err);
+                    });
                 }
             }
 
