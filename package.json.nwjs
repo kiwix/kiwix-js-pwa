@@ -22,7 +22,7 @@
     "nwVersion": "0.14.7",
     "output": "bld/nwjs/win-x86-xp",
     "files": [
-      "pwabuilder-sw.js",
+      "service-worker.js",
       "index.html",
       "CHANGELOG.md",
       "LICENCE",
@@ -40,7 +40,7 @@
     "output": "bld/nwjs/win-x64",
     "files": [
       "archives/**",
-      "pwabuilder-sw.js",
+      "service-worker.js",
       "index.html",
       "CHANGELOG.md",
       "LICENCE",
@@ -54,7 +54,7 @@
     "nwVersion": "0.58.0",
     "output": "bld/nwjs/win-x86",
     "files": [
-      "pwabuilder-sw.js",
+      "service-worker.js",
       "index.html",
       "CHANGELOG.md",
       "LICENCE",

@@ -21,7 +21,7 @@ param (
 $release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-windows/actions/workflows/publish-docker.yaml/dispatches'
 
 $app_params = Select-String 'appVersion' "$PSScriptRoot\..\www\js\init.js" -List
-$serviceworker = Select-String 'appVersion' "$PSScriptRoot\..\pwabuilder-sw.js" -List
+$serviceworker = Select-String 'appVersion' "$PSScriptRoot\..\service-worker.js" -List
 $suggested_build = ''
 $app_tag = ''
 if ($app_params -match 'params\[[''"]appVersion[''"]]\s*=\s*[''"]([^''"]+)') {
@@ -35,15 +35,15 @@ $sw_tag = ''
 if ($serviceworker -match 'appVersion\s*=\s*[''"]([^''"]+)') {
   $sw_tag = $matches[1]
   if ($sw_tag -ne $app_tag) {
-    "*** WARNING: The version in init.js [$app_tag] does not match the version in pwabuilder-sw.js [$sw_tag]! ***"
+    "*** WARNING: The version in init.js [$app_tag] does not match the version in service-worker.js [$sw_tag]! ***"
     "Please correct before continuing.`n"
     exit
   } else {
     "`nVersion in init.js: $app_tag"
-    "Version in pwabuilder-sw.js: $sw_tag`n"
+    "Version in service-worker.js: $sw_tag`n"
   }
 } else {
-  "*** WARNING: App version is incorrectly set in pwabuilder-sw.js.`nPlease correct before continuing.`n"
+  "*** WARNING: App version is incorrectly set in service-worker.js.`nPlease correct before continuing.`n"
   exit
 }
 

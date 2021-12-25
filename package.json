@@ -54,7 +54,7 @@
     "asar": false,
     "files": [
       "archives/**",
-      "pwabuilder-sw.js",
+      "service-worker.js",
       "index.html",
       "CHANGELOG.md",
       "LICENCE",
