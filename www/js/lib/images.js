@@ -124,8 +124,8 @@ define(['uiUtil'], function (uiUtil) {
             //Ensure 36px clickable image height so user can request images by tapping
             documentImages[i].height = '36';
             if (params.contentInjectionMode === 'jquery') {
-                documentImages[i].src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
                 documentImages[i].style.background = 'lightblue';
+                documentImages[i].style.opacity = '1';
             }
             documentImages[i].dataset.kiwixheight = originalHeight;
             documentImages[i].addEventListener('click', function (e) {
