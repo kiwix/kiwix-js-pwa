@@ -1,9 +1,9 @@
 ﻿// Self-destroying service-worker - see https://github.com/NekR/self-destroying-sw
 
-// If you want new SW to activate immediately, use below
-// self.addEventListener('install', function (e) {
-//   self.skipWaiting();
-// });
+// We activate SW immediately in order to avoid a three-stage upgrade process
+self.addEventListener('install', function (e) {
+  self.skipWaiting();
+});
 
 self.addEventListener('activate', function (e) {
   self.registration.unregister().then(function () {
