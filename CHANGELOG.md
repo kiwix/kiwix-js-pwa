@@ -1,5 +1,12 @@
 # Changelog
 
+## In-progress release 1.8.6
+
+* UPDATE: Sample archive updated to `wikipedia_en_100_nopic_2021-12`
+* ENHANCEMENT: Assets cache and app cache are now separated, so an assets persist after update
+* ENHANCEMENT: New persistent caching of ZIM assets that are not provided in file system
+* ENHANCEMENT: Automatically choose best available caching technology: Cache API, IndexedDB, Local Storage or memory
+
 ## Release 1.8.5
 
 * FIX: Stylesheet errors with sistersite boxes
