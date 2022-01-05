@@ -26,7 +26,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
     const CACHEAPI = 'kiwixjs-assetsCache'; // Set the database or cache name here, and synchronize with Service Worker
     const CACHEIDB = 'kiwix-assetsCache'; // Slightly different name to disambiguate
     var objStore = 'kiwix-assets'; // Name of the object store
-    const APPCACHE = 'kiwixjs-appCache-' + params.appVersion; // Ensure this is the same as in Service Worker
+    const APPCACHE = 'kiwix-appCache-' + params.appVersion; // Ensure this is the same as in Service Worker
 
     // DEV: Regex below defines the permitted key types for the cache; add further types as needed
     // NB: The key type of '.zim', or '.zimaa' (etc.) is used to store a ZIM's last-accessed article 
