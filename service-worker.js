@@ -36,7 +36,7 @@ const appVersion = '1.8.6-dev';
  * The value is sometimes needed here before it can be passed from app.js, so we have to duplicate it
  * @type {String}
  */
-// DEV: Ensure this matches the name defined in app.js
+// DEV: Ensure this matches the name defined in cache.js. Note this is interoperable with Kiwix JS.
 const ASSETS_CACHE = 'kiwixjs-assetsCache';
 
 /**
@@ -46,7 +46,7 @@ const ASSETS_CACHE = 'kiwixjs-assetsCache';
  * restarts the app, when we will also delete the old cache.
  * @type {String}
  */
-const APP_CACHE = 'kiwixjs-appCache-' + appVersion;
+const APP_CACHE = 'kiwix-appCache-' + appVersion;
 
 /**
  * A global Boolean that governs whether ASSETS_CACHE will be used
@@ -232,6 +232,10 @@ self.addEventListener("install", function (event) {
 
 // Allow sw to control current page
 self.addEventListener('activate', function (event) {
+    // "Claiming" the ServiceWorker is necessary to make it work right away,
+    // without the need to reload the page.
+    // See https://developer.mozilla.org/en-US/docs/Web/API/Clients/claim
+    event.waitUntil(self.clients.claim());
     console.debug('[SW] Claiming clients for current page');
     // Check all the cache keys, and delete any old caches
     event.waitUntil(
@@ -455,7 +459,7 @@ function updateCache(cache, request, response) {
  * @returns {Promise<Array>} A Promise for an array of format [cacheType, cacheDescription, assetCount]
  */
 function testCacheAndCountAssets(url) {
-    if (regexpExcludedURLSchema.test(url)) return Promise.resolve(['custom', 'Custom', '-']);
+    if (regexpExcludedURLSchema.test(url)) return Promise.resolve(['custom', 'custom', 'Custom', '-']);
     if (!useCache) return Promise.resolve(['none', 'none', 'None', 0]);
     return caches.open(ASSETS_CACHE).then(function (cache) {
         return cache.keys().then(function (keys) {
