@@ -837,11 +837,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // Check for upgrade of PWA
             if (!params.upgradeNeeded && /PWA/.test(params.appType) && activeBtn === 'btnConfigure') {
                 caches.keys().then(function (keyList) {
-                    if (keyList.length < 3) document.getElementById('alertBoxPersistent').innerHTML = '';
+                    var cachePrefix = cache.APPCACHE.replace(/^([^\d]+).+/, '$1');
+                    document.getElementById('alertBoxPersistent').innerHTML = '';
                     keyList.forEach(function(key) {
-                        if (key === cache.APPCACHE) return;
-                        if (key === cache.CACHEAPI) return;
-                        // If we get here, then there is a cache key that does not match our version, i.e. a PWA-in-waiting
+                        if (key === cache.APPCACHE || key === cache.CACHEAPI) return;
+                        // Ignore any keys that do not begin with the APPCACHE prefix (they could be from other apps using the same domain)
+                        if (key.indexOf(cachePrefix)) return;
+                        // If we get here, then there is a kiwix cache key that does not match our version, i.e. a PWA-in-waiting
                         params.upgradeNeeded = true;
                         document.getElementById('alertBoxPersistent').innerHTML =
                             '<div id="upgradeAlert" class="alert alert-info alert-dismissible">\n' +
@@ -849,7 +851,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             '    <span id="persistentMessage"></span>\n' +
                             '</div>\n';
                         var loadOrInstall = params.PWAInstalled ? 'install' : 'load';
-                        var cachePrefix = cache.APPCACHE.replace(/[\d.]+$/, '');
                         document.getElementById('persistentMessage').innerHTML = 'Version ' + key.replace(cachePrefix, '') + ' is ready to '
                             + loadOrInstall + '! (Re-launch app to ' + loadOrInstall + '.)';
                     });
