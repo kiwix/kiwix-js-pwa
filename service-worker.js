@@ -1,9 +1,9 @@
 ﻿/**
- * pwabuilder.js : Service Worker implementation,
+ * service-worker.js : Service Worker implementation,
  * in order to capture the HTTP requests made by an article, and respond with the
  * corresponding content, coming from the archive
  * 
- * Copyright 2015 Mossroy and contributors
+ * Copyright 2022 Mossroy, Jaifroid and contributors
  * License GPL v3:
  * 
  * This file is part of Kiwix.
@@ -29,7 +29,7 @@
  * download and install a new copy; we have to hard code this here because it is needed before any other file
  * is cached in APP_CACHE
  */
-const appVersion = '1.8.6-dev';
+const appVersion = '1.8.6';
 
 /**
  * The name of the Cache API cache in which assets defined in regexpCachedContentTypes will be stored
