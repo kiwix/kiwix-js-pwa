@@ -1,11 +1,14 @@
 # Changelog
 
-## In-progress release 1.8.6
+## Release 1.8.6
 
 * UPDATE: Sample archive updated to `wikipedia_en_100_nopic_2021-12`
-* ENHANCEMENT: Assets cache and app cache are now separated, so an assets persist after update
-* ENHANCEMENT: New persistent caching of ZIM assets that are not provided in file system
+* ENHANCEMENT: Assets cache and app cache are now separated, so assets persist after update
+* ENHANCEMENT: New persistent caching of ZIM assets that are not provided in file system singinficantly improves performance
 * ENHANCEMENT: Automatically choose best available caching technology: Cache API, IndexedDB, Local Storage or memory
+* ENHANCEMENT: New Cache API info panel in Configuration, and option to stop using and empty the cache
+* FIX: Regression whereby blue image placeholders were not shown in jQuery mode when user turns off image display
+* FIX: Bug whereby upgrade alert was triggered by caches from other apps on the same domain
 
 ## Release 1.8.5
 
