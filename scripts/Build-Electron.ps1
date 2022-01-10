@@ -76,25 +76,26 @@ if ($alt_tag -imatch 'Wikivoyage|WikiMed') {
   $LinuxBasePackage = $base_dir + "$alt_tag by Kiwix-$numeric_tag-E"
 }
 $DebBasePackage = $base_dir + $package_name + "_$numeric_tag-E"
+$RPMBasePackage = $base_dir + $package_name + "-$numeric_tag-E"
 $AppImageArchives = @("$LinuxBasePackage.AppImage", ($LinuxBasePackage + "-i386.AppImage"),
   ("$DebBasePackage" + "_i386.deb"), ("$DebBasePackage" + "_amd64.deb"))
 if ($alt_tag -notmatch 'WikiMed|Wikivoyage') {
-  $RPMArchives = @("$DebBasePackage.x86_64.rpm", "$DebBasePackage.i686.rpm");
+  $RPMArchives = @("$RPMBasePackage.x86_64.rpm", "$RPMBasePackage.i686.rpm");
   $AppImageArchives += $RPMArchives  
 }
   "Processing $AppImageArchives"
 foreach ($AppImageArchive in $AppImageArchives) {
   if (-Not (Test-Path $AppImageArchive -PathType Leaf)) {
     "No packages found: building $AppImageArchive..."
+    # To get docker to start, you might need to run below commands as admin
+    # net stop com.docker.service
+    # taskkill /IM "Docker Desktop.exe" /F
+    # net start com.docker.service
+    # runas /noprofile /user:Administrator "net stop com.docker.service; taskkill /IM 'Docker Desktop.exe' /F; net start com.docker.service"
+    $repo_dir = ($PSScriptRoot -replace '[\\/]scripts[\\/]*$', '')
+    "Using docker command:"
+    "docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux"
     if (-Not $dryrun) {
-      # To get docker to start, you might need to run below commands as admin
-      # net stop com.docker.service
-      # taskkill /IM "Docker Desktop.exe" /F
-      # net start com.docker.service
-      # runas /noprofile /user:Administrator "net stop com.docker.service; taskkill /IM 'Docker Desktop.exe' /F; net start com.docker.service"
-      $repo_dir = ($PSScriptRoot -replace '[\\/]scripts[\\/]*$', '')
-      "Using docker command:"
-      "docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux"
       docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux
       # Alternatively build with wsl
       # wsl . ~/.bashrc; npm run dist-linux
