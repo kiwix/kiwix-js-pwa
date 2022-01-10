@@ -2042,8 +2042,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 'The PWA will be able to run offline, but will auto-update periodically when online ' +
                 'as per the Service Worker spec.\n\n' +
                 'You can switch back any time by toggling "Allow Internet access?" off.\n\n' +
-                'WARNING: This will attempt to access the following server: \n' + params.PWAServer + '\n\n' +
-                '*** App screen will flash between black and white several times. If the app crashes, please relaunch it. ***';
+                'WARNING: This will attempt to access the following server: ' + params.PWAServer + '\n\n' +
+                '*** Screen will flash between black and white several times.\nIf the app crashes, please relaunch it. ***';
             var launchPWA = function () {
                 settingsStore.setItem('contentInjectionMode', 'serviceworker', Infinity);
                 // This is needed so that we get passthrough on subsequent launches
