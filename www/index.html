@@ -917,33 +917,73 @@
                     </div>
                     <div>
                         <div class="row">
+                            <h3>Performance settings</h3>
+                            <div class="panel panel-warning" id="performanceSettingsDiv">
+                                <div class="panel-heading">Speed up archive access</div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <p>Speed up the display of articles by caching assets:</p>
+                                            <label class="radio" title="The cache provides high-speed access to ZIM assets such as stylesheets and scripts, which will improve article load times.">
+                                                <input type="radio" name="cachedAssetsMode" value="true" id="cachedAssetsModeRadioTrue" checked>
+                                                <strong>Cache assets</strong> (<i>recommended</i>)
+                                                <span class="radiobtn"></span>
+                                            </label>
+                                            <label class="radio" title="For low-memory devices, caching assets may cause app instability. This option allows you to disable the cache.">
+                                                <input type="radio" name="cachedAssetsMode" value="false" id="cachedAssetsModeRadioFalse">
+                                                <strong>Do not cache assets</strong> (empties caches: for low-memory devices)
+                                                <span class="radiobtn"></span>
+                                            </label>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div id="cacheStatusPanel" class="panel panel-footer" style="overflow: hidden">
+                                                <div>
+                                                    <p><b>Cache status:</b></p>
+                                                </div>
+                                                <div>
+                                                    <div class="col-7">
+                                                        <p>Cache used: <b id="cacheUsed"></b></p>
+                                                    </div>
+                                                    <div class="col-5">
+                                                        <p>Assets: <b id="assetsCount"></b></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-warning" style="min-width:16em; display: none;" id="packagedAppFileSelectors">
+                                <div class="panel-heading">Display hidden ZIM archive selectors:</div>
+                                <div class="panel-body">
+                                    <label class="checkbox">
+                                        <input type="checkbox" name="displayFileSelectors" id="displayFileSelectorsCheck">
+                                        <span class="checkmark"></span>
+                                        <b>Display selectors</b> for files and folders : <i>This is for downloading other ZIM archives</i>.
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="panel panel-warning" style="min-width:16em;" id="mathsProcessingMode">
+                                <div class="panel-heading">Mathematical and chemical equations and symbols:</div>
+                                <div class="panel-body">
+                                    <label class="radio">
+                                        <input type="radio" name="useMathJax" id="useMathJaxRadioTrue" value="true">
+                                        <span class="radiobtn"></span>
+                                        <b>Typeset TeX equations with KaTeX</b> (<i>recommended</i>: very fast, but not all symbols may be supported in all languages; will use SVG fallbacks if TeX string not available)
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="useMathJax" id="useMathJaxRadioFalse" value="false">
+                                        <span class="radiobtn"></span>
+                                        <b>Use SVG fallback images</b> (very slow and memory hungry, but will dislplay all symbols)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="row">
                             <h3>Expert settings</h3>
                             <div class="column">
-                                <div class="panel panel-warning" style="min-width:16em; display: none;" id="packagedAppFileSelectors">
-                                    <div class="panel-heading">Display hidden ZIM archive selectors:</div>
-                                    <div class="panel-body">
-                                        <label class="checkbox">
-                                            <input type="checkbox" name="displayFileSelectors" id="displayFileSelectorsCheck">
-                                            <span class="checkmark"></span>
-                                            <b>Display selectors</b> for files and folders : <i>This is for downloading other ZIM archives</i>.
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="panel panel-warning" style="min-width:16em;" id="mathsProcessingMode">
-                                    <div class="panel-heading">Mathematical and chemical equations and symbols:</div>
-                                    <div class="panel-body">
-                                        <label class="radio">
-                                            <input type="radio" name="useMathJax" id="useMathJaxRadioTrue" value="true">
-                                            <span class="radiobtn"></span>
-                                            <b>Typeset TeX equations with KaTeX</b> (<i>recommended</i>: very fast, but not all symbols may be supported in all languages; will use SVG fallbacks if TeX string not available)
-                                        </label>
-                                        <label class="radio">
-                                            <input type="radio" name="useMathJax" id="useMathJaxRadioFalse" value="false">
-                                            <span class="radiobtn"></span>
-                                            <b>Use SVG fallback images</b> (very slow and memory hungry, but will dislplay all symbols)
-                                        </label>
-                                    </div>
-                                </div>
                                 <div class="panel panel-danger" id="contentInjectionModeDiv">
                                     <div class="panel-heading">Content injection mode</div>
                                     <div class="panel-body">
