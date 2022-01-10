@@ -3,6 +3,7 @@ FROM nginx:latest
 EXPOSE 80
 
 COPY ./manifest.json /usr/share/nginx/html
+COPY ./pwabuilder-sw.js /usr/share/nginx/html
 COPY ./service-worker.js /usr/share/nginx/html
 COPY index.html /usr/share/nginx/html
 COPY CHANGELOG.md /usr/share/nginx/html
