@@ -47,7 +47,7 @@ Full installation instructions are after the screenshot.
 
 ## Release Notes
 
-* This app is packaged with a sample atchive of the <<date>> English-language top 100 Wikipedia articles (`<<zim>>`). The packaged archive is located in the `archives` folder (where this is accessible). See the readme in that folder if you wish to add a different archive as the packaged ZIM;
+* This app is packaged with a sample archive of the <<date>> English-language top 100 Wikipedia articles (`<<zim>>`). The packaged archive is located in the `archives` folder (where this is accessible). See the readme in that folder if you wish to add a different archive as the packaged ZIM;
 * You can download many different archives in multiple languages from the Configuration page;
 * It supports dark mode, and opening different navigable windows by right-clicking or ctrl-clicking a link (see Configuration);
 * You can print by pressing Ctrl-P or using the print icon. If local printers are not available (after clicking on More options...) then print to PDF and use another app to print;
