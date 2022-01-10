@@ -1574,6 +1574,21 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 params.lastPageHTML = "";
             }
         });
+        document.getElementById('cachedAssetsModeRadioTrue').addEventListener('change', function (e) {
+            if (e.target.checked) {
+                settingsStore.setItem('useCache', true, Infinity);
+                params.useCache = true;
+                refreshCacheStatus();
+            }
+        });
+        document.getElementById('cachedAssetsModeRadioFalse').addEventListener('change', function (e) {
+            if (e.target.checked) {
+                settingsStore.setItem('useCache', false, Infinity);
+                params.useCache = false;
+                // Delete all caches
+                cache.clear('all', refreshCacheStatus);
+            }
+        });
         $('input:radio[name=cssInjectionMode]').on('click', function (e) {
             params.cssSource = this.value;
             settingsStore.setItem('cssSource', params.cssSource, Infinity);
@@ -1814,7 +1829,31 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             decompAPIStatusDiv.innerHTML = 'Decompressor API: ' + apiName;
 
             // Add a warning colour to the API Status Panel if any of the above tests failed
-                apiStatusPanel.classList.add(apiPanelClass);
+            apiStatusPanel.classList.add(apiPanelClass);
+
+            refreshCacheStatus();
+        }
+
+        /** 
+         * Refreshes the UI (Configuration) with the cache attributes obtained from getCacheAttributes()
+         */
+        function refreshCacheStatus() {
+            // Update radio buttons and checkbox
+            document.getElementById('cachedAssetsModeRadio' + (params.useCache ? 'True' : 'False')).checked = true;
+            // Get cache attributes, then update the UI with the obtained data
+            cache.count(function (c) {
+                document.getElementById('cacheUsed').innerHTML = c.description;
+                document.getElementById('assetsCount').innerHTML = c.count;
+                var cacheSettings = document.getElementById('performanceSettingsDiv');
+                var cacheStatusPanel = document.getElementById('cacheStatusPanel');
+                [cacheSettings, cacheStatusPanel].forEach(function (card) {
+                    // IE11 cannot remove more than one class from a list at a time
+                    card.classList.remove('panel-success');
+                    card.classList.remove('panel-warning');
+                    if (params.useCache) card.classList.add('panel-success');
+                    else card.classList.add('panel-warning');
+                });
+            });
         }
 
         var keepAliveServiceWorkerHandle = null;
@@ -1899,8 +1938,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             // The ServiceWorker is registered
                             console.log('Service worker is registered with a scope of ' + reg.scope);
                             serviceWorkerRegistration = reg;
-                            refreshAPIStatus();
-
+                            
                             // We need to wait for the ServiceWorker to be activated
                             // before sending the first init message
                             var serviceWorker = reg.installing || reg.waiting || reg.active;
@@ -1912,6 +1950,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     // and send the 'init' message to the ServiceWorker
                                     initOrKeepAliveServiceWorker();
                                     setWindowOpenerUI();
+                                    refreshAPIStatus();
                                 }
                             });
                             if (serviceWorker.state === 'activated') {
@@ -1921,6 +1960,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 // in case it has been stopped and lost its context
                                 initOrKeepAliveServiceWorker();
                             }
+                            refreshAPIStatus();
                         }).catch(function (err) {
                             console.error('error while registering serviceWorker', err);
                             refreshAPIStatus();
@@ -3634,26 +3674,33 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 return;
                             }
 
-                            // Let's read the content in the ZIM file
-                            appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                            var sendContentToSW = function (content) {
+                                var mimetype = dirEntry.getMimetype();
                                 console.log('SW read binary file for: ' + dirEntry.url);
-                                var mimetype = fileDirEntry.getMimetype();
                                 // Let's send the content to the ServiceWorker
                                 var message = {
                                     'action': 'giveContent',
                                     'title': title,
                                     'mimetype': mimetype,
                                     'imageDisplay': imageDisplayMode,
-                                    'content': content.buffer
+                                    'content': content.buffer ? content.buffer : content
                                 };
-                                // if (/\bjavascript$/i.test(mimetype)) {
-                                //     // Soome scripts need the document to be visible, but we must remove max page width first
-                                //     // if user has requested this, or we get ugly page redraws
-                                //     if (!maxPageWidthProcessed) removePageMaxWidth();
-                                //     document.getElementById('articleContent').style.display = 'block';
-                                // }
-                                messagePort.postMessage(message, [content.buffer]);
-                            });
+                                if (content.buffer) {
+                                    messagePort.postMessage(message, [content.buffer]);
+                                } else {
+                                    messagePort.postMessage(message);
+                                }
+                            }
+                            // Let's read the content in the ZIM file
+                            if (/^(?:file:|chrome-extension)/i.test(window.location.protocol)) {
+                                // For Electron apps or Chrome extension, we have to access the cache app-side instead of SW-side
+                                var cacheKey = appstate.selectedArchive._file.name + '/' + title;
+                                cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(sendContentToSW);
+                            } else {
+                                appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                                    sendContentToSW(content.buffer);
+                                });
+                            }
                         }
                     };
                     appstate.selectedArchive.getDirEntryByPath(title).then(readFile).catch(function (err) {

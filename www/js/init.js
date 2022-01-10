@@ -85,6 +85,7 @@ params['imageDisplay'] = getSetting('imageDisplay') != null ? getSetting('imageD
 params['manipulateImages'] = getSetting('manipulateImages') != null ? getSetting('manipulateImages') : false; //Makes dataURIs by default instead of BLOB URIs for images
 params['hideToolbars'] = getSetting('hideToolbars') != null ? getSetting('hideToolbars') : true; //Set default to true (hides both), 'top' (hides top only), or false (no hiding)
 params['rememberLastPage'] = getSetting('rememberLastPage') != null ? getSetting('rememberLastPage') : true; //Set default option to remember the last visited page between sessions
+params['useCache'] = getSetting('useCache') != null ? getSetting('useCache') : true; // Whether to use cache by default or not
 params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
 //params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
 params['showFileSelectors'] = true; //False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
@@ -115,7 +116,6 @@ params['themeChanged'] = params['themeChanged'] || false;
 params['printIntercept'] = false;
 params['printInterception'] = false;
 params['appIsLaunching'] = true; // Allows some routines to tell if the app has just been launched
-params['useCache'] = true; // This needs to be made optional in UI
 params['PWAInstalled'] = getSetting('PWAInstalled');
 params['appType'] = getAppType();
 params['falFileToken'] = "zimfile"; // UWP support

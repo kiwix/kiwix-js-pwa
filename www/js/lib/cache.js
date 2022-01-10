@@ -444,14 +444,14 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                 var readFile = regexpKeyTypes.test(title) ?
                     selectedArchive.readUtf8File : selectedArchive.readBinaryFile;
                 // Bypass getting dirEntry if we already have it
-                var getDirEntry = dirEntry ? Promise.Promise.resolve() :
+                var getDirEntry = dirEntry ? Promise.resolve() :
                     selectedArchive.getDirEntryByPath(title);
                 // Read data from ZIM
                 getDirEntry.then(function (resolvedDirEntry) {
                     if (dirEntry) resolvedDirEntry = dirEntry;
                     if (resolvedDirEntry === null) {
                         console.log("Error: asset file not found: " + title);
-                        callback();
+                        resolve(null);
                     } else {
                         readFile(resolvedDirEntry, function (fileDirEntry, content) {
                             if (regexpKeyTypes.test(title)) {
@@ -500,7 +500,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
      * @param {Function} callback Callback function to report the number of items cleared
      */
     function clear(items, callback) {
-        if (!/lastpages|all/.test(items)) {
+        if (!/lastpages|all|reset/.test(items)) {
             callback(false);
             return;
         }    
@@ -512,7 +512,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
         var currentCookies = document.cookie;
         var cookieCrumb = zimRegExp.exec(currentCookies);
         while (cookieCrumb !== null) {
-            if (/\.zim\w{0,2}=A\//i.test(decodeURIComponent(cookieCrumb[0]))) {
+            if (/\.zim\w{0,2}=/i.test(decodeURIComponent(cookieCrumb[0]))) {
                 key = cookieCrumb[1];
                 // This expiry date will cause the browser to delete the cookie on next page refresh
                 document.cookie = key + '=;expires=Thu, 21 Sep 1979 00:00:01 UTC;';
@@ -533,7 +533,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
             }
             cookieCrumb = zimRegExp.exec(currentCookies);
         }
-        if (items === 'all') {
+        if (items === 'all' || items === 'reset') {
             var result;
             if (/^(memory|indexedDB|cacheAPI)/.test(capability)) {
                 itemsCount += assetsCache.size;
@@ -544,8 +544,18 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
             assetsCache.capability = capability;
             // Loose test here ensures we clear localStorage even if it wasn't being used in this session
             if (/localStorage/.test(capability)) {
-                itemsCount += localStorage.length;
-                localStorage.clear();
+                if (items === 'reset') {
+                    itemsCount += localStorage.length;
+                    localStorage.clear();
+                } else {
+                    for (var i = localStorage.length; i--;) {
+                        var key = localStorage.key(i);
+                        if (/\.zim\w{0,2}/i.test(key)) {
+                            localStorage.removeItem(key);
+                            itemsCount++;
+                        }
+                    }
+                }
                 result = result ? result + " and localStorage" : "localStorage";
             }
             // Loose test here ensures we clear indexedDB even if it wasn't being used in this session
