@@ -300,8 +300,18 @@ footer .btn-xs {
     color: darkred !important;
 }
 
+.dark .btn-danger {
+    background-color: darkslategrey !important;
+    color: gainsboro !important;
+}
+
 .btn-danger:hover {
     background-color: red !important;
+    color: lightyellow !important;
+}
+
+.dark .btn-danger:hover {
+    background-color: darkred !important;
     color: lightyellow !important;
 }
 

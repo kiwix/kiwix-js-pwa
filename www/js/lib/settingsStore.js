@@ -97,70 +97,76 @@ define([], function () {
 
   /**
    * Performs a full app reset, deleting all caches and settings
-   * Or, if a paramter is supplied, deletes or disables the object
+   * Or, if a parameter is supplied, deletes or disables the object
    * @param {String} object Optional name of the object to disable or delete ('cookie', 'localStorage', 'cacheAPI')
    */
   function reset(object) {
-    // If no specific object was specified, we are doing a general reset, so ask user for confirmation
-    if (!object && !confirm('WARNING: This will reset the app to a freshly installed state, deleting all app caches and settings!')) return;
-    
-    // 1. Clear any remaining cookie entries
-    if (!object || object === 'cookie') {
-      var cookieKeys = /(?:^|;)\s*([^=]+)=([^;]*)/ig;
-      var currentCookie = document.cookie;
-      var cookieCrumb = cookieKeys.exec(currentCookie);
-      var cook = false;
-      while (cookieCrumb !== null) {
-        // If the cookie key starts with the keyPrefix
-        if (~params.keyPrefix.indexOf(decodeURIComponent(cookieCrumb[0]))) {
-          cook = true;
-          key = cookieCrumb[1];
-          // This expiry date will cause the browser to delete the cookie on next page refresh
-          document.cookie = key + '=;expires=Thu, 21 Sep 1979 00:00:01 UTC;';
+    var performReset = function () {
+      // 1. Clear any cookie entries
+      if (!object || object === 'cookie') {
+        var regexpCookieKeys = /(?:^|;)\s*([^=]+)=([^;]*)/ig;
+        var currentCookie = document.cookie;
+        var foundCrumb = false;
+        var cookieCrumb = regexpCookieKeys.exec(currentCookie);
+        while (cookieCrumb !== null) {
+          // DEV: Note that we don't use the keyPrefix in legacy cookie support
+          foundCrumb = true;
+          // This expiry date will cause the browser to delete the cookie crumb on next page refresh
+          document.cookie = cookieCrumb[1] + '=;expires=Thu, 21 Sep 1979 00:00:01 UTC;';
+          cookieCrumb = regexpCookieKeys.exec(currentCookie);
         }
-        cookieCrumb = cookieKeys.exec(currentCookie);
+        if (foundCrumb) console.debug('All cookie keys were expired...');
       }
-      if (cook) console.debug('All cookie keys were expiered...');
-    }
 
-    // 2. Clear any localStorage settings
-    if (!object || object === 'localStorage') {
-      if (params.storeType === 'local_storage') {
-        localStorage.clear();
-        console.debug('All Local Storage settings were deleted...');
+      // 2. Clear any localStorage settings
+      if (!object || object === 'localStorage') {
+        if (/localStorage/.test(assetsCache.capability)) {
+          localStorage.clear();
+          console.debug('All Local Storage settings were deleted...');
+        }
       }
-    }
 
-    // 3. Clear any IndexedDB entries
-    if (!object || object === 'indexedDB') {
-      if (/indexedDB/.test(assetsCache.capability)) {
-        var cache = require('cache');
-        cache.clear('reset');
+      // 3. Clear any IndexedDB entries
+      if (!object || object === 'indexedDB') {
+        if (/indexedDB/.test(assetsCache.capability)) {
+          var cache = require('cache');
+          cache.clear('reset');
+        }
       }
-    }
 
-    // 4. Clear any (remaining) Cache API caches
-    if (!object || object === 'cacheAPI') {
-      getCacheNames(function (cacheNames) {
-        if (cacheNames && !cacheNames.error) {
-          var cnt = 0;
-          for (var cacheName in cacheNames) {
-            cnt++;
-            caches.delete(cacheNames[cacheName]).then(function () {
-              cnt--;
-              if (!cnt) {
-                // All caches deleted
-                console.debug('All Cache API caches were deleted...');
-                // Reload if user performed full reset or if appCache is needed
-                if (!object || params.appCache) _reloadApp();
-              }
-            });
+      // 4. Clear any (remaining) Cache API caches
+      if (!object || object === 'cacheAPI') {
+        getCacheNames(function (cacheNames) {
+          if (cacheNames && !cacheNames.error) {
+            var cnt = 0;
+            for (var cacheName in cacheNames) {
+              cnt++;
+              caches.delete(cacheNames[cacheName]).then(function () {
+                cnt--;
+                if (!cnt) {
+                  // All caches deleted
+                  console.debug('All Cache API caches were deleted...');
+                  // Reload if user performed full reset or if appCache is needed
+                  if (!object || params.appCache) _reloadApp();
+                }
+              });
+            }
+          } else {
+            console.debug('No Cache API caches were in use (or we do not have access to the names).');
+            // All operations complete, reload if user performed full reset or if appCache is needed
+            if (!object || params.appCache) _reloadApp();
           }
-        } else {
-          console.debug('No Cache API caches were in use (or we do not have access to the names).');
-          // All operations complete, reload if user performed full reset or if appCache is needed
-          if (!object || params.appCache) _reloadApp();
-        }
+        });
+      }
+    };
+    var uiUtil = require('uiUtil');
+    // If no specific object was specified, we are doing a general reset, so ask user for confirmation
+    if (object) performReset();
+    else {
+      uiUtil.systemAlert('WARNING: This will reset the app to a freshly installed state, deleting all app caches and settings!',
+      'Warning!', 'OK', performReset, 'Cancel',
+      function () {
+        console.debug('User cancelled');
       });
     }
   }
@@ -307,9 +313,6 @@ define([], function () {
     hasItem: settingsStore.hasItem,
     getCacheNames: getCacheNames,
     reset: reset,
-    getBestAvailableStorageAPI: getBestAvailableStorageAPI,
-    function() {
-      return require('cache').clear;
-    }
+    getBestAvailableStorageAPI: getBestAvailableStorageAPI
   };
 });
