@@ -983,35 +983,53 @@
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <div class="row">
-                            <h3>Expert settings</h3>
-                            <div class="column">
-                                <div class="panel panel-danger" id="contentInjectionModeDiv">
-                                    <div class="panel-heading">Content injection mode</div>
-                                    <div class="panel-body">
-                                        <p>See <a href="#expert" class="aboutLink">About (Expert Settings)</a> for an explanation of the difference between these modes:</p>
-                                        <label class="radio" title="This mode tends to be faster, and works well with Wikimedia ZIMs, but active/dynamic content doesn't work.">
-                                            <input type="radio" name="contentInjectionMode" value="jquery" id="jQueryModeRadio" checked>
-                                            <span class="radiobtn"></span>
-                                            <strong>JQuery</strong> (stable and safe)
-                                        </label>
-                                        <label class="radio" title="This mode can run JavaScript in the ZIM, so if it's available, use it for ZIMs with active content.">
-                                            <input type="radio" name="contentInjectionMode" value="serviceworker" id="serviceworkerModeRadio">
-                                            <span class="radiobtn"></span>
-                                            <strong>ServiceWorker</strong> (not available on all platforms, but supports more ZIM files)
-                                        </label>
-                                    </div>
+                    <div class="row">
+                        <h3>Expert settings</h3>
+                        <div class="panel panel-danger" id="contentInjectionModeDiv">
+                            <div class="panel-heading">Content injection mode</div>
+                            <div class="panel-body">
+                                <p>See <a href="#expert" class="aboutLink">About (Expert Settings)</a> for an
+                                    explanation of the difference between these modes:</p>
+                                <label class="radio"
+                                    title="This mode tends to be faster, and works well with Wikimedia ZIMs, but active/dynamic content doesn't work.">
+                                    <input type="radio" name="contentInjectionMode" value="jquery"
+                                        id="jQueryModeRadio" checked>
+                                    <span class="radiobtn"></span>
+                                    <strong>JQuery</strong> (stable and safe)
+                                </label>
+                                <label class="radio"
+                                    title="This mode can run JavaScript in the ZIM, so if it's available, use it for ZIMs with active content.">
+                                    <input type="radio" name="contentInjectionMode" value="serviceworker"
+                                        id="serviceworkerModeRadio">
+                                    <span class="radiobtn"></span>
+                                    <strong>ServiceWorker</strong> (not available on all platforms, but supports
+                                    more ZIM files)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="panel panel-danger panel-footer">
+                            <div class="row">
+                                <div class="col-sm-5">
+                                    <label title="This will return the app to its original settings on launch, and will empty all caches and settings and deregister Service Workers. The app will then reload.">
+                                        <button type="button" class="btn btn-danger" id="btnReset">Reset</button> Full app reset
+                                    </label>
                                 </div>
-                                <div class="panel panel-warning" id="apiStatusDiv">
-                                    <div class="panel-heading">API Status</div>
-                                    <div class="panel-body">
-                                        <div id="serviceWorkerStatus"></div>
-                                        <div id="messageChannelStatus"></div>
-                                        <div id="settingsStoreStatus"></div>
-                                        <div id="decompressorAPIStatus"></div>
-                                    </div>
+                                <div class="col-sm-7">
+                                    <label class="checkbox" title="WARNING: Leaving this checked will prevent offline usage of the PWA. Setting will clear all existing Cache API caches, but assetsCache will be used unless also disabled above. For testing new code with the PWA.">
+                                        <input type="checkbox" name="bypassAppCache" id="bypassAppCacheCheck">
+                                        <span class="checkmark"></span>
+                                        <b>Bypass AppCache</b> (<i>disables offline use of PWA!</i>)
+                                    </label>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-warning" id="apiStatusDiv">
+                            <div class="panel-heading">API Status</div>
+                            <div class="panel-body">
+                                <div id="serviceWorkerStatus"></div>
+                                <div id="messageChannelStatus"></div>
+                                <div id="settingsStoreStatus"></div>
+                                <div id="decompressorAPIStatus"></div>
                             </div>
                         </div>
                     </div>

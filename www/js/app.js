@@ -1201,6 +1201,21 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
             params.themeChanged = true;
         });
+        document.getElementById('btnReset').addEventListener('click', function () {
+            settingsStore.reset();
+        });
+        document.getElementById('bypassAppCacheCheck').addEventListener('change', function () {
+            if (params.contentInjectionMode !== 'serviceworker') {
+                alert('This setting can only be used in Service Worker mode!');
+                this.checked = false;
+            } else {
+                params.appCache = !this.checked;
+                settingsStore.setItem('appCache', params.appCache, Infinity);
+                settingsStore.reset('cacheAPI');
+            }
+            // This will also send any new values to Service Worker
+            refreshCacheStatus();
+        });
         $('input:checkbox[name=hideActiveContentWarning]').on('change', function () {
             params.hideActiveContentWarning = this.checked ? true : false;
             settingsStore.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
@@ -1576,15 +1591,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         });
         document.getElementById('cachedAssetsModeRadioTrue').addEventListener('change', function (e) {
             if (e.target.checked) {
-                settingsStore.setItem('useCache', true, Infinity);
-                params.useCache = true;
+                settingsStore.setItem('assetsCache', true, Infinity);
+                params.assetsCache = true;
                 refreshCacheStatus();
             }
         });
         document.getElementById('cachedAssetsModeRadioFalse').addEventListener('change', function (e) {
             if (e.target.checked) {
-                settingsStore.setItem('useCache', false, Infinity);
-                params.useCache = false;
+                settingsStore.setItem('assetsCache', false, Infinity);
+                params.assetsCache = false;
                 // Delete all caches
                 cache.clear('all', refreshCacheStatus);
             }
@@ -1839,7 +1854,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
          */
         function refreshCacheStatus() {
             // Update radio buttons and checkbox
-            document.getElementById('cachedAssetsModeRadio' + (params.useCache ? 'True' : 'False')).checked = true;
+            document.getElementById('cachedAssetsModeRadio' + (params.assetsCache ? 'True' : 'False')).checked = true;
             // Get cache attributes, then update the UI with the obtained data
             cache.count(function (c) {
                 document.getElementById('cacheUsed').innerHTML = c.description;
@@ -1850,7 +1865,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     // IE11 cannot remove more than one class from a list at a time
                     card.classList.remove('panel-success');
                     card.classList.remove('panel-warning');
-                    if (params.useCache) card.classList.add('panel-success');
+                    if (params.assetsCache) card.classList.add('panel-success');
                     else card.classList.add('panel-warning');
                 });
             });

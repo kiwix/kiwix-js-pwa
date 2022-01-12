@@ -85,7 +85,8 @@ params['imageDisplay'] = getSetting('imageDisplay') != null ? getSetting('imageD
 params['manipulateImages'] = getSetting('manipulateImages') != null ? getSetting('manipulateImages') : false; //Makes dataURIs by default instead of BLOB URIs for images
 params['hideToolbars'] = getSetting('hideToolbars') != null ? getSetting('hideToolbars') : true; //Set default to true (hides both), 'top' (hides top only), or false (no hiding)
 params['rememberLastPage'] = getSetting('rememberLastPage') != null ? getSetting('rememberLastPage') : true; //Set default option to remember the last visited page between sessions
-params['useCache'] = getSetting('useCache') != null ? getSetting('useCache') : true; // Whether to use cache by default or not
+params['assetsCache'] = getSetting('assetsCache') != null ? getSetting('assetsCache') : true; // Whether to use cache by default or not
+params['appCache'] = getSetting('appCache') !== false; // Will be true by default unless explicitly set to false
 params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
 //params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
 params['showFileSelectors'] = true; //False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
@@ -248,6 +249,7 @@ if (/^http/i.test(window.location.protocol) && params.allowInternetAccess === nu
     document.getElementById('allowInternetAccessCheck').checked = true;
     params.allowInternetAccess = true;
 }
+document.getElementById('bypassAppCacheCheck').checked = !params.appCache;
 // If we're in a PWA served from http, change the app titles
 if (/^http/i.test(window.location.protocol)) {
     Array.prototype.slice.call(document.querySelectorAll('span.identity')).forEach(function (ele) {
@@ -440,9 +442,10 @@ function getBestAvailableStorageAPI() {
 require.config({
     //enforceDefine: true, //This is for debugging IE errors
     baseUrl: 'js/lib',
-    config: { '../app': { params: params } },
+    // config: { '../app': { params: params } },
     paths: {
         'jquery': 'jquery-3.2.1.slim',
+        'cache' : 'cache',
         //'jquery': 'jquery-3.2.1',
         //'bootstrap': 'bootstrap'
         'bootstrap': 'bootstrap.min',
