@@ -1206,7 +1206,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         });
         document.getElementById('bypassAppCacheCheck').addEventListener('change', function () {
             if (params.contentInjectionMode !== 'serviceworker') {
-                alert('This setting can only be used in Service Worker mode!');
+                uiUtil.systemAlert('This setting can only be used in Service Worker mode!');
                 this.checked = false;
             } else {
                 params.appCache = !this.checked;
