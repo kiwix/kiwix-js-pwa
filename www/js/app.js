@@ -1102,7 +1102,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             kiwixServe.requestXhttpData(params.kiwixDownloadLink);
         });
 
-        $('input:radio[name=contentInjectionMode]').on('change', function (e) {
+        $('input:radio[name=contentInjectionMode]').on('change', function () {
+            if (this.value === 'jquery' && !params.appCache) {
+                uiUtil.systemAlert('You must deselect the "Bypass AppCache" option before switching to JQuery mode!');
+                this.checked = false;
+                document.getElementById('serviceworkerModeRadio').checked = true;
+                return;
+            }
             var returnDivs = document.getElementsByClassName("returntoArticle");
             for (var i = 0; i < returnDivs.length; i++) {
                 returnDivs[i].innerHTML = "";
@@ -1129,7 +1135,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
             params.themeChanged = true; // This will reload the page
         });
-        $('input:checkbox[name=allowInternetAccess]').on('change', function (e) {
+        $('input:checkbox[name=allowInternetAccess]').on('change', function () {
             document.getElementById('serverResponse').style.display = "none";
             params.allowInternetAccess = this.checked;
             if (!this.checked) {
@@ -1845,6 +1851,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
             // Add a warning colour to the API Status Panel if any of the above tests failed
             apiStatusPanel.classList.add(apiPanelClass);
+
+            // Set visibility of UI elements according to mode
+            document.getElementById('bypassAppCacheDiv').style.display = params.contentInjectionMode === 'serviceworker' ? 'block' : 'none';
 
             refreshCacheStatus();
         }
