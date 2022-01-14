@@ -814,11 +814,6 @@
                                                 </label>
                                             </div>
                                         </div>
-                                        <label class="checkbox">
-                                            <input type="checkbox" name="hideActiveContentWarning" id="hideActiveContentWarningCheck">
-                                            <span class="checkmark"></span>
-                                            <b>Permanently hide active content warning</b> (for experienced users)
-                                        </label>
                                         <div class="row">
                                             <div class="col-sm-12">
                                                 <b>Alphabetical ZIM Archive Index:</b>
@@ -1010,15 +1005,20 @@
                         <div class="panel panel-danger" id="expertSettingsDiv">
                             <div class="panel-heading">Troubleshooting and development</div>
                             <div class="panel-body">
-                                <p>Reset the app to default settings and erase all caches:</p>
                                 <div class="column">
-                                    <label class="button" title="This will return the app to its original settings on launch, and will empty all caches and settings and deregister Service Workers. The app will then reload.">
-                                        <button type="button" class="btn btn-danger" id="btnReset">Reset app</button>
+                                    <label class="checkbox">
+                                        <input type="checkbox" name="hideActiveContentWarning" id="hideActiveContentWarningCheck">
+                                        <span class="checkmark"></span>
+                                        <b>Permanently hide active content warning</b> (for experienced users)
                                     </label>
                                     <label id="bypassAppCacheDiv" class="checkbox" title="WARNING: Leaving this checked will prevent offline usage of the PWA. Setting will clear all existing Cache API caches, but assetsCache will be used unless also disabled above. For testing new code with the PWA.">
                                         <input type="checkbox" name="bypassAppCache" id="bypassAppCacheCheck">
                                         <span class="checkmark"></span>
                                         <b>Bypass AppCache</b> (<i>disables offline use of PWA!</i>)
+                                    </label>
+                                    <p>Reset the app to default settings and erase all caches:</p>
+                                    <label class="button" title="This will return the app to its original settings on launch, and will empty all caches and settings and deregister Service Workers. The app will then reload.">
+                                        <button type="button" class="btn btn-danger" id="btnReset">Reset app</button>
                                     </label>
                                 </div>
                             </div>

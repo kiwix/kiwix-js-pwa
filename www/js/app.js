@@ -2019,12 +2019,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         }
 
         // At launch, we try to set the last content injection mode (stored in Settings Store)
-        var contentInjectionMode = settingsStore.getItem('contentInjectionMode');
-        if (contentInjectionMode) {
-            setContentInjectionMode(contentInjectionMode);
-        } else {
-            setContentInjectionMode('jquery');
-        }
+        setContentInjectionMode(params.contentInjectionMode);
+        // var contentInjectionMode = settingsStore.getItem('contentInjectionMode');
+        // if (contentInjectionMode) {
+        //     setContentInjectionMode(contentInjectionMode);
+        // } else {
+        //     setContentInjectionMode('jquery');
+        // }
 
         /**
          * Tells if the ServiceWorker API is available
