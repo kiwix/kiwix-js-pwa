@@ -301,7 +301,7 @@ footer .btn-xs {
 }
 
 .dark .btn-danger {
-    background-color: darkslategrey !important;
+    background-color: #250000 !important;
     color: gainsboro !important;
 }
 
