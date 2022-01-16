@@ -280,7 +280,7 @@
                         <li><a href="#changelog">Changelog and Features</a></li>
                         <li><a href="#searchSyntax">Title search syntax and alphabetical ZIM Archive Index</a></li>
                         <li><a href="#linkHandling">Link handling, image download, tabs and windows</a></li>
-                        <li><a href="#expert">Expert or Experimental Settings</a></li>
+                        <li><a href="#modes">Technical Information</a></li>
                         <li><a href="#privacy">Privacy Policy</a></li>
                         <li><a href="#feedback">Feedback and Support</a></li>
                         <li><a href="#credits">Credits and Licence</a></li>
@@ -325,7 +325,7 @@
                         You can browse the Kiwix repository on the <a href="#downloads" onclick="document.getElementById('btnConfigure').click();">Configuration</a> page,
                         and the app will provide instructions according to the type of file you download. Alternatively, visit
                         <a href="https://download.kiwix.org/zim" target="_blank">https://download.kiwix.org/zim/</a> using a regular computer. To use all the features of
-                        ZIM archives that have dynamic content (e.g. PhET), you may need to switch the app to the experimental PWA/ServiceWorker mode (see Expert Settings in
+                        ZIM archives that have dynamic content (e.g. PhET), you may need to switch the app to the experimental PWA/ServiceWorker mode (see Compatibility settings in
                         configuration, but this mode is not available on Windows Mobile or on old browsers).
                     </p>
                     <h4>Step 2: Copy the content onto your device</h4>
@@ -451,7 +451,7 @@
                         works smoothly with every option.
                     </p>
                     <p>The app can usually operate in two modes: "JQuery" (which manipulates the content of the article) and "ServiceWorker" (which tries to get out of the way and let the ZIM do its
-                        thing - see below under <a href="#expert">Expert settings</a> for a fuller explanation). Some contexts, like mobile or old browsers, only support JQuery mode. Desktop systems
+                        thing - see below under <a href="#modes">Technical information</a> for a fuller explanation). Some contexts, like mobile or old browsers, only support JQuery mode. Desktop systems
                         and modern browsers support both modes. <b><i>JQuery mode doesn't support active or dynamic content.</i></b> You will usually get an <b>Active Content Warning</b> popping up at the 
                         top of the landing page (Home) if you open a ZIM that requires you to switch to ServiceWorker mode. If you can't switch, you can often still access content in these archives
                         by using title search or typing a space in title search to show the <a href="#zimIndex">ZIM Archive Index</a> (see above), but some things, especially any proprietary User Interface,
@@ -489,10 +489,10 @@
                     <p>
                         
                     </p>
-                    <h3 id="expert">Expert or experimental settings</h3>
+                    <h3 id="modes">Technical information</h3>
                     <p>
                         Depending on your browser or framework, this app may be capable of running in two different modes, which we call
-                        "JQuery Mode" and "ServiceWorker Mode" for short. There is a toggle under Expert Settings
+                        "JQuery Mode" and "ServiceWorker Mode" for short. There is a toggle under Compatibility settings
                         in Configuration. Here is an explanation of what these modes do:
                         <ul>
                             <li>
@@ -814,11 +814,6 @@
                                                 </label>
                                             </div>
                                         </div>
-                                        <label class="checkbox">
-                                            <input type="checkbox" name="hideActiveContentWarning" id="hideActiveContentWarningCheck">
-                                            <span class="checkmark"></span>
-                                            <b>Permanently hide active content warning</b> (for experienced users)
-                                        </label>
                                         <div class="row">
                                             <div class="col-sm-12">
                                                 <b>Alphabetical ZIM Archive Index:</b>
@@ -858,7 +853,7 @@
                                                 </div>
                                             </label>
                                         </div>
-                                        <label class="checkbox" id="openInNewTab" title="Opens articles and external links in a new tab. In ServiceWorker mode (see 'Expert settings' below), this also causes links to be parsed, which (in the UWP app) makes it possible to download EPUBs and PDFs from Gutenberg ZIMs, and to open external links without them being blocked by the CSP. N.B. This setting may interfere with some other ZIM types containing active content.">
+                                        <label class="checkbox" id="openInNewTab" title="Opens articles and external links in a new tab. In ServiceWorker mode (see 'Compatibility settings' below), this also causes links to be parsed, which (in the UWP app) makes it possible to download EPUBs and PDFs from Gutenberg ZIMs, and to open external links without them being blocked by the CSP. N.B. This setting may interfere with some other ZIM types containing active content.">
                                             <input type="checkbox" name="tabOpener" id="tabOpenerCheck">
                                             <span class="checkmark"></span>
                                             <strong>Open links in a new tab</strong> with right-click, ctrl-click, middle-click or long-press
@@ -983,35 +978,58 @@
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <div class="row">
-                            <h3>Expert settings</h3>
-                            <div class="column">
-                                <div class="panel panel-danger" id="contentInjectionModeDiv">
-                                    <div class="panel-heading">Content injection mode</div>
-                                    <div class="panel-body">
-                                        <p>See <a href="#expert" class="aboutLink">About (Expert Settings)</a> for an explanation of the difference between these modes:</p>
-                                        <label class="radio" title="This mode tends to be faster, and works well with Wikimedia ZIMs, but active/dynamic content doesn't work.">
-                                            <input type="radio" name="contentInjectionMode" value="jquery" id="jQueryModeRadio" checked>
-                                            <span class="radiobtn"></span>
-                                            <strong>JQuery</strong> (stable and safe)
-                                        </label>
-                                        <label class="radio" title="This mode can run JavaScript in the ZIM, so if it's available, use it for ZIMs with active content.">
-                                            <input type="radio" name="contentInjectionMode" value="serviceworker" id="serviceworkerModeRadio">
-                                            <span class="radiobtn"></span>
-                                            <strong>ServiceWorker</strong> (not available on all platforms, but supports more ZIM files)
-                                        </label>
-                                    </div>
+                    <div class="row">
+                        <h3>Compatibility settings</h3>
+                        <div class="panel panel-warning" id="contentInjectionModeDiv">
+                            <div class="panel-heading">Content injection mode</div>
+                            <div class="panel-body">
+                                <p>See <a href="#modes" class="aboutLink">About (Technical settings)</a> for an explanation of the difference between these modes:</p>
+                                <label class="radio"
+                                    title="This mode tends to be faster, and works well with Wikimedia ZIMs, but active/dynamic content doesn't work.">
+                                    <input type="radio" name="contentInjectionMode" value="jquery"
+                                        id="jQueryModeRadio" checked>
+                                    <span class="radiobtn"></span>
+                                    <strong>JQuery</strong> (compatible with older browsers and frameworks)
+                                </label>
+                                <label class="radio"
+                                    title="This mode can run JavaScript in the ZIM, so if it's available, use it for ZIMs with active content.">
+                                    <input type="radio" name="contentInjectionMode" value="serviceworker" id="serviceworkerModeRadio">
+                                    <span class="radiobtn"></span>
+                                    <strong>ServiceWorker</strong> (supports archives with dynamic content)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <h3>Expert settings</h3>
+                        <div class="panel panel-danger" id="expertSettingsDiv">
+                            <div class="panel-heading">Troubleshooting and development</div>
+                            <div class="panel-body">
+                                <div class="column">
+                                    <label class="checkbox">
+                                        <input type="checkbox" name="hideActiveContentWarning" id="hideActiveContentWarningCheck">
+                                        <span class="checkmark"></span>
+                                        <b>Permanently hide active content warning</b> (for experienced users)
+                                    </label>
+                                    <label id="bypassAppCacheDiv" class="checkbox" title="WARNING: Leaving this checked will prevent offline usage of the PWA. Setting will clear all existing Cache API caches, but assetsCache will be used unless also disabled above. For testing new code with the PWA.">
+                                        <input type="checkbox" name="bypassAppCache" id="bypassAppCacheCheck">
+                                        <span class="checkmark"></span>
+                                        <b>Bypass AppCache</b> (<i>disables offline use of PWA!</i>)
+                                    </label>
+                                    <p>Reset the app to default settings and erase all caches:</p>
+                                    <label class="button" title="This will return the app to its original settings on launch, and will empty all caches and settings and deregister Service Workers. The app will then reload.">
+                                        <button type="button" class="btn btn-danger" id="btnReset">Reset app</button>
+                                    </label>
                                 </div>
-                                <div class="panel panel-warning" id="apiStatusDiv">
-                                    <div class="panel-heading">API Status</div>
-                                    <div class="panel-body">
-                                        <div id="serviceWorkerStatus"></div>
-                                        <div id="messageChannelStatus"></div>
-                                        <div id="settingsStoreStatus"></div>
-                                        <div id="decompressorAPIStatus"></div>
-                                    </div>
-                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-warning" id="apiStatusDiv">
+                            <div class="panel-heading">API Status</div>
+                            <div class="panel-body">
+                                <div id="serviceWorkerStatus"></div>
+                                <div id="messageChannelStatus"></div>
+                                <div id="settingsStoreStatus"></div>
+                                <div id="decompressorAPIStatus"></div>
                             </div>
                         </div>
                     </div>

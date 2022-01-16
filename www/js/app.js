@@ -1102,7 +1102,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             kiwixServe.requestXhttpData(params.kiwixDownloadLink);
         });
 
-        $('input:radio[name=contentInjectionMode]').on('change', function (e) {
+        $('input:radio[name=contentInjectionMode]').on('change', function () {
+            if (this.value === 'jquery' && !params.appCache) {
+                uiUtil.systemAlert('You must deselect the "Bypass AppCache" option before switching to JQuery mode!');
+                this.checked = false;
+                document.getElementById('serviceworkerModeRadio').checked = true;
+                return;
+            }
             var returnDivs = document.getElementsByClassName("returntoArticle");
             for (var i = 0; i < returnDivs.length; i++) {
                 returnDivs[i].innerHTML = "";
@@ -1129,7 +1135,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
             params.themeChanged = true; // This will reload the page
         });
-        $('input:checkbox[name=allowInternetAccess]').on('change', function (e) {
+        $('input:checkbox[name=allowInternetAccess]').on('change', function () {
             document.getElementById('serverResponse').style.display = "none";
             params.allowInternetAccess = this.checked;
             if (!this.checked) {
@@ -1200,6 +1206,21 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
             }
             params.themeChanged = true;
+        });
+        document.getElementById('btnReset').addEventListener('click', function () {
+            settingsStore.reset();
+        });
+        document.getElementById('bypassAppCacheCheck').addEventListener('change', function () {
+            if (params.contentInjectionMode !== 'serviceworker') {
+                uiUtil.systemAlert('This setting can only be used in Service Worker mode!');
+                this.checked = false;
+            } else {
+                params.appCache = !this.checked;
+                settingsStore.setItem('appCache', params.appCache, Infinity);
+                settingsStore.reset('cacheAPI');
+            }
+            // This will also send any new values to Service Worker
+            refreshCacheStatus();
         });
         $('input:checkbox[name=hideActiveContentWarning]').on('change', function () {
             params.hideActiveContentWarning = this.checked ? true : false;
@@ -1576,15 +1597,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         });
         document.getElementById('cachedAssetsModeRadioTrue').addEventListener('change', function (e) {
             if (e.target.checked) {
-                settingsStore.setItem('useCache', true, Infinity);
-                params.useCache = true;
+                settingsStore.setItem('assetsCache', true, Infinity);
+                params.assetsCache = true;
                 refreshCacheStatus();
             }
         });
         document.getElementById('cachedAssetsModeRadioFalse').addEventListener('change', function (e) {
             if (e.target.checked) {
-                settingsStore.setItem('useCache', false, Infinity);
-                params.useCache = false;
+                settingsStore.setItem('assetsCache', false, Infinity);
+                params.assetsCache = false;
                 // Delete all caches
                 cache.clear('all', refreshCacheStatus);
             }
@@ -1831,6 +1852,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // Add a warning colour to the API Status Panel if any of the above tests failed
             apiStatusPanel.classList.add(apiPanelClass);
 
+            // Set visibility of UI elements according to mode
+            document.getElementById('bypassAppCacheDiv').style.display = params.contentInjectionMode === 'serviceworker' ? 'block' : 'none';
+
             refreshCacheStatus();
         }
 
@@ -1839,7 +1863,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
          */
         function refreshCacheStatus() {
             // Update radio buttons and checkbox
-            document.getElementById('cachedAssetsModeRadio' + (params.useCache ? 'True' : 'False')).checked = true;
+            document.getElementById('cachedAssetsModeRadio' + (params.assetsCache ? 'True' : 'False')).checked = true;
             // Get cache attributes, then update the UI with the obtained data
             cache.count(function (c) {
                 document.getElementById('cacheUsed').innerHTML = c.description;
@@ -1850,7 +1874,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     // IE11 cannot remove more than one class from a list at a time
                     card.classList.remove('panel-success');
                     card.classList.remove('panel-warning');
-                    if (params.useCache) card.classList.add('panel-success');
+                    if (params.assetsCache) card.classList.add('panel-success');
                     else card.classList.add('panel-warning');
                 });
             });
@@ -1995,12 +2019,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         }
 
         // At launch, we try to set the last content injection mode (stored in Settings Store)
-        var contentInjectionMode = settingsStore.getItem('contentInjectionMode');
-        if (contentInjectionMode) {
-            setContentInjectionMode(contentInjectionMode);
-        } else {
-            setContentInjectionMode('jquery');
-        }
+        setContentInjectionMode(params.contentInjectionMode);
+        // var contentInjectionMode = settingsStore.getItem('contentInjectionMode');
+        // if (contentInjectionMode) {
+        //     setContentInjectionMode(contentInjectionMode);
+        // } else {
+        //     setContentInjectionMode('jquery');
+        // }
 
         /**
          * Tells if the ServiceWorker API is available
