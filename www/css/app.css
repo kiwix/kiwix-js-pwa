@@ -295,6 +295,26 @@ footer .btn-xs {
     z-index:initial !important;
 }
 
+.btn-danger {
+    background-color: lightyellow !important;
+    color: darkred !important;
+}
+
+.dark .btn-danger {
+    background-color: #250000 !important;
+    color: gainsboro !important;
+}
+
+.btn-danger:hover {
+    background-color: red !important;
+    color: lightyellow !important;
+}
+
+.dark .btn-danger:hover {
+    background-color: darkred !important;
+    color: lightyellow !important;
+}
+
 .darkfooter {
     background: rgba(34,34,34,0.8) !important;
 }
