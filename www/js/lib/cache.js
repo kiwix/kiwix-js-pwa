@@ -250,8 +250,9 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
      *     'delete' (deletes a record with key passed in valueOrCallback)         
      * @param {Variable} valueOrCallback The value to write, or a callback function for read and command transactions
      * @param {Function} callback Callback for write transactions only
+     * @param {String} mimetype The MIME type of any content to be stored
      */
-    function cacheAPI(keyOrCommand, valueOrCallback, callback) {
+    function cacheAPI(keyOrCommand, valueOrCallback, callback, mimetype) {
         var value = callback ? valueOrCallback : null;
         var rtnFn = callback || valueOrCallback;
         // Process commands
@@ -280,9 +281,25 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
         } else {
             // Request storing of data in cache
             caches.open(CACHEAPI).then(function(cache) {
-                // Construct a Response from value
-                var response = new Response(value);
-                cache.put('../' + keyOrCommand, response).then(function() {
+                var contentLength;
+                if (typeof value === 'string') {
+                    var m = encodeURIComponent(value).match(/%[89ABab]/g);
+                    contentLength = value.length + (m ? m.length : 0);
+                } else {
+                    contentLength = value.byteLength || value.length;
+                }
+                var headers = new Headers();
+                if (contentLength) headers.set('Content-Length', contentLength);
+                // Prevent CORS issues in PWAs
+                if (contentLength) headers.set('Access-Control-Allow-Origin', '*');
+                if (mimetype) headers.set('Content-Type', mimetype);
+                var responseInit = {
+                    status: 200,
+                    statusText: 'OK',
+                    headers: headers
+                };
+                var httpResponse = new Response(value, responseInit);
+                cache.put('../' + keyOrCommand, httpResponse).then(function() {
                     rtnFn(true);
                 }).catch(function(err) {
                     console.error('Unable to store assets in Cache API!', err);
@@ -307,7 +324,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
             return;
         }
         settingsStore.setItem(zimFile, article, Infinity);
-        setItem(zimFile, content, function(response) {
+        setItem(zimFile, content, 'text/html', function(response) {
             callback(response);
         });
     }
@@ -333,9 +350,10 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
      * 
      * @param {String} key The database key of the asset to cache
      * @param {String} contents The file contents to be stored in the cache
+     * @param {String} mimetype The MIME type of the contents
      * @param {Function} callback Callback function to report outcome of operation
      */
-    function setItem(key, contents, callback) {
+    function setItem(key, contents, mimetype, callback) {
         // Prevent use of storage if user has deselected the option in Configuration
         // or if the asset is of the wrong type
         if (params.assetsCache === false || !regexpKeyTypes.test(key)) {
@@ -363,7 +381,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
         } else if (/^cacheAPI/.test(assetsCache.capability)) {
             cacheAPI(key, contents, function(result) {
                 callback(result);
-            });
+            }, mimetype);
         } else {
             callback(key);
         }
@@ -420,7 +438,8 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
      * @param {Object} selectedArchive The ZIM archive picked by the user 
      * @param {String} key The cache key of the item to retrieve 
      * @param {Object} dirEntry If the item's dirEntry has already been looked up, it can optionally be
-     *   supplied here (saves a redundant dirEntry lookup) 
+     *   supplied here (saves a redundant dirEntry lookup)
+     * @returns {Promise<String|Uint8Array>} A Promise for the content
      */
     function getItemFromCacheOrZIM(selectedArchive, key, dirEntry) {
         return new Promise(function (resolve, reject) {
@@ -470,8 +489,9 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                                 // Process any pre-cache transforms
                                 content = transform(content, title.replace(/^.*\.([^.]+)$/, '$1'));
                             }
+                            var mimetype = fileDirEntry.getMimetype();
                             // Hide article while it is rendering
-                            if (/^text\/html$/.test(fileDirEntry.getMimetype())) {
+                            if (/^text\/html$/.test(mimetype)) {
                                 // Count CSS so we can attempt to show article before JS/images are fully loaded
                                 var cssCount = content.match(/<(?:link)[^>]+?href=["']([^"']+)[^>]+>/ig);
                                 assetsCache.cssLoading = cssCount ? cssCount.length : 0;
@@ -485,7 +505,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                                     document.getElementById('searchingArticles').style.display = 'none';
                                 }
                             }
-                            setItem(key, content, function (result) {
+                            setItem(key, content, mimetype, function (result) {
                                 if (result === -1) {
                                     // Cache rejected item due to user settings
                                 } else if (result) {
