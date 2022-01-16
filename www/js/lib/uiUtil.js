@@ -575,20 +575,26 @@ define(rqDef, function(util) {
      * 
      * @param {String} message The message to display
      * @param {String} title The message title
-     * @param {String} btn1 An optional button to display
-     * @param {Function} btn1Func An optional function to run when btn1 is selected
-     * @param {String} btn2 An optional secondary button to display
-     * @param {Function} btn2Func An optional function to run when btn2 is selected
+     * @param {String} btnOK An optional button to display with an OK function
+     * @param {Function} btnOKFn An optional function to run when btnOK is selected
+     * @param {String} btnCancel An optional secondary button to display with a cancel function
+     * @param {Function} btnCancelFn An optional function to run when btnCancel is selected
      */
-    function systemAlert(message, title, btn1, btn1Func, btn2, btn2Func) {
+    function systemAlert(message, title, btnOK, btnOKFn, btnCancel, btnCancelFn) {
         // Test for UWP
         if (typeof Windows !== 'undefined' && typeof Windows.UI !== 'undefined' && typeof Windows.UI.Popups !== 'undefined') {
             var dialog = new Windows.UI.Popups.MessageDialog(message);
-            if (btn1 && btn1Func) dialog.commands.append(new Windows.UI.Popups.UICommand(btn1, btn1Func));
-            if (btn2 && btn2Func) dialog.commands.append(new Windows.UI.Popups.UICommand(btn2, btn2Func));
+            if (btnOK && btnOKFn) dialog.commands.append(new Windows.UI.Popups.UICommand(btnOK, btnOKFn));
+            if (btnCancel && btnCancelFn) dialog.commands.append(new Windows.UI.Popups.UICommand(btnCancel, btnCancelFn));
             dialog.showAsync();
         } else {
-            alert(message);
+            if (btnOK && btnOKFn || btnCancel && btnCancelFn) {
+                var response = confirm(message);
+                if (response) btnOKFn();
+                else if (btnCancel && btnCancelFn) btnCancelFn();
+            } else {
+                alert(message);
+            }
         }
     }
 
