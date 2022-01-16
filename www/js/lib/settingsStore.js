@@ -192,9 +192,17 @@ define([], function () {
     var reboot = function () {
       console.debug('Performing app reload...');
       setTimeout(function () {
-        window.location.reload();
+        window.location.href = location.origin + location.pathname + uriParams 
       }, 300);
     };
+    // Blank the querystring, so that parameters are not set on reload
+    var uriParams = '';
+    if (~window.location.href.indexOf(params.PWAServer) && params.referrerExtensionURL) {
+      // However, if we're in a PWA that was called from local code, then by definition we must remain in SW mode and we need to
+      // ensure the user still has access to the referrerExtensionURL (so they can get back to local code from the UI)
+      uriParams = '?allowInternetAccess=truee&contentInjectionMode=serviceworker';
+      uriParams += '&referrerExtensionURL=' + encodeURIComponent(params.referrerExtensionURL);
+    }
     if (navigator && navigator.serviceWorker) {
       console.debug('Deregistering Service Workers...');
       var cnt = 0;
