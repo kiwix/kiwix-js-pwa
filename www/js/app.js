@@ -3853,6 +3853,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             //@TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
             htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, "$1");
 
+            //@TODO - remove when fixed in youtube ZIM sources: dirty patch for removing erroneously duplicated Video sources
+            // htmlArticle = htmlArticle.replace(/(<video\b(?:[^<]|<(?!\/video))+?)src=['"]([^'"]+)['"]((?:[^<]|<(?!\/video))+?<source\b[^>]+?src=["']\2)/ig, "$1$3");
+
             // Remove erroneous content frequently on front page
             htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, "");
             htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, "");
@@ -3895,8 +3898,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
             //Remove the details polyfill: it's poor and doesn't recognize Edgium
             htmlArticle = htmlArticle.replace(/<script\b[^<]+details[^"']*polyfill\.js[^<]+<\/script>\s*/i, '');
-            // And make sure all sections are open - this doesn't work, because they are all subsequently closed by JS
-            // htmlArticle = htmlArticle.replace(/(<details\b(?![^>]+\sopen)[^>]+)>/ig, '$1 open>');
+            
+            //Remove article.js on youtube ZIMs as it erroneously hides description
+            htmlArticle = /<video\b/i.test(htmlArticle) ? htmlArticle.replace(/<script\b[^<]+assets\/article\.js[^<]+<\/script>\s*/i, '') : htmlArticle;
+            
             // Remove the script.js that closes top-level sections if user requested this
             if (params.openAllSections) htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/(j\/js_modules\/)?script\.js"[^<]*<\/script>/i, "");
             if (params.cssCache) {
