@@ -53,7 +53,14 @@ const APP_CACHE = 'kiwix-appCache-' + appVersion;
  * Caching is on by default but can be turned off by the user in Configuration
  * @type {Boolean}
  */
-var useCache = true;
+var useAssetsCache = true;
+
+/**
+ * A global Boolean that governs whether the APP_CACHE will be used
+ * This is an expert setting in Configuration
+ * @type {Boolean}
+ */
+ var useAppCache = true;
 
 /**
  * A Boolean that governs whether images are displayed
@@ -254,89 +261,112 @@ self.addEventListener('activate', function (event) {
 let outgoingMessagePort = null;
 let fetchCaptureEnabled = false;
 
-self.addEventListener('fetch', intercept);
-
-// Look up fetch in cache, and if it does not exist, try to get it from the network
-function intercept(event) {
-  // Test if we're in an Electron app
-  // DEV: Electron uses the file:// protocol and hacks it to work with SW, but it has CORS issues when using the Fetch API to fetch local files,
-  // so we must bypass it here if we're fetching a local file
-  if (/^file:/i.test(event.request.url) && ! (regexpZIMUrlWithNamespace.test(event.request.url) && /\.zim\w{0,2}\//i.test(event.request.url))) return;
-  // console.debug('[SW] Service Worker ' + (event.request.method === "GET" ? 'intercepted ' : 'noted ') + event.request.url, event.request.method);
-  if (event.request.method !== "GET") return;
-  // Don't cache download links
-  if (regexpKiwixDownloadLinks.test(event.request.url)) return;
-  // Remove any querystring except 'kiwix-display'
-  var rqUrl = event.request.url.replace(/\?(?!kiwix-display)[^?]+$/i, '');
-  // Select cache depending on request format
-  var cache = /\.zim\//i.test(rqUrl) ? ASSETS_CACHE : APP_CACHE;
-  if (cache === ASSETS_CACHE && !fetchCaptureEnabled) return;
-  event.respondWith(
+/**
+ * Intercept selected Fetch requests from the browser window
+ */
+self.addEventListener('fetch', function intercept(event) {
+    // Test if we're in an Electron app
+    // DEV: Electron uses the file:// protocol and hacks it to work with SW, but it has CORS issues when using the Fetch API to fetch local files,
+    // so we must bypass it here if we're fetching a local file
+    if (/^file:/i.test(event.request.url) && !(regexpZIMUrlWithNamespace.test(event.request.url) && /\.zim\w{0,2}\//i.test(event.request.url))) return;
+    // console.debug('[SW] Service Worker ' + (event.request.method === "GET" ? 'intercepted ' : 'noted ') + event.request.url, event.request.method);
+    if (event.request.method !== "GET") return;
+    // Don't cache download links
+    if (regexpKiwixDownloadLinks.test(event.request.url)) return;
+    // Remove any querystring except 'kiwix-display'
+    var rqUrl = event.request.url.replace(/\?(?!kiwix-display)[^?]+$/i, '');
+    // Select cache depending on request format
+    var cache = /\.zim\//i.test(rqUrl) ? ASSETS_CACHE : APP_CACHE;
+    if (cache === ASSETS_CACHE && !fetchCaptureEnabled) return;
+    event.respondWith(
         // First see if the content is in the cache
         fromCache(cache, rqUrl).then(function (response) {
             // The response was found in the cache so we respond with it 
             return response;
         }, function () {
-          // The response was not found in the cache so we look for it on the server
-          if (cache === ASSETS_CACHE && regexpZIMUrlWithNamespace.test(rqUrl)) {
-              if (imageDisplay !== 'all' && /(^|\/)[IJ]\/.*\.(jpe?g|png|svg|gif|webp)($|[?#])(?!kiwix-display)/i.test(rqUrl)) {
-                  // If the user has disabled the display of images, and the browser wants an image, respond with empty SVG
-                  // A URL with "?kiwix-display" query string acts as a passthrough so that the regex will not match and
-                  // the image will be fetched by app.js  
-                  // DEV: If you need to hide more image types, add them to regex below and also edit equivalent regex in app.js
-                  var svgResponse;
-                  if (imageDisplay === 'manual')
-                      svgResponse = "<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1'><rect width='1' height='1' style='fill:lightblue'/></svg>";
-                  else
-                      svgResponse = "<svg xmlns='http://www.w3.org/2000/svg'/>";
-                  return new Response(svgResponse, {
-                      headers: {
-                          'Content-Type': 'image/svg+xml'
-                      }
-                  });
-              }
-              return fetchRequestFromZIM(event).then(function (response) {
-                // Add css or js assets to ASSETS_CACHE (or update their cache entries) unless the URL schema is not supported
-                if (regexpCachedContentTypes.test(response.headers.get('Content-Type')) &&
-                    !regexpExcludedURLSchema.test(event.request.url)) {
-                    event.waitUntil(updateCache(ASSETS_CACHE, event.request, response.clone()));
+            // The response was not found in the cache so we look for it in the ZIM
+            // and add it to the cache if it is an asset type (css or js)
+            if (cache === ASSETS_CACHE && regexpZIMUrlWithNamespace.test(rqUrl)) {
+                if (imageDisplay !== 'all' && /(^|\/)[IJ]\/.*\.(jpe?g|png|svg|gif|webp)($|[?#])(?!kiwix-display)/i.test(rqUrl)) {
+                    // If the user has disabled the display of images, and the browser wants an image, respond with empty SVG
+                    // A URL with "?kiwix-display" query string acts as a passthrough so that the regex will not match and
+                    // the image will be fetched by app.js  
+                    // DEV: If you need to hide more image types, add them to regex below and also edit equivalent regex in app.js
+                    var svgResponse;
+                    if (imageDisplay === 'manual')
+                        svgResponse = "<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1'><rect width='1' height='1' style='fill:lightblue'/></svg>";
+                    else
+                        svgResponse = "<svg xmlns='http://www.w3.org/2000/svg'/>";
+                    return new Response(svgResponse, {
+                        headers: {
+                            'Content-Type': 'image/svg+xml'
+                        }
+                    });
                 }
-                return response;
-              }).catch(function (msgPortData, title) {
-                  console.error('Invalid message received from app.js for ' + title, msgPortData);
-                  return msgPortData;
-              });
-          } else {
-              // It's not an asset, or it doesn't match a ZIM URL pattern, so we should fetch it with Fetch API
-              return fetch(event.request).then(function (response) {
-                  // If request was success, add or update it in the cache
-                  if (!regexpExcludedURLSchema.test(rqUrl) && !/\.zim\w{0,2}$/i.test(rqUrl)) {
-                      event.waitUntil(updateCache(APP_CACHE, event.request, response.clone()));
-                  }
-                  return response;
-              }).catch(function (error) {
-                  console.debug("[SW] Network request failed and no cache.", error);
-            });
-          }
-      })
-  );
-}
+                return fetchRequestFromZIM(event).then(function (response) {
+                    // Add css or js assets to ASSETS_CACHE (or update their cache entries) unless the URL schema is not supported
+                    if (regexpCachedContentTypes.test(response.headers.get('Content-Type')) &&
+                        !regexpExcludedURLSchema.test(event.request.url)) {
+                        event.waitUntil(updateCache(ASSETS_CACHE, event.request, response.clone()));
+                    }
+                    return response;
+                }).catch(function (msgPortData, title) {
+                    console.error('Invalid message received from app.js for ' + title, msgPortData);
+                    return msgPortData;
+                });
+            } else {
+                // It's not an asset, or it doesn't match a ZIM URL pattern, so we should fetch it with Fetch API
+                return fetch(event.request).then(function (response) {
+                    // If request was successful, add or update it in the cache, but be careful not to cache the ZIM archive itself!
+                    if (!regexpExcludedURLSchema.test(rqUrl) && !/\.zim\w{0,2}$/i.test(rqUrl)) {
+                        event.waitUntil(updateCache(APP_CACHE, event.request, response.clone()));
+                    }
+                    return response;
+                }).catch(function (error) {
+                    console.debug("[SW] Network request failed and no cache.", error);
+                });
+            }
+        })
+    );
+});
 
 /**
- * Handle custom commands 'init' and 'disable' from app.js
+ * Handle custom commands sent from app.js
  */
  self.addEventListener('message', function (event) {
-  if (event.data.action === 'init') {
-    // On 'init' message, we initialize the outgoingMessagePort and enable the fetchEventListener
-    outgoingMessagePort = event.ports[0];
-    fetchCaptureEnabled = true;
-  }
-  if (event.data.action === 'disable') {
-    // On 'disable' message, we delete the outgoingMessagePort and disable the fetchEventListener
-    outgoingMessagePort = null;
-    fetchCaptureEnabled = false;
-    self.removeEventListener('fetch', intercept);
-  }
+    if (event.data.action) {
+        if (event.data.action === 'init') {
+            // On 'init' message, we initialize the outgoingMessagePort and enable the fetchEventListener
+            outgoingMessagePort = event.ports[0];
+            fetchCaptureEnabled = true;
+        } else if (event.data.action === 'disable') {
+            // On 'disable' message, we delete the outgoingMessagePort and disable the fetchEventListener
+            outgoingMessagePort = null;
+            fetchCaptureEnabled = false;
+        }
+        var oldValue;
+        if (event.data.action.assetsCache) {
+            // Turns caching on or off (a string value of 'enable' turns it on, any other string turns it off)
+            oldValue = useAssetsCache;
+            useAssetsCache = event.data.action.assetsCache === 'enable';
+            if (useAssetsCache !== oldValue) console.debug('[SW] Use of assetsCache was switched to: ' + useAssetsCache);
+        }
+        if (event.data.action.appCache) {
+            // Enables or disables use of appCache
+            oldValue = useAppCache;
+            useAppCache = event.data.action.appCache === 'enable';
+            if (useAppCache !== oldValue) console.debug('[SW] Use of appCache was switched to: ' + useAppCache);
+        }
+        if (event.data.action === 'getCacheNames') {
+            event.ports[0].postMessage({ 'app': APP_CACHE, 'assets': ASSETS_CACHE });
+        }
+        if (event.data.action.checkCache) {
+            // Checks and returns the caching strategy: checkCache key should contain a sample URL string to test
+            testCacheAndCountAssets(event.data.action.checkCache).then(function (cacheArr) {
+                event.ports[0].postMessage({ type: cacheArr[0], name: cacheArr[1], description: cacheArr[2], count: cacheArr[3] });
+            });
+        }
+    }
 });
 
 /**
@@ -424,7 +454,7 @@ function removeUrlParameters(url) {
  */
 function fromCache(cache, requestUrl) {
     // Prevents use of Cache API if user has disabled it
-    if (!useCache && cache === ASSETS_CACHE) return Promise.reject('disabled');
+    if (!useAppCache && cache === APP_CACHE || !useAssetsCache && cache === ASSETS_CACHE) return Promise.reject('disabled');
     return caches.open(cache).then(function (cacheObj) {
         return cacheObj.match(requestUrl).then(function (matching) {
             if (!matching || matching.status === 404) {
@@ -445,7 +475,7 @@ function fromCache(cache, requestUrl) {
  */
 function updateCache(cache, request, response) {
     // Prevents use of Cache API if user has disabled it
-    if (!useCache && cache === ASSETS_CACHE) return Promise.resolve();
+    if (!useAppCache && cache === APP_CACHE || !useAssetsCache && cache === ASSETS_CACHE) return Promise.resolve();
     return caches.open(cache).then(function (cacheObj) {
         console.debug('[SW] Adding ' + request.url + ' to ' + cache + '...');
         return cacheObj.put(request, response);
@@ -460,7 +490,7 @@ function updateCache(cache, request, response) {
  */
 function testCacheAndCountAssets(url) {
     if (regexpExcludedURLSchema.test(url)) return Promise.resolve(['custom', 'custom', 'Custom', '-']);
-    if (!useCache) return Promise.resolve(['none', 'none', 'None', 0]);
+    if (!useAssetsCache) return Promise.resolve(['none', 'none', 'None', 0]);
     return caches.open(ASSETS_CACHE).then(function (cache) {
         return cache.keys().then(function (keys) {
             return ['cacheAPI', ASSETS_CACHE, 'Cache API', keys.length];

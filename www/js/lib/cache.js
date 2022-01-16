@@ -54,7 +54,6 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
             // Test for Cache API
             if('caches' in window && /https?:/i.test(window.location.protocol)) {
                 assetsCache.capability = 'cacheAPI|' + assetsCache.capability;
-                console.log('Cache API is available, but in development in this app');
             } else {
                 console.log('CacheAPI is not supported' + (/https?:/i.test(window.location.protocol) ? '' : 
                     ' with the ' + window.location.protocol + ' protocol'));
@@ -129,6 +128,18 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                 callback({'type': type, 'description': description, 'count': cacheCount});
             }
         });
+        // Refresh instructions to Service Worker
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+            // Create a Message Channel
+            var channel = new MessageChannel();
+            navigator.serviceWorker.controller.postMessage({
+                'action': {
+                    'assetsCache': params.assetsCache ? 'enable' : 'disable',
+                    'appCache': params.appCache ? 'enable' : 'disable',
+                    'checkCache': window.location.href
+                }
+            }, [channel.port2]);
+        }
     } 
 
     /**
@@ -327,7 +338,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
     function setItem(key, contents, callback) {
         // Prevent use of storage if user has deselected the option in Configuration
         // or if the asset is of the wrong type
-        if (params.useCache === false || !regexpKeyTypes.test(key)) {
+        if (params.assetsCache === false || !regexpKeyTypes.test(key)) {
             callback(-1);
             return;
         }
@@ -434,7 +445,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                     if (!/\.css$|\.js$/.test(key)) {
                         document.getElementById('cachingAssets').style.display = 'none';
                         document.getElementById('searchingArticles').style.display = 'block';
-                    } else if (params.useCache !== false) {
+                    } else if (params.assetsCache !== false) {
                         var shortTitle = key.replace(/[^/]+\//g, '').substring(0, 18);
                         document.getElementById('cachingAssets').innerHTML = 'Getting ' + shortTitle + '...';
                         document.getElementById('cachingAssets').style.display = 'block';
@@ -501,7 +512,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
      */
     function clear(items, callback) {
         if (!/lastpages|all|reset/.test(items)) {
-            callback(false);
+            if (callback) callback(false);
             return;
         }    
         // Delete cookie entries with a key containing '.zim' or '.zimaa' etc. followed by article namespace
@@ -566,7 +577,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                     idxDB('clear', function() {
                         result = result ? result + " (" + itemsCount + " items deleted)" : "no assets to delete";
                         console.log("cache.clear: " + result);
-                        if (!/^cacheAPI/.test(capability)) callback(itemsCount);
+                        if (!/^cacheAPI/.test(capability) && callback) callback(itemsCount);
                     });
                 });
             }
@@ -578,7 +589,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                     cacheAPI('clear', function() {
                         result = result ? result + " (" + itemsCount + " items deleted)" : "no assets to delete";
                         console.log("cache.clear: " + result);
-                        callback(itemsCount);
+                        if (callback) callback(itemsCount);
                     });
                 });
             }
@@ -586,7 +597,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
         if (!/^cacheAPI|indexedDB/.test(capability)) {
             result = result ? result + " (" + itemsCount + " items deleted)" : "no assets to delete";
             console.log("cache.clear: " + result);
-            callback(itemsCount);
+            if (callback) callback(itemsCount);
         }
     }
 
