@@ -68,6 +68,7 @@ params['PWAServer'] = "https://pwa.kiwix.org/"; // Production server
 params['PWAMode'] = getSetting('PWAMode'); // Set to true if the app should always operate in PWA mode 
 
 params['storeType'] = getBestAvailableStorageAPI();
+params['appType'] = getAppType();
 params['keyPrefix'] = 'kiwixjs-'; // Prefix to use for localStorage keys
 // Maximum number of article titles to return (range is 5 - 100, default 30)
 params['maxSearchResultsSize'] = ~~(getSetting('maxSearchResultsSize') || 30);
@@ -94,8 +95,8 @@ params['hideActiveContentWarning'] = getSetting('hideActiveContentWarning') != n
 params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') == true;
 params['alphaChar'] = getSetting('alphaChar') || 'A'; //Set default start of alphabet string (used by the Archive Index)
 params['omegaChar'] = getSetting('omegaChar') || 'Z'; //Set default end of alphabet string
-params['contentInjectionMode'] = getSetting('contentInjectionMode') || (navigator.serviceWorker &&
-    !/^(ms-appx-web:)$/i.test(window.location.protocol) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
+params['contentInjectionMode'] = getSetting('contentInjectionMode') || (navigator.serviceWorker && !/^(ms-appx-web:)$/i.test(window.location.protocol)
+    && !/Android/.test(params.appType) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
 params['allowInternetAccess'] = getSetting('allowInternetAccess');
 params['windowOpener'] = getSetting('windowOpener'); // 'tab|window|false' A setting that determines whether right-click/long-press of a ZIM link opens a new window/tab
 params['rightClickType'] = getSetting('rightClickType'); // 'single|double|false' A setting that determines whether a single or double right-click is used to open a new window/tab
@@ -119,7 +120,6 @@ params['printIntercept'] = false;
 params['printInterception'] = false;
 params['appIsLaunching'] = true; // Allows some routines to tell if the app has just been launched
 params['PWAInstalled'] = getSetting('PWAInstalled');
-params['appType'] = getAppType();
 params['falFileToken'] = "zimfile"; // UWP support
 params['falFolderToken'] = "zimfilestore"; // UWP support
 params.pagesLoaded = 0; // Page counter used to show PWA Install Prompt only after user has played with the app for a while
@@ -264,8 +264,9 @@ function getAppType() {
     if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') type = 'UWP';
     if (window.fs || window.nw) type = 'Electron';
     if (navigator.serviceWorker) type += '|PWA';
-    if (~navigator.appVersion.indexOf('Win')) type += '|Windows';
-    else if (~navigator.appVersion.indexOf('Linux')) type += '|Linux';
+    if (~navigator.userAgent.indexOf('Windows')) type += '|Windows';
+    else if (~navigator.userAgent.indexOf('Linux')) type += '|Linux';
+    else if (~navigator.userAgent.indexOf('Android')) type += '|Android';
     return type;
 }
 
