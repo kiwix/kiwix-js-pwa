@@ -1,12 +1,12 @@
 {
-  "name": "kiwix-js-electron",
-  "productName": "Kiwix JS Electron",
-  "version": "1.8.6E",
-  "description": "Kiwix JS packaged for the Electron framework",
+  "name": "kiwix-js-wikivoyage",
+  "productName": "Wikivoyage by Kiwix",
+  "version": "1.8.3E",
+  "description": "Wikivoyage by Kiwix packaged for the Electron framework",
   "main": "main.js",
   "build": {
-    "appId": "kiwix.js.electron",
-    "productName": "Kiwix JS Electron",
+    "appId": "kiwix.js.wikivoyage",
+    "productName": "Wikivoyage by Kiwix",
     "directories": {
       "output": "bld/Electron",
       "buildResources": "bld"
@@ -31,13 +31,6 @@
         },
         {
           "target": "deb",
-          "arch": [
-            "x64",
-            "ia32"
-          ]
-        },
-        {
-          "target": "rpm",
           "arch": [
             "x64",
             "ia32"
@@ -68,15 +61,19 @@
     "dist-win": "electron-builder build --win",
     "dist-linux": "electron-builder build --linux",
     "package-mac": "electron-packager . kiwix-js-windows --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
-    "package-win": "electron-packager . kiwix-js-windows --overwrite --electron-version='16.0.6' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --platform=win32 --arch=ia32 --icon=www/img/icons/kiwix-64.ico --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Kiwix JS Windows Electron Edition'",
+    "package-win": "electron-packager . kiwix-js-windows --overwrite --electron-version='16.0.2' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --platform=win32 --arch=ia32 --icon=www/img/icons/kiwix-64.ico --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Wikivoyage by Kiwix Electron Edition'",
     "postpackage-win": "(robocopy archives bld\\Electron\\kiwix-js-windows-win32-ia32\\resources\\app\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0",
-    "package-linux": "electron-packager . kiwix-js-windows --overwrite --platform=linux --icon=www/img/icons/kiwix-64.png --electron-version='16.0.6' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --arch=x64 --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Kiwix JS Windows Electron Edition'",
+    "package-linux": "electron-packager . kiwix-js-windows --overwrite --platform=linux --icon=www/img/icons/kiwix-64.png --electron-version='16.0.2' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --arch=x64 --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Wikivoyage by Kiwix Electron Edition'",
     "postpackage-linux": "(robocopy archives bld\\Electron\\kiwix-js-windows-linux-x64\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0"
   },
   "repository": "https://github.com/kiwix/kiwix-js-windows",
   "keywords": [
     "Kiwix",
+    "Wikivoyage",
     "offline",
+    "travel",
+    "guide",
+    "tourism",
     "Wikipedia",
     "ZIM",
     "reader"
@@ -97,5 +94,3 @@
     "electron-context-menu": "^3.1.1"
   }
 }
-
-
