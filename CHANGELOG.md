@@ -17,6 +17,7 @@
 
 * FIX: Stylesheet errors with sistersite boxes
 * FIX: Regression with Electron file handling causing previously picked archive to be forgotten
+* FIX: Fatal Electron error on startup if packaged archive cannot be found
 * FIX: NWJS file handling with legacy file picker (for XP and Vista builds)
 
 ## Release 1.8.2
