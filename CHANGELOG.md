@@ -13,6 +13,7 @@
 * FIX: Regression whereby blue image placeholders were not shown in jQuery mode when user turns off image display
 * FIX: Bug whereby upgrade alert was triggered by caches from other apps on the same domain
 * FIX: Regression with Electron file handling causing previously picked archive to be forgotten
+* FIX: Fatal Electron error on startup if packaged archive cannot be found
 * FIX: NWJS file handling with legacy file picker (for XP and Vista builds)
 
 ## Release 1.8.3-Wikivoyage
