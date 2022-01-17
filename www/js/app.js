@@ -2213,7 +2213,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // Create a fake File object (this avoids extensive patching of later code)
                 createFakeFileObjectElectron(params.storedFile, params.storedFilePath, function (fakeFileList) {
                     var fakeFile = fakeFileList[0];
-                    if (fakeFile.size) {
+                    if (fakeFile && fakeFile.size) {
                         params.pickedFile = fakeFile;
                         if (window.showOpenFilePicker) {
                             populateDropDownListOfArchives([params.pickedFile.name]);
@@ -3058,7 +3058,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     file.size = null;
                     console.error('File cannot be found!', err);
                     uiUtil.systemAlert('The archive you are attempting to load (' + file.path + ') cannot be found. Perhaps it has moved?');
-                    callback([]);
                 } else {
                     file.size = stats.size;
                     console.log("Stored file size is: " + file.size);
