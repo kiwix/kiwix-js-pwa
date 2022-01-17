@@ -344,7 +344,8 @@
                     <h3 id="addingArchives">Adding Wikivoyage archives in other languages</h3>
                     <h4>Step 1: Download some content</h4>
                     <p>
-                        In the Configuration <span class="glyphicon glyphicon-wrench"></span> menu, click <a href="#otherLangs" onclick="document.getElementById('btnConfigure').click();"><b>Download more archives from the Archive Library</b></a> near the top of the page. (Instead, you can go to <a href="#packagedAppFileSelectors" onclick="document.getElementById('btnConfigure').click();"><b>Expert settings</b></a> and check the option to <b>Display selectors</b>.) Select <b>Allow Internet access</b> and tap the <b>Open library</b> button. Locate your Wikivoyage ZIM file, and instructions will be provided to download the file on your device.
+                        In the Configuration <span class="glyphicon glyphicon-wrench"></span> menu, click <a href="#otherLangs" onclick="document.getElementById('btnConfigure').click();"><b>Download more archives from the Archive Library</b></a> near the top of the page.
+                        (Instead, you can go to <a href="#packagedAppFileSelectors" onclick="document.getElementById('btnConfigure').click();"><b>Compatibility settings</b></a> and check the option to <b>Display selectors</b>.) Select <b>Allow Internet access</b> and tap the <b>Open library</b> button. Locate your Wikivoyage ZIM file, and instructions will be provided to download the file on your device.
                         Alternatively, visit <a href="https://download.kiwix.org/zim" target="_blank">https://download.kiwix.org/zim/</a> using a regular computer.
                         <strong>This app is optimized for Wikivoyage archives only</strong>. If you wish to use regularly other archive types with this app, you should instead obtain our sister app, <b>Kiwix JS</b> from the Store and keep this as a dedicated Wikivoyage app.
                     </p>
@@ -956,16 +957,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="panel panel-warning" style="min-width:16em; display: none;" id="packagedAppFileSelectors">
-                                <div class="panel-heading">Display hidden ZIM archive selectors:</div>
-                                <div class="panel-body">
-                                    <label class="checkbox">
-                                        <input type="checkbox" name="displayFileSelectors" id="displayFileSelectorsCheck">
-                                        <span class="checkmark"></span>
-                                        <b>Display selectors</b> for files and folders : <i>This is for downloading other ZIM archives</i>.
-                                    </label>
-                                </div>
-                            </div>
                             <div class="panel panel-warning" style="min-width:16em;" id="mathsProcessingMode">
                                 <div class="panel-heading">Mathematical and chemical equations and symbols:</div>
                                 <div class="panel-body">
@@ -1001,6 +992,16 @@
                                     <input type="radio" name="contentInjectionMode" value="serviceworker" id="serviceworkerModeRadio">
                                     <span class="radiobtn"></span>
                                     <strong>ServiceWorker</strong> (supports archives with dynamic content)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="panel panel-warning" style="min-width:16em; display: none;" id="packagedAppFileSelectors">
+                            <div class="panel-heading">Display hidden ZIM archive selectors:</div>
+                            <div class="panel-body">
+                                <label class="checkbox">
+                                    <input type="checkbox" name="displayFileSelectors" id="displayFileSelectorsCheck">
+                                    <span class="checkmark"></span>
+                                    <b>Display selectors</b> for files and folders : <i>This is for downloading other ZIM archives</i>.
                                 </label>
                             </div>
                         </div>
