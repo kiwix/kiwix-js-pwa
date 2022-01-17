@@ -2227,8 +2227,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         settingsStore.removeItem('lastSelectedArchive');
                         settingsStore.removeItem('lastSelectedArchivePath');
                         if (params.packagedFile && params.storedFile !== params.packagedFile) {
-                            createFakeFileObjectElectron(params.packagedFile, params.archivePath + '/' + params.packagedFile, function (fakeFile) {
-                                if (fakeFile.size) {
+                            createFakeFileObjectElectron(params.packagedFile, params.archivePath + '/' + params.packagedFile, function (fakeFileList) {
+                                var fakeFile = fakeFileList[0];
+                                if (fakeFile && fakeFile.size) {
                                     params.pickedFile = fakeFile;
                                     setLocalArchiveFromFileList([params.pickedFile]);
                                 } else {
