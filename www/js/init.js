@@ -264,9 +264,9 @@ function getAppType() {
     if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') type = 'UWP';
     if (window.fs || window.nw) type = 'Electron';
     if (navigator.serviceWorker) type += '|PWA';
-    if (~navigator.userAgent.indexOf('Windows')) type += '|Windows';
-    else if (~navigator.userAgent.indexOf('Linux')) type += '|Linux';
-    else if (~navigator.userAgent.indexOf('Android')) type += '|Android';
+    if (/Windows/i.test(navigator.userAgent)) type += '|Windows';
+    else if (/Android/i.test(navigator.userAgent)) type += '|Android';
+    else if (/Linux/i.test(navigator.userAgent)) type += '|Linux';
     return type;
 }
 
