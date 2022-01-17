@@ -3,10 +3,13 @@
 ## Release 1.8.7-Wikivoyage
 
 * UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2022-01`
+* ENHANCEMENT: Service Worker mode is now the default in contexts or frameworks that natively support it
+* ENHANCEMENT: Option to reset app to defaults in Expert settings
 * ENHANCEMENT: Assets cache and app cache are now separated, so assets persist after update
 * ENHANCEMENT: New persistent caching of ZIM assets that are not provided in file system singinficantly improves performance
 * ENHANCEMENT: Automatically choose best available caching technology: Cache API, IndexedDB, Local Storage or memory
 * ENHANCEMENT: New Cache API info panel in Configuration, and option to stop using and empty the cache
+* FIX: Set headers properly when caching Fetch responses in JQuery mode
 * FIX: Regression whereby blue image placeholders were not shown in jQuery mode when user turns off image display
 * FIX: Bug whereby upgrade alert was triggered by caches from other apps on the same domain
 * FIX: Regression with Electron file handling causing previously picked archive to be forgotten
