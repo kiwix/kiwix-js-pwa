@@ -3669,20 +3669,19 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                         // hidden). Note that testing appstate.target is probably redundant for UWP because it will always
                                         // be iframe even if an external window is loaded... (but we probably need to do so for other cases)
                                         if (appstate.target === 'iframe') articleContainer.style.display = 'none';
-                                        articleContainer.onload = function() {
-                                            articleLoadedSW(thisDirEntry);
-                                        };
+                                        // articleContainer.onload = function() {
+                                        //     articleLoadedSW(thisDirEntry);
+                                        // };
                                         // New windows do not respect the onload event because they've been pre-populated,
                                         // so we have to simulate this event (note potential for race condition if timeout is too short)
                                         // NB The UWP app cannot control the opened window, so it can only be controlled by the Service Worker
-                                        if (/UWP/.test(params.appType)) {
-                                            setTimeout(function () {
-                                                articleContainer.style.display = 'block';
-                                            }, 800);
-                                            setTimeout(function () {
-                                                $("#searchingArticles").hide();
-                                            }, 2000);
-                                        } else {
+                                        setTimeout(function () {
+                                            if (appstate.target === 'iframe') articleContainer.style.display = 'block';
+                                        }, 800);
+                                        setTimeout(function () {
+                                            $("#searchingArticles").hide();
+                                        }, 2000);
+                                        if (!/UWP/.test(params.appType)) {
                                             setTimeout(function () {
                                                 if (!loaded) articleLoadedSW(thisDirEntry);
                                             }, 400);
@@ -3721,7 +3720,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 } else {
                                     messagePort.postMessage(message);
                                 }
-                            }
+                            };
                             // Let's read the content in the ZIM file
                             if (/^(?:file:|chrome-extension)/i.test(window.location.protocol)) {
                                 // For Electron apps or Chrome extension, we have to access the cache app-side instead of SW-side
