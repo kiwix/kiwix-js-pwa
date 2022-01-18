@@ -3670,7 +3670,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                         // hidden). Note that testing appstate.target is probably redundant for UWP because it will always
                                         // be iframe even if an external window is loaded... (but we probably need to do so for other cases)
                                         if (appstate.target === 'iframe') {
-                                            articleContainer.style.display = 'none';
+                                            if (/UWP/.test(params.appType)) articleContainer.style.display = 'none';
                                             articleContainer.onload = function() {
                                                 articleLoadedSW(thisDirEntry);
                                             };
