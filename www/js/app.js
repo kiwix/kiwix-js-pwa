@@ -3714,11 +3714,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 maxPageWidthProcessed = false;
                 loaded = false;
                 // Remove those pesky JQuery hooks to prevent memory leaks
-                if (articleContainer.document) {
-                    $(articleContainer.document).contents().remove();    
-                } else {
-                    $(articleContainer).contents().remove();
-                }
+                //if (articleContainer.document) {
+                //    $(articleContainer.document).contents().remove(); // Causes exception in UWP   
+                //} else {
+                //    $(articleContainer).contents().remove();
+                //}
                 // If loading the iframe, we can hide the frame (for UWP apps: for others, the doc should already be
                 // hidden). Note that testing appstate.target is probably redundant for UWP because it will always
                 // be iframe even if an external window is loaded... (but we probably need to do so for other cases)
