@@ -3639,75 +3639,21 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     'imageDisplay': imageDisplayMode
                                 };
                                 var timer;
-                                var thisMessage = message;
-                                var thisMessagePort = messagePort;
-                                var postTransformedHTML = function() {
-                                    clearTimeout(timer);
-                                    if (params.transformedHTML && /<html[^>]*>/.test(params.transformedHTML)) {
-                                        // // Because UWP app window can only be controlled from the Service Worker, we have to allow all images
-                                        // // to be called from any external windows
-                                        // if (/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting) &&
-                                        //     params.imageDisplay) { imageDisplayMode = 'all'; }
-                                        // // We need to do the same for Gutenberg and PHET ZIMs
-                                        // if (/gutenberg|phet/i.test(appstate.selectedArchive._file._files[0].name)) {
-                                        //     imageDisplayMode = 'all';
-                                        // }
-                                        appstate.messageChannelWaiting = false;
-                                        // Let's send the content to the ServiceWorker
-                                        thisMessage.content = params.transformedHTML;
-                                        thisMessage.imageDisplay = imageDisplayMode;
-                                        params.transformedHTML = '';
-                                        maxPageWidthProcessed = false;
-                                        loaded = false;
-                                        var thisDirEntry = dirEntry;
-                                        // Remove those pesky JQuery hooks to prevent memory leaks
-                                        if (articleContainer.document) {
-                                            $(articleContainer.document).contents().remove();    
-                                        } else {
-                                            $(articleContainer).contents().remove();
-                                        }
-                                        // If loading the iframe, we can hide the frame (for UWP apps: for others, the doc should already be
-                                        // hidden). Note that testing appstate.target is probably redundant for UWP because it will always
-                                        // be iframe even if an external window is loaded... (but we probably need to do so for other cases)
-                                        if (appstate.target === 'iframe') {
-                                            if (/UWP/.test(params.appType)) articleContainer.style.display = 'none';
-                                            articleContainer.onload = function() {
-                                                articleLoadedSW(thisDirEntry);
-                                            };
-                                        } else {
-                                            // New windows do not respect the onload event because they've been pre-populated,
-                                            // so we have to simulate this event (note potential for race condition if timeout is too short)
-                                            // NB The UWP app cannot control the opened window, so it can only be controlled by the Service Worker
-                                            setTimeout(function () {
-                                                if (appstate.target === 'iframe') articleContainer.style.display = 'block';
-                                            }, 800);
-                                            setTimeout(function () {
-                                                $("#searchingArticles").hide();
-                                            }, 2000);
-                                            if (!/UWP/.test(params.appType)) {
-                                                setTimeout(function () {
-                                                    if (!loaded) articleLoadedSW(thisDirEntry);
-                                                }, 400);
-                                            }
-                                        }
-                                        thisMessagePort.postMessage(thisMessage);
-                                    } else {
-                                        setTimeout(postTransformedHTML, 500);
-                                    }
-                                }; 
                                 if (!params.transformedHTML) {
                                     // It's an unstransformed html file, so we need to do some content transforms and wait for the HTML to be available
                                     if (!~params.lastPageVisit.indexOf(dirEntry.url)) params.lastPageVisit = '';
                                     // Tell the read routine that the request comes from a messageChannel 
                                     appstate.messageChannelWaiting = true;
                                     readArticle(dirEntry);
-                                    timer = setTimeout(postTransformedHTML, 300);
+                                    timer = setTimeout(function () {
+                                        clearTimeout(timer);
+                                        postTransformedHTML(message, messagePort, dirEntry);
+                                    }, 300);
                                 } else {
-                                    postTransformedHTML();
+                                    postTransformedHTML(message, messagePort, dirEntry);
                                 }
                                 return;
                             }
-
                             var sendContentToSW = function (content) {
                                 var mimetype = dirEntry.getMimetype();
                                 console.log('SW read binary file for: ' + dirEntry.url);
@@ -3748,6 +3694,59 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 } else {
                     console.error("Invalid message received", event.data);
                 }
+            }
+        }
+
+        function postTransformedHTML(thisMessage, thisMessagePort, thisDirEntry) {
+            if (params.transformedHTML && /<html[^>]*>/.test(params.transformedHTML)) {
+                // // Because UWP app window can only be controlled from the Service Worker, we have to allow all images
+                // // to be called from any external windows
+                // if (/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting) &&
+                //     params.imageDisplay) { imageDisplayMode = 'all'; }
+                // // We need to do the same for Gutenberg and PHET ZIMs
+                // if (/gutenberg|phet/i.test(appstate.selectedArchive._file._files[0].name)) {
+                //     imageDisplayMode = 'all';
+                // }
+                appstate.messageChannelWaiting = false;
+                // Let's send the content to the ServiceWorker
+                thisMessage.content = params.transformedHTML;
+                params.transformedHTML = '';
+                maxPageWidthProcessed = false;
+                loaded = false;
+                // Remove those pesky JQuery hooks to prevent memory leaks
+                if (articleContainer.document) {
+                    $(articleContainer.document).contents().remove();    
+                } else {
+                    $(articleContainer).contents().remove();
+                }
+                // If loading the iframe, we can hide the frame (for UWP apps: for others, the doc should already be
+                // hidden). Note that testing appstate.target is probably redundant for UWP because it will always
+                // be iframe even if an external window is loaded... (but we probably need to do so for other cases)
+                if (appstate.target === 'iframe') {
+                    if (/UWP/.test(params.appType)) articleContainer.style.display = 'none';
+                    articleContainer.onload = function() {
+                        articleContainer.onload = null;
+                        articleLoadedSW(thisDirEntry);
+                    };
+                } else {
+                    // New windows do not respect the onload event because they've been pre-populated,
+                    // so we have to simulate this event (note potential for race condition if timeout is too short)
+                    // NB The UWP app cannot control the opened window, so it can only be controlled by the Service Worker
+                    setTimeout(function () {
+                        if (appstate.target === 'iframe') articleContainer.style.display = 'block';
+                    }, 800);
+                    setTimeout(function () {
+                        $("#searchingArticles").hide();
+                    }, 2000);
+                    if (!/UWP/.test(params.appType)) {
+                        setTimeout(function () {
+                            if (!loaded) articleLoadedSW(thisDirEntry);
+                        }, 400);
+                    }
+                }
+                thisMessagePort.postMessage(thisMessage);
+            } else {
+                setTimeout(postTransformedHTML, 500);
             }
         }
 
