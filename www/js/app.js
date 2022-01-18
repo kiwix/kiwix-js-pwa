@@ -3559,6 +3559,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 setTab();
                 setTimeout(function() {
                     articleDocument.bgcolor = '';
+                    if (articleWindow.kiwixType === 'iframe') articleContainer.style.display = 'block';
                     docBody.hidden = false;
                 }, 200);
                 settingsStore.removeItem('lastPageLoad');
@@ -3668,23 +3669,26 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                         // If loading the iframe, we can hide the frame (for UWP apps: for others, the doc should already be
                                         // hidden). Note that testing appstate.target is probably redundant for UWP because it will always
                                         // be iframe even if an external window is loaded... (but we probably need to do so for other cases)
-                                        if (appstate.target === 'iframe') articleContainer.style.display = 'none';
-                                        // articleContainer.onload = function() {
-                                        //     articleLoadedSW(thisDirEntry);
-                                        // };
-                                        // New windows do not respect the onload event because they've been pre-populated,
-                                        // so we have to simulate this event (note potential for race condition if timeout is too short)
-                                        // NB The UWP app cannot control the opened window, so it can only be controlled by the Service Worker
-                                        setTimeout(function () {
-                                            if (appstate.target === 'iframe') articleContainer.style.display = 'block';
-                                        }, 800);
-                                        setTimeout(function () {
-                                            $("#searchingArticles").hide();
-                                        }, 2000);
-                                        if (!/UWP/.test(params.appType)) {
+                                        if (appstate.target === 'iframe') {
+                                            articleContainer.style.display = 'none';
+                                            articleContainer.onload = function() {
+                                                articleLoadedSW(thisDirEntry);
+                                            };
+                                        } else {
+                                            // New windows do not respect the onload event because they've been pre-populated,
+                                            // so we have to simulate this event (note potential for race condition if timeout is too short)
+                                            // NB The UWP app cannot control the opened window, so it can only be controlled by the Service Worker
                                             setTimeout(function () {
-                                                if (!loaded) articleLoadedSW(thisDirEntry);
-                                            }, 400);
+                                                if (appstate.target === 'iframe') articleContainer.style.display = 'block';
+                                            }, 800);
+                                            setTimeout(function () {
+                                                $("#searchingArticles").hide();
+                                            }, 2000);
+                                            if (!/UWP/.test(params.appType)) {
+                                                setTimeout(function () {
+                                                    if (!loaded) articleLoadedSW(thisDirEntry);
+                                                }, 400);
+                                            }
                                         }
                                         thisMessagePort.postMessage(thisMessage);
                                     } else {
