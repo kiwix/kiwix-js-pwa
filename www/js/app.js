@@ -3522,7 +3522,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             loaded = true;
             articleDocument = articleWindow.document.documentElement;
             // Deflect drag-and-drop of ZIM file on the iframe to Config
-            if (articleContainer.kiwixType === 'iframe') {
+            if (appstate.target === 'iframe') {
                 doc.body.addEventListener('dragover', handleIframeDragover);
                 doc.body.addEventListener('drop', handleIframeDrop);
                 setupTableOfContents();
@@ -3557,11 +3557,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (/UWP/.test(params.appType)) doc.body.addEventListener('pointerup', onPointerUp);
             // The content is ready : we can hide the spinner
             setTab();
-            // setTimeout(function() {
-            //     articleDocument.bgcolor = '';
-            //     if (articleWindow.kiwixType === 'iframe') articleContainer.style.display = 'block';
-            //     doc.body.hidden = false;
-            // }, 80);
+            setTimeout(function() {
+                articleDocument.bgcolor = '';
+                if (articleWindow.kiwixType === 'iframe') articleContainer.style.display = 'block';
+                doc.body.hidden = false;
+            }, 200);
             settingsStore.removeItem('lastPageLoad');
             $("#searchingArticles").hide();
             // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
@@ -3570,7 +3570,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             
             // Show spinner when the article unloads
             articleContainer.onunload = function () {
-                if (articleContainer.kiwixType === 'iframe') {
+                if (articleWindow.kiwixType === 'iframe') {
                     $("#searchingArticles").show();
                 }
             };
@@ -3716,7 +3716,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 //} else {
                 //    $(articleContainer).contents().remove();
                 //}
-                articleContainer.kiwixType = appstate.target;
                 // If loading the iframe, we can hide the frame (for UWP apps: for others, the doc should already be
                 // hidden). Note that testing appstate.target is probably redundant for UWP because it will always
                 // be iframe even if an external window is loaded... (but we probably need to do so for other cases)
@@ -3727,40 +3726,30 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // New windows do not respect the onload event because they've been pre-populated,
                 // so we have to simulate this event (note potential for race condition if timeout is too short)
                 // NB The UWP app cannot control the opened window, so it can only be controlled by the Service Worker
-                setTimeout(function displayArticleWindow (attempts, dirEnt) {
+                (function displayArticleWindow (attempts) {
                     if (!attempts) return;
-                    if (!/UWP/.test(params.appType)) {
-                        articleLoadedSW(dirEnt);
-                    }
-                    var reallyLoaded = false;
                     if (loaded) {
+                        console.debug('Article loaded: displaying...');
+                        if (appstate.target === 'iframe') articleContainer.style.display = 'block';
                         if (!/UWP/.test(params.appType)) {
                             var doc = articleWindow.document;
-                            if (doc && doc.body && doc.body.hidden) {
-                                reallyLoaded = true;
-                                doc.body.hidden = false;
-                                doc.body.removeAttribute('hidden');
-                            }
-                        } else {
-                            reallyLoaded = true;
-                            if (appstate.target === 'iframe') articleContainer.style.display = 'block';
+                            if (doc && doc.body) doc.body.hidden = false;
                         }
-                    }
-                    if (!reallyLoaded) {
+                    } else {
                         attempts--;
                         console.debug('Attempts remaining: ' + attempts);
-                        setTimeout(displayArticleWindow, 600, attempts, dirEnt);
+                        setTimeout(displayArticleWindow, 600, attempts);
                     }
-                }, 600, 30, thisDirEntry);
+                })(10);
                 // Hide spinner
                 setTimeout(function () {
                     document.getElementById('searchingArticles').style.display = 'none';
                 }, 2000);
-                // if (!/UWP/.test(params.appType)) {
-                //     setTimeout(function () {
-                //         articleLoadedSW(thisDirEntry);
-                //     }, 600);
-                // }
+                if (!/UWP/.test(params.appType)) {
+                    setTimeout(function () {
+                        articleLoadedSW(thisDirEntry);
+                    }, 600);
+                }
                 thisMessagePort.postMessage(thisMessage);
             } else {
                 setTimeout(postTransformedHTML, 500);
@@ -4248,7 +4237,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     articleDocument = articleWindow.document.documentElement;
                     // Hide the document before injecting to avoid display flash before stylesheets are loaded; also improves performance
                     // during loading of assets in most browsers, but UWP mnobile (at least) cannot build the DOM if hidden
-                    // if ('serviceWorker' in navigator) articleDocument.hidden = true; // Already done above
+                    if ('serviceWorker' in navigator) articleDocument.hidden = true; 
 
                     // ** Write article html to the new article container **
                     articleDocument.innerHTML = htmlArticle;
@@ -4347,7 +4336,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     checkToolbar();
                     var showArticle = function () {
                         articleDocument.bgcolor = "";
-                        // articleDocument.hidden = false;
+                        articleDocument.hidden = false;
                         articleWindow.document.body.hidden = false;
                     };
                     if ('MSBlobBuilder' in window) {
@@ -4355,7 +4344,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         showArticle();
                     } else {
                         // For Chromium browsers a small delay greatly improves composition
-                        setTimeout(showArticle, 600);
+                        setTimeout(showArticle, 80);
                     }
                     params.isLandingPage = false;
                 };
