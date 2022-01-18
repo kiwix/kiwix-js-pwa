@@ -1,9 +1,11 @@
 # Changelog
 
-## Interim release 1.8.7
+## Interim release 1.8.8
 
-* ENHANCEMENT: Service Worker mode is now the default in contexts or frameworks that natively support it
+* ENHANCEMENT: Service Worker mode is now the default in contexts or frameworks that natively support it with good performance
 * ENHANCEMENT: Option to reset app to defaults in Expert settings
+* DEV: Developer option to bypass appCache
+* FIX: Bug that would sometimes cause a blank screen in Service Worker mode on slow devices
 * FIX: Set headers properly when caching Fetch responses in JQuery mode
 
 ## Release 1.8.6
