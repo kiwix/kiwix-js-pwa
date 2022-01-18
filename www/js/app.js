@@ -3740,7 +3740,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         console.debug('Attempts remaining: ' + attempts);
                         setTimeout(displayArticleWindow, 600, attempts);
                     }
-                })(10);
+                })(30);
                 // Hide spinner
                 setTimeout(function () {
                     document.getElementById('searchingArticles').style.display = 'none';
