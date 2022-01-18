@@ -3559,9 +3559,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 setTab();
                 setTimeout(function() {
                     articleDocument.bgcolor = '';
-                    if (articleWindow.kiwixType === 'iframe') articleContainer.style.display = 'block';
+                    if (appstate.target === 'iframe') articleContainer.style.display = 'block';
                     docBody.hidden = false;
-                }, 200);
+                }, 30);
                 settingsStore.removeItem('lastPageLoad');
                 $("#searchingArticles").hide();
                 // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
@@ -3725,7 +3725,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 if (appstate.target === 'iframe') {
                     if (/UWP/.test(params.appType)) articleContainer.style.display = 'none';
                     articleContainer.onload = function() {
-                        articleContainer.onload = null;
                         articleLoadedSW(thisDirEntry);
                     };
                 } else {
