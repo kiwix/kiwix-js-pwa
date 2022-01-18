@@ -3516,60 +3516,57 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         var loaded = false;
         var articleLoadedSW = function (dirEntry) {
             if (loaded) return;
+            var doc = articleWindow.document;
+            if (!doc || !doc.body) return;
+            // Document appears to be properly loaded
             loaded = true;
             articleDocument = articleWindow.document.documentElement;
-            var doc = articleWindow.document;
-            var docBody = doc.body;
-            if (docBody) {
-                // Deflect drag-and-drop of ZIM file on the iframe to Config
-                if (appstate.target === 'iframe') {
-                    docBody.addEventListener('dragover', handleIframeDragover);
-                    docBody.addEventListener('drop', handleIframeDrop);
-                    setupTableOfContents();
-                    listenForSearchKeys();
-                }
-                //Set relative font size + Stackexchange-family multiplier
-                var zimType = /-\/s\/style\.css/i.test(doc.head.innerHTML) ? "desktop" : "mobile";
-                zimType = /-\/static\/main\.css/i.test(doc.head.innerHTML) ? "desktop-stx" : zimType; //Support stackexchange
-                zimType = /minerva|mobile[^"']*\.css/i.test(doc.head.innerHTML) ? "mobile" : zimType;
-                var docElStyle = articleDocument.style;
-                var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
-                docElStyle = zoomProp === 'fontSize' ? docBody.style : docElStyle; 
-                docElStyle[zoomProp] = ~zimType.indexOf("stx") && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
-                // if (appstate.target === 'iframe') uiUtil.initTouchZoom(articleDocument, docBody);
-                checkToolbar();
-                //Set page width according to user preference
-                removePageMaxWidth();
-                if (!params.isLandingPage) openAllSections();
-                setupHeadings();
-                listenForNavigationKeys();
-                // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
-                // We need to set a timeout so that dynamically generated URLs are parsed as well (e.g. in Gutenberg ZIMs)
-                if (params.windowOpener) setTimeout(function () {
-                    parseAnchorsJQuery(dirEntry);
-                }, 1500);
-                if (/manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker(articleWindow);
-                if (params.allowHTMLExtraction && appstate.target === 'iframe') {
-                    var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
-                    uiUtil.insertBreakoutLink(determinedTheme);
-                }
-                // Trap any clicks on the iframe to detect if mouse back or forward buttons have been pressed (Chromium does this natively)
-                if (/UWP/.test(params.appType)) docBody.addEventListener('pointerup', onPointerUp);
-                // The content is ready : we can hide the spinner
-                setTab();
-                setTimeout(function() {
-                    articleDocument.bgcolor = '';
-                    if (articleWindow.kiwixType === 'iframe') articleContainer.style.display = 'block';
-                    docBody.hidden = false;
-                }, 200);
-                settingsStore.removeItem('lastPageLoad');
-                $("#searchingArticles").hide();
-                // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
-                if (params.printIntercept) printIntercept();
-                params.isLandingPage = false;
-            } else {
-                loaded = false;
+            // Deflect drag-and-drop of ZIM file on the iframe to Config
+            if (appstate.target === 'iframe') {
+                doc.body.addEventListener('dragover', handleIframeDragover);
+                doc.body.addEventListener('drop', handleIframeDrop);
+                setupTableOfContents();
+                listenForSearchKeys();
             }
+            //Set relative font size + Stackexchange-family multiplier
+            var zimType = /-\/s\/style\.css/i.test(doc.head.innerHTML) ? "desktop" : "mobile";
+            zimType = /-\/static\/main\.css/i.test(doc.head.innerHTML) ? "desktop-stx" : zimType; //Support stackexchange
+            zimType = /minerva|mobile[^"']*\.css/i.test(doc.head.innerHTML) ? "mobile" : zimType;
+            var docElStyle = articleDocument.style;
+            var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
+            docElStyle = zoomProp === 'fontSize' ? doc.body.style : docElStyle; 
+            docElStyle[zoomProp] = ~zimType.indexOf("stx") && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
+            // if (appstate.target === 'iframe') uiUtil.initTouchZoom(articleDocument, doc.body);
+            checkToolbar();
+            //Set page width according to user preference
+            removePageMaxWidth();
+            if (!params.isLandingPage) openAllSections();
+            setupHeadings();
+            listenForNavigationKeys();
+            // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
+            // We need to set a timeout so that dynamically generated URLs are parsed as well (e.g. in Gutenberg ZIMs)
+            if (params.windowOpener) setTimeout(function () {
+                parseAnchorsJQuery(dirEntry);
+            }, 1500);
+            if (/manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker(articleWindow);
+            if (params.allowHTMLExtraction && appstate.target === 'iframe') {
+                var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
+                uiUtil.insertBreakoutLink(determinedTheme);
+            }
+            // Trap any clicks on the iframe to detect if mouse back or forward buttons have been pressed (Chromium does this natively)
+            if (/UWP/.test(params.appType)) doc.body.addEventListener('pointerup', onPointerUp);
+            // The content is ready : we can hide the spinner
+            setTab();
+            setTimeout(function() {
+                articleDocument.bgcolor = '';
+                if (articleWindow.kiwixType === 'iframe') articleContainer.style.display = 'block';
+                doc.body.hidden = false;
+            }, 200);
+            settingsStore.removeItem('lastPageLoad');
+            $("#searchingArticles").hide();
+            // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
+            if (params.printIntercept) printIntercept();
+            params.isLandingPage = false;
             
             // Show spinner when the article unloads
             articleContainer.onunload = function () {
@@ -3722,27 +3719,36 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // If loading the iframe, we can hide the frame (for UWP apps: for others, the doc should already be
                 // hidden). Note that testing appstate.target is probably redundant for UWP because it will always
                 // be iframe even if an external window is loaded... (but we probably need to do so for other cases)
-                if (appstate.target === 'iframe') {
-                    if (/UWP/.test(params.appType)) articleContainer.style.display = 'none';
-                    articleContainer.onload = function() {
-                        articleContainer.onload = null;
-                        articleLoadedSW(thisDirEntry);
-                    };
-                } else {
-                    // New windows do not respect the onload event because they've been pre-populated,
-                    // so we have to simulate this event (note potential for race condition if timeout is too short)
-                    // NB The UWP app cannot control the opened window, so it can only be controlled by the Service Worker
-                    setTimeout(function () {
+                if (/UWP/.test(params.appType)) articleContainer.style.display = 'none';
+                articleContainer.onload = function() {
+                    articleLoadedSW(thisDirEntry);
+                };
+                // New windows do not respect the onload event because they've been pre-populated,
+                // so we have to simulate this event (note potential for race condition if timeout is too short)
+                // NB The UWP app cannot control the opened window, so it can only be controlled by the Service Worker
+                (function displayArticleWindow (attempts) {
+                    if (!attempts) return;
+                    if (loaded) {
+                        console.debug('Article loaded: displaying...');
                         if (appstate.target === 'iframe') articleContainer.style.display = 'block';
-                    }, 800);
-                    setTimeout(function () {
-                        $("#searchingArticles").hide();
-                    }, 2000);
-                    if (!/UWP/.test(params.appType)) {
-                        setTimeout(function () {
-                            if (!loaded) articleLoadedSW(thisDirEntry);
-                        }, 400);
+                        if (!/UWP/.test(params.appType)) {
+                            var doc = articleWindow.document;
+                            if (doc && doc.body) doc.body.hidden = false;
+                        }
+                    } else {
+                        attempts--;
+                        console.debug('Attempts remaining: ' + attempts);
+                        setTimeout(displayArticleWindow, 600, attempts);
                     }
+                })(10);
+                // Hide spinner
+                setTimeout(function () {
+                    document.getElementById('searchingArticles').style.display = 'none';
+                }, 2000);
+                if (!/UWP/.test(params.appType)) {
+                    setTimeout(function () {
+                        articleLoadedSW(thisDirEntry);
+                    }, 600);
                 }
                 thisMessagePort.postMessage(thisMessage);
             } else {
