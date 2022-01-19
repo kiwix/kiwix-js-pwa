@@ -241,7 +241,8 @@ define(['uiUtil'], function (uiUtil) {
                     });
                 }
             }
-            if (imageURLRegexp.test(documentImages[i].src) && !/map_marker-\d\dpx\.png$/.test(documentImages[i].src)) {
+            // Note we exempt images that are from the file system in the second part of this test
+            if (imageURLRegexp.test(documentImages[i].src) && !~documentImages[i].getAttribute('src').indexOf(window.location.protocol)) {
                 documentImages[i].dataset.kiwixurl = documentImages[i].getAttribute('src');
                 if (params.imageDisplayMode === 'progressive') {
                     documentImages[i].style.opacity = '0';
