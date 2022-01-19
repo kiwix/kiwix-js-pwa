@@ -29,8 +29,9 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
     const APPCACHE = 'kiwix-appCache-' + params.appVersion; // Ensure this is the same as in Service Worker
 
     // DEV: Regex below defines the permitted key types for the cache; add further types as needed
+    // @TODO: Revise for use with no-namespace ZIMs (maybe this becomes useless?)
     // NB: The key type of '.zim', or '.zimaa' (etc.) is used to store a ZIM's last-accessed article 
-    var regexpKeyTypes = /(?:(?:^|\/)A\/.+|\.[Jj][Ss]|\.[Cc][Ss][Ss]|\.[Zz][Ii][Mm]\w{0,2})$/;
+    var regexpKeyTypes = /(?:(?:^|\/)[AC]\/.+|\.[Jj][Ss]|\.[Cc][Ss][Ss]|\.[Zz][Ii][Mm]\w{0,2})$/;
 
     /** 
      * Tests the enviornment's caching capabilities and sets assetsCache.capability to the supported level
@@ -459,17 +460,6 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                     resolve(result);
                     return;
                 }
-                // Since there was no result, post UI messages and look up asset in ZIM
-                if (regexpKeyTypes.test(key)) {
-                    if (!/\.css$|\.js$/.test(key)) {
-                        document.getElementById('cachingAssets').style.display = 'none';
-                        document.getElementById('searchingArticles').style.display = 'block';
-                    } else if (params.assetsCache !== false) {
-                        var shortTitle = key.replace(/[^/]+\//g, '').substring(0, 18);
-                        document.getElementById('cachingAssets').innerHTML = 'Getting ' + shortTitle + '...';
-                        document.getElementById('cachingAssets').style.display = 'block';
-                    }
-                }
                 // Set the read function to use according to filetype
                 var readFile = regexpKeyTypes.test(title) ?
                     selectedArchive.readUtf8File : selectedArchive.readBinaryFile;
@@ -483,13 +473,23 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                         console.log("Error: asset file not found: " + title);
                         resolve(null);
                     } else {
+                        var mimetype = resolvedDirEntry.getMimetype();
+                        // Since there was no result, post UI messages and look up asset in ZIM
+                        if (/html$/.test(mimetype)) {
+                            document.getElementById('cachingAssets').style.display = 'none';
+                            document.getElementById('cachingAssets').innerHTML = '';
+                            document.getElementById('searchingArticles').style.display = 'block';
+                        } else if (params.assetsCache !== false) {
+                            var shortTitle = key.replace(/[^/]+\//g, '').substring(0, 18);
+                            document.getElementById('cachingAssets').innerHTML = 'Getting ' + shortTitle + '...';
+                            document.getElementById('cachingAssets').style.display = 'block';
+                        }
                         readFile(resolvedDirEntry, function (fileDirEntry, content) {
                             if (regexpKeyTypes.test(title)) {
                                 console.log('Cache retrieved ' + title + ' from ZIM');
                                 // Process any pre-cache transforms
                                 content = transform(content, title.replace(/^.*\.([^.]+)$/, '$1'));
                             }
-                            var mimetype = fileDirEntry.getMimetype();
                             // Hide article while it is rendering
                             if (/^text\/html$/.test(mimetype)) {
                                 // Count CSS so we can attempt to show article before JS/images are fully loaded
