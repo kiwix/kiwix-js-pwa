@@ -3638,15 +3638,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     'mimetype': mimetype,
                                     'imageDisplay': imageDisplayMode
                                 };
-                                var timer;
                                 if (!params.transformedHTML) {
                                     // It's an unstransformed html file, so we need to do some content transforms and wait for the HTML to be available
                                     if (!~params.lastPageVisit.indexOf(dirEntry.url)) params.lastPageVisit = '';
                                     // Tell the read routine that the request comes from a messageChannel 
                                     appstate.messageChannelWaiting = true;
                                     readArticle(dirEntry);
-                                    timer = setTimeout(function () {
-                                        clearTimeout(timer);
+                                    setTimeout(function () {
                                         postTransformedHTML(message, messagePort, dirEntry);
                                     }, 300);
                                 } else {
@@ -3678,6 +3676,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(sendContentToSW);
                             } else {
                                 appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                                    if (/html$/.test(mimetype)) {
+                                        document.getElementById('cachingAssets').style.display = 'none';
+                                        document.getElementById('cachingAssets').innerHTML = '';
+                                        document.getElementById('searchingArticles').style.display = 'block';
+                                    } else if (params.assetsCache !== false) {
+                                        var shortTitle = fileDirEntry.url.replace(/[^/]+\//g, '').substring(0, 18);
+                                        document.getElementById('cachingAssets').innerHTML = 'Getting ' + shortTitle + '...';
+                                        document.getElementById('cachingAssets').style.display = 'block';
+                                    }
                                     sendContentToSW(content.buffer);
                                 });
                             }
