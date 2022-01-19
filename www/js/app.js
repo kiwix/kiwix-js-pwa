@@ -1849,6 +1849,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             apiName = params.decompressorAPI.errorStatus || apiName || 'Not initialized';
             decompAPIStatusDiv.innerHTML = 'Decompressor API: ' + apiName;
 
+            // Update PWA origin
+            var pwaOriginStatusDiv = document.getElementById('pwaOriginStatus');
+            pwaOriginStatusDiv.className = 'apiAvailable';
+            pwaOriginStatusDiv.innerHTML = 'PWA Origin: ' + window.location.origin;
+
             // Add a warning colour to the API Status Panel if any of the above tests failed
             apiStatusPanel.classList.add(apiPanelClass);
 
