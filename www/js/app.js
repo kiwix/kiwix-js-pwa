@@ -1543,6 +1543,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? "img/icons/wikivoyage-black-32.png" : /medicine/i.test(params.storedFile) ? "img/icons/wikimed-blue-32.png" : "img/icons/kiwix-blue-32.png";
                 if (/wikivoyage/i.test(params.packagedFile)) document.getElementById('kiwixIconAbout').src = "img/icons/wikivoyage-90.png";
             }
+            refreshCacheStatus();
             return value;
         }
 
@@ -1882,6 +1883,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     else card.classList.add('panel-warning');
                 });
             });
+            var scrollbox = document.getElementById('scrollbox');
+            if (params.appCache) {
+                scrollbox.style.removeProperty('background');
+            } else {
+                scrollbox.style.background = cssUIThemeGetOrSet(params.cssUITheme, true) === 'dark' ? 'maroon' : 'mistyrose';
+            }
         }
 
         var keepAliveServiceWorkerHandle = null;
