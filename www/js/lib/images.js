@@ -264,7 +264,7 @@ define(['uiUtil'], function (uiUtil) {
         }
 
         if (forPrinting) {
-            if (params.preloadAllImages) document.getElementById('searchingArticles').style.display = 'block';
+            if (params.preloadAllImages) uiUtil.pollSpinner();
             extractImages(documentImages, params.preloadingAllImages ? params.preloadAllImages : params.printImagesLoaded);
         } else {
             if (params.imageDisplayMode === 'manual') {

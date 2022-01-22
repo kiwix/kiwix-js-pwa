@@ -199,7 +199,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (appstate.search.prefix === prefix && !/^(cancelled|complete)$/.test(appstate.search.status)) return;
             $("#welcomeText").hide();
             $('.alert').hide();
-            $("#searchingArticles").show();
+            uiUtil.pollSpinner();
             pushBrowserHistoryState(null, prefix);
             // Initiate the search
             searchDirEntriesFromPrefix(prefix);
@@ -305,7 +305,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         document.getElementById('scrollbox').style.height = 0;
                         document.getElementById('articleListWithHeader').style.display = 'none';
                         appstate.tempPrefix = '';
-                        document.getElementById('searchingArticles').style.display = 'none';
+                        uiUtil.clearSpinner();
                     }
                 }, 1);
         });
@@ -721,7 +721,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             appstate.target = 'iframe';setTab('btnHome');
             document.getElementById('search-article').scrollTop = 0;
             $('#articleContent').contents().empty();
-            $('#searchingArticles').hide();
+            uiUtil.clearSpinner();
             $('#welcomeText').show();
             if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
                 $('#welcomeText').hide();
@@ -817,7 +817,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             $('#articleListHeaderMessage').empty();
             $('#articleListWithHeader').hide();
             $("#prefix").val("");
-            $("#searchingArticles").hide();
             $("#welcomeText").hide();
             if (params.beforeinstallpromptFired) {
                 var divInstall1 = document.getElementById('divInstall1');
@@ -2281,7 +2280,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 if (appstate.target === 'window') articleWindow = event.target;
                 $('#prefix').val("");
                 $("#welcomeText").hide();
-                $('#searchingArticles').hide();
+                uiUtil.clearSpinner();
                 $('#configuration').hide();
                 $('#articleListWithHeader').hide();
                 $('#articleContent').contents().empty();
@@ -3202,7 +3201,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     appstate.selectedArchive.findDirEntriesWithPrefix(appstate.search, populateListOfArticles);
                 }
             } else {
-                $('#searchingArticles').hide();
+                uiUtil.clearSpinner();
                 // We have to remove the focus from the search field,
                 // so that the keyboard does not stay above the message
                 $('#searchArticles').focus();
@@ -3308,7 +3307,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         showZIMIndex(null, char);
                         return false;
                     });
-                    $('#searchingArticles').hide();
+                    uiUtil.clearSpinner();
                     $('#articleListWithHeader').hide();
                     var modalTheme = document.getElementById('modalTheme');
                     modalTheme.classList.remove('dark');
@@ -3371,7 +3370,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 document.getElementById('articleListWithHeader').style.display = 'none';
                 return false;
             });
-            if (!stillSearching) $('#searchingArticles').hide();
+            if (!stillSearching) uiUtil.clearSpinner();
             $('#articleListWithHeader').show();
             if (reportingSearch.status === 'error') {
                 document.getElementById('searchSyntaxLink').addEventListener('click', function () {
@@ -3403,7 +3402,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 document.getElementById('articleContent').contentWindow.focus();
                 // Ensure selected search item is displayed in the iframe, not a new window or tab
                 appstate.target = 'iframe';
-                $("#searchingArticles").show();
+                uiUtil.pollSpinner();
                 if (dirEntry.isRedirect()) {
                     appstate.selectedArchive.resolveRedirect(dirEntry, readArticle);
                 } else {
@@ -3470,7 +3469,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             dirEntry.title = title ? title[1] : dirEntry.title;
                             displayArticleContentInContainer(dirEntry, htmlContent);
                         } else {
-                            document.getElementById('searchingArticles').style.display = 'block';
+                            uiUtil.pollSpinner();
                             appstate.selectedArchive.readUtf8File(dirEntry, displayArticleContentInContainer);
                         }
                     });
@@ -3568,7 +3567,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     docBody.hidden = false;
                 }, 30);
                 settingsStore.removeItem('lastPageLoad');
-                $("#searchingArticles").hide();
+                uiUtil.clearSpinner();
                 // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
                 if (params.printIntercept) printIntercept();
                 params.isLandingPage = false;
@@ -3579,13 +3578,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // Show spinner when the article unloads
             articleContainer.onunload = function () {
                 if (articleWindow.kiwixType === 'iframe') {
-                    $("#searchingArticles").show();
+                    uiUtil.pollSpinner();
                 }
             };
 
         };
 
         var messageChannel;
+        var spinnerTimer;
         var maxPageWidthProcessed;
 
         /**
@@ -3635,6 +3635,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             if (/gutenberg|phet/i.test(appstate.selectedArchive._file.name)) {
                                 imageDisplayMode = 'all';
                             }
+                            // console.debug('Spinner should show now: [' + mimetype + '] ' + title);
+                            if (/\b(css|javascript|video|vtt|webm)\b/i.test(mimetype)) {
+                                var shortTitle = dirEntry.url.replace(/[^/]+\//g, '').substring(0, 18);
+                                uiUtil.pollSpinner('Getting ' + shortTitle + '...');
+                            }
                             if (/\bhtml\b/i.test(mimetype)) {
                                 // Intercept files of type html and apply transformations   
                                 var message = {
@@ -3649,17 +3654,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     // Tell the read routine that the request comes from a messageChannel 
                                     appstate.messageChannelWaiting = true;
                                     readArticle(dirEntry);
-                                    setTimeout(function () {
-                                        postTransformedHTML(message, messagePort, dirEntry);
-                                    }, 300);
+                                    setTimeout(postTransformedHTML, 300, message, messagePort, dirEntry);
                                 } else {
                                     postTransformedHTML(message, messagePort, dirEntry);
                                 }
                                 return;
                             }
                             var sendContentToSW = function (content) {
-                                var mimetype = dirEntry.getMimetype();
                                 console.log('SW read binary file for: ' + dirEntry.url);
+                                if (/\b(css|javascript|video|vtt|webm)\b/i.test(mimetype)) {
+                                    var shortTitle = dirEntry.url.replace(/[^/]+\//g, '').substring(0, 18);
+                                    uiUtil.pollSpinner('Getting ' + shortTitle + '...');
+                                }
                                 // Let's send the content to the ServiceWorker
                                 var message = {
                                     'action': 'giveContent',
@@ -3668,31 +3674,36 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     'imageDisplay': imageDisplayMode,
                                     'content': content.buffer ? content.buffer : content
                                 };
+                                clearTimeout(spinnerTimer);
+                                spinnerTimer = setTimeout(uiUtil.clearSpinner, 1000);
                                 if (content.buffer) {
                                     messagePort.postMessage(message, [content.buffer]);
                                 } else {
                                     messagePort.postMessage(message);
                                 }
                             };
+                            var cacheKey = appstate.selectedArchive._file.name + '/' + title;
+                            cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(sendContentToSW);
                             // Let's read the content in the ZIM file
-                            if (/^(?:file:|chrome-extension)/i.test(window.location.protocol)) {
-                                // For Electron apps or Chrome extension, we have to access the cache app-side instead of SW-side
-                                var cacheKey = appstate.selectedArchive._file.name + '/' + title;
-                                cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(sendContentToSW);
-                            } else {
-                                appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                                    if (/html$/.test(mimetype)) {
-                                        document.getElementById('cachingAssets').style.display = 'none';
-                                        document.getElementById('cachingAssets').innerHTML = '';
-                                        document.getElementById('searchingArticles').style.display = 'block';
-                                    } else if (params.assetsCache !== false) {
-                                        var shortTitle = fileDirEntry.url.replace(/[^/]+\//g, '').substring(0, 18);
-                                        document.getElementById('cachingAssets').innerHTML = 'Getting ' + shortTitle + '...';
-                                        document.getElementById('cachingAssets').style.display = 'block';
-                                    }
-                                    sendContentToSW(content.buffer);
-                                });
-                            }
+                            // if (/^(?:file:|chrome-extension)/i.test(window.location.protocol)) {
+                            //     // For Electron apps or Chrome extension, we have to access the cache app-side instead of SW-side
+                            //     var cacheKey = appstate.selectedArchive._file.name + '/' + title;
+                            //     cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(sendContentToSW);
+                            // } else {
+                            //     if (/html$/.test(mimetype)) {
+                            //         uiUitl.pollSpinner();
+                            //     }
+                            //     console.debug('Mimetype: ' + mimetype);
+                            //     if (/(css|javascript|video|vtt)/i.test(mimetype)) {
+                            //         var shortTitle = dirEntry.url.replace(/[^/]+\//g, '').substring(0, 18);
+                            //         uiUtil.pollSpinner('Getting ' + shortTitle + '...');
+                            //     }
+                            //     appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                            //         // clearTimeout(spinnerTimer);
+                            //         // spinnerTimer = setTimeout(uiUtil.clearSpinner, 1000);
+                            //         sendContentToSW(content.buffer);
+                            //     });
+                            // }
                         }
                     };
                     appstate.selectedArchive.getDirEntryByPath(title).then(readFile).catch(function (err) {
@@ -3747,7 +3758,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         if (appstate.target === 'iframe') articleContainer.style.display = 'block';
                     }, 800);
                     setTimeout(function () {
-                        $("#searchingArticles").hide();
+                        uiUtil.clearSpinner();
                     }, 2000);
                     if (!/UWP/.test(params.appType)) {
                         setTimeout(function () {
@@ -3757,7 +3768,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
                 thisMessagePort.postMessage(thisMessage);
             } else {
-                setTimeout(postTransformedHTML, 500);
+                setTimeout(postTransformedHTML, 500, thisMessage, thisMessagePort, thisDirEntry);
             }
         }
 
@@ -4195,14 +4206,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     console.log("All CSS resolved");
                     injectHTML(); //Pass the revised HTML to the image and JS subroutine...
                 } else {
-                    uiUtil.poll("Waiting for CSS # " + (cssArray.length - blobArrayLength) + " out of " + cssArray.length + "...");
+                    uiUtil.pollSpinner("Waiting for CSS # " + (cssArray.length - blobArrayLength) + " out of " + cssArray.length + "...");
                 }
             }
             //End of preload stylesheets code
 
             function injectHTML() {
                 //Inject htmlArticle into iframe
-                uiUtil.clear(); //Void progress messages
+                uiUtil.pollSpinner(); //Void progress messages
                 // Extract any css classes from the html tag (they will be stripped when injected in iframe with .innerHTML)
                 var htmlCSS;
                 if (params.contentInjectionMode === 'jquery') htmlCSS = htmlArticle.match(/<html[^>]*class\s*=\s*["']\s*([^"']+)/i);
@@ -4218,6 +4229,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         console.error('Error caught in ZIM contents [' + url + ':' + line + ']:\n' + msg, error);
                         return true;
                     };
+                    uiUtil.clearSpinner();
                     if (appstate.target === 'iframe' && !articleContainer.contentDocument && window.location.protocol === 'file:') {
                         uiUtil.systemAlert("<p>You seem to be opening kiwix-js with the file:// protocol, which blocks access to the app's iframe. "
                         + "We have tried to open your article in a separate window. You may be able to use it with limited functionality.</p>"
@@ -4920,10 +4932,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (params.preloadingAllImages !== true) {
                 setTimeout(function () {
                     if (params.preloadingAllImages) {
-                        var assetsMsg = document.getElementById('cachingAssets');
-                        document.getElementById('searchingArticles').style.display = 'block';
-                        assetsMsg.style.display = 'block';
-                        assetsMsg.innerHTML = 'Extracting images...';
+                        uiUtil.pollSpinner('Extracting images...');
                     }
                 }, 1000);
                 params.preloadingAllImages = true;
@@ -4932,9 +4941,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 return;
             }
             // All images should now be loaded, or else user did not request loading images
-            document.getElementById('searchingArticles').style.display = 'none';
+            uiUtil.clearSpinner();
             uiUtil.extractHTML();
-            $('#searchingArticles').hide();
+            uiUtil.clearSpinner();
         };
 
         // Load Javascript content
@@ -5005,7 +5014,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         function goToArticle(path, download, contentType) {
             //This removes any search highlighting
             clearFindInArticle();
-            document.getElementById('searchingArticles').style.display = 'block';
+            uiUtil.pollSpinner();
             var zimName = appstate.selectedArchive._file.name.replace(/\.[^.]+$/, '').replace('_\d+_\d+$', '');
             if (~path.indexOf(params.cachedStartPages[zimName])) {
                 goToMainArticle();
@@ -5013,14 +5022,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
             appstate.selectedArchive.getDirEntryByPath(path).then(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
-                    document.getElementById('searchingArticles').style.display = 'none';
+                    uiUtil.clearSpinner();
                     console.error("Article with title " + path + " not found in the archive");
                     goToMainArticle();
                 } else if (download) {
                     appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                         var mimetype = contentType || fileDirEntry.getMimetype();
                         uiUtil.displayFileDownloadAlert(path, download, mimetype, content);
-                        document.getElementById('searchingArticles').style.display = 'none';
+                        uiUtil.clearSpinner();
                     });
                 } else {
                     params.isLandingPage = false;
@@ -5036,13 +5045,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         }
 
         function goToRandomArticle() {
-            document.getElementById('searchingArticles').style.display = 'block';
+            uiUtil.pollSpinner();
             if (appstate.selectedArchive === null) {
                 return;
             } //Prevents exception if user hasn't selected an archive
             appstate.selectedArchive.getRandomDirEntry(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
-                    document.getElementById('searchingArticles').style.display = 'none';
+                    uiUtil.clearSpinner();
                     uiUtil.systemAlert("Error finding random article.");
                 } else {
                     // We fall back to the old A namespace to support old ZIM files without a text/html MIME type for articles
@@ -5051,7 +5060,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     if (appstate.selectedArchive._file.articlePtrPos || dirEntry.getMimetype() === 'text/html' || dirEntry.namespace === 'A') {
                         params.isLandingPage = false;
                         $('#activeContent').hide();
-                        $('#searchingArticles').show();
+                        uiUtil.pollSpinner();
                         readArticle(dirEntry);
                     } else {
                         // If the random title search did not end up on an article,
@@ -5063,11 +5072,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         }
 
         function goToMainArticle() {
-            document.getElementById('searchingArticles').style.display = 'block';
+            uiUtil.pollSpinner();
             appstate.selectedArchive.getMainPageDirEntry(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
                     console.error("Error finding main article.");
-                    document.getElementById('searchingArticles').style.display = 'none';
+                    uiUtil.clearSpinner();
                     $("#welcomeText").show();
                 } else {
                 // DEV: see comment above under goToRandomArticle()
@@ -5076,7 +5085,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         readArticle(dirEntry);
                     } else {
                         console.error("The main page of this archive does not seem to be an article");
-                        $("#searchingArticles").hide();
+                        uiUtil.clearSpinner();
                         $("#welcomeText").show();
                     }
                 }

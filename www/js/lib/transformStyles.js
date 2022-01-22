@@ -33,12 +33,10 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 zl = (cs == "mobile") ? prefix + "-/s/style-mobile.css" : prefix + "-/s/style.css"; //Take it from cache, because not in the ZIM
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem because style is not in ZIM" +
                     "\nbut your display options require a " + cs + " style");
-                uiUtil.poll("Matched [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] from cache" + " because your display options require a " + cs + " style...");
             }
             if (cs == "desktop" && /minerva|mobile|parsoid|(css_modules|mw)\/style\.css/.test(zl) && !/(css_modules|mw)\/mobile_main_page\.css/.test(zl)) {
                 //If user selected desktop style and style is one of the mobile styles, but not mobile_main_page for newstyle all image homepages
                 console.log("Voiding #" + i + " [" + zl + "] from document header \nbecause your display options require a desktop style");
-                uiUtil.poll("Voiding [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] because your display options require a " + cs + " style...");
                 zl = "#"; //Void these mobile styles
             }
             // Rename this required mobile style so that we don't trigger reading ZIM as mobile in print intercept
@@ -89,7 +87,6 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 // Replace bootstrap with own: DEV: when upgrading to Bootstrap 4, stop doing this!
                 zl = zl.replace(/.+(bootstrap[^\/]*?\.css)/i, "css/$1");
                 console.log("Matched #" + i + " [" + zl + "] from local filesystem");
-                uiUtil.poll("Matched #" + i + " [" + zl.replace(/[^/]+\//g, '').substring(0, 18) + "] from filesystem");
                 //Make link absolute
                 zl = zl.replace(/^[/.]*/, prefix);
                 //injectCSS();
@@ -113,7 +110,6 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
         }
         if (cc || (zim == "desktop")) { //If user requested cached styles OR the ZIM does not contain mobile styles
             console.log(zim == "desktop" ? "Transforming display style to mobile..." : "Optimizing cached styles for mobile display...");
-            uiUtil.poll(zim == "desktop" ? "Transforming display style to mobile..." : "Optimizing cached styles for mobile display...");
             //Add styling to image captions that is hard-coded in Wikipedia mobile
             html = html.replace(/class\s*=\s*["']\s*thumbcaption\s*["']\s*/ig, 'style="margin: 0.5em 0 0.5em; font-size: 0.8em; line-height: 1.5; padding: 0 !important; color: #54595d; width: auto !important;"');
             //Wrap <h2> tags in <div> to control bottom border width if there's an infobox, but not if it's a new-style ZIM with collapsible details tags
@@ -176,13 +172,11 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
         if (cc || (zim != cs)) {
             if (/class\s*=\s*["']gallery/i.test(html) && !/gallery/i.test(css)) {
                 console.log("Inserting missing css required for gallery display [mediawiki.page.gallery.styles.css]...");
-                uiUtil.poll("Inserting missing css [mediawiki.page.gallery.styles.css]...");
                 css += /\/mediawiki\.page\.gallery\.styles\.css/i.test(css) ? "" : '<link href="' + prefix + '-/s/css_modules/mediawiki.page.gallery.styles.css" rel="stylesheet" type="text/css">\r\n';
             }
         }
         if (cc || (zim == "mobile")) { //If user requested cached styles OR the ZIM does not contain desktop styles
             console.log(zim == "mobile" ? "Transforming display style to desktop..." : "Optimizing cached styles for desktop display...");
-            uiUtil.poll(zim == "mobile" ? "Transforming display style to desktop..." : "Optimizing cached styles for desktop display...");
             //If it's in mobile position, move info-box above lead paragraph like on Wikipedia desktop
             if (zim == "mobile") {
                 //Attempt to match div-style infobox first
