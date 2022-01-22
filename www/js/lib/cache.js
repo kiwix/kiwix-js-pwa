@@ -367,9 +367,6 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
             setArticle(keyArticle[1], keyArticle[2], contents, callback);
             return;
         }
-        // Post a message to the UI that we are caching an asset
-        var shortTitle = key.replace(/[^/]+\//g, '').substring(0, 18);
-        document.getElementById('cachingAssets').innerHTML = 'Caching ' + shortTitle + '...';
         if (/^localStorage/.test(assetsCache.capability)) {
             localStorage.setItem(key, contents);
         } else {
@@ -453,8 +450,6 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                         assetsCache.cssLoading--;
                         if (assetsCache.cssLoading <= 0) {
                             document.getElementById('articleContent').style.display = 'block';
-                            document.getElementById('cachingAssets').style.display = 'none';
-                            document.getElementById('searchingArticles').style.display = 'none';
                         }
                     }
                     resolve(result);
@@ -476,13 +471,10 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                         var mimetype = resolvedDirEntry.getMimetype();
                         // Since there was no result, post UI messages and look up asset in ZIM
                         if (/html$/.test(mimetype)) {
-                            document.getElementById('cachingAssets').style.display = 'none';
-                            document.getElementById('cachingAssets').innerHTML = '';
-                            document.getElementById('searchingArticles').style.display = 'block';
-                        } else if (params.assetsCache !== false) {
+                            uiUtil.pollSpinner();
+                        } else if (/(css|javascript|video|vtt)/i.test(mimetype)) {
                             var shortTitle = key.replace(/[^/]+\//g, '').substring(0, 18);
-                            document.getElementById('cachingAssets').innerHTML = 'Getting ' + shortTitle + '...';
-                            document.getElementById('cachingAssets').style.display = 'block';
+                            uiUtil.pollSpinner('Getting ' + shortTitle + '...');
                         }
                         readFile(resolvedDirEntry, function (fileDirEntry, content) {
                             if (regexpKeyTypes.test(title)) {
@@ -497,12 +489,10 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                                 assetsCache.cssLoading = cssCount ? cssCount.length : 0;
                                 if (assetsCache.cssLoading) document.getElementById('articleContent').style.display = 'none';
                             }
-                            if (/\.css$/.test(title)) {
+                            if (/\bcss\b/i.test(mimetype)) {
                                 assetsCache.cssLoading--;
                                 if (assetsCache.cssLoading <= 0) {
                                     document.getElementById('articleContent').style.display = 'block';
-                                    document.getElementById('cachingAssets').style.display = 'none';
-                                    document.getElementById('searchingArticles').style.display = 'none';
                                 }
                             }
                             setItem(key, content, mimetype, function (result) {
