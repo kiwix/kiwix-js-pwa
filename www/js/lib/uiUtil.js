@@ -179,15 +179,20 @@ define(rqDef, function(util) {
         return rtnFunction;
     }
 
-    function poll(msg) {
+    function pollSpinner(msg) {
+        msg = msg || '';
         document.getElementById('searchingArticles').style.display = 'block';
-        document.getElementById('cachingAssets').innerHTML = msg;
-        document.getElementById('cachingAssets').style.display = 'block';
+        var cachingAssets = document.getElementById('cachingAssets');
+        cachingAssets.innerHTML = msg;
+        if (msg) cachingAssets.style.display = 'block';
+        else cachingAssets.style.display = 'none';
     }
 
-    function clear() {
-        document.getElementById('cachingAssets').innerHTML = '';
-        document.getElementById('cachingAssets').style.display = 'none';
+    function clearSpinner() {
+        document.getElementById('searchingArticles').style.display = 'none';
+        var cachingAssets = document.getElementById('cachingAssets');
+        cachingAssets.innerHTML = '';
+        cachingAssets.style.display = 'none';
     }
 
     function printCustomElements() {
@@ -564,10 +569,7 @@ define(rqDef, function(util) {
         iframe.head.innerHTML = headHtml;
         itemsCount = false;
         params.preloadingAllImages = false;
-        var assetsMsg = document.getElementById('cachingAssets');
-        assetsMsg.innerHTML = '';
-        assetsMsg.style.display = 'none';
-        document.getElementById('searchingArticles').style.display = 'none';
+        clearSpinner();
     }
 
     /** 
@@ -784,8 +786,8 @@ define(rqDef, function(util) {
         toc: TableOfContents,
         isElementInView: isElementInView,
         makeReturnLink: makeReturnLink,
-        poll: poll,
-        clear: clear,
+        pollSpinner: pollSpinner,
+        clearSpinner: clearSpinner,
         XHR: XHR,
         printCustomElements: printCustomElements,
         downloadBlobUWP: downloadBlobUWP,
