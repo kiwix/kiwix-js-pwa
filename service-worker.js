@@ -384,9 +384,12 @@ function fetchRequestFromZIM(fetchEvent) {
         var prefix = regexpResult[1];
         nameSpace = regexpResult[2];
         title = regexpResult[3];
+        var anchorTarget = fetchEvent.request.url.match(/#([^#;]*)$/);
+        anchorTarget = anchorTarget ? anchorTarget[1] : '';
 
-        // We need to remove the potential parameters in the URL
-        title = removeUrlParameters(decodeURIComponent(title));
+        // We need to remove the potential parameters in the URL. Note that titles may contain question marks or hashes, so we test the
+        // encoded URI before decoding it. Be sure that you haven't encoded any querystring along with the URL, e.g. for clicked links.
+        title = decodeURIComponent(removeUrlParameters(title));
 
         titleWithNameSpace = nameSpace + '/' + title;
 
@@ -432,7 +435,8 @@ function fetchRequestFromZIM(fetchEvent) {
         };
         outgoingMessagePort.postMessage({
             'action': 'askForContent',
-            'title': titleWithNameSpace
+            'title': titleWithNameSpace,
+            'anchorTarget': anchorTarget 
         }, [messageChannel.port2]);
     });
 }
@@ -443,7 +447,13 @@ function fetchRequestFromZIM(fetchEvent) {
  * @returns {String} The same URL without its parameters and anchors
  */
 function removeUrlParameters(url) {
-    return url.replace(/([^?#]+)[?#].*$/, '$1');
+    // Remove any querystring
+    var strippedUrl = url.replace(/\?[^?]*$/, '');
+    // Remove any anchor parameters - note that IN PRACTICE anchor parameters cannot contain a semicolon because JavaScript maintains
+    // compatibility with HTML4, so we can avoid accidentally stripping e.g. &#39; by excluding an anchor if any semicolon is found
+    // between it and the end of the string. See https://stackoverflow.com/a/79022/9727685.
+    strippedUrl = strippedUrl.replace(/#[^#;]*$/, '');
+    return strippedUrl;
 }
 
 /**
