@@ -243,7 +243,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 if (/Enter/.test(e.key)) {
                     if (activeElement.classList.contains('hover')) {
                         var dirEntryId = activeElement.getAttribute('dirEntryId');
-                        findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId);
+                        findDirEntryFromDirEntryIdAndLaunchArticleRead(decodeURIComponent(dirEntryId));
                         return;
                     }
                 }
@@ -3235,8 +3235,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     var newHtml = "";
                     for (var i = 0; i < dirEntryArray.length; i++) {
                         var dirEntry = dirEntryArray[i];
-                        newHtml += "\n<a  class='list-group-item' href='#' dirEntryId='" + dirEntry.toStringId().replace(/'/g, "&apos;") +
-                            "'>" + (dirEntry.getTitleOrUrl()) + "</a>";
+                        // NB Ensure you use double quotes for HTML attributes below - see comment in populateListOfArticles
+                        newHtml += '\n<a  class="list-group-item" href="#" dirEntryId="' + encodeURIComponent(dirEntry.toStringId()) +
+                            '">' + dirEntry.getTitleOrUrl() + '</a>';
                     }
                     start = start ? start : 0;
                     var back = start ? '<a href="#" data-start="' + (start - params.maxSearchResultsSize) +
@@ -3362,7 +3363,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             var listLength = dirEntryArray.length < params.maxSearchResultsSize ? dirEntryArray.length : params.maxSearchResultsSize;
             for (var i = 0; i < listLength; i++) {
                 var dirEntry = dirEntryArray[i];
-                var dirEntryStringId = uiUtil.htmlEscapeChars(dirEntry.toStringId());
+                // NB We use encodeURIComponent rather than encodeURI here because we know that any question marks in the title are not querystrings,
+                // and should be encoded [kiwix-js #806]. DEV: be very careful if you edit the dirEntryId attribute below, because the contents must be
+                // inside double quotes (in the final HTML string), given that dirEntryStringId may contain bare apostrophes
+                // Info: encodeURIComponent encodes all characters except  A-Z a-z 0-9 - _ . ! ~ * ' ( ) 
+                var dirEntryStringId = encodeURIComponent(dirEntry.toStringId());
                 articleListDivHtml += '<a href="#" dirEntryId="' + dirEntryStringId +
                     '" class="list-group-item">' + dirEntry.getTitleOrUrl() + '</a>';
             }
@@ -3388,11 +3393,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         }
         /**
          * Handles the click on the title of an article in search results
-         * @param {Event} event
-         * @returns {Boolean}
+         * @param {Event} event The click event to handle
+         * @returns {Boolean} Always returns false for JQuery event handling
          */
         function handleTitleClick(event) {
-            var dirEntryId = event.currentTarget.getAttribute("dirEntryId");
+            var dirEntryId = decodeURIComponent(event.target.getAttribute('dirEntryId'));
             findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId);
             return false;
         }
@@ -3400,7 +3405,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         /**
          * Creates an instance of DirEntry from given dirEntryId (including resolving redirects),
          * and call the function to read the corresponding article
-         * @param {String} dirEntryId
+         * @param {String} dirEntryId The stringified Directory Entry to parse and launch
          */
         function findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId) {
             if (appstate.selectedArchive.isReady()) {
@@ -3518,10 +3523,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     } else {
                         goToRetrievedContent(htmlContent);
                     }
-                    
                 }
             }
-
         }
 
         var loaded = false;
@@ -3577,6 +3580,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 uiUtil.clearSpinner();
                 // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
                 if (params.printIntercept) printIntercept();
+                // Jump to any anchor parameter
+                if (anchorParameter) {
+                    var target = articleWindow.document.getElementById(anchorParameter);
+                    if (target) setTimeout(function () {
+                        target.scrollIntoView();
+                    }, 1000);
+                    anchorParameter = '';
+                } 
                 params.isLandingPage = false;
             } else {
                 loaded = false;
@@ -3610,6 +3621,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 if (event.data.action === "askForContent") {
                     // The ServiceWorker asks for some content
                     var title = event.data.title;
+                    if (!anchorParameter && event.data.anchorTarget) anchorParameter = event.data.anchorTarget;
                     var messagePort = event.ports[0];
                     var readFile = function (dirEntry) {
                         if (dirEntry === null) {
@@ -3807,6 +3819,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
         // This matches the data-kiwixurl of all <link> tags containing rel="stylesheet" in raw HTML unless commented out
         var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*(?:href|data-kiwixurl)\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
+
+        // A string to hold any anchor parameter in clicked ZIM URLs (as we must strip these to find the article in the ZIM)
+        var anchorParameter;
 
         params.containsMathTexRaw = false;
         params.containsMathTex = false;
@@ -4370,6 +4385,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         // For Chromium browsers a small delay greatly improves composition
                         setTimeout(showArticle, 80);
                     }
+                    // Jump to any anchor parameter
+                    if (anchorParameter) {
+                        var target = articleWindow.document.getElementById(anchorParameter);
+                        if (target) setTimeout(function () {
+                            target.scrollIntoView();
+                        }, 1000);
+                        anchorParameter = '';
+                    } 
                     params.isLandingPage = false;
                 };
 
@@ -4618,7 +4641,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // NB dirEntry.url can also contain path separator / in some ZIMs (Stackexchange). } and ] do not need to be escaped as they have no meaning on their own. 
             var escapedUrl = encodeURIComponent(dirEntry.url).replace(/([\\$^.|?*+/()[{])/g, '\\$1');
             // Pattern to match a local anchor in an href even if prefixed by escaped url; will also match # on its own
-            var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#]*$)');
+            // Note that we exclude any # with a semicolon between it and the end of the string, to avoid accidentally matching e.g. &#39;
+            var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#;]*$)');
             Array.prototype.slice.call(articleDocument.querySelectorAll('a, area')).forEach(function (anchor) {
                 // Attempts to access any properties of 'this' with malformed URLs causes app crash in Edge/UWP [kiwix-js #430]
                 try {
@@ -4629,12 +4653,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
                 var href = anchor.getAttribute('href');
                 if (href === null || href === undefined || /^javascript:/i.test(anchor.protocol)) return;
+                var anchorTarget = href.match(regexpLocalAnchorHref);
                 if (href.length === 0) {
                     // It's a link with an empty href, pointing to the current page: do nothing.
-                } else if (regexpLocalAnchorHref.test(href)) {
+                } else if (anchorTarget) {
                     // It's a local anchor link : remove escapedUrl if any (see above)
-                    anchor.setAttribute('href', href.replace(/^[^#]*/, ''));
-                } else if (anchor.protocol !== currentProtocol || anchor.host !== currentHost) {
+                    anchor.setAttribute('href', '#' + anchorTarget[1]);
+                } else if (anchor.protocol !== currentProtocol ||
+                    anchor.host !== currentHost) {
                     // It's an external URL : we should open it in a new tab
                     anchor.target = '_blank';
                     if (anchor.protocol === 'bingmaps:') {
@@ -4722,6 +4748,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
                 e.preventDefault();
                 e.stopPropagation();
+                anchorParameter = href.match(/#([^#;]+)$/);
+                anchorParameter = anchorParameter ? anchorParameter[1] : '';
                 var zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
                 goToArticle(zimUrl, downloadAttrValue, contentType);
                 setTimeout(reset, 1400);
