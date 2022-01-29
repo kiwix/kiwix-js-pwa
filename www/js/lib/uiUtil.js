@@ -108,9 +108,7 @@ define(rqDef, function(util) {
     function removeUrlParameters(url) {
         // Remove any querystring
         var strippedUrl = url.replace(/\?[^?]*$/, '');
-        // Remove any anchor parameters - note that IN PRACTICE anchor parameters cannot contain a semicolon because JavaScript maintains
-        // compatibility with HTML4, so we can avoid accidentally stripping e.g. &#39; by excluding an anchor if any semicolon is found
-        // between it and the end of the string. See https://stackoverflow.com/a/79022/9727685.
+        // Remove any anchor parameters - note that we are deliberately excluding entity references, e.g. '&#39;'.
         strippedUrl = strippedUrl.replace(/#[^#;]*$/, '');
         return strippedUrl;
     }
@@ -640,35 +638,6 @@ define(rqDef, function(util) {
     }
 
     /**
-     * DEV: This function is no longer used in the project and could be removed unless it is of historical interest.
-     * It has been superseded by encodeURIComponent which encodes all characters except  A-Z a-z 0-9 - _ . ! ~ * ' ( )
-     * The only character from below that is not encoded is apostrophe ('), but this does not need to be encoded to
-     * show correctly in our UI, given that it is an allowed character in bare URIs and the dirEntryId is enclosed
-     * in double quote marks ("..."). This has been successfully tested on titles with apostrophes.
-     * 
-     * Encodes the html escape characters in the string before using it as html class name,id etc.
-     * 
-     * @param {String} string The string in which html characters are to be escaped
-     * @returns {String} The escaped HTML string
-     */
-    function htmlEscapeChars(string) {
-        var escapechars = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#39;',
-            '/': '&#x2F;',
-            '`': '&#x60;',
-            '=': '&#x3D;'
-        };
-        string = String(string).replace(/[&<>"'`=/]/g, function (s) {
-            return escapechars[s];
-        });
-        return string;
-    }
-
-    /**
      * Initiates pointer touch events on the given element in order to set the zoom level
      * 
      * @param {Element} element The element to which the pointer events should be attached 
@@ -808,7 +777,6 @@ define(rqDef, function(util) {
         extractHTML: extractHTML,
         systemAlert: systemAlert,
         checkServerIsAccessible: checkServerIsAccessible,
-        htmlEscapeChars: htmlEscapeChars,
         initTouchZoom: initTouchZoom,
         reportAssemblerErrorToAPIStatusPanel: reportAssemblerErrorToAPIStatusPanel
     };
