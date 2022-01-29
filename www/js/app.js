@@ -4139,7 +4139,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
                 for (var i = 0; i < arr.length; i++) {
                     var zimLink = arr[i].match(/(?:href|data-kiwixurl)\s*=\s*['"]([^'"]+)/i);
-                    zimLink = zimLink ? decodeURIComponent(zimLink[1]) : '';
+                    zimLink = zimLink ? decodeURIComponent(uiUtil.removeUrlParameters(zimLink[1])) : '';
                     //Remove path DON'T DO THIS! SW mode fails if you do...
                     //zimLink = zimLink.replace(/^[.\/]*([\S\s]+)$/, '$1');
                     /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
