@@ -72,7 +72,7 @@
     <PackageCertificateKeyFile>KiwixWebAppWikiMed_StoreKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="archives\wikipedia_en_medicine-app_maxi_2021-12.zim" />
+    <Content Include="archives\wikipedia_en_medicine-app_maxi_2022-01.zim" />
     <Content Include="images\Kiwix_midnightblue_icon_transparent_530.png" />
     <Content Include="images\LargeTile.scale-100.png" />
     <Content Include="images\LargeTile.scale-125.png" />
@@ -150,6 +150,10 @@
     <Content Include="www\-\style.css" />
     <Content Include="www\A\Main_Page" />
     <Content Include="www\A\Wikipedia%253AWikiProject_Medicine\Open_Textbook_of_Medicine2" />
+    <Content Include="www\img\icons\favicon-16x16.png" />
+    <Content Include="www\img\icons\favicon-192x192.png" />
+    <Content Include="www\img\icons\favicon-270x270.png" />
+    <Content Include="www\img\icons\favicon-32x32.png" />
     <Content Include="www\img\icons\kiwix-midnightblue-90.png" />
     <Content Include="www\I\ArequipaBanner3.jpg" />
     <Content Include="www\I\AviationHistoryBanner3.jpg" />
