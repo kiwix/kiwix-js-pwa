@@ -102,6 +102,7 @@ let precacheFiles = [
     ".", // This caches the redirect to www/index.html, in case a user launches the app from its root directory
   "manifest.json",
   "service-worker.js",
+  "www/favicon.ico",
   "www/-/mw/ext.cite.styles.css",
   "www/-/mw/ext.cite.ux-enhancements.css",
   "www/-/mw/ext.math.scripts.css",
