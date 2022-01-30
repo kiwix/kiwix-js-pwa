@@ -3574,7 +3574,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 setTimeout(function() {
                     articleDocument.bgcolor = '';
                     if (appstate.target === 'iframe') articleContainer.style.display = 'block';
-                    docBody.hidden = false;
+                    docBody.style.display = 'block';
                 }, 30);
                 settingsStore.removeItem('lastPageLoad');
                 uiUtil.clearSpinner();
@@ -3679,50 +3679,30 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 }
                                 return;
                             }
-                            var sendContentToSW = function (content) {
+                            var cacheKey = appstate.selectedArchive._file.name + '/' + title;
+                            cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(function (content) {
                                 console.log('SW read binary file for: ' + dirEntry.url);
                                 if (/\b(css|javascript|video|vtt|webm)\b/i.test(mimetype)) {
                                     var shortTitle = dirEntry.url.replace(/[^/]+\//g, '').substring(0, 18);
                                     uiUtil.pollSpinner('Getting ' + shortTitle + '...');
                                 }
                                 // Let's send the content to the ServiceWorker
+                                var buffer = content.buffer ? content.buffer : content;
                                 var message = {
                                     'action': 'giveContent',
                                     'title': title,
                                     'mimetype': mimetype,
                                     'imageDisplay': imageDisplayMode,
-                                    'content': content.buffer ? content.buffer : content
+                                    'content': buffer
                                 };
                                 clearTimeout(spinnerTimer);
                                 spinnerTimer = setTimeout(uiUtil.clearSpinner, 2000);
                                 if (content.buffer) {
-                                    messagePort.postMessage(message, [content.buffer]);
+                                    messagePort.postMessage(message, buffer);
                                 } else {
                                     messagePort.postMessage(message);
                                 }
-                            };
-                            var cacheKey = appstate.selectedArchive._file.name + '/' + title;
-                            cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(sendContentToSW);
-                            // Let's read the content in the ZIM file
-                            // if (/^(?:file:|chrome-extension)/i.test(window.location.protocol)) {
-                            //     // For Electron apps or Chrome extension, we have to access the cache app-side instead of SW-side
-                            //     var cacheKey = appstate.selectedArchive._file.name + '/' + title;
-                            //     cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(sendContentToSW);
-                            // } else {
-                            //     if (/html$/.test(mimetype)) {
-                            //         uiUitl.pollSpinner();
-                            //     }
-                            //     console.debug('Mimetype: ' + mimetype);
-                            //     if (/(css|javascript|video|vtt)/i.test(mimetype)) {
-                            //         var shortTitle = dirEntry.url.replace(/[^/]+\//g, '').substring(0, 18);
-                            //         uiUtil.pollSpinner('Getting ' + shortTitle + '...');
-                            //     }
-                            //     appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                            //         // clearTimeout(spinnerTimer);
-                            //         // spinnerTimer = setTimeout(uiUtil.clearSpinner, 1000);
-                            //         sendContentToSW(content.buffer);
-                            //     });
-                            // }
+                            });
                         }
                     };
                     appstate.selectedArchive.getDirEntryByPath(title).then(readFile).catch(function (err) {
@@ -4275,14 +4255,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     // Scroll the old container to the top
                     articleWindow.scrollTo(0,0);
                     articleDocument = articleWindow.document.documentElement;
-                    // Hide the document before injecting to avoid display flash before stylesheets are loaded; also improves performance
-                    // during loading of assets in most browsers, but UWP mnobile (at least) cannot build the DOM if hidden
-                    if ('serviceWorker' in navigator) articleDocument.hidden = true; 
 
                     // ** Write article html to the new article container **
                     articleDocument.innerHTML = htmlArticle;
 
                     var docBody = articleDocument.querySelector('body');
+
                     if (articleWindow.kiwixType === 'iframe') {
                         // Add any missing classes stripped from the <html> tag
                         if (htmlCSS) htmlCSS.forEach(function (cl) {
@@ -4376,8 +4354,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     checkToolbar();
                     var showArticle = function () {
                         articleDocument.bgcolor = "";
-                        articleDocument.hidden = false;
-                        articleWindow.document.body.hidden = false;
+                        docBody.style.display = 'block';
                     };
                     if ('MSBlobBuilder' in window) {
                         // For legacy MS browsers, including UWP, delay causes blank screen on slow systems
@@ -4417,7 +4394,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 if (!(/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting))) {
                     htmlArticle = htmlArticle.replace(/(<html\b[^>]*)>/i, '$1 bgcolor="' + 
                         (cssUIThemeGetOrSet(params.cssTheme, true) !== 'light' ? 'grey' : 'whitesmoke') + '">');
-                    if (!('MSBlobBuilder' in window)) htmlArticle = htmlArticle.replace(/(<body\b[^>]*)/i, '$1 hidden');
+                    if (!('MSBlobBuilder' in window)) htmlArticle = htmlArticle.replace(/(<body\b[^>]*)/i, '$1 style="display: none;"');
                 }
 
                 // Display any hidden block elements, with a timeout, so as not to interfere with image loading
