@@ -3698,7 +3698,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 clearTimeout(spinnerTimer);
                                 spinnerTimer = setTimeout(uiUtil.clearSpinner, 2000);
                                 if (content.buffer) {
-                                    messagePort.postMessage(message, buffer);
+                                    messagePort.postMessage(message, [buffer]);
                                 } else {
                                     messagePort.postMessage(message);
                                 }
