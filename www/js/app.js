@@ -3817,8 +3817,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         // to support to this regex. The "zip" has been added here as an example of how to support further filetypes
         var regexpDownloadLinks = /^.*?\.epub($|\?)|^.*?\.pdf($|\?)|^.*?\.zip($|\?)/i;
 
-        // This matches the data-kiwixurl of all <link> tags containing rel="stylesheet" in raw HTML unless commented out
-        var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["']stylesheet)[^>]*(?:href|data-kiwixurl)\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
+        // This matches the data-kiwixurl of all <link> tags containing rel="stylesheet" or "...icon" in raw HTML unless commented out
+        var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["'](?:stylesheet|[^"']*icon))[^>]*(?:href|data-kiwixurl)\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
 
         // A string to hold any anchor parameter in clicked ZIM URLs (as we must strip these to find the article in the ZIM)
         var anchorParameter;
@@ -4163,8 +4163,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey).then(function (content) {
                         //DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
                         //var cssContent = util.uintToString(content);
+                        var mimetype = /\.ico$/i.test(title) ? 'image' : 'text/css';
                         var cssBlob = new Blob([content], {
-                            type: 'text/css'
+                            type: mimetype
                         });
                         var newURL = [title, URL.createObjectURL(cssBlob)];
                         blobArray.push(newURL);

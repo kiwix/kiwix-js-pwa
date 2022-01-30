@@ -31,7 +31,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
     // DEV: Regex below defines the permitted key types for the cache; add further types as needed
     // @TODO: Revise for use with no-namespace ZIMs (maybe this becomes useless?)
     // NB: The key type of '.zim', or '.zimaa' (etc.) is used to store a ZIM's last-accessed article 
-    var regexpKeyTypes = /(?:(?:^|\/)[AC]\/.+|\.[Jj][Ss]|\.[Cc][Ss][Ss]|\.[Zz][Ii][Mm]\w{0,2})$/;
+    var regexpKeyTypes = /(?:(?:^|\/)[AC]\/.+|\.[Jj][Ss]|\.[Cc][Ss][Ss]|\.[Ii][Cc][Oo]|\.[Zz][Ii][Mm]\w{0,2})$/;
 
     /** 
      * Tests the enviornment's caching capabilities and sets assetsCache.capability to the supported level
@@ -455,9 +455,6 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                     resolve(result);
                     return;
                 }
-                // Set the read function to use according to filetype
-                var readFile = regexpKeyTypes.test(title) ?
-                    selectedArchive.readUtf8File : selectedArchive.readBinaryFile;
                 // Bypass getting dirEntry if we already have it
                 var getDirEntry = dirEntry ? Promise.resolve() :
                     selectedArchive.getDirEntryByPath(title);
@@ -476,6 +473,9 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                             var shortTitle = key.replace(/[^/]+\//g, '').substring(0, 18);
                             uiUtil.pollSpinner('Getting ' + shortTitle + '...');
                         }
+                        // Set the read function to use according to filetype
+                        var readFile = /^text\//i.test(mimetype) ?
+                        selectedArchive.readUtf8File : selectedArchive.readBinaryFile;
                         readFile(resolvedDirEntry, function (fileDirEntry, content) {
                             if (regexpKeyTypes.test(title)) {
                                 console.log('Cache retrieved ' + title + ' from ZIM');
