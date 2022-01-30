@@ -1,6 +1,6 @@
 # Changelog
 
-## Release 1.8.8-WikiMed
+## Release 1.8.9-WikiMed
 
 * UPDATE: Packaged archive updated to wikipedia_en_medicine-app_maxi_2022-01.zim
 * ENHANCEMENT: Service Worker mode is now the default in contexts or frameworks that natively support it with good performance
