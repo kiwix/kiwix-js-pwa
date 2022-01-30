@@ -1,24 +1,16 @@
-# This is a utility script which helps developers choose sensible values for updating the online Docker-based implementation
-# of this app while testing and developing code in a specific branch. It checks app.js and service-worker.js for consistency,
-# and checks that that the underlying branch of a PR has been checked out (rather than the PR itself). It then calls the
-# GitHub REST API for dispatching the workflow using the provided values.
-#
-# IMPORTANT: Ensure that your personal github token is in your local copy of the '/scripts' directory, saved as 'github_token'
-#
-# You may run this script with commandline switches -machine_name (this could be 'dev'), the -branch_name, and -dryrun (this
-# will show the changes that would be made if run without the -dryrun switch). Alternatively, if you do not provide these
-# values, you will be prompted with sensible defaults.
-
-# Prevents execution with unrecognized switches
-[CmdletBinding()]
 param (
     [string]$machine_name = "",
     [string]$branch_name = "",
     [switch]$dryrun = $false
 )
 
+# DEV: To build the Docker container programmatically (for testing), provide the -machine_name (this could be 'dev')
+# and the -branch_name switches on the commandline. If you do not provide them, you will be prompted with defaults.
+# IMPORTANT: Ensure that your personal github token is in your local copy of the '/scripts' directory, saved as 'github_token'
+
 # Provide parameters
 $release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-windows/actions/workflows/publish-docker.yaml/dispatches'
+$github_token = Get-Content -Raw "$PSScriptRoot/github_token"
 
 $app_params = Select-String 'appVersion' "$PSScriptRoot\..\www\js\init.js" -List
 $serviceworker = Select-String 'appVersion' "$PSScriptRoot\..\service-worker.js" -List
@@ -26,9 +18,9 @@ $suggested_build = ''
 $app_tag = ''
 if ($app_params -match 'params\[[''"]appVersion[''"]]\s*=\s*[''"]([^''"]+)') {
   $app_tag = $matches[1]
-  $suggested_build = 'dev-' + $app_tag
+  $suggested_build = 'dev_' + $app_tag 
 } else {
-  "*** WARNING: App version is incorrectly set in init.js.`nPlease correct before continuing.`n"
+  "`n*** WARNING: App version is incorrectly set in init.js.`nPlease correct before continuing.`n"
   exit
 }
 $sw_tag = ''
@@ -47,13 +39,6 @@ if ($serviceworker -match 'appVersion\s*=\s*[''"]([^''"]+)') {
   exit
 }
 
-if (Test-Path $PSScriptRoot/github_token -PathType Leaf) {
-  $github_token = Get-Content -Raw "$PSScriptRoot/github_token"
-} else {
-  Write-Warning "Missing file github_token! Please add it to $PSScriptRoot to run this script.`n"
-  $github_token = $false
-}
-
 if ($machine_name -eq "") {
   if (-Not $dryrun) {
     $dryrun_check = Read-Host "Is this a dry run? [Y/N]"
@@ -62,21 +47,13 @@ if ($machine_name -eq "") {
       "[DRYRUN]: Initiating dry run..."
     }
   }
-  $machine_name = Read-Host "`nGive the name to use for the docker build, or Enter to accept suggested name [$suggested_build]"
-  ""
-  if (-Not $machine_name) { 
-    $machine_name = $suggested_build
-    $warning_message = "Please note that ""$app_tag"" will be used as the appVersion. If you want to change that, press Ctrl-C and re-run this script entering a build number matching 9.9.9."
-  } elseif ($machine_name -match '^[\d.]+') {
-    $warning_message = "*** Please be aware that you have entered a release tag matching the format 9.9.9* [$machine_name], and so it will be used as the appVersion of the container " +
-      "and will be visible to users. If this is NOT want you want, press Ctrl-C to abort this script, and re-run with the suggested build number." 
-  }
-  if ($warning_message) { Write-Warning $warning_message }
+  $machine_name = Read-Host "`nGive the tag name to use for the docker build, or Enter to accept suggested build name [$suggested_build]"
+  if (-Not $machine_name) { $machine_name = $suggested_build }
 }
 
 if ($branch_name -eq "") {
   $suggested_branch = &{ git branch --show-current }
-  $branch_name = Read-Host "`nGive the branch name to use of the docker build, or Enter to accept [$suggested_branch]"
+  $branch_name = Read-Host "Give the branch name to use of the docker build, or Enter to accept [$suggested_branch]"
   if (-Not $branch_name) { $branch_name = $suggested_branch }
   if ($branch_name -imatch '^pr/\d+') {
     "`nWARNING: You appear to have indicated a PR. Please check out the underlying branch to use this script,`nor else run it again and give the branch name at the prompt.`n"
@@ -85,13 +62,8 @@ if ($branch_name -eq "") {
 
 }
 
-"`nMachine name set to: $machine_name"
+"`nTag name set to: $machine_name"
 "Branch name set to: $branch_name"
-
-if (-Not $dryrun -and -Not $github_token) {
-  "`nSupply token to continue.`n"
-  exit
-}
 
 # Set up dispatch_params object - for API see https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event
 $dispatch_params = @{
