@@ -1,12 +1,16 @@
 # Changelog
 
-## Interim release 1.8.8
+## Interim release 1.8.9
 
 * ENHANCEMENT: Service Worker mode is now the default in contexts or frameworks that natively support it with good performance
 * ENHANCEMENT: Option to reset app to defaults in Expert settings
+* ENHANCEMENT: Better feedback to user during slow ZIM archive loading
+* ENHANCEMENT: Included favicons at various resolutions
 * DEV: Developer option to bypass appCache
+* DEV: Window location information now shown in API panel
 * FIX: Bug that would sometimes cause a blank screen in Service Worker mode on slow devices
 * FIX: Set headers properly when caching Fetch responses in JQuery mode
+* FIX: Loading of articles that have question marks or hashes in the title
 
 ## Release 1.8.6
 
