@@ -3696,7 +3696,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     'content': buffer
                                 };
                                 clearTimeout(spinnerTimer);
-                                spinnerTimer = setTimeout(uiUtil.clearSpinner, 2000);
+                                // Android is extremely slow, so this presents the spinner flashing on and off too much
+                                if (/Android/i.test(params.appType)) spinnerTimer = setTimeout(uiUtil.clearSpinner, 1800);
+                                else spinnerTimer = setTimeout(uiUtil.clearSpinner, 900);
                                 if (content.buffer) {
                                     // In Edge Legacy, we have to transfer the buffer inside an array, whereas in Chromium, this produces an error
                                     // due to type not being transferrable... (and already detached, which may be to do with storing in IndexedDB in Electron)
@@ -3756,9 +3758,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     // New windows do not respect the onload event because they've been pre-populated,
                     // so we have to simulate this event (note potential for race condition if timeout is too short)
                     // NB The UWP app cannot control the opened window, so it can only be controlled by the Service Worker
-                    setTimeout(function () {
-                        if (appstate.target === 'iframe') articleContainer.style.display = 'block';
-                    }, 800);
                     setTimeout(function () {
                         uiUtil.clearSpinner();
                     }, 2000);
@@ -4147,10 +4146,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         //DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
                         //var cssContent = util.uintToString(content);
                         var mimetype = /\.ico$/i.test(title) ? 'image' : 'text/css';
-                        var cssBlob = new Blob([content], {
+                        var cssBlob;
+                        if (content) cssBlob = new Blob([content], {
                             type: mimetype
                         });
-                        var newURL = [title, URL.createObjectURL(cssBlob)];
+                        var newURL = cssBlob ? [title, URL.createObjectURL(cssBlob)] : [title, ''];
                         blobArray.push(newURL);
                         if (cssBlobCache)
                             cssBlobCache.set(newURL[0], newURL[1]);
