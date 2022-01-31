@@ -3685,6 +3685,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 if (/\b(css|javascript|video|vtt|webm)\b/i.test(mimetype)) {
                                     var shortTitle = dirEntry.url.replace(/[^/]+\//g, '').substring(0, 18);
                                     uiUtil.pollSpinner('Getting ' + shortTitle + '...');
+                                    clearTimeout(spinnerTimer);
+                                    // Android is extremely slow, so this presents the spinner flashing on and off too much
+                                    if (/Android/i.test(params.appType)) spinnerTimer = setTimeout(uiUtil.clearSpinner, 1500);
+                                    else spinnerTimer = setTimeout(uiUtil.clearSpinner, 300);
                                 }
                                 // Let's send the content to the ServiceWorker
                                 var buffer = content.buffer ? content.buffer : content;
@@ -3695,10 +3699,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     'imageDisplay': imageDisplayMode,
                                     'content': buffer
                                 };
-                                clearTimeout(spinnerTimer);
-                                // Android is extremely slow, so this presents the spinner flashing on and off too much
-                                if (/Android/i.test(params.appType)) spinnerTimer = setTimeout(uiUtil.clearSpinner, 1800);
-                                else spinnerTimer = setTimeout(uiUtil.clearSpinner, 900);
                                 if (content.buffer) {
                                     // In Edge Legacy, we have to transfer the buffer inside an array, whereas in Chromium, this produces an error
                                     // due to type not being transferrable... (and already detached, which may be to do with storing in IndexedDB in Electron)
