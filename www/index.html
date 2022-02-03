@@ -157,6 +157,26 @@
             </div>
         </div>
     </div>
+    <!--Bootstrap modal for alert and confirmation pop up-->
+    <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h5 class="modal-title" id="modalLabel">Modatl title goes here</h5>
+                </div>
+                <div class="modal-body">
+                    <p id="modalText">Modal text goes here.</p>
+                </div>
+                <div class="modal-footer" id="modalFooter">
+                    <button type="button" class="btn btn-primary" id="approveModal" data-dismiss="modal">Confirm</button>
+                    <button type="button" class="btn btn-secondary" id="declineModal" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="printModal" class="modal" tabindex="-1">
         <div class="modal-dialog">
             <div id="print-modal-content" class="modal-content">
@@ -1091,7 +1111,7 @@
     </section>
 
     <!-- Using require.js, a module system for javascript, include the
-         js files. This loads "main.js", which in turn can load other
+         js files. This loads "init.js", which in turn can load other
          files, all handled by require.js:
          https://requirejs.org/docs/api.html#jsfiles -->
     <script type="text/javascript"
