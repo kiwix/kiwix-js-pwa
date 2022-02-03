@@ -265,7 +265,7 @@ nav a.btn-primary, .input-group-addon {
     background-color: lightsteelblue !important;
 }
 
-.dark nav a.btn-primary, .dark .navbar-inverse {
+.dark .btn-primary, .dark .btn-secondary, .dark .navbar-inverse {
     background: #222 !important;
     border-color: #222 !important;
 }
@@ -361,7 +361,11 @@ pre {
 }
 
 .modal-content:not(.dark) {
-    background: #eee !important;
+    background: #fff !important;
+}
+
+.dark .modal-content:not(.dark) {
+    background: #333 !important;
 }
 
 .dark {

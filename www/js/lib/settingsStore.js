@@ -164,9 +164,9 @@ define([], function () {
     if (object) performReset();
     else {
       uiUtil.systemAlert('WARNING: This will reset the app to a freshly installed state, deleting all app caches and settings!',
-      'Warning!', 'OK', performReset, 'Cancel',
-      function () {
-        console.debug('User cancelled');
+      'Warning!', true).then(function (confirm) {
+        if (confirm) performReset();
+        else console.debug('User cancelled');
       });
     }
   }
