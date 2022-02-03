@@ -1164,10 +1164,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             window.location.href = 'ms-appx-web:///www/index.html' + uriParams;
                             throw 'Beam me down, Scotty!';
                         };
-                        uiUtil.systemAlert(message, 'Warning!', 'Reload app', launchLocal, 'Cancel', function () {
-                            this.checked = true;
-                            params.allowInternetAccess = true;
-                            document.getElementById('btnConfigure').click();
+                        uiUtil.systemAlert(message, 'Warning!', true, 'Cancel', 'Reload app').then(function (response) {
+                            if (response) launchLocal(); 
+                            else {
+                                this.checked = true;
+                                params.allowInternetAccess = true;
+                                document.getElementById('btnConfigure').click();
+                            }
                         });
                     }
                 }
@@ -2117,9 +2120,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         '(we show this information to prevent a boot loop).' +
                         '\n\nPlease try again by selecting "Access server":';
                 }
-                uiUtil.systemAlert(message, 'Warning!', 'Access server', launchPWA, 'Cancel', function () {
-                    var allowAccessCheck = document.getElementById('allowInternetAccessCheck');
-                    if (allowAccessCheck.checked) allowAccessCheck.click();
+                uiUtil.systemAlert(message, 'Warning!', true, 'Cancel', 'Access server').then(function (confirm) {
+                    if (confirm) launchPWA();
+                    else {
+                        var allowAccessCheck = document.getElementById('allowInternetAccessCheck');
+                        if (allowAccessCheck.checked) allowAccessCheck.click();
+                    }
                 });
             }
         }
@@ -4421,6 +4427,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         htmlArticle = htmlArticle.replace(/(<html\b[^>]+?style=['"])/i, '$1zoom:' + params.relativeFontSize + '%; ');
                         htmlArticle = htmlArticle.replace(/(<html\b(?![^>]+?style=['"])\s)/i, '$1style="zoom:' + params.relativeFontSize + '%;" ');
                     }
+                    // Move problematic scripts in YouTube-based ZIMs which executes before DOM is ready
+                    ['zim_prefix.js', 'app.js'].forEach(function (script) {
+                        var regexpMoveScript = new RegExp('<script src="[^"]+assets/' + script + '[^<]+?</script>\\s*');
+                        var moveScript = htmlArticle.match(regexpMoveScript);
+                        if (moveScript) {
+                            htmlArticle = htmlArticle.replace(moveScript[0], '');
+                            htmlArticle = htmlArticle.replace(/(<\/body>)/i, moveScript[0] + '$1');
+                        }
+                    });
+                    
                     // Add doctype if missing so that scripts run in standards mode
                     // (quirks mode prevents katex from running, and is incompatible with jQuery)
                     params.transformedHTML = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(htmlArticle) ? '<!DOCTYPE html>\n' + htmlArticle : htmlArticle;
