@@ -575,32 +575,38 @@ define(rqDef, function(util) {
         clearSpinner();
     }
 
-    /** 
-     * Provides system-specific alert function
+    /**
+     * Displays a Bootstrap alert or confirm dialog box depending on the options provided
+     * Credit to @gaurav7019 for this code (slightly adapted here) - see Kiwix JS #804
      * 
-     * @param {String} message The message to display
-     * @param {String} title The message title
-     * @param {String} btnOK An optional button to display with an OK function
-     * @param {Function} btnOKFn An optional function to run when btnOK is selected
-     * @param {String} btnCancel An optional secondary button to display with a cancel function
-     * @param {Function} btnCancelFn An optional function to run when btnCancel is selected
+     * @param {String} message The alert message to display in the body of the modal 
+     * @param {String} label The modal's label or title which appears in the header 
+     * @param {Boolean} isConfirm If true, the modal will be a confirm dialog box, otherwise it will be an alert 
+     * @param {String} declineButtonText The text to display on the decline button (optional, Default = "Cancel") 
+     * @param {String} approveButtonText  The text to display on the approve button (optional, Default = "Confirm")
+     * @returns {Promise<Boolean>} A promise which resolves to true if the user clicked Confirm, false if the user clicked Cancel, backdrop or the cross(x) button
      */
-    function systemAlert(message, title, btnOK, btnOKFn, btnCancel, btnCancelFn) {
-        // Test for UWP
-        if (typeof Windows !== 'undefined' && typeof Windows.UI !== 'undefined' && typeof Windows.UI.Popups !== 'undefined') {
-            var dialog = new Windows.UI.Popups.MessageDialog(message);
-            if (btnOK && btnOKFn) dialog.commands.append(new Windows.UI.Popups.UICommand(btnOK, btnOKFn));
-            if (btnCancel && btnCancelFn) dialog.commands.append(new Windows.UI.Popups.UICommand(btnCancel, btnCancelFn));
-            dialog.showAsync();
-        } else {
-            if (btnOK && btnOKFn || btnCancel && btnCancelFn) {
-                var response = confirm(message);
-                if (response) btnOKFn();
-                else if (btnCancel && btnCancelFn) btnCancelFn();
-            } else {
-                alert(message);
-            }
-        }
+     function systemAlert(message, label, isConfirm, declineButtonText, approveButtonText) {
+        label = label || (isConfirm ? 'Confirm' : 'Message');
+        return new Promise(function (resolve, reject) {
+            if (!message) reject("Missing parameters");
+            if (declineButtonText) document.getElementById("declineModal").innerHTML = declineButtonText;
+            if (approveButtonText) document.getElementById("approveModal").innerHTML = approveButtonText;
+            document.getElementById("modalLabel").innerHTML = label;
+            document.getElementById("modalText").innerHTML = message;
+            // Displays an additional Confirm button if isConfirm is true
+            document.getElementById("approveModal").style.visibility = isConfirm ? "visible" : "hidden";
+            $("#alertModal").modal("show");
+            // When hide model is called, resolve promise with true if hidden using approve button, false otherwise
+            $("#alertModal").on("hide.bs.modal", function () {
+                const closeSource = document.activeElement;
+                if (closeSource.id === "approveModal") {
+                    resolve(true);
+                } else {
+                    resolve(false);
+                }
+            });
+        });
     }
 
     /**
