@@ -1947,18 +1947,22 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 refreshAPIStatus();
             } else if (value === 'serviceworker') {
                 if (!isServiceWorkerAvailable()) {
-                    uiUtil.systemAlert("The ServiceWorker API is not available on your device. Falling back to JQuery mode");
-                    setContentInjectionMode('jquery');
+                    uiUtil.systemAlert("The ServiceWorker API is not available on your device. Falling back to JQuery mode").then(function () {
+                        setContentInjectionMode('jquery');
+                    });
                     return;
                 }
                 if (!isMessageChannelAvailable()) {
-                    uiUtil.systemAlert("The MessageChannel API is not available on your device. Falling back to JQuery mode");
-                    setContentInjectionMode('jquery');
+                    uiUtil.systemAlert("The MessageChannel API is not available on your device. Falling back to JQuery mode").then(function () {
+                        setContentInjectionMode('jquery');
+                    });
                     return;
                 }
                 if (window.nw && nw.process.versions.nw === '0.14.7') {
-                    uiUtil.systemAlert('Service Worker mode is not available in the XP version of this app, due to the age of the Chromium build. Falling back to JQuery mode...');
-                    setContentInjectionMode('jquery');
+                    uiUtil.systemAlert('Service Worker mode is not available in the XP version of this app, due to the age of the Chromium build. Falling back to JQuery mode...')
+                    .then(function () {
+                        setContentInjectionMode('jquery');
+                    });
                     return;
                 }
                 if (!isServiceWorkerReady()) {
@@ -2011,10 +2015,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 message += "\nPlease vote for https://bugzilla.mozilla.org/show_bug.cgi?id=1344561 so that some future Firefox versions support it";
                             } else if (protocol === 'file:') {
                                 message += "\n\nYou seem to be opening kiwix-js with the file:// protocol. You should open it through a web server : either through a local one (http://localhost/...) or through a remote one (but you need SSL : https://webserver/...)";
-                            } else {
-                                uiUtil.systemAlert(message, 'Information');
                             }
-                            setContentInjectionMode("jquery");
+                            uiUtil.systemAlert(message, 'Information').then(function () {
+                                setContentInjectionMode("jquery");
+                            });
                             return;
                         });
                     }
