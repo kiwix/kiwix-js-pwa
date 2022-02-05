@@ -361,6 +361,10 @@ pre {
     font-weight: bold;
 }
 
+.dark .modal-title {
+    color: whitesmoke;
+}
+
 .modal-content.dark {
     background: #222 !important;
 }
