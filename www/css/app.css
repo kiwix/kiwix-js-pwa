@@ -362,7 +362,7 @@ pre {
 }
 
 .dark .modal-title {
-    color: whitesmoke;
+    color: lightgray !important;
 }
 
 .modal-content.dark {
