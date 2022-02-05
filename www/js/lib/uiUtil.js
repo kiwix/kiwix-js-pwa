@@ -52,7 +52,7 @@ define(rqDef, function(util) {
      * @param {Function} callback An optional function to call with the URI
      */
     function feedNodeWithBlob(node, nodeAttribute, content, mimeType, makeDataURI, callback) {
-        // Decode WebP data if the browser does not support WebP and the mimeType is webp 
+        // Decode WebP data if the browser does not support WebP and the mimeType is webp
         if (webpMachine && /image\/webp/i.test(mimeType)) {
             // If we're dealing with a dataURI, first convert to Uint8Array
             if (/^data:/i.test(content)) {
@@ -587,10 +587,10 @@ define(rqDef, function(util) {
      * @param {String} closeMessageLabel  The text to display on the close alert message button (optional, Default = "Okay")
      * @returns {Promise<Boolean>} A promise which resolves to true if the user clicked Confirm, false if the user clicked Cancel/Okay, backdrop or the cross(x) button
      */
-     function systemAlert(message, label, isConfirm, declineConfirmLabel, approveConfirmLabel, closeMessageLabel) {
-        declineConfirmLabel = declineConfirmLabel || document.getElementById("declineConfirm").textContent;
-        approveConfirmLabel = approveConfirmLabel || document.getElementById("approveConfirm").textContent;
-        closeMessageLabel = closeMessageLabel || document.getElementById("closeMessage").textContent;
+    function systemAlert(message, label, isConfirm, declineConfirmLabel, approveConfirmLabel, closeMessageLabel) {
+        declineConfirmLabel = declineConfirmLabel || "Cancel";
+        approveConfirmLabel = approveConfirmLabel || "Confirm";
+        closeMessageLabel = closeMessageLabel || "OK";
         label = label || (isConfirm ? "Confirmation" : "Message");
         return new Promise(function (resolve, reject) {
             if (!message) reject("Missing body message");
@@ -756,7 +756,7 @@ define(rqDef, function(util) {
 
     
     // Reports an error in loading one of the ASM or WASM machines to the UI API Status Panel
-    // This can't be done in aoo.js because the error occurs after the API panel is first displayed
+    // This can't be done in app.js because the error occurs after the API panel is first displayed
     function reportAssemblerErrorToAPIStatusPanel(decoderType, error) {
         // Report error to API panel because error is produced asynchronously after panel is first displayed
         console.error('Could not instantiate any ' + decoderType + ' decoder!', error);
@@ -774,6 +774,7 @@ define(rqDef, function(util) {
      * Functions and classes exposed by this module
      */
     return {
+        systemAlert: systemAlert,
         feedNodeWithBlob: feedNodeWithBlob,
         deriveZimUrlFromRelativeUrl: deriveZimUrlFromRelativeUrl,
         getClosestMatchForTagname: getClosestMatchForTagname,
@@ -790,7 +791,6 @@ define(rqDef, function(util) {
         displayFileDownloadAlert: displayFileDownloadAlert,
         insertBreakoutLink: insertBreakoutLink,
         extractHTML: extractHTML,
-        systemAlert: systemAlert,
         checkServerIsAccessible: checkServerIsAccessible,
         initTouchZoom: initTouchZoom,
         reportAssemblerErrorToAPIStatusPanel: reportAssemblerErrorToAPIStatusPanel
