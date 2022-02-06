@@ -348,11 +348,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
             uiUtil.printCustomElements();
             document.getElementById("alert-content").innerHTML = "<b>Document will now reload to restore the DOM after printing...</b>";
-            $("#alertModal").off('hide.bs.modal');
-            $("#alertModal").on('hide.bs.modal', function () {
+            $("#alertModalSmall").off('hide.bs.modal');
+            $("#alertModalSmall").on('hide.bs.modal', function () {
                 printCleanup();
             });
-            $("#alertModal").modal({
+            $("#alertModalSmall").modal({
                 backdrop: "static",
                 keyboard: true
             });
@@ -2380,11 +2380,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             if (document.getElementById('configuration').style.display == 'none')
                                 document.getElementById('btnConfigure').click();
                             document.getElementById('alert-content').innerHTML = message;
-                            $('#alertModal').off('hide.bs.modal');
-                            $('#alertModal').on('hide.bs.modal', function () {
+                            $('#alertModalSmall').off('hide.bs.modal');
+                            $('#alertModalSmall').on('hide.bs.modal', function () {
                                 displayFileSelect();
                             });
-                            $('#alertModal').modal({
+                            $('#alertModalSmall').modal({
                                 backdrop: 'static',
                                 keyboard: true
                             });
@@ -2961,13 +2961,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // Check that user hasn't picked just part of split ZIM
             if (files.length == 1 && /\.zim\w\w/i.test(files[0].name)) {
                 document.getElementById('alert-content').innerHTML = '<p>You have picked only part of a split archive!</p><p>Please select its folder in Config, or drag and drop <b>all</b> of its parts into Config.</p>';
-                $('#alertModal').off('hide.bs.modal');
-                $('#alertModal').on('hide.bs.modal', function () {
+                $('#alertModalSmall').off('hide.bs.modal');
+                $('#alertModalSmall').on('hide.bs.modal', function () {
                     if (document.getElementById('configuration').style.display == 'none')
                         document.getElementById('btnConfigure').click();
                     displayFileSelect();
                 });
-                $('#alertModal').modal({
+                $('#alertModalSmall').modal({
                     backdrop: 'static',
                     keyboard: true
                 });
