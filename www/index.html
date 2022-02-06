@@ -74,7 +74,7 @@
                 }).then(function (reg) {
                     console.log("Service Worker has been registered for scope: " + reg.scope);
                 }).catch(function (err) {
-                    console.err('Service Worker could not be registered', err);
+                    console.error('Service Worker could not be registered', err);
                 });
             }
         } else {
