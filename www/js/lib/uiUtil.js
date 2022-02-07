@@ -599,7 +599,7 @@ define(rqDef, function(util) {
             document.getElementById("declineConfirm").textContent = declineConfirmLabel;
             document.getElementById("closeMessage").textContent = closeMessageLabel;
             document.getElementById("modalLabel").textContent = label;
-            document.getElementById("modalText").textContent = message;
+            document.getElementById("modalText").innerHTML = message;
             // Display buttons acc to the type of alert
             document.getElementById("approveConfirm").style.display = isConfirm ? "inline" : "none";
             document.getElementById("declineConfirm").style.display = isConfirm ? "inline" : "none";
