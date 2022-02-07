@@ -1021,7 +1021,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 getNativeFSHandle(function(handle) {
                     if (!handle) {
                         console.error('No handle was retrieved');
-                        uiUtil.systemAlert('We could not get a handle to the previously picked file or folder!\n' +
+                        uiUtil.systemAlert('We could not get a handle to the previously picked file or folder!<br>' +
                             'This is probably because the contents of the folder have changed. Please try picking it again.');
                         document.getElementById('openLocalFiles').style.display = 'block';
                         return;
@@ -1036,7 +1036,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             setLocalArchiveFromArchiveList(selected);
                         }).catch(function(err) {
                             console.error('Unable to read previously picked file!', err);
-                            uiUtil.systemAlert('We could not retrieve the previously picked file or folder!\nPlease try picking it again.');
+                            uiUtil.systemAlert('We could not retrieve the previously picked file or folder!<br>Please try picking it again.');
                             document.getElementById('openLocalFiles').style.display = 'block';
                         });
                     }
@@ -1118,8 +1118,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (this.value === 'jquery' && /^http/i.test(window.location.protocol) && /UWP\|PWA/.test(params.appType) &&
                 settingsStore.getItem('allowInternetAccess') === 'true') {
                 uiUtil.systemAlert(
-                    'Please note that switching content injection mode does not revert to local code.\n' +
-                    'If you wish to exit the PWA, you will need to turn off "Allow Internet access?" above.'
+                    '<p>Please note that switching content injection mode does not revert to local code.</p>' +
+                    '<p>If you wish to exit the PWA, you will need to turn off "Allow Internet access?" above.</p>'
                 );
             }
             if (this.value === 'serviceworker') {
@@ -1142,8 +1142,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 if (/^http/i.test(window.location.protocol)) {
                     var message;
                     if (!/PWA/.test(params.appType)) {
-                        message = 'You are accessing Kiwix JS from a remote server, and it is not possible to disable Internet access fully without exiting the app.\n' +
-                            'Please visit https://github.com/kiwix/kiwix-js-windows/releases/ to find an app version that will run offline.';
+                        message = '<p>You are accessing Kiwix JS from a remote server, and it is not possible to disable Internet access fully without exiting the app.</p>' +
+                            '<p>Please visit <a href="https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html" target="_blank">Kiwix JS UWP/Electron/NWJS</a> to find an app version that will run fully offline.</p>';
                         uiUtil.systemAlert(message);
                         this.checked = true;
                         params.allowInternetAccess = true;
@@ -1153,8 +1153,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             'off the Internet connection on your computer. By design, the PWA spec allows an offline app to check whether the Service Worker ' +
                             'code has changed, and this app cannot override that completely.');
                     } else {
-                        message = 'This will switch to using locally packaged code only. Configuration settings may be lost.\n\n' +
-                            'WARNING: App will re-load in jQuery mode!';
+                        message = '<p>This will switch to using locally packaged code only. Configuration settings may be lost.</p>' +
+                            '<p><b>WARNING:</b> App will re-load in jQuery mode!</p>';
                         var that = this;
                         var launchLocal = function () {
                             settingsStore.setItem('allowInternetAccess', false, Infinity);
@@ -1165,7 +1165,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             window.location.href = 'ms-appx-web:///www/index.html' + uriParams;
                             throw 'Beam me down, Scotty!';
                         };
-                        uiUtil.systemAlert(message, 'Warning!', true, 'Cancel', 'Reload app').then(function (response) {
+                        uiUtil.systemAlert(message, 'Information', true, 'Cancel', 'Reload app').then(function (response) {
                             if (response) {
                                 launchLocal();
                             } else {
@@ -1200,9 +1200,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             settingsStore.setItem('manipulateImages', params.manipulateImages, Infinity);
             if (this.checked && !params.displayHiddenBlockElements) {
                 if (/UWP/.test(params.appType)) {
-                    uiUtil.systemAlert('This option does not work in UWP apps. WORKAROUND: To save an image to disk, please select the "Add breakout link ..." option below, load the article you require, and export it to a browser window by clicking the breakout link. You will then be able to right-click or long-press images in the exported page and save them.');
+                    uiUtil.systemAlert('<p>This option does not work in UWP apps.</p><p><b>WORKAROUND:</b> To save an image to disk, please select the ' +
+                        '"Add breakout link ..." option below, load the article you require, and export it to a browser window by clicking the breakout link.</p>' +
+                        '<p>You will then be able to right-click or long-press images in the exported page and save them.</p>');
                 } else if (window.nw) {
-                    uiUtil.systemAlert('Unfortunately there is currently no way to save an image to disk in the NWJS version of this app. You can do this in the PWA version: please visit https://pwa.kiwix.org.');
+                    uiUtil.systemAlert('Unfortunately there is currently no way to save an image to disk in the NWJS version of this app.<br>You can do this in the PWA version: please visit https://pwa.kiwix.org.');
                 } else if (params.contentInjectionMode === 'serviceworker') {
                     uiUtil.systemAlert('Please be aware that Image manipulation can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). If you cannot access the articles in such a ZIM, please turn this setting off.');
                 } else if (/PWA/.test(params.appType)) {
@@ -1233,16 +1235,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         document.getElementById('tabOpenerCheck').addEventListener('click', function () {
             params.windowOpener = this.checked ? 'tab' : false;
             if (params.windowOpener && /UWP\|PWA/.test(params.appType) && params.contentInjectionMode === 'jquery') {
-                uiUtil.systemAlert('In this UWP app, opening a new browsable window only works in Service Worker mode.\n' + 
-                'Your system appears to support SW mode, so please try switching to it in Expert Settings below.\n' +
-                'If your system does not support SW mode, then use the more basic "breakout link" feature below.');
+                uiUtil.systemAlert('<p>In this UWP app, opening a new browsable window only works in Service Worker mode.</p>' + 
+                    '<p>Your system appears to support SW mode, so please try switching to it in Expert Settings below.</p>' +
+                    '<p>If your system does not support SW mode, then use the more basic "breakout link" feature below.</p>');
             }
             if (params.windowOpener && params.allowHTMLExtraction) {
                 uiUtil.systemAlert('Enabling this option disables the more basic breakout link option below.');
                 document.getElementById('allowHTMLExtractionCheck').click();
             }
             if (params.windowOpener && /UWP$/.test(params.appType)) {
-                uiUtil.systemAlert('This option is not currently supported in UWP apps that cannot use Service Worker mode.\n' +
+                uiUtil.systemAlert('This option is not currently supported in UWP apps that cannot use Service Worker mode.<br>' +
                 'Please switch to the more basic "breakout link" feature below instead.');
                 params.windowOpener = false;
             } else {
@@ -2111,9 +2113,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             };
             var checkPWAIsOnline = function () {
                 uiUtil.checkServerIsAccessible(params.PWAServer + 'www/img/icons/kiwix-32.png', launchPWA, function () {
-                    uiUtil.systemAlert('The server is not currently accessible! ' +
-                        '\n\n(Kiwix needs one-time access to the server to cache the PWA).' +
-                        '\nPlease try again when you have a stable Internet connection.', 'Error!');
+                    uiUtil.systemAlert('<p>The server is not currently accessible!</p>' +
+                        '<p>(Kiwix needs one-time access to the server to cache the PWA).</p>' +
+                        '<p>Please try again when you have a stable Internet connection.</p>', 'Error!');
                 });
             };
             if (settingsStore.getItem('allowInternetAccess') === 'true' && params.localUWPSettings.PWA_launch !== 'fail') {
@@ -2122,9 +2124,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 return;
             } else {
                 if (params.localUWPSettings.PWA_launch === 'fail') {
-                    message = 'The PWA MAY have failed to launch on the last attempt\n' +
-                        '(we show this information to prevent a boot loop).' +
-                        '\n\nPlease try again by selecting "Access server":';
+                    message = '<p>The PWA MAY have failed to launch on the last attempt ' +
+                        '(we show this information to prevent a boot loop).</p>' +
+                        '<p>Please try again by selecting "Access server":</p>';
                 }
                 uiUtil.systemAlert(message, 'Information', true, 'Cancel', 'Access server').then(function (confirm) {
                     if (confirm) launchPWA();
@@ -3224,7 +3226,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // We have to remove the focus from the search field,
                 // so that the keyboard does not stay above the message
                 $('#searchArticles').focus();
-                uiUtil.systemAlert("Archive not set : please select an archive");
+                uiUtil.systemAlert("Archive not set: please select an archive!");
                 document.getElementById('btnConfigure').click();
             }
         }
