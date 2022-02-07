@@ -5081,32 +5081,36 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         }
 
         function goToRandomArticle() {
-            uiUtil.pollSpinner();
-            if (appstate.selectedArchive === null) {
-                return;
-            } //Prevents exception if user hasn't selected an archive
-            appstate.selectedArchive.getRandomDirEntry(function (dirEntry) {
-                if (dirEntry === null || dirEntry === undefined) {
-                    uiUtil.clearSpinner();
-                    uiUtil.systemAlert("Error finding random article.");
-                } else {
-                    // We fall back to the old A namespace to support old ZIM files without a text/html MIME type for articles
-                    // DEV: If articlePtrPos is defined in zimFile, then we are using a v1 article-only title listing. By definition,
-                    // all dirEntries in an article-only listing must be articles.  
-                    if (appstate.selectedArchive._file.articlePtrPos || dirEntry.getMimetype() === 'text/html' || dirEntry.namespace === 'A') {
-                        params.isLandingPage = false;
-                        $('#activeContent').hide();
-                        uiUtil.pollSpinner();
-                        readArticle(dirEntry);
+            if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
+                uiUtil.pollSpinner();
+                appstate.selectedArchive.getRandomDirEntry(function(dirEntry) {
+                    if (dirEntry === null || dirEntry === undefined) {
+                        uiUtil.clearSpinner();
+                        uiUtil.systemAlert("Error finding random article", "Error finding article");
                     } else {
-                        // If the random title search did not end up on an article,
-                        // we try again, until we find one
-                        goToRandomArticle();
+                        // We fall back to the old A namespace to support old ZIM files without a text/html MIME type for articles
+                        // DEV: If articlePtrPos is defined in zimFile, then we are using a v1 article-only title listing. By definition,
+                        // all dirEntries in an article-only listing must be articles.  
+                        if (appstate.selectedArchive._file.articlePtrPos || dirEntry.getMimetype() === 'text/html' || dirEntry.namespace === 'A') {
+                            params.isLandingPage = false;
+                            $('#activeContent').hide();
+                            uiUtil.pollSpinner();
+                            readArticle(dirEntry);
+                        } else {
+                            // If the random title search did not end up on an article,
+                            // we try again, until we find one
+                            goToRandomArticle();
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                // Showing the relavant error message and redirecting to config page for adding the ZIM file
+                uiUtil.systemAlert("Archive not set: please select an archive", "No archive selected").then(function () {
+                    document.getElementById('btnConfigure').click();
+                });
+            }
         }
-
+    
         function goToMainArticle() {
             uiUtil.pollSpinner();
             appstate.selectedArchive.getMainPageDirEntry(function (dirEntry) {
