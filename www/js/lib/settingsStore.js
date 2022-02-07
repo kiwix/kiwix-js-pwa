@@ -163,7 +163,7 @@ define([], function () {
     // If no specific object was specified, we are doing a general reset, so ask user for confirmation
     if (object) performReset();
     else {
-      uiUtil.systemAlert('WARNING: This will reset the app to a freshly installed state, deleting all app caches and settings!',
+      uiUtil.systemAlert('<b>WARNING:</b> This will reset the app to a freshly installed state, deleting all app caches and settings!',
       'Warning!', true).then(function (confirm) {
         if (confirm) performReset();
         else console.debug('User cancelled');
