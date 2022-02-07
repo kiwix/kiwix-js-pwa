@@ -1154,7 +1154,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             'code has changed, and this app cannot override that completely.');
                     } else {
                         message = 'This will switch to using locally packaged code only. Configuration settings may be lost.\n\n' +
-                        'WARNING: App will re-load in jQuery mode!';
+                            'WARNING: App will re-load in jQuery mode!';
+                        var that = this;
                         var launchLocal = function () {
                             settingsStore.setItem('allowInternetAccess', false, Infinity);
                             var uriParams = '?allowInternetAccess=false&contentInjectionMode=jquery';
@@ -1165,9 +1166,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             throw 'Beam me down, Scotty!';
                         };
                         uiUtil.systemAlert(message, 'Warning!', true, 'Cancel', 'Reload app').then(function (response) {
-                            if (response) launchLocal(); 
-                            else {
-                                this.checked = true;
+                            if (response) {
+                                launchLocal();
+                            } else {
+                                that.checked = true;
                                 params.allowInternetAccess = true;
                                 document.getElementById('btnConfigure').click();
                             }
@@ -2010,16 +2012,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             var protocol = window.location.protocol;
                             if (protocol === 'ms-appx-web:') {
                                 launchUWPServiceWorker();
+                                message = "";
                             } else if (protocol === 'moz-extension:') {
                                 message += "\n\nYou seem to be using kiwix-js through a Firefox extension : ServiceWorkers are disabled by Mozilla in extensions.";
                                 message += "\nPlease vote for https://bugzilla.mozilla.org/show_bug.cgi?id=1344561 so that some future Firefox versions support it";
                             } else if (protocol === 'file:') {
                                 message += "\n\nYou seem to be opening kiwix-js with the file:// protocol. You should open it through a web server : either through a local one (http://localhost/...) or through a remote one (but you need SSL : https://webserver/...)";
                             }
-                            uiUtil.systemAlert(message, 'Information').then(function () {
-                                setContentInjectionMode("jquery");
-                            });
-                            return;
+                            if (message) uiUtil.systemAlert(message, 'Information');
+                            setContentInjectionMode("jquery");
                         });
                     }
                 } else {
@@ -2080,13 +2081,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         }
 
         function launchUWPServiceWorker () {
-            var message = 'To enable the Service Worker, we need one-time access to our secure server ' +
-                'so that the app can re-launch as a Progressive Web App (PWA).\n\n' +
-                'The PWA will be able to run offline, but will auto-update periodically when online ' +
-                'as per the Service Worker spec.\n\n' +
-                'You can switch back any time by toggling "Allow Internet access?" off.\n\n' +
-                'WARNING: This will attempt to access the following server: ' + params.PWAServer + '\n\n' +
-                '*** Screen will flash between black and white several times.\nIf the app crashes, please relaunch it. ***';
+            var message = '<p>To enable the Service Worker, we need one-time access to our secure server ' +
+                'so that the app can re-launch as a Progressive Web App (PWA).</p>' +
+                '<p>The PWA will be able to run offline, but will auto-update periodically when online ' +
+                'as per the Service Worker spec.</p>' +
+                '<p>You can switch back any time by toggling <i>Allow Internet access?</i> off.</p>' +
+                '<p><b>WARNING:</b> This will attempt to access the following server: <i>' + params.PWAServer + '</i></p>' +
+                '<p><b>*** Screen will flash between black and white several times. ***</b></p>' +
+                '<p>Note: If the app crashes, simply relaunch it.</p>';
             var launchPWA = function () {
                 settingsStore.setItem('contentInjectionMode', 'serviceworker', Infinity);
                 // This is needed so that we get passthrough on subsequent launches
@@ -2124,7 +2126,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         '(we show this information to prevent a boot loop).' +
                         '\n\nPlease try again by selecting "Access server":';
                 }
-                uiUtil.systemAlert(message, 'Warning!', true, 'Cancel', 'Access server').then(function (confirm) {
+                uiUtil.systemAlert(message, 'Information', true, 'Cancel', 'Access server').then(function (confirm) {
                     if (confirm) launchPWA();
                     else {
                         var allowAccessCheck = document.getElementById('allowInternetAccessCheck');
