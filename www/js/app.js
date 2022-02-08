@@ -2178,12 +2178,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         }
 
         if ('launchQueue' in window) {
+            console.debug('File Handling API is available');
             launchQueue.setConsumer(function (launchParams) {
                 // Nothing to do when the queue is empty.
                 if (!launchParams.files.length) {
+                    console.debug('Launch Queue is empty');
                     return;
                 }
                 // User launched app by double-clicking on file
+                console.debug('Processing NativeFileHandle for ' + launchParams);
                 processNativeFileHandle(launchParams.files[0]);
             });
         } 
