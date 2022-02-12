@@ -58,12 +58,14 @@
             }, false);
         }
         // If we're running in NWJS context, rename NWJS require and add needed functions
+        var nwjsVersion = '';
         if (typeof window.nw !== 'undefined') {
             window.requireNode = window.require;
             window.require = undefined;
             window.fs = requireNode('fs');
+            nwjsVersion = nw.process.versions.nw;
         } 
-        if ('serviceWorker' in navigator && !/^ms-appx-web/i.test(window.location.protocol)) {
+        if ('serviceWorker' in navigator && !/^ms-appx-web/i.test(window.location.protocol) && mwjsVersion !== '0.14.7') {
             console.log('Trying to activate Service Worker...');
             if (navigator.serviceWorker.controller) {
                 console.log('Service Worker is already active');
