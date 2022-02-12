@@ -1,3 +1,4 @@
+﻿[CmdletBinding()]
 param (
     [switch]$only32bit = $false
 )
@@ -6,7 +7,7 @@ if (-Not $only32bit) {
     $builds += "win-x64"
     "Caller requested 32bit and 64bit build"
 } else {
-    "Caller requested 32bitonly build"
+    "Caller requested only32bit build"
 }
 $version10 = "0.58.0" # <<< value updated automatically from package.json if launched from Create-DraftRelease
 $versionXP = "0.14.7"
