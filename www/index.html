@@ -65,7 +65,7 @@
             window.fs = requireNode('fs');
             nwjsVersion = nw.process.versions.nw;
         } 
-        if ('serviceWorker' in navigator && !/^ms-appx-web/i.test(window.location.protocol) && mwjsVersion !== '0.14.7') {
+        if ('serviceWorker' in navigator && !/^ms-appx-web/i.test(window.location.protocol) && nwjsVersion !== '0.14.7') {
             console.log('Trying to activate Service Worker...');
             if (navigator.serviceWorker.controller) {
                 console.log('Service Worker is already active');
