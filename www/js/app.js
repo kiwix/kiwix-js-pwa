@@ -2178,18 +2178,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         }
 
         if ('launchQueue' in window) {
-            console.debug('File Handling API is available');
+            console.log('File Handling API is available');
             launchQueue.setConsumer(function (launchParams) {
                 // Nothing to do when the queue is empty.
                 if (!launchParams.files.length) {
                     console.debug('Launch Queue is empty');
-                    return;
+                } else {
+                    // User launched app by double-clicking on file
+                    console.debug('Processing NativeFileHandle for ' + launchParams);
+                    processNativeFileHandle(launchParams.files[0]);
                 }
-                // User launched app by double-clicking on file
-                console.debug('Processing NativeFileHandle for ' + launchParams);
-                processNativeFileHandle(launchParams.files[0]);
             });
-        } 
+        }
 
         // @STORAGE AUTOLOAD STARTS HERE
         if ($.isFunction(navigator.getDeviceStorages)) {
@@ -2224,9 +2224,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
             } else if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 processPickedFileUWP(params.pickedFile);
-            } else if (launchArguments && 'launchQueue' in window) {
-                // The app was launched with a file
-                processNativeFileHandle(params.pickedFile); 
+            // } else if (launchArguments && 'launchQueue' in window) {
+            //     // The app was launched with a file
+            //     processNativeFileHandle(params.pickedFile); 
             } else {
                 // We're in an Electron or NWJS app with a packaged file that we need to read from the node File System
                 console.log("Loading packaged ZIM or last selected archive for Electron...");
@@ -3087,6 +3087,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     file.size = null;
                     console.error('File cannot be found!', err);
                     uiUtil.systemAlert('The archive you are attempting to load (' + file.path + ') cannot be found. Perhaps it has moved?');
+                    document.getElementById('btnConfigure').click();
                 } else {
                     file.size = stats.size;
                     console.log("Stored file size is: " + file.size);
