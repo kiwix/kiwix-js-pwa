@@ -2177,7 +2177,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
         }
 
-        if ('launchQueue' in window) {
+        if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
             console.log('File Handling API is available');
             launchQueue.setConsumer(function (launchParams) {
                 // Nothing to do when the queue is empty.
