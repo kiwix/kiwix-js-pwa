@@ -54,7 +54,7 @@ define(rqDef, function(util) {
     function feedNodeWithBlob(node, nodeAttribute, content, mimeType, makeDataURI, callback) {
         // Decode WebP data if the browser does not support WebP and the mimeType is webp
         if (webpMachine && /image\/webp/i.test(mimeType)) {
-            // If we're dealing with a dataURI, first convert to Uint8Array
+            // If we're dealing with a dataURI, first convert to Uint8Array (polyfill cannot read data URIs)
             if (/^data:/i.test(content)) {
                 content = util.dataURItoUint8Array(content);
             }
