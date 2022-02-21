@@ -5091,10 +5091,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         function goToRandomArticle() {
             if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
                 uiUtil.pollSpinner();
-                appstate.selectedArchive.getRandomDirEntry(function(dirEntry) {
+                appstate.selectedArchive.getRandomDirEntry(function (dirEntry) {
                     if (dirEntry === null || dirEntry === undefined) {
                         uiUtil.clearSpinner();
-                        uiUtil.systemAlert("Error finding random article", "Error finding article");
+                        uiUtil.systemAlert('Error finding random article', 'Error finding article');
                     } else {
                         // We fall back to the old A namespace to support old ZIM files without a text/html MIME type for articles
                         // DEV: If articlePtrPos is defined in zimFile, then we are using a v1 article-only title listing. By definition,
@@ -5113,7 +5113,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 });
             } else {
                 // Showing the relavant error message and redirecting to config page for adding the ZIM file
-                uiUtil.systemAlert("Archive not set: please select an archive", "No archive selected").then(function () {
+                uiUtil.systemAlert('Archive not set: please select an archive', 'No archive selected').then(function () {
                     document.getElementById('btnConfigure').click();
                 });
             }
