@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-wikivoyage",
   "productName": "Wikivoyage by Kiwix",
-  "version": "1.8.9E",
+  "version": "1.9.1E",
   "description": "Wikivoyage by Kiwix packaged for the Electron framework",
   "main": "main.js",
   "build": {
@@ -85,8 +85,8 @@
   "maintainer": "Jaifroid",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^16.0.7",
-    "electron-builder": "^22.14.5",
+    "electron": "^17.0.1",
+    "electron-builder": "^22.14.13",
     "electron-packager": "^15.4.0"
   },
   "dependencies": {

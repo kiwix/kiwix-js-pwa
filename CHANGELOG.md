@@ -1,20 +1,18 @@
 # Changelog
 
-## Release 1.9.0
+## Release 1.9.1-Wikivoyage
 
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2022-02`
 * ENHANCEMENT: Better feedback to user during slow ZIM archive loading
 * ENHANCEMENT: Included favicons at various resolutions
 * ENHANCEMENT: App now uses Bootstrap asynchronous dialogue boxes for modal alert and confirm
 * DEV: Developer option to bypass appCache
 * DEV: Window location information now shown in API panel
-* FIX: Set headers properly when caching Fetch responses in JQuery mode
 * FIX: Bug that would sometimes cause a blank screen in Service Worker mode on slow devices
-* FIX: Set headers properly when caching Fetch responses in JQuery mode
 * FIX: Loading of articles that have question marks or hashes in the title
 * FIX: Incorrect attempt to register Service Worker in XP version of NWJS app causing fatal crash on startup
 * FIX: Random button now warns user if archive is not loaded
 * FIX: Race condition loading deocmpressors which caused failure in some rare contexts with the file:// protocol
-* FIX: Bug preventing proper loading of landing page in Khan Academy and TED Talks ZIMs
 
 ## Release 1.8.7-Wikivoyage
 
