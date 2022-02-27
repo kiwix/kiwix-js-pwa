@@ -342,7 +342,7 @@ define([], function () {
     var serverResponse = document.getElementById('serverResponse');
     
     // DEV: If you support more packaged files, add to this list
-    var regexpFilter = /_medicine/.test(params.packagedFile) ? /^(?!.+_medicine_)[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$\s+/mig : null;
+    var regexpFilter = /_medicine|mdwiki_/.test(params.packagedFile) ? /^(?!.+(_medicine_|mdwiki_))[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$\s+/mig : null;
     regexpFilter = /wikivoyage/.test(params.packagedFile) ? /^(?!.+wikivoyage_)[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$\s+/mig : regexpFilter;
     
     /**
