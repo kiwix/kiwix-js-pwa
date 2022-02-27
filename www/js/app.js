@@ -1532,7 +1532,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 for (var i = 0; i < elements.length; i++) {
                     elements[i].style.border = "1px solid darkgray";
                 }
-                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? "img/icons/wikivoyage-white-32.png" : /medicine/i.test(params.storedFile) ? "img/icons/wikimed-lightblue-32.png" : "img/icons/kiwix-32.png";
+                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? "img/icons/wikivoyage-white-32.png" : /medicine|mdwiki/i.test(params.storedFile) ? "img/icons/wikimed-lightblue-32.png" : "img/icons/kiwix-32.png";
                 if (/wikivoyage/i.test(params.storedFile)) document.getElementById('kiwixIconAbout').src = "img/icons/wikivoyage-90-white.png";
             }
             if (value == 'light') {
@@ -1547,7 +1547,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 for (var i = 0; i < elements.length; i++) {
                     elements[i].style.border = "1px solid black";
                 }
-                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? "img/icons/wikivoyage-black-32.png" : /medicine/i.test(params.storedFile) ? "img/icons/wikimed-blue-32.png" : "img/icons/kiwix-blue-32.png";
+                document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? "img/icons/wikivoyage-black-32.png" : /medicine|mdwiki/i.test(params.storedFile) ? "img/icons/wikimed-blue-32.png" : "img/icons/kiwix-blue-32.png";
                 if (/wikivoyage/i.test(params.packagedFile)) document.getElementById('kiwixIconAbout').src = "img/icons/wikivoyage-90.png";
             }
             refreshCacheStatus();
@@ -3639,8 +3639,20 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 if (event.data.action === "askForContent") {
                     // The ServiceWorker asks for some content
                     var title = event.data.title;
-                    if (!anchorParameter && event.data.anchorTarget) anchorParameter = event.data.anchorTarget;
                     var messagePort = event.ports[0];
+                    if (!anchorParameter && event.data.anchorTarget) anchorParameter = event.data.anchorTarget;
+                    // Intercept landing page if already transformed (because this might have a fake dirEntry)
+                    if (params.transformedHTML && params.transDirEntry &&
+                        title === params.transDirEntry.namespace + '/' + params.transDirEntry.url) {
+                        var message = {
+                            'action': 'giveContent',
+                            'title': title,
+                            'mimetype': 'text/html',
+                            'imageDisplay': 'all'
+                        };
+                        postTransformedHTML(message, messagePort, params.transDirEntry);
+                        return;
+                    }
                     var readFile = function (dirEntry) {
                         if (dirEntry === null) {
                             console.error("Title " + title + " not found in archive.");
@@ -3649,6 +3661,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 'title': title,
                                 'content': ''
                             });
+                            goToMainArticle();
                         } else if (dirEntry.isRedirect()) {
                             appstate.selectedArchive.resolveRedirect(dirEntry, function (resolvedDirEntry) {
                                 var redirectURL = resolvedDirEntry.namespace + "/" + resolvedDirEntry.url;
@@ -3756,14 +3769,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // Let's send the content to the ServiceWorker
                 thisMessage.content = params.transformedHTML;
                 params.transformedHTML = '';
+                params.transDirEntry = null;
                 maxPageWidthProcessed = false;
                 loaded = false;
-                // Remove those pesky JQuery hooks to prevent memory leaks
-                //if (articleContainer.document) {
-                //    $(articleContainer.document).contents().remove(); // Causes exception in UWP   
-                //} else {
-                //    $(articleContainer).contents().remove();
-                //}
                 // If loading the iframe, we can hide the frame (for UWP apps: for others, the doc should already be
                 // hidden). Note that testing appstate.target is probably redundant for UWP because it will always
                 // be iframe even if an external window is loaded... (but we probably need to do so for other cases)
@@ -4452,6 +4460,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     // Add doctype if missing so that scripts run in standards mode
                     // (quirks mode prevents katex from running, and is incompatible with jQuery)
                     params.transformedHTML = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(htmlArticle) ? '<!DOCTYPE html>\n' + htmlArticle : htmlArticle;
+                    params.transDirEntry = dirEntry;
                     // We will need the encoded URL on article load so that we can set the iframe's src correctly,
                     // but we must not encode the '/' character or else relative links may fail [kiwix-js #498]
                     var encodedUrl = dirEntry.url.replace(/[^/]+/g, function (matchedSubstring) {
