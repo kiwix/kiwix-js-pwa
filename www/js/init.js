@@ -59,6 +59,7 @@ params['fileVersion'] = getSetting('fileVersion') || "wikipedia_en_100_nopic_202
 params['cachedStartPages'] = {
     'wikipedia_en_medicine-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
     'wikipedia_en_medicine_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
+    'mdwiki_en_all-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
     'wikivoyage_en_all_maxi': 'A/Main_Page'
 };
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
