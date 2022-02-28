@@ -3760,15 +3760,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 if (/gutenberg|phet/i.test(appstate.selectedArchive._file.name)) {
                     thisMessage.imageDisplay = 'all';
                 }
-                appstate.messageChannelWaiting = false;
                 // Let's send the content to the ServiceWorker
                 thisMessage.content = params.transformedHTML;
                 params.transformedHTML = '';
                 params.transDirEntry = null;
                 maxPageWidthProcessed = false;
                 loaded = false;
-                // If loading the iframe, we can hide the frame for UWP apps (for others, the doc should already be hidden).
-                if (articleContainer.kiwixType === 'iframe') {
+                // If loading the iframe, we can hide the frame for UWP apps (for others, the doc should already be hidden)
+                // NB Test for messageChannelWaiting filters out requests coming from a UWP window
+                if (articleContainer.kiwixType === 'iframe' && !appstate.messageChannelWaiting) {
                     if (/UWP/.test(params.appType)) articleContainer.style.display = 'none';
                     articleContainer.onload = function() {
                         articleLoadedSW(thisDirEntry);
@@ -3787,6 +3787,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     }
                 }
                 thisMessagePort.postMessage(thisMessage);
+                appstate.messageChannelWaiting = false;
             } else {
                 setTimeout(postTransformedHTML, 200, thisMessage, thisMessagePort, thisDirEntry);
             }
