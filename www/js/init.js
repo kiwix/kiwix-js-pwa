@@ -2,7 +2,7 @@
  * init.js : Configuration for the library require.js
  * This file handles the dependencies between javascript libraries
  * 
- * Copyright 2013-2020 Mossroy and contributors
+ * Copyright 2013-2021 Mossroy, Jaifroid and contributors
  * License GPL v3:
  * 
  * This file is part of Kiwix.
