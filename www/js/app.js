@@ -42,6 +42,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
         // Placeholders for the article container, the article window and the article DOM
         var articleContainer = document.getElementById('articleContent');
+        articleContainer.kiwixType = 'iframe';
         var articleWindow = articleContainer.contentWindow;
         var articleDocument;
 
@@ -718,7 +719,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         // Top menu :
         document.getElementById('btnHome').addEventListener('click', function () {
             // In jQuery mode, only load landing page in iframe (not tab or window)
-            appstate.target = 'iframe';setTab('btnHome');
+            appstate.target = 'iframe';
+            setTab('btnHome');
             document.getElementById('search-article').scrollTop = 0;
             $('#articleContent').contents().empty();
             uiUtil.clearSpinner();
@@ -3679,7 +3681,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             var mimetype = dirEntry.getMimetype();
                             var imageDisplayMode = params.imageDisplayMode;
                             // UWP apps with windows need to allow all images in all throughput
-                            if (/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting) && 
+                            if (/UWP/.test(params.appType) && (articleContainer.kiwixType === 'window' || appstate.messageChannelWaiting) && 
                                 params.imageDisplay) { imageDisplayMode = 'all'; }
                             // We need to do the same for Gutenberg and PHET ZIMs
                             if (/gutenberg|phet/i.test(appstate.selectedArchive._file.name)) {
@@ -3772,10 +3774,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 params.transDirEntry = null;
                 maxPageWidthProcessed = false;
                 loaded = false;
-                // If loading the iframe, we can hide the frame (for UWP apps: for others, the doc should already be
-                // hidden). Note that testing appstate.target is probably redundant for UWP because it will always
-                // be iframe even if an external window is loaded... (but we probably need to do so for other cases)
-                if (appstate.target === 'iframe') {
+                // If loading the iframe, we can hide the frame for UWP apps (for others, the doc should already be hidden).
+                if (articleContainer.kiwixType === 'iframe') {
                     if (/UWP/.test(params.appType)) articleContainer.style.display = 'none';
                     articleContainer.onload = function() {
                         articleLoadedSW(thisDirEntry);
@@ -4409,6 +4409,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     // Tell jQuery we're removing the iframe document: clears jQuery cache and prevents memory leaks [kiwix-js #361]
                     $('#articleContent').contents().remove();
                     articleContainer = document.getElementById('articleContent');
+                    articleContainer.kiwixType = 'iframe';
                     articleWindow = articleContainer.contentWindow;
                 }
 
