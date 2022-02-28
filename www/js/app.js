@@ -3700,7 +3700,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     // Tell the read routine that the request comes from a messageChannel 
                                     appstate.messageChannelWaiting = true;
                                     readArticle(dirEntry);
-                                    setTimeout(postTransformedHTML, 400, message, messagePort, dirEntry);
+                                    setTimeout(postTransformedHTML, 300, message, messagePort, dirEntry);
                                 } else {
                                     postTransformedHTML(message, messagePort, dirEntry);
                                 }
@@ -3789,7 +3789,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 thisMessagePort.postMessage(thisMessage);
                 appstate.messageChannelWaiting = false;
             } else {
-                setTimeout(postTransformedHTML, 200, thisMessage, thisMessagePort, thisDirEntry);
+                setTimeout(postTransformedHTML, 500, thisMessage, thisMessagePort, thisDirEntry);
             }
         }
 
