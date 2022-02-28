@@ -1,4 +1,4 @@
-# Kiwix JS for PWA and Universal Windows Platform
+# WikiMed Offline Medical Wikipedia
 
 *There is a browser-based deployment and **[installable Progressive Web App (PWA)](https://pwa.kiwix.org/)** version of this app at https://pwa.kiwix.org/, but you will need a
 [ZIM file](https://wiki.kiwix.org/wiki/Content_in_all_languages) for testing. A [development deployment](https://kiwix.github.io/kiwix-js-windows/) is also available, but code
@@ -22,9 +22,9 @@ development has been undertaken to add functionality and to make the app sit hap
 as an installable PWA. The port runs as a UWP Store App on Windows 10 and Windows 10 Mobile, but it should also run on any Windows 10 platform: x86, x64, ARM, on Mobile,
 tablets, Xbox, Surface Hub, Holographic and PC.
 
-The UWP app is currently installable from the Microsoft Store at:
+The easiest way to install WikiMed is from the Microsoft Store:
 
-[https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j](https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j)
+https://www.microsoft.com/en-gb/store/p/wikimed/9phjsnp1cz8j
 
 It can also be installed (in Windows 10) by opening a Command Prompt or PowerShell terminal and typing `winget install kiwix`. Electron and NWJS versions, compatible with older Windows and Linux, are available from [Releases](https://github.com/kiwix/kiwix-js-windows/releases/). The PWA version can be installed by visiting https://pwa.kiwix.org/. The easiest way to sideload the UWP app is with `winget install kiwix`, but alternative sideloading instructions are available at https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages.
 
@@ -44,7 +44,7 @@ egk10 at cam ac uk.
 
 # Privacy Policy
 
-When installed, Kiwix JS Windows works offline, and does not collect or record any of your personal data. It
+WikiMed Offline Medical Wikipedia works offline, and does not collect or record any of your personal data. It
 only remembers your browsing history for the duration of a session (for the purpose of returning to previously
 viewed pages). This history is lost on exiting the app with the optional exception of the last-visited page.
 

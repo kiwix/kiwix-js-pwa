@@ -2,7 +2,7 @@
  * init.js : Configuration for the library require.js
  * This file handles the dependencies between javascript libraries
  * 
- * Copyright 2013-2020 Mossroy and contributors
+ * Copyright 2013-2021 Mossroy, Jaifroid and contributors
  * License GPL v3:
  * 
  * This file is part of Kiwix.
@@ -50,11 +50,11 @@ var params = {};
  */
 var appstate = {};
 /******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******/
-params['appVersion'] = "1.9.1"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
+params['appVersion'] = "1.9.2-WikiMed"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************/
-params['packagedFile'] = getSetting('packagedFile') || "wikipedia_en_100_nopic_2021-12.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
+params['packagedFile'] = getSetting('packagedFile') || "mdwiki_en_all-app_maxi_2022-02.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
-params['fileVersion'] = getSetting('fileVersion') || "wikipedia_en_100_nopic_2021-12.zim (30-Dec-2021)"; //This will be displayed in the app - optionally include date of ZIM file
+params['fileVersion'] = getSetting('fileVersion') || "mdwiki_en_all-app_maxi_2022-02 (6-Feb-2022)"; //This will be displayed in the app - optionally include date of ZIM file
 // List of known start pages cached in the FS:
 params['cachedStartPages'] = {
     'wikipedia_en_medicine-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
@@ -62,7 +62,7 @@ params['cachedStartPages'] = {
     'mdwiki_en_all-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
     'wikivoyage_en_all_maxi': 'A/Main_Page'
 };
-params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
+params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/.hidden/custom_apps/"; //Include final slash
 /******* DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
 params['PWAServer'] = "https://pwa.kiwix.org/"; // Production server
 // params['PWAServer'] = "https://kiwix.github.io/kiwix-js-windows/"; // Test server
@@ -91,7 +91,7 @@ params['assetsCache'] = getSetting('assetsCache') != null ? getSetting('assetsCa
 params['appCache'] = getSetting('appCache') !== false; // Will be true by default unless explicitly set to false
 params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
 //params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
-params['showFileSelectors'] = true; //False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
+params['showFileSelectors'] = false; //False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
 params['hideActiveContentWarning'] = getSetting('hideActiveContentWarning') != null ? getSetting('hideActiveContentWarning') : false;
 params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') == true;
 params['alphaChar'] = getSetting('alphaChar') || 'A'; //Set default start of alphabet string (used by the Archive Index)
