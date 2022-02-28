@@ -3624,7 +3624,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
         var messageChannel;
         var spinnerTimer;
-        var maxPageWidthProcessed;
+        var loadingArticle = '';
 
         /**
          * Function that handles a message of the messageChannel.
@@ -3663,7 +3663,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 'title': title,
                                 'content': ''
                             });
-                            goToMainArticle();
+                            if (title === loadingArticle) goToMainArticle();
                         } else if (dirEntry.isRedirect()) {
                             appstate.selectedArchive.resolveRedirect(dirEntry, function (resolvedDirEntry) {
                                 var redirectURL = resolvedDirEntry.namespace + "/" + resolvedDirEntry.url;
@@ -3686,6 +3686,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 uiUtil.pollSpinner('Getting ' + shortTitle + '...');
                             }
                             if (/\bhtml\b/i.test(mimetype)) {
+                                loadingArticle = title;
                                 // Intercept files of type html and apply transformations   
                                 var message = {
                                     'action': 'giveContent',
@@ -3764,7 +3765,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 thisMessage.content = params.transformedHTML;
                 params.transformedHTML = '';
                 params.transDirEntry = null;
-                maxPageWidthProcessed = false;
                 loaded = false;
                 // If loading the iframe, we can hide the frame for UWP apps (for others, the doc should already be hidden)
                 // NB Test for messageChannelWaiting filters out requests coming from a UWP window
