@@ -6,8 +6,10 @@
 * ENHANCEMENT: Better feedback to user during slow ZIM archive loading
 * ENHANCEMENT: Included favicons at various resolutions
 * ENHANCEMENT: App now uses Bootstrap asynchronous dialogue boxes for modal alert and confirm
+* ENHANCEMENT: App now recognizes `mdwiki` ZIMs as WikiMed variants, and shows custom landing page
 * DEV: Developer option to bypass appCache
 * DEV: Window location information now shown in API panel
+* FIX: Improvement to independent browsing of windows in UWP app in SW mode
 * FIX: Bug that would sometimes cause a blank screen in Service Worker mode on slow devices
 * FIX: Loading of articles that have question marks or hashes in the title
 * FIX: Incorrect attempt to register Service Worker in XP version of NWJS app causing fatal crash on startup
