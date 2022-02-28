@@ -3649,8 +3649,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         var message = {
                             'action': 'giveContent',
                             'title': title,
-                            'mimetype': 'text/html',
-                            'imageDisplay': 'all'
+                            'mimetype': 'text/html'
                         };
                         postTransformedHTML(message, messagePort, params.transDirEntry);
                         return;
