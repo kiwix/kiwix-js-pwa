@@ -1,14 +1,16 @@
 # Changelog
 
-## Release 1.9.0
+## Release 1.9.2
 
 * ENHANCEMENT: Service Worker mode is now the default in contexts or frameworks that natively support it with good performance
 * ENHANCEMENT: Option to reset app to defaults in Expert settings
 * ENHANCEMENT: Better feedback to user during slow ZIM archive loading
 * ENHANCEMENT: Included favicons at various resolutions
 * ENHANCEMENT: App now uses Bootstrap asynchronous dialogue boxes for modal alert and confirm
+* ENHANCEMENT: App now recognizes `mdwiki` ZIMs as WikiMed variants, and shows custom landing page
 * DEV: Developer option to bypass appCache
 * DEV: Window location information now shown in API panel
+* FIX: Improvement to independent browsing of windows in UWP app in SW mode
 * FIX: Bug that would sometimes cause a blank screen in Service Worker mode on slow devices
 * FIX: Set headers properly when caching Fetch responses in JQuery mode
 * FIX: Loading of articles that have question marks or hashes in the title
