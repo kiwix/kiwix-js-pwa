@@ -3680,13 +3680,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         } else {
                             var mimetype = dirEntry.getMimetype();
                             var imageDisplayMode = params.imageDisplayMode;
-                            // UWP apps with windows need to allow all images in all throughput
-                            if (/UWP/.test(params.appType) && (articleContainer.kiwixType === 'window' || appstate.messageChannelWaiting) && 
-                                params.imageDisplay) { imageDisplayMode = 'all'; }
-                            // We need to do the same for Gutenberg and PHET ZIMs
-                            if (/gutenberg|phet/i.test(appstate.selectedArchive._file.name)) {
-                                imageDisplayMode = 'all';
-                            }
                             // console.debug('Spinner should show now: [' + mimetype + '] ' + title);
                             if (/\b(css|javascript|video|vtt|webm)\b/i.test(mimetype)) {
                                 var shortTitle = dirEntry.url.replace(/[^/]+\//g, '').substring(0, 18);
@@ -3706,7 +3699,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     // Tell the read routine that the request comes from a messageChannel 
                                     appstate.messageChannelWaiting = true;
                                     readArticle(dirEntry);
-                                    setTimeout(postTransformedHTML, 300, message, messagePort, dirEntry);
+                                    setTimeout(postTransformedHTML, 400, message, messagePort, dirEntry);
                                 } else {
                                     postTransformedHTML(message, messagePort, dirEntry);
                                 }
@@ -3759,14 +3752,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
         function postTransformedHTML(thisMessage, thisMessagePort, thisDirEntry) {
             if (params.transformedHTML && /<html[^>]*>/.test(params.transformedHTML)) {
-                // // Because UWP app window can only be controlled from the Service Worker, we have to allow all images
-                // // to be called from any external windows
-                // if (/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting) &&
-                //     params.imageDisplay) { imageDisplayMode = 'all'; }
-                // // We need to do the same for Gutenberg and PHET ZIMs
-                // if (/gutenberg|phet/i.test(appstate.selectedArchive._file._files[0].name)) {
-                //     imageDisplayMode = 'all';
-                // }
+                // Because UWP app window can only be controlled from the Service Worker, we have to allow all images
+                // to be called from any external windows. NB messageChannelWaiting is only true when user requested article from a window
+                if (/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting) &&
+                    params.imageDisplay) { imageDisplayMode = 'all'; }
+                // We need to do the same for Gutenberg and PHET ZIMs
+                if (/gutenberg|phet/i.test(appstate.selectedArchive._file.name)) {
+                    imageDisplayMode = 'all';
+                }
                 appstate.messageChannelWaiting = false;
                 // Let's send the content to the ServiceWorker
                 thisMessage.content = params.transformedHTML;
@@ -3795,7 +3788,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
                 thisMessagePort.postMessage(thisMessage);
             } else {
-                setTimeout(postTransformedHTML, 500, thisMessage, thisMessagePort, thisDirEntry);
+                setTimeout(postTransformedHTML, 200, thisMessage, thisMessagePort, thisDirEntry);
             }
         }
 
