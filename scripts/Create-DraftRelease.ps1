@@ -28,9 +28,14 @@ $file_tag = ''
 if ($init_params -match 'params\[[''"]appVersion[''"]]\s*=\s*[''"]([^''"]+)') {
   $file_tag = 'v' + $matches[1] 
 } else {
-  "*** WARNING: App version is incorrectly set in init.js.`nPlease correct before continuing.`n"
+  "`n*** WARNING: App version is incorrectly set in init.js.`nPlease correct before continuing.`n"
   exit
 }
+if (-Not (Test-Path $PSScriptRoot/../node_modules -PathType Container)) {
+  "`n*** WARNING: Cannot find node_modules folder: perhaps you renamed it?`n"
+  exit
+}
+
 $sw_tag = ''
 if ($serviceworker -match 'appVersion\s*=\s*[''"]([^''"]+)') {
   $sw_tag = 'v' + $matches[1]
