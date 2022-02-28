@@ -1,13 +1,15 @@
 # Changelog
 
-## Release 1.9.1-WikiMed
+## Release 1.9.2-WikiMed
 
-* UPDATE: Packaged archive updated to `mdwiki_en_all-app_maxi_2022-02.zim`
+* UPDATE: Packaged archive updated to `wikipedia_en_medicine_maxi_2022-02.zim`
 * ENHANCEMENT: App now uses Bootstrap asynchronous dialogue boxes for modal alert and confirm
 * ENHANCEMENT: Service Worker mode is now the default in contexts or frameworks that natively support it with good performance
 * ENHANCEMENT: Option to reset app to defaults in Expert settings
 * ENHANCEMENT: Better feedback to user during slow ZIM archive loading
 * ENHANCEMENT: Included favicons at various resolutions
+* ENHANCEMENT: App now recognizes `mdwiki` ZIMs as WikiMed variants, and shows custom landing page
+* FIX: Improvement to independent browsing of windows in UWP app in SW mode
 * FIX: Incorrect attempt to register Service Worker in XP version of NWJS app causing fatal crash on startup
 * FIX: Random button now warns user if archive is not loaded
 * FIX: Race condition loading deocmpressors which caused failure in some rare contexts with the file:// protocol
