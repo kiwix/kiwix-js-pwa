@@ -7,7 +7,9 @@ _pkginfo.txt
 /bin/
 /build/
 /BundleArtifacts/
-/archives/*.zim
+/archives/*wikivoyage*.zim
+/archives/*medicine*.zim
+/archives/*mdwiki*.zim
 /AppPackages/*wikivoyage*
 /AppPackages/*wikimed*
 /?ode_modules*/
