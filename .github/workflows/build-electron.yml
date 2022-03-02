@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  Release Linux packages:
+  Release_Linux:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2       
@@ -23,8 +23,8 @@ jobs:
         CSC_KEY_PASSWORD:  ${{ secrets.CSC_KEY_PASSWORD }}
       run: npm run publish
 
-  Release Windows package:
-    runs-on: ubuntu-latest
+  Release_Windows:
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2       
     - uses: actions/setup-node@master
