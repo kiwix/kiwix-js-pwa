@@ -106,10 +106,11 @@
                         </p>
                     </div>
                     <p style="padding-top:10px;">
-                        This application may be packaged with a small sample ZIM archive WITHOUT PICTURES of the top 100 Wikipedia articles so that you
-                        can get a feel for how offline Wikipedia browsing works. For the full experience you <strong>must download an offline ZIM archive</strong>
-                        and store it on your device! You can do this from the <b>Configuration page&nbsp;<span class="glyphicon glyphicon-wrench"></span></b>,
-                        or else see the <b>About page&nbsp;<span class="glyphicon glyphicon-info-sign"></span></b> for more information.
+                        This application may be packaged with a small sample ZIM archive of Wikipedia articles related to Climate Change, so that you
+                        can get a feel for how offline Wikipedia browsing works. Please note, to keep the app size small <i>this archive does not contain images
+                        apart from the landing page</i>, and each article contains only the article summary (the introductory section). For the full experience you
+                        <strong>must download an offline ZIM archive</strong> and store it on your device! You can do this from the <b>Configuration page&nbsp;
+                        <span class="glyphicon glyphicon-wrench"></span></b>, or else see the <b>About page&nbsp;<span class="glyphicon glyphicon-info-sign"></span></b> for more information.
                     </p>
                     <p>
                         Alternatively, if you only want Wikivoyage or WikiMed in English, look for "Wikivoyage by Kiwix" or "WikiMed" in the Microsoft Store
@@ -122,19 +123,13 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in version <span class="version">1.0</span></h3>
                         <ul style="padding-left: 15px;">
-                            <li>SW mode is now the default in contexts that natively support it with good performance</li>
-                            <li>New option to reset app to defaults in Expert Settings</li>
-                            <li>Provide better feedback to user during slow ZIM archive loading</li>
-                            <li>App now recognizes `mdwiki` ZIMs as WikiMed variants, and shows custom landing page</li>
+                            <li>New sample archive provided: wikipedia_en_climate_change_mini_2022-02</li>
+                            <li>App now recognizes mdwiki ZIMs as WikiMed variants, and shows custom landing page</li>
                             <li>Improvement to independent browsing of windows in UWP app in SW mode</li>
-                            <li>Included favicons at various resolutions</li>
-                            <li>Developer option to bypass appCache in Configuration</li>
-                            <li>Window location information is now shown in API panel</li>
-                            <li>Fixed bug that would sometimes cause a blank screen in Service Worker mode on slow devices</li>
-                            <li>Fixed loading of articles that have question marks or hashes in the title</li>
-                            <li>Fixed fatal startup error in XP/Vista version of the NWJS app</li>
-                            <li>Fixed race condition loading decompressors which caused failure in rare contexts with file:// protocol</li>
-                            <li>Fixed bug preventing proper loading of landing pages in Khan Academy and TED Talks ZIMs</li>
+                            <li>Automatic building of Electron app now enabled via GitHub Actions</li>
+                            <li>Patch some CSS errors in mdwiki ZIMs</li>
+                            <li>Stabilize page loading when assets are missing (in SW mode)</li>
+                            <li>Fix styling of image-based landing pages</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md" target="_blank">And there's more...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>
