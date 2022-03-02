@@ -3757,7 +3757,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 if (/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting) &&
                     params.imageDisplay) { thisMessage.imageDisplay = 'all'; }
                 // We need to do the same for Gutenberg and PHET ZIMs
-                if (/gutenberg|phet/i.test(appstate.selectedArchive._file.name)) {
+                if (params.imageDisplay && (/gutenberg|phet/i.test(appstate.selectedArchive._file.name) || params.isLandingPage)) {
                     thisMessage.imageDisplay = 'all';
                 }
                 // Let's send the content to the ServiceWorker
