@@ -7,13 +7,24 @@ on:
   workflow_dispatch:
 
 jobs:
-  release:
-    runs-on: ${{ matrix.os }}
+  Release Linux packages:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2       
+    - uses: actions/setup-node@master
+      with:
+        node-version: 14
+    - name: install dependencies
+      run: npm install
+    - name: publish
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        CSC_LINK: ${{ secrets.CSC_LINK }}
+        CSC_KEY_PASSWORD:  ${{ secrets.CSC_KEY_PASSWORD }}
+      run: npm run publish
 
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-
+  Release Windows package:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2       
     - uses: actions/setup-node@master
