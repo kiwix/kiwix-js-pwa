@@ -1,16 +1,24 @@
 # Changelog
 
-## Release 1.9.2
+## Release 1.9.3
+
+* UPDATE: New sample archive: `wikipedia_en_climate_change_mini_2022-02`
+* ENHANCEMENT: App now recognizes `mdwiki` ZIMs as WikiMed variants, and shows custom landing page
+* DEV: Automatic building of Electron app now enabled via GitHub Actions
+* FIX: Improvement to independent browsing of windows in UWP app in SW mode
+* FIX: Patch some CSS errors in `mdwiki` ZIMs
+* FIX: Stabilize page loading when assets are missing (in SW mode)
+* FIX: Styling of image-based landing pages
+
+## Release 1.9.0
 
 * ENHANCEMENT: Service Worker mode is now the default in contexts or frameworks that natively support it with good performance
 * ENHANCEMENT: Option to reset app to defaults in Expert settings
 * ENHANCEMENT: Better feedback to user during slow ZIM archive loading
 * ENHANCEMENT: Included favicons at various resolutions
 * ENHANCEMENT: App now uses Bootstrap asynchronous dialogue boxes for modal alert and confirm
-* ENHANCEMENT: App now recognizes `mdwiki` ZIMs as WikiMed variants, and shows custom landing page
 * DEV: Developer option to bypass appCache
 * DEV: Window location information now shown in API panel
-* FIX: Improvement to independent browsing of windows in UWP app in SW mode
 * FIX: Bug that would sometimes cause a blank screen in Service Worker mode on slow devices
 * FIX: Set headers properly when caching Fetch responses in JQuery mode
 * FIX: Loading of articles that have question marks or hashes in the title
