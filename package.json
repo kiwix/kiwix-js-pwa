@@ -9,7 +9,7 @@
     "productName": "Wikivoyage by Kiwix",
     "directories": {
       "output": "bld/Electron",
-      "buildResources": "bld"
+      "buildResources": "electron_icons"
     },
     "afterPack": "./scripts/appimage-fix.js",
     "win": {
@@ -62,7 +62,7 @@
     "start": "electron .",
     "dist-win": "electron-builder build --win",
     "dist-linux": "electron-builder build --linux",
-    "publish": "electron-builder --publish always",
+    "publish": "electron-builder",
     "package-mac": "electron-packager . kiwix-js-windows --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
     "package-win": "electron-packager . kiwix-js-windows --overwrite --electron-version='16.0.7' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --platform=win32 --arch=ia32 --icon=www/img/icons/kiwix-64.ico --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Wikivoyage by Kiwix Electron Edition'",
     "postpackage-win": "(robocopy archives bld\\Electron\\kiwix-js-windows-win32-ia32\\resources\\app\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0",
