@@ -53,6 +53,9 @@ capable of installing a Service Worker. If you install or bookmark the PWA versi
 note that **by design** any PWA will periodically check the PWA server (in this case, https://pwa.kiwix.org/), if it
 is available, to check for an updated Service Worker.
 
+Electron versions of the app may access GitHub on each start of the app to check for an update. This applies to the installer (setup)
+version for Windows, and to the AppImage version for Linux. Other versions for Electron or NWJS do not auto-upaate (and do not access the server).
+
 By default, this application will remember your last-visited page between sessions using local stoarage or a cookie
 that is accessible only by this app on this device. If you are accessing sensitive information that you do
 not wish to be displayed next time you open this app, we recommend that you turn this option off in the Configuration options.
