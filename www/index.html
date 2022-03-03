@@ -398,6 +398,11 @@
                         is available, to check for an updated Service Worker.
                     </p>
                     <p>
+                        Electron versions of the app may access GitHub on each start of the app to check for an update. This applies to the installer
+                        (setup) version for Windows, and to the AppImage version for Linux. Other versions for Electron or NWJS do not auto-upaate
+                        (and do not access the server).
+                    </p>
+                    <p>
                         By default, this application will remember your last-visited page for each ZIM between sessions using local storage
                         or a cookie that is accessible only by this app on this device. If you are accessing sensitive information that you do
                         not wish to be displayed next time you open this app, we recommend that you <a href="#privacy"
