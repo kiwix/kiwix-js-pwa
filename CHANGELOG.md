@@ -2,7 +2,19 @@
 
 ## Release 1.9.1-Wikivoyage
 
-* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2022-02`
+* UPDATE: New sample archive: `wikipedia_en_climate_change_mini_2022-02`
+* FEATURE: Electron apps now auto-update (Windows exe and Linux AppImage versions only)
+* ENHANCEMENT: App now recognizes `mdwiki` ZIMs as WikiMed variants, and shows custom landing page
+* DEV: Automatic building of Electron app now enabled via GitHub Actions
+* FIX: Improvement to independent browsing of windows in UWP app in SW mode
+* FIX: Patch some CSS errors in `mdwiki` ZIMs
+* FIX: Stabilize page loading when assets are missing (in SW mode)
+* FIX: Styling of image-based landing pages
+
+## Release 1.9.0
+
+* ENHANCEMENT: Service Worker mode is now the default in contexts or frameworks that natively support it with good performance
+* ENHANCEMENT: Option to reset app to defaults in Expert settings
 * ENHANCEMENT: Better feedback to user during slow ZIM archive loading
 * ENHANCEMENT: Included favicons at various resolutions
 * ENHANCEMENT: App now uses Bootstrap asynchronous dialogue boxes for modal alert and confirm
