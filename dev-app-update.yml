@@ -1,0 +1,6 @@
+owner: kiwix
+repo: kiwix-js-windows
+provider: github
+updaterCacheDirName: kiwix-js-electron-updater
+publisherName:
+  - Association Kiwix
