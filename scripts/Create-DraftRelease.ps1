@@ -122,14 +122,12 @@ if ($tag_name -match 'E\+N') {
 }
 if ($tag_name -match '\+E') {
   $title_flavour = 'UWP/PWA/Electron'
-  $release_title = $release_title -replace 'Windows\s', ''
-  $release_title = $release_title -replace 'UWP', '(Windows/Linux)'
+  $release_title = "Kiwix JS $text_tag/Linux $base_tag"
   $release_tag_name = $tag_name -replace '\+E', ''
 }
 if ($tag_name -match '\+E\+N') {
   $title_flavour = 'UWP/PWA/Electron/NWJS'
-  $release_title = $release_title -replace 'Windows\s', ''
-  $release_title = $release_title -replace 'UWP', '(Windows/Linux)'
+  $release_title = "Kiwix JS $text_tag/Linux $base_tag"
   $release_tag_name = $tag_name -replace '\+E\+N', ''
 }
 if ($text_tag -ne "Windows") { $branch = "Kiwix-JS-$text_tag" }
@@ -234,7 +232,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   "`nUpdating release version in package.json"
   $json_object = $json_object -replace '("version": ")[^"]+', "`${1}$base_tag"
   if ($plus_electron) {
-    $json_object = $json_object -replace '("version": ")[^"]+', ("`${1}$base_tag" + "E")
+    $json_object = $json_object -replace '("version": ")[^"]+', ("`${1}$base_tag" + "-E")
   }
   $json_object = $json_object -replace '\s*$', "`n"
   if ($dryrun) {
