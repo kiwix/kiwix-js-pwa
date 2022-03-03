@@ -845,15 +845,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         // Ignore any keys that do not begin with the APPCACHE prefix (they could be from other apps using the same domain)
                         if (key.indexOf(cachePrefix)) return;
                         // If we get here, then there is a kiwix cache key that does not match our version, i.e. a PWA-in-waiting
-                        params.upgradeNeeded = true;
-                        document.getElementById('alertBoxPersistent').innerHTML =
-                            '<div id="upgradeAlert" class="alert alert-info alert-dismissible">\n' +
-                            '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
-                            '    <span id="persistentMessage"></span>\n' +
-                            '</div>\n';
+                        var version = key.replace(cachePrefix, '');
                         var loadOrInstall = params.PWAInstalled ? 'install' : 'load';
-                        document.getElementById('persistentMessage').innerHTML = 'Version ' + key.replace(cachePrefix, '') + ' is ready to '
-                            + loadOrInstall + '! (Re-launch app to ' + loadOrInstall + '.)';
+                        uiUtil.showUpgradeReady(version, loadOrInstall);
                     });
                 });
             } else if (params.upgradeNeeded) {
@@ -861,6 +855,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 if (upgradeAlert) upgradeAlert.style.display = 'block';
             }
             setTimeout(resizeIFrame, 100);
+        }
+
+        // Check for Electron update
+        if (window.electronAPI) {
+            electronAPI.on('update-available', function (data) {
+                console.log('Upgrade is available:' + data);
+                uiUtil.showUpgradeReady(data.version, 'install');
+            });
         }
 
         function setActiveBtn(activeBtn) {
@@ -2741,6 +2743,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             });
         }
 
+        // Electron file pickers
         if (window.dialog) {
             dialog.on('file-dialog', function (fullPath) {
                 console.log('Path: ' + fullPath);
@@ -3144,7 +3147,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
         /**
          * Handle key input in the prefix input zone
-     * @param {Event} evt The event data to handle
+         * @param {Event} evt The event data to handle
          */
         function onKeyUpPrefix(evt) {
             // Use a timeout, so that very quick typing does not cause a lot of overhead

@@ -617,6 +617,22 @@ define(rqDef, function(util) {
             });
         });
     }
+
+    /**
+     * Shows that an upgrade is ready to install
+     * @param {String} ver The version of the upgrade 
+     * @param {String} type Either 'load' or 'install' according to the type of upgrade 
+     */
+    function showUpgradeReady(ver, type) {
+        params.upgradeNeeded = true;
+        document.getElementById('alertBoxPersistent').innerHTML =
+            '<div id="upgradeAlert" class="alert alert-info alert-dismissible">\n' +
+            '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
+            '    <span id="persistentMessage"></span>\n' +
+            '</div>\n';
+        document.getElementById('persistentMessage').innerHTML = 'Version ' + ver + ' is ready to '
+            + type + '! (Re-launch app to ' + type + '.)';
+    }
     
     /**
      * Checks if a server is accessible by attempting to load a test image from the server
@@ -774,6 +790,7 @@ define(rqDef, function(util) {
      */
     return {
         systemAlert: systemAlert,
+        showUpgradeReady: showUpgradeReady,
         feedNodeWithBlob: feedNodeWithBlob,
         deriveZimUrlFromRelativeUrl: deriveZimUrlFromRelativeUrl,
         getClosestMatchForTagname: getClosestMatchForTagname,
