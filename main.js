@@ -1,7 +1,7 @@
 // Modules to control application life and create native browser window
 const { app, dialog, ipcMain, BrowserWindow } = require('electron');
 const path = require('path');
-const {autoUpdater} = require("electron-updater");
+const { autoUpdater } = require("electron-updater");
 
 const contextMenu = require('electron-context-menu');
 
@@ -85,7 +85,7 @@ function registerListeners() {
                 event.reply('dir-dialog', filePaths[0]);
             }
         });
-    })
+    });
 }
 
 app.whenReady().then(() => {
@@ -114,7 +114,14 @@ app.whenReady().then(() => {
     createWindow();
     registerListeners();
     
-    autoUpdater.checkForUpdatesAndNotify();
+    setTimeout(function () {
+        autoUpdater.checkForUpdates();
+    }, 30000);
+
+    // Send message to renderer if update is available
+    autoUpdater.on('update-downloaded', function (info) {
+        mainWindow.webContents.send('update-available', info);
+    });
     
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the
