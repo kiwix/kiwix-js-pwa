@@ -17,21 +17,29 @@ contextBridge.exposeInMainWorld('fs', {
     close: close, 
     stat: stat
 });
+// Event callback for electronAPI (you can add events to listen to, so long as main.js sends a message with name of the event)
+contextBridge.exposeInMainWorld('electronAPI', {
+    on: function (event, callback) {
+        ipcRenderer.on(event, function (_, data) {
+            callback(data);
+        });
+    }
+});
 
 // Adapted from: https://stackoverflow.com/questions/69717365/using-electron-save-dialog-in-renderer-with-context-isolation
 contextBridge.exposeInMainWorld('dialog', {
     openFile: function () {
-      ipcRenderer.send('file-dialog'); // adjust naming for your project
+        ipcRenderer.send('file-dialog'); // adjust naming for your project
     },
     openDirectory: function () {
         ipcRenderer.send('dir-dialog'); // adjust naming for your project
     },
     // Provide an easier way to listen to events
     on: function (channel, callback) {
-      ipcRenderer.on(channel, function (_, data) {
-          callback(data);
+        ipcRenderer.on(channel, function (_, data) {
+            callback(data);
         });
-    },
+    }
   });
 
 // window.Buffer = Buffer;
