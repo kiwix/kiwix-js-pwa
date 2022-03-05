@@ -1,6 +1,46 @@
 # This script is intended to be run by Create-DraftRelease, and must be dot-sourced (run with `. ./Build-Electron.ps1` or `. /path/to/Build-Electron.ps1`)
 # because it modifies variables needed in Create-DraftRelease
 $base_dir = "$PSScriptRoot/../bld/electron/"
+if ($electronbuild -eq "") {
+  ""
+  $electronbuild_check = Read-Host "Do you want to build Electron packages on GitHub? [Y/N]"
+  $electronbuild_check = -Not ( $electronbuild_check -imatch 'n' )
+  if ($electronbuild_check) {
+    "`nSelecting cloud build"
+    $electronbuild = 'cloud'
+  } else {
+    "`nSelecting local build"
+    $electronbuild = 'local'
+  }
+}
+if ($electronbuild -eq "cloud") {
+  $release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-windows/actions/workflows/build-electron.yml/dispatches'
+  # Set up dispatch_params object - for API see https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event
+  $dispatch_params = @{
+    Uri = $release_uri
+    Method = 'POST'
+    Headers = @{
+      'Authorization' = "token $github_token"
+      'Accept' = 'application/vnd.github.v3+json'
+    }
+    Body = @{
+      'ref' = 'master'
+    } | ConvertTo-Json
+    ContentType = "application/json"
+  }
+
+  $dispatch_f = ($dispatch_params | Format-List | Out-String);
+  "`nDispatch parameters:`n$dispatch_f"
+
+  # Post to the release server
+  if (-Not $dryrun) { 
+    Invoke-RestMethod @dispatch_params 
+    "`nCheck for any error message above. An empty dispatch is normal, and indicates that the command was accepted.`n"
+  } else {
+    "[DRYRUN]: Cloudbuild dispatched.`n"
+  }
+  return
+}
 # Package installer electron app for Windows
 "`nChecking for installer package for Windows..."
 $alt_tag = $text_tag -ireplace 'Windows', 'Electron'
