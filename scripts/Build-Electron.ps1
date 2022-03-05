@@ -93,10 +93,16 @@ foreach ($AppImageArchive in $AppImageArchives) {
     # net start com.docker.service
     # runas /noprofile /user:Administrator "net stop com.docker.service; taskkill /IM 'Docker Desktop.exe' /F; net start com.docker.service"
     $repo_dir = ($PSScriptRoot -replace '[\\/]scripts[\\/]*$', '')
-    "Using docker command:"
-    "docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux"
+    # "Using docker command:"
+    # "docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux"
+    "Using electron-builder in wsl:"
+    "wsl sh -c 'npm run dist-linux'"
     if (-Not $dryrun) {
-      docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux
+      # docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux
+      cd $repo_dir
+      rm -r $base_dir/linux-unpacked
+      rm -r $base_dir/linux-ia32-unpacked
+      wsl sh -c "npm run dist-linux"
       # Alternatively build with wsl
       # wsl . ~/.bashrc; npm run dist-linux
       # docker $build_command

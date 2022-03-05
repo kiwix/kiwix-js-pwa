@@ -230,7 +230,7 @@ if ($updatewinget) {
 if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   if (-Not $buildonly) { "The draft release details were successfully created." }
   "`nUpdating release version in package.json"
-  $json_object = $json_object -replace '("version": ")[^"]+', "`${1}$base_tag"
+  $json_object = $json_object -replace '("version": ")[^"]+', ("`${1}" + $base_tag -replace 'E(?=-|$)', '-E')
   if ($plus_electron) {
     $json_object = $json_object -replace '("version": ")[^"]+', ("`${1}$base_tag" + "-E")
   }
@@ -397,13 +397,13 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     $cert_file = $ReleaseBundle -replace '\.[^.]+$', '.cer'
     "Compressing: $AddAppPackage, $cert_file"
     if (-Not $dryrun) { "$AddAppPackage", "$cert_file" | Compress-Archive -DestinationPath $compressed_archive -Force }
-  }
-  # Check the compressed file exists
-  if ($dryrun -or $found -or (Test-Path $compressed_archive -PathType leaf)) {
-    "Compression successful`n"
-  } else {
-    "There was an error compressing assets."
-    return
+    # Check the compressed file exists
+    if ($dryrun -or $found -or (Test-Path $compressed_archive -PathType leaf)) {
+      "Compression successful`n"
+    } else {
+      "There was an error compressing assets."
+      return
+    }
   }
   # Build any extras requested
   if ($plus_electron) {
@@ -450,7 +450,10 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   
   ForEach($asset in $upload_assets) {
     if (-Not $asset) { Continue }
+    # Replace backslash with forward slash
     $asset_name = $asset -replace '^.*[\\/]([^\\/]+)$', '$1'
+    # Replace spaces with hyphens
+    $asset_name = $asset_name -replace '\s', '-';
     # Establish upload params
     $upload_params = @{
       Uri = $upload_uri + "?name=$asset_name"
