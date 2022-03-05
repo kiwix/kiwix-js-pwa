@@ -1,7 +1,10 @@
 # This script is intended to be run by Create-DraftRelease, and must be dot-sourced (run with `. ./Build-Electron.ps1` or `. /path/to/Build-Electron.ps1`)
 # because it modifies variables needed in Create-DraftRelease
 $base_dir = "$PSScriptRoot/../bld/electron/"
-if ($electronbuild -eq "") {
+if ($text_tag -match 'WikiMed|Wikivoyage') {
+  $electronbuild = "local"
+}
+if (($electronbuild -eq "")) {
   ""
   $electronbuild_check = Read-Host "Do you want to build Electron packages on GitHub? [Y/N]"
   $electronbuild_check = -Not ( $electronbuild_check -imatch 'n' )
@@ -39,7 +42,6 @@ if ($electronbuild -eq "cloud") {
   } else {
     "[DRYRUN]: Cloudbuild dispatched.`n"
   }
-  return
 }
 # Package installer electron app for Windows
 "`nChecking for installer package for Windows..."
@@ -50,19 +52,22 @@ if ($alt_tag -imatch 'WikiMed|Wikivoyage') {
   $comp_electron_archive = $base_dir + "$text_tag.by.Kiwix.$base_tag.zip"
   $WinInstaller = $base_dir + "$alt_tag by Kiwix Setup $numeric_tag-E.exe"
 }
-if (-Not (Test-Path $WinInstaller -PathType Leaf)) {
-  "No package found: building $WinInstaller..."
-  if (-Not $dryrun) {
-    npm run dist-win
-    if (Test-Path $WinInstaller -PathType Leaf) {
-      "Successfully built."
-    } else {
-      "Oh no! The Windows installer build failed!"
+if ($electronbuild -eq "local") {
+  if (-Not (Test-Path $WinInstaller -PathType Leaf)) {
+    "No package found: building $WinInstaller..."
+    if (-Not $dryrun) {
+      npm run dist-win
+      if (Test-Path $WinInstaller -PathType Leaf) {
+        "Successfully built."
+      } else {
+        "Oh no! The Windows installer build failed!"
+      }
     }
+  } else {
+    "Package found."
   }
-} else {
-  "Package found."
 }
+# Portable app isn't built in the cloud, so we always run this
 if (-Not ($old_windows_support -or (Test-Path $comp_electron_archive -PathType Leaf))) {
   # Package portable electron app for Windows
   "Building portable Electron app for Windows"
@@ -109,46 +114,48 @@ if (-Not ($old_windows_support -or (Test-Path $comp_electron_archive -PathType L
   "Compressing: $AddAppPackage, $compressed_assets_dir to $comp_electron_archive"
   if (-Not $dryrun) { "$AddAppPackage", "$compressed_assets_dir" | Compress-Archive -DestinationPath $comp_electron_archive -Force }
 }
-# Package Electron app for Linux
-"`nChecking for Electron packages for Linux..."
-$LinuxBasePackage = $base_dir + "Kiwix JS $alt_tag-$numeric_tag-E"
-if ($alt_tag -imatch 'Wikivoyage|WikiMed') {
-  $LinuxBasePackage = $base_dir + "$alt_tag by Kiwix-$numeric_tag-E"
-}
-$DebBasePackage = $base_dir + $package_name + "_$numeric_tag-E"
-$RPMBasePackage = $base_dir + $package_name + "-$numeric_tag-E"
-$AppImageArchives = @("$LinuxBasePackage.AppImage", ($LinuxBasePackage + "-i386.AppImage"),
-  ("$DebBasePackage" + "_i386.deb"), ("$DebBasePackage" + "_amd64.deb"))
-if ($alt_tag -notmatch 'WikiMed|Wikivoyage') {
-  $RPMArchives = @("$RPMBasePackage.x86_64.rpm", "$RPMBasePackage.i686.rpm");
-  $AppImageArchives += $RPMArchives  
-}
-  "Processing $AppImageArchives"
-foreach ($AppImageArchive in $AppImageArchives) {
-  if (-Not (Test-Path $AppImageArchive -PathType Leaf)) {
-    "No packages found: building $AppImageArchive..."
-    # To get docker to start, you might need to run below commands as admin
-    # net stop com.docker.service
-    # taskkill /IM "Docker Desktop.exe" /F
-    # net start com.docker.service
-    # runas /noprofile /user:Administrator "net stop com.docker.service; taskkill /IM 'Docker Desktop.exe' /F; net start com.docker.service"
-    $repo_dir = ($PSScriptRoot -replace '[\\/]scripts[\\/]*$', '')
-    # "Using docker command:"
-    # "docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux"
-    "Using electron-builder in wsl:"
-    "wsl sh -c 'npm run dist-linux'"
-    if (-Not $dryrun) {
-      # docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux
-      cd $repo_dir
-      rm -r $base_dir/linux-unpacked
-      rm -r $base_dir/linux-ia32-unpacked
-      wsl sh -c "npm run dist-linux"
-      # Alternatively build with wsl
-      # wsl . ~/.bashrc; npm run dist-linux
-      # docker $build_command
+if ($electronbuild -eq "local") {
+  # Package Electron app for Linux
+  "`nChecking for Electron packages for Linux..."
+  $LinuxBasePackage = $base_dir + "Kiwix JS $alt_tag-$numeric_tag-E"
+  if ($alt_tag -imatch 'Wikivoyage|WikiMed') {
+    $LinuxBasePackage = $base_dir + "$alt_tag by Kiwix-$numeric_tag-E"
+  }
+  $DebBasePackage = $base_dir + $package_name + "_$numeric_tag-E"
+  $RPMBasePackage = $base_dir + $package_name + "-$numeric_tag-E"
+  $AppImageArchives = @("$LinuxBasePackage.AppImage", ($LinuxBasePackage + "-i386.AppImage"),
+    ("$DebBasePackage" + "_i386.deb"), ("$DebBasePackage" + "_amd64.deb"))
+  if ($alt_tag -notmatch 'WikiMed|Wikivoyage') {
+    $RPMArchives = @("$RPMBasePackage.x86_64.rpm", "$RPMBasePackage.i686.rpm");
+    $AppImageArchives += $RPMArchives  
+  }
+    "Processing $AppImageArchives"
+  foreach ($AppImageArchive in $AppImageArchives) {
+    if (-Not (Test-Path $AppImageArchive -PathType Leaf)) {
+      "No packages found: building $AppImageArchive..."
+      # To get docker to start, you might need to run below commands as admin
+      # net stop com.docker.service
+      # taskkill /IM "Docker Desktop.exe" /F
+      # net start com.docker.service
+      # runas /noprofile /user:Administrator "net stop com.docker.service; taskkill /IM 'Docker Desktop.exe' /F; net start com.docker.service"
+      $repo_dir = ($PSScriptRoot -replace '[\\/]scripts[\\/]*$', '')
+      # "Using docker command:"
+      # "docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux"
+      "Using electron-builder in wsl:"
+      "wsl sh -c 'npm run dist-linux'"
+      if (-Not $dryrun) {
+        # docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux
+        cd $repo_dir
+        rm -r $base_dir/linux-unpacked
+        rm -r $base_dir/linux-ia32-unpacked
+        wsl sh -c "npm run dist-linux"
+        # Alternatively build with wsl
+        # wsl . ~/.bashrc; npm run dist-linux
+        # docker $build_command
+      }
+    } else {
+      "Linux Electron package $AppImageArchive is available"
     }
-  } else {
-    "Linux Electron package $AppImageArchive is available"
   }
 }
 if ($old_windows_support) {
