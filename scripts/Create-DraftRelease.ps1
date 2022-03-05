@@ -6,6 +6,7 @@ param (
     [switch]$skipsigning = $false,
     [switch]$draftonly = $false,
     [switch]$buildonly = $false,
+    [string]$electronbuild = "", # 'local' or 'cloud'
     [switch]$updatewinget = $false,
     [string]$respondtowingetprompt = "" # Provide an override response (Y/N) to the winget prompt at the end of the script - for automation
 )
