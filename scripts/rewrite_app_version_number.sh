@@ -13,10 +13,11 @@
 VERSION=${INPUT_VERSION}
 # If the script was launched by Cron, then there will be no INPUT_VERSION, so construct a nightly version number
 if [[ "qq${CRON_LAUNCHED}" != "qq" ]]; then
+  echo "This script was launched by the GitHub Cron job"
   COMMIT_ID=$(git rev-parse --short HEAD)
   # Get version from init.js
   VERSION="$(grep 'params\[.appVersion' www/js/init.js | sed -E "s/[^[:digit:]]+([^\"']+).*/\1/")"
-  VERSION="v$VERSION$COMMIT_ID"
+  VERSION="v$VERSION-$COMMIT_ID"
 fi
 if [[ $VERSION =~ ^v?[0-9.]+ ]]; then
   VERSION=$(sed 's/^v//' <<<"$VERSION") # Remove any leading v
