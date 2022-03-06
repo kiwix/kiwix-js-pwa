@@ -5,6 +5,7 @@
 * UPDATE: New sample archive: `wikipedia_en_climate_change_mini_2022-02`
 * FEATURE: Electron apps now auto-update (Windows exe and Linux AppImage versions only)
 * ENHANCEMENT: App now recognizes `mdwiki` ZIMs as WikiMed variants, and shows custom landing page
+* REGRESSION: The NWJS has reverted to using JQuery mode by default while investigating an app crash with some articles in SW mode
 * DEV: Automatic building of Electron app now enabled via GitHub Actions
 * FIX: Improvement to independent browsing of windows in UWP app in SW mode
 * FIX: Patch some CSS errors in `mdwiki` ZIMs
