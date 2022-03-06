@@ -31,7 +31,7 @@ Please choose the correct version (those marked [**AUTO-UPDATE**] will self-upda
 
 Full installation instructions are after the screenshot.
 
-![image](https://user-images.githubusercontent.com/4304337/119402976-99d71e00-bcd5-11eb-8bf4-dfa6c12e68aa.png)
+![Composition_Clñimate_Change](https://user-images.githubusercontent.com/4304337/156934052-9260c976-095a-4309-9dcc-a7c307f7575d.png)
 
 ## Installation Instructions - NWJS/Electron
 
@@ -60,6 +60,7 @@ Full installation instructions are after the screenshot.
 * On the XP build with some recent ZIMs __there is a CSS error in rendering the landing page of this ZIM__, due to the age of the Chromium build included in the runtime package. However, you can access all articles by __pressing a space in the search box__;
 * In the Electron and NWJS apps, If you download an archive from within the app (from Configuration), you will be able to pick a download directory, and the download will start, but then there will be no further indication that a download is in progress. You will need to check the chosen download directory to see if the download has completed;
 * Image manipulation (e.g. saving image to disk) does not currently work with the NWJS app;
+* In Service Worker mode, the NWJS app occasionally crashes accessing certain Wikipedia articles (see #236). It is recommended to use JQuery mode for Wikipedia in this version until this issue is resolved;
 * Please see https://github.com/kiwix/kiwix-js-windows/issues for further known issues. If you find a new issue, please open a new issue on that page.
 
 ## Instructions for sideloading (UWP)
