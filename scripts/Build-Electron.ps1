@@ -6,7 +6,7 @@ if ($text_tag -match 'WikiMed|Wikivoyage') {
 }
 if (($electronbuild -eq "")) {
   ""
-  $electronbuild_check = Read-Host "Do you want to build Electron packages on GitHub? [Y/N]"
+  $electronbuild_check = Read-Host "Do you want to build Electron packages on GitHub instead of locally? [Y/N]"
   $electronbuild_check = -Not ( $electronbuild_check -imatch 'n' )
   if ($electronbuild_check) {
     "`nSelecting cloud build"
