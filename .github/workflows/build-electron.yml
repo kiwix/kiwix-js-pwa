@@ -1,5 +1,8 @@
 name: 'Build Electron packages'
 on:
+  schedule:
+  # Nightly run at 03:39 UTC
+    - cron: '39 03 * * *'
   workflow_dispatch:
     inputs:
       version:
@@ -20,6 +23,7 @@ jobs:
     - name: rewrite app version number
       env:
         INPUT_VERSION: ${{ github.event.inputs.version }}
+        CRON_LAUNCHED: ${{ github.event.schedule }}
       run: |
         chmod +x ./scripts/rewrite_app_version_number.sh
         ./scripts/rewrite_app_version_number.sh
@@ -28,7 +32,13 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         CSC_LINK: ${{ secrets.CSC_LINK }}
         CSC_KEY_PASSWORD:  ${{ secrets.CSC_KEY_PASSWORD }}
-      run: npm run publish
+        SSH_KEY: ${{ secrets.SSH_KEY }}
+      run: |
+        npm run publish
+        echo "$SSH_KEY" > ./scripts/ssh_key
+        chmod 600 ./scripts/ssh_key
+        chmod +x ./scripts/publish_linux_packages_to_kiwix.sh
+        ./scripts/publish_linux_packages_to_kiwix.sh
 
   Release_Windows:
     runs-on: windows-latest
@@ -48,4 +58,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         CSC_LINK: ${{ secrets.CSC_LINK }}
         CSC_KEY_PASSWORD:  ${{ secrets.CSC_KEY_PASSWORD }}
-      run: npm run publish
+        SSH_KEY: ${{ secrets.SSH_KEY }}
+      run: |
+        npm run publish
+        $SSH_KEY = $Env:SSH_KEY
+        echo "$SSH_KEY" > .\scripts\ssh_key
