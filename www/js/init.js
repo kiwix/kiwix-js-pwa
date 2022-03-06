@@ -97,7 +97,7 @@ params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') == true;
 params['alphaChar'] = getSetting('alphaChar') || 'A'; //Set default start of alphabet string (used by the Archive Index)
 params['omegaChar'] = getSetting('omegaChar') || 'Z'; //Set default end of alphabet string
 params['contentInjectionMode'] = getSetting('contentInjectionMode') || ((navigator.serviceWorker && !/^(ms-appx-web:)$/i.test(window.location.protocol)
-    && !/Android/.test(params.appType)) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
+    && !/Android/.test(params.appType) && !window.nw) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
 params['allowInternetAccess'] = getSetting('allowInternetAccess');
 params['windowOpener'] = getSetting('windowOpener'); // 'tab|window|false' A setting that determines whether right-click/long-press of a ZIM link opens a new window/tab
 params['rightClickType'] = getSetting('rightClickType'); // 'single|double|false' A setting that determines whether a single or double right-click is used to open a new window/tab
