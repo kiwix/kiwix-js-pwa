@@ -8,9 +8,16 @@
 #
 # This script can be tested manually by replacing ${INPUT_VERSION} and ${TAG_VERSION}
 # with test strings
- 
+
 # Use the override value by preference
 VERSION=${INPUT_VERSION}
+# If the script was launched by Cron, then there will be no INPUT_VERSION, so construct a nightly version number
+if [[ "qq${CRON_LAUNCHED}" != "qq" ]]; then
+  COMMIT_ID=$(git rev-parse --short HEAD)
+  # Get version from init.js
+  VERSION="$(grep 'params\[.appVersion' www/js/init.js | sed -E "s/[^[:digit:]]+([^\"']+).*/\1/")"
+  VERSION="v$VERSION$COMMIT_ID"
+fi
 if [[ $VERSION =~ ^v?[0-9.]+ ]]; then
   VERSION=$(sed 's/^v//' <<<"$VERSION") # Remove any leading v
   echo "Using the valid override input and setting version to $VERSION"
