@@ -19,7 +19,7 @@ ls bld/Electron/*.* | % {
         if ($file -ne $renamed_file) {
             mv $file $renamed_file
         }
-        $renamed_file = $renamed_file -replace '^.*?([\\/]bld)', '.$1'
+        $renamed_file = $renamed_file -replace '^.*?([\\/]bld)', '.$1' -replace '[\\/]', '/'
         & "C:\Program Files\Git\usr\bin\scp.exe" @('-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$renamed_file", "ci@download.kiwix.org:$target")
         "Copied $renamed_file to $target"
     }
