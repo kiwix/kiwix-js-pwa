@@ -7,10 +7,14 @@ if [[ "qq${CRON_LAUNCHED}" != "qq" ]]; then
     target="/data/download/nightly/$CURRENT_DATE"
 fi
 echo "Uploading packages to https://download.kiwix.org/$target/"
-ssh -o StrictHostKeyChecking=no -i ./scripts/ssh_key ci@download.kiwix.org mkdir -p $target
+# ssh -o StrictHostKeyChecking=no -i ./scripts/ssh_key ci@download.kiwix.org mkdir -p $target
 for file in ./bld/Electron/* ; do
-    if [[ $file =~ \.(AppImage|deb|rpm)$ ]]; then
-        scp -o StrictHostKeyChecking=no -i ./scripts/ssh_key $file ci@download.kiwix.org:$target
-        echo "Copied $file to $target"
+    if [[ "$file" =~ \.(AppImage|deb|rpm)$ ]]; then
+        renamed_file=$(sed 's/\s/-/g' <<<"$file")
+        if [[ "$file" != "$renamed_file" ]]; then
+            mv "$file" "$renamed_file"
+        fi
+        scp -o StrictHostKeyChecking=no -i ./scripts/ssh_key "$renamed_file" ci@download.kiwix.org:$target
+        echo "Copied $renamed_file to $target"
     fi
 done
