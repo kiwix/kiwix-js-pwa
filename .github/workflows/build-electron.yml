@@ -51,9 +51,12 @@ jobs:
       run: npm install
     - name: rewrite app version number
       env:
-        $INPUT_VERSION: ${{ github.event.inputs.version }}
-        $CRON_LAUNCHED: ${{ github.event.schedule }}
-      run: ./scripts/Rewrite-AppVersion.ps1
+        INPUT_VERSION: ${{ github.event.inputs.version }}
+        CRON_LAUNCHED: ${{ github.event.schedule }}
+      run: |
+        $INPUT_VERSION = $Env:INPUT_VERSION
+        $CRON_LAUNCHER = $Env:CRON_LAUNCHER
+        ./scripts/Rewrite-AppVersion.ps1
     - name: publish
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
