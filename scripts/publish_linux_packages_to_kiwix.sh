@@ -10,7 +10,7 @@ echo "Uploading packages to https://download.kiwix.org/$target/"
 ssh -o StrictHostKeyChecking=no -i ./scripts/ssh_key ci@download.kiwix.org mkdir -p $target
 for file in ./bld/Electron/* ; do
     if [[ $file =~ \.(AppImage|deb|rpm)$ ]]; then
-        scp -o StrictHostKeyChecking=no -i $file ci@download.kiwix.org:$target
+        scp -o StrictHostKeyChecking=no -i ./scripts/ssh_key $file ci@download.kiwix.org:$target
         echo "Copied $file to $target"
     fi
 done
