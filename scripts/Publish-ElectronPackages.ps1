@@ -14,7 +14,7 @@ if ($CRON_LAUNCHED) {
 & "C:\Program Files\Git\usr\bin\ssh.exe" @('-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", 'ci@download.kiwix.org', "mkdir -p $target")
 ls bld/Electron/*.* | % {
     $file = $_
-    if ($file -match '\.(AppImage|deb|rpm)$') {
+    if ($file -match '\.(exe|zip|msix)$') {
         $renamed_file = $file -replace '\s', '-'
         if ($file -ne $renamed_file) {
             mv $file $renamed_file
