@@ -9,7 +9,14 @@ on:
         description: Specific version to build like v9.9.9 (if empty, builds version in package.json)
         required: false
         default: ''
-
+env:
+  INPUT_VERSION: ${{ github.event.inputs.version }}
+  CRON_LAUNCHED: ${{ github.event.schedule }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  CSC_LINK: ${{ secrets.CSC_LINK }}
+  CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+  SSH_KEY: ${{ secrets.SSH_KEY }}
+      
 jobs:
   Release_Linux:
     runs-on: ubuntu-latest
@@ -21,18 +28,10 @@ jobs:
     - name: install dependencies
       run: npm install
     - name: rewrite app version number
-      env:
-        INPUT_VERSION: ${{ github.event.inputs.version }}
-        CRON_LAUNCHED: ${{ github.event.schedule }}
       run: |
         chmod +x ./scripts/rewrite_app_version_number.sh
         ./scripts/rewrite_app_version_number.sh
     - name: publish
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        CSC_LINK: ${{ secrets.CSC_LINK }}
-        CSC_KEY_PASSWORD:  ${{ secrets.CSC_KEY_PASSWORD }}
-        SSH_KEY: ${{ secrets.SSH_KEY }}
       run: |
         npm run publish
         echo "$SSH_KEY" > ./scripts/ssh_key
@@ -50,21 +49,14 @@ jobs:
     - name: install dependencies
       run: npm install
     - name: rewrite app version number
-      env:
-        INPUT_VERSION: ${{ github.event.inputs.version }}
-        CRON_LAUNCHED: ${{ github.event.schedule }}
       run: |
         $INPUT_VERSION = $Env:INPUT_VERSION
-        $CRON_LAUNCHER = $Env:CRON_LAUNCHER
+        $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         ./scripts/Rewrite-AppVersion.ps1
     - name: publish
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        CSC_LINK: ${{ secrets.CSC_LINK }}
-        CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-        SSH_KEY: ${{ secrets.SSH_KEY }}
       run: |
         npm run publish
         $SSH_KEY = $Env:SSH_KEY
         echo "$SSH_KEY" > .\scripts\ssh_key
+        $INPUT_VERSION = $Env:INPUT_VERSION
         ./scripts/Publish-ElectronPackages.ps1
