@@ -1,6 +1,8 @@
 ﻿# Publish Kiwix Electron packages to Kiwix download server
 
 $target = "/data/download/release/kiwix-js-electron"
+$keyfile = "$PSScriptRoot\ssh_key"
+$keyfile = $keyfile -ireplace '[\\/]', '/'
 
 if ($CRON_LAUNCHED) {
     "`nThis script was launched by the Github Cron prccess"
@@ -11,9 +13,14 @@ if ($CRON_LAUNCHED) {
 "`nUploading packages to https://download.kiwix.org$target/ ...`n"
 & "C:\Program Files\Git\usr\bin\ssh.exe" @('-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", 'ci@download.kiwix.org', "mkdir -p $target")
 ls bld/Electron/*.* | % {
-    if ($_ -match '\.(AppImage|deb|rpm)$') {
-        & "C:\Program Files\Git\usr\bin\scp.exe" @('-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$_", "ci@download.kiwix.org:$target")
-        "Copied $_ to $target"
+    $file = $_
+    if ($file -match '\.(AppImage|deb|rpm)$') {
+        $renamed_file = $file -replace '\s', '-'
+        if ($file -ne $renamed_file) {
+            mv $file $renamed_file
+        }
+        & "C:\Program Files\Git\usr\bin\scp.exe" @('-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$renamed_file", "ci@download.kiwix.org:$target")
+        "Copied $renamed_file to $target"
     }
 }
 ""
