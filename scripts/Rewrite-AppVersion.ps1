@@ -10,6 +10,8 @@ if ($INPUT_VERSION) {
         $app_tag = $matches[1]
         $COMMIT_ID = $(git rev-parse --short HEAD)
         $VERSION = "v$app_tag-$COMMIT_ID"   
+    } else {
+        "`nCould not construct a valid nightly version number."
     }
 }
 if ($VERSION -match '^v?[\d.]') {
