@@ -3,8 +3,9 @@ const { app, dialog, ipcMain, BrowserWindow } = require('electron');
 const path = require('path');
 const { autoUpdater } = require("electron-updater");
 
-const contextMenu = require('electron-context-menu');
+app.commandLine.appendSwitch("enable-experimental-web-platform-features");
 
+const contextMenu = require('electron-context-menu');
 contextMenu({
 	labels: {
 		cut: 'Cut',
