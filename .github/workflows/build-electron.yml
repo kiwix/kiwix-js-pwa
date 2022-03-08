@@ -59,4 +59,5 @@ jobs:
         $SSH_KEY = $Env:SSH_KEY
         echo "$SSH_KEY" > .\scripts\ssh_key
         $INPUT_VERSION = $Env:INPUT_VERSION
+        $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         ./scripts/Publish-ElectronPackages.ps1
