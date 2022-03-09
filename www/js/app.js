@@ -2224,6 +2224,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     searchForArchivesInPreferencesOrStorage();
                 }
             } else if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
+                console.log("Loading picked file for UWP app...");
                 processPickedFileUWP(params.pickedFile);
             // } else if (launchArguments && 'launchQueue' in window) {
             //     // The app was launched with a file
@@ -2368,7 +2369,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     }
                     // Set the localArchive as the last selected (if none has been selected previously, wait for user input)
                     if (success) {
-                        if (!displayOnly) setLocalArchiveFromArchiveList();
+                        if (!displayOnly) setLocalArchiveFromArchiveList(lastSelectedArchive);
                     } else {
                         // We can't find lastSelectedArchive in the archive list
                         // Let's first check if this is a Store UWP/PWA that has a different archive package from that last selected
@@ -2894,6 +2895,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 });
                 if (archiveList.length) {
                     document.getElementById('noZIMFound').style.display = "none";
+                    params.rescan = false;
                     populateDropDownListOfArchives(archiveList);
                     if (callback) callback(files, archiveList);
                     return;
@@ -4740,9 +4742,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             var thisWindow = articleWindow;
             var thisContainer = articleContainer;
             var reset = function () {
-                // By delaying unblocking of the touch event, we prevent multiple touch events launching the same window
-                a.touched = false;
-                a.newcontainer = false;
+                if (appstate.target === 'window') {
+                    // By delaying unblocking of the touch event, we prevent multiple touch events launching the same window
+                    a.touched = false;
+                    a.newcontainer = false;
+                }
                 loadingContainer = false;
             };
             var onDetectedClick = function (e) {
