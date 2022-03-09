@@ -1059,30 +1059,31 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 //UWP FilePicker
                 pickFileUWP();
-            } else if (window.fs && window.dialog) {
-                dialog.openFile();
             } else if (typeof window.showOpenFilePicker !== 'undefined') {
                 // Native File System API file picker
                 pickFileNativeFS();
-                //@TODO enable and provide classic filepicker
+            } else if (window.fs && window.dialog) {
+                // Electron file picker if showOpenFilePicker is not available
+                dialog.openFile();
             }
         });
         document.getElementById('archiveFiles').addEventListener('click', function () {
             if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 //UWP FolderPicker
                 pickFolderUWP();
-            } else if (window.fs && window.dialog) {
-                dialog.openDirectory();
             } else if (typeof window.showOpenFilePicker !== 'undefined') {
                 // Native File System API folder picker
                 pickFolderNativeFS();
-            }
+            } else if (window.fs && window.dialog) {
+                // Electron fallback
+                dialog.openDirectory();
+        }
         });
         document.getElementById('btnRefresh').addEventListener('click', function () {
             // Refresh list of archives
             if (params.pickedFolder) {
                 params.rescan = true;
-                if (window.showOpenFilePicker && (!window.fs || window.nw)) {
+                if (window.showOpenFilePicker) {
                     processNativeDirHandle(params.pickedFolder);
                 } else if (typeof Windows !== 'undefined') {
                     scanUWPFolderforArchives(params.pickedFolder)
@@ -2205,23 +2206,19 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         if (storages !== null && storages.length > 0 ||
             typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined' ||
             typeof window.fs !== 'undefined' || typeof window.showOpenFilePicker !== 'undefined') {
-            // Make a fake first access to device storage, in order to ask the user for confirmation if necessary.
-            // This way, it is only done once at this moment, instead of being done several times in callbacks
-            // After that, we can start looking for archives
-            //storages[0].get("fake-file-to-read").then(searchForArchivesInPreferencesOrStorage,
             if (!params.pickedFile && window.fs) {
                 // Below we compare the prefix of the files, i.e. the generic filename without date, so we can smoothly deal with upgrades
                 if (params.packagedFile && params.storedFile.replace(/_[\d-]+\.zim\w?\w?$/i, '') === params.packagedFile.replace(/_[\d-]+\.zim\w?\w?$/i, '')) {
                     // We're in Electron / NWJS and we need to load the packaged app, so we are forced to use the .fs code
                     params.pickedFile = params.packagedFile;
                 }
-                //   else if (!window.showOpenFilePicker || !window.nw ) {
-                //     // We're in an Electron app, or an older NWJS app, so we need to use the .fs code anyway
-                //     params.pickedFile = params.storedFile;
-                // }
+            //   else if (!window.showOpenFilePicker || !window.nw ) {
+            //     // We're in an Electron app, or an older NWJS app, so we need to use the .fs code anyway
+            //     params.pickedFile = params.storedFile;
+            // }
             }
             if (!params.pickedFile) {
-                if (params.storedFile && window.showOpenFilePicker && (!window.fs || window.nw)) {
+                if (params.storedFile && window.showOpenFilePicker) {
                     document.getElementById('btnConfigure').click();
                 } else {
                     searchForArchivesInPreferencesOrStorage();
@@ -2232,8 +2229,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             //     // The app was launched with a file
             //     processNativeFileHandle(params.pickedFile); 
             } else {
-                // We're in an Electron or NWJS app with a packaged file that we need to read from the node File System
-                console.log("Loading packaged ZIM or last selected archive for Electron...");
+                // @AUTOLOAD packaged archive in Electron and NWJS packaged apps
+                // We need to read the packaged file using the node File System API (so user doesn't need to pick it on startup)
+                console.log("Loading packaged ZIM or last selected archive for Electron or NWJS...");
                 // If we're in an AppImage package and the storedFilePath points to the packaged archive, then the storedFilePath will be invalid,
                 // because a new path is established each time the image's filesystem is mounted. So we reset to default.
                 if (params.storedFile === params.packagedFile) {
@@ -2242,49 +2240,47 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         params.storedFilePath = archiveFilePath;
                     }
                 }
-                // Create a fake File object (this avoids extensive patching of later code)
-                createFakeFileObjectElectron(params.storedFile, params.storedFilePath, function (fakeFileList) {
-                    var fakeFile = fakeFileList[0];
-                    if (fakeFile && fakeFile.size) {
-                        params.pickedFile = fakeFile;
-                        if (window.showOpenFilePicker) {
-                            populateDropDownListOfArchives([params.pickedFile.name]);
-                            if (window.fs && !window.nw) setLocalArchiveFromFileList([params.pickedFile]);
-                        } else {
-                            setLocalArchiveFromFileList([params.pickedFile]);
-                        }
-                    } else {
-                        // Attempts to load the file seem to have failed: maybe it has moved or been deleted
-                        // Let's see if we can open the packaged ZIM instead (if this isn't the packaged ZIM)
-                        settingsStore.removeItem('lastSelectedArchive');
-                        settingsStore.removeItem('lastSelectedArchivePath');
-                        if (params.packagedFile && params.storedFile !== params.packagedFile) {
-                            createFakeFileObjectElectron(params.packagedFile, params.archivePath + '/' + params.packagedFile, function (fakeFileList) {
-                                var fakeFile = fakeFileList[0];
-                                if (fakeFile && fakeFile.size) {
-                                    params.pickedFile = fakeFile;
-                                    setLocalArchiveFromFileList([params.pickedFile]);
-                                } else {
-                                    // This shouldn't happen!
-                                    params.showFileSelectors = true;
-                                    document.getElementById('hideFileSelectors').style.display = 'inline';
-                                    document.getElementById('btnConfigure').click();
-                                    setTimeout(function () {
-                                        uiUtil.systemAlert('The packaged file cannot be loaded!\nPlease check that it is in the "' + params.archivePath + '" folder\nor pick a new ZIM file.');
-                                    }, 10);
-                                }
-                            });
-                        } else {
-                            params.showFileSelectors = true;
-                            document.getElementById('hideFileSelectors').style.display = 'inline';
-                            document.getElementById('btnConfigure').click();
-                            setTimeout(function () {
-                                uiUtil.systemAlert('The previously picked file cannot be found!\nPlease pick a new ZIM file.');
-                            }, 10);
-                        }
-                    }
+                var archiveDirectory = archiveFilePath.replace(/[^\\/]+$/, '');
+                readNodeDirectoryAndCreateNodeFileObjects(archiveDirectory, params.storedFile).then(function (archiveFiles) {
+                    var pickedFileset = archiveFiles[0], archivesInFolder = archiveFiles[1];
+                    params.pickedFolder = archiveDirectory;
+                    params.pickedfile = '';
+                    setLocalArchiveFromFileList(pickedFileset);
+                    if (!params.rescan) populateDropDownListOfArchives(archivesInFolder, true);
                     document.getElementById('hideFileSelectors').style.display = params.showFileSelectors ? 'inline' : 'none';
+                }).catch(function (err) {
+                    console.error('There was an error reading the directory!', err);
+                    // Attempts to load the file seem to have failed: maybe it has moved or been deleted
+                    // Let's see if we can open the packaged ZIM instead (if this isn't the packaged ZIM)
+                    settingsStore.removeItem('lastSelectedArchive');
+                    settingsStore.removeItem('lastSelectedArchivePath');
+                    if (params.packagedFile && params.storedFile !== params.packagedFile) {
+                        createFakeFileObjectNode(params.packagedFile, params.archivePath + '/' + params.packagedFile, function (fakeFileList) {
+                            var fakeFile = fakeFileList[0];
+                            if (fakeFile && fakeFile.size) {
+                                params.pickedFile = fakeFile;
+                                setLocalArchiveFromFileList([params.pickedFile]);
+                            } else {
+                                // This shouldn't happen!
+                                params.showFileSelectors = true;
+                                document.getElementById('hideFileSelectors').style.display = 'inline';
+                                document.getElementById('btnConfigure').click();
+                                setTimeout(function () {
+                                    uiUtil.systemAlert('The packaged file cannot be loaded!\nPlease check that it is in the "' + params.archivePath + '" folder\nor pick a new ZIM file.');
+                                }, 10);
+                            }
+                        });
+                    } else {
+                        params.showFileSelectors = true;
+                        document.getElementById('hideFileSelectors').style.display = 'inline';
+                        document.getElementById('btnConfigure').click();
+                        setTimeout(function () {
+                            uiUtil.systemAlert('The previously picked file cannot be found!\nPlease pick a new ZIM file.');
+                        }, 10);
+                    }
+
                 });
+                document.getElementById('hideFileSelectors').style.display = params.showFileSelectors ? 'inline' : 'none';
             }
         } else {
             // If DeviceStorage is not available, we display the file select components
@@ -2332,7 +2328,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
          * Populate the drop-down list of archives with the given list
          * @param {Array.<String>} archiveDirectories
          */
-        function populateDropDownListOfArchives(archiveDirectories) {
+        function populateDropDownListOfArchives(archiveDirectories, displayOnly) {
             $('#scanningForArchives').hide();
             $('#chooseArchiveFromLocalStorage').show();
             document.getElementById('rescanStorage').style.display = params.rescan ? "none" : "block";
@@ -2372,7 +2368,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     }
                     // Set the localArchive as the last selected (if none has been selected previously, wait for user input)
                     if (success) {
-                        setLocalArchiveFromArchiveList();
+                        if (!displayOnly) setLocalArchiveFromArchiveList();
                     } else {
                         // We can't find lastSelectedArchive in the archive list
                         // Let's first check if this is a Store UWP/PWA that has a different archive package from that last selected
@@ -2405,12 +2401,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 usage.style.display = 'none';
             } else {
                 usage.style.display = 'block';
-                // uiUtil.systemAlert("Welcome to Kiwix! This application needs at least one ZIM file in your storage. Please download one and put it on the device (see About section).");
-                // $("#btnAbout").click();
-                // var isAndroid = navigator.userAgent.indexOf("Android") !== -1;
-                // if (isAndroid) {
-                //     alert("You seem to be using an Android device. Be aware that there is a bug on Firefox, that prevents finding Wikipedia archives in a SD-card (at least on some devices. See about section). Please put the archive in the internal storage if the application can't find it.");
-                // }
             }
         }
 
@@ -2480,7 +2470,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     console.error("The picked file could not be found in the selected folder!\n" + params.pickedFile);
                                     var archiveList = [];
                                     for (i = 0; i < files.length; i++) {
-                                        if (/\.zima?a?$/i.test(files[i].name)) {
+                                        if (/\.zim(aa)?$/i.test(files[i].name)) {
                                             archiveList.push(files[i].name);
                                         }
                                     }
@@ -2489,7 +2479,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 }
                             });
                             return;
-                        } else if (!params.pickedFile && params.pickedFolder && window.showOpenFilePicker && (!window.fs || window.nw)) {
+                        } else if (!params.pickedFile && params.pickedFolder && params.pickedFolder.kind) {
                             // Native FS support
                             cache.verifyPermission(params.pickedFolder).then(function(permission) {
                                 if (!permission) {
@@ -2537,7 +2527,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                                 console.error("The picked file could not be found in the selected folder!");
                                                 var archiveList = [];
                                                 for (i = 0; i < fileHandles.length; i++) {
-                                                    if (/\.zima?a?$/i.test(fileHandles[i].name)) {
+                                                    if (/\.zim(aa)?$/i.test(fileHandles[i].name)) {
                                                         archiveList.push(fileHandles[i].name);
                                                     }
                                                 }
@@ -2555,53 +2545,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             if (params.pickedFile) {
                                 setLocalArchiveFromFileList([params.pickedFile]);
                             } else {
-                                var fileset = [];
-                                var count = 0;
-                                var fileHandle = typeof archive === 'string' ? archive : archive[0];
                                 if (params.pickedFolder) {
-                                    window.fs.readdir(params.pickedFolder, function (err, fileNames) {
-                                       // Deal with split archives
-                                        if (fileHandle && fileNames) {
-                                            if (/\.zim\w\w$/i.test(fileHandle)) {
-                                                var genericFileName = fileHandle.replace(/(\.zim)\w\w$/i, '$1');
-                                                var testFileName = new RegExp(genericFileName + '\\w\\w$');
-                                                for (i = 0; i < fileNames.length; i++) {
-                                                    if (testFileName.test(fileNames[i])) {
-                                                        count++;
-                                                        //This gets a pseudo File object from a file handle
-                                                        createFakeFileObjectElectron(fileNames[i],
-                                                            params.pickedFolder + '/' + fileNames[i], function (file) {
-                                                                fileset.push(file[0]);
-                                                        });
-                                                    }
-                                                }
-                                            } else {
-                                                // Deal with single unslpit archive
-                                                count++;
-                                                createFakeFileObjectElectron(fileHandle,
-                                                    params.pickedFolder + '/' + fileHandle, function (file) {
-                                                        fileset.push(file[0]);
-                                                });
-                                            }
-                                            if (count) {
-                                                // Wait for all file objects to resolve
-                                                var testIfReady = function () {
-                                                    if (fileset.length === count) {
-                                                        setLocalArchiveFromFileList(fileset);
-                                                    } else {
-                                                        setTimeout(testIfReady, 50);
-                                                    }
-                                                }
-                                                setTimeout(testIfReady, 50);
-                                            } else {
-                                                console.error('There was an error reading the picked file(s)!');
-                                            }
-                                        } else {
-                                            createFakeFileObjectElectron(fileHandle, params.pickedFolder + '/' + fileHandle, setLocalArchiveFromFileList);
-                                        } 
+                                    readNodeDirectoryAndCreateNodeFileObjects(params.pickedFolder, archive)
+                                    .then(function (fileset) {
+                                        var selectedFiles = fileset[0];
+                                        if (appstate.selectArchive && appstate.selectArchive._file.files[0].name === selectedFiles[0].name) return;
+                                        setLocalArchiveFromFileList(selectedFiles);
                                     });
                                 } else {
-                                    uiUtil.systemAlert('We could not find the location of the file ' + fileHandle + 
+                                    uiUtil.systemAlert('We could not find the location of the file ' + archive + 
                                         '. This can happen if you dragged and dropped a file into the app. Please use the file or folder pickers instead.');
                                     if (document.getElementById('configuration').style.display == 'none')
                                         document.getElementById('btnConfigure').click();
@@ -2750,7 +2702,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 fullPath = fullPath.replace(/\\/g, '/');
                 var pathParts = fullPath.match(/^(.+[/\\])([^/\\]+)$/i);
                 params.rescan = false;
-                createFakeFileObjectElectron(pathParts[2], fullPath, processFakeFile);
+                createFakeFileObjectNode(pathParts[2], fullPath, processFakeFile);
             });
             dialog.on('dir-dialog', function (fullPath) {
                 console.log('Path: ' + fullPath);
@@ -2894,7 +2846,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             archiveDisplay.style.display = 'block';
         }
 
-        function scanNodeFolderforArchives(folder) {
+        function scanNodeFolderforArchives(folder, callback) {
             if (folder) {
                 fs.readdir(folder, function (err, files) {
                     if (err) console.error('There was an error reading files in the folder: ' + err.message, err);
@@ -2902,7 +2854,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         params.pickedFolder = folder;
                         settingsStore.setItem('pickedFolder', params.pickedFolder, Infinity);
                         params.pickedFile = '';
-                        processFilesArray(files);
+                        processFilesArray(files, callback);
                     }
                 });
             } else {
@@ -2926,19 +2878,24 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
         }
 
-        function processFilesArray(files) {
+        function processFilesArray(files, callback) {
             // Display file list
             var archiveDisplay = document.getElementById('chooseArchiveFromLocalStorage');
             if (files) {
+                var filteredFiles = [];
                 var archiveList = [];
                 files.forEach(function (file) {
-                    if (file.fileType == ".zim" || file.fileType == ".zimaa" || /\.zim(aa)?$/.test(file)) {
+                    if (/\.zim(aa)?$/i.test(file.fileType) || /\.zim(aa)?$/i.test(file)) {
                         archiveList.push(file.name || file);
+                    }
+                    if (/\.zim(\w\w)?$/i.test(file.fileType) || /\.zim(\w\w)?$/i.test(file)) {
+                        filteredFiles.push(file);
                     }
                 });
                 if (archiveList.length) {
                     document.getElementById('noZIMFound').style.display = "none";
                     populateDropDownListOfArchives(archiveList);
+                    if (callback) callback(files, archiveList);
                     return;
                 }
             }
@@ -3052,7 +3009,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 settingsStore.removeItem('lastSelectedArchivePath');
                 params.lastPageVisit = '';
                 if (params.packagedFile && params.storedFile !== params.packagedFile) {
-                    createFakeFileObjectElectron(params.packagedFile, params.archivePath + '/' + params.packagedFile, processFakeFile);
+                    readNodeDirectoryAndCreateNodeFileObjects(params.archivePath, params.packagedFile).then(function (fileset) {
+                        var fileObjects = fileset[0], fileNames = fileset[1];
+                        // params.pickedFile = params.packagedFile;
+                        params.pickedFolder = params.archivePath;
+                        params.storedFile = params.packagedFile;
+                        setLocalArchiveFromFileList(fileObjects);
+                        populateDropDownListOfArchives(fileNames, true);
+                    });
+                    // createFakeFileObjectNode(params.packagedFile, params.archivePath + '/' + params.packagedFile, processFakeFile);
                 }
             }
         }
@@ -3073,7 +3038,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
          * @param {String} filepath The path of the file to be represented
          * @param {Function} callback The function to call back with the constructed file
          */
-        function createFakeFileObjectElectron(filename, filepath, callback) {
+        function createFakeFileObjectNode(filename, filepath, callback) {
             var file = {};
             // For Electron, we need to set an absolute filepath in case the file was launched from a shortcut (and if it's not already absolute)
             if (filepath === params.archivePath + '/' + filename && /^file:/i.test(window.location.protocol)) {
@@ -3098,6 +3063,52 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     console.log("Stored file size is: " + file.size);
                 }
                 callback([file]);
+            });
+        }
+
+        /**
+         * Reads a directory using the Node File System API and creates a file object or objects for the requested file or split fileset
+         * @param {String} folder The directory path to read  
+         * @param {String|Array} file The file or split file array to match in the folder (only file[0] will be tested if it is an array)
+         * @returns {Promise<Array>} A Promise for the Array of files matching the requested file
+         */
+        function readNodeDirectoryAndCreateNodeFileObjects(folder, file) {
+            return new Promise(function (resolve, reject) {
+                var selectedFileSet = [], selectedFileNamesSet = [];
+                var count = 0;
+                var fileHandle = typeof file === 'string' ? file : file[0];
+                window.fs.readdir(folder, function (err, fileNames) {
+                    if (err) {
+                        reject(err);
+                    } else if (fileNames) {
+                        // Deal with split archives
+                        if (/\.zim\w{0,2}$/i.test(fileHandle)) {
+                            var genericFileName = fileHandle.replace(/(\.zim)\w\w$/i, '$1');
+                            var fileFilter = new RegExp(genericFileName + '\\w\\w$');
+                            if (/\.zim$/i.test(fileHandle)) { fileFilter = new RegExp(genericFileName); } 
+                            for (var i = 0; i < fileNames.length; i++) {
+                                // Filter filenames so we only get zim or zimaa
+                                if (/\.zim(aa)?$/i.test(fileNames[i])) {
+                                    selectedFileNamesSet.push(fileNames[i]);
+                                }
+                                if (fileFilter.test(fileNames[i])) {
+                                    count++;
+                                    //This gets a pseudo File object from a file handle
+                                    createFakeFileObjectNode(fileNames[i], folder + '/' + fileNames[i], function (file) {
+                                        selectedFileSet.push(file[0]);
+                                        if (count === selectedFileSet.length) {
+                                            resolve([selectedFileSet, selectedFileNamesSet]);
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    } else {
+                        // Folder was empty...
+                        // createFakeFileObjectNode(fileHandle, folder + '/' + fileHandle, setLocalArchiveFromFileList);
+                        reject('No files were found in the folder!');
+                    } 
+                 });
             });
         }
 
