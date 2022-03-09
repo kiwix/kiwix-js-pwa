@@ -315,7 +315,7 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
     }
 }
 
-if (window.fs && (!window.nw || typeof window.showOpenFilePicker === 'undefined')) {
+if (typeof window.showOpenFilePicker === 'undefined') {
     params.pickedFolder = getSetting('pickedFolder') || '';
     if (!params.pickedFolder) {
         params.pickedFile = getSetting('lastSelectedArchivePath') || '';

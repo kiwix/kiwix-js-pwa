@@ -686,7 +686,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
      * @returns {Promise<Boolean>} A Promise for a Boolean value indicating whether permission has been granted or not
      */    
     function verifyPermission(fileHandle, withWrite) {
-        if (window.fs) return Promise.resolve(true); // Electron
+        // if (window.fs) return Promise.resolve(true); // Electron
         var opts = withWrite ? { mode: 'readwrite' } : {};
         return fileHandle.queryPermission(opts).then(function(permission) {
             if (permission === "granted") return true;
