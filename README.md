@@ -9,24 +9,25 @@ may be buggy and change rapidly.*
 This repository is for development of the Kiwix JS app for Windows 10 Universal Windows Platform (UWP), PWA, Electron and NWJS.
 The latest code is usually on the master branch, but this is used for active development and may be several commits ahead of releases.
 
-This is a lightweight HTML/JavaScript port of the Kiwix Offline Wikipedia (and other Wiki) reader. The UWP version targets Windows 10 (x86, x64, ARM, mobile, tablet, Xbox,
-Surface Hub, Holographic) while the NWJS and Electron versions also run on earlier Windows and Linux (see the respective
-[releases](https://github.com/kiwix/kiwix-js-windows/releases/) for more information). The PWA should work with any browser that supports Service Workers, but has only been
-tested on Edge Legacy, Edge Chromium, Firefox and Samsung Internet Browser. The PWA can be installed from a browser without visiting a Store (using Chromium-based browsers) and will work offline.
+This is a lightweight HTML/JavaScript port of the Kiwix Offline Wikipedia (and other Wiki) reader. The UWP version targets Windows 10/11 (x86, x64, ARM,
+mobile, tablet, Xbox, Surface Hub, Holographic) while the NWJS and Electron versions also run on earlier Windows and Linux (see the respective
+[releases](https://github.com/kiwix/kiwix-js-windows/releases/) for more information). The PWA should work with any browser that supports Service
+Workers, but has only been tested on Edge Legacy, Edge Chromium, Firefox and Samsung Internet Browser. The PWA can be installed from a browser without
+visiting a Store (using Chromium-based browsers) and will work offline.
 
-Offline ZIM archives are available from the [Kiwix repository](https://wiki.kiwix.org/wiki/Content_in_all_languages), including full Wikipedia versions with or without images
+Offline ZIM archives are available from the [Kiwix repository](https://library.kiwix.org), including full Wikipedia versions with or without images
 in many different languages. This app is regularly tested fully on Wikimedia ZIM files, though a number of other ZIM file types work.
 
-This began as a simple port of [Kiwix JS](https://github.com/kiwix/kiwix-js), the HTML5 web app provided upstream at https://github.com/kiwix/kiwix-js, although significant
-development has been undertaken to add functionality and to make the app sit happily with the Universal Windows Platform, and more recently Electron and NWJS, as well as to work
-as an installable PWA. The port runs as a UWP Store App on Windows 10 and Windows 10 Mobile, but it should also run on any Windows 10 platform: x86, x64, ARM, on Mobile,
-tablets, Xbox, Surface Hub, Holographic and PC.
+This began as a simple port of [Kiwix JS](https://github.com/kiwix/kiwix-js), the HTML5 web app provided upstream at https://github.com/kiwix/kiwix-js,
+although significan development has been undertaken to add functionality and to make the app sit happily with the Universal Windows Platform, and more
+recently Electron and NWJS, as well as to work as an installable PWA. The port runs as a UWP Store App on Windows 10/11 and Windows 10 Mobile, but it should
+also run on any Windows 10/11 platform: x86, x64, ARM, on Mobile, tablets, Xbox, Surface Hub, Holographic and PC.
 
 The UWP app is currently installable from the Microsoft Store at:
 
 [https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j](https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j)
 
-It can also be installed (in Windows 10) by opening a Command Prompt or PowerShell terminal and typing `winget install kiwix`. Electron and NWJS versions, compatible with older Windows and Linux, are available from [Releases](https://github.com/kiwix/kiwix-js-windows/releases/). The PWA version can be installed by visiting https://pwa.kiwix.org/. The easiest way to sideload the UWP app is with `winget install kiwix`, but alternative sideloading instructions are available at https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages.
+It can also be installed (in Windows 10/11) by opening a Command Prompt or PowerShell terminal and typing `winget install kiwix`. Electron and NWJS versions, compatible with older Windows and Linux, are available from [Releases](https://github.com/kiwix/kiwix-js-windows/releases/). The PWA version can be installed by visiting https://pwa.kiwix.org/. The easiest way to sideload the UWP app is with `winget install kiwix`, but alternative sideloading instructions are available in the [release notes](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html).
 
 **You will need a ZIM file to work with this app.** For testing, the Store version comes packaged with an archive of the top 100 Wikipedia pages in English
 (with pictures) as a starter ZIM, while packaged aps of WikiMed and Wikivoyage are also available in the Store or from [Releases](https://github.com/kiwix/kiwix-js-windows/releases/). You can download other ZIM archives from the Configuration page in the app (the download completes in the browser).
@@ -40,7 +41,7 @@ in the storage with no problem. However, if you plan to store your ZIM file on a
 A lot of development for this app happens upstream in the [Kiwix JS repository](https://kiwix.github.io/kiwix-js/) to which I ontribute actively.
 Without Kiwix JS, this app would be impossible, and huge thanks goes to the original developers of first the Evopedia app and then Kiwix HTML5, which
 eventually became Kiwix JS. The original source code runs almost "as is" on the UWP platform, which is testament to how well written that app is.
-The port and further development of Kiwix JS Windows for Windows 10 (including Mobile) is by Geoffrey Kantaris. I can be contacted by email:
+The port and further development of Kiwix JS Windows for Windows 10/11 (including Mobile) is by Geoffrey Kantaris. I can be contacted by email:
 egk10 at cam ac uk.
 
 # Privacy Policy
