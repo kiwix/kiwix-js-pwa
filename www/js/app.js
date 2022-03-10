@@ -967,6 +967,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     if (callback) {
                         callback(null);
                     } else {
+                        // We have failed to load a picked archive via the File System API, but if params.storedFilePath exists, then the archive
+                        // was launched with Electron APIs, so we can get the folder that way
+                        if (params.storedFilePath) params.pickedFolder = params.storedFilePath.replace(/[\\/]+[^\\/]+$/, '');
                         searchForArchivesInPreferencesOrStorage();
                     }
                 }
