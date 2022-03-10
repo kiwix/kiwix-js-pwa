@@ -28,13 +28,14 @@ The UWP app is currently installable from the Microsoft Store at:
 
 It can also be installed (in Windows 10) by opening a Command Prompt or PowerShell terminal and typing `winget install kiwix`. Electron and NWJS versions, compatible with older Windows and Linux, are available from [Releases](https://github.com/kiwix/kiwix-js-windows/releases/). The PWA version can be installed by visiting https://pwa.kiwix.org/. The easiest way to sideload the UWP app is with `winget install kiwix`, but alternative sideloading instructions are available at https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages.
 
-You will need a ZIM file to work with this app. For testing, the Store version comes packaged with an archive of the top 100 Wikipedia pages in English
+**You will need a ZIM file to work with this app.** For testing, the Store version comes packaged with an archive of the top 100 Wikipedia pages in English
 (with pictures) as a starter ZIM, while packaged aps of WikiMed and Wikivoyage are also available in the Store or from [Releases](https://github.com/kiwix/kiwix-js-windows/releases/). You can download other ZIM archives from the Configuration page in the app (the download completes in the browser).
 
-Alternatively, you can download files from the [Kiwix repository](http://wiki.kiwix.org/wiki/Content_in_all_languages)
-on a regular PC. If you plan to store your ZIM file on an SD card formatted as FAT32, and you wish to use an archive larger than 4GB, then you will need
-to split the ZIM: see [file splitting instructions](https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#download-a-zim-archive-all-platforms).
-If your SD card is formatted as exFAT or NTFS, you do not need to split the ZIM archive.
+Alternatively, you can download files from the [Kiwix repository](http://library.kiwix.org) on a regular PC. Some archives are very large indeed,
+for example full English Wikipedia with images is currently around 90GB, and you should download this with a BitTorrent client (torrent links are
+provided in the app). For most storage types (including microSD cards) that are formatted as exFAT or NTFS, you can store even these very large files
+in the storage with no problem. However, if you plan to store your ZIM file on an SD card formatted as **FAT32**, and you wish to use an archive larger than
+4GB, then you will need to split the ZIM: see [file splitting instructions](https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#download-a-zim-archive-all-platforms).
 
 A lot of development for this app happens upstream in the [Kiwix JS repository](https://kiwix.github.io/kiwix-js/) to which I ontribute actively.
 Without Kiwix JS, this app would be impossible, and huge thanks goes to the original developers of first the Evopedia app and then Kiwix HTML5, which
@@ -53,8 +54,9 @@ capable of installing a Service Worker. If you install or bookmark the PWA versi
 note that **by design** any PWA will periodically check the PWA server (in this case, https://pwa.kiwix.org/), if it
 is available, to check for an updated Service Worker.
 
-Electron versions of the app may access GitHub on each start of the app to check for an update. This applies to the installer (setup)
-version for Windows, and to the AppImage version for Linux. Other versions for Electron or NWJS do not auto-upaate (and do not access the server).
+Electron versions of the app may access GitHub on each start of the app to check for an update. This applies to the installer
+(setup) version for Windows, and to the AppImage version for Linux. Other versions for Electron or NWJS do not auto-upaate
+(and do not access the server).
 
 By default, this application will remember your last-visited page between sessions using local stoarage or a cookie
 that is accessible only by this app on this device. If you are accessing sensitive information that you do
@@ -68,8 +70,7 @@ Some ZIM archives contain active content (scripts) which may, in rare circumstan
 contact external servers for incidental files such as fonts. These scripts will only run if you enable Service
 Worker mode in Configuration.
 
-**If you believe your Internet access is insecure, or is being observed or censored, we recommend that you completely
-shut down your Internet access (Data or WiFi) before using the application.**
+**If you believe your Internet access is insecure, or is being observed or censored, we recommend that you completely shut down your Internet access (Data or WiFi) before using the application.**
 
 Additionally, if you obtained this app from a Vendor Store (including extensions), then the Store operator may
 track your usage of the app (e.g. download, install, uninstall, date and number of sessions) for the purpose of
@@ -80,4 +81,4 @@ Store Privacy Policy for further information.
 
 * [Releases](https://github.com/kiwix/kiwix-js-windows/releases/)
 * [NWJS version](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html) - this version is completely standalone
-  and will never self-update
+  and will never self-update or access servers unless you allow it to.
