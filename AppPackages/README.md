@@ -44,7 +44,11 @@ Alternatively, you can download files from http://wiki.kiwix.org/wiki/Content_in
 
 ### Splitting your ZIM archive (for FAT32 storage)
 
-If you plan to store your ZIM file on an SD card or other drive formatted as **FAT32**, you may need to use a programme like
-[File Splitter and Joiner](http://www.fastfilejoiner.com/) to split the file into 4GiB-1 chunks (chunks must be exactly 4,294,967,295 bytes **or less**). You will need to give a
-file extension to each chunk in the right order following this pattern: `*.zimaa`, `*.zimab`, `*.zimac`, `...`, etc.). However, if your SD card is formatted as exFAT or NTFS,
-you *do not need to do this*.
+**NB If your SD card or hard drive is formatted as exFAT or NTFS, you *do not need to do this procedure!***
+
+If you plan to store a large ZIM file > 4GB on an SD card or other drive formatted as **FAT32** (most are not), then you may need to use a programme like
+[File Splitter and Joiner](http://www.fastfilejoiner.com/) to split the file into 4GiB-1 chunks: chunks must be exactly 4,294,967,295 bytes **or any number less than this**. You will need to give a file extension to each chunk in the right order following this pattern: `*.zimaa`, `*.zimab`, `*.zimac`, `...`, etc.).
+
+Alternatively, you can split a file with Linux or WSL (Windows Subsystem for Linux). In this case, open a Terminal and type
+`split --bytes=4000M wikipedia_en_all_maxi_2021-12.zim wikipedia_en_all_maxi_2021-12.zim` (adapt the name of the ZIM archive accordingly),
+and the file will be split into the correct parts (if you have sufficient disk space).
