@@ -2898,7 +2898,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 });
                 if (archiveList.length) {
                     document.getElementById('noZIMFound').style.display = "none";
-                    params.rescan = false;
                     populateDropDownListOfArchives(archiveList);
                     if (callback) callback(files, archiveList);
                     return;
