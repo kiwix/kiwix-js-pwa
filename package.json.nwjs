@@ -1,7 +1,7 @@
 {
   "name": "kiwix_js_windows",
   "productName": "Kiwix JS Windows",
-  "version": "1.9.0N",
+  "version": "1.9.4N",
   "description": "Kiwix JS Windows for NWJS",
   "main": "index.html",
   "domain": "kiwix.js.windows",
@@ -36,7 +36,7 @@
     }
   },
   "build-x64": {
-    "nwVersion": "0.61.0",
+    "nwVersion": "0.62.0",
     "output": "bld/nwjs/win-x64",
     "files": [
       "archives/**",
@@ -51,7 +51,7 @@
     }
   },
   "build": {
-    "nwVersion": "0.61.0",
+    "nwVersion": "0.62.0",
     "output": "bld/nwjs/win-x86",
     "files": [
       "service-worker.js",
