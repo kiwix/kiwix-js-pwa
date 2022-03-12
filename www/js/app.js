@@ -2244,7 +2244,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         params.storedFilePath = archiveFilePath;
                     }
                 }
-                var archiveDirectory = archiveFilePath.replace(/[^\\/]+$/, '');
+                var archiveDirectory = archiveFilePath.replace(/[\\/][^\\/]+$/, '');
                 readNodeDirectoryAndCreateNodeFileObjects(archiveDirectory, params.storedFile).then(function (archiveFiles) {
                     var pickedFileset = archiveFiles[0], archivesInFolder = archiveFiles[1];
                     params.pickedFolder = archiveDirectory;
