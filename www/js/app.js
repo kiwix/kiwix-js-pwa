@@ -3081,6 +3081,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 var selectedFileSet = [], selectedFileNamesSet = [];
                 var count = 0;
                 var fileHandle = typeof file === 'string' ? file : file[0];
+                if (folder === params.archivePath && /^file:/i.test(window.location.protocol)) {
+                    folder = decodeURIComponent(window.location.href.replace(/www\/[^/?#]+(?:[?#].*)?$/, '') + folder);
+                }
+                // Check for a Windows-style path and process accordingly to create absolute path appropriate to fs
+                folder = /^file:\/+\w:[/\\]/i.test(folder) ? folder.replace(/^file:\/+/i, '') : folder.replace(/^file:\/\//i, '');
                 window.fs.readdir(folder, function (err, fileNames) {
                     if (err) {
                         reject(err);
