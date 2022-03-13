@@ -36,21 +36,18 @@ if ($VERSION -match '^v?[\d.]') {
     (Get-Content ./www/js/init.js) -replace '(appVersion..\s*=\s*["''])[^"'']+', "`${1}$VERSION" | Set-Content -encoding "utf8BOM" ./www/js/init.js
     $PackageJson = Get-Content -Raw ./package.json
     $nwVersion = $PackageJson -match '"build":\s\{[^"]+"nwVersion":\s"([^"'']+)'
+    $CustomVersion = $VERSION -replace '(-|$)', '-E$1'
     if ($nwVersion) {
         $nwVersion = $matches[1]
+        $CustomVersion = $customversion -creplace '-E', '-N'
         $BuildNWJSScript = Get-Content -Raw ./scripts/Build-NWJS.ps1
-        "Setting App Version to $VERSION" + "N in Build-NWJS.ps1 ..."
-        $BuildNWJSScript = $BuildNWJSScript -replace '(appBuild\s*=\s*["''])[^"'']+', ("`${1}$VERSION" + "N")
+        "Setting App Version to $CustomVersion in Build-NWJS.ps1 ..."
+        $BuildNWJSScript = $BuildNWJSScript -replace '(appBuild\s*=\s*["''])[^"'']+', ("`${1}$CustomVersion")
         "Setting NWJS build to $nwVersion in Build-NWJS.ps1 ..."
         $BuildNWJSScript = $BuildNWJSScript -replace '(version10\s*=\s*["''])[^"'']+', "`${1}$nwVersion"
         Set-Content -encoding "utf8BOM" ./scripts/Build-NWJS.ps1 $BuildNWJSScript
     }
-    "Setting App Version to $VERSION (N or -E) in package.json ...`n"
-    if ($nwVersion) {
-        $CustomVersion = $VERSION + 'N'
-    } else {
-        $CustomVersion = "$VERSION-E"
-    }
+    "Setting App Version to $CustomVersion in package.json ...`n"
     $PackageJson = $PackageJson -replace '("version":\s+")[^"]+', "`${1}$CustomVersion"
     Set-Content ./package.json $PackageJson
 } else {
