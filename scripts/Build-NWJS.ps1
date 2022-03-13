@@ -42,9 +42,13 @@ foreach ($build in $builds) {
     $folderTarget = "$PSScriptRoot\..\bld\nwjs\$build-$version"
     $target = "$folderTarget\kiwix_js_windows$sep$appBuild"
     $fullTarget = "$target-$build"
-    $ZipLocation = "$PSScriptRoot\..\node_modules\nwjs-builder-phoenix\caches\nwjs-v$version-$build.zip"
+    $ZipFolder = "$PSScriptRoot\..\node_modules\nwjs-builder-phoenix\caches\"
+    $ZipLocation = $ZipFolder + "nwjs-v$version-$build.zip"
     $UnzipLocation = "$ZipLocation-extracted\"
     $buildLocation = "$ZipLocation-extracted\nwjs-v$version-$build\"
+    if (-Not (Test-Path $ZipFolder -PathType Container)) {
+        mkdir $ZipFolder
+    }
     if (-Not (Test-Path $buildLocation -PathType Container)) {
         # We need to download and/or unzip the release, as it is not available
         if (-Not (Test-Path $ZipLocation -PathType Leaf)) {
