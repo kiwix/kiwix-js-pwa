@@ -67,7 +67,7 @@ jobs:
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         ./scripts/Publish-ElectronPackages.ps1
 
-    Release_NWJS:
+  Release_NWJS:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2       
