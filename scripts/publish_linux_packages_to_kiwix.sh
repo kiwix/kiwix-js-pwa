@@ -1,6 +1,9 @@
 #!/bin/bash
 # Script to upload Linux packages to download.kiwix.org
 target="/data/download/release/kiwix-js-electron"
+if [[ ${INPUT_TARGET} = "nightly" ]]; then
+    CRON_LAUNCHED="1"
+fi
 if [[ "qq${CRON_LAUNCHED}" != "qq" ]]; then
     echo "This script was launched by the GitHub Cron proces"
     CURRENT_DATE=$(date +'%Y-%m-%d')

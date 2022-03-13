@@ -4,6 +4,11 @@ $target = "/data/download/release/kiwix-js-electron"
 $keyfile = "$PSScriptRoot\ssh_key"
 $keyfile = $keyfile -ireplace '[\\/]', '/'
 
+if ($INPUT_TARGET -eq "nightly") {
+    "`nUser manually requested a nightly build..."
+    $CRON_LAUNCHED = "1"
+}
+
 if ($CRON_LAUNCHED) {
     "`nThis script was launched by the Github Cron prccess"
     $current_date = $(Get-Date -Format "yyyy-MM-dd")
@@ -12,7 +17,12 @@ if ($CRON_LAUNCHED) {
 
 "`nUploading packages to https://download.kiwix.org$target/ ...`n"
 & "C:\Program Files\Git\usr\bin\ssh.exe" @('-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", 'ci@download.kiwix.org', "mkdir -p $target")
-ls bld/Electron/*.* | % {
+if ((Get-Content ./package.json) -match 'nwVersion') {
+    $Packages = $(ls bld/NWJS/*.*)
+} else {
+    $packages = $(ls bld/Electron/*.*)
+}
+$Packages | % {
     $file = $_
     if ($file -match '\.(exe|zip|msix)$') {
         $renamed_file = $file -replace '\s', '-'
