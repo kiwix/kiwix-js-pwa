@@ -11,6 +11,10 @@
 
 # Use the override value by preference
 VERSION=${INPUT_VERSION}
+if [[ ${INPUT_TARGET} = "nightly" ]]; then
+    echo "User manually requested a nightly build..."
+    CRON_LAUNCHED="1"
+fi
 # If the script was launched by Cron, then there will be no INPUT_VERSION, so construct a nightly version number
 if [[ "qq${CRON_LAUNCHED}" != "qq" ]]; then
   echo "This script was launched by the GitHub Cron job"
