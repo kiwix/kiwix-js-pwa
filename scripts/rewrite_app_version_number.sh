@@ -38,6 +38,7 @@ if [[ $VERSION =~ ^[0-9.]+ ]]; then
   echo "Rewriting appVersion in service-worker.js and init.js to $VERSION ..."
   sed -i -E "s/appVersion\s*=\s*[^;]+/appVersion = '$VERSION'/" ./service-worker.js
   sed -i -E "s/params..appVersion[^=]+?=\s*[^;]+/params['appVersion'] = '$VERSION'/" ./www/js/init.js
-  echo "Rewriting version in package.json to $VERSION-E"
-  sed -i -E 's/"version":\s*"[^"]+"/"version": "'$VERSION'-E"/' ./package.json
+  CUSTOM_VERSION=$(sed 's/(-|$)/-E$1/' <<<"$VERSION")
+  echo "Rewriting version in package.json to $CUSTOM_VERSION"
+  sed -i -E 's/"version":\s*"[^"]+"/"version": "'$CUSTOM_VERSION'"/' ./package.json
 fi
