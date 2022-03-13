@@ -1,4 +1,4 @@
-name: 'Build Electron packages'
+name: 'Build Electron and NWJS packages'
 on:
   schedule:
   # Nightly run at 03:39 UTC
@@ -9,8 +9,13 @@ on:
         description: Specific version to build like v9.9.9 (if empty, builds version in package.json)
         required: false
         default: ''
+      target:
+        description: Do you wish to build release or nightly?
+        required: false
+        default: 'nightly'
 env:
   INPUT_VERSION: ${{ github.event.inputs.version }}
+  INPUT_TARGET: ${{ github.event.inputs.target }}
   CRON_LAUNCHED: ${{ github.event.schedule }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   CSC_LINK: ${{ secrets.CSC_LINK }}
@@ -56,6 +61,33 @@ jobs:
     - name: publish
       run: |
         npm run publish
+        $SSH_KEY = $Env:SSH_KEY
+        echo "$SSH_KEY" > .\scripts\ssh_key
+        $INPUT_VERSION = $Env:INPUT_VERSION
+        $CRON_LAUNCHED = $Env:CRON_LAUNCHED
+        ./scripts/Publish-ElectronPackages.ps1
+
+    Release_Windows_NWJS:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2       
+    - uses: actions/setup-node@master
+      with:
+        node-version: 14
+    - name: select NWJS app
+      run: |
+        del package.json
+        ren package.json.nwjs package.json
+    - name: install dependencies
+      run: npm install
+    - name: rewrite app version number
+      run: |
+        $INPUT_VERSION = $Env:INPUT_VERSION
+        $CRON_LAUNCHED = $Env:CRON_LAUNCHED
+        ./scripts/Rewrite-AppVersion.ps1
+    - name: publish
+      run: |
+        ./scripts/Build-NWJS:ps1 -only32bit
         $SSH_KEY = $Env:SSH_KEY
         echo "$SSH_KEY" > .\scripts\ssh_key
         $INPUT_VERSION = $Env:INPUT_VERSION
