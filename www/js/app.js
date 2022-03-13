@@ -1727,6 +1727,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
             openAllSections();
         });
+        document.getElementById('linkToWikimediaImageFileCheck').addEventListener('click', function () {
+            params.linkToWikimediaImageFile = this.checked;
+            settingsStore.setItem('linkToWikimediaImageFile', this.checked, Infinity);
+            params.themeChanged = true;
+        });
         document.getElementById('useOSMCheck').addEventListener('click', function () {
             params.mapsURI = this.checked ? 'https://www.openstreetmap.org/' : 'bingmaps:';
             settingsStore.setItem('mapsURI', params.mapsURI, Infinity);
@@ -3827,7 +3832,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         // the opening delimiter (" or ', which is capture group \3) or a querystring or hash character (? or #). When the regex is used
         // below, it will be further processed to calculate the ZIM URL from the relative path. This regex can cope with legitimate single
         // quote marks (') in the URL.
-        params.regexpTagsWithZimUrl = /(<(?:img|script|link)\b[^>]*?\s)(?:src|href)(\s*=\s*(["']))(?![a-z][a-z0-9+.-]+:)(.+?)(?=\3|\?|#)/ig;
+        params.regexpTagsWithZimUrl = /(<(?:img|script|link)\b[^>]*?\s)(?:src|href)(\s*=\s*(["']))(?![a-z][a-z0-9+.-]+:)(.+?)(?=\3|\?|#)([\s\S]*?>)/ig;
         // Regex below tests the html of an article for active content [kiwix-js #466]
         // It inspects every <script> block in the html and matches in the following cases: 1) the script loads a UI application called app.js;
         // 2) the script block has inline content that does not contain "importScript()", "toggleOpenSection" or an "articleId" assignment
@@ -3901,19 +3906,41 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // Replaces ZIM-style URLs of img, script, link and media tags with a data-kiwixurl to prevent 404 errors [kiwix-js #272 #376]
             // This replacement also processes the URL relative to the page's ZIM URL so that we can find the ZIM URL of the asset
             // with the correct namespace (this works for old-style -,I,J namespaces and for new-style C namespace)
+            if (params.linkToWikimediaImageFile && !params.isLandingPage && /(?:wikipedia|wikivoyage|wiktionary)_/i.test(appstate.selectedArchive._file.name)) {
+                var wikiLang = appstate.selectedArchive._file.name.replace(/(?:wikipedia|wikivoyage|wiktionary)_([^_]+).+/i, '$1');
+                var wikimediaZimFlavour = appstate.selectedArchive._file.name.replace(/_.+/, '');
+            }
             if (params.contentInjectionMode == 'jquery') {
-                htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl) {
+                htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
                     var assetZIMUrl = uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseURL);
                     // DEV: Note that deriveZimUrlFromRelativeUrl produces a *decoded* URL (and incidentally would remove any URI component
                     // if we had captured it). We therefore re-encode the URI with encodeURI (which does not encode forward slashes) instead
                     // of encodeURIComponent.
-                    return blockStart + 'data-kiwixurl' + equals + encodeURI(assetZIMUrl);
+                    var newBlock = blockStart + 'data-kiwixurl' + equals + encodeURI(assetZIMUrl) + blockClose;
+                    // For Wikipedia archives, hyperlink the image to the File version
+                    if (wikiLang && /^<img/i.test(blockStart) && !/usemap=/i.test(match)) {
+                        newBlock = '<a href="https://' + wikiLang + '.' + wikimediaZimFlavour + '.org/wiki/File:' + 
+                            assetZIMUrl.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1')
+                            + '" target="_blank">' + newBlock + '</a>'
+                    }
+                    return newBlock;
                 });
                 // We also need to process data:image/webp if the browser needs the WebPMachine
                 if (webpMachine) htmlArticle = htmlArticle.replace(/(<img\b[^>]*?\s)src(\s*=\s*["'])(?=data:image\/webp)([^"']+)/ig, '$1data-kiwixurl$2$3');
                 // Remove any empty media containers on page (they can cause layout issue in jQuery mode)
                 htmlArticle = htmlArticle.replace(/(<(audio|video)\b(?:[^<]|<(?!\/\2))+<\/\2>)/ig, function (p0) {
                     return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
+                });
+            } else if (wikiLang) {
+                htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
+                    // For Wikipedia archives, hyperlink the image to the File version
+                    var assetZIMUrl = decodeURIComponent(relAssetUrl);
+                    if (/^<img/i.test(blockStart) && !/usemap=/i.test(match)) {
+                        var newBlock = '<a href="https://' + wikiLang + '.' + wikimediaZimFlavour + '.org/wiki/File:' + 
+                            assetZIMUrl.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1')
+                            + '" target="_blank">' + match + '</a>'
+                    }
+                    return newBlock || match;
                 });
             }
             

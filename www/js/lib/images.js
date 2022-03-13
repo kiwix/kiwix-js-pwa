@@ -129,14 +129,13 @@ define(['uiUtil'], function (uiUtil) {
             }
             documentImages[i].dataset.kiwixheight = originalHeight;
             documentImages[i].addEventListener('click', function (e) {
-                // If the image clicked on hasn't been extracted yet, cancel event bubbling, so that we don't navigate
-                // away from the article if the image is hyperlinked
                 // Line below ensures documentImages remains in scope
                 var thisImage = e.currentTarget;
-                if (thisImage.dataset.kiwixurl) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
+                // Exit function if image was already extracted
+                if (!thisImage.dataset.kiwixurl) return;
+                // Cancel event bubbling, so that we don't navigate away from the article if the image is hyperlinked
+                e.preventDefault();
+                e.stopPropagation();
                 // DEV: Algorithm below doesn't queue webp images correctly, so for now we will extract images
                 // only one-by-one on image click
                 // var visibleImages = queueImages('poll', 0, function() { extractImages(visibleImages); }).visible;
@@ -248,12 +247,12 @@ define(['uiUtil'], function (uiUtil) {
                     documentImages[i].style.opacity = '0';
                 }
                 if (params.manipulateImages || params.allowHTMLExtraction) {
-                    documentImages[i].outerHTML = documentImages[i].outerHTML.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl) {
+                    documentImages[i].outerHTML = documentImages[i].outerHTML.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockEnd) {
                         var assetZIMUrl = uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseURL);
                         // DEV: Note that deriveZimUrlFromRelativeUrl produces a *decoded* URL (and incidentally would remove any URI component
                         // if we had captured it). We therefore re-encode the URI with encodeURI (which does not encode forward slashes) instead
                         // of encodeURIComponent.
-                        return blockStart + 'data-kiwixurl' + equals + encodeURI(assetZIMUrl);
+                        return blockStart + 'data-kiwixurl' + equals + encodeURI(assetZIMUrl) + blockEnd;
                     });
                 }
             }
