@@ -12,6 +12,7 @@ if ($customversion) {
 }
 
 if ($INPUT_TARGET -eq "nightly") {
+    "`nUser manually requested a nighlty build..."
     $CRON_LAUNCHED = "1"
 }
 
