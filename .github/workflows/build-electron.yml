@@ -67,7 +67,7 @@ jobs:
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         ./scripts/Publish-ElectronPackages.ps1
 
-    Release_Windows_NWJS:
+    Release_NWJS:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2       
@@ -83,6 +83,7 @@ jobs:
     - name: rewrite app version number
       run: |
         $INPUT_VERSION = $Env:INPUT_VERSION
+        $INPUT_TARGET = $Env:INPUT_VERSION
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         ./scripts/Rewrite-AppVersion.ps1
     - name: publish
@@ -91,5 +92,6 @@ jobs:
         $SSH_KEY = $Env:SSH_KEY
         echo "$SSH_KEY" > .\scripts\ssh_key
         $INPUT_VERSION = $Env:INPUT_VERSION
+        $INPUT_TARGET = $Env:INPUT_VERSION
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         ./scripts/Publish-ElectronPackages.ps1
