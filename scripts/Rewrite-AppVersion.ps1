@@ -11,6 +11,10 @@ if ($customversion) {
     $INPUT_VERSION = $customversion
 }
 
+if ($INPUT_TARGET -eq "nightly") {
+    $CRON_LAUNCHED = "1"
+}
+
 if ($INPUT_VERSION) {
     $VERSION = $INPUT_VERSION
 } elseif ($TAG_VERSION) {
