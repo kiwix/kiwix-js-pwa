@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param (
     [switch]$only32bit = $false
 )
@@ -11,7 +11,7 @@ if (-Not $only32bit) {
 }
 $version10 = "0.61.0" # <<< value updated automatically from package.json if launched from Create-DraftRelease
 $versionXP = "0.14.7"
-$appBuild = "1.9.3N" # <<< value updated auotmatically from package.json if launched form Create-DraftRelease
+$appBuild = "1.9.3N" # <<< value updated auotmatically from package.json if launched from Create-DraftRelease
 # $ZIMbase = "wikipedia_en_100"
 # Check that the dev has included the correct archive in this branch
 $init_params = Get-Content -Raw "$PSScriptRoot\..\www\js\init.js"
@@ -25,7 +25,7 @@ if ($PackagedArchive) {
 if (-Not $archiveExists) {
     "`n***** WARNING: PACKAGED ARCHIVE $PackagedArchive COULD NOT BE FOUND IN ARCHIVE FOLDER!!! *****"
     "Please place the requested package in this folder and run script again.`n"
-    return
+    exit 1
 }
 "Found."
 
