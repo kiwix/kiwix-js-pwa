@@ -2987,7 +2987,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 } else {
                     $('#openLocalFiles').hide();
                     document.getElementById('usage').style.display = 'none';
-                    if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile)) {
+                    if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile.replace(/\.zim(\w\w)?$/, ''))) {
                         var lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, "");
                         goToArticle(lastPage);
                     } else {
