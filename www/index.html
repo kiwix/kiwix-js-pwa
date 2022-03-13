@@ -737,7 +737,7 @@
                             <h3>Display settings</h3>
                             <div class="column">
                                 <div id="displaySettingsDiv" class="panel panel-info" style="clear: left;">
-                                    <div class="panel-heading">Display options:</div>
+                                    <div class="panel-heading">Display size and theme:</div>
                                     <div class="panel-body">
                                         <div class="row">
                                             <div class="col-sm-12">
@@ -821,6 +821,37 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="panel panel-info" id="imageSettingsDiv">
+                                    <div class="panel-heading">Image and map settings:</div>
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label class="checkbox" title="This is useful for very low-memory devices, or to increase page rendering speed.">
+                                                    <input type="checkbox" name="imageDisplayMode" id="imageDisplayModeCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Display images if any</b> (if hidden, tap the <span style="background-color:lightblue; color:black;">&nbsp;blue area&nbsp;</span> to display one-by-one)
+                                                </label>
+                                            </div>
+                                            <div class="col-sm-6" id="imageManipulationDiv">
+                                                <label class="checkbox" title="This allows saving images to disk (with right-click/long-press), or opening them in a new tab, but uses slightly more memory because images are stored in the document as dataURIs. WARNING: setting may interfere with dynamic content in non-Wikimedia ZIMs.">
+                                                    <input type="checkbox" name="manipulateImages" id="manipulateImagesCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Allow image manipulation</b> (may interfere with dynamic content)
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <label class="checkbox" title="If a Wikipedia ZIM is loaded, you can hyperlink each image to its high resolution version online. This will then open if you click on an image. NB Setting does not work on the landing page or on image maps, and images are not guaranteed to exist on the server.">
+                                            <input type="checkbox" name="linkToWikimediaImageFile" id="linkToWikimediaImageFileCheck">
+                                            <span class="checkmark"></span>
+                                            <b>In Wikipedia ZIMs, hyperlink images to high-res Wikimedia versions</b> (click image to open the external site in a new window, disabled for imagemaps and landing page)
+                                        </label>
+                                        <label class="checkbox" title="By default, this app will use the Windows Maps app when you click on a map pin (you can download offline maps in Windows Settings -> Offline maps). If you prefer to use OpenStreetMap (online), then check this box.">
+                                            <input type="checkbox" name="useOSM" id="useOSMCheck">
+                                            <span class="checkmark"></span>
+                                            <b>Use online OpenStreetMap for map pins instead of offline Windows Maps</b> (for some Wikipedia and English / German Wikivoyage)
+                                        </label>
+                                    </div>
+                                </div>
                                 <div class="panel panel-info" id="otherSettingsDiv">
                                     <div class="panel-heading">Other settings:</div>
                                     <div class="panel-body">
@@ -834,22 +865,6 @@
                                             <span class="checkmark"></span>
                                             <b>Move navigation buttons to top toolbar</b> (note that Kiwix icon acts as Home button)
                                         </label>
-                                        <div class="row">
-                                            <div class="col-sm-6">
-                                                <label class="checkbox" title="This is useful for very low-memory devices, or to increase page rendering speed.">
-                                                    <input type="checkbox" name="imageDisplayMode" id="imageDisplayModeCheck">
-                                                    <span class="checkmark"></span>
-                                                    <b>Display images if any</b> (if hidden, tap the <span style="background-color:lightblue; color:black;">&nbsp;blue area&nbsp;</span> to display one-by-one)
-                                                </label>
-                                            </div>
-                                            <div class="col-sm-6" id="imageManipulationDiv">
-                                                <label class="checkbox" title="This allows saving images to disk (with right-click/long-press), or opening them in a new tab, but uses slightly more memory because images are stored in the document as dataURIs. WARNING: setting may interfere with dynamic content in non-Wikimedia ZIMs.">
-                                                    <input type="checkbox" name="manipulateImages" id="manipulateImagesCheck">
-                                                    <span class="checkmark"></span>
-                                                    <b>Allow image manipulation</b> (increases app memory usage and may interfere with dynamic content)
-                                                </label>
-                                            </div>
-                                        </div>
                                         <div class="row">
                                             <div class="col-sm-12">
                                                 <b>Alphabetical ZIM Archive Index:</b>
@@ -920,11 +935,6 @@
                                             <input type="checkbox" name="openAllSections" id="openAllSectionsCheck">
                                             <span class="checkmark"></span>
                                             <b>Open all headings</b> (<i>for WikiMedia ZIMs</i>: sets the state of collapsible headings on article load)
-                                        </label>
-                                        <label class="checkbox" title="By default, this app will use the Windows Maps app when you click on a map pin (you can download offline maps in Windows Settings -> Offline maps). If you prefer to use OpenStreetMap (online), then check this box.">
-                                            <input type="checkbox" name="useOSM" id="useOSMCheck">
-                                            <span class="checkmark"></span>
-                                            <b>Use online OpenStreetMap for map pins instead of offline Windows Maps</b> (for some Wikipedia and English / German Wikivoyage)
                                         </label>
                                     </div> 
                                 </div>
