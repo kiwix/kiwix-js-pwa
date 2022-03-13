@@ -56,6 +56,7 @@ jobs:
     - name: rewrite app version number
       run: |
         $INPUT_VERSION = $Env:INPUT_VERSION
+        $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         ./scripts/Rewrite-AppVersion.ps1
     - name: publish
