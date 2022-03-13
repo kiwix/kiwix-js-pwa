@@ -15,6 +15,8 @@ for file in ./bld/Electron/* ; do
     if [[ "$file" =~ \.(AppImage|deb|rpm)$ ]]; then
         renamed_file=$(sed 's/\s/-/g' <<<"$file")
         renamed_file=$(sed 's/_/-/g' <<<"$renamed_file")
+        # Convert to all lowercase
+        renamed_file="${renamed_file,,}"
         if [[ "$file" != "$renamed_file" ]]; then
             mv "$file" "$renamed_file"
         fi
