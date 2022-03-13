@@ -1,5 +1,14 @@
 # Changelog
 
+## In-progress release 1.9.4
+
+* UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-02`
+* FEATURE: Option to hyperlink images in Wikimedia ZIMs to the online File for the image
+* ENHANCEMENT: Electron app now uses File System Access API except for initial loading of packaged archive
+* DEV: Provided instructions on how to split a ZIM archive using WSL
+* FIX: App now (optionally) remembers the last viewed article for split ZIM archives
+* FIX: Electron and UWP apps now auto-load split ZIM archives
+
 ## Release 1.9.3
 
 * UPDATE: New sample archive: `wikipedia_en_climate_change_mini_2022-02`
