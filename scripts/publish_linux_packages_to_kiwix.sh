@@ -26,13 +26,13 @@ for file in ./bld/Electron/* ; do
         filename=$(sed 's/kiwix_js_electron/kiwix-js-electron/' <<<"$filename")
         filename=$(sed 's/x86_64/x86-64/' <<<"$filename")
         # Normalize 64bit naming convention
-        filenamee=$(sed 's/amd64/x86-64/' <<<"filename")
+        filename=$(sed 's/amd64/x86-64/' <<<"filename")
         # Remove spurious dot
-        filenamee=$(sed -E 's/\.(i686|x86)/_\1/' <<<"$filename")
+        filename=$(sed -E 's/\.(i686|x86)/_\1/' <<<"$filename")
         # Swap order of architecture and release number
-        filenamee=$(sed -E 's/(electron)(.+)(_(i[36]86|x86)[^.]*)/\1\3\2/' <<<"$filename")
+        filename=$(sed -E 's/(electron)(.+)(_(i[36]86|x86)[^.]*)/\1\3\2/' <<<"$filename")
         # Delete release number other than SHA
-        filenamee=$(sed -E 's/_[0-9.]+([-_.])/\1/' <<<"$filename")
+        filename=$(sed -E 's/_[0-9.]+([-_.])/\1/' <<<"$filename")
         # Put it all together
         renamed_file="$directory$filename"
         if [[ "$file" != "$renamed_file" ]]; then
