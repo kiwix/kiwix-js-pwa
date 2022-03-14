@@ -25,15 +25,25 @@ if ((Get-Content ./package.json) -match 'nwVersion') {
 $Packages | % {
     $file = $_
     if ($file -match '\.(exe|zip|msix)$') {
-        $renamed_file = $file -replace '\s', '-'
-        $renamed_file = $renamed_file -replace '_', '-'
-        $renamed_file = $renamed_file -creplace '-N-', '-NWJS-'
+        $directory = $file -replace '^(.+[\\/])[^\\/]+$', '$1'
+        $filename = $file -replace '^.+[\\/]([^\\/]+)$', '$1'
+        # Convert all spaces and hyphens to underscore
+        $filename = $filename -replace '[\s-]', '_'
+        $filename = $filename -creplace '_N([_.])', '_NWJS$1'
         # Swap architecture and release number, and remove redundant -win
-        $renamed_file = $renamed_file -replace '(windows(?:-XP)?)([^\\/]+)-win(-ia32[^.]*)', '$1$3$2'
+        $filename = $filename -replace '(windows(?:_XP)?)(.+)_win(_ia32[^.]*)', '$1$3$2'
         # Convert filename to lowercase
-        $renamed_file = $renamed_file -replace '[^\\/]+$', ($renamed_file -replace '^.+?([^\\/]+)$', '$1').ToLower()
-        # Convert back the exceptions
-        $renamed_file = (($renamed_file -creplace '-xp([-.])', '-XP$1') -creplace '-nwjs([-.])', '-NWJS$1') -creplace '-e([-.])', '-E$1'
+        $filename = $filename.ToLower()
+        # Convert back appname to hyphens
+        $filename = $filename -replace 'kiwix_js_(electron|windows)', 'kiwix-js-$1'
+        # Fix Windows Setup version so that it is clear it is a Windows executable
+        $filename = $filename -replace 'electron_setup', 'electron_win_setup'
+        # Convert back the exceptions and remove the -E
+        $filename = (($filename -creplace '_xp([_.])', '-XP$1') -creplace '_nwjs([_.])', '_NWJS$1') -creplace '_e([_.])', '$1'
+        # Remove the version number
+        $filename = $filename -replace '_[0-9.]+(-_.)', '$1'
+        # Put back together
+        $renamed_file = "$directory$filename"
         if ($file -ne $renamed_file) {
             mv $file $renamed_file
         }
