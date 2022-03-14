@@ -21,6 +21,12 @@ for file in ./bld/Electron/* ; do
         filename="${filename,,}"
         renamed_file="$directory$filename"
         renamed_file=$(sed 's/-e-/-E-/' <<<"$renamed_file")
+        # Normalize 64bit naming convention
+        renamed_file=$(sed 's/amd64/x86-64/' <<<"$renamed_file")
+        # Remove spurious dot
+        renamed_file=$(sed -E 's/\.(i686|x86)/-\1/' <<<"$renamed_file")
+        # Swap order of architecture and release number
+        renamed_file=$(sed -E 's/(electron)(.+)(-(i[36]86|x86)[^.]*)/\1\3\2/' <<<"$renamed_file")
         if [[ "$file" != "$renamed_file" ]]; then
             mv "$file" "$renamed_file"
         fi
