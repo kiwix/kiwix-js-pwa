@@ -14,7 +14,7 @@ ssh -o StrictHostKeyChecking=no -i ./scripts/ssh_key ci@download.kiwix.org mkdir
 for file in ./bld/Electron/* ; do
     if [[ "$file" =~ \.(AppImage|deb|rpm)$ ]]; then
         directory=$(sed -E 's/[^\/]+$//' <<<"$file")
-        filename=$(sed -E 's/^.+([^\/]+)$/\1/' <<<"$file")
+        filename=$(sed -E 's/[^/]+\///g' <<<"$file")
         filename=$(sed 's/\s/-/g' <<<"$filename")
         filename=$(sed 's/_/-/g' <<<"$filename")
         # Convert to all lowercase
