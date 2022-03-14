@@ -9,14 +9,17 @@ if [[ "qq${CRON_LAUNCHED}" != "qq" ]]; then
     CURRENT_DATE=$(date +'%Y-%m-%d')
     target="/data/download/nightly/$CURRENT_DATE"
 fi
-echo "Uploading packages to https://download.kiwix.org/$target/"
-# ssh -o StrictHostKeyChecking=no -i ./scripts/ssh_key ci@download.kiwix.org mkdir -p $target
+echo "Uploading packages to https://download.kiwix.org$target/"
+ssh -o StrictHostKeyChecking=no -i ./scripts/ssh_key ci@download.kiwix.org mkdir -p $target
 for file in ./bld/Electron/* ; do
     if [[ "$file" =~ \.(AppImage|deb|rpm)$ ]]; then
-        renamed_file=$(sed 's/\s/-/g' <<<"$file")
-        renamed_file=$(sed 's/_/-/g' <<<"$renamed_file")
+        directory=$(sed -E 's/[^\/]+$//' <<<"$file")
+        filename=$(sed -E 's/^.+([^\/]+)$/\1/' <<<"$file")
+        filename=$(sed 's/\s/-/g' <<<"$filename")
+        filename=$(sed 's/_/-/g' <<<"$filename")
         # Convert to all lowercase
-        renamed_file="${renamed_file,,}"
+        filename="${filename,,}"
+        renamed_file="$directory$filename"
         if [[ "$file" != "$renamed_file" ]]; then
             mv "$file" "$renamed_file"
         fi
