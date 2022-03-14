@@ -22,8 +22,8 @@ for file in ./bld/Electron/* ; do
         # Convert to all lowercase
         filename="${filename,,}"
         # Restore hyphens in app name and architecture
-        filename=$(sed 'kiwix_js_electron/kiwix-js-electron/' <<<"$filename")
-        filename=$(sed 'x86_64/x86-64/' <<<"$filename")
+        filename=$(sed 's/kiwix_js_electron/kiwix-js-electron/' <<<"$filename")
+        filename=$(sed 's/x86_64/x86-64/' <<<"$filename")
         # Normalize 64bit naming convention
         filenamee=$(sed 's/amd64/x86-64/' <<<"filename")
         # Remove spurious dot
