@@ -15,18 +15,25 @@ for file in ./bld/Electron/* ; do
     if [[ "$file" =~ \.(AppImage|deb|rpm)$ ]]; then
         directory=$(sed -E 's/[^\/]+$//' <<<"$file")
         filename=$(sed -E 's/[^/]+\///g' <<<"$file")
-        filename=$(sed 's/\s/-/g' <<<"$filename")
-        filename=$(sed 's/_/-/g' <<<"$filename")
+        # Convert spaces and hyphens to underscores
+        filename=$(sed -E 's/[\s-]/_/g' <<<"$filename")
+        # Remove unneeded elements
+        filename=$(sed -E 's/_E([_.])/\1/' <<<"$filename")
         # Convert to all lowercase
         filename="${filename,,}"
-        renamed_file="$directory$filename"
-        renamed_file=$(sed 's/-e-/-E-/' <<<"$renamed_file")
+        # Restore hyphens in app name and architecture
+        filename=$(sed 'kiwix_js_electron/kiwix-js-electron/' <<<"$filename")
+        filename=$(sed 'x86_64/x86-64/' <<<"$filename")
         # Normalize 64bit naming convention
-        renamed_file=$(sed 's/amd64/x86-64/' <<<"$renamed_file")
+        filenamee=$(sed 's/amd64/x86-64/' <<<"filename")
         # Remove spurious dot
-        renamed_file=$(sed -E 's/\.(i686|x86)/-\1/' <<<"$renamed_file")
+        filenamee=$(sed -E 's/\.(i686|x86)/_\1/' <<<"$filename")
         # Swap order of architecture and release number
-        renamed_file=$(sed -E 's/(electron)(.+)(-(i[36]86|x86)[^.]*)/\1\3\2/' <<<"$renamed_file")
+        filenamee=$(sed -E 's/(electron)(.+)(_(i[36]86|x86)[^.]*)/\1\3\2/' <<<"$filename")
+        # Delete release number other than SHA
+        filenamee=$(sed -E 's/_[0-9.]+([-_.])/\1/' <<<"$filename")
+        # Put it all together
+        renamed_file="$directory$filename"
         if [[ "$file" != "$renamed_file" ]]; then
             mv "$file" "$renamed_file"
         fi
