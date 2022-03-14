@@ -28,6 +28,8 @@ $Packages | % {
         $renamed_file = $file -replace '\s', '-'
         $renamed_file = $renamed_file -replace '_', '-'
         $renamed_file = $renamed_file -creplace '-N-', '-NWJS-'
+        # Swap architecture and release number, and remove redundant -win
+        $renamed_file = $renamed_file -replace '(windows(?:-XP)?)(.+)-win(-ia32[^.]*)', '$1$3$2'
         if ($file -ne $renamed_file) {
             mv $file $renamed_file
         }
