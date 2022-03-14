@@ -3544,11 +3544,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     var lastPage = '';
                     // NB code below must be able to run async, hence it is a function
                     var goToRetrievedContent = function(html) {
-                        if (/<html[^>]*>/.test(html)) {
+                        if (/<html[^>]*>/i.test(html)) {
                             console.log("Fast article retrieval from localStorage: " + lastPage);
+                            if (/<html[^>]*islandingpage/i.test(html)) {
+                                params.isLandingPage = true;
+                                appstate.selectedArchive.landingPageUrl = dirEntry.namespace + '/' + dirEntry.url;
+                            }
                             setTimeout(function () {
                                 displayArticleContentInContainer(dirEntry, html);
-                            }, 10);
+                            }, 0);
                         } else {
                             //if (params.contentInjectionMode === 'jquery') {
                             // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
@@ -3883,6 +3887,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             console.log("** HTML received **");
             console.log("Loading stylesheets...");
             
+            params.isLandingPage = (appstate.selectedArchive.landingPageUrl === (dirEntry.namespace + '/' + dirEntry.url)) ?
+                true : params.isLandingPage;
+            // Due to fast article retrieval algorithm, we need to embed a reference to the landing page in the html
+            if (params.isLandingPage && !/<html[^>]*islandingpage/i.test(htmlArticle)) {
+                htmlArticle = htmlArticle.replace(/(<html[^>]*)>/i, '$1 data-kiwixid="islandingpage">');
+            }
+
             // Display Bootstrap warning alert if the landing page contains active content
             if (!params.hideActiveContentWarning && params.isLandingPage && (params.contentInjectionMode === 'jquery' || params.manipulateImages || params.allowHTMLExtraction)) {
                 if (regexpActiveContent.test(htmlArticle)) uiUtil.displayActiveContentWarning();
@@ -3891,8 +3902,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
             // App appears to have successfully launched
             params.appIsLaunching = false;
-            // params.isLandingPage = false;
-
+            
             // Calculate the current article's ZIM baseUrl to use when processing relative links
             params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
                 // URI-encode anything that is not a '/'
@@ -5135,7 +5145,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         uiUtil.clearSpinner();
                     });
                 } else {
-                    params.isLandingPage = false;
+                    // params.isLandingPage = false;
                     $('.alert').hide();
                     readArticle(dirEntry);
                 }
@@ -5189,6 +5199,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // DEV: see comment above under goToRandomArticle()
                 if (dirEntry.redirect || dirEntry.getMimetype() === 'text/html' || dirEntry.namespace === 'A') {
                         params.isLandingPage = true;
+                        appstate.selectedArchive.landingPageUrl = dirEntry.namespace + '/' + dirEntry.url;
                         readArticle(dirEntry);
                     } else {
                         console.error("The main page of this archive does not seem to be an article");
