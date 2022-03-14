@@ -37,7 +37,7 @@ for file in ./bld/Electron/* ; do
         if [[ "$file" != "$renamed_file" ]]; then
             mv "$file" "$renamed_file"
         fi
+        echo "Copying $renamed_file to $target"
         scp -o StrictHostKeyChecking=no -i ./scripts/ssh_key "$renamed_file" ci@download.kiwix.org:$target
-        echo "Copied $renamed_file to $target"
     fi
 done
