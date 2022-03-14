@@ -26,7 +26,7 @@ for file in ./bld/Electron/* ; do
         filename=$(sed 's/kiwix_js_electron/kiwix-js-electron/' <<<"$filename")
         filename=$(sed 's/x86_64/x86-64/' <<<"$filename")
         # Normalize 64bit naming convention
-        filename=$(sed 's/amd64/x86-64/' <<<"filename")
+        filename=$(sed 's/amd64/x86-64/' <<<"$filename")
         # Remove spurious dot
         filename=$(sed -E 's/\.(i686|x86)/_\1/' <<<"$filename")
         # Swap order of architecture and release number
