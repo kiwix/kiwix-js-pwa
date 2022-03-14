@@ -20,6 +20,7 @@ for file in ./bld/Electron/* ; do
         # Convert to all lowercase
         filename="${filename,,}"
         renamed_file="$directory$filename"
+        renamed_file=$(sed 's/-e-/-E-/' <<<"$renamed_file")
         if [[ "$file" != "$renamed_file" ]]; then
             mv "$file" "$renamed_file"
         fi
