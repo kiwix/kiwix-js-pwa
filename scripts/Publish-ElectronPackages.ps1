@@ -33,7 +33,7 @@ $Packages | % {
         # Convert filename to lowercase
         $renamed_file = $renamed_file -replace '[^\\/]+$', ($renamed_file -replace '^.+?([^\\/]+)$', '$1').ToLower()
         # Convert back the exceptions
-        $renamed_file = $renamed_file -replace '-(?:xp|e|nwsj)[-.]', ($renamed_file -replace '^.+?(-(?:xp|e|nwjs)[-.]).+$', '$1').ToUpper()
+        $renamed_file = (($renamed_file -creplace '-xp([-.])', '-XP$1') -creplace '-nwjs([-.])', '-NWJS$1') -creplace '-e([-.])', '-E$1'
         if ($file -ne $renamed_file) {
             mv $file $renamed_file
         }
