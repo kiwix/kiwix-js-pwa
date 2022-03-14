@@ -2924,12 +2924,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 return;
             }
             // Check for usable file types
+            var firstFileIndex = null;
             for (var i = files.length; i--;) {
                 // DEV: you can support other file types by adding (e.g.) '|dat|idx' after 'zim\w{0,2}'
                 if (!/\.(?:zim\w{0,2})$/i.test(files[i].name)) {
                     uiUtil.systemAlert("One or more files does not appear to be a ZIM file!");
                     return;
                 }
+                // Note the index of the .zimaa file
+                firstFileIndex = /\.zimaa$/i.test(files[i].name) ? i : firstFileIndex;
                 // Allow reading with electron if we have the path info
                 if (typeof window.fs !== 'undefined' && files[i].path) {
                     files[i].readMode = 'electron';
@@ -2952,7 +2955,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
             // If the file name is already in the archive list, try to select it in the list
             var listOfArchives = document.getElementById('archiveList');
-            if (listOfArchives) listOfArchives.value = files[0].name;
+            // Files aren't in order necessarily, so we need to find
+            if (listOfArchives && firstFileIndex) listOfArchives.value = files[firstFileIndex].name;
             // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
             if (cssBlobCache) cssBlobCache = new Map();
             appstate.selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
