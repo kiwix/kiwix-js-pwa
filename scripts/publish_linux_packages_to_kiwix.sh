@@ -16,7 +16,8 @@ for file in ./bld/Electron/* ; do
         directory=$(sed -E 's/[^\/]+$//' <<<"$file")
         filename=$(sed -E 's/[^/]+\///g' <<<"$file")
         # Convert spaces and hyphens to underscores
-        filename=$(sed -E 's/[\s-]/_/g' <<<"$filename")
+        filename=$(sed 's/\s/_/g' <<<"$filename")
+        filename=$(sed 's/-/_/g' <<<"$filename")
         # Remove unneeded elements
         filename=$(sed -E 's/_E([_.])/\1/' <<<"$filename")
         # Convert to all lowercase
