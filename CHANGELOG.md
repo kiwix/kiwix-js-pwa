@@ -6,8 +6,10 @@
 * FEATURE: Option to hyperlink images in Wikimedia ZIMs to the online File for the image
 * ENHANCEMENT: Electron app now uses File System Access API except for initial loading of packaged archive
 * DEV: Provided instructions on how to split a ZIM archive using WSL
+* DEV: The NWJS app is now build via CI (including nightly)
 * FIX: App now (optionally) remembers the last viewed article for split ZIM archives
 * FIX: Electron and UWP apps now auto-load split ZIM archives
+* FIX: Failure to recognize landing page when retrieved from history or cache
 
 ## Release 1.9.3
 
