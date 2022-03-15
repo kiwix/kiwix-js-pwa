@@ -41,10 +41,10 @@ jobs:
     - name: publish
       run: |
         npm run publish
-        echo "$SSH_KEY" > ./scripts/ssh_key
-        chmod 600 ./scripts/ssh_key
-        chmod +x ./scripts/publish_linux_packages_to_kiwix.sh
-        ./scripts/publish_linux_packages_to_kiwix.sh
+        # echo "$SSH_KEY" > ./scripts/ssh_key
+        # chmod 600 ./scripts/ssh_key
+        # chmod +x ./scripts/publish_linux_packages_to_kiwix.sh
+        # ./scripts/publish_linux_packages_to_kiwix.sh
 
   Release_Windows:
     runs-on: windows-latest
@@ -64,38 +64,38 @@ jobs:
     - name: publish
       run: |
         npm run publish
-        $SSH_KEY = $Env:SSH_KEY
-        echo "$SSH_KEY" > .\scripts\ssh_key
-        $INPUT_VERSION = $Env:INPUT_VERSION
-        $INPUT_TARGET = $Env:INPUT_TARGET
-        $CRON_LAUNCHED = $Env:CRON_LAUNCHED
-        ./scripts/Publish-ElectronPackages.ps1
+        # $SSH_KEY = $Env:SSH_KEY
+        # echo "$SSH_KEY" > .\scripts\ssh_key
+        # $INPUT_VERSION = $Env:INPUT_VERSION
+        # $INPUT_TARGET = $Env:INPUT_TARGET
+        # $CRON_LAUNCHED = $Env:CRON_LAUNCHED
+        # ./scripts/Publish-ElectronPackages.ps1
 
-  Release_NWJS:
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v3       
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 16
-    - name: select NWJS app
-      run: |
-        del package.json
-        ren package.json.nwjs package.json
-    - name: install dependencies
-      run: npm install
-    - name: rewrite app version number
-      run: |
-        $INPUT_VERSION = $Env:INPUT_VERSION
-        $INPUT_TARGET = $Env:INPUT_TARGET
-        $CRON_LAUNCHED = $Env:CRON_LAUNCHED
-        ./scripts/Rewrite-AppVersion.ps1
-    - name: publish
-      run: |
-        ./scripts/Build-NWJS.ps1 -only32bit
-        $SSH_KEY = $Env:SSH_KEY
-        echo "$SSH_KEY" > .\scripts\ssh_key
-        $INPUT_VERSION = $Env:INPUT_VERSION
-        $INPUT_TARGET = $Env:INPUT_TARGET
-        $CRON_LAUNCHED = $Env:CRON_LAUNCHED
-        ./scripts/Publish-ElectronPackages.ps1
+  # Release_NWJS:
+  #   runs-on: windows-latest
+  #   steps:
+  #   - uses: actions/checkout@v3       
+  #   - uses: actions/setup-node@v3
+  #     with:
+  #       node-version: 16
+  #   - name: select NWJS app
+  #     run: |
+  #       del package.json
+  #       ren package.json.nwjs package.json
+  #   - name: install dependencies
+  #     run: npm install
+  #   - name: rewrite app version number
+  #     run: |
+  #       $INPUT_VERSION = $Env:INPUT_VERSION
+  #       $INPUT_TARGET = $Env:INPUT_TARGET
+  #       $CRON_LAUNCHED = $Env:CRON_LAUNCHED
+  #       ./scripts/Rewrite-AppVersion.ps1
+  #   - name: publish
+  #     run: |
+  #       ./scripts/Build-NWJS.ps1 -only32bit
+  #       $SSH_KEY = $Env:SSH_KEY
+  #       echo "$SSH_KEY" > .\scripts\ssh_key
+  #       $INPUT_VERSION = $Env:INPUT_VERSION
+  #       $INPUT_TARGET = $Env:INPUT_TARGET
+  #       $CRON_LAUNCHED = $Env:CRON_LAUNCHED
+  #       ./scripts/Publish-ElectronPackages.ps1
