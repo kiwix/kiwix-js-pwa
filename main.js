@@ -115,7 +115,17 @@ app.whenReady().then(() => {
     createWindow();
     registerListeners();
     
+
+    var appName = app.getName();
+    console.log('App name: ' + appName);
+        
     setTimeout(function () {
+        // Don't auto update if the app is a packaged app
+        if (/wikimed|wikivoyage/i.test(appName)) {
+            console.log('Auto-update: Packaged apps with large ZIM archives are not auto-updated.\n');
+            return;
+        }
+        console.log('Auto-update: checking for update...\n');
         autoUpdater.checkForUpdates();
     }, 30000);
 
