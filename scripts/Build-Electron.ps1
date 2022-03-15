@@ -17,6 +17,8 @@ if (($electronbuild -eq "")) {
   }
 }
 if ($electronbuild -eq "cloud") {
+  $branch_name = &{ git branch --show-current }
+  "Setting the build branch to: $branch_name"
   $release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-windows/actions/workflows/build-electron.yml/dispatches'
   # Set up dispatch_params object - for API see https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event
   $dispatch_params = @{
@@ -27,7 +29,8 @@ if ($electronbuild -eq "cloud") {
       'Accept' = 'application/vnd.github.v3+json'
     }
     Body = @{
-      'ref' = 'Kiwix-JS-Wikivoyage'
+      'ref' = $branch_name
+      'inputs' = @{ 'target' = 'release' }
     } | ConvertTo-Json
     ContentType = "application/json"
   }
@@ -50,7 +53,7 @@ $comp_electron_archive = $base_dir + "Kiwix.JS.Electron.$base_tag.zip"
 $WinInstaller = $base_dir + "Kiwix JS $alt_tag Setup $numeric_tag-E.exe"
 if ($alt_tag -imatch 'WikiMed|Wikivoyage') {
   $comp_electron_archive = $base_dir + "$text_tag.by.Kiwix.$base_tag.zip"
-  $WinInstaller = $base_dir + "$alt_tag by Kiwix Setup $numeric_tag-E.exe"
+  $WinInstaller = $base_dir + "$alt_tag.by.Kiwix.Setup.$numeric_tag-E.exe"
 }
 if ($electronbuild -eq "local") {
   if (-Not (Test-Path $WinInstaller -PathType Leaf)) {
