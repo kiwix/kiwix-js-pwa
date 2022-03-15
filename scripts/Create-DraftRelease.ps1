@@ -173,7 +173,7 @@ if (($flavour -match '_E') -or $plus_electron) {
       $electronbuild = 'cloud'
       if (-Not ($release_tag_name -cmatch '-E$')) {
         $original_release_tag_name = $release_tag_name
-        $release_tag_name = $release_tag_name -creplace '-?E$', ''
+        $release_tag_name = $release_tag_name -creplace '-?E$|-WikiMed|-Wikivoyage', ''
         $release_tag_name = $release_tag_name + '-E' 
         "Changing release tag name to $release_tag_name"
       }
