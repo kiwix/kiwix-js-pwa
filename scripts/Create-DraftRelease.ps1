@@ -160,7 +160,7 @@ if ($json_object -imatch '"name":\s"([\w]+-[^"]+)') {
 
 # Determine type of Electron build if any
 $electronbuild = ""
-if ($text_tag -match 'WikiMed|Wikivoyage') {
+if ($text_tag -match 'WikiMed') {
   $electronbuild = "local"
 }
 if (($flavour -match '_E') -or $plus_electron) {
