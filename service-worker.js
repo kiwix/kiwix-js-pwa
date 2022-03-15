@@ -277,7 +277,7 @@ self.addEventListener('fetch', function (event) {
     // so we must bypass it here if we're fetching a local file
     if (/^file:/i.test(rqUrl) && !(regexpZIMUrlWithNamespace.test(strippedUrl) && /\.zim\w{0,2}\//i.test(strippedUrl))) return;
     // Don't cache download links
-    if (regexpKiwixDownloadLinks.test(strippedUrl)) return;
+    if (regexpKiwixDownloadLinks.test(rqUrl)) return;
     // Select cache depending on request format
     var cache = /\.zim\//i.test(strippedUrl) ? ASSETS_CACHE : APP_CACHE;
     if (cache === ASSETS_CACHE && !fetchCaptureEnabled) return;
