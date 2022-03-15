@@ -1,8 +1,8 @@
 name: 'Build Electron and NWJS packages'
 on:
-  schedule:
-  # Nightly run at 03:39 UTC
-    - cron: '39 03 * * *'
+  # schedule:
+  # # Nightly run at 03:39 UTC
+  #   - cron: '39 03 * * *'
   workflow_dispatch:
     inputs:
       version:
@@ -26,10 +26,12 @@ jobs:
   Release_Linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2       
-    - uses: actions/setup-node@master
+    - uses: actions/checkout@v3
       with:
-        node-version: 14
+        ref: Kiwix-JS-Wikivoyage       
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
     - name: install dependencies
       run: npm install
     - name: rewrite app version number
@@ -47,10 +49,10 @@ jobs:
   Release_Windows:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2       
-    - uses: actions/setup-node@master
+    - uses: actions/checkout@v3      
+    - uses: actions/setup-node@v3
       with:
-        node-version: 14
+        node-version: 16
     - name: install dependencies
       run: npm install
     - name: rewrite app version number
@@ -72,10 +74,10 @@ jobs:
   Release_NWJS:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2       
-    - uses: actions/setup-node@master
+    - uses: actions/checkout@v3       
+    - uses: actions/setup-node@v3
       with:
-        node-version: 14
+        node-version: 16
     - name: select NWJS app
       run: |
         del package.json
