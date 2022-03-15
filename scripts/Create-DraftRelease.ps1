@@ -471,7 +471,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   }
   if ($plus_electron) {
     $upload_assets += $AppImageArchives
-    $upload_assets += $WinInstaller
+    if ($electronbuild -eq 'local') { $upload_assets += $WinInstaller }
     if ($old_windows_support) {
       $upload_assets += $nwjs_archives
     } else {
@@ -499,7 +499,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       InFile = $asset
       ContentType = 'application/octet-stream'
     }
-    "`nUploading $asset..."
+    "`n*** Uploading $asset..."
     # Upload asset to the release server
     # $upload = [System.IO.File]::ReadAllBytes($upload_file) | Invoke-RestMethod @upload_params
     if (-Not $dryrun) {
