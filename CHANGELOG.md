@@ -3,7 +3,6 @@
 ## Release 1.9.4-Wikivoyage
 
 * UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2022-03`
-* FEATURE: Electron apps now auto-update (Windows exe and Linux AppImage versions only)
 * FEATURE: Option to hyperlink images in Wikimedia ZIMs to the online File for the image
 * ENHANCEMENT: Electron app now uses File System Access API except for initial loading of packaged archive
 * DEV: Provided instructions on how to split a ZIM archive using WSL
