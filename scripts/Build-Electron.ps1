@@ -1,7 +1,7 @@
 # This script is intended to be run by Create-DraftRelease, and must be dot-sourced (run with `. ./Build-Electron.ps1` or `. /path/to/Build-Electron.ps1`)
 # because it modifies variables needed in Create-DraftRelease
 $base_dir = "$PSScriptRoot/../bld/electron/"
-if ($text_tag -match 'WikiMed|Wikivoyage') {
+if ($text_tag -match 'WikiMed') {
   $electronbuild = "local"
 }
 if (($electronbuild -eq "")) {
@@ -27,7 +27,7 @@ if ($electronbuild -eq "cloud") {
       'Accept' = 'application/vnd.github.v3+json'
     }
     Body = @{
-      'ref' = 'master'
+      'ref' = 'Kiwix-JS-Wikivoyage'
     } | ConvertTo-Json
     ContentType = "application/json"
   }
