@@ -1,39 +1,28 @@
 # Changelog
 
-## In-progress release 1.9.4
+## Release 1.9.4-Wikivoyage
 
-* UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-02`
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2022-03`
+* FEATURE: Electron apps now auto-update (Windows exe and Linux AppImage versions only)
 * FEATURE: Option to hyperlink images in Wikimedia ZIMs to the online File for the image
 * ENHANCEMENT: Electron app now uses File System Access API except for initial loading of packaged archive
 * DEV: Provided instructions on how to split a ZIM archive using WSL
-* DEV: The NWJS app is now built via CI (including nightly)
 * FIX: App now (optionally) remembers the last viewed article for split ZIM archives
 * FIX: Electron and UWP apps now auto-load split ZIM archives
 * FIX: Failure to recognize landing page when retrieved from history or cache
-
-## Release 1.9.3
-
-* UPDATE: New sample archive: `wikipedia_en_climate_change_mini_2022-02`
-* FEATURE: Electron apps now auto-update (Windows exe and Linux AppImage versions only)
-* ENHANCEMENT: App now recognizes `mdwiki` ZIMs as WikiMed variants, and shows custom landing page
-* REGRESSION: The NWJS has reverted to using JQuery mode by default while investigating an app crash with some articles in SW mode
 * DEV: Automatic building of Electron app now enabled via GitHub Actions
 * FIX: Improvement to independent browsing of windows in UWP app in SW mode
-* FIX: Patch some CSS errors in `mdwiki` ZIMs
 * FIX: Stabilize page loading when assets are missing (in SW mode)
 * FIX: Styling of image-based landing pages
 
-## Release 1.9.0
+## Release 1.9.1-Wikivoyage
 
-* ENHANCEMENT: Service Worker mode is now the default in contexts or frameworks that natively support it with good performance
-* ENHANCEMENT: Option to reset app to defaults in Expert settings
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2022-02`
 * ENHANCEMENT: Better feedback to user during slow ZIM archive loading
 * ENHANCEMENT: Included favicons at various resolutions
 * ENHANCEMENT: App now uses Bootstrap asynchronous dialogue boxes for modal alert and confirm
-* ENHANCEMENT: App now recognizes `mdwiki` ZIMs as WikiMed variants, and shows custom landing page
 * DEV: Developer option to bypass appCache
 * DEV: Window location information now shown in API panel
-* FIX: Improvement to independent browsing of windows in UWP app in SW mode
 * FIX: Bug that would sometimes cause a blank screen in Service Worker mode on slow devices
 * FIX: Loading of articles that have question marks or hashes in the title
 * FIX: Incorrect attempt to register Service Worker in XP version of NWJS app causing fatal crash on startup
