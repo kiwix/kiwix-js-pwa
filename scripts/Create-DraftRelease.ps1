@@ -442,7 +442,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   if ($plus_electron) {
     "Building add-on: Electron packages..."
     $base_tag_origin = $base_tag
-    $base_tag = $base_tag -replace '^([\d.]+)', '$1E'
+    $base_tag = $base_tag -replace '^([\d.]+)', '$1-E'
     . $PSScriptRoot/Build-Electron.ps1
     $base_tag = $base_tag_origin
   } 
