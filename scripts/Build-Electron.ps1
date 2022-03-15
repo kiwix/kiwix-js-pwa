@@ -49,10 +49,10 @@ if ($electronbuild -eq "cloud") {
 # Package installer electron app for Windows
 "`nChecking for installer package for Windows..."
 $alt_tag = $text_tag -ireplace 'Windows', 'Electron'
-$comp_electron_archive = $base_dir + "Kiwix.JS.Electron.$base_tag.zip"
+$comp_electron_archive = $base_dir + "Kiwix-JS-Electron-$base_tag.zip"
 $WinInstaller = $base_dir + "Kiwix JS $alt_tag Setup $numeric_tag-E.exe"
 if ($alt_tag -imatch 'WikiMed|Wikivoyage') {
-  $comp_electron_archive = $base_dir + "$text_tag.by.Kiwix.$base_tag.zip"
+  $comp_electron_archive = $base_dir + "$text_tag-by-Kiwix-$base_tag.zip"
   $WinInstaller = $base_dir + "$alt_tag.by.Kiwix.Setup.$numeric_tag-E.exe"
 }
 if ($electronbuild -eq "local") {
