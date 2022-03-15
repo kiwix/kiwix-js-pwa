@@ -3531,6 +3531,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             dirEntry.url = params.cachedStartPages[zimName].replace(/[AC]\//, '');
                             var title = htmlContent.match(/<title[^>]*>((?:[^<]|<(?!\/title))+)/);
                             dirEntry.title = title ? title[1] : dirEntry.title;
+                            appstate.selectedArchive.landingPageUrl = params.cachedStartPages[zimName];
                             displayArticleContentInContainer(dirEntry, htmlContent);
                         } else {
                             uiUtil.pollSpinner();
@@ -3887,7 +3888,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             console.log("** HTML received **");
             console.log("Loading stylesheets...");
             
-            params.isLandingPage = (appstate.selectedArchive.landingPageUrl === (dirEntry.namespace + '/' + dirEntry.url)) ?
+            params.isLandingPage = appstate.selectedArchive.landingPageUrl === dirEntry.namespace + '/' + dirEntry.url ?
                 true : params.isLandingPage;
             // Due to fast article retrieval algorithm, we need to embed a reference to the landing page in the html
             if (params.isLandingPage && !/<html[^>]*islandingpage/i.test(htmlArticle)) {
@@ -5128,7 +5129,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             //This removes any search highlighting
             clearFindInArticle();
             uiUtil.pollSpinner();
-            var zimName = appstate.selectedArchive._file.name.replace(/\.[^.]+$/, '').replace('_\d+_\d+$', '');
+            var zimName = appstate.selectedArchive._file.name.replace(/\.[^.]+$/, '').replace(/_\d+-\d+$/, '');
             if (~path.indexOf(params.cachedStartPages[zimName])) {
                 goToMainArticle();
                 return;
