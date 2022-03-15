@@ -3678,6 +3678,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 if (event.data.action === "askForContent") {
                     // The ServiceWorker asks for some content
                     var title = event.data.title;
+                    if (appstate.selectedArchive.landingPageUrl === title) params.isLandingPage = true;
                     var messagePort = event.ports[0];
                     if (!anchorParameter && event.data.anchorTarget) anchorParameter = event.data.anchorTarget;
                     // Intercept landing page if already transformed (because this might have a fake dirEntry)
