@@ -1,4 +1,10 @@
 ﻿# Publish Kiwix Electron packages to Kiwix download server
+[CmdletBinding()]
+param (
+    [string]$test = ""
+)
+
+$test = "./bld/Electron/kiwix_js_windows-XP-1.9.3-N-win-ia32.zip"
 
 $target = "/data/download/release/kiwix-js-electron"
 $keyfile = "$PSScriptRoot\ssh_key"
@@ -22,6 +28,9 @@ if ((Get-Content ./package.json) -match 'nwVersion') {
 } else {
     $packages = $(ls bld/Electron/*.*)
 }
+if ($test) {
+    $Packages = @($test)
+}
 $Packages | % {
     $file = $_
     if ($file -match '\.(exe|zip|msix)$') {
@@ -44,17 +53,24 @@ $Packages | % {
         $filename = $filename -replace '-windows(.*)_nwjs', '-nwjs_win$1'
         # Change ia32 to i386
         $filename = $filename -replace 'ia32', 'i386'
-        # Remove the version number
-        $filename = $filename -replace '_[0-9.]+([-_.])', '$1'
+        if ($CRON_LAUNCHED) {
+            # Remove the version number
+            $filename = $filename -replace '_[0-9.]+([-_.])', '$1'
+        }
         # Put back together
         $renamed_file = "$directory$filename"
-        if ($file -ne $renamed_file) {
-            mv $file $renamed_file
+        if ($test) {
+            "`n$file was renamed to $renamed_file"
+        } else {
+            # Rename the file
+            if ($file -ne $renamed_file) {
+                mv $file $renamed_file
+            }
+            # Replace absolute path with relative, and normalize to forward slashes
+            $renamed_file = $renamed_file -replace '^.*?([\\/]bld)', '.$1' -replace '[\\/]', '/'
+            "Copying $renamed_file to $target..."
+            & "C:\Program Files\Git\usr\bin\scp.exe" @('-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$renamed_file", "ci@download.kiwix.org:$target")
         }
-        # Replace absolute path with relative, and normalize to forward slashes
-        $renamed_file = $renamed_file -replace '^.*?([\\/]bld)', '.$1' -replace '[\\/]', '/'
-        "Copying $renamed_file to $target..."
-        & "C:\Program Files\Git\usr\bin\scp.exe" @('-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$renamed_file", "ci@download.kiwix.org:$target")
     }
 }
 ""
