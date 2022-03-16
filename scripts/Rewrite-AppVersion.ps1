@@ -20,12 +20,17 @@ if ($INPUT_VERSION) {
     $VERSION = $INPUT_VERSION
 } elseif ($TAG_VERSION) {
     $VERSION = $TAG_VERSION
-} elseif ($CRON_LAUNCHED) {
+} else {
+    # No version was provided, so we use one from init.js, and ensure all the others match
     $app_params = Select-String 'appVersion' "$PSScriptRoot\..\www\js\init.js" -List
     if ($app_params -match 'params\[[''"]appVersion[''"]]\s*=\s*[''"]([^''"]+)') {
         $app_tag = $matches[1]
-        $COMMIT_ID = $(git rev-parse --short HEAD)
-        $VERSION = "v$app_tag-$COMMIT_ID"   
+        $VERSION = "v$app_tag"
+        # Add a commit SHA if launched by CRON
+        if ($CRON_LAUNCHED) {
+            $COMMIT_ID = $(git rev-parse --short HEAD)
+            $VERSION = "v$app_tag-$COMMIT_ID"
+        }   
     } else {
         "`nCould not construct a valid nightly version number."
     }
