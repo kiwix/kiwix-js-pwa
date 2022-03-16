@@ -4,8 +4,6 @@ param (
     [string]$test = ""
 )
 
-$test = "./bld/Electron/kiwix_js_windows-XP-1.9.3-N-win-ia32.zip"
-
 $target = "/data/download/release/kiwix-js-electron"
 $keyfile = "$PSScriptRoot\ssh_key"
 $keyfile = $keyfile -ireplace '[\\/]', '/'
