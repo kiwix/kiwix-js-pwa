@@ -15,12 +15,14 @@ if [[ ${INPUT_TARGET} = "nightly" ]]; then
     echo "User manually requested a nightly build..."
     CRON_LAUNCHED="1"
 fi
-# If the script was launched by Cron, then there will be no INPUT_VERSION, so construct a nightly version number
+if [[ "rr$VERSION" = "rr"]]; then
+  # There was no version, so get version from init.js
+  VERSION="$(grep 'params\[.appVersion' www/js/init.js | sed -E "s/[^[:digit:]]+([^\"']+).*/\1/")"
+fi
+# If the script was launched by Cron, then version needs commit SHA
 if [[ "qq${CRON_LAUNCHED}" != "qq" ]]; then
   echo "This script was launched by the GitHub Cron job"
   COMMIT_ID=$(git rev-parse --short HEAD)
-  # Get version from init.js
-  VERSION="$(grep 'params\[.appVersion' www/js/init.js | sed -E "s/[^[:digit:]]+([^\"']+).*/\1/")"
   VERSION="v$VERSION-$COMMIT_ID"
 fi
 if [[ $VERSION =~ ^v?[0-9.]+ ]]; then
