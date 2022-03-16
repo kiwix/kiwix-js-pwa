@@ -15,7 +15,7 @@ if [[ ${INPUT_TARGET} = "nightly" ]]; then
     echo "User manually requested a nightly build..."
     CRON_LAUNCHED="1"
 fi
-if [[ "rr$VERSION" = "rr"]]; then
+if [[ "rr$VERSION" = "rr" ]]; then
   # There was no version, so get version from init.js
   VERSION="$(grep 'params\[.appVersion' www/js/init.js | sed -E "s/[^[:digit:]]+([^\"']+).*/\1/")"
 fi
