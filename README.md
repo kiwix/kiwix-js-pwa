@@ -5,8 +5,7 @@ available to people with limited or no Internet access. The software as well as 
 (which can be downloaded in the app). There are also two apps that come with content: [WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html) and [Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html) (no extra download needed).**
 
 *Try this app instantly by opening the installable PWA (Progressive Web App) in your browser: **[https://pwa.kiwix.org](https://pwa.kiwix.org/)**.
-Get a free [ZIM archive](https://wiki.kiwix.org/wiki/Content_in_all_languages) to use with it. You can easily get one from the Configuration
-page of the app, or [download](https://library.kiwix.org) one separately.*
+Get a free ZIM archive to use with it from the [Configuration page of the app](https://pwa.kiwix.org/www/index.html#downloads), or from [library.kiwix.org](https://library.kiwix.org).*
 
 This repository is for development of the Kiwix JS app for PWA, Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP). The latest code is usually
 on the master branch, but this is used for active development and may be several commits ahead of releases. Installable and portable versions for Windows
