@@ -46,7 +46,7 @@ $Packages | % {
         # Fix Windows Setup version so that it is clear it is a Windows executable
         $filename = $filename -replace 'electron_setup', 'electron_win_setup'
         # Convert back the exceptions and remove the -E
-        $filename = ($filename -creplace '_xp([_.])', '-XP$1') -creplace '_e([_.])', '$1'
+        $filename = $filename -creplace '_e([_.])', '$1'
         # Move nwjs
         $filename = $filename -replace '-windows(.*)_nwjs', '-nwjs_win$1'
         # Change ia32 to i386
