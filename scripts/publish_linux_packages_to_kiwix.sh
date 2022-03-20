@@ -31,8 +31,13 @@ for file in ./bld/Electron/* ; do
         filename=$(sed -E 's/\.(i686|x86)/_\1/' <<<"$filename")
         # Swap order of architecture and release number
         filename=$(sed -E 's/(electron)(.+)(_(i[36]86|x86)[^.]*)/\1\3\2/' <<<"$filename")
-        # Delete release number other than SHA
-        filename=$(sed -E 's/_[0-9.]+([-_.])/\1/' <<<"$filename")
+        if [[ $filename =~ \.appimage && (! $filename =~ i386) ]]; then
+            filename=$(sed -E 's/(electron)(.)/\1_x86-64\2/' <<<"$filename")
+        fi
+        if [[ "qq${CRON_LAUNCHED}" != "qq" ]]; then 
+            # Delete release number other than SHA if there is a SHA
+            filename=$(sed -E 's/_[0-9.]+([-_.])/\1/' <<<"$filename")
+        fi
         # Put it all together
         renamed_file="$directory$filename"
         if [[ "$file" != "$renamed_file" ]]; then
