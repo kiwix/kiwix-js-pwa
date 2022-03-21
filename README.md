@@ -1,4 +1,4 @@
-# Kiwix JS for PWA, Electron, NWJS and Universal Windows Platform
+# WikiMed Offline Medical Wikipedia for Electron and Universal Windows Platform
 
 **Kiwix is an offline reader for multilingual content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, etc. It makes knowledge
 available to people with limited or no Internet access. The software as well as the content is free for anyone to use. It requires an offline ZIM archive
@@ -26,9 +26,9 @@ This began as a simple port of [Kiwix JS](https://github.com/kiwix/kiwix-js), th
 although significant development has been undertaken to add functionality and to make the app sit happily with the Universal Windows Platform, and more
 recently Electron and NWJS, as well as to work as an installable PWA.
 
-The UWP app is available in the Microsoft Store at:
+The easiest way to install WikiMed is from the Microsoft Store:
 
-[https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j](https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j)
+https://www.microsoft.com/en-gb/store/p/wikimed/9phjsnp1cz8j
 
 It can also be installed (in Windows 10/11) by opening a Command Prompt or PowerShell terminal and typing `winget install kiwix`. The easiest way to sideload
 the UWP app is with `winget install kiwix`, but alternative sideloading instructions are available in the [release notes](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html).
@@ -52,7 +52,7 @@ egk10 at cam ac uk.
 
 # Privacy Policy
 
-When installed, Kiwix JS Windows works offline, and does not collect or record any of your personal data. It
+WikiMed Offline Medical Wikipedia works offline, and does not collect or record any of your personal data. It
 only remembers your browsing history for the duration of a session (for the purpose of returning to previously
 viewed pages). This history is lost on exiting the app with the optional exception of the last-visited page.
 
