@@ -1,9 +1,6 @@
 # This script is intended to be run by Create-DraftRelease, and must be dot-sourced (run with `. ./Build-Electron.ps1` or `. /path/to/Build-Electron.ps1`)
 # because it modifies variables needed in Create-DraftRelease
 $base_dir = "$PSScriptRoot/../bld/electron/"
-if ($text_tag -match 'WikiMed') {
-  $electronbuild = "local"
-}
 if (($electronbuild -eq "")) {
   ""
   $electronbuild_check = Read-Host "Do you want to build Electron packages on GitHub instead of locally? [Y/N]"
