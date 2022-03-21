@@ -1,12 +1,13 @@
 # Changelog
 
-## In-progress release 1.9.4
+## Release 1.9.5-WikiMed
 
-* UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-02`
+* UPDATE: Packaged archive updated to `wikipedia_en_medicine_maxi_2022-03.zim`
 * FEATURE: Option to hyperlink images in Wikimedia ZIMs to the online File for the image
 * ENHANCEMENT: Electron app now uses File System Access API except for initial loading of packaged archive
 * DEV: Provided instructions on how to split a ZIM archive using WSL
-* DEV: The NWJS app is now built via CI (including nightly)
+* FIX: Patch some CSS errors in mdwiki ZIMs
+* FIX: Stabilize page loading when assets are missing (in SW mode)
 * FIX: App now (optionally) remembers the last viewed article for split ZIM archives
 * FIX: Electron and UWP apps now auto-load split ZIM archives
 * FIX: Failure to recognize landing page when retrieved from history or cache
