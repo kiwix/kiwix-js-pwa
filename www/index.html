@@ -126,18 +126,14 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in version <span class="version">1.0</span></h3>
                         <ul style="padding-left: 15px;">
-                            <li>Packaged archive updated to wikipedia_en_medicine_maxi_2022-02.zim</li>
-                            <li>New option to reset app to defaults in Expert Settings</li>
-                            <li>App now uses Bootstrap asynchronous dialogue boxes for modal alert and confirm</li>
-                            <li>SW mode is now the default in contexts that natively support it with good performance</li>
-                            <li>App now recognizes `mdwiki` ZIMs as WikiMed variants, and shows custom landing page</li>
-                            <li>Improvement to independent browsing of windows in UWP app in SW mode</li>
-                            <li>Included favicons at various resolutions</li>
-                            <li>Window location information is now shown in API panel</li>
-                            <li>Provide better feedback to user during slow ZIM archive loading</li>
-                            <li>Fixed fatal startup error in XP/Vista version of the NWJS app</li>
-                            <li>Fixed race condition loading decompressors which caused failure in rare contexts with file:// protocol</li>
-                            <li>Fixed bug preventing proper loading of landing pages in Khan Academy and TED Talks ZIMs</li>
+                            <li>Packaged archive updated to wikipedia_en_medicine_maxi_2022-03.zim</li>
+                            <li>New option to hyperlink images in Wikimedia ZIMs to the online File for the image</li>
+                            <li>Electron app now uses File System Access API except for initial loading of packaged archive</li>
+                            <li>Provided instructions on how to split a ZIM archive using WSL</li>
+                            <li>Patched some CSS errors in mdwiki ZIMs</li>
+                            <li>Stabilize page loading when assets are missing (in SW mode)</li>
+                            <li>App now (optionally) remembers the last viewed article for split ZIM archives</li>
+                            <li>Electron and UWP apps now auto-load split ZIM archives</li>
                             <li>Fixed failure to recognize landing page when retrieved from history or cache</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-WikiMed/CHANGELOG.md" target="_blank">And there's more!<img src="I/s/Icon_External_Link.png"></a></p>
