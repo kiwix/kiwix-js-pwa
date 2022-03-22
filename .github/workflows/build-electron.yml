@@ -42,7 +42,6 @@ jobs:
         echo "$SSH_KEY" > ./scripts/ssh_key
         chmod 600 ./scripts/ssh_key
         chmod +x ./scripts/publish_linux_packages_to_kiwix.sh
-        ./scripts/publish_linux_packages_to_kiwix.sh
 
   Release_Windows:
     runs-on: windows-latest
@@ -67,7 +66,6 @@ jobs:
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
-        ./scripts/Publish-ElectronPackages.ps1
 
   # Release_NWJS:
   #   runs-on: windows-latest
