@@ -48,12 +48,13 @@ if ($electronbuild -eq "cloud") {
 "`nChecking for installer package for Windows..."
 $alt_tag = $text_tag -ireplace 'Windows', 'Electron'
 $comp_electron_archive = $base_dir + "Kiwix-JS-Electron-$base_tag.zip"
+$unpacked_folder = $base_dir + "win-ia32-unpacked"
 $WinInstaller = $base_dir + "Kiwix JS $alt_tag Setup $numeric_tag-E.exe"
 if ($alt_tag -imatch 'WikiMed|Wikivoyage') {
   $comp_electron_archive = $base_dir + "$text_tag-by-Kiwix-$base_tag.zip"
   $WinInstaller = $base_dir + "$alt_tag.by.Kiwix.Setup.$numeric_tag-E.exe"
 }
-if ($electronbuild -eq "local") {
+if ($electronbuild -eq "local" -and (-not $portableonly)) {
   if (-Not (Test-Path $WinInstaller -PathType Leaf)) {
     "No package found: building $WinInstaller..."
     if (-Not $dryrun) {
@@ -75,7 +76,6 @@ if (-Not (($electronbuild -eq 'cloud') -or $old_windows_support -or (Test-Path $
   # Line below uses electron-packager, but not necessary if we run the setup version first above
   # if (-Not $dryrun) { npm run package-win }
   "Compressing release package for Electron..."
-  $unpacked_folder = $base_dir + "win-ia32-unpacked"
   $foldername = "kiwix-js-windows-win32-ia32"
   $compressed_assets_dir = $base_dir + $foldername
   # Find the executable filename in the folder
