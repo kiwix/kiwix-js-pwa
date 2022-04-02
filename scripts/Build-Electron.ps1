@@ -1,7 +1,8 @@
 # This script is intended to be run by Create-DraftRelease, and must be dot-sourced (run with `. ./Build-Electron.ps1` or `. /path/to/Build-Electron.ps1`)
 # because it modifies variables needed in Create-DraftRelease
 $base_dir = "$PSScriptRoot/../bld/electron/"
-if (($electronbuild -eq "")) {
+"`nSelected base_tag: $base_tag"
+if ($electronbuild -eq "") {
   ""
   $electronbuild_check = Read-Host "Do you want to build Electron packages on GitHub instead of locally? [Y/N]"
   $electronbuild_check = -Not ( $electronbuild_check -imatch 'n' )
@@ -53,7 +54,7 @@ if ($alt_tag -imatch 'WikiMed|Wikivoyage') {
   $WinInstaller = $base_dir + "$alt_tag.by.Kiwix.Setup.$numeric_tag-E.exe"
 }
 if ($electronbuild -eq "local") {
-  if (-Not (Test-Path $WinInstaller -PathType Leaf)) {
+  if (-Not (Test-Path $WinInstaller -PathType Leaf) -and (-not $portableonly)) {
     "No package found: building $WinInstaller..."
     if (-Not $dryrun) {
       npm run dist-win
@@ -64,7 +65,7 @@ if ($electronbuild -eq "local") {
       }
     }
   } else {
-    "Package found."
+    "Package found or only building portable package."
   }
 }
 # Portable app isn't built in the cloud, so we always run this
@@ -114,7 +115,7 @@ if (-Not ($old_windows_support -or (Test-Path $comp_electron_archive -PathType L
   "Compressing: $AddAppPackage, $compressed_assets_dir to $comp_electron_archive"
   if (-Not $dryrun) { "$AddAppPackage", "$compressed_assets_dir" | Compress-Archive -DestinationPath $comp_electron_archive -Force }
 }
-if ($electronbuild -eq "local") {
+if ($electronbuild -eq "local" -and (-not $portableonly)) {
   # Package Electron app for Linux
   "`nChecking for Electron packages for Linux..."
   $LinuxBasePackage = $base_dir + "Kiwix JS $alt_tag-$numeric_tag-E"
