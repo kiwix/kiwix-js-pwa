@@ -7,8 +7,9 @@ param (
     [switch]$draftonly = $false,
     [switch]$buildonly = $false,
     [string]$electronbuild = "", # 'local' or 'cloud'
+    [switch]$portableonly = $false, # If set, only the portable electron build will be built. Implies local electron build.
     [switch]$updatewinget = $false,
-    [string]$respondtowingetprompt = "" # Provide an override response (Y/N) to the winget prompt at the end of the script - for automation
+    [string]$wingetprompt = "" # Provide an override response (Y/N) to the winget prompt at the end of the script - for automation
 )
 # DEV: To build Electron packages for all platforms and NWJS for XP and Vista in a single release, use, e.g., "v1.3.0E+N" (Electron + NWJS)
 # DEV: To build UWP + Electron in a single release (for WikiMed or Wikivoyage), use "v1.3.0+E" (plus Electron)
@@ -20,8 +21,11 @@ param (
 
 # Provide parameters
 $release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-windows/releases'
-$github_token = Get-Content -Raw "$PSScriptRoot/github_token"
-
+if ($GITHUB_TOKEN) {
+  $github_token = $GITHUB_TOKEN
+} else {
+  $github_token = Get-Content -Raw "$PSScriptRoot/github_token"
+}
 $init_params = Get-Content -Raw "$PSScriptRoot\..\www\js\init.js"
 $serviceworker = Select-String 'appVersion' "$PSScriptRoot\..\service-worker.js" -List
 
@@ -159,28 +163,25 @@ if ($json_object -imatch '"name":\s"([\w]+-[^"]+)') {
 "Package name: $package_name"
 
 # Determine type of Electron build if any
-$electronbuild = ""
-if ($text_tag -match 'WikiMed') {
-  $electronbuild = "local"
-}
 if (($flavour -match '_E') -or $plus_electron) {
-  if (($electronbuild -eq "")) {
+  if ($portableonly) { $electronbuild = 'local' }
+  if ($electronbuild -eq "") {
     ""
     $electronbuild_check = Read-Host "Do you want to build Electron packages on GitHub instead of locally? [Y/N]"
     $electronbuild_check = -Not ( $electronbuild_check -imatch 'n' )
     if ($electronbuild_check) {
       "`nSelecting cloud build..."
       $electronbuild = 'cloud'
-      if (-Not ($release_tag_name -cmatch '-E$')) {
-        $original_release_tag_name = $release_tag_name
-        $release_tag_name = $release_tag_name -creplace '-?E$|-WikiMed|-Wikivoyage', ''
-        $release_tag_name = $release_tag_name + '-E' 
-        "Changing release tag name to $release_tag_name"
-      }
     } else {
       "`nSelecting local build..."
       $electronbuild = 'local'
     }
+  }
+  if (-Not ($release_tag_name -cmatch '-E$') -and ($electronbuild -eq 'cloud')) {
+    $original_release_tag_name = $release_tag_name
+    $release_tag_name = $release_tag_name -creplace '-?E$|-WikiMed|-Wikivoyage', ''
+    $release_tag_name = $release_tag_name + '-E' 
+    "Changing release tag name to $release_tag_name"
   }
 }
 
@@ -214,7 +215,7 @@ $release_params = @{
 # Post to the release server
 if (-Not ($dryrun -or $buildonly -or $updatewinget)) { 
   $release = Invoke-RestMethod @release_params 
-} elseif (-Not $updatewinget) {
+} elseif (-Not ($updatewinget -or $buildonly -or $updatewinget)) {
   "[DRYRUN] Release Body:`n$release_body"
 }
 
@@ -283,7 +284,10 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   $AppImageArchives = @()
   if ($flavour -eq '_E') {
     "Building Electron packages..."
+    $base_tag_origin = $base_tag
+    $base_tag = $base_tag -replace '^([0-9.]+).*', '$1-E'
     . $PSScriptRoot/Build-Electron.ps1 # Note that we are dot-sourcing this, so that variables will be available in this scope
+    $base_tag = $base_tag_origin
   } elseif ($flavour -eq '_N') {
     # Package NWJS app if necessary
     $base_dir = "$PSScriptRoot/../bld/nwjs"
@@ -442,7 +446,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   if ($plus_electron) {
     "Building add-on: Electron packages..."
     $base_tag_origin = $base_tag
-    $base_tag = $base_tag -replace '^([\d.]+)', '$1-E'
+    $base_tag = $base_tag -replace '^([0-9.]+).*', '$1-E'
     . $PSScriptRoot/Build-Electron.ps1
     $base_tag = $base_tag_origin
   } 
@@ -471,7 +475,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   }
   if ($plus_electron) {
     $upload_assets += $AppImageArchives
-    if ($electronbuild -eq 'local') { $upload_assets += $WinInstaller }
+    if ($electronbuild -eq 'local' -and (-not $portableonly)) { $upload_assets += $WinInstaller }
     if ($old_windows_support) {
       $upload_assets += $nwjs_archives
     } else {
@@ -555,13 +559,13 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   }
   # Now update winget manifest if we are not building NWJS or Electron
   if ($flavour -eq '' -or $flavour -eq '_E') {
-    if ($respondtowingetprompt) {
-      $wingetcreate_check = $respondtowingetprompt
+    if ($wingetprompt) {
+      $wingetcreate_check = $wingetprompt
     } else {
       $wingetcreate_check = Read-Host "Would you like to update the WinGet repository with these new builds?`nWARNING: be sure you have published the draft release (if in doubt answer N)! [Y/N]"
     }
     $wingetcreate_check = $wingetcreate_check -imatch 'y'
-    if ($original_release_tag_name) {
+    if ($original_release_tag_name -and (-not $wingetprompt)) {
       $check = Read-Host "Did you change the Release Tag Name? (Y/N)"
       if ($check -imatch 'N') {
         "You must change the Tag name!"
