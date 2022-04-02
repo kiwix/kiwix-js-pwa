@@ -51,7 +51,7 @@ if (-not $CRON_LAUNCHED) {
     $releases = Invoke-RestMethod @draft_release_params
     $release_found = $false
     $release = $null
-    $releases| Where-Object { $release_found -eq $False } | % {
+    $releases | Where-Object { $release_found -eq $False } | % {
         $release = $_
         if (($release.draft -eq $true) -and ($release.tag_name -eq $INPUT_VERSION) ) {
             $release_found = $true
@@ -66,7 +66,7 @@ if (-not $CRON_LAUNCHED) {
         "`nUploading assets to: $upload_uri..."
         ForEach($asset in $packages) {
             if (-Not $asset) { Continue }
-            if (-Not ($file -match '\.(exe|zip|msix)$')) { Continue }
+            if (-Not ($asset -match '\.(exe|zip|msix)$')) { Continue }
             # Replace backslash with forward slash
             $asset_name = $asset -replace '^.*[\\/]([^\\/]+)$', '$1'
             # Replace spaces with hyphens
