@@ -60,7 +60,10 @@ jobs:
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         ./scripts/Rewrite-AppVersion.ps1
     - name: run electron builder
-      run: npm run publish
+      run: | 
+        ./scripts/Rewrite-DraftReleaseTag.ps1
+        npm run publish
+        ./scripts/Rewrite-DraftReleaseTag.ps1
     - name: build portable Electron app
       run: |
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
