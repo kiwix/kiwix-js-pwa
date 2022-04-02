@@ -61,6 +61,7 @@ jobs:
         ./scripts/Rewrite-AppVersion.ps1
     - name: run electron builder
       run: | 
+        $GITHUB_TOKEN = $Env:GITHUB_TOKEN
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
