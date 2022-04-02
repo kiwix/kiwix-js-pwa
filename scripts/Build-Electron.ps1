@@ -54,7 +54,7 @@ if ($alt_tag -imatch 'WikiMed|Wikivoyage') {
   $WinInstaller = $base_dir + "$alt_tag.by.Kiwix.Setup.$numeric_tag-E.exe"
 }
 if ($electronbuild -eq "local") {
-  if (-Not (Test-Path $WinInstaller -PathType Leaf) -and (-not $portableonly)) {
+  if (-Not (Test-Path $WinInstaller -PathType Leaf)) {
     "No package found: building $WinInstaller..."
     if (-Not $dryrun) {
       npm run dist-win
@@ -65,11 +65,11 @@ if ($electronbuild -eq "local") {
       }
     }
   } else {
-    "Package found or only building portable package."
+    "Package found."
   }
 }
-# Portable app isn't built in the cloud, so we always run this
-if (-Not ($old_windows_support -or (Test-Path $comp_electron_archive -PathType Leaf))) {
+# Build portable app if not in cloud
+if (-Not (($electronbuild -eq 'cloud') -or $old_windows_support -or (Test-Path $comp_electron_archive -PathType Leaf))) {
   # Package portable electron app for Windows
   "Building portable Electron app for Windows"
   # Line below uses electron-packager, but not necessary if we run the setup version first above
