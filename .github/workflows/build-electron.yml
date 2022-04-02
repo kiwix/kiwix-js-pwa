@@ -74,7 +74,7 @@ jobs:
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
-        ./scripts/Publish-ElectronPackages.ps1
+        ./scripts/Publish-ElectronPackages.ps1 -portableonly
 
   Release_NWJS:
     runs-on: windows-latest
