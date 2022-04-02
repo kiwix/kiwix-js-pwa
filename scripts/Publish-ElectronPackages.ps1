@@ -4,6 +4,7 @@ param (
     [string]$test = "",
     [switch]$dryrun = $false,
     [switch]$githubonly = $false,
+    [switch]$portableonly = $false, # If true, will only publish the portable package to GitHub, does not affect download.kiwix.org publishing
     [string]$tag = ""
 )
 if ($tag) {
@@ -61,9 +62,13 @@ if (-not $CRON_LAUNCHED) {
         }
         $upload_uri = $release.upload_url -ireplace '\{[^{}]+}', '' 
         "`nUploading assets to: $upload_uri..."
+        $filter = '\.(exe|zip|msix)$'
+        if ($portableonly) {
+            $filter = '\.(zip)$'
+        }
         ForEach($asset in $packages) {
             if (-Not $asset) { Continue }
-            if (-Not ($asset -match '\.(exe|zip|msix)$')) { Continue }
+            if (-Not ($asset -match $filter)) { Continue }
             # Replace backslash with forward slash
             $asset_name = $asset -replace '^.*[\\/]([^\\/]+)$', '$1'
             # Replace spaces with hyphens
