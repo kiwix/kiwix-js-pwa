@@ -61,7 +61,8 @@ jobs:
         ./scripts/Rewrite-AppVersion.ps1
     - name: build portable Electron app
       run: |
-        $INPUT_VERSION_E = $Env:INPUT_VERSION -replace '^([0-9.]+)E?(.*)', '$1-E$2'
+        $GITHUB_TOKEN = $Env:GITHUB_TOKEN
+        $INPUT_VERSION_E = $Env:INPUT_VERSION -replace '^([0-9.]+)E?(.*)', '$1E$2'
         ./scripts/Create-DraftRelease -buildonly -tag_name $INPUT_VERSION_E -portableonly -wingetprompt N
     - name: publish
       run: |
