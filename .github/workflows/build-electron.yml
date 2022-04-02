@@ -59,14 +59,15 @@ jobs:
         $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         ./scripts/Rewrite-AppVersion.ps1
+    - name: run electron builder
+      run: npm run publish
     - name: build portable Electron app
       run: |
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
         $INPUT_VERSION_E = $Env:INPUT_VERSION -replace '^(v[0-9.]+)E?(.*)', '$1E$2'
         ./scripts/Create-DraftRelease -buildonly -tag_name $INPUT_VERSION_E -portableonly -wingetprompt N
-    - name: publish
+    - name: publish packages
       run: |
-        npm run publish
         $SSH_KEY = $Env:SSH_KEY
         echo "$SSH_KEY" > .\scripts\ssh_key
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
