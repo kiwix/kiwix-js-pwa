@@ -61,6 +61,9 @@ jobs:
         ./scripts/Rewrite-AppVersion.ps1
     - name: run electron builder
       run: | 
+        $INPUT_VERSION = $Env:INPUT_VERSION
+        $INPUT_TARGET = $Env:INPUT_TARGET
+        $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         ./scripts/Rewrite-DraftReleaseTag.ps1
         npm run publish
         ./scripts/Rewrite-DraftReleaseTag.ps1
