@@ -52,9 +52,10 @@ if (-not $CRON_LAUNCHED) {
     $releases = Invoke-RestMethod @draft_release_params
     $release_found = $false
     $release = $null
+    $base_input = $INPUT_VERSION -replace '^(v[0-9.]+).*', '$1'
     $releases | Where-Object { $release_found -eq $False } | % {
         $release = $_
-        if (($release.draft -eq $true) -and ($release.tag_name -eq $INPUT_VERSION) ) {
+        if (($release.draft -eq $true) -and ($release.tag_name -match $base_input)) {
             $release_found = $true
         }
     }
