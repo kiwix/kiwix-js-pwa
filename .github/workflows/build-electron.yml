@@ -70,9 +70,11 @@ jobs:
         ./scripts/Rewrite-DraftReleaseTag.ps1
     - name: build portable Electron app
       run: |
-        $GITHUB_TOKEN = $Env:GITHUB_TOKEN
-        $INPUT_VERSION_E = $Env:INPUT_VERSION -replace '^(v[0-9.]+)E?(.*)', '$1E$2'
-        ./scripts/Create-DraftRelease -buildonly -tag_name $INPUT_VERSION_E -portableonly -wingetprompt N
+        if (-not ($Env:CRON_LAUNCHED -or ($Env:INPUT_VERSION -eq 'nightly'))) {
+          $GITHUB_TOKEN = $Env:GITHUB_TOKEN
+          $INPUT_VERSION_E = $Env:INPUT_VERSION -replace '^(v[0-9.]+)E?(.*)', '$1E$2'
+          ./scripts/Create-DraftRelease -buildonly -tag_name $INPUT_VERSION_E -portableonly -wingetprompt N
+        }
     - name: publish packages
       run: |
         $SSH_KEY = $Env:SSH_KEY
