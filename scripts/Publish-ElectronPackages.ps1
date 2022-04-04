@@ -120,7 +120,7 @@ if (-not $CRON_LAUNCHED) {
 
 if (-not $githubonly) {
     "`nUploading packages to https://download.kiwix.org$target/ ...`n"
-    & "C:\Program Files\Git\usr\bin\ssh.exe" @('-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", 'ci@download.kiwix.org', "mkdir -p $target")
+    echo "mkdir $target" | & "C:\Program Files\Git\usr\bin\sftp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", 'ci@master.download.kiwix.org')
 
     $Packages | % {
         $file = $_
@@ -160,7 +160,7 @@ if (-not $githubonly) {
                 # Replace absolute path with relative, and normalize to forward slashes
                 $renamed_file = $renamed_file -replace '^.*?([\\/]bld)', '.$1' -replace '[\\/]', '/'
                 "Copying $renamed_file to $target..."
-                & "C:\Program Files\Git\usr\bin\scp.exe" @('-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$renamed_file", "ci@download.kiwix.org:$target")
+                & "C:\Program Files\Git\usr\bin\scp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$renamed_file", "ci@master.download.kiwix.org:$target")
             }
         }
     }
