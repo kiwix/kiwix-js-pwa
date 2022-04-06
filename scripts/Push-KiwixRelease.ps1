@@ -56,15 +56,15 @@ function Main {
         $keyfile = "$PSScriptRoot\ssh_key"
         $keyfile = $keyfile -ireplace '[\\/]', '/'
         if ($dryrun) {
-            "C:\Program Files\Git\usr\bin\scp.exe -o StrictHostKeyChecking=no -i $keyfile $filename ci@download.kiwix.org:$target"
-            "C:\Program Files\Git\usr\bin\ssh.exe -o StrictHostKeyChecking=no -i $keyfile ci@download.kiwix.org mv $target/$file $target/$newfilename"  
+            "C:\Program Files\Git\usr\bin\scp.exe -P 30022 -o StrictHostKeyChecking=no -i $keyfile $filename ci@master.download.kiwix.org:$target"
+            "echo 'rename $target/$file $target/$newfilename' | C:\Program Files\Git\usr\bin\sftp.exe -P 30022 -o StrictHostKeyChecking=no -i $keyfile ci@master.download.kiwix.org"
             "Aborting because this is a dry run."
             exit
         }
         # Uploading file
         # Move-Item $filename $originalpath/$newfilename
-        & "C:\Program Files\Git\usr\bin\scp.exe" @('-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$filename", "ci@download.kiwix.org:$target")
-        & "C:\Program Files\Git\usr\bin\ssh.exe" @('-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", 'ci@download.kiwix.org', "mv $target/$file $target/$newfilename")
+        & "C:\Program Files\Git\usr\bin\scp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$filename", "ci@master.download.kiwix.org:$target")
+        echo "rename $target/$file $target/$newfilename" | & "C:\Program Files\Git\usr\bin\sftp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", 'ci@master.download.kiwix.org')
         "Done."
     } else {
         "You can only upload a file of type .appx, .appxbundle or .appxupload"
