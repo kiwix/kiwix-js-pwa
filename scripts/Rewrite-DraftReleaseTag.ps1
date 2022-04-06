@@ -19,14 +19,14 @@ if ($INPUT_VERSION) {
         $to = $from -creplace '-E', ''
     }
 }
-if (-not ($from -and $to)) {
-    "`nFrom and To inputs were not provided or could not be determeined automatically!"
-    exit 1
-} else {
-    "Rewriting draft version from $from to $to..."
-}
 
 if (-not $CRON_LAUNCHED) {
+    if (-not ($from -and $to)) {
+        "`nFrom and To inputs were not provided or could not be determeined automatically!"
+        exit 1
+    } else {
+        "Rewriting draft version from $from to $to..."
+    }
     "`nChecking for a draft publishing target on GitHub..."
     if (-not $GITHUB_TOKEN) {
         $GITHUB_TOKEN = Get-Content -Raw "$PSScriptRoot/github_token"
