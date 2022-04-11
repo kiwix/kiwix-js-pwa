@@ -28,7 +28,10 @@ if ($electronbuild -eq "cloud") {
     }
     Body = @{
       'ref' = $branch_name
-      'inputs' = @{ 'target' = 'release' }
+      'inputs' = @{ 
+        'target' = 'release'
+        'version' = $release_tag_name
+      }
     } | ConvertTo-Json
     ContentType = "application/json"
   }
@@ -159,7 +162,7 @@ if ($electronbuild -eq "local" -and (-not $portableonly)) {
     }
   }
 }
-if ($old_windows_support) {
+if ($old_windows_support -and ($electronbuild -eq 'local')) {
   "`nSupport for XP and Vista was requested."
   "Searching for archives..."
   $nwjs_base = $PSScriptRoot -ireplace 'kiwix-js-windows.scripts.*$', 'kiwix-js-windows-nwjs'
