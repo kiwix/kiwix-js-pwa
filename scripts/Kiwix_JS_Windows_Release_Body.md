@@ -11,8 +11,8 @@ Please choose the correct version (those marked [**AUTO-UPDATE**] will self-upda
     + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9P8SLZ4J979J [**AUTO-UPDATE**] - *recommended*
     + Or, on a PC, open a command prompt and run `winget install kiwix.kiwixjs`; you can also sideload it (see instructions below)
   - **Portable (NWJS) - just unzip, no install needed**
-    + Windows XP or Vista: [kiwix_js_windows-XP-<<base_tag>>N-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-XP-<<base_tag>>N-win-ia32.zip)
-    + Windows 7/8/10/11: [kiwix_js_windows-<<base_tag>>N-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-<<base_tag>>N-win-ia32.zip)
+    + Windows XP or Vista: [kiwix_js_windows-XP-<<base_tag>>-N-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-XP-<<base_tag>>-N-win-ia32.zip)
+    + Windows 7/8/10/11: [kiwix_js_windows-<<base_tag>>-N-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-<<base_tag>>-N-win-ia32.zip)
   - **Installable (Electron)**
     + Windows 7/8/10/11 - [Kiwix-JS-Electron-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix-JS-Electron-Setup-<<numeric_tag>>-E.exe) [**AUTO-UPDATE**]
     + Alternatively, run `winget install kiwix.kiwixjs.electron` in a Windows 10/11 Terminal [**AUTO-UPDATE**]
@@ -35,7 +35,7 @@ Full installation instructions are after the screenshot.
 
 ## Installation Instructions - NWJS/Electron
 
-* For the Windows Portable build, unzip the contents of the [kiwix_js_windows-<<base_tag>>N-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-<<numeric_tag>>N-win-ia32.zip) archive (or the XP version if you're using that) to any folder, or to a flash drive / thumb drive, and double click on `Start Kiwix JS Windows` or `Start Kiwix JS Windows via batch file.bat`, or open the `kiwix_js_windows-...` folder and double click on `nw.exe`;
+* For the Windows Portable build, unzip the contents of the [kiwix_js_windows-<<base_tag>>-N-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-<<numeric_tag>>-N-win-ia32.zip) archive (or the XP version if you're using that) to any folder, or to a flash drive / thumb drive, and double click on `Start Kiwix JS Windows` or `Start Kiwix JS Windows via batch file.bat`, or open the `kiwix_js_windows-...` folder and double click on `nw.exe`;
 * For the Windows Setup (installable) build, simply download and launch. It will install itself, together with a shortcut in your shortcut menu, and run. It auto-updates, but if you want to update it manually, then just install a new version over it (it will uninstall the old one for you).
 * For the Linux portable builds, download and save the correct AppImage file anywhere (e.g. your Desktop), and double-click it. If it doesn’t work, open Terminal and run `chmod a+x Kiwix-JS-Electron*.AppImage` and then `./Kiwix-JS-Electron*.AppImage`. This version will auto-update. If you have issues running it on **Debian**, you can try adding the `--no-sandbox` switch to the command like this `./Kiwix.JS.Electron*.AppImage --no-sandbox` (see https://github.com/electron/electron/issues/17972#issuecomment-516957971). On older versions of **OpenSUSE**, you may need to use these commandline switches instead: `./Kiwix.JS.Electron*.AppImage --use-gl=disabled --disable-gpu-compositing`.¹
 * For the Linux installable builds:
