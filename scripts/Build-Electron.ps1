@@ -30,7 +30,7 @@ if ($electronbuild -eq "cloud") {
       'ref' = $branch_name
       'inputs' = @{ 
         'target' = 'release'
-        'version' = $release_tag_name
+        'version' = $base_tag_origin
       }
     } | ConvertTo-Json
     ContentType = "application/json"
