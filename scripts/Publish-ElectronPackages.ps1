@@ -44,8 +44,8 @@ if (-not $CRON_LAUNCHED) {
         Uri = "https://api.github.com/repos/kiwix/kiwix-js-windows/releases"
         Method = 'GET'
         Headers = @{
-        'Authorization' = "token $GITHUB_TOKEN"
-        'Accept' = 'application/vnd.github.v3+json'
+            'Authorization' = "token $GITHUB_TOKEN"
+            'Accept' = 'application/vnd.github.v3+json'
         }
         ContentType = "application/json"
     }
