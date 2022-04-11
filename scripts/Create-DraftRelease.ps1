@@ -96,6 +96,7 @@ if ($updatewinget) {
 } else {
   "`nCreating release for $tag_name...`n"
 }
+$tag_name = $tag_name -creplace '-E', 'E'
 $base_tag = $tag_name -creplace '^v([\d.EN]+).*', '$1'
 $text_tag = $tag_name -creplace '^v[\d.EN+]+-?(.*)$', '$1'
 $numeric_tag = $base_tag -creplace "([\d.]+)[EN]", '$1'
