@@ -3567,11 +3567,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     if (params.rememberLastPage && params.lastPageVisit) lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, "");
                     if (params.rememberLastPage && dirEntry.namespace + '/' + dirEntry.url === lastPage) {
                         if (!params.lastPageHTML) {
-                            cache.getArticle(params.lastPageVisit.replace(/.*@kiwixKey@/, ''), lastPage, function (html) {
-                                params.lastPageHTML = html;
-                                htmlContent = params.lastPageHTML || htmlContent;
-                                goToRetrievedContent(htmlContent);
-                            });
+                            // DEV: Timout is needed here to allow time for cache capability to be tested before calling it
+                            // otherwise the app will return only a memory capibility for apps that use indexedDB
+                            setTimeout(function () {
+                                cache.getArticle(params.lastPageVisit.replace(/.*@kiwixKey@/, ''), lastPage, function (html) {
+                                    params.lastPageHTML = html;
+                                    htmlContent = params.lastPageHTML || htmlContent;
+                                    goToRetrievedContent(htmlContent);
+                                });
+                            }, 250);
                         } else {
                             htmlContent = params.lastPageHTML;
                             goToRetrievedContent(htmlContent);
