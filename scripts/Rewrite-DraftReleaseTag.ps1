@@ -23,7 +23,7 @@ if ($INPUT_VERSION) {
 if (-not $CRON_LAUNCHED) {
     if (-not ($from -and $to)) {
         "`nFrom and To inputs were not provided or could not be determeined automatically!"
-        exit 1
+        exit 0
     } else {
         "Rewriting draft version from $from to $to..."
     }
