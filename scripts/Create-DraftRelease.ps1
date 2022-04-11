@@ -301,7 +301,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       if (-Not (Test-Path $NWJSAsset -PathType Leaf)) { $found = $false }
       if (-Not $found) { "Unable to locate $NWJSAsset..." }
     }
-    if (-Not $found) {
+    if ((-Not $found) -and ($electronbuild -eq 'local')) {
       "One or more NWJS build(s) could not be found."
       "`nBuilding..."
       "Updating Build-NWJS script with required tag..."
