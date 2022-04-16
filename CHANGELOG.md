@@ -1,5 +1,12 @@
 # Changelog
 
+## Release 1.9.7-Wikivoyage
+
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2022-04`
+* BUILD: Nightly builds of main app are now uploaded to a new server (with sftp instead of ssh)
+* BUILD: Deploy PWA image on a k8s cluster
+* BUILD: PWA images are now uploaded to ghcr.io instead of Docker Hub
+
 ## Release 1.9.4-Wikivoyage
 
 * UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2022-03`
