@@ -75,15 +75,15 @@ jobs:
           $INPUT_VERSION_E = $Env:INPUT_VERSION -replace '^(v[0-9.]+)E?(.*)', '$1E$2'
           ./scripts/Create-DraftRelease -buildonly -tag_name $INPUT_VERSION_E -portableonly -wingetprompt N
         }
-    # - name: publish packages
-    #   run: |
-    #     $SSH_KEY = $Env:SSH_KEY
-    #     echo "$SSH_KEY" > .\scripts\ssh_key
-    #     $GITHUB_TOKEN = $Env:GITHUB_TOKEN
-    #     $INPUT_VERSION = $Env:INPUT_VERSION
-    #     $INPUT_TARGET = $Env:INPUT_TARGET
-    #     $CRON_LAUNCHED = $Env:CRON_LAUNCHED
-    #     ./scripts/Publish-ElectronPackages.ps1 -portableonly
+    - name: publish packages
+      run: |
+        $SSH_KEY = $Env:SSH_KEY
+        echo "$SSH_KEY" > .\scripts\ssh_key
+        $GITHUB_TOKEN = $Env:GITHUB_TOKEN
+        $INPUT_VERSION = $Env:INPUT_VERSION
+        $INPUT_TARGET = $Env:INPUT_TARGET
+        $CRON_LAUNCHED = $Env:CRON_LAUNCHED
+        ./scripts/Publish-ElectronPackages.ps1 -portableonly -githubonly
 
   # Release_NWJS:
   #   runs-on: windows-latest
