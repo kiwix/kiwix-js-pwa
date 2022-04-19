@@ -67,7 +67,7 @@ if ($machine_name -eq "") {
   if (-Not $machine_name) { 
     $machine_name = $suggested_build
     $warning_message = "Please note that ""$app_tag"" will be used as the appVersion. If you want to change that, press Ctrl-C and re-run this script entering a build number matching 9.9.9."
-  } elseif ($machine_name -match '^[\d.]+') {
+  } elseif ($machine_name -match '^v?[\d.]+') {
     $warning_message = "*** Please be aware that you have entered a release tag matching the format 9.9.9* [$machine_name], and so it will be used as the appVersion of the container " +
       "and will be visible to users. If this is NOT want you want, press Ctrl-C to abort this script, and re-run with the suggested build number." 
   }
