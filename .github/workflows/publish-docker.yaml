@@ -23,6 +23,12 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+      - name: Update app version number
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+        run: |
+          chmod +x ./scripts/rewrite_app_version_number.sh
+          ./scripts/rewrite_app_version_number.sh
       - name: Build and push
         uses: openzim/docker-publish-action@v8
         with:
@@ -30,7 +36,7 @@ jobs:
           credentials: |
             GHCRIO_USERNAME=${{ secrets.GHCR_USERNAME }}
             GHCRIO_TOKEN=${{ secrets.GHCR_TOKEN }}
-          tag-pattern: /^v([0-9.]+)$/
+          tag-pattern: /^v?([0-9.]+)$/
           latest-on-tag: true
           dockerfile: Dockerfile.pwa
           restrict-to: kiwix/kiwix-js-windows
