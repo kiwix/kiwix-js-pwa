@@ -50,6 +50,14 @@ eventually became Kiwix JS. The original source code runs almost "as is" on the 
 The port and further development of Kiwix JS Windows for Windows 10/11 (including Mobile) is by Geoffrey Kantaris. I can be contacted by email:
 egk10 at cam ac uk.
 
+# Contributing
+
+If you have coding experience and are interested in contributing to this project, we suggest you start by contributing to the upstream Kiwix JS repository, as
+much of the code contributed there is subsequently ported to this repository. Please see [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/master/CONTRIBUTING.md) for details.
+If you wish to contribute to a specific Kiwix JS Windows/Linux feature, then please open an issue on this repository explaining the feature or other code you
+aim to contribute and how you propose to this should be done. You should be comfortable creating PRs and have good knowledge of JavaScript. Follow the same
+[contributing guidelines](https://github.com/kiwix/kiwix-js/blob/master/CONTRIBUTING.md) as for Kiwix JS.
+
 # Privacy Policy
 
 WikiMed Offline Medical Wikipedia works offline, and does not collect or record any of your personal data. It
