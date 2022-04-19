@@ -50,6 +50,29 @@ eventually became Kiwix JS. The original source code runs almost "as is" on the 
 The port and further development of Kiwix JS Windows for Windows 10/11 (including Mobile) is by Geoffrey Kantaris. I can be contacted by email:
 egk10 at cam ac uk.
 
+# Reporting bugs
+
+Please use this repository's [issue tracker](https://github.com/kiwix/kiwix-js-windows/issues) to report any bugs you have found with the software. Open a new
+issue (after checking that the issue you identified doesn't have an issue already). In all cases, please state clearly the version number you are using (see
+the About page in the app), and which browser or platform you are using. Please read the
+[Kiwix JS bug reporting guidelines](https://github.com/kiwix/kiwix-js/blob/master/REPORT_BUG.md) before opening your issue.
+
+# Contributing code
+
+If you have coding experience and are interested in contributing to this project, we suggest you start by contributing to the upstream [Kiwix JS repository](https://kiwix.github.io/kiwix-js/),
+as much of the code contributed there is subsequently ported to this repository. Please see [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/master/CONTRIBUTING.md) for details.
+If you wish to contribute to a specific Kiwix JS Windows/Linux feature, then please open an issue on this repository explaining the feature or other code you
+aim to contribute and how you propose this should be done. You should be comfortable creating PRs and have good knowledge of JavaScript. Follow the same
+[contributing guidelines](https://github.com/kiwix/kiwix-js/blob/master/CONTRIBUTING.md) as for Kiwix JS.
+
+# Other contributions / donations
+
+If you like this project and would like to contribute financially towards keeping it running, you can make one-off or regular donations on the Kiwix
+[Support page](https://www.kiwix.org/en/support/). Donations help pay for servers, coding certificates, maintenance, etc. If you would like to contribute
+time and expertise rather than money, and you have good knowledge of a foreign language, you can help with [translations of Kiwix projects](https://translatewiki.net/wiki/Special:SearchTranslations?query=kiwix&language=en).
+Alternatively, you can help improve Wikimedia projects by [making edits or corrections](https://en.wikipedia.org/wiki/Wikipedia:Contributing_to_Wikipedia)
+to Wikipedia or Wikivoyage articles. 
+
 # Privacy Policy
 
 When installed, Kiwix JS Windows works offline, and does not collect or record any of your personal data. It
