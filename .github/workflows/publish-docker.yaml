@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Specific version to build (overrides on-master and tag-pattern)
+        description: Specific version to build (overrides on-master and tag-pattern), e.g. 'v2.0.0'
         required: false
         default: ''
 
@@ -30,7 +30,7 @@ jobs:
           credentials: |
             GHCRIO_USERNAME=${{ secrets.GHCR_USERNAME }}
             GHCRIO_TOKEN=${{ secrets.GHCR_TOKEN }}
-          tag-pattern: /^v([0-9.]+).*$/
+          tag-pattern: /^v([0-9.]+)$/
           latest-on-tag: true
           dockerfile: Dockerfile.pwa
           restrict-to: kiwix/kiwix-js-windows
