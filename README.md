@@ -50,13 +50,21 @@ eventually became Kiwix JS. The original source code runs almost "as is" on the 
 The port and further development of Kiwix JS Windows for Windows 10/11 (including Mobile) is by Geoffrey Kantaris. I can be contacted by email:
 egk10 at cam ac uk.
 
-# Contributing
+# Contributing code
 
 If you have coding experience and are interested in contributing to this project, we suggest you start by contributing to the upstream Kiwix JS repository, as
 much of the code contributed there is subsequently ported to this repository. Please see [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/master/CONTRIBUTING.md) for details.
 If you wish to contribute to a specific Kiwix JS Windows/Linux feature, then please open an issue on this repository explaining the feature or other code you
 aim to contribute and how you propose to this should be done. You should be comfortable creating PRs and have good knowledge of JavaScript. Follow the same
 [contributing guidelines](https://github.com/kiwix/kiwix-js/blob/master/CONTRIBUTING.md) as for Kiwix JS.
+
+# Other contributions / donations
+
+If you like this project and would like to contribute financially towards keeping it running, you can make one-off or regular donations on the Kiwix
+[Support page](https://www.kiwix.org/en/support/). Donations help pay for servers, coding certificates, maintenance, etc. If you would like to contribute
+time and expertise rather than money, and you have good knowledge of a foreign language, you can help with [translations of Kiwix projects](https://translatewiki.net/wiki/Special:SearchTranslations?query=kiwix&language=en).
+Alternatively, you can help improve Wikimedia projects by [making edits or corrections](https://en.wikipedia.org/wiki/Wikipedia:Contributing_to_Wikipedia)
+to Wikipedia or Wikivoyage articles. 
 
 # Privacy Policy
 
