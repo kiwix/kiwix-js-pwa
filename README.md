@@ -59,10 +59,10 @@ the About page in the app), and which browser or platform you are using. Please 
 
 # Contributing code
 
-If you have coding experience and are interested in contributing to this project, we suggest you start by contributing to the upstream Kiwix JS repository, as
-much of the code contributed there is subsequently ported to this repository. Please see [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/master/CONTRIBUTING.md) for details.
+If you have coding experience and are interested in contributing to this project, we suggest you start by contributing to the upstream [Kiwix JS repository](https://kiwix.github.io/kiwix-js/),
+as much of the code contributed there is subsequently ported to this repository. Please see [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/master/CONTRIBUTING.md) for details.
 If you wish to contribute to a specific Kiwix JS Windows/Linux feature, then please open an issue on this repository explaining the feature or other code you
-aim to contribute and how you propose to this should be done. You should be comfortable creating PRs and have good knowledge of JavaScript. Follow the same
+aim to contribute and how you propose this should be done. You should be comfortable creating PRs and have good knowledge of JavaScript. Follow the same
 [contributing guidelines](https://github.com/kiwix/kiwix-js/blob/master/CONTRIBUTING.md) as for Kiwix JS.
 
 # Other contributions / donations
