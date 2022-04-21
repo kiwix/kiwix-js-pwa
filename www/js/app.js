@@ -4878,7 +4878,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 anchorParameter = anchorParameter ? anchorParameter[1] : '';
                 var zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
                 // Patch Zimit support
-                if (params.zimitZim && !~zimUrl.search(params.zimitPrefix)) zimUrl = params.zimitPrefix + '/' + zimUrl;
+                if (params.zimitZim && !~zimUrl.indexOf(params.zimitPrefix)) zimUrl = params.zimitPrefix + '/' + zimUrl;
                 goToArticle(zimUrl, downloadAttrValue, contentType);
                 setTimeout(reset, 1400);
             };
