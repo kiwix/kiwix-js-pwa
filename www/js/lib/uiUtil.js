@@ -324,7 +324,7 @@ define(rqDef, function(util) {
     /**
      * Displays a Bootstrap warning alert with information about how to access content in a ZIM with unsupported active UI
      */
-    function displayActiveContentWarning() {
+    function displayActiveContentWarning(type) {
         // We have to add the alert box in code, because Bootstrap removes it completely from the DOM when the user dismisses it
         var alertHTML =
             '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
@@ -342,6 +342,15 @@ define(rqDef, function(util) {
                 params.manipulateImages ? '<a id="imModeLink" href="#imageManipulationDiv" class="alert-link">disable Image manipulation</a> ' : '') + 
                 (params.allowHTMLExtraction ? (params.displayHiddenBlockElements || params.manipulateImages ? 'and ' : '') + 
                 'disable Breakout link ' : '') + 'for this content to work properly. To use Archive Index <b><i>type a space</i></b> ' +
+                'in the box above.&nbsp;[<a id="stop" href="#otherSettingsDiv" class="alert-link">Permanently hide</a>]' +
+            '</div>';
+        }
+        if (type === 'zimit') {
+            alertHTML =
+            '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
+                '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
+                '<strong>Limited support:</strong> Please note that this app only has limited support for <b>Zimit</b> ZIMs, and in particular it cannot ' +
+                'run active content in these ZIMs. Please search for your content in the search box above, or to use Archive Index <b><i>type a space</i></b> ' +
                 'in the box above.&nbsp;[<a id="stop" href="#otherSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
         }

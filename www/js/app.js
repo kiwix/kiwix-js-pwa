@@ -3767,6 +3767,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     'imageDisplay': imageDisplayMode,
                                     'content': buffer
                                 };
+                                // Prevent JS running in Zimit ZIMs
+                                if (params.zimitZim && /javascript/i.test(message.mimetype) && /chunk\.js/i.test(message.title)) message.content = '';
                                 if (content.buffer) {
                                     // In Edge Legacy, we have to transfer the buffer inside an array, whereas in Chromium, this produces an error
                                     // due to type not being transferrable... (and already detached, which may be to do with storing in IndexedDB in Electron)
@@ -3931,7 +3933,27 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 var wikimediaZimFlavour = appstate.selectedArchive._file.name.replace(/_.+/, '');
             }
             // Check if we're dealing with a Zimit ZIM
-            var zimitZim = /warc-headers/.test(Array.from(appstate.selectedArchive._file.mimeTypes.values()));
+            params.zimitZim = /warc-headers/.test(Array.from(appstate.selectedArchive._file.mimeTypes.values()));
+            if (params.isLandingPage && params.zimitZim) {
+                // Display Bootstrap alert regarding limited support
+                if (!params.hideActiveContentWarning) {
+                    setTimeout(function () {
+                        uiUtil.displayActiveContentWarning('zimit');
+                    }, 1000);
+                }
+                params.zimitStartPage = htmlArticle.match(/window\.mainUrl\s*=\s*(['"])https?:\/\/([^\/]+)(.+?)\1/);
+                if (params.zimitStartPage && params.zimitStartPage[2] && params.zimitStartPage[3]) {
+                    params.zimitPrefix = dirEntry.namespace + '/' + params.zimitStartPage[2];
+                    params.zimitStartPage =  params.zimitPrefix + params.zimitStartPage[3];
+                } else {
+                    params.zimitStartPage = null;
+                }
+                if (params.zimitStartPage) {
+                    params.isLandingPage = false;
+                    goToArticle(params.zimitStartPage);
+                    return;
+                }
+            }
             var newBlock;
             if (params.contentInjectionMode == 'jquery') {
                 htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
@@ -3954,14 +3976,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 htmlArticle = htmlArticle.replace(/(<(audio|video)\b(?:[^<]|<(?!\/\2))+<\/\2>)/ig, function (p0) {
                     return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
                 });
-            // } else if (wikiLang || zimitZim) {
-            } else if (wikiLang) {
+            } else if (wikiLang || params.zimitZim) {
+            // } else if (wikiLang) {
                 htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
-                    if (zimitZim) {
+                    if (params.zimitZim) {
                         var newBlock = match;
                         if (/^\/(?!A\/)/.test(relAssetUrl)) {
-                            relAssetUrl = relAssetUrl.replace(/^\//, '');
-                            var assetZIMUrl = uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseURL);
+                            if (!params.zimitPrefix) {
+                                params.zimitPrefix = htmlArticle.match(/link\s+rel=["']canonical["']\s+href=(['"])https?:\/\/([^\/]+)(.+?)\1/);
+                                params.zimitPrefix = params.zimitPrefix ? dirEntry.namespace + '/' + params.zimitPrefix[2] : '';
+                            }
+                            var assetZIMUrl = relAssetUrl.replace(/^\//, window.location.origin + '/' + appstate.selectedArchive._file.name + '/' + params.zimitPrefix + '/');
+                            // var assetZIMUrl = uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseURL);
                             newBlock = match.replace(relAssetUrl, encodeURI(assetZIMUrl));
                         }
                         return newBlock;
@@ -4848,6 +4874,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 anchorParameter = href.match(/#([^#;]+)$/);
                 anchorParameter = anchorParameter ? anchorParameter[1] : '';
                 var zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
+                // Patch Zimit support
+                if (params.zimitZim && !~zimUrl.search(params.zimitPrefix)) zimUrl = params.zimitPrefix + '/' + zimUrl;
                 goToArticle(zimUrl, downloadAttrValue, contentType);
                 setTimeout(reset, 1400);
             };
