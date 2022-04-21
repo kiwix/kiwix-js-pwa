@@ -3507,7 +3507,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 appstate.selectedArchive.resolveRedirect(dirEntry, readArticle);
             } else {
                 //TESTING//
-                console.log("Initiating HTML load...");
+                console.log("Initiating HTML load of " + dirEntry.url + "...");
                 
                 //Set startup cookie to guard against boot loop
                 //Cookie will signal failure until article is fully loaded
@@ -3930,13 +3930,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 var wikiLang = appstate.selectedArchive._file.name.replace(/(?:wikipedia|wikivoyage|wiktionary)_([^_]+).+/i, '$1');
                 var wikimediaZimFlavour = appstate.selectedArchive._file.name.replace(/_.+/, '');
             }
+            // Check if we're dealing with a Zimit ZIM
+            var zimitZim = /warc-headers/.test(Array.from(appstate.selectedArchive._file.mimeTypes.values()));
+            var newBlock;
             if (params.contentInjectionMode == 'jquery') {
                 htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
                     var assetZIMUrl = uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseURL);
                     // DEV: Note that deriveZimUrlFromRelativeUrl produces a *decoded* URL (and incidentally would remove any URI component
                     // if we had captured it). We therefore re-encode the URI with encodeURI (which does not encode forward slashes) instead
                     // of encodeURIComponent.
-                    var newBlock = blockStart + 'data-kiwixurl' + equals + encodeURI(assetZIMUrl) + blockClose;
+                    newBlock = blockStart + 'data-kiwixurl' + equals + encodeURI(assetZIMUrl) + blockClose;
                     // For Wikipedia archives, hyperlink the image to the File version
                     if (wikiLang && /^<img/i.test(blockStart) && !/usemap=/i.test(match)) {
                         newBlock = '<a href="https://' + wikiLang + '.' + wikimediaZimFlavour + '.org/wiki/File:' + 
@@ -3951,12 +3954,22 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 htmlArticle = htmlArticle.replace(/(<(audio|video)\b(?:[^<]|<(?!\/\2))+<\/\2>)/ig, function (p0) {
                     return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
                 });
+            // } else if (wikiLang || zimitZim) {
             } else if (wikiLang) {
                 htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
+                    if (zimitZim) {
+                        var newBlock = match;
+                        if (/^\/(?!A\/)/.test(relAssetUrl)) {
+                            relAssetUrl = relAssetUrl.replace(/^\//, '');
+                            var assetZIMUrl = uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseURL);
+                            newBlock = match.replace(relAssetUrl, encodeURI(assetZIMUrl));
+                        }
+                        return newBlock;
+                    }
                     // For Wikipedia archives, hyperlink the image to the File version
                     var assetZIMUrl = decodeURIComponent(relAssetUrl);
                     if (/^<img/i.test(blockStart) && !/usemap=/i.test(match)) {
-                        var newBlock = '<a href="https://' + wikiLang + '.' + wikimediaZimFlavour + '.org/wiki/File:' + 
+                        newBlock = '<a href="https://' + wikiLang + '.' + wikimediaZimFlavour + '.org/wiki/File:' + 
                             assetZIMUrl.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1')
                             + '" target="_blank">' + match + '</a>'
                     }

@@ -471,6 +471,7 @@ var req = ['bootstrap']; // Baseline Require array
 // Add polyfills to the Require array only if needed
 if (!('Promise' in self)) req.push('promisePolyfill');
 if (!('from' in Array)) req.push('arrayFromPolyfill');
+if (typeof Map.prototype.values === 'undefined') req.push('mapsPolyfill');
 
 requirejs(req, function () {
     requirejs(['../app']);
