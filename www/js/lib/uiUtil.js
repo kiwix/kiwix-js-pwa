@@ -331,7 +331,7 @@ define(rqDef, function(util) {
                 '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
                 '<strong>Unable to display active content:</strong> To use Archive Index <b><i>type a space</i></b> in the box above, or else ' +
                 '<a id="swModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to Service Worker mode</a> ' +
-                'if your platform supports it. &nbsp;[<a id="stop" href="#otherSettingsDiv" class="alert-link">Permanently hide</a>]' +
+                'if your platform supports it. &nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
         if (params.contentInjectionMode === 'serviceworker' && (params.manipulateImages || params.displayHiddenBlockElements || params.allowHTMLExtraction)) {
             alertHTML =
@@ -342,7 +342,7 @@ define(rqDef, function(util) {
                 params.manipulateImages ? '<a id="imModeLink" href="#imageManipulationDiv" class="alert-link">disable Image manipulation</a> ' : '') + 
                 (params.allowHTMLExtraction ? (params.displayHiddenBlockElements || params.manipulateImages ? 'and ' : '') + 
                 'disable Breakout link ' : '') + 'for this content to work properly. To use Archive Index <b><i>type a space</i></b> ' +
-                'in the box above.&nbsp;[<a id="stop" href="#otherSettingsDiv" class="alert-link">Permanently hide</a>]' +
+                'in the box above.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
         }
         if (type === 'zimit') {
@@ -351,7 +351,7 @@ define(rqDef, function(util) {
                 '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
                 '<strong>Limited support:</strong> Please note that this app only has limited support for <b>Zimit</b> ZIMs, and in particular it cannot ' +
                 'run active content in these ZIMs. Please search for your content in the search box above, or to use Archive Index <b><i>type a space</i></b> ' +
-                'in the box above.&nbsp;[<a id="stop" href="#otherSettingsDiv" class="alert-link">Permanently hide</a>]' +
+                'in the box above.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
         }
         var alertBoxHeader = document.getElementById('alertBoxHeader');

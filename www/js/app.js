@@ -3981,12 +3981,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
                     if (params.zimitZim) {
                         var newBlock = match;
-                        if (/^\/(?!A\/)/.test(relAssetUrl)) {
+                        if (/^\/(?![ACIJ-]\/)/.test(relAssetUrl)) {
                             if (!params.zimitPrefix) {
                                 params.zimitPrefix = htmlArticle.match(/link\s+rel=["']canonical["']\s+href=(['"])https?:\/\/([^\/]+)(.+?)\1/);
                                 params.zimitPrefix = params.zimitPrefix ? dirEntry.namespace + '/' + params.zimitPrefix[2] : '';
                             }
                             var assetZIMUrl = relAssetUrl.replace(/^\//, window.location.origin + '/' + appstate.selectedArchive._file.name + '/' + params.zimitPrefix + '/');
+                            if (relAssetUrl.match(/\.(?:jpe?g|svg|png|gif)/i)) {
+                                assetZIMUrl = assetZIMUrl.replace(/https?:.+?\/A\//, 'I/');
+                            }
                             // var assetZIMUrl = uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseURL);
                             newBlock = match.replace(relAssetUrl, encodeURI(assetZIMUrl));
                         }
