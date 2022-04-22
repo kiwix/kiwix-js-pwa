@@ -3749,7 +3749,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             }
                             var cacheKey = appstate.selectedArchive._file.name + '/' + title;
                             cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(function (content) {
-                                console.log('SW read binary file for: ' + dirEntry.url);
+                                console.log('SW read binary file for: ' + dirEntry.namespace + '/' + dirEntry.url);
                                 if (/\b(css|javascript|video|vtt|webm)\b/i.test(mimetype)) {
                                     var shortTitle = dirEntry.url.replace(/[^/]+\//g, '').substring(0, 18);
                                     uiUtil.pollSpinner('Getting ' + shortTitle + '...');
