@@ -259,8 +259,6 @@ self.addEventListener('activate', function (event) {
     );
 });
 
-self.importScripts('sw.js');
-
 let outgoingMessagePort = null;
 let fetchCaptureEnabled = false;
 
