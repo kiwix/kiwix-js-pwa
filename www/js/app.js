@@ -3943,8 +3943,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 }
                 params.zimitStartPage = htmlArticle.match(/window\.mainUrl\s*=\s*(['"])https?:\/\/([^\/]+)(.+?)\1/);
                 if (params.zimitStartPage && params.zimitStartPage[2] && params.zimitStartPage[3]) {
-                    params.zimitPrefix = dirEntry.namespace + '/' + params.zimitStartPage[2];
-                    params.zimitStartPage =  params.zimitPrefix + params.zimitStartPage[3];
+                    params.zimitPrefix = params.zimitStartPage[2];
+                    params.zimitStartPage = dirEntry.namespace + '/' + params.zimitPrefix + params.zimitStartPage[3];
                 } else {
                     params.zimitStartPage = null;
                 }
@@ -3977,33 +3977,38 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
                 });
             } else if (wikiLang || params.zimitZim) {
-            // } else if (wikiLang) {
-                htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
-                    if (params.zimitZim) {
+                if (params.zimitZim) {
+                    if (!params.zimitPrefix) {
+                        params.zimitPrefix = htmlArticle.match(/link\s+rel=["']canonical["']\s+href=(['"])https?:\/\/([^\/]+)(.+?)\1/);
+                        params.zimitPrefix = params.zimitPrefix ? params.zimitPrefix[2] : '';
+                    }
+                    var regexpZimitLinks = new RegExp('(<(?:img|script|link)\\b[^>]*?\\s)(?:src|href)(\\s*=\\s*(["' + ']))(?:(?![a-z][a-z0-9+.-]+:)|(?=https?://' + params.zimitPrefix + '))(.+?)(?=\\3|\\?|#)([\\s\\S]*?>)', 'ig');
+                    htmlArticle = htmlArticle.replace(regexpZimitLinks, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
                         var newBlock = match;
-                        if (/^\/(?![ACIJ-]\/)/.test(relAssetUrl)) {
-                            if (!params.zimitPrefix) {
-                                params.zimitPrefix = htmlArticle.match(/link\s+rel=["']canonical["']\s+href=(['"])https?:\/\/([^\/]+)(.+?)\1/);
-                                params.zimitPrefix = params.zimitPrefix ? dirEntry.namespace + '/' + params.zimitPrefix[2] : '';
-                            }
-                            var assetZIMUrl = relAssetUrl.replace(/^\//, window.location.origin + '/' + appstate.selectedArchive._file.name + '/' + params.zimitPrefix + '/');
+                        var regexpTestAsset = new RegExp('^(/(?![ACIJ-]/))|(https?://' + params.zimitPrefix + ')');
+                        if (regexpTestAsset.test(relAssetUrl)) {
+                            var assetZIMUrl = relAssetUrl.replace(/^(\/|https?:\/\/)/, window.location.origin + '/' + appstate.selectedArchive._file.name + '/' + dirEntry.namespace + '/' + 
+                                (~relAssetUrl.indexOf(params.zimitPrefix) ? '' : (params.zimitPrefix + '/')));
                             if (relAssetUrl.match(/\.(?:jpe?g|svg|png|gif)/i)) {
                                 assetZIMUrl = assetZIMUrl.replace(/https?:.+?\/A\//, 'I/');
                             }
-                            // var assetZIMUrl = uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseURL);
-                            newBlock = match.replace(relAssetUrl, encodeURI(assetZIMUrl));
+                            assetZIMUrl = assetZIMUrl.replace(/\/\//g, '/');
+                            newBlock = match.replace(relAssetUrl, assetZIMUrl);
                         }
                         return newBlock;
-                    }
-                    // For Wikipedia archives, hyperlink the image to the File version
-                    var assetZIMUrl = decodeURIComponent(relAssetUrl);
-                    if (/^<img/i.test(blockStart) && !/usemap=/i.test(match)) {
-                        newBlock = '<a href="https://' + wikiLang + '.' + wikimediaZimFlavour + '.org/wiki/File:' + 
-                            assetZIMUrl.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1')
-                            + '" target="_blank">' + match + '</a>'
-                    }
-                    return newBlock || match;
-                });
+                    });
+                } else {
+                    htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
+                        // For Wikipedia archives, hyperlink the image to the File version
+                        var assetZIMUrl = decodeURIComponent(relAssetUrl);
+                        if (/^<img/i.test(blockStart) && !/usemap=/i.test(match)) {
+                            newBlock = '<a href="https://' + wikiLang + '.' + wikimediaZimFlavour + '.org/wiki/File:' + 
+                                assetZIMUrl.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1')
+                                + '" target="_blank">' + match + '</a>'
+                        }
+                        return newBlock || match;
+                    });
+                }
             }
             
             //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
@@ -4783,8 +4788,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 } else if (anchorTarget) {
                     // It's a local anchor link : remove escapedUrl if any (see above)
                     anchor.setAttribute('href', '#' + anchorTarget[1]);
-                } else if (anchor.protocol !== currentProtocol ||
-                    anchor.host !== currentHost) {
+                } else if (!(params.zimitZim && ~href.indexOf(params.zimitPrefix)) && (anchor.protocol !== currentProtocol ||
+                    anchor.host !== currentHost)) {
                     // It's an external URL : we should open it in a new tab
                     anchor.target = '_blank';
                     if (anchor.protocol === 'bingmaps:') {
@@ -4796,6 +4801,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     }
                 } else {
                     // It's a link to an article or file in the ZIM
+                    if (params.zimitZim) {
+                        // Change absolute link to ZIM link
+                        var testZimitAnchor = new RegExp('^https?://' + params.zimitPrefix);
+                        href = href.replace(testZimitAnchor, dirEntry.namespace + '/' + params.zimitPrefix);
+                    }
                     addListenersToLink(anchor, href, params.baseURL);
                 }
             });
@@ -4878,7 +4888,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 anchorParameter = anchorParameter ? anchorParameter[1] : '';
                 var zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
                 // Patch Zimit support
-                if (params.zimitZim && !~zimUrl.indexOf(params.zimitPrefix)) zimUrl = params.zimitPrefix + '/' + zimUrl;
+                if (params.zimitZim && !~zimUrl.indexOf(params.zimitPrefix)) zimUrl = dirEntry.name + '/' + params.zimitPrefix + '/' + zimUrl;
                 goToArticle(zimUrl, downloadAttrValue, contentType);
                 setTimeout(reset, 1400);
             };
