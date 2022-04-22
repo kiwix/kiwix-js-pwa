@@ -3507,7 +3507,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 appstate.selectedArchive.resolveRedirect(dirEntry, readArticle);
             } else {
                 //TESTING//
-                console.log("Initiating HTML load of " + dirEntry.url + "...");
+                console.log("Initiating HTML load of " + dirEntry.namespace + '/' + dirEntry.url + "...");
                 
                 //Set startup cookie to guard against boot loop
                 //Cookie will signal failure until article is fully loaded
@@ -3982,19 +3982,22 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         params.zimitPrefix = htmlArticle.match(/link\s+rel=["']canonical["']\s+href=(['"])https?:\/\/([^\/]+)(.+?)\1/i);
                         params.zimitPrefix = params.zimitPrefix ? params.zimitPrefix[2] : '';
                     }
-                    var regexpZimitLinks = new RegExp('(<(?:img|script|link)\\b[^>]*?\\s)(?:src|href)(\\s*=\\s*(["' + "']))(?:(?![a-z][a-z0-9+.-]+:)|(?=https?://))(.+?)(?=\\3|\\?|#)([\\s\\S]*?>)", 'ig');
+                    var regexpZimitLinks = new RegExp('(<(?:a|img|script|link)\\b[^>]*?\\s)(?:src|href)(\\s*=\\s*(["' + "']))(?:(?![a-z][a-z0-9+.-]+:)|(?=https?://))(.+?)(?=\\3|\\?|#)([\\s\\S]*?>)", 'ig');
                     htmlArticle = htmlArticle.replace(regexpZimitLinks, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
                         var newBlock = match;
-                        var regexpTestAsset = new RegExp('^(/(?![ACIJ-]/))|(https?://)');
-                        if (regexpTestAsset.test(relAssetUrl)) {
-                            var assetZIMUrl = relAssetUrl.replace(/^(?:\/|https?:\/\/([^\/]+))/, window.location.origin + '/' + appstate.selectedArchive._file.name + '/' + dirEntry.namespace + '/' + 
-                                (~relAssetUrl.search(/https?:/) ? '$1' : (params.zimitPrefix + '/')));
-                            if (/<img\b/i.test(newBlock)) {
-                                assetZIMUrl = assetZIMUrl.replace(/https?:\/\/.*?\/A\//, 'I/');
-                            }
-                            assetZIMUrl = assetZIMUrl.replace(/\/\//g, '/');
-                            newBlock = match.replace(relAssetUrl, assetZIMUrl);
-                        }
+                        // var regexpTestAsset = new RegExp('^(/(?![ACIJ-]/))|(https?://)');
+                        // if (regexpTestAsset.test(relAssetUrl)) {
+                        //     var assetZIMUrl = relAssetUrl.replace(/^(?:\/|https?:\/\/([^\/]+))/, window.location.origin + '/' + appstate.selectedArchive._file.name + '/' + dirEntry.namespace + '/' + 
+                        //         (~relAssetUrl.search(/https?:/) ? '$1' : (params.zimitPrefix + '/')));
+                        //     if (/<img\b/i.test(newBlock)) {
+                        //         assetZIMUrl = assetZIMUrl.replace(/https?:\/\/.*?\/A\//, 'I/');
+                        //     }
+                        //     assetZIMUrl = assetZIMUrl.replace(/\/\//g, '/');
+                        //     newBlock = match.replace(relAssetUrl, assetZIMUrl);
+                        // }
+                        var assetUrl = relAssetUrl.replace(/^\//i, dirEntry.namespace + '/' + params.zimitPrefix + '/');
+                        assetUrl = assetUrl.replace(/^https?:\/\//i, 'A/'); 
+                        newBlock = newBlock.replace(relAssetUrl, assetUrl);
                         return newBlock;
                     });
                 } else {
@@ -4801,11 +4804,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     }
                 } else {
                     // It's a link to an article or file in the ZIM
-                    if (params.zimitZim) {
-                        // Change absolute link to ZIM link
-                        var testZimitAnchor = new RegExp('^https?://' + params.zimitPrefix);
-                        href = href.replace(testZimitAnchor, dirEntry.namespace + '/' + params.zimitPrefix);
-                    }
+                    // if (params.zimitZim) {
+                    //     // Change absolute link to ZIM link
+                    //     var testZimitAnchor = new RegExp('^https?://' + params.zimitPrefix);
+                    //     href = href.replace(testZimitAnchor, dirEntry.namespace + '/' + params.zimitPrefix);
+                    // }
                     addListenersToLink(anchor, href, params.baseURL);
                 }
             });
@@ -4887,9 +4890,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 e.stopPropagation();
                 anchorParameter = href.match(/#([^#;]+)$/);
                 anchorParameter = anchorParameter ? anchorParameter[1] : '';
-                var zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
+                var zimUrl;
                 // Patch Zimit support
-                if (params.zimitZim && !~zimUrl.indexOf(params.zimitPrefix)) zimUrl = namespace + '/' + params.zimitPrefix + '/' + zimUrl;
+                if (params.zimitZim) {
+                    zimUrl = decodeURIComponent(uriComponent);
+                } else {
+                    zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
+                }
+                // if (params.zimitZim && !~zimUrl.indexOf(params.zimitPrefix)) zimUrl = namespace + '/' + params.zimitPrefix + '/' + zimUrl;
                 goToArticle(zimUrl, downloadAttrValue, contentType);
                 setTimeout(reset, 1400);
             };
@@ -5198,7 +5206,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 if (dirEntry === null || dirEntry === undefined) {
                     uiUtil.clearSpinner();
                     console.error("Article with title " + path + " not found in the archive");
-                    goToMainArticle();
+                    if (params.zimitZim) {
+                        path = path.replace(/^[AC]\//, 'http://');
+                        uiUtil.systemAlert('<p>We could not find an offline version of the requested article in this Zimit archive.</p>' +
+                            '<p>If you would like to open this page online in a new tab, please click this link:</p>' + 
+                            '<p><a href="' + path + '" target="_blank">' + path + '</a></p>');
+                        setTab();
+                    } else {
+                        uiUtil.systemAlert('<p>We could not find the article ' + path + ' in this archive!</p>' +
+                            '<p>Redirecting to landing page...</p>');
+                        goToMainArticle();
+                    }
                 } else if (download) {
                     appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                         var mimetype = contentType || fileDirEntry.getMimetype();
