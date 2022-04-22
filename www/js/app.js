@@ -3979,26 +3979,19 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             } else if (wikiLang || params.zimitZim) {
                 if (params.zimitZim) {
                     if (!params.zimitPrefix) {
-                        params.zimitPrefix = htmlArticle.match(/link\s+rel=["']canonical["']\s+href=(['"])https?:\/\/([^\/]+)(.+?)\1/i);
+                        params.zimitPrefix = htmlArticle.match(/link\s+rel=["']canonical["']\s+href=(['"])https?:\/\/([^\/]+)(.+?)\1/);
                         params.zimitPrefix = params.zimitPrefix ? params.zimitPrefix[2] : '';
                     }
-                    var regexpZimitLinks = new RegExp('(<(?:img|script|link)\\b[^>]*?\\s)(?:src|href)(\\s*=\\s*(["' + "']))(?:(?![a-z][a-z0-9+.-]+:)|(?=https?://))(.+?)(?=\\3|\\?|#)([\\s\\S]*?>)", 'ig');
+                    var regexpZimitLinks = new RegExp('(<(?:img|script|link)\\b[^>]*?\\s)(?:src|href)(\\s*=\\s*(["' + ']))(?:(?![a-z][a-z0-9+.-]+:)|(?=https?://' + params.zimitPrefix + '))(.+?)(?=\\3|\\?|#)([\\s\\S]*?>)', 'ig');
                     htmlArticle = htmlArticle.replace(regexpZimitLinks, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
                         var newBlock = match;
-                        // var regexpTestAsset = new RegExp('^(/(?![ACIJ-]/))|(https?://' + params.zimitPrefix + ')');
-                        var regexpTestAsset = /^(https?:\/\/|\/(?![ACIJ-]\/))/
+                        var regexpTestAsset = new RegExp('^(/(?![ACIJ-]/))|(https?://' + params.zimitPrefix + ')');
                         if (regexpTestAsset.test(relAssetUrl)) {
-                            // var assetZIMUrl = relAssetUrl.replace(/^(\/|https?:\/\/)/, window.location.origin + '/' + appstate.selectedArchive._file.name + '/' + dirEntry.namespace + '/' + 
-                            //     (~relAssetUrl.indexOf(params.zimitPrefix) ? '' : (params.zimitPrefix + '/')));
-                            var assetZIMUrl = relAssetUrl.replace(/^(\/|https?:\/\/)/, window.location.origin + '/' + appstate.selectedArchive._file.name + '/' + dirEntry.namespace + '/');
-                            // if(dirEntry.namespace === 'A') {
-                            //     if (/<img\b/i.test(newBlock)) {
-                            //         assetZIMUrl = assetZIMUrl.replace(/\/A\//, '/I/');
-                            //     }
-                            //     if (/<(script|link)/i.test(newBlock)) {
-                            //         assetZIMUrl = assetZIMUrl.replace(/\/A\//, '/-/');
-                            //     }
-                            // }
+                            var assetZIMUrl = relAssetUrl.replace(/^(\/|https?:\/\/)/, window.location.origin + '/' + appstate.selectedArchive._file.name + '/' + dirEntry.namespace + '/' + 
+                                (~relAssetUrl.indexOf(params.zimitPrefix) ? '' : (params.zimitPrefix + '/')));
+                            if (relAssetUrl.match(/\.(?:jpe?g|svg|png|gif)/i)) {
+                                assetZIMUrl = assetZIMUrl.replace(/https?:.+?\/A\//, 'I/');
+                            }
                             assetZIMUrl = assetZIMUrl.replace(/\/\//g, '/');
                             newBlock = match.replace(relAssetUrl, assetZIMUrl);
                         }
