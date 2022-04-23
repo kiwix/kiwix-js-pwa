@@ -3933,7 +3933,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 var wikimediaZimFlavour = appstate.selectedArchive._file.name.replace(/_.+/, '');
             }
             // Check if we're dealing with a Zimit ZIM
-            params.zimitZim = /warc-headers/.test(Array.from(appstate.selectedArchive._file.mimeTypes.values()));
+            params.zimitZim = /warc-headers/.test(Array.from(appstate.selectedArchive._file.mimeTypes));
             if (params.isLandingPage && params.zimitZim) {
                 // Display Bootstrap alert regarding limited support
                 if (!params.hideActiveContentWarning) {
