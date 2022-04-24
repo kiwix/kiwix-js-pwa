@@ -353,7 +353,7 @@ define(rqDef, function(util) {
                 (params.contentInjectionMode === 'jquery' ? 'Please <a id="swModeLink" href="#contentInjectionModeDiv" ' + 
                 'class="alert-link">switch to Service Worker mode</a> if your platform supports it. ' : 
                 'Please note that this app only has experimental support for <b>Zimit</b> ZIMs, and ' + 
-                'in particular it may not run most active content in these ZIMs. ') + 
+                'in particular it may not run all active content. Audio and video may not work yet. ') + 
                 '<br />Search for your content in the search box above (start your search with .* to match part of a title)' +
                 ', or to use the Archive Index <b><i>type a space</i></b> in the box above.&nbsp;' +
                 '[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
