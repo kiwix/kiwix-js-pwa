@@ -3994,7 +3994,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     htmlArticle = htmlArticle.replace(params.regexpZimitLinks, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
                         var newBlock = match;
                         var assetZIMUrl = relAssetUrl.replace(/^\//i, dirEntry.namespace + '/' + params.zimitPrefix + '/');
-                        assetZIMUrl = assetZIMUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
+                        assetZIMUrl = assetZIMUrl.replace(/^https?:\/\//i, function (m0) {
+                            var rtnVal = '';
+                            if (/^<a\s/i.test(match)) rtnVal = '/';
+                            return rtnVal + dirEntry.namespace + '/';
+                        }); 
                         newBlock = newBlock.replace(relAssetUrl, assetZIMUrl);
                         return newBlock;
                     });
@@ -4891,11 +4895,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 anchorParameter = anchorParameter ? anchorParameter[1] : '';
                 var zimUrl;
                 // Patch Zimit support
-                if (params.zimitZim && params.contentInjectionMode === 'serviceworker') {
-                    zimUrl = decodeURIComponent(uriComponent);
-                } else {
+                // if (params.zimitZim && params.contentInjectionMode === 'serviceworker') {
+                //     zimUrl = decodeURIComponent(uriComponent);
+                // } else {
                     zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
-                }
+                // }
                 // if (params.zimitZim && !~zimUrl.indexOf(params.zimitPrefix)) zimUrl = namespace + '/' + params.zimitPrefix + '/' + zimUrl;
                 goToArticle(zimUrl, downloadAttrValue, contentType);
                 setTimeout(reset, 1400);
