@@ -4118,6 +4118,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 htmlArticle = htmlArticle.replace(/(<[^>]+?)onclick\s*=\s*["'][^"']+["']\s*/ig, '$1');
                 //Neutralize href="javascript:" links
                 htmlArticle = htmlArticle.replace(/href\s*=\s*["']javascript:[^"']+["']/gi, 'href=""');
+            } else if (/journals\.openedition\.org/i.test(params.zimitPrefix)) {
+                // Neutralize all inline scripts, excluding math blocks or react templates, as they cause a loop on loading article
+                htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig, function (p0, p1) {
+                    return '<!-- ' + p1 + ' --!>';
+                });
             }
 
             //MathJax detection:
