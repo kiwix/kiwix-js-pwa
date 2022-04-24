@@ -3768,7 +3768,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     'content': buffer
                                 };
                                 // Prevent running of replay system in Zimit files (it causes blocking exceptions, and we don't use it)
-                                if (params.zimitZim && /javascript/i.test(message.mimetype) && /chunk\.js/i.test(message.title)) message.content = '';
+                                if (params.zimitZim && /javascript/i.test(message.mimetype) && 
+                                    /(?:chunk\.js|\bload\.js|\bsw\.js)(?:[?#]|$)/.test(message.title)) message.content = '';
                                 if (content.buffer) {
                                     // In Edge Legacy, we have to transfer the buffer inside an array, whereas in Chromium, this produces an error
                                     // due to type not being transferrable... (and already detached, which may be to do with storing in IndexedDB in Electron)
