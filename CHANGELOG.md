@@ -1,5 +1,12 @@
 # Changelog
 
+## Release 1.9.8-WikiMed
+
+* UPDATE: Packaged archive updated to `mdwiki_en_all-app_maxi_2022-04.zim`
+* BUILD: Nightly builds of main app are now uploaded to a new server (with sftp instead of ssh)
+* BUILD: Deploy PWA image on a k8s cluster
+* BUILD: PWA images are now uploaded to ghcr.io instead of Docker Hub
+
 ## Release 1.9.5-WikiMed
 
 * UPDATE: Packaged archive updated to `wikipedia_en_medicine_maxi_2022-03.zim`
