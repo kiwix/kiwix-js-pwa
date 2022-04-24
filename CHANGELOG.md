@@ -1,5 +1,11 @@
 # Changelog
 
+## In-progress release 1.9.8
+
+* BUILD: Nightly builds of main app are now uploaded to a new server (with sftp instead of ssh)
+* BUILD: Deploy PWA image on a k8s cluster
+* BUILD: PWA images are now uploaded to ghcr.io instead of Docker Hub
+
 ## Release 1.9.6
 
 * UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-03`
