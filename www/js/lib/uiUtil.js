@@ -349,8 +349,11 @@ define(rqDef, function(util) {
             alertHTML =
             '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
                 '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
-                '<strong>Limited support:</strong> Please note that this app only has limited support for <b>Zimit</b> ZIMs, and in particular it cannot ' +
-                'run active content in these ZIMs. Please search for your content in the search box above (start your search with .* to match part of a title)' +
+                '<strong>Limited support:</strong> ' + (params.contentInjectionMode === 'jquery' ? 
+                'Please <a id="swModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to Service Worker mode</a> ' +
+                'if your platform supports it. ' : 'Please note that this app only has limited support for <b>Zimit</b> ZIMs, and ' + 
+                'in particular it cannot run most active content in these ZIMs. ') + 
+                'Search for your content in the search box above (start your search with .* to match part of a title)' +
                 ', or to use the Archive Index <b><i>type a space</i></b> in the box above.&nbsp;' +
                 '[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
