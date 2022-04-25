@@ -2,6 +2,7 @@
 
 ## In-progress release 1.9.8
 
+* UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-04`
 * FEATURE: Experimental support for reading Zimit ZIM archives
 * BUILD: Nightly builds of main app are now uploaded to a new server (with sftp instead of ssh)
 * BUILD: Deploy PWA image on a k8s cluster
