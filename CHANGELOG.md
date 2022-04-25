@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 1.9.9
+## In-progress release 1.9.8
 
 * FEATURE: Experimental support for reading Zimit ZIM archives
 * BUILD: Nightly builds of main app are now uploaded to a new server (with sftp instead of ssh)
