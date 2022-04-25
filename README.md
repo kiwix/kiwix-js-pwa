@@ -20,9 +20,10 @@ Workers, but has only been tested on Edge Legacy, Edge Chromium, Firefox and Sam
 visiting a Store (using Chromium-based browsers) and will work offline.
 
 Offline ZIM archives are available from the [Kiwix repository](https://library.kiwix.org), including full Wikipedia versions with or without images
-in many different languages. This app is regularly tested fully on Wikimedia ZIM files, though a number of other ZIM file types work.
+in many different languages. This app is regularly tested fully on Wikimedia ZIM files, though a number of other ZIM file types work. There is *experimental*
+support for Zimit ZIMs from version 1.9.8 onwards.
 
-This began as a simple port of [Kiwix JS](https://github.com/kiwix/kiwix-js), the HTML5 web app provided upstream at https://github.com/kiwix/kiwix-js,
+This project began as a simple port of [Kiwix JS](https://github.com/kiwix/kiwix-js), the HTML5 web app provided upstream at https://github.com/kiwix/kiwix-js,
 although significant development has been undertaken to add functionality and to make the app sit happily with the Universal Windows Platform, and more
 recently Electron and NWJS, as well as to work as an installable PWA.
 
