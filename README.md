@@ -2,7 +2,7 @@
 
 **Kiwix is an offline reader for multilingual content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, etc. It makes knowledge
 available to people with limited or no Internet access. The software as well as the content is free for anyone to use. It requires an offline ZIM archive
-(which can be downloaded in the app). There are also two apps that come with content: [WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html) and [Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html) (no extra download needed).**
+(which can be downloaded in the app). See [Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html) for the latest release of Electron, UWP and NWJS packages. There are also two apps that come with content: [WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html) and [Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html) (no extra download needed).**
 
 *Try this app instantly by opening the installable PWA (Progressive Web App) in your browser at **[pwa.kiwix.org](https://pwa.kiwix.org/)**. Get a free ZIM archive to use with it from the [Configuration page](https://pwa.kiwix.org/www/index.html#downloads) of the app, or you can preview a ZIM at [library.kiwix.org](https://library.kiwix.org) before you download one.* Once installed or bookmarked, the PWA works offline!
 
