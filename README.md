@@ -34,12 +34,12 @@ The UWP app is available in the Microsoft Store at:
 It can also be installed (in Windows 10/11) by opening a Command Prompt or PowerShell terminal and typing `winget install kiwix.kiwixjs` (but this version
 will not auto-update, unlike the Store version). Alternative sideloading instructions are available in the 
 [release notes](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html). The Electron version can be installed with `winget install kiwix.kiwixjs.electron`,
-or else by downloading a package from [releases](https://github.com/kiwix/kiwix-js-windows/releases/).
+or else by downloading a package from [Releases](https://github.com/kiwix/kiwix-js-windows/releases/).
 
 **You will need a ZIM file to work with this app.** For testing, the Store, Electron and NWJS versions come packaged with an archive of Wikipedia articles
-related to Climate Change (as a starter ZIM), while packaged aps of WikiMed and Wikivoyage are also available in the Store or from [Releases](https://github.com/kiwix/kiwix-js-windows/releases/).
-Go to [WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html) or [Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html).
-You can download other ZIM archives from the Configuration page in the app (the download completes in the browser).
+related to Climate Change (as a starter ZIM), while packaged aps of [WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html) and 
+[Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html) are also available in the Store or from Releases. You can download 
+other ZIM archives from the Configuration page in the app (the download completes in the browser).
 
 Alternatively, you can download files from the [Kiwix repository](http://library.kiwix.org) on a regular PC. Some archives are very large indeed,
 for example full English Wikipedia with images is currently around 90GB, and you should download this with a BitTorrent client (torrent links are
