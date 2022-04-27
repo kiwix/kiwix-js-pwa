@@ -93,7 +93,7 @@ define(['uiUtil'], function (uiUtil) {
                 });
                 return;
             }
-            if (params.zimitZim) title = title.replace(/^\//, '');
+            // if (params.zimType === 'zimit') title = title.replace(/^\//, '');
             appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
                 return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                     image.style.background = '';
