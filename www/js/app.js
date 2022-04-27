@@ -3543,7 +3543,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             displayArticleContentInContainer(dirEntry, htmlContent);
                         } else {
                             uiUtil.pollSpinner();
-                            appstate.selectedArchive.readUtf8File(dirEntry, displayArticleContentInContainer);
+                            appstate.selectedArchive.readUtf8File(dirEntry, function (fileDirEntry, data) {
+                                if (fileDirEntry.zimitRedirect) goToArticle(fileDirEntry.zimitRedirect);
+                                else displayArticleContentInContainer(fileDirEntry, data);
+                            });
                         }
                     });
                 }
@@ -3565,7 +3568,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         } else {
                             //if (params.contentInjectionMode === 'jquery') {
                             // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
-                            appstate.selectedArchive.readUtf8File(dirEntry, displayArticleContentInContainer);
+                            appstate.selectedArchive.readUtf8File(dirEntry, function (fileDirEntry, data) {
+                                if (fileDirEntry.zimitRedirect) goToArticle(fileDirEntry.zimitRedirect);
+                                else displayArticleContentInContainer(fileDirEntry, data);
+                            });
                             // This is needed so that the html is cached in displayArticleInForm
                             params.lastPageVisit = '';
                             params.lastPageHTML = '';
@@ -3776,8 +3782,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     'content': buffer
                                 };
                                 // Prevent running of replay system in Zimit files (it causes blocking exceptions, and we don't use it)
-                                if (params.zimType === 'zimit' && /javascript/i.test(message.mimetype) && 
-                                    /(?:chunk\.js|\bload\.js|\bsw\.js)(?:[?#]|$)/.test(message.title)) message.content = '';
+                                // if (params.zimType === 'zimit' && /javascript/i.test(message.mimetype) && 
+                                //     /(?:chunk\.js|\bload\.js|\bsw\.js)(?:[?#]|$)/.test(message.title)) message.content = '';
+                                if (dirEntry.nullify) message.content = '';
                                 if (content.buffer) {
                                     // In Edge Legacy, we have to transfer the buffer inside an array, whereas in Chromium, this produces an error
                                     // due to type not being transferrable... (and already detached, which may be to do with storing in IndexedDB in Electron)
@@ -3859,7 +3866,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         // quote marks (') in the URL.
         params.regexpTagsWithZimUrl = /(<(?:img|script|link)\b[^>]*?\s)(?:src|href)(\s*=\s*(["']))(?![a-z][a-z0-9+.-]+:)(.+?)(?=\3|\?|#)([\s\S]*?>)/ig;
         // Similar to above, but tailored for Zimit links
-        params.regexpZimitLinks = /(<(?:a|img|script|link|track)\b[^>]*?\s)(?:src|href)(=(["']))(?!#)(.+?)(?=\3|\?|#)([\s\S]*?>)/ig;
+        // params.regexpZimitLinks = /(<(?:a|img|script|link|track)\b[^>]*?\s)(?:src|href)(=(["']))(?!#)(.+?)(?=\3|\?|#)([\s\S]*?>)/ig;
         // Regex below tests the html of an article for active content [kiwix-js #466]
         // It inspects every <script> block in the html and matches in the following cases: 1) the script loads a UI application called app.js;
         // 2) the script block has inline content that does not contain "importScript()", "toggleOpenSection" or an "articleId" assignment
@@ -3949,18 +3956,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         uiUtil.displayActiveContentWarning('zimit');
                     }, 1000);
                 }
-                params.zimitStartPage = htmlArticle.match(/window\.mainUrl\s*=\s*(['"])https?:\/\/([^\/]+)(.+?)\1/);
-                if (params.zimitStartPage && params.zimitStartPage[2] && params.zimitStartPage[3]) {
-                    params.zimitPrefix = params.zimitStartPage[2];
-                    params.zimitStartPage = dirEntry.namespace + '/' + params.zimitPrefix + params.zimitStartPage[3];
-                } else {
-                    params.zimitStartPage = null;
-                }
-                if (params.zimitStartPage) {
-                    params.isLandingPage = false;
-                    goToArticle(params.zimitStartPage);
-                    return;
-                }
+                // params.zimitStartPage = htmlArticle.match(/window\.mainUrl\s*=\s*(['"])https?:\/\/([^\/]+)(.+?)\1/);
+                // if (params.zimitStartPage && params.zimitStartPage[2] && params.zimitStartPage[3]) {
+                //     params.zimitPrefix = params.zimitStartPage[2];
+                //     params.zimitStartPage = dirEntry.namespace + '/' + params.zimitPrefix + params.zimitStartPage[3];
+                // } else {
+                //     params.zimitStartPage = null;
+                // }
+                // if (params.zimitStartPage) {
+                //     params.isLandingPage = false;
+                //     goToArticle(params.zimitStartPage);
+                //     return;
+                // }
             }
             var newBlock;
             if (params.contentInjectionMode == 'jquery') {
@@ -4100,11 +4107,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 htmlArticle = htmlArticle.replace(/(<[^>]+?)onclick\s*=\s*["'][^"']+["']\s*/ig, '$1');
                 //Neutralize href="javascript:" links
                 htmlArticle = htmlArticle.replace(/href\s*=\s*["']javascript:[^"']+["']/gi, 'href=""');
-            } else if (/journals\.openedition\.org/i.test(params.zimitPrefix)) {
-                // Neutralize all inline scripts, excluding math blocks or react templates, as they cause a loop on loading article
-                htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig, function (p0, p1) {
-                    return '<!-- ' + p1 + ' --!>';
-                });
+            // } else if (/journals\.openedition\.org/i.test(params.zimitPrefix)) {
+            //     // Neutralize all inline scripts, excluding math blocks or react templates, as they cause a loop on loading article
+            //     htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig, function (p0, p1) {
+            //         return '<!-- ' + p1 + ' --!>';
+            //     });
             }
 
             //MathJax detection:

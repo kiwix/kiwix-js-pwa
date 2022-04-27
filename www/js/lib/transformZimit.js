@@ -87,6 +87,12 @@ define([], function () {
                 console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
+            if (/journals\.openedition\.org/i.test(params.zimitPrefix)) {
+                // Neutralize all inline scripts, excluding math blocks or react templates, as they cause a loop on loading article
+                data = data.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig, function (p0, p1) {
+                    return '<!-- ' + p1 + ' --!>';
+                });
+            }
         }
         if (/^text\/css\b/.test(mimetype)) {
             var regexpZimitCssLinks = /url\s*\(['"\s]*([^)'"]+\s*\))/ig;
