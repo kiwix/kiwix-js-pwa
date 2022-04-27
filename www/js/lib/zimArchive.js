@@ -20,8 +20,8 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
-define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
-    function(zimfile, zimDirEntry, util, utf8) {
+define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
+    function(zimfile, zimDirEntry, transformZimit, util, utf8) {
     
     /**
      * ZIM Archive
@@ -49,8 +49,9 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
      * @param {StorageFirefoxOS|Array<Blob>} storage Storage (in this case, the path must be given) or Array of Files (path parameter must be omitted)
      * @param {String} path The Storage path for an OS that requires this to be specified
      * @param {callbackZIMArchive} callbackReady The function to call when the archive is ready to use
+     * @param {callbackZIMArchive} callbackError The function to call when an error occurs
      */
-    function ZIMArchive(storage, path, callbackReady) {
+    function ZIMArchive(storage, path, callbackReady, callbackError) {
         var that = this;
         that._file = null;
         that._language = ""; //@TODO
@@ -75,6 +76,10 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
                         countName: 'articleCount'
                     }
                 ]);
+
+                // Set the ZIM type ('zimit' or 'open')
+                params.zimType = transformZimit.setZimType(that);
+
                 // DEV: Currently, extended listings are only used for title (=article) listings when the user searches
                 // for an article or uses the Random button, by which time the listings will have been extracted.
                 // If, in the future, listings are used in a more time-critical manner, consider forcing a wait before
@@ -88,21 +93,19 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
             var fileArray = [].slice.call(fileList);
             // The constructor has been called with an array of File/Blob parameter
             createZimfile(fileArray);
-        }
-        else {
+        } else {
             if (/.*zim..$/.test(path)) {
                 // split archive
                 that._searchArchiveParts(storage, path.slice(0, -2)).then(function(fileArray) {
                     createZimfile(fileArray);
-                }, function(error) {
-                    alert("Error reading files in split archive " + path + ": " + error);
+                }).catch(function (error) {
+                    callbackError("Error reading files in split archive " + path + ": " + error, "Error reading archive files");
                 });
-            }
-            else {
+            } else {
                 storage.get(path).then(function(file) {
                     createZimfile([file]);
-                }, function(error) {
-                    alert("Error reading ZIM file " + path + " : " + error);
+                }).catch(function (error) {
+                    callbackError("Error reading ZIM file " + path + " : " + error, "Error reading archive file");
                 });
             }
         }
@@ -145,7 +148,12 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
     ZIMArchive.prototype.getMainPageDirEntry = function(callback) {
         if (this.isReady()) {
             var mainPageUrlIndex = this._file.mainPage;
-            this._file.dirEntryByUrlIndex(mainPageUrlIndex).then(callback);
+            var that = this;
+            this._file.dirEntryByUrlIndex(mainPageUrlIndex).then(function (dirEntry) {
+                // Filter out Zimit files that we cannot handle without error
+                if (that.type === 'zimit') dirEntry = transformZimit.filterReplayFiles(dirEntry);
+                callback(dirEntry);
+            });
         }
     };
 
@@ -372,8 +380,20 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
      * @param {callbackStringContent} callback
      */
     ZIMArchive.prototype.readUtf8File = function(dirEntry, callback) {
-        dirEntry.readData().then(function(data) {
-            callback(dirEntry, utf8.parse(data));
+        var that = this;
+        return dirEntry.readData().then(function(data) {
+            data = utf8.parse(data);
+            var mimetype = dirEntry.getMimetype();
+            if (dirEntry.inspect) {
+                dirEntry = transformZimit.getZimitLandingPage(dirEntry, data);
+            } else {
+                // DEV: Note that we cannot terminate regex below with $ because there is a (rogue?) mimetype
+                // of 'text/html;raw=true'
+                if (params.zimType === 'zimit' && /\/(?:html|css|javascript)\b/i.test(mimetype)) {
+                    data = transformZimit.transformReplayUrls(dirEntry, data, mimetype, that);
+                }
+            }
+            callback(dirEntry, data);
         });
     };
 
@@ -388,7 +408,18 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
      * @param {callbackBinaryContent} callback
      */
     ZIMArchive.prototype.readBinaryFile = function(dirEntry, callback) {
+        var that = this;
         return dirEntry.readData().then(function(data) {
+            var mimetype = dirEntry.getMimetype();
+            if (dirEntry.inspect) {
+                dirEntry = transformZimit.getZimitLandingPage(dirEntry, utf8.parse(data));
+            } else {
+                // DEV: Note that we cannot terminate regex below with $ because there is a (rogue?) mimetype
+                // of 'text/html;raw=true'
+                if (params.zimType === 'zimit' && /^text\/(?:html|css|javascript)\b/i.test(mimetype)) {
+                    data = transformZimit.transformReplayUrls(dirEntry, utf8.parse(data), mimetype, that);
+                }
+            }
             callback(dirEntry, data);
         });
     };
@@ -414,6 +445,8 @@ define(['zimfile', 'zimDirEntry', 'util', 'utf8'],
             if (index === null) return null;
             return that._file.dirEntryByUrlIndex(index);
         }).then(function(dirEntry) {
+            // Filter out Zimit files that we cannot handle without error
+            if (that.type === 'zimit') dirEntry = transformZimit.filterReplayFiles(dirEntry);
             if ((dirEntry === null || dirEntry === undefined) && /^[AC]\/[^/]+\/.+/i.test(path)) {
                 console.log("Article " + path + " not available, but moving up one directory to compensate for ZIM coding error...");
                 path = path.replace(/^([AC]\/)[^/]+\/(.+)$/, '$1$2');

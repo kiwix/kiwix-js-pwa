@@ -2186,7 +2186,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (params.localStorage && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 scanUWPFolderforArchives(params.localStorage);
             } else {
-                zimArchiveLoader.scanForArchives(storages, populateDropDownListOfArchives);
+                zimArchiveLoader.scanForArchives(storages, populateDropDownListOfArchives, function () {
+                    // callbackError function is called in case of an error
+                    uiUtil.systemAlert(message, label).then(populateDropDownListOfArchives(null));
+                });
             }
         }
 
@@ -2621,8 +2624,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         document.getElementById('usage').style.display = 'none';
                         document.getElementById('btnHome').click();
                     }
+                }, function (message, label) {
+                    // callbackError which is called in case of an error
+                    uiUtil.systemAlert(message, label);
                 });
-
             }
         }
 
@@ -3002,6 +3007,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         document.getElementById('btnHome').click();
                     }
                 }
+            }, function (message, label) {
+                // callbackError which is called in case of an error
+                uiUtil.systemAlert(message, label);
             });
         }
 
@@ -3768,7 +3776,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                     'content': buffer
                                 };
                                 // Prevent running of replay system in Zimit files (it causes blocking exceptions, and we don't use it)
-                                if (params.zimitZim && /javascript/i.test(message.mimetype) && 
+                                if (params.zimType === 'zimit' && /javascript/i.test(message.mimetype) && 
                                     /(?:chunk\.js|\bload\.js|\bsw\.js)(?:[?#]|$)/.test(message.title)) message.content = '';
                                 if (content.buffer) {
                                     // In Edge Legacy, we have to transfer the buffer inside an array, whereas in Chromium, this produces an error
@@ -3934,9 +3942,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 var wikiLang = appstate.selectedArchive._file.name.replace(/(?:wikipedia|wikivoyage|wiktionary)_([^_]+).+/i, '$1');
                 var wikimediaZimFlavour = appstate.selectedArchive._file.name.replace(/_.+/, '');
             }
-            // Check if we're dealing with a Zimit ZIM
-            params.zimitZim = /warc-headers/.test(Array.from(appstate.selectedArchive._file.mimeTypes));
-            if (params.isLandingPage && params.zimitZim) {
+            if (params.isLandingPage && params.zimType === 'zimit') {
                 // Display Bootstrap alert regarding limited support
                 if (!params.hideActiveContentWarning) {
                     setTimeout(function () {
@@ -3958,20 +3964,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
             var newBlock;
             if (params.contentInjectionMode == 'jquery') {
-                var regexp = params.zimitZim ? params.regexpZimitLinks : params.regexpTagsWithZimUrl;
-                htmlArticle = htmlArticle.replace(regexp, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
+                htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
                     var assetZIMUrl;
                     newBlock = match;
-                    if (params.zimitZim) {
-                        assetZIMUrl = relAssetUrl.replace(/^\//i, '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
-                        assetZIMUrl = assetZIMUrl.replace(/^https?:\/\//i, '/' + dirEntry.namespace + '/'); 
-                    }
-                    assetZIMUrl = /^\//.test(assetZIMUrl) ? assetZIMUrl : uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseURL);
-                    if (/^<a\s/i.test(match)) newBlock = newBlock.replace(relAssetUrl, assetZIMUrl); // For Zimit ZIMs
+                    assetZIMUrl = uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseURL);
                     // DEV: Note that deriveZimUrlFromRelativeUrl produces a *decoded* URL (and incidentally would remove any URI component
                     // if we had captured it). We therefore re-encode the URI with encodeURI (which does not encode forward slashes) instead
                     // of encodeURIComponent.
-                    else newBlock = blockStart + 'data-kiwixurl' + equals + encodeURI(assetZIMUrl) + blockClose;
+                    newBlock = blockStart + 'data-kiwixurl' + equals + encodeURI(assetZIMUrl) + blockClose;
                     // For Wikipedia archives, hyperlink the image to the File version
                     if (wikiLang && /^<img/i.test(blockStart) && !/usemap=/i.test(match)) {
                         newBlock = '<a href="https://' + wikiLang + '.' + wikimediaZimFlavour + '.org/wiki/File:' + 
@@ -3986,35 +3986,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 htmlArticle = htmlArticle.replace(/(<(audio|video)\b(?:[^<]|<(?!\/\2))+<\/\2>)/ig, function (p0) {
                     return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
                 });
-            } else if (wikiLang || params.zimitZim) {
-                if (params.zimitZim) {
-                    if (!params.zimitPrefix) {
-                        params.zimitPrefix = htmlArticle.match(/link\s+rel=["']canonical["']\s+href=(['"])https?:\/\/([^\/]+)(.+?)\1/i);
-                        params.zimitPrefix = params.zimitPrefix ? params.zimitPrefix[2] : '';
+            } else if (wikiLang) {
+                htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
+                    // For Wikipedia archives, hyperlink the image to the File version
+                    var assetZIMUrl = decodeURIComponent(relAssetUrl);
+                    if (/^<img/i.test(blockStart) && !/usemap=/i.test(match)) {
+                        newBlock = '<a href="https://' + wikiLang + '.' + wikimediaZimFlavour + '.org/wiki/File:' + 
+                            assetZIMUrl.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1')
+                            + '" target="_blank">' + match + '</a>'
                     }
-                    htmlArticle = htmlArticle.replace(params.regexpZimitLinks, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
-                        var newBlock = match;
-                        var assetZIMUrl = relAssetUrl.replace(/^\//i, dirEntry.namespace + '/' + params.zimitPrefix + '/');
-                        assetZIMUrl = assetZIMUrl.replace(/^https?:\/\//i, function (m0) {
-                            var rtnVal = '';
-                            if (/^<a\s/i.test(match)) rtnVal = '/';
-                            return rtnVal + dirEntry.namespace + '/';
-                        }); 
-                        newBlock = newBlock.replace(relAssetUrl, assetZIMUrl);
-                        return newBlock;
-                    });
-                } else {
-                    htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
-                        // For Wikipedia archives, hyperlink the image to the File version
-                        var assetZIMUrl = decodeURIComponent(relAssetUrl);
-                        if (/^<img/i.test(blockStart) && !/usemap=/i.test(match)) {
-                            newBlock = '<a href="https://' + wikiLang + '.' + wikimediaZimFlavour + '.org/wiki/File:' + 
-                                assetZIMUrl.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1')
-                                + '" target="_blank">' + match + '</a>'
-                        }
-                        return newBlock || match;
-                    });
-                }
+                    return newBlock || match;
+                });
             }
             
             //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
@@ -4305,6 +4287,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         injectCSS(); //DO NOT move this: it must run within .then function to pass correct values
                     }).catch(function (err) {
                         console.error(err);
+                        var newURL = [title, ''];
+                        blobArray.push(newURL);
+                        if (cssBlobCache)
+                            cssBlobCache.set(newURL[0], newURL[1]);
+                        injectCSS();
                     });
                 }
             }
@@ -4800,8 +4787,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 } else if (anchorTarget) {
                     // It's a local anchor link : remove escapedUrl if any (see above)
                     anchor.setAttribute('href', '#' + anchorTarget[1]);
-                } else if (!(params.zimitZim && ~href.indexOf(params.zimitPrefix)) && (anchor.protocol !== currentProtocol ||
-                    anchor.host !== currentHost)) {
+                } else if (anchor.protocol !== currentProtocol || anchor.host !== currentHost) {
                     // It's an external URL : we should open it in a new tab
                     anchor.target = '_blank';
                     if (anchor.protocol === 'bingmaps:') {
@@ -4812,12 +4798,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         });
                     }
                 } else {
-                    // It's a link to an article or file in the ZIM
-                    // if (params.zimitZim) {
-                    //     // Change absolute link to ZIM link
-                    //     var testZimitAnchor = new RegExp('^https?://' + params.zimitPrefix);
-                    //     href = href.replace(testZimitAnchor, dirEntry.namespace + '/' + params.zimitPrefix);
-                    // }
                     addListenersToLink(anchor, href, params.baseURL);
                 }
             });
@@ -4899,14 +4879,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 e.stopPropagation();
                 anchorParameter = href.match(/#([^#;]+)$/);
                 anchorParameter = anchorParameter ? anchorParameter[1] : '';
-                var zimUrl;
-                // Patch Zimit support
-                // if (params.zimitZim && params.contentInjectionMode === 'serviceworker') {
-                //     zimUrl = decodeURIComponent(uriComponent);
-                // } else {
-                    zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
-                // }
-                // if (params.zimitZim && !~zimUrl.indexOf(params.zimitPrefix)) zimUrl = namespace + '/' + params.zimitPrefix + '/' + zimUrl;
+                var zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
                 goToArticle(zimUrl, downloadAttrValue, contentType);
                 setTimeout(reset, 1400);
             };
@@ -5215,7 +5188,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 if (dirEntry === null || dirEntry === undefined) {
                     uiUtil.clearSpinner();
                     console.error("Article with title " + path + " not found in the archive");
-                    if (params.zimitZim) {
+                    if (params.zimType === 'zimit') {
                         path = path.replace(/^[AC]\//, 'http://');
                         uiUtil.systemAlert('<p>We could not find an offline version of the requested article in this Zimit archive.</p>' +
                             '<p>If you would like to open this page online in a new tab, please click this link:</p>' + 
@@ -5278,18 +5251,21 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
     
         function goToMainArticle() {
             uiUtil.pollSpinner();
+            params.isLandingPage = true;
             appstate.selectedArchive.getMainPageDirEntry(function (dirEntry) {
                 if (dirEntry === null || dirEntry === undefined) {
+                    params.isLandingPage = false;
                     console.error("Error finding main article.");
                     uiUtil.clearSpinner();
                     $("#welcomeText").show();
                 } else {
                 // DEV: see comment above under goToRandomArticle()
-                if (dirEntry.redirect || dirEntry.getMimetype() === 'text/html' || dirEntry.namespace === 'A') {
+                if (dirEntry.redirect || /text/.test(dirEntry.getMimetype()) || dirEntry.namespace === 'A') {
                         params.isLandingPage = true;
                         appstate.selectedArchive.landingPageUrl = dirEntry.namespace + '/' + dirEntry.url;
                         readArticle(dirEntry);
                     } else {
+                        params.isLandingPage = false;
                         console.error("The main page of this archive does not seem to be an article");
                         uiUtil.clearSpinner();
                         $("#welcomeText").show();
