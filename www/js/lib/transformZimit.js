@@ -89,8 +89,8 @@ define([], function () {
             });
         }
         if (/^text\/css\b/.test(mimetype)) {
-            var regexpZimitJavascriptLinks = /url\s*\(['"\s]*([^)'"]+\s*\))/ig;
-            data = data.replace(regexpZimitJavascriptLinks, function (match, url) {
+            var regexpZimitCssLinks = /url\s*\(['"\s]*([^)'"]+\s*\))/ig;
+            data = data.replace(regexpZimitCssLinks, function (match, url) {
                 var newBlock = match;
                 var assetUrl = url.replace(/^\//i, dirEntry.namespace + '/' + params.zimitPrefix + '/');
                 assetUrl = assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
