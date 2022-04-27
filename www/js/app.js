@@ -3524,7 +3524,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
                 //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
                 localSearch = {};
-
+                // Calculate the current article's ZIM baseUrl to use when processing relative links
+                params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
+                // URI-encode anything that is not a '/'
+                .replace(/[^/]+/g, function(m) {
+                    return encodeURIComponent(m);
+                });
                 //Load cached start page if it exists and we have loaded the packaged file
                 var htmlContent = 0;
                 var zimName = appstate.selectedArchive._file.name.replace(/\.[^.]+$/, '').replace(/_\d+-\d+$/, '');
@@ -3740,7 +3745,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 var shortTitle = dirEntry.url.replace(/[^/]+\//g, '').substring(0, 18);
                                 uiUtil.pollSpinner('Getting ' + shortTitle + '...');
                             }
-                            if (/\bhtml\b/i.test(mimetype)) {
+                            // Note we sometimes can get HTML "moved permanently" as a response to a request for an image
+                            // particularly in Zimit archives, so we have to exclude these here
+                            if (/\bhtml\b/i.test(mimetype) && !/\.(png|gif|jpe?g|css|js|mpe?g)$/i.test(dirEntry.url)) {
                                 loadingArticle = title;
                                 // Intercept files of type html and apply transformations   
                                 var message = {
@@ -3929,6 +3936,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             params.appIsLaunching = false;
             
             // Calculate the current article's ZIM baseUrl to use when processing relative links
+            // (duplicated because we sometimes bypass readArticle above)
             params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
                 // URI-encode anything that is not a '/'
                 .replace(/[^/]+/g, function(m) {
@@ -4824,7 +4832,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
          */
         function addListenersToLink(a, href, baseUrl) {
             var uriComponent = uiUtil.removeUrlParameters(href);
-            var namespace = baseUrl.replace(/^([-ABCIJMUVWX])\/.+/, '$1');
+            // var namespace = baseUrl.replace(/^([-ABCIJMUVWX])\/.+/, '$1');
             var loadingContainer = false;
             var contentType;
             var downloadAttrValue;
