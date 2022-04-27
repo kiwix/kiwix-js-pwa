@@ -380,7 +380,6 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
      * @param {callbackStringContent} callback
      */
     ZIMArchive.prototype.readUtf8File = function(dirEntry, callback) {
-        var that = this;
         return dirEntry.readData().then(function(data) {
             data = utf8.parse(data);
             var mimetype = dirEntry.getMimetype();
@@ -390,7 +389,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                 // DEV: Note that we cannot terminate regex below with $ because there is a (rogue?) mimetype
                 // of 'text/html;raw=true'
                 if (params.zimType === 'zimit' && /\/(?:html|css|javascript)\b/i.test(mimetype)) {
-                    data = transformZimit.transformReplayUrls(dirEntry, data, mimetype, that);
+                    data = transformZimit.transformReplayUrls(dirEntry, data, mimetype, appstate.selectedArchive);
                 }
             }
             callback(dirEntry, data);

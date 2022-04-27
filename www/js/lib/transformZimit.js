@@ -46,9 +46,8 @@ define([], function () {
     function filterReplayFiles(dirEntry) {
         if (!(dirEntry && dirEntry.url)) return null;
         if (/(?:chunk\.js|\bload\.js|\bsw\.js)(?:[?#]|$)/.test(dirEntry.url)) {
-            dirEntry = null;
-        }
-        if (params.isLandingPage && /^index\.html(?:[?#]|$)/.test(dirEntry.url)) {
+            dirEntry.nullify = true;
+        } else if (params.isLandingPage && /^index\.html(?:[?#]|$)/.test(dirEntry.url)) {
             dirEntry.inspect = true;
         }
         return dirEntry;
@@ -90,7 +89,32 @@ define([], function () {
             });
         }
         if (/^text\/css\b/.test(mimetype)) {
-            // Foobar
+            var regexpZimitJavascriptLinks = /url\s*\(['"\s]*([^)'"]+\s*\))/ig;
+            data = data.replace(regexpZimitJavascriptLinks, function (match, url) {
+                var newBlock = match;
+                var assetUrl = url.replace(/^\//i, dirEntry.namespace + '/' + params.zimitPrefix + '/');
+                assetUrl = assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
+                if (assetUrl === url) return match; // If nothing was transformed, return
+                newBlock = params.contentInjectionMode === 'serviceworker' ?
+                    newBlock.replace(url, '/' + selectedArchive._file.name + '/' + assetUrl) :
+                    newBlock.replace(url, '/' + assetUrl);
+                console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+                return newBlock;
+            });
+        }
+        if (/^text\/javascript\b/.test(mimetype)) {
+            var regexpZimitJavascriptLinks = /(https?:\/\/[^'"?#)]+)/ig;
+            data = data.replace(regexpZimitJavascriptLinks, function (match, url) {
+                var newBlock = match;
+                // var assetUrl = url.replace(/^\//i, dirEntry.namespace + '/' + params.zimitPrefix + '/');
+                var assetUrl = url.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
+                // if (assetUrl === url) return match; // If nothing was transformed, return
+                newBlock = params.contentInjectionMode === 'serviceworker' ?
+                    newBlock.replace(url, '/' + selectedArchive._file.name + '/' + assetUrl) :
+                    newBlock.replace(url, '/' + assetUrl);
+                console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+                return newBlock;
+            });
         }
         return data;
     }
