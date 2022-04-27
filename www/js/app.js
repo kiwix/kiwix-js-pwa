@@ -3514,8 +3514,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             if (dirEntry.isRedirect()) {
                 appstate.selectedArchive.resolveRedirect(dirEntry, readArticle);
             } else {
+                var mimeType = dirEntry.getMimetype();
                 //TESTING//
-                console.log("Initiating HTML load of " + dirEntry.namespace + '/' + dirEntry.url + "...");
+                console.log('Initiating ' + mimeType  + ' load of ' + dirEntry.namespace + '/' + dirEntry.url + "...");
                 
                 //Set startup cookie to guard against boot loop
                 //Cookie will signal failure until article is fully loaded
@@ -3530,6 +3531,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 .replace(/[^/]+/g, function(m) {
                     return encodeURIComponent(m);
                 });
+                if (!/\bhtml\b/i.test(mimeType) && params.contentInjectionMode === 'serviceworker') {
+                    // If the selected article isn't HTML, e.g. it might be a PDF, we ask the SW to deal with it straight away
+                    articleContainer = window.open("../" + appstate.selectedArchive._file.name + "/" + dirEntry.namespace + "/" + encodeURI(dirEntry.url), 
+                        params.windowOpener === 'tab' ? '_blank' : encodeUriComponent(dirEntry.title),
+                        params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
+                    appstate.target = 'window';
+                    articleContainer.kiwixType = appstate.target;
+                    articleWindow = articleContainer;
+                    uiUtil.clearSpinner();
+                    return;
+                } 
                 //Load cached start page if it exists and we have loaded the packaged file
                 var htmlContent = 0;
                 var zimName = appstate.selectedArchive._file.name.replace(/\.[^.]+$/, '').replace(/_\d+-\d+$/, '');
