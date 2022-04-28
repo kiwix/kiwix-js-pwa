@@ -73,13 +73,15 @@ define([], function () {
     }
 
     function transformReplayUrls(dirEntry, data, mimetype, selectedArchive) {
-        if (/^text\/html\b/.test(mimetype)) {
+
+        // Filter links in html files
+        if (/\bhtml\b/.test(mimetype)) {
             var zimitPrefix = data.match(/link\s+rel=["']canonical["']\s+href=(['"])https?:\/\/([^\/]+)(.+?)\1/i);
             zimitPrefix = zimitPrefix ? zimitPrefix[2] : params.zimitPrefix;
             var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track)\b[^>]*?\s)(?:src|href)(=(["']))(?=\/|https?:\/\/)([^>]+)(?=\3|\?|#)([^>]*>)/ig;
             data = data.replace(regexpZimitHtmlLinks, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
                 var newBlock = match;
-                var assetUrl = relAssetUrl.replace(/^\//i, dirEntry.namespace + '/' + params.zimitPrefix + '/');
+                var assetUrl = relAssetUrl.replace(/^\/\/?/, dirEntry.namespace + '/' + params.zimitPrefix + '/');
                 assetUrl = assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
                 newBlock = params.contentInjectionMode === 'serviceworker' && !/^<a\s/i.test(match) ?
                     newBlock.replace(relAssetUrl, '/' + selectedArchive._file.name + '/' + assetUrl) :
@@ -87,13 +89,26 @@ define([], function () {
                 console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
+            
+            // Remove any <base href...> statements
+            data = data.replace(/<base\b[^>]+href\b[^>]+>\s*/i, '');
+            
             if (/journals\.openedition\.org/i.test(params.zimitPrefix)) {
                 // Neutralize all inline scripts, excluding math blocks or react templates, as they cause a loop on loading article
                 data = data.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig, function (p0, p1) {
                     return '<!-- ' + p1 + ' --!>';
                 });
             }
+
+            // Collapse open menu bar
+            if (/cheatography/i.test(params.zimitPrefix)) {
+                data = data.replace(/(<div\s+id=['"]menubar['"])/i, '$1 hidden');
+                data = data.replace(/(<div\s+class=['"]filterBar['"])/i, '$1 hidden');
+                // Remove onclick events
+                data = data.replace(/onclick="[^"]+"/ig, '');
+            }
         }
+        
         if (/^text\/css\b/.test(mimetype)) {
             var regexpZimitCssLinks = /url\s*\(['"\s]*([^)'"]+\s*\))/ig;
             data = data.replace(regexpZimitCssLinks, function (match, url) {
@@ -108,7 +123,7 @@ define([], function () {
                 return newBlock;
             });
         }
-        if (/^text\/javascript\b/.test(mimetype)) {
+        if (/\b(javascript)\b/.test(mimetype)) {
             var regexpZimitJavascriptLinks = /(https?:\/\/[^'"?#)]+)/ig;
             data = data.replace(regexpZimitJavascriptLinks, function (match, url) {
                 var newBlock = match;
