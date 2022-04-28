@@ -5212,6 +5212,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 return;
             }
             appstate.selectedArchive.getDirEntryByPath(path).then(function (dirEntry) {
+                var mimetype = contentType || dirEntry.getMimetype();
                 if (dirEntry === null || dirEntry === undefined) {
                     uiUtil.clearSpinner();
                     console.error("Article with title " + path + " not found in the archive");
@@ -5226,9 +5227,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             '<p>Redirecting to landing page...</p>');
                         goToMainArticle();
                     }
-                } else if (download) {
+                } else if (download || /application\/pdf/i.test(mimetype)) {
+                    download = true;
                     appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                        var mimetype = contentType || fileDirEntry.getMimetype();
                         uiUtil.displayFileDownloadAlert(path, download, mimetype, content);
                         uiUtil.clearSpinner();
                     });
