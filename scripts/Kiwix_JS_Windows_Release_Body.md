@@ -2,14 +2,16 @@
 
 This app comes packaged with a small sample ZIM archve containing a collection of summary articles from Wikipedia on the topic of Climate Change (`<<zim>>`, <<date>>). For what's new, see the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md). Builds are provided for 32bit and 64bit editions of Windows and Linux (tested on Ubuntu, Debian and OpenSUSE - but see instructions below). ARM is supported via the UWP app.
 
-**Status of Store App: IN CERTIFICATION**
+**MS Store status: IN CERTIFICATION**
+**Winget status: IN CERTIFICATION**
 
 Please choose the correct version (those marked [**AUTO-UPDATE**] will self-update automatically when there is a new version):
 
 * **Windows**:
   - **Store app for Windows 10/11 (UWP)**
     + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9P8SLZ4J979J [**AUTO-UPDATE**] - *recommended*
-    + Or, on a PC, open a command prompt and run `winget install kiwix.kiwixjs`; you can also sideload it (see instructions below)
+    + Or, on a PC, open a command prompt and run `winget install 'kiwix js' -s msstore` [**AUTO-UPDATE**]
+    + Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.kiwixjs` - this doesn't auto-update, but you can upgrade easily by running `winget upgrade` or `winget upgrade --all`
   - **Portable (NWJS) - just unzip, no install needed**
     + Windows XP or Vista: [kiwix_js_windows-XP-<<base_tag>>-N-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-XP-<<base_tag>>-N-win-ia32.zip)
     + Windows 7/8/10/11: [kiwix_js_windows-<<base_tag>>-N-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-<<base_tag>>-N-win-ia32.zip)
