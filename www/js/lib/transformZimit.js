@@ -81,7 +81,11 @@ define([], function () {
             var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track)\b[^>]*?\s)(?:src|href)(=(["']))(?=\/|https?:\/\/)([^>]+)(?=\3|\?|#)([^>]*>)/ig;
             data = data.replace(regexpZimitHtmlLinks, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
                 var newBlock = match;
-                var assetUrl = relAssetUrl.replace(/^\/\/?/, dirEntry.namespace + '/' + params.zimitPrefix + '/');
+                var assetUrl = relAssetUrl;
+                // For Zimit assets that begin with // the zimitPrefix is different and is given in the URL
+                // assetUrl = assetUrl.replace(/^\/\//, dirEntry.namespace + '/');
+                // For root-relative links, we need to add the zimitPrefix
+                assetUrl = assetUrl.replace(/^\/\/?/, dirEntry.namespace + '/' + params.zimitPrefix + '/');
                 assetUrl = assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
                 newBlock = params.contentInjectionMode === 'serviceworker' && !/^<a\s/i.test(match) ?
                     newBlock.replace(relAssetUrl, '/' + selectedArchive._file.name + '/' + assetUrl) :
