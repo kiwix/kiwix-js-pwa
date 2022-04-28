@@ -451,6 +451,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                 path = path.replace(/^([AC]\/)[^/]+\/(.+)$/, '$1$2');
                 return that.getDirEntryByPath(path);
             } else {
+                console.log('Found ' + path);
                 return dirEntry;
             }
         });
