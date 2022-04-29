@@ -86,14 +86,18 @@ define(['uiUtil'], function (uiUtil) {
                     image.style.transition = 'opacity 0.5s ease-in';
                     image.style.opacity = '1';
                 });
-                image.src = imageUrl + '?kiwix-display';
+                // Note we remove any querystring on the image
+                image.src = imageUrl.replace(/\?[^\/]+$/, '') + '?kiwix-display';
                 // Timeout allows the loop to complete so we get an accurate busy count
                 setTimeout(function () {
                     checkBatch();
                 });
                 return;
             }
-            // if (params.zimType === 'zimit') title = title.replace(/^\//, '');
+            // Zimit files (at least) will sometimes have a ZIM prefix, but we are extracting raw here
+            title = title.replace(appstate.selectedArchive._file.name + '/', '');
+            // Zimit files store URLs encoded!
+            if (params.zimType === 'zimit') title = encodeURI(title);
             appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
                 return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                     image.style.background = '';
