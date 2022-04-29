@@ -3712,7 +3712,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // We received a message from the ServiceWorker
                 if (event.data.action === "askForContent") {
                     // The ServiceWorker asks for some content
-                    var title = event.data.title;
+                    // Zimit archives store URLs encoded...
+                    var title = params.zimType === 'zimit' ? encodeURI(event.data.title) : event.data.title;
                     if (appstate.selectedArchive.landingPageUrl === title) params.isLandingPage = true;
                     var messagePort = event.ports[0];
                     if (!anchorParameter && event.data.anchorTarget) anchorParameter = event.data.anchorTarget;
@@ -4907,6 +4908,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 anchorParameter = href.match(/#([^#;]+)$/);
                 anchorParameter = anchorParameter ? anchorParameter[1] : '';
                 var zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
+                // Zimit ZIMs store URLs encoded!
+                if (params.zimType === 'zimit') zimUrl = encodeURI(zimUrl);
                 goToArticle(zimUrl, downloadAttrValue, contentType);
                 setTimeout(reset, 1400);
             };
