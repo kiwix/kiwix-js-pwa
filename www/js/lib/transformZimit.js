@@ -75,7 +75,7 @@ define([], function () {
     function transformReplayUrls(dirEntry, data, mimetype, selectedArchive) {
 
         // Filter links in html files
-        if (/\bhtml\b/.test(mimetype)) {
+        if (/\bhtml\b/i.test(mimetype)) {
             var zimitPrefix = data.match(/link\s+rel=["']canonical["']\s+href=(['"])https?:\/\/([^\/]+)(.+?)\1/i);
             zimitPrefix = zimitPrefix ? zimitPrefix[2] : params.zimitPrefix;
             var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track|meta)\b[^>]*?[\s;])(?:src|href|url)(=(["']))(?=\/|https?:\/\/)([^>]+)(?=\3|\?|#)([^>]*>)/ig;
@@ -87,6 +87,8 @@ define([], function () {
                 // For root-relative links, we need to add the zimitPrefix
                 assetUrl = assetUrl.replace(/^\//, dirEntry.namespace + '/' + params.zimitPrefix + '/');
                 assetUrl = assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
+                // Deal with <meta http-equiv refresh...> directives
+                if (/<meta\s+http-equiv[^>]+refresh\b/i.test(newBlock)) dirEntry.zimitRedirect = assetUrl;
                 newBlock = params.contentInjectionMode === 'serviceworker' && !/^<a\s/i.test(match) ?
                     newBlock.replace(relAssetUrl, '/' + selectedArchive._file.name + '/' + assetUrl) :
                     newBlock.replace(relAssetUrl, '/' + assetUrl);
@@ -113,15 +115,15 @@ define([], function () {
             }
         }
         
-        if (/^text\/css\b/.test(mimetype)) {
-            var regexpZimitCssLinks = /url\s*\(['"\s]*([^)'"]+\s*\))/ig;
+        if (/\b(css|html)\b/i.test(mimetype)) {
+            var regexpZimitCssLinks = /url\s*\(['"\s]*([^)'"\s]+)/ig;
             data = data.replace(regexpZimitCssLinks, function (match, url) {
                 var newBlock = match;
                 var assetUrl = url.replace(/^\//i, dirEntry.namespace + '/' + params.zimitPrefix + '/');
                 assetUrl = assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
                 if (assetUrl === url) return match; // If nothing was transformed, return
                 newBlock = params.contentInjectionMode === 'serviceworker' ?
-                    newBlock.replace(url, '/' + selectedArchive._file.name + '/' + assetUrl) :
+                    newBlock.replace(url, '/' + selectedArchive._file.name + '/' + assetUrl + '?kiwix-display') :
                     newBlock.replace(url, '/' + assetUrl);
                 console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
