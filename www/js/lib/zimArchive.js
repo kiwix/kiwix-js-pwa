@@ -143,7 +143,6 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
     /**
      * Looks for the DirEntry of the main page
      * @param {callbackDirEntry} callback
-     * @returns {Promise} that resolves to the DirEntry
      */
     ZIMArchive.prototype.getMainPageDirEntry = function(callback) {
         if (this.isReady()) {
