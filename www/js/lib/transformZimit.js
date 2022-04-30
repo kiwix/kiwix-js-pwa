@@ -83,14 +83,14 @@ define([], function () {
                 var newBlock = match;
                 var assetUrl = relAssetUrl;
                 // For Zimit assets that begin with // the zimitPrefix is different and is given in the URL
-                // assetUrl = assetUrl.replace(/^\/\//, dirEntry.namespace + '/');
+                assetUrl = assetUrl.replace(/^\/\//, dirEntry.namespace + '/');
                 // For root-relative links, we need to add the zimitPrefix
-                assetUrl = assetUrl.replace(/^\/\/?/, dirEntry.namespace + '/' + params.zimitPrefix + '/');
+                assetUrl = assetUrl.replace(/^\//, dirEntry.namespace + '/' + params.zimitPrefix + '/');
                 assetUrl = assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
                 newBlock = params.contentInjectionMode === 'serviceworker' && !/^<a\s/i.test(match) ?
                     newBlock.replace(relAssetUrl, '/' + selectedArchive._file.name + '/' + assetUrl) :
                     newBlock.replace(relAssetUrl, '/' + assetUrl);
-                console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+                console.debug('Transform: \n' + relAssetUrl + ' -> ' + newBlock);
                 return newBlock;
             });
             
