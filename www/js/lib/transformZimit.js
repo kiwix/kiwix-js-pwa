@@ -82,6 +82,8 @@ define([], function () {
             data = data.replace(regexpZimitHtmlLinks, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
                 var newBlock = match;
                 var assetUrl = relAssetUrl;
+                // Remove google analytics and other google files that cause stall
+                if (/google.com|analytics.com/i.test(assetUrl)) return '';
                 // For Zimit assets that begin with // the zimitPrefix is different and is given in the URL
                 assetUrl = /^\/\//.test(assetUrl) ? assetUrl.replace(/^\/\//, dirEntry.namespace + '/') :
                 // For root-relative links, we need to add the zimitPrefix
@@ -100,7 +102,7 @@ define([], function () {
             // Remove any <base href...> statements
             data = data.replace(/<base\b[^>]+href\b[^>]+>\s*/i, '');
             
-            if (/journals\.openedition\.org/i.test(params.zimitPrefix)) {
+            if (/(?:journals\.openedition\.org)/i.test(params.zimitPrefix)) {
                 // Neutralize all inline scripts, excluding math blocks or react templates, as they cause a loop on loading article
                 data = data.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig, function (p0, p1) {
                     return '<!-- ' + p1 + ' --!>';
