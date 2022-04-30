@@ -116,14 +116,17 @@ define([], function () {
         }
         
         if (/\b(css|html)\b/i.test(mimetype)) {
-            var regexpZimitCssLinks = /url\s*\(['"\s]*([^)'"\s]+)/ig;
+            var regexpZimitCssLinks = /url\s*\(['"\s]*([^)'"\s]+)['"\s]*\)/ig;
             data = data.replace(regexpZimitCssLinks, function (match, url) {
                 var newBlock = match;
                 var assetUrl = url.replace(/^\//i, dirEntry.namespace + '/' + params.zimitPrefix + '/');
                 assetUrl = assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
-                if (assetUrl === url) return match; // If nothing was transformed, return
                 newBlock = params.contentInjectionMode === 'serviceworker' ?
+                    // If asset is relative, then just add the kiwix-display directive
+                    assetUrl === url ? newBlock.replace(url, assetUrl + '?kiwix-display') :
                     newBlock.replace(url, '/' + selectedArchive._file.name + '/' + assetUrl + '?kiwix-display') :
+                    // For jQuery mode, no change needed for relative links
+                    assetUrl === url ? newBlock :
                     newBlock.replace(url, '/' + assetUrl);
                 console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
