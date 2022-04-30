@@ -83,10 +83,11 @@ define([], function () {
                 var newBlock = match;
                 var assetUrl = relAssetUrl;
                 // For Zimit assets that begin with // the zimitPrefix is different and is given in the URL
-                assetUrl = assetUrl.replace(/^\/\//, dirEntry.namespace + '/');
+                assetUrl = /^\/\//.test(assetUrl) ? assetUrl.replace(/^\/\//, dirEntry.namespace + '/') :
                 // For root-relative links, we need to add the zimitPrefix
-                assetUrl = assetUrl.replace(/^\//, dirEntry.namespace + '/' + params.zimitPrefix + '/');
-                assetUrl = assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
+                /^\//.test(assetUrl) ? assetUrl.replace(/^\//, dirEntry.namespace + '/' + params.zimitPrefix + '/') :
+                // Deal with absolute URLs
+                /^https?:\/\//i.test(assetUrl) ? assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/') : assetUrl; 
                 // Deal with <meta http-equiv refresh...> directives
                 if (/<meta\s+http-equiv[^>]+refresh\b/i.test(newBlock)) dirEntry.zimitRedirect = assetUrl;
                 newBlock = params.contentInjectionMode === 'serviceworker' && !/^<a\s/i.test(match) ?
