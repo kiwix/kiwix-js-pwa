@@ -86,8 +86,8 @@ define(['uiUtil'], function (uiUtil) {
                     image.style.transition = 'opacity 0.5s ease-in';
                     image.style.opacity = '1';
                 });
-                // Note we remove any querystring on the image
-                image.src = imageUrl.replace(/\?[^\/]+$/, '') + '?kiwix-display';
+                // Let's add kiwix-display to the end of the url so that the SW will ask for the image
+                image.src = imageUrl + '?kiwix-display';
                 // Timeout allows the loop to complete so we get an accurate busy count
                 setTimeout(function () {
                     checkBatch();
