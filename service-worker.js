@@ -293,7 +293,7 @@ self.addEventListener('fetch', function (event) {
             // The response was not found in the cache so we look for it in the ZIM
             // and add it to the cache if it is an asset type (css or js)
             if (cache === ASSETS_CACHE && regexpZIMUrlWithNamespace.test(strippedUrl)) {
-                if (imageDisplay !== 'all' && /(^|\/)[IJ]\/.*\.(jpe?g|png|svg|gif|webp)($|[?#])(?!kiwix-display)/i.test(rqUrl)) {
+                if (imageDisplay !== 'all' && /\/.*\.(jpe?g|png|svg|gif|webp)(?!.*?kiwix-display)/i.test(rqUrl)) {
                     // If the user has disabled the display of images, and the browser wants an image, respond with empty SVG
                     // A URL with "?kiwix-display" query string acts as a passthrough so that the regex will not match and
                     // the image will be fetched by app.js  
@@ -391,6 +391,7 @@ function fetchUrlFromZIM(urlObject) {
         var nameSpace = partsOfZIMUrl[2];
         var title = partsOfZIMUrl[3];
         var anchorTarget = urlObject.hash.replace(/^#/, '');
+        var uriComponent = urlObject.search.replace(/\?kiwix-display/, '');
         var titleWithNameSpace = nameSpace + '/' + title;
 
         // Let's instantiate a new messageChannel, to allow app.js to give us the content
@@ -436,7 +437,8 @@ function fetchUrlFromZIM(urlObject) {
         outgoingMessagePort.postMessage({
             'action': 'askForContent',
             'title': titleWithNameSpace,
-            'anchorTarget': anchorTarget 
+            'search': uriComponent,
+            'anchorTarget': anchorTarget
         }, [messageChannel.port2]);
     });
 }
