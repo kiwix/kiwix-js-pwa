@@ -3711,9 +3711,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             } else {
                 // We received a message from the ServiceWorker
                 if (event.data.action === "askForContent") {
-                    // The ServiceWorker asks for some content
-                    // Zimit archives store URLs encoded...
-                    var title = params.zimType === 'zimit' ? encodeURI(event.data.title) : event.data.title;
+                    // Zimit archives store URLs encoded, and also need the URI component (search parameter) if any
+                    var title = params.zimType === 'zimit' ? encodeURI(event.data.title + event.data.search) : event.data.title;
                     if (appstate.selectedArchive.landingPageUrl === title) params.isLandingPage = true;
                     var messagePort = event.ports[0];
                     if (!anchorParameter && event.data.anchorTarget) anchorParameter = event.data.anchorTarget;
@@ -3760,9 +3759,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             }
                             // Note we sometimes can get HTML "moved permanently" as a response to a request for an image
                             // particularly in Zimit archives, so we have to exclude these here
-                            if (/\bhtml\b/i.test(mimetype) && !/\.(png|gif|jpe?g|css|js|mpe?g)$/i.test(dirEntry.url)) {
+                            if (/\bhtml\b/i.test(mimetype) && !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm)$/i.test(dirEntry.url)) {
                                 loadingArticle = title;
-                                // Intercept files of type html and apply transformations   
+                                // Intercept files of type html and apply transformations
                                 var message = {
                                     'action': 'giveContent',
                                     'title': title,
