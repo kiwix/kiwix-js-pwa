@@ -313,7 +313,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
 
         //Add keyboard shortcuts
         window.addEventListener('keyup', function (e) {
-            var e = e || window.event;
+            e = e || window.event;
             //Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
             if ((e.ctrlKey || e.altKey) && e.which == 70) {
                 document.getElementById('findText').click();
@@ -5214,7 +5214,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 return;
             }
             appstate.selectedArchive.getDirEntryByPath(path).then(function (dirEntry) {
-                var mimetype = contentType || dirEntry.getMimetype();
+                var mimetype = contentType || dirEntry ? dirEntry.getMimetype() : '';
                 if (dirEntry === null || dirEntry === undefined) {
                     uiUtil.clearSpinner();
                     console.error("Article with title " + path + " not found in the archive");
