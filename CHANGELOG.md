@@ -1,9 +1,15 @@
 # Changelog
 
-## In-progress release 1.9.8
+## Release 1.9.9
 
 * UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-04`
 * FEATURE: Experimental support for reading Zimit ZIM archives
+* FIX: Support for reading background and bullet images in Zimit CSS in Service Worker mode
+* FIX: Style of thumbinner Wikipedia images adjusted so that images are back in their original position
+* FIX: MDwiki thumbinner images now have an MDwiki-specific override to prevent text bleeding to left of image
+* FIX: Links to PDF data are now recognized by MIME type and downloaded as if they were files
+* FIX: Support image links that have querystrings in Zimit archives
+* FIX: Support percent-encoded ZIM URLs in Zimit archives
 * BUILD: Nightly builds of main app are now uploaded to a new server (with sftp instead of ssh)
 * BUILD: Deploy PWA image on a k8s cluster
 * BUILD: PWA images are now uploaded to ghcr.io instead of Docker Hub
