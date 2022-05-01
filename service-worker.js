@@ -78,7 +78,7 @@ const regexpKiwixDownloadLinks = /download\.kiwix\.org/i;
  * Add any further Content-Types you wish to cache to the regexp, separated by '|'
  * @type {RegExp}
  */
-var regexpCachedContentTypes = /text\/css|text\/javascript|application\/javascript/i;
+const regexpCachedContentTypes = /text\/css|\/javascript|application\/javascript/i;
 
 /**
  * A regular expression that excludes listed schemata from caching attempts
@@ -86,7 +86,7 @@ var regexpCachedContentTypes = /text\/css|text\/javascript|application\/javascri
  * 'example-extension' is included to show how to add another schema if necessary
  * @type {RegExp}
  */
-var regexpExcludedURLSchema = /^(?:file|chrome-extension|example-extension):/i;
+const regexpExcludedURLSchema = /^(?:file|chrome-extension|example-extension):/i;
 
 /** 
  * Pattern for ZIM file namespace: see https://wiki.openzim.org/wiki/ZIM_file_format#Namespaces
@@ -283,6 +283,7 @@ self.addEventListener('fetch', function (event) {
     if (cache === ASSETS_CACHE && !fetchCaptureEnabled) return;
     // For APP_CACHE assets, we should ignore any querystring (whereas it should be conserved for ZIM assets,
     // especially .js assets, where it may be significant). Anchor targets are irreleveant in this context.
+    // @TODO DEV: This isn't true for Zimit ZIM types! So we will have to send the zimType from app.js
     if (cache === APP_CACHE) rqUrl = strippedUrl;
     event.respondWith(
         // First see if the content is in the cache
