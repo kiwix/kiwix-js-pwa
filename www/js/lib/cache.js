@@ -464,15 +464,16 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                         resolve(null);
                     } else {
                         var mimetype = resolvedDirEntry.getMimetype();
+                        var shortTitle = key.replace(/[^/]+\//g, '').substring(0, 18);
                         // Since there was no result, post UI messages and look up asset in ZIM
-                        if (/html$/.test(mimetype)) {
+                        if (/\bhtml\b/.test(mimetype)) {
                             uiUtil.pollSpinner();
+                            if (params.isLandingPage) uiUtil.pollSpinner('Loading ' + shortTitle + '...');
                         } else if (/(css|javascript|video|vtt)/i.test(mimetype)) {
-                            var shortTitle = key.replace(/[^/]+\//g, '').substring(0, 18);
                             uiUtil.pollSpinner('Getting ' + shortTitle + '...');
                         }
                         // Set the read function to use according to filetype
-                        var readFile = /^text\//i.test(mimetype) ?
+                        var readFile = /\b(?:html|css|javascript)\b/i.test(mimetype) ?
                             selectedArchive.readUtf8File : selectedArchive.readBinaryFile;
                         readFile(resolvedDirEntry, function (fileDirEntry, content) {
                             if (regexpMimeTypes.test(mimetype)) {
