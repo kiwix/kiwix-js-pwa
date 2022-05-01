@@ -95,7 +95,7 @@ define([], function () {
                 newBlock = params.contentInjectionMode === 'serviceworker' && !/^<a\s/i.test(match) ?
                     newBlock.replace(relAssetUrl, '/' + selectedArchive._file.name + '/' + assetUrl) :
                     newBlock.replace(relAssetUrl, '/' + assetUrl);
-                console.debug('Transform: \n' + relAssetUrl + ' -> ' + newBlock);
+                // console.debug('Transform: \n' + relAssetUrl + ' -> ' + newBlock);
                 return newBlock;
             });
             
@@ -132,7 +132,7 @@ define([], function () {
                     // For jQuery mode, no change needed for relative links
                     assetUrl === url ? newBlock :
                     newBlock.replace(url, '/' + assetUrl);
-                console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+                // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
         }
@@ -146,7 +146,7 @@ define([], function () {
                 newBlock = params.contentInjectionMode === 'serviceworker' ?
                     newBlock.replace(url, '/' + selectedArchive._file.name + '/' + assetUrl) :
                     newBlock.replace(url, '/' + assetUrl);
-                console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+                // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
         }
