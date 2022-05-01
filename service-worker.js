@@ -473,8 +473,9 @@ function updateCache(cache, request, response) {
     if (!response.ok || !(useAppCache && cache === APP_CACHE || useAssetsCache && cache === ASSETS_CACHE))
         return Promise.resolve();
     return caches.open(cache).then(function (cacheObj) {
-        console.debug('[SW] Adding ' + (request.url || request) + ' to ' + cache + '...');
-        return cacheObj.put(request, response);
+        var reqKey = request.url || request;
+        console.debug('[SW] Adding ' + reqKey + ' to ' + cache + '...');
+        return cacheObj.put(reqKey, response);
     });
 }
 
