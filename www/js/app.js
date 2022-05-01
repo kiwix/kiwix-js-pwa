@@ -3851,9 +3851,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // If loading the iframe, we can hide the frame for UWP apps (for others, the doc should already be hidden)
                 // NB Test for messageChannelWaiting filters out requests coming from a UWP window
                 if (articleContainer.kiwixType === 'iframe' && !appstate.messageChannelWaiting) {
-                    if (/UWP/.test(params.appType)) articleContainer.style.display = 'none';
+                    if (/UWP/.test(params.appType)) {
+                        articleContainer.style.display = 'none';
+                        setTimeout(function () {
+                            if (!loaded) articleLoadedSW(thisDirEntry);
+                        }, 800);
+                    }
                     articleContainer.onload = function() {
-                        articleLoadedSW(thisDirEntry);
+                        if (!loaded) articleLoadedSW(thisDirEntry);
                     };
                 } else {
                     // New windows do not respect the onload event because they've been pre-populated,
