@@ -3752,6 +3752,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         } else {
                             var mimetype = dirEntry.getMimetype();
                             var imageDisplayMode = params.imageDisplayMode;
+                            // These ZIM types have so much dynamic content that we have to allow all images
+                            if (params.imageDisplay && (/gutenberg|phet/i.test(appstate.selectedArchive._file.name) || params.isLandingPage)) {
+                                imageDisplayMode = 'all';
+                            }
                             // console.debug('Spinner should show now: [' + mimetype + '] ' + title);
                             if (/\b(css|javascript|video|vtt|webm)\b/i.test(mimetype)) {
                                 var shortTitle = dirEntry.url.replace(/[^/]+\//g, '').substring(0, 18);
