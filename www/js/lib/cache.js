@@ -360,8 +360,8 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
             return;
         }
         // Check if we're actually setting an article 
-        var keyArticle = key.match(/([^/]+)\/([AC]\/.+$)/) && /\bhtml\b/i.test(mimetype);
-        if (keyArticle) { // We're setting an article, so go to setArticle function
+        var keyArticle = key.match(/([^/]+)\/([AC]\/.+$)/);
+        if (keyArticle && /\bhtml\b/i.test(mimetype)) { // We're setting an article, so go to setArticle function
             setArticle(keyArticle[1], keyArticle[2], contents, callback);
             return;
         }
