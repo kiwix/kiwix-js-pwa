@@ -28,10 +28,8 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
     var objStore = 'kiwix-assets'; // Name of the object store
     const APPCACHE = 'kiwix-appCache-' + params.appVersion; // Ensure this is the same as in Service Worker
 
-    // DEV: Regex below defines the permitted key types for the cache; add further types as needed
-    // @TODO: Revise for use with no-namespace ZIMs (maybe this becomes useless?)
-    // NB: The key type of '.zim', or '.zimaa' (etc.) is used to store a ZIM's last-accessed article 
-    var regexpKeyTypes = /(?:(?:^|\/)[AC]\/.+|\.[Jj][Ss]|\.[Cc][Ss][Ss]|\.[Ii][Cc][Oo]|\.[Zz][Ii][Mm]\w{0,2})$/;
+    // DEV: Regex below defines the permitted MIME types for the cache; add further types as needed
+    var regexpMimeTypes = /\b(?:javascript|css|ico|html)\b/;
 
     /** 
      * Tests the enviornment's caching capabilities and sets assetsCache.capability to the supported level
@@ -357,12 +355,12 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
     function setItem(key, contents, mimetype, callback) {
         // Prevent use of storage if user has deselected the option in Configuration
         // or if the asset is of the wrong type
-        if (params.assetsCache === false || !regexpKeyTypes.test(key)) {
+        if (params.assetsCache === false || !regexpMimeTypes.test(mimetype)) {
             callback(-1);
             return;
         }
         // Check if we're actually setting an article 
-        var keyArticle = key.match(/([^/]+)\/(A\/.+$)/);
+        var keyArticle = key.match(/([^/]+)\/([AC]\/.+$)/) && /\bhtml\b/i.test(mimetype);
         if (keyArticle) { // We're setting an article, so go to setArticle function
             setArticle(keyArticle[1], keyArticle[2], contents, callback);
             return;
@@ -394,12 +392,12 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
      */
     function getItem(key, callback) {
         // Only look up assets of the type stored in the cache
-        if (!regexpKeyTypes.test(key)) {
+        if (params.assetsCache === false) {
             callback(false);
             return;
         }
         // Check if we're actually calling an article 
-        // DEV: See above about this regex (may need expanding)
+        // DEV: With new ZIM types, we can't know we're retrieving an article...
         var keyArticle = key.match(/([^/]+)\/(A\/.+$)/);
         if (keyArticle) { // We're retrieving an article, so go to getArticle function
             getArticle(keyArticle[1], keyArticle[2], callback);
@@ -475,15 +473,15 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                         }
                         // Set the read function to use according to filetype
                         var readFile = /^text\//i.test(mimetype) ?
-                        selectedArchive.readUtf8File : selectedArchive.readBinaryFile;
+                            selectedArchive.readUtf8File : selectedArchive.readBinaryFile;
                         readFile(resolvedDirEntry, function (fileDirEntry, content) {
-                            if (regexpKeyTypes.test(title)) {
+                            if (regexpMimeTypes.test(mimetype)) {
                                 console.log('Cache retrieved ' + title + ' from ZIM');
                                 // Process any pre-cache transforms
                                 content = transform(content, title.replace(/^.*\.([^.]+)$/, '$1'));
                             }
                             // Hide article while it is rendering
-                            if (/^text\/html$/.test(mimetype)) {
+                            if (/\bhtml\b/i.test(mimetype)) {
                                 // Count CSS so we can attempt to show article before JS/images are fully loaded
                                 var cssCount = content.match(/<(?:link)[^>]+?href=["']([^"']+)[^>]+>/ig);
                                 assetsCache.cssLoading = cssCount ? cssCount.length : 0;
