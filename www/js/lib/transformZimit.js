@@ -102,6 +102,7 @@ define([], function () {
             // Remove any <base href...> statements
             data = data.replace(/<base\b[^>]+href\b[^>]+>\s*/i, '');
             
+            // ZIM-specific overrides
             if (/(?:journals\.openedition\.org)/i.test(params.zimitPrefix)) {
                 // Neutralize all inline scripts, excluding math blocks or react templates, as they cause a loop on loading article
                 data = data.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig, function (p0, p1) {
