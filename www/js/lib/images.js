@@ -245,8 +245,8 @@ define(['uiUtil'], function (uiUtil) {
                     });
                 }
             }
-            // Note we exempt images that are from the file system in the second part of this test
-            if (imageURLRegexp.test(documentImages[i].src) && !~documentImages[i].getAttribute('src').indexOf(window.location.protocol)) {
+            // We exempt images that are from the file system
+            if (!~documentImages[i].getAttribute('src').indexOf(window.location.protocol)) {
                 documentImages[i].dataset.kiwixurl = documentImages[i].getAttribute('src');
                 if (params.imageDisplayMode === 'progressive') {
                     documentImages[i].style.opacity = '0';
@@ -277,7 +277,7 @@ define(['uiUtil'], function (uiUtil) {
                 // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
                 setTimeout(function() {
                     lazyLoad(documentImages);
-                }, 300);
+                }, 400);
             }
         }
     }
