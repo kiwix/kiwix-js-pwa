@@ -4038,8 +4038,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             //@TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
             htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, "$1");
 
-            //@TODO - remove when fixed in youtube ZIM sources: dirty patch for removing erroneously duplicated Video sources
-            // htmlArticle = htmlArticle.replace(/(<video\b(?:[^<]|<(?!\/video))+?)src=['"]([^'"]+)['"]((?:[^<]|<(?!\/video))+?<source\b[^>]+?src=["']\2)/ig, "$1$3");
+            //@TODO - remove when fixed in MDwiki ZIM: dirty patch for removing erroneously hard-coded style
+            if (/^mdwiki/.test(appstate.selectedArchive._file.name)) htmlArticle = htmlArticle.replace(/(class=['"]thumbinner[^>]+style=['"]width\s*:\s*)\d+px/ig, "$1320px");
 
             // Remove erroneous content frequently on front page
             htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, "");
