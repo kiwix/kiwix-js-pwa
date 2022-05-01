@@ -3811,7 +3811,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                                 if (content.buffer) {
                                     // In Edge Legacy, we have to transfer the buffer inside an array, whereas in Chromium, this produces an error
                                     // due to type not being transferrable... (and already detached, which may be to do with storing in IndexedDB in Electron)
-                                    // if (/UWP/.test(params.appType)) buffer = [buffer];
+                                    if (/UWP/.test(params.appType)) buffer = [buffer];
                                     messagePort.postMessage(message, buffer);
                                 } else {
                                     messagePort.postMessage(message);
