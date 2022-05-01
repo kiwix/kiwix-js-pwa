@@ -4041,6 +4041,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             //@TODO - remove when fixed in MDwiki ZIM: dirty patch for removing erroneously hard-coded style
             if (/^mdwiki/.test(appstate.selectedArchive._file.name)) htmlArticle = htmlArticle.replace(/(class=['"]thumbinner[^>]+style=['"]width\s*:\s*)\d+px/ig, "$1320px");
 
+            // Gutenberg ZIMs try to initialize before all assets are fully loaded. Affect UWP app.
+            htmlArticle = htmlArticle.replace(/(<body\s[^<]*onload=(['"]))([^'"]*init\([^'"]+showBooks\([^'"]+)\2/i, '$1setTimeout(function () {$3}, 300);$2');
+
             // Remove erroneous content frequently on front page
             htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, "");
             htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, "");
