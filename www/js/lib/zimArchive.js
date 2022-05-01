@@ -447,7 +447,8 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
             if (that.type === 'zimit') dirEntry = transformZimit.filterReplayFiles(dirEntry);
             if ((dirEntry === null || dirEntry === undefined) && /^[AC]\/[^/]+\/.+/i.test(path)) {
                 console.log("Article " + path + " not available, but moving up one directory to compensate for ZIM coding error...");
-                path = path.replace(/^([AC]\/)[^/]+\/(.+)$/, '$1$2');
+                if (/www\.nomadicchangthang/i.test(path)) path = path.replace(/www\./i, '');
+                else path = path.replace(/^([AC]\/)[^/]+\/(.+)$/, '$1$2');
                 return that.getDirEntryByPath(path);
             } else {
                 if (dirEntry) console.log('Found ' + path);
