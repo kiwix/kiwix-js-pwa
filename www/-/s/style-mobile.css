@@ -2768,7 +2768,7 @@ body {
 
     .content .thumb .thumbinner {
         margin: 0 auto;
-        width: 320px !important
+        max-width: 100%
     }
 
 .content .thumbcaption {
