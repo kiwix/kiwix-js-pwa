@@ -95,7 +95,6 @@ define([], function () {
                 newBlock = params.contentInjectionMode === 'serviceworker' && !/^<a\s/i.test(match) ?
                     newBlock.replace(relAssetUrl, '/' + selectedArchive._file.name + '/' + assetUrl) :
                     newBlock.replace(relAssetUrl, '/' + assetUrl);
-                // console.debug('Transform: \n' + relAssetUrl + ' -> ' + newBlock);
                 return newBlock;
             });
             
@@ -123,8 +122,12 @@ define([], function () {
             var regexpZimitCssLinks = /url\s*\(['"\s]*([^)'"\s]+)['"\s]*\)/ig;
             data = data.replace(regexpZimitCssLinks, function (match, url) {
                 var newBlock = match;
-                var assetUrl = url.replace(/^\//i, dirEntry.namespace + '/' + params.zimitPrefix + '/');
-                assetUrl = assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
+                var assetUrl = url;
+                assetUrl = /^\/\//.test(assetUrl) ? assetUrl.replace(/^\/\//, dirEntry.namespace + '/') :
+                // For root-relative links, we need to add the zimitPrefix
+                /^\//.test(assetUrl) ? assetUrl.replace(/^\//, dirEntry.namespace + '/' + params.zimitPrefix + '/') :
+                // Deal with absolute URLs
+                /^https?:\/\//i.test(assetUrl) ? assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/') : assetUrl; 
                 newBlock = params.contentInjectionMode === 'serviceworker' ?
                     // If asset is relative, then just add the kiwix-display directive
                     assetUrl === url ? newBlock.replace(url, assetUrl + '?kiwix-display') :
@@ -137,11 +140,11 @@ define([], function () {
             });
         }
         if (/\b(javascript)\b/.test(mimetype)) {
-            var regexpZimitJavascriptLinks = /(https?:\/\/[^'"?#)]+)/ig;
+            var regexpZimitJavascriptLinks = /['"(]((?:\b|https?:)\/\/[^'"?#)]+)['"?#)]/ig;
             data = data.replace(regexpZimitJavascriptLinks, function (match, url) {
                 var newBlock = match;
-                // var assetUrl = url.replace(/^\//i, dirEntry.namespace + '/' + params.zimitPrefix + '/');
-                var assetUrl = url.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
+                var assetUrl = url.replace(/^\/\//, dirEntry.namespace + '/');
+                assetUrl = url.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
                 // if (assetUrl === url) return match; // If nothing was transformed, return
                 newBlock = params.contentInjectionMode === 'serviceworker' ?
                     newBlock.replace(url, '/' + selectedArchive._file.name + '/' + assetUrl) :
