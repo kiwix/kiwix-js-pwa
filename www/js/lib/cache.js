@@ -464,6 +464,12 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                         resolve(null);
                     } else {
                         var mimetype = resolvedDirEntry.getMimetype();
+                        if (resolvedDirEntry.nullify) {
+                            console.debug('Zimit filter prevented access to ' + resolvedDirEntry.url + 'Storing empty contents in cache.');
+                            setItem(key, '', mimetype, function () {});
+                            resolve ('');
+                            return;
+                        }
                         var shortTitle = key.replace(/[^/]+\//g, '').substring(0, 18);
                         // Since there was no result, post UI messages and look up asset in ZIM
                         if (/\bhtml\b/.test(mimetype)) {
