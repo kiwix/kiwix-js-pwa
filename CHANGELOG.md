@@ -10,6 +10,8 @@
 * FIX: Links to PDF data are now recognized by MIME type and downloaded as if they were files
 * FIX: Support image links that have querystrings in Zimit archives
 * FIX: Support percent-encoded ZIM URLs in Zimit archives
+* FIX: Transition away from testing file extensions for caching strategy
+* REGRESSION: Fix display of book thumbnails in Gutenberg ZIMs
 * BUILD: Nightly builds of main app are now uploaded to a new server (with sftp instead of ssh)
 * BUILD: Deploy PWA image on a k8s cluster
 * BUILD: PWA images are now uploaded to ghcr.io instead of Docker Hub
