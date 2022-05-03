@@ -2246,8 +2246,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 console.log("Loading packaged ZIM or last selected archive for Electron or NWJS...");
                 // If we're in an AppImage package and the storedFilePath points to the packaged archive, then the storedFilePath will be invalid,
                 // because a new path is established each time the image's filesystem is mounted. So we reset to default.
+                var archiveFilePath = params.storedFilePath;
                 if (params.storedFile === params.packagedFile) {
-                    var archiveFilePath = params.archivePath + '/' + params.packagedFile;
+                    archiveFilePath = params.archivePath + '/' + params.packagedFile;
                     if (~params.storedFilePath.indexOf(archiveFilePath)) {
                         params.storedFilePath = archiveFilePath;
                     }
