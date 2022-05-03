@@ -288,7 +288,7 @@ define(rqDef, function(util) {
      * @param {String} url The (URI-encoded) URL to convert (e.g. "Einstein", "../Einstein",
      *      "../../I/im%C3%A1gen.png", "-/s/style.css", "/A/Einstein.html", "../static/bootstrap/css/bootstrap.min.css")
      * @param {String} base The base ZIM URL of the currently loaded article (e.g. "A/", "A/subdir1/subdir2/", "C/Singapore/")
-     * @returns {String} The derived ZIM URL in decoded form (e.g. "A/Einstein", "I/imÃ¡gen.png", "C/")
+     * @returns {String} The derived ZIM URL in decoded form (e.g. "A/Einstein", "I/imágen.png", "C/")
      */
     function deriveZimUrlFromRelativeUrl(url, base) {
         // We use a dummy domain because URL API requires a valid URI
