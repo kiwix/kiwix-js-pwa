@@ -3535,7 +3535,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 if (!/\bhtml\b/i.test(mimeType) && params.contentInjectionMode === 'serviceworker') {
                     // If the selected article isn't HTML, e.g. it might be a PDF, we ask the SW to deal with it straight away
                     articleContainer = window.open("../" + appstate.selectedArchive._file.name + "/" + dirEntry.namespace + "/" + encodeURI(dirEntry.url), 
-                        params.windowOpener === 'tab' ? '_blank' : encodeUriComponent(dirEntry.title),
+                        params.windowOpener === 'tab' ? '_blank' : encodeURIComponent(dirEntry.title),
                         params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
                     appstate.target = 'window';
                     articleContainer.kiwixType = appstate.target;
@@ -3986,33 +3986,26 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         uiUtil.displayActiveContentWarning('zimit');
                     }, 1000);
                 }
-                // params.zimitStartPage = htmlArticle.match(/window\.mainUrl\s*=\s*(['"])https?:\/\/([^\/]+)(.+?)\1/);
-                // if (params.zimitStartPage && params.zimitStartPage[2] && params.zimitStartPage[3]) {
-                //     params.zimitPrefix = params.zimitStartPage[2];
-                //     params.zimitStartPage = dirEntry.namespace + '/' + params.zimitPrefix + params.zimitStartPage[3];
-                // } else {
-                //     params.zimitStartPage = null;
-                // }
-                // if (params.zimitStartPage) {
-                //     params.isLandingPage = false;
-                //     goToArticle(params.zimitStartPage);
-                //     return;
-                // }
             }
             var newBlock;
+            var assetZIMUrlEnc;
             if (params.contentInjectionMode == 'jquery') {
+                var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
                 htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
-                    var assetZIMUrl;
                     newBlock = match;
-                    assetZIMUrl = uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseURL);
-                    // DEV: Note that deriveZimUrlFromRelativeUrl produces a *decoded* URL (and incidentally would remove any URI component
-                    // if we had captured it). We therefore re-encode the URI with encodeURI (which does not encode forward slashes) instead
-                    // of encodeURIComponent.
-                    newBlock = blockStart + 'data-kiwixurl' + equals + encodeURI(assetZIMUrl) + blockClose;
+                    if (params.zimType === 'zimit' && !(relAssetUrl).indexOf(indexRoot)) {
+                        assetZIMUrlEnc = relAssetUrl.replace(indexRoot, '');
+                    } else {
+                        // DEV: Note that deriveZimUrlFromRelativeUrl produces a *decoded* URL (and incidentally would remove any URI component
+                        // if we had captured it). We therefore re-encode the URI with encodeURI (which does not encode forward slashes) instead
+                        // of encodeURIComponent.
+                        assetZIMUrlEnc = encodeURI(uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseURL));
+                    }
+                    newBlock = blockStart + 'data-kiwixurl' + equals + assetZIMUrlEnc + blockClose;
                     // For Wikipedia archives, hyperlink the image to the File version
                     if (wikiLang && /^<img/i.test(blockStart) && !/usemap=/i.test(match)) {
                         newBlock = '<a href="https://' + wikiLang + '.' + wikimediaZimFlavour + '.org/wiki/File:' + 
-                            assetZIMUrl.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1')
+                            assetZIMUrlEnc.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1')
                             + '" target="_blank">' + newBlock + '</a>'
                     }
                     return newBlock;
@@ -4868,7 +4861,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             // However, we cannot rely on the download attribute having been set, so we also need to test for known download file types
             var isDownloadableLink = a.hasAttribute('download') || regexpDownloadLinks.test(href);
             if (isDownloadableLink) {
-                if (!/UWP/.test(params.appType) && params.contentInjectionMode === 'serviceworker') return;
+                // if (!/UWP/.test(params.appType) && params.contentInjectionMode === 'serviceworker') return;
                 downloadAttrValue = a.getAttribute('download');
                 // Normalize the value to a true Boolean or a filename string or true if there is no download attribute
                 downloadAttrValue = /^(download|true|\s*)$/i.test(downloadAttrValue) || downloadAttrValue || true;
@@ -4919,9 +4912,20 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 e.stopPropagation();
                 anchorParameter = href.match(/#([^#;]+)$/);
                 anchorParameter = anchorParameter ? anchorParameter[1] : '';
-                var zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
-                // Zimit ZIMs store URLs encoded!
-                if (params.zimType === 'zimit') zimUrl = encodeURI(zimUrl);
+                var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
+                var zimUrl;
+                if (params.zimType === 'zimit') { 
+                    if(!href.indexOf(indexRoot)) { // If begins with indexRoot
+                        zimUrl = href.replace(indexRoot, '').replace('#' + anchorParameter, '');
+                    } else {
+                        // Zimit ZIMs store URLs percent-encoded and with querystring and
+                        // deriveZimUrlFromRelativeUrls strips any querystring and decodes
+                        zimUrl = encodeURI(uiUtil.deriveZimUrlFromRelativeUrl(href, baseUrl)) + 
+                            href.replace(encodeURI(uriComponent), '').replace('#' + anchorParameter, '');
+                    }
+                } else {
+                    zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
+                }
                 goToArticle(zimUrl, downloadAttrValue, contentType);
                 setTimeout(reset, 1400);
             };

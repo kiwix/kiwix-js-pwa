@@ -232,6 +232,7 @@ define(['uiUtil'], function (uiUtil) {
         }, 1000);
         if (!forPrinting && !documentImages.length) return;
         var imageHtml;
+        var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
         for (var i = 0, l = documentImages.length; i < l; i++) {
             // Process Wikimedia MathML, but not if we'll be using the jQuery routine later
             if (!(params.manipulateImages || params.allowHTMLExtraction)) {
@@ -253,11 +254,17 @@ define(['uiUtil'], function (uiUtil) {
                 }
                 if (params.manipulateImages || params.allowHTMLExtraction) {
                     documentImages[i].outerHTML = documentImages[i].outerHTML.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockEnd) {
-                        var assetZIMUrl = uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseURL);
-                        // DEV: Note that deriveZimUrlFromRelativeUrl produces a *decoded* URL (and incidentally would remove any URI component
-                        // if we had captured it). We therefore re-encode the URI with encodeURI (which does not encode forward slashes) instead
-                        // of encodeURIComponent.
-                        return blockStart + 'data-kiwixurl' + equals + encodeURI(assetZIMUrl) + blockEnd;
+                        var parameters = relAssetUrl.replace(/^[^?]+/, '');
+                        var assetZIMUrlEnc;
+                        if (params.zimType === 'zimit' && !relAssetUrl.indexOf(indexRoot)) {
+                            assetZIMUrlEnc = relAssetUrl.replace(indexRoot, '');
+                        } else {
+                            // DEV: Note that deriveZimUrlFromRelativeUrl produces a *decoded* URL (and incidentally would remove any URI component
+                            // if we had captured it). We therefore re-encode the URI with encodeURI (which does not encode forward slashes) instead
+                            // of encodeURIComponent.
+                            assetZIMUrlEnc = encodeURI(uiUtil.deriveZimUrlFromRelativeUrl(relAssetUrl, params.baseURL)) + parameters;
+                        }
+                        return blockStart + 'data-kiwixurl' + equals + assetZIMUrlEnc + blockEnd;
                     });
                 }
             }
@@ -292,6 +299,8 @@ define(['uiUtil'], function (uiUtil) {
         container = win;
         var doc = container.document;
         var documentImages = doc.querySelectorAll('img[data-kiwixurl]');
+        var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
+        indexRoot = indexRoot.replace(/^\//, '');
         // In case there are no images in the doc, we need to schedule the loadMathJax function here
         setTimeout(function() {
             loadMathJax();
@@ -310,6 +319,9 @@ define(['uiUtil'], function (uiUtil) {
                 var imgX = image.width + '';
                 imgX = imgX.replace(/(\d+)$/, '$1px');
                 image.style.minWidth = imgX;
+            }
+            if (params.zimType === 'zimit' && !(image.dataset.kiwixurl).indexOf(indexRoot)) {
+                image.dataset.kiwixurl = image.dataset.kiwixurl.replace(indexRoot, '');
             }
         }
         if (forPrinting) {
