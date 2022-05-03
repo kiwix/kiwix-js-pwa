@@ -22,13 +22,12 @@
     "nwVersion": "0.14.7",
     "output": "bld/nwjs/win-x86-xp",
     "files": [
+      "archives/**",
       "service-worker.js",
       "index.html",
       "CHANGELOG.md",
       "LICENCE",
-      "www/**",
-      "archives/README.md",
-      "archives/wikip*.*"
+      "www/**"
     ],
     "afterPack": "./scripts/appimage-fix.js",
     "win": {
