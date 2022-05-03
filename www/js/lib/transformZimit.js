@@ -73,28 +73,27 @@ define([], function () {
     }
 
     function transformReplayUrls(dirEntry, data, mimetype, selectedArchive) {
-
-        // Filter links in html files
+        /**
+         * Transform URL links in HTML files
+         */
         if (/\bhtml\b/i.test(mimetype)) {
             var zimitPrefix = data.match(/link\s+rel=["']canonical["']\s+href=(['"])https?:\/\/([^\/]+)(.+?)\1/i);
             zimitPrefix = zimitPrefix ? zimitPrefix[2] : params.zimitPrefix;
-            var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track|meta)\b[^>]*?[\s;])(?:src|href|url)(=(["']))(?=\/|https?:\/\/)([^>]+)(?=\3|\?|#)([^>]*>)/ig;
+            var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track|meta)\b[^>]*?[\s;])(?:src|href|url)(=(["']))(?=\/|https?:\/\/)((?:[^>](?!\3|\?|#))+[^>])([^>]*>)/ig;
+            // Get stem for constructing an absolute URL
+            var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(selectedArchive._file.name);
             data = data.replace(regexpZimitHtmlLinks, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
                 var newBlock = match;
                 var assetUrl = relAssetUrl;
-                // Remove google analytics and other google files that cause stall
-                if (/google.com|analytics.com/i.test(assetUrl)) return '';
-                // For Zimit assets that begin with // the zimitPrefix is different and is given in the URL
-                assetUrl = /^\/\//.test(assetUrl) ? assetUrl.replace(/^\/\//, dirEntry.namespace + '/') :
+                // Remove google analytics and other analytics files that cause stall
+                if (/google|analytics/i.test(assetUrl)) return '';
+                // For Zimit assets that begin with https: or // the zimitPrefix is derived from the URL
+                assetUrl = /^(?:https?:)?\/\//i.test(assetUrl) ? assetUrl.replace(/^(?:https?:)?\/\//i, '/' + dirEntry.namespace + '/') :
                 // For root-relative links, we need to add the zimitPrefix
-                /^\//.test(assetUrl) ? assetUrl.replace(/^\//, dirEntry.namespace + '/' + params.zimitPrefix + '/') :
-                // Deal with absolute URLs
-                /^https?:\/\//i.test(assetUrl) ? assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/') : assetUrl; 
+                /^\//.test(assetUrl) ? assetUrl.replace(/^\//, '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/') : assetUrl; 
                 // Deal with <meta http-equiv refresh...> directives
-                if (/<meta\s+http-equiv[^>]+refresh\b/i.test(newBlock)) dirEntry.zimitRedirect = assetUrl;
-                newBlock = params.contentInjectionMode === 'serviceworker' && !/^<a\s/i.test(match) ?
-                    newBlock.replace(relAssetUrl, '/' + selectedArchive._file.name + '/' + assetUrl) :
-                    newBlock.replace(relAssetUrl, '/' + assetUrl);
+                if (/<meta\s+http-equiv[^>]+refresh\b/i.test(newBlock)) dirEntry.zimitRedirect = assetUrl.replace(/^\//, '');
+                newBlock = newBlock.replace(relAssetUrl, indexRoot + assetUrl);
                 return newBlock;
             });
             
@@ -116,8 +115,12 @@ define([], function () {
                 // Remove onclick events
                 data = data.replace(/onclick="[^"]+"/ig, '');
             }
-        }
+            
+        } // End of html transformations
         
+        /**
+         * Transform css-style links in stylesheet files and stylesheet blocks in HTML
+         */
         if (/\b(css|html)\b/i.test(mimetype)) {
             var regexpZimitCssLinks = /url\s*\(['"\s]*([^)'"\s]+)['"\s]*\)/ig;
             data = data.replace(regexpZimitCssLinks, function (match, url) {
@@ -138,13 +141,18 @@ define([], function () {
                 // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
-        }
-        if (/\b(javascript)\b/.test(mimetype)) {
-            var regexpZimitJavascriptLinks = /['"(]((?:\b|https?:)\/\/[^'"?#)]+)['"?#)]/ig;
+        } // End of css transformations
+
+        /**
+         * Transform links in JavaScript files
+         */
+        if (/\b(javascript)\b/i.test(mimetype)) {
+            var regexpZimitJavascriptLinks = /['"(]((?:https?:)?\/\/[^'"?#)]+)['"?#)]/ig;
             data = data.replace(regexpZimitJavascriptLinks, function (match, url) {
                 var newBlock = match;
-                var assetUrl = url.replace(/^\/\//, dirEntry.namespace + '/');
-                assetUrl = url.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
+                var assetUrl = url;
+                assetUrl = assetUrl.replace(/^\/\//, dirEntry.namespace + '/');
+                assetUrl = assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
                 // if (assetUrl === url) return match; // If nothing was transformed, return
                 newBlock = params.contentInjectionMode === 'serviceworker' ?
                     newBlock.replace(url, '/' + selectedArchive._file.name + '/' + assetUrl) :
@@ -152,7 +160,8 @@ define([], function () {
                 // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
-        }
+        } // End of JavaScript transformations
+
         return data;
     }
 
