@@ -45,7 +45,7 @@ define([], function () {
      */
     function filterReplayFiles(dirEntry) {
         if (!(dirEntry && dirEntry.url)) return null;
-        if (/(?:chunk\.js|\bload\.js|\bsw\.js)(?:[?#]|$)/.test(dirEntry.url)) {
+        if (/(?:chunk\.js|\bload\.js|\bsw\.js|analytics.*\.js|remote.loader\.js|survey\.js)(?:[?#]|$)/i.test(dirEntry.url)) {
             dirEntry.nullify = true;
         } else if (params.isLandingPage && /^index\.html(?:[?#]|$)/.test(dirEntry.url)) {
             dirEntry.inspect = true;
