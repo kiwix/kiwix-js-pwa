@@ -38,10 +38,10 @@
   "file_handlers": [
     {
       "action": "www/",
-      "name": "ZIM Archive",
       "accept": {
         "application/octet-stream": [ ".zim" ]
-      }
+      },
+      "launch_type": "single-client"
     }
   ]
 }
