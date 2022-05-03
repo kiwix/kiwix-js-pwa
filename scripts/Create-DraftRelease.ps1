@@ -184,6 +184,8 @@ if (($flavour -match '_E') -or $plus_electron) {
     $release_tag_name = $release_tag_name + '-E' 
     "Changing release tag name to $release_tag_name"
   }
+} else {
+  $electronbuild = 'local'
 }
 
 # Create the Draft Release text
@@ -261,7 +263,7 @@ if ($updatewinget) {
 if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   if (-Not $buildonly) { "The draft release details were successfully created." }
   "`nUpdating release version in package.json"
-  $json_object = $json_object -replace '("version": ")[^"]+', ("`${1}" + $base_tag -replace 'E(?=-|$)', '-E')
+  $json_object = $json_object -replace '("version": ")[^"]+', ("`${1}" + $base_tag -replace '([EN])(?=-|$)', '-$1')
   if ($plus_electron) {
     $json_object = $json_object -replace '("version": ")[^"]+', ("`${1}$base_tag" + "-E")
   }
