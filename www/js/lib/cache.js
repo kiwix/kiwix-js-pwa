@@ -398,11 +398,11 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
         }
         // Check if we're actually calling an article 
         // DEV: With new ZIM types, we can't know we're retrieving an article...
-        var keyArticle = key.match(/([^/]+)\/(A\/.+$)/);
-        if (keyArticle) { // We're retrieving an article, so go to getArticle function
-            getArticle(keyArticle[1], keyArticle[2], callback);
-            return;
-        }
+        // var keyArticle = key.match(/([^/]+)\/(A\/.+$)/);
+        // if (keyArticle) { // We're retrieving an article, so go to getArticle function
+        //     getArticle(keyArticle[1], keyArticle[2], callback);
+        //     return;
+        // }
         var contents = null;
         if (assetsCache.has(key)) {
             contents = assetsCache.get(key);
@@ -465,7 +465,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                     } else {
                         var mimetype = resolvedDirEntry.getMimetype();
                         if (resolvedDirEntry.nullify) {
-                            console.debug('Zimit filter prevented access to ' + resolvedDirEntry.url + 'Storing empty contents in cache.');
+                            console.debug('Zimit filter prevented access to ' + resolvedDirEntry.url + '. Storing empty contents in cache.');
                             setItem(key, '', mimetype, function () {});
                             resolve ('');
                             return;
