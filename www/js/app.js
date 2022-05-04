@@ -1115,6 +1115,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 this.checked = false;
                 document.getElementById('serviceworkerModeRadio').checked = true;
                 return;
+            } else if (this.value === 'serviceworker' && params.zimType === 'zimit') {
+                cache.clear('all', refreshAPIStatus);
+                uiUtil.systemAlert('We need to clear the assets cache when switching to Service Worker mode ' + 
+                    'while using a Zimit ZIM, to be sure you are served the correct assets.<br >' + 
+                    '<b>N.B. You may also need to re-pick the ZIM.</b>', 'Clearing cache...')
             }
             var returnDivs = document.getElementsByClassName("returntoArticle");
             for (var i = 0; i < returnDivs.length; i++) {
