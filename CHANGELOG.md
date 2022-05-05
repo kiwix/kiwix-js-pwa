@@ -1,5 +1,13 @@
 # Changelog
 
+## Interim bugfix release 1.9.91
+
+* Fix erroneous link handling for Zimit files
+* Fix an exception when reloading the last selected archive on certain platfomrs
+* Filter out undesired files more effectively (Zimit ZIMs)
+* Process URLs in JavaScript files (Zimit ZIMs)
+* Ensure user clears the cache when switching to SW mode while a Zimit ZIM is loaded
+
 ## Release 1.9.9
 
 * UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-04`
