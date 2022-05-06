@@ -407,9 +407,9 @@ define(rqDef, function(util) {
         // Download code adapted from https://stackoverflow.com/a/19230668/9727685 
         if (!contentType) {
             // DEV: Add more contentTypes here for downloadable files
-            if (/\.epub$/.test(title)) contentType = 'application/epub+zip';
-            if (/\.pdf$/.test(title)) contentType = 'application/pdf';
-            if (/\.zip$/.test(title)) contentType = 'application/zip';
+            if (/\.epub([?#]|$)/i.test(title)) contentType = 'application/epub+zip';
+            if (/\.pdf([?#]|$)/i.test(title)) contentType = 'application/pdf';
+            if (/\.zip([?#]|$)/i.test(title)) contentType = 'application/zip';
         }
         // Set default contentType if there has been no match
         if (!contentType) contentType = 'application/octet-stream';
@@ -419,10 +419,14 @@ define(rqDef, function(util) {
         var filename = download === true ? title.replace(/^.*\/([^\/]+)$/, '$1') : download;
         // Make filename safe
         filename = filename.replace(/[\/\\:*?"<>|]/g, '_');
+        // If the file doesn't have an extension, add one for compatibility with older browsers
+        if (!/\.(epub|pdf|zip)([?#]|$)/i.test(filename)) {
+            var extension = /pdf/i.test(contentType) ? '\.pdf' : /epub/i.test(contentType) ? '\.epub' : /zip/i.test(contentType) ? '\.zip' : '';
+            filename = filename.replace(/^(.*?)([#?]|$)/, '$1' + extension);
+        }
         a.href = window.URL.createObjectURL(blob);
         a.target = '_blank';
         a.type = contentType;
-        // if (typeof window.fs === 'undefined') a.download = filename;
         a.classList.add('alert-link');
         a.innerHTML = filename;
         var alertMessage = document.getElementById('alertMessage');
