@@ -1,4 +1,4 @@
-# Kiwix JS for PWA, Electron, NWJS and Universal Windows Platform
+# Kiwix JS Wikivoyage for Electron, NWJS and Universal Windows Platform
 
 **Kiwix is an offline reader for multilingual content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, etc. It makes knowledge
 available to people with limited or no Internet access. The software as well as the content is free for anyone to use. It requires an offline ZIM archive
@@ -27,14 +27,13 @@ This project began as a simple port of [Kiwix JS](https://github.com/kiwix/kiwix
 although significant development has been undertaken to add functionality and to make the app sit happily with the Universal Windows Platform, and more
 recently Electron and NWJS, as well as to work as an installable PWA.
 
-The UWP app is available in the Microsoft Store at:
+This app enables offline reading of the packaged ZIM archive, although many other ZIM files may be
+downloaded from the Kiwix repository, including full Wikipedia versions with or without images
+in many different languages. The underlying app has only been tested fully on Wikimedia ZIM files to date.
 
-[https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j](https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j)
-
-It can also be installed (in Windows 10/11) by opening a Command Prompt or PowerShell terminal and typing `winget install kiwix.kiwixjs` (but this version
-will not auto-update, unlike the Store version). Alternative sideloading instructions are available in the 
-[release notes](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html). The Electron version can be installed with `winget install kiwix.kiwixjs.electron`,
-or else by downloading a package from [Releases](https://github.com/kiwix/kiwix-js-windows/releases/).
+It can also be installed (in Windows 10/11) by opening a Command Prompt or PowerShell terminal and typing `winget install kiwix.wikivoyage` (but this version will not
+auto-update, unolike the Store version). Alternative sideloading instructions are available in the [release notes](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html).
+The Electron version can be installed with `winget install kiwix.wikivoyage.electron', or else by downloading hte package from [releases](https://github.com/kiwix/kiwix-js-windows/releases/).
 
 **You will need a ZIM file to work with this app.** For testing, the Store, Electron and NWJS versions come packaged with an archive of Wikipedia articles
 related to Climate Change (as a starter ZIM), while packaged aps of [WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html) and 
@@ -78,7 +77,7 @@ to Wikipedia or Wikivoyage articles.
 
 # Privacy Policy
 
-When installed, Kiwix JS Windows works offline, and does not collect or record any of your personal data. It
+When installed, Wikivoyage by Kiwix works offline, and does not collect or record any of your personal data. It
 only remembers your browsing history for the duration of a session (for the purpose of returning to previously
 viewed pages). This history is lost on exiting the app with the optional exception of the last-visited page.
 
