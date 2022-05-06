@@ -3,7 +3,8 @@
 ## Interim bugfix release 1.9.91
 
 * Fix erroneous link handling for Zimit files
-* Fix an exception when reloading the last selected archive on certain platfomrs
+* Add any missing file extension to downloadable files
+* Fix an exception when reloading the last selected archive on certain platforms
 * Filter out undesired files more effectively (Zimit ZIMs)
 * Process URLs in JavaScript files (Zimit ZIMs)
 * Ensure user clears the cache when switching to SW mode while a Zimit ZIM is loaded
