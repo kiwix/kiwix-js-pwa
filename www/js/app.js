@@ -5251,7 +5251,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             '<p>Redirecting to landing page...</p>');
                         goToMainArticle();
                     }
-                } else if (download || /application\/pdf/i.test(mimetype)) {
+                } else if (download || /\/(pdf|epub)/i.test(mimetype)) {
                     download = true;
                     appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                         uiUtil.displayFileDownloadAlert(path, download, mimetype, content);
