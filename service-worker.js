@@ -174,6 +174,7 @@ let precacheFiles = [
   "www/js/lib/require.js",
   "www/js/lib/settingsStore.js",
   "www/js/lib/transformStyles.js",
+  "www/js/lib/transformZimit.js",
   "www/js/lib/uiUtil.js",
   "www/js/lib/utf8.js",
   "www/js/lib/util.js",
