@@ -3825,6 +3825,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             });
                         }
                     };
+                    if (params.zimType === 'zimit') title = title.replace(/^([^?]+)(\?[^?]*)?$/, function (m0, m1, m2) {
+                        // Note that Zimit ZIMs store ZIM URLs encoded, but SOME incorrectly encode using encodeURIComponent, instead of encodeURI!
+                        return m1.replace(/[&]/g, '%26').replace(/,/g, '%2C') + (m2 || '');
+                        // return encodeURI(m1) + (m2 || '');
+                    });
                     appstate.selectedArchive.getDirEntryByPath(title).then(readFile).catch(function (err) {
                         console.error('Failed to read ' + title, err);
                         messagePort.postMessage({
@@ -4034,99 +4039,90 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 });
             }
             
-            //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
-            //so add some whitespace at the end of the document
-            htmlArticle = htmlArticle.replace(/(<\/body>)/i, "\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n$1");
-            htmlArticle = htmlArticle.replace(/(dditional\s+terms\s+may\s+apply\s+for\s+the\s+media\s+files[^<]+<\/div>\s*)/i, "$1\r\n<h1></h1><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n");
+            if (params.zimType === 'open') {
+                //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
+                //so add some whitespace at the end of the document
+                htmlArticle = htmlArticle.replace(/(<\/body>)/i, "\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n$1");
+                htmlArticle = htmlArticle.replace(/(dditional\s+terms\s+may\s+apply\s+for\s+the\s+media\s+files[^<]+<\/div>\s*)/i, "$1\r\n<h1></h1><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n");
 
-            //@TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
-            htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, "<a href=\"$1.html\">$2</a>");
-            htmlArticle = htmlArticle.replace(/&lt;(\/?)(i|b|em|strong)&gt;/ig, "<$1$2>");
+                //@TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
+                htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, "<a href=\"$1.html\">$2</a>");
+                htmlArticle = htmlArticle.replace(/&lt;(\/?)(i|b|em|strong)&gt;/ig, "<$1$2>");
 
-            //@TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
-            htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, "$1");
+                //@TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
+                htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, "$1");
 
-            //@TODO - remove when fixed in MDwiki ZIM: dirty patch for removing erroneously hard-coded style
-            if (/^mdwiki/.test(appstate.selectedArchive._file.name)) htmlArticle = htmlArticle.replace(/(class=['"]thumbinner[^>]+style=['"]width\s*:\s*)\d+px/ig, "$1320px");
+                //@TODO - remove when fixed in MDwiki ZIM: dirty patch for removing erroneously hard-coded style
+                if (/^mdwiki/.test(appstate.selectedArchive._file.name)) htmlArticle = htmlArticle.replace(/(class=['"]thumbinner[^>]+style=['"]width\s*:\s*)\d+px/ig, "$1320px");
 
-            // Gutenberg ZIMs try to initialize before all assets are fully loaded. Affect UWP app.
-            htmlArticle = htmlArticle.replace(/(<body\s[^<]*onload=(['"]))([^'"]*init\([^'"]+showBooks\([^'"]+)\2/i, '$1setTimeout(function () {$3}, 300);$2');
+                // Gutenberg ZIMs try to initialize before all assets are fully loaded. Affect UWP app.
+                htmlArticle = htmlArticle.replace(/(<body\s[^<]*onload=(['"]))([^'"]*init\([^'"]+showBooks\([^'"]+)\2/i, '$1setTimeout(function () {$3}, 300);$2');
 
-            // Remove erroneous content frequently on front page
-            htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, "");
-            htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, "");
+                // Remove erroneous content frequently on front page
+                htmlArticle = htmlArticle.replace(/<h1\b[^>]+>[^/]*?User:Popo[^<]+<\/h1>\s*/i, "");
+                htmlArticle = htmlArticle.replace(/<span\b[^>]+>[^/]*?User:Popo[^<]+<\/span>\s*/i, "");
 
-            // Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
-            var noexcerpt = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?(<dl\b(?:[^<]|<(?!\/dl>)){1,50}?(?:For\sother\s.{5,20}\swith\s|Not\sto\sbe\sconfused\swith|mw-redirect[^<]+travel\stopic|This\sarticle\sis\sa|See\salso:)(?:[^<]|<(?!\/dl>))+<\/dl>\s*)/i);
-            if (noexcerpt && noexcerpt[1] && noexcerpt[1].length) {
-                htmlArticle = htmlArticle.replace(noexcerpt[1], '');
-                htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, '$1' + noexcerpt[1]);
-            }
-            // Put misplaced hatnote headers inside <h1> block back in correct position @TODO remove this when fixed in mw-offliner
-            var hatnote;
-            var hatnotes = [];
-            do {
-                hatnote = util.matchOuter(htmlArticle, '<div\\b[^>]+\\b(?:hatnote|homonymie|dablink)\\b', '</div>\\s*', 'i');
-                if (hatnote && hatnote.length) {
-                    // Ensure the next matching hatnote is under h1
-                    if (/<h1\b(?:[^<]|<(?!h2))+<div\b[^>]+\b(?:hatnote|homonymie|dablink)\b/i.test(htmlArticle)) {
-                        htmlArticle = htmlArticle.replace(hatnote[0], '');
-                        hatnotes.push(hatnote[0]);
-                    } else {
-                        break;
-                    }
+                // Put misplaced disambiguation header back in its correct position @TODO remove this when fixed in mw-offliner
+                var noexcerpt = htmlArticle.match(/<h1\b(?:[^<]|<(?!h2))+?(<dl\b(?:[^<]|<(?!\/dl>)){1,50}?(?:For\sother\s.{5,20}\swith\s|Not\sto\sbe\sconfused\swith|mw-redirect[^<]+travel\stopic|This\sarticle\sis\sa|See\salso:)(?:[^<]|<(?!\/dl>))+<\/dl>\s*)/i);
+                if (noexcerpt && noexcerpt[1] && noexcerpt[1].length) {
+                    htmlArticle = htmlArticle.replace(noexcerpt[1], '');
+                    htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, '$1' + noexcerpt[1]);
                 }
-            } while (hatnote.length);
-            // Ensure we replace them in the right order
-            for (var i = hatnotes.length; i--;) {
-                htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnotes[i].replace(/(<div\s+)/i, '$1style="padding-top:10px;" '));
+                // Put misplaced hatnote headers inside <h1> block back in correct position @TODO remove this when fixed in mw-offliner
+                var hatnote;
+                var hatnotes = [];
+                do {
+                    hatnote = util.matchOuter(htmlArticle, '<div\\b[^>]+\\b(?:hatnote|homonymie|dablink)\\b', '</div>\\s*', 'i');
+                    if (hatnote && hatnote.length) {
+                        // Ensure the next matching hatnote is under h1
+                        if (/<h1\b(?:[^<]|<(?!h2))+<div\b[^>]+\b(?:hatnote|homonymie|dablink)\b/i.test(htmlArticle)) {
+                            htmlArticle = htmlArticle.replace(hatnote[0], '');
+                            hatnotes.push(hatnote[0]);
+                        } else {
+                            break;
+                        }
+                    }
+                } while (hatnote.length);
+                // Ensure we replace them in the right order
+                for (var i = hatnotes.length; i--;) {
+                    htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnotes[i].replace(/(<div\s+)/i, '$1style="padding-top:10px;" '));
+                }
+
+                //Remove white background colour (causes flashes in dark mode)
+                htmlArticle = htmlArticle.replace(/(<body\b[^>]+style=["'][^"']*)background-color\s*:\s*[^;]+;\s*/i, '$1');
+                htmlArticle = htmlArticle.replace(/(<div\b(?=[^>]+class=\s*["'][^"']*mw-body)[^>]+style=["'][^"']*)background-color\s*:\s*[^;]+;\s*/i, '$1');
+
+                //Display IPA pronunciation info erroneously hidden in some ZIMs
+                htmlArticle = htmlArticle.replace(/(<span\b[^>]+?class\s*=\s*"[^"]+?mcs-ipa[^>]+?display:\s*)none/i, "$1inline");
+
+                //Remove any background:url statements in style blocks as they cause the system to attempt to load them
+                htmlArticle = htmlArticle.replace(/background:url\([^)]+\)[^;}]*/ig, '');
+
+                //Remove the details polyfill: it's poor and doesn't recognize Edgium
+                htmlArticle = htmlArticle.replace(/<script\b[^<]+details[^"']*polyfill\.js[^<]+<\/script>\s*/i, '');
+                
+                //Remove article.js on youtube ZIMs as it erroneously hides description
+                htmlArticle = /<video\b/i.test(htmlArticle) ? htmlArticle.replace(/<script\b[^<]+assets\/article\.js[^<]+<\/script>\s*/i, '') : htmlArticle;
+                
+                // Remove the script.js that closes top-level sections if user requested this
+                if (params.openAllSections) htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/(j\/js_modules\/)?script\.js"[^<]*<\/script>/i, "");
+                if (params.cssCache) {
+                    // Remove landing page scripts that don't work in SW mode
+                    htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/[^>]*((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, '');
+                    // Set max-width for infoboxes (now set in -/s/styles.css)
+                    // htmlArticle = htmlArticle.replace(/(<table\s+)(class=["'][^"']*infobox\b)/gi, '$1style="max-width:25%;" $2');
+                    // Remove override sidebar styles recently hard-coded into some Wikipedia ZIMs - reverted due to error with Wikivoyage and now dealt with in styles.css
+                    // htmlArticle = htmlArticle.replace(/<style\s+data-mw-deduplicate[^<]+<\/style>\s*/gi, '');
+                    // Edit sidebar style to make it an infobox
+                    htmlArticle = htmlArticle.replace(/(<table\s+class=["'][^"']*)sidebar\s/gi, '$1infobox ');
+                }
+
+                //Remove empty div that causes layout issues in desktop style (but don't remove in SW mode, as they are dynamically filled)
+                if (params.contentInjectionMode === 'jquery') htmlArticle = htmlArticle.replace(/<div\b[^>]*?>\s*<\/div>\s*/, '');
+                // Deal with incorrectly sized masonry pages
+                htmlArticle = htmlArticle.replace(/(<body\b[^<]+<div\b[^>]+?id=['"]container['"][^>]*)/i, '$1 style="height:auto;"');
             }
 
-            //Remove white background colour (causes flashes in dark mode)
-            htmlArticle = htmlArticle.replace(/(<body\b[^>]+style=["'][^"']*)background-color\s*:\s*[^;]+;\s*/i, '$1');
-            htmlArticle = htmlArticle.replace(/(<div\b(?=[^>]+class=\s*["'][^"']*mw-body)[^>]+style=["'][^"']*)background-color\s*:\s*[^;]+;\s*/i, '$1');
-
-            //Display IPA pronunciation info erroneously hidden in some ZIMs
-            htmlArticle = htmlArticle.replace(/(<span\b[^>]+?class\s*=\s*"[^"]+?mcs-ipa[^>]+?display:\s*)none/i, "$1inline");
-
-            //Remove any background:url statements in style blocks as they cause the system to attempt to load them
-            htmlArticle = htmlArticle.replace(/background:url\([^)]+\)[^;}]*/ig, '');
-
-            //Remove the details polyfill: it's poor and doesn't recognize Edgium
-            htmlArticle = htmlArticle.replace(/<script\b[^<]+details[^"']*polyfill\.js[^<]+<\/script>\s*/i, '');
-            
-            //Remove article.js on youtube ZIMs as it erroneously hides description
-            htmlArticle = /<video\b/i.test(htmlArticle) ? htmlArticle.replace(/<script\b[^<]+assets\/article\.js[^<]+<\/script>\s*/i, '') : htmlArticle;
-            
-            // Remove the script.js that closes top-level sections if user requested this
-            if (params.openAllSections) htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/(j\/js_modules\/)?script\.js"[^<]*<\/script>/i, "");
-            if (params.cssCache) {
-                // Remove landing page scripts that don't work in SW mode
-                htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/[^>]*((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, '');
-                // Set max-width for infoboxes (now set in -/s/styles.css)
-                // htmlArticle = htmlArticle.replace(/(<table\s+)(class=["'][^"']*infobox\b)/gi, '$1style="max-width:25%;" $2');
-                // Remove override sidebar styles recently hard-coded into some Wikipedia ZIMs - reverted due to error with Wikivoyage and now dealt with in styles.css
-                // htmlArticle = htmlArticle.replace(/<style\s+data-mw-deduplicate[^<]+<\/style>\s*/gi, '');
-                // Edit sidebar style to make it an infobox
-                htmlArticle = htmlArticle.replace(/(<table\s+class=["'][^"']*)sidebar\s/gi, '$1infobox ');
-            }
-
-            //Remove empty div that causes layout issues in desktop style (but don't remove in SW mode, as they are dynamically filled)
-            if (params.contentInjectionMode === 'jquery') htmlArticle = htmlArticle.replace(/<div\b[^>]*?>\s*<\/div>\s*/, '');
-            // Deal with incorrectly sized masonry pages
-            htmlArticle = htmlArticle.replace(/(<body\b[^<]+<div\b[^>]+?id=['"]container['"][^>]*)/i, '$1 style="height:auto;"');
-
-            //For all cases, neutralize the toggleOpenSection javascript that causes a crash
-            //htmlArticle = htmlArticle.replace(/(onclick\s*=\s*["'])toggleOpenSection[^"']*(['"]\s*)/ig, "$1$2");
-            // Remove and save inline javascript contents only (does not remove scripts with src)
-            // This is required because most app CSPs forbid inline scripts or require hashes
-            // DEV: {5,} in regex means script must have at least 5 characters between the script tags to be matched
-            //var regexpScripts = /<script\b(?![^>]+type\s*=\s*["']text\/html)(?![^>]+src\s*=)[^>]*>([^<]{5,})<\/script>/ig;
-            //var inlineJavaScripts = [];
-            //htmlArticle = htmlArticle.replace(regexpScripts, function(match, inlineScript) {
-            //    inlineJavaScripts.push(inlineScript);
-            //    return "";
-            //});
             if (params.contentInjectionMode == 'jquery') {
                 // Neutralize all inline scripts for now (later use above), excluding math blocks or react templates
                 htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig, function (p0, p1) {
@@ -4179,69 +4175,71 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             params.containsMathTex = params.useMathJax ? /<script\s+type\s*=\s*['"]\s*math\/tex\s*['"]/i.test(htmlArticle) : false;
             params.containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
 
-            //Adapt German Wikivoyage POI data format
-            var regexpGeoLocationDE = /<span\s+class="[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<bdi\s[^>]+?listing-name[^>]+>(?:<a\b\s+href[^>]+>)?([^<]+))/ig;
-            htmlArticle = htmlArticle.replace(regexpGeoLocationDE, function (match, latitude, longitude, href, id) {
-                var html;
-                if (/bingmaps/.test(params.mapsURI)) {
-                    html = '<a href="' + params.mapsURI + '?collection=point.' + latitude + '_' + longitude + '_' + encodeURIComponent(id.replace(/_/g, " ")) + '">\r\n';
+            if (params.zimType === 'open') {
+                //Adapt German Wikivoyage POI data format
+                var regexpGeoLocationDE = /<span\s+class="[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<bdi\s[^>]+?listing-name[^>]+>(?:<a\b\s+href[^>]+>)?([^<]+))/ig;
+                htmlArticle = htmlArticle.replace(regexpGeoLocationDE, function (match, latitude, longitude, href, id) {
+                    var html;
+                    if (/bingmaps/.test(params.mapsURI)) {
+                        html = '<a href="' + params.mapsURI + '?collection=point.' + latitude + '_' + longitude + '_' + encodeURIComponent(id.replace(/_/g, " ")) + '">\r\n';
+                    }
+                    if (/openstreetmap/.test(params.mapsURI)) {
+                        html = '<a href="' + params.mapsURI + '?mlat=' + latitude + '&mlon=' + longitude + '#map=18/' + latitude + '/' + longitude + '">\r\n';
+                    }
+                    html += '<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="app:///www/img/icons/map_marker-30px.png" width="18px" style="position:relative !important;top:-5px !important;margin-top:5px !important" />\r\n</a>' + href;
+                    return html;
+                });
+
+                //Adapt English Wikivoyage POI data format
+                var regexpGeoLocationEN = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
+                var mapPin30 = '<img alt="Map marker" title="Show this place on a map" src="app:///www/img/icons/map_marker-30px.png" width="18px" style="position:relative !important;top:-5px !important;" />';
+                htmlArticle = htmlArticle.replace(regexpGeoLocationEN, function (match, hrefAttr, latitude, longitude, p4, p5, p6, id) {
+                    var html;
+                    if (/bingmaps/.test(params.mapsURI)) {
+                        html = hrefAttr + params.mapsURI + '?collection=point.' + latitude + '_' + longitude + '_' +
+                        encodeURIComponent(id.replace(/_/g, ' ')).replace(/\.(\w\w)/g, '%$1') +
+                        (p5 ? '\&lvl=' + p5 : '') + p4.replace(/style=["']\s?background:[^"']+["']/i, '');
+                    }
+                    if (/openstreetmap/.test(params.mapsURI)) {
+                        html = hrefAttr + params.mapsURI + '?mlat=' + latitude + '&mlon=' + longitude + '#map=18/' + latitude + '/' + longitude + 
+                            p4.replace(/style=["']\s?background:[^"']+["']/i, '');
+                    }
+                    html += mapPin30 + p6 + id;
+                    return html;
+                });
+
+                //Clean up remaining geo: links
+                var mapPin18 = '<img alt="Map marker" title="Show this place on a map" src="app:///www/img/icons/map_marker-18px.png" width="12px" />';
+                if (/bingmaps:/.test(params.mapsURI)) {
+                    htmlArticle = htmlArticle.replace(/href=['"]geo:([\d.-]+),([\d.-]+)[^"']*([^>]+>)/ig, 'href="' + params.mapsURI + '?collection=point.$1_$2_' + 
+                    encodeURIComponent(dirEntry.getTitleOrUrl()) + '$3' + mapPin18 + '&nbsp;');
                 }
                 if (/openstreetmap/.test(params.mapsURI)) {
-                    html = '<a href="' + params.mapsURI + '?mlat=' + latitude + '&mlon=' + longitude + '#map=18/' + latitude + '/' + longitude + '">\r\n';
+                    htmlArticle = htmlArticle.replace(/href=['"]geo:([\d.-]+),([\d.-]+)[^"']*([^>]+>)/ig, 'href="' + params.mapsURI + '?mlat=$1&mlon=$2#map=18/$1/$2$3' + mapPin18 + '&nbsp;');
                 }
-                html += '<img alt="Map marker" title="Diesen Ort auf einer Karte zeigen" src="app:///www/img/icons/map_marker-30px.png" width="18px" style="position:relative !important;top:-5px !important;margin-top:5px !important" />\r\n</a>' + href;
-                return html;
-            });
 
-            //Adapt English Wikivoyage POI data format
-            var regexpGeoLocationEN = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
-            var mapPin30 = '<img alt="Map marker" title="Show this place on a map" src="app:///www/img/icons/map_marker-30px.png" width="18px" style="position:relative !important;top:-5px !important;" />';
-            htmlArticle = htmlArticle.replace(regexpGeoLocationEN, function (match, hrefAttr, latitude, longitude, p4, p5, p6, id) {
-                var html;
-                if (/bingmaps/.test(params.mapsURI)) {
-                    html = hrefAttr + params.mapsURI + '?collection=point.' + latitude + '_' + longitude + '_' +
-                    encodeURIComponent(id.replace(/_/g, ' ')).replace(/\.(\w\w)/g, '%$1') +
-                    (p5 ? '\&lvl=' + p5 : '') + p4.replace(/style=["']\s?background:[^"']+["']/i, '');
-                }
-                if (/openstreetmap/.test(params.mapsURI)) {
-                    html = hrefAttr + params.mapsURI + '?mlat=' + latitude + '&mlon=' + longitude + '#map=18/' + latitude + '/' + longitude + 
-                        p4.replace(/style=["']\s?background:[^"']+["']/i, '');
-                }
-                html += mapPin30 + p6 + id;
-                return html;
-            });
+                // Process any app:// links (these are always from the app payload) to match the current protocol
+                htmlArticle = htmlArticle.replace(/(['"])app:\/\//g, function (p0, p1) {
+                    var appRootDir = window.location.href.replace(/\/www\/.*$/i, '');
+                    return p1 + appRootDir;
+                });
 
-            //Clean up remaining geo: links
-            var mapPin18 = '<img alt="Map marker" title="Show this place on a map" src="app:///www/img/icons/map_marker-18px.png" width="12px" />';
-            if (/bingmaps:/.test(params.mapsURI)) {
-                htmlArticle = htmlArticle.replace(/href=['"]geo:([\d.-]+),([\d.-]+)[^"']*([^>]+>)/ig, 'href="' + params.mapsURI + '?collection=point.$1_$2_' + 
-                encodeURIComponent(dirEntry.getTitleOrUrl()) + '$3' + mapPin18 + '&nbsp;');
+                // Remove erroneous caption on maps that displaces the location marker in at least German Wikivoyage
+                htmlArticle = htmlArticle.replace(/(<table\b(?=[^>]+class=["']locationMap)(?:[^<]|<(?!\/table>))+?<img\b[^>]+>)<div\s+class=['"]thumbcaption(?:[^<]|<(?!\/div>))+<\/div>((?:[^<]|<(?!\/table>))+?<div\s+style=['"]position:\s*absolute)/ig, "$1$2");
+
+                //Setup endnote backlinks if the ZIM doesn't have any
+                htmlArticle = htmlArticle.replace(/<li\b[^>]+id=["']cite[-_]note[-_]([^"']+)[^>]+>(?![^/]+?[↑^])/ig, function (match, id) {
+                    var fnReturnMatch = '';
+                    try {
+                        var fnSearchRegxp = new RegExp('id=["' + "'](cite[-_]ref[-_]" + id.replace(/[-_()+?]/g, "[-_()]+?") + '[^"' + "']*)", 'i');
+                        fnReturnMatch = htmlArticle.match(fnSearchRegxp);
+                    } catch (err) {
+                        console.error('Error constructiong regular expression in app.js', err);
+                    }
+                    var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : '';
+                    return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>';
+                });
             }
-            if (/openstreetmap/.test(params.mapsURI)) {
-                htmlArticle = htmlArticle.replace(/href=['"]geo:([\d.-]+),([\d.-]+)[^"']*([^>]+>)/ig, 'href="' + params.mapsURI + '?mlat=$1&mlon=$2#map=18/$1/$2$3' + mapPin18 + '&nbsp;');
-            }
-
-            // Process any app:// links (these are always from the app payload) to match the current protocol
-            htmlArticle = htmlArticle.replace(/(['"])app:\/\//g, function (p0, p1) {
-                var appRootDir = window.location.href.replace(/\/www\/.*$/i, '');
-                return p1 + appRootDir;
-            });
-
-            // Remove erroneous caption on maps that displaces the location marker in at least German Wikivoyage
-            htmlArticle = htmlArticle.replace(/(<table\b(?=[^>]+class=["']locationMap)(?:[^<]|<(?!\/table>))+?<img\b[^>]+>)<div\s+class=['"]thumbcaption(?:[^<]|<(?!\/div>))+<\/div>((?:[^<]|<(?!\/table>))+?<div\s+style=['"]position:\s*absolute)/ig, "$1$2");
-
-            //Setup endnote backlinks if the ZIM doesn't have any
-            htmlArticle = htmlArticle.replace(/<li\b[^>]+id=["']cite[-_]note[-_]([^"']+)[^>]+>(?![^/]+?[↑^])/ig, function (match, id) {
-                var fnReturnMatch = '';
-                try {
-                    var fnSearchRegxp = new RegExp('id=["' + "'](cite[-_]ref[-_]" + id.replace(/[-_()+?]/g, "[-_()]+?") + '[^"' + "']*)", 'i');
-                    fnReturnMatch = htmlArticle.match(fnSearchRegxp);
-                } catch (err) {
-                    console.error('Error constructiong regular expression in app.js', err);
-                }
-                var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : '';
-                return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>';
-            });
 
             // If there is no CSP, add one to prevent external scripts and content
             if (!/<meta\b[^>]+Content-Security-Policy/i.test(htmlArticle)) {
@@ -5251,7 +5249,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                             '<p>Redirecting to landing page...</p>');
                         goToMainArticle();
                     }
-                } else if (download || /\/(pdf|epub)/i.test(mimetype)) {
+                } else if (download || /\/(pdf|epub|gif|jpg|png|webp|svg|tiff)/i.test(mimetype)) {
                     download = true;
                     appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                         uiUtil.displayFileDownloadAlert(path, download, mimetype, content);
