@@ -79,6 +79,9 @@ define([], function () {
         if (/\bhtml\b/i.test(mimetype)) {
             var zimitPrefix = data.match(/link\s+rel=["']canonical["']\s+href=(['"])https?:\/\/([^\/]+)(.+?)\1/i);
             zimitPrefix = zimitPrefix ? zimitPrefix[2] : params.zimitPrefix;
+            // Remove lazyimgage system and noscript tags that comment out images
+            data = data.replace(/<noscript>\s*(<img\b[^>]+>)\s*<\/noscript>/ig, '$1');
+            data = data.replace(/<span\b[^>]+lazy-image-placeholder[^<]+<\/span>\s*/ig, '');
             var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track|meta)\b[^>]*?[\s;])(?:src|href|url)(=(["']))(?=\/|https?:\/\/)((?:[^>](?!\3|\?|#))+[^>])([^>]*>)/ig;
             // Get stem for constructing an absolute URL
             var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(selectedArchive._file.name);
