@@ -6,9 +6,10 @@ https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j
 
 There are portable and installable versions for Linux (Ubuntu, Debian, OpenSUSE), and Windows XP/Vista/7/8/10/11 available from https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html. The Store and Electron Setup and AppImage versions are self-updating. The `zip`, `deb` and `rpm` versions do not self-update.
 
-There is a PWA version at https://pwa.kiwix.org/ which can be installed as an offline app in any Chromium browser (Chrome, Edge) -- see INstall button in Configuration. In Firefox, the app can be bookmarked, and will work offline, but it cannot be installed.
+There is a PWA version at https://pwa.kiwix.org/ which can be installed as an offline app in any Chromium browser (Chrome, Edge) -- see Install button in
+Configuration. In Firefox, the app can be bookmarked, and will work offline, but it cannot be installed.
 
-# Sideloading INstructions (Windows 10/11 and Mobile)
+# Sideloading Instructions (Windows 10/11 and Mobile)
 
 You can now sideload the app easily by opening a Command Prompt (Win key -> type "Command" or "Terminal" or "PowerShell") and at the commandline type
 `winget install kiwix.kiwixjs`. If you don't have [`winget`](https://docs.microsoft.com/en-us/windows/package-manager/winget/) yet, or wish to test a
