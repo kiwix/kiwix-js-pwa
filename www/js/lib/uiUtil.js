@@ -407,12 +407,23 @@ define(rqDef, function(util) {
         // Download code adapted from https://stackoverflow.com/a/19230668/9727685 
         if (!contentType) {
             // DEV: Add more contentTypes here for downloadable files
-            if (/\.epub([?#]|$)/i.test(title)) contentType = 'application/epub+zip';
-            if (/\.pdf([?#]|$)/i.test(title)) contentType = 'application/pdf';
-            if (/\.zip([?#]|$)/i.test(title)) contentType = 'application/zip';
+            contentType = 
+                /\.epub([?#]|$)/i.test(title) ? 'application/epub+zip' :
+                /\.pdf([?#]|$)/i.test(title) ? 'application/pdf' :
+                /\.zip([?#]|$)/i.test(title) ? 'application/zip' :
+                /\.png([?#]|$)/i.test(title) ? 'image/png' :
+                /\.jpe?g([?#]|$)/i.test(title) ? 'image/jpeg' :
+                /\.webp([?#]|$)/i.test(title) ? 'image/webp' :
+                /\.svg([?#]|$)/i.test(title) ? 'image/svg+xml' :
+                /\.gif([?#]|$)/i.test(title) ? 'image/gif' :
+                /\.tiff([?#]|$)/i.test(title) ? 'image/tiff' :
+                /\.mp4([?#]|$)/i.test(title) ? 'video/mp4' :
+                /\.(webm)([?#]|$)/i.test(title) ? 'video/webm' :
+                /\.mpeg([?#]|$)/i.test(title) ? 'video/mpeg' :
+                /\.mp3([?#]|$)/i.test(title) ? 'audio/mpeg' : 
+                 // Default contentType if no match:
+                'application/octet-stream';
         }
-        // Set default contentType if there has been no match
-        if (!contentType) contentType = 'application/octet-stream';
         var a = document.createElement('a');
         var blob = new Blob([content], { 'type': contentType });
         // If the filename to use for saving has not been specified, construct it from title
@@ -420,8 +431,21 @@ define(rqDef, function(util) {
         // Make filename safe
         filename = filename.replace(/[\/\\:*?"<>|]/g, '_');
         // If the file doesn't have an extension, add one for compatibility with older browsers
-        if (!/\.(epub|pdf|zip)([?#]|$)/i.test(filename)) {
-            var extension = /pdf/i.test(contentType) ? '\.pdf' : /epub/i.test(contentType) ? '\.epub' : /zip/i.test(contentType) ? '\.zip' : '';
+        if (!/\.(epub|pdf|zip|png|jpe?g|webp|svg|gif|tiff|mp4|webm|mpe?g|mp3)([?#]|$)/i.test(filename)) {
+            var extension = 
+                /epub/i.test(contentType) ? '.epub' : 
+                /pdf/i.test(contentType) ? '.pdf' : 
+                /\/zip$/i.test(contentType) ? '.zip' : 
+                /png/i.test(contentType) ? '.png' : 
+                /jpeg/i.test(contentType) ? '.jpeg' : 
+                /webp/i.test(contentType) ? '.webp' : 
+                /svg/i.test(contentType) ? '.svg' : 
+                /gif/i.test(contentType) ? '.gif' : 
+                /tiff/i.test(contentType) ? '.tiff' : 
+                /mp4/i.test(contentType) ? '.mp4' : 
+                /webm/i.test(contentType) ? '.webm' : 
+                /mpeg/i.test(contentType) ? '.mpeg' : 
+                /mp3/i.test(contentType) ? '.mp3' : '';
             filename = filename.replace(/^(.*?)([#?]|$)/, '$1' + extension);
         }
         a.href = window.URL.createObjectURL(blob);
