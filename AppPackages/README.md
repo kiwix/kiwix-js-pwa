@@ -1,10 +1,10 @@
 # Installation Instructions (Windows/Linux)
 
-The easiest way to install the UWP app on Win 10/11 is from the Microsoft Store:
+The easiest way to install the UWP app on Windows 10/11 is from the Microsoft Store:
 
 https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j
 
-There are portable and installable versions for Linux (Ubuntu, Debian, OpenSUSE), and Windows XP/Vista/7/8/10/11 available from https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html. The Store and Electron Setup and AppImage versions are self-updating.
+There are portable and installable versions for Linux (Ubuntu, Debian, OpenSUSE), and Windows XP/Vista/7/8/10/11 available from https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html. The Store and Electron Setup and AppImage versions are self-updating. The `zip`, `deb` and `rpm` versions do not self-update.
 
 There is a PWA version at https://pwa.kiwix.org/ which can be installed as an offline app in any Chromium browser (Chrome, Edge) -- see INstall button in Configuration. In Firefox, the app can be bookmarked, and will work offline, but it cannot be installed.
 
