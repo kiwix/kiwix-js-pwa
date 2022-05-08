@@ -353,7 +353,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         "`nYou should delete this bundle unless you are very sure that it was built with the correct certificate!"
         $deleteBundle = Read-Host "WARNING: There is already an existing UWP release package! Delete (recommended)? [Y/N]"
         $deleteBundle = -Not ( $deleteBundle -imatch 'n' )
-        If ($deleteBundle) {
+        If ((-Not $dryrun) -and $deleteBundle) {
           rm $ReleaseBundle
         }
     }
