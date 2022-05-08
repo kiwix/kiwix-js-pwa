@@ -8,7 +8,7 @@
 * FIX: Links to PDF data are now recognized by MIME type and downloaded as if they were files
 * FIX: Transition away from testing file extensions for caching strategy
 * Add any missing file extension to downloadable files
-* Fix an exception when reloading the last selected archive on certain platfomrs
+* Fix an exception when reloading the last selected archive on certain platforms
 
 ## Release 1.9.7-Wikivoyage
 
