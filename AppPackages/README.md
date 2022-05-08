@@ -1,14 +1,14 @@
-# Installation Instructions (Windows 10 Tablet, PC, Mobile)
+# Installation and Sideloading Instructions (Windows 10/11 Tablet, PC, Mobile)
 
 The easiest way to install Kiwix JS Windows is from the Microsoft Store:
 
 https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j
 
-The second easiest way is to open a Command Prompt (Win key -> type "Command" or "Terminal" or "PowerShell") and at the commandline type `winget install kiwix`. If you don't
+You can now sideload it easily by opening a Command Prompt (Win key -> type "Command" or "Terminal" or "PowerShell") and at the commandline type `winget install kiwix.kiwixjs`. If you don't
 have [`winget`](https://docs.microsoft.com/en-us/windows/package-manager/winget/) yet, or wish to test a different build, then follow the instructions below. _Uninstall any
 previous installation of Kiwix JS Windows before you follow this procedure_.
 
-## Windows 10 Tablet / PC
+## Windows 10/11 Tablet / PC
 
 Starting in Windows 10 version 2004, **sideloading is enabled by default** and you can install apps by double-clicking signed app packages.
 On Windows 10 version 1909 and earlier, sideloading requires some additional configuration, as does sideloading unsigned packages.
@@ -20,8 +20,7 @@ On Windows 10 version 1909 and earlier, sideloading requires some additional con
 
 **_If above procedure fails_**, the package may not be a signed one, or else you have an even older version of Windows 10. In this case, follow the more complex procedure below:
 
-* Put your PC in Developer mode: Settings / Update and security / For developers (it is not enough to select "Sideload" for unsigned packages). Your device may need to download
-*  a developer package, install it, and restart.
+* Put your PC in Developer mode: Settings / Update and security / For developers (it is not enough to select "Sideload" for unsigned packages). Your device may need to download a developer package, install it, and restart.
 * Then, launch a PowerShell command window: press Windows key and type PowerShell, right-click and "Run as Administrator".
 * Type the following command: `Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser`
 * Accept the warnings and ensure the script finished correctly. (The above steps are one-time only: you shouldn't need to repeat them to install future builds.)
