@@ -3537,16 +3537,24 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 .replace(/[^/]+/g, function(m) {
                     return encodeURIComponent(m);
                 });
-                if (!/\bhtml\b/i.test(mimeType) && params.contentInjectionMode === 'serviceworker') {
-                    // If the selected article isn't HTML, e.g. it might be a PDF, we ask the SW to deal with it straight away
-                    articleContainer = window.open("../" + appstate.selectedArchive._file.name + "/" + dirEntry.namespace + "/" + encodeURI(dirEntry.url), 
-                        params.windowOpener === 'tab' ? '_blank' : encodeURIComponent(dirEntry.title),
-                        params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
-                    appstate.target = 'window';
-                    articleContainer.kiwixType = appstate.target;
-                    articleWindow = articleContainer;
-                    uiUtil.clearSpinner();
-                    return;
+                if (!/\bhtml\b/i.test(mimeType)) {
+                    // If the selected article isn't HTML, e.g. it might be a PDF, we can either download it if we recognize the type, or ask the SW to deal with it
+                    if (params.zimType === 'zimit' && /\/(epub|pdf|zip|png|jpeg|webp|svg|gif|tiff|mp4|webm|mpeg|mp3|octet-stream)/i.test(mimeType)) {
+                        var download = true;
+                        return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                            uiUtil.displayFileDownloadAlert(dirEntry.title || mimeType.replace(/\//, '-'), download, mimeType, content);
+                            uiUtil.clearSpinner();
+                        });
+                    } else if (params.contentInjectionMode === 'serviceworker') {
+                        articleContainer = window.open("../" + appstate.selectedArchive._file.name + "/" + dirEntry.namespace + "/" + encodeURIComponent(dirEntry.url), 
+                            params.windowOpener === 'tab' ? '_blank' : encodeURIComponent(dirEntry.title | mimeType),
+                            params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
+                        appstate.target = 'window';
+                        articleContainer.kiwixType = appstate.target;
+                        articleWindow = articleContainer;
+                        uiUtil.clearSpinner();
+                        return;
+                    }
                 } 
                 //Load cached start page if it exists and we have loaded the packaged file
                 var htmlContent = 0;
@@ -5242,14 +5250,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         path = path.replace(/^[AC]\//, 'http://');
                         uiUtil.systemAlert('<p>We could not find an offline version of the requested article in this Zimit archive.</p>' +
                             '<p>If you would like to open this page online in a new tab, please click this link:</p>' + 
-                            '<p><a href="' + path + '" target="_blank">' + path + '</a></p>');
+                            '<p><a href="' + path + '" target="_blank">' + path.replace(/^http:\/\//, '') + '</a></p>');
                         setTab();
                     } else {
                         uiUtil.systemAlert('<p>We could not find the article ' + path + ' in this archive!</p>' +
                             '<p>Redirecting to landing page...</p>');
                         goToMainArticle();
                     }
-                } else if (download || /\/(pdf|epub|gif|jpg|png|webp|svg|tiff)/i.test(mimetype)) {
+                } else if (download || /\/(epub|pdf|zip|png|jpeg|webp|svg|gif|tiff|mp4|webm|mpeg|mp3|octet-stream)/i.test(mimetype)) {
                     download = true;
                     appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                         uiUtil.displayFileDownloadAlert(path, download, mimetype, content);
