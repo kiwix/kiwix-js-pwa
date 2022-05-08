@@ -123,25 +123,15 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in version <span class="version">1.9</span></h3>
                         <ul style="padding-left: 15px;">
-                            <li>Fix erroneous link handling for Zimit files</li>
+                            <li>Experimental support for reading Zimit ZIM archives</li>
                             <li>Add any missing file extension to downloadable files</li>
-                            <li>Fix an exception when reloading the last selected archive on certain platforms</li>
+                            <li>Prevent expensive RegExp processing for irrelevant ZIM types</li>
                             <li>Filter out undesired files more effectively (Zimit ZIMs)</li>
                             <li>Process URLs in JavaScript files</li>
                             <li>Ensure user clears the cache when switching to SW mode while a Zimit ZIM is loaded</li>
-                            <li>Sample archive updated to wikipedia_en_climate_change_mini_2022-04</li>
-                            <li>Experimental support for reading Zimit ZIM archives</li>
-                            <li>Support for reading background and bullet images in Zimit CSS in Service Worker mode</li>
-                            <li>Style of thumbinner Wikipedia images adjusted so that images are back in their original position</li>
-                            <li>MDwiki thumbinner images now have an MDwiki-specific override</li>
-                            <li>Links to PDF data are now recognized by MIME type and correctly downloaded</li>
-                            <li>Support image links that have query strings in Zimit archives</li>
-                            <li>Support percent-encoded ZIM URLs in Zimit archives</li>
-                            <li>Transition away from testing file extensions for caching strategy</li>
+                            <li>Fix an exception when reloading the last selected archive on certain platforms</li>
+                            <li>Direct download certain recognized content types for Zimit archives</li>
                             <li>Fix display of book thumbnails in Gutenberg ZIMs</li>
-                            <li>Nightly builds of main app are now uploaded to a new server</li>
-                            <li>Deploy PWA image on a k8s cluster</li>
-                            <li>PWA images are now uploaded to ghcr.io instead of Docker Hub</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md" target="_blank">And there's more...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>
