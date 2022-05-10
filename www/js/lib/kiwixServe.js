@@ -570,8 +570,8 @@ define([], function () {
                     dropdownDate += '</select>\r\n';
                 }
                 //Add language, subject and date spans to doc
-                if (/\/(mooc|phet|other)\b/i.test(URL)) {
-                    doc = doc.replace(/^([^_\n\r]+_([^_\n\r]+)_.*?(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2" data-kiwixdate="$3">$1<br /></span>');
+                if (/\/(mooc|phet|zimit|other)\b/i.test(URL)) {
+                    doc = doc.replace(/^([^_\n\r]+_([^_\n\r\d]*)_?.*?(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2" data-kiwixdate="$3">$1<br /></span>');
                 } else if (/\/stack_exchange\b/i.test(URL)) {
                     doc = doc.replace(/^([^>\n\r]+>(?:.+(stackoverflow)|([^.\n\r]+))\.([^_\n\r]+)_([^_\n\r]+)_.*?(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$5" data-kiwixsubject="$2$3" data-kiwixdate="$6">$1<br /></span>');
                 } else {
@@ -795,7 +795,7 @@ define([], function () {
             // Get list of languages
             function getLangArray(fromDoc) {
                 //Get list of all languages
-                var langList = fromDoc.replace(/^[^_]+_([^_]+)_.+[\r\n]*/mg, '$1\n');
+                var langList = fromDoc.replace(/^[^_]+_([^_\d"<]+)_.+[\r\n]*/mg, '$1\n');
                 //Delete recurrences
                 langList = langList.replace(/\b([\w-]+\n)(?=[\s\S]*\b\1\n?)/g, '');
                 langList = 'All\n' + langList;
@@ -810,7 +810,7 @@ define([], function () {
             function getSubjectArray(fromDoc) {
                 //Get list of all subjects
                 var subList;
-                if (/\/(mooc|phet|other)\b/i.test(URL)) {
+                if (/\/(mooc|phet|zimit|other)\b/i.test(URL)) {
                     return null;
                 } else if (/\/stack_exchange\b/i.test(URL)) {
                     subList = fromDoc.replace(/^(?:.+(stackoverflow)|[^"]+"([^.]+)).+[\r\n]/img, '$1$2\n');
