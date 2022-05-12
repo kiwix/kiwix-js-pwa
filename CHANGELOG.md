@@ -1,12 +1,13 @@
 # Changelog
 
-## Interim bugfix release 1.9.92
+## Interim bugfix release 1.9.93
 
 * ENHANCEMENT: Filter out undesired files more effectively (Zimit ZIMs)
 * ENHANCEMENT: Process URLs in JavaScript files (Zimit ZIMs)
 * ENHANCEMENT: Ensure user clears the cache when switching to SW mode while a Zimit ZIM is loaded
 * ENHANCEMENT: Prevent expensive RegExp processing for irrelevant ZIM types
 * ENHANCEMENT: Driect download certain recognized content types for Zimit archives
+* ENHANCEMENT: Made PWA manifest compatible with Chromium installability criteria
 * FIX: Erroneous link handling for Zimit files
 * FIX: Add any missing file extension to downloadable files and construct MIME types if missing
 * FIX: Exception when reloading the last selected archive on certain platforms
