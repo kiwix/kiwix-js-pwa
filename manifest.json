@@ -11,8 +11,7 @@
   "orientation": "any",
   "background_color": "transparent",
   "related_applications": [],
-  "prefer_related_applications": "false",
-  "generated": "true",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "www/img/icons/kiwix-48.png",
