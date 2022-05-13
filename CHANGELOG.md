@@ -12,6 +12,7 @@
 * FIX: Add any missing file extension to downloadable files and construct MIME types if missing
 * FIX: Exception when reloading the last selected archive on certain platforms
 * FIX: Remove lazy image loading system if detected in Zimit archives
+* FIX: Errors with parsing and display of archive links in download library
 
 ## Release 1.9.9
 
