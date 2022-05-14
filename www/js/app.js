@@ -3741,7 +3741,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // We received a message from the ServiceWorker
                 if (event.data.action === "askForContent") {
                     // Zimit archives store URLs encoded, and also need the URI component (search parameter) if any
-                    var title = params.zimType === 'zimit' ? encodeURI(event.data.title + event.data.search) : event.data.title;
+                    // var title = params.zimType === 'zimit' ? encodeURI(event.data.title + event.data.search) : event.data.title;
+                    var title = params.zimType === 'zimit' ? encodeURIComponent(event.data.title).replace(/\%2F/g, '/') + event.data.search : event.data.title;
                     if (appstate.selectedArchive.landingPageUrl === title) params.isLandingPage = true;
                     var messagePort = event.ports[0];
                     if (!anchorParameter && event.data.anchorTarget) anchorParameter = event.data.anchorTarget;
@@ -3868,7 +3869,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         }
 
         function postTransformedHTML(thisMessage, thisMessagePort, thisDirEntry) {
-            if (params.transformedHTML && /<html[^>]*>/.test(params.transformedHTML)) {
+            if (params.transformedHTML && /<html[^>]*>/i.test(params.transformedHTML)) {
                 // Because UWP app window can only be controlled from the Service Worker, we have to allow all images
                 // to be called from any external windows. NB messageChannelWaiting is only true when user requested article from a UWP window
                 if (/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting) &&
@@ -4644,7 +4645,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     params.transDirEntry = dirEntry;
                     // We will need the encoded URL on article load so that we can set the iframe's src correctly,
                     // but we must not encode the '/' character or else relative links may fail [kiwix-js #498]
-                    var encodedUrl = dirEntry.url.replace(/[^/]+/g, function (matchedSubstring) {
+                    var encodedUrl = params.zimType === 'zimit' ? dirEntry.url : dirEntry.url.replace(/[^/]+/g, function (matchedSubstring) {
                         return encodeURIComponent(matchedSubstring);
                     });
                     // If the request was not initiated by an existing controlled window, we instantiate the request here
@@ -5312,9 +5313,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         uiUtil.systemAlert('Error finding random article', 'Error finding article');
                     } else {
                         // We fall back to the old A namespace to support old ZIM files without a text/html MIME type for articles
-                        // DEV: If articlePtrPos is defined in zimFile, then we are using a v1 article-only title listing. By definition,
-                        // all dirEntries in an article-only listing must be articles.  
-                        if (appstate.selectedArchive._file.articlePtrPos || dirEntry.getMimetype() === 'text/html' || dirEntry.namespace === 'A') {
+                        // DEV: If minorVersion is 1, then we are using a v1 article-only title listing. By definition,
+                        // all dirEntries in an article-only listing must be articles.
+                        if (appstate.selectedArchive._file.minorVersion === 1 || /text\/html\b/i.test(dirEntry.getMimetype()) || 
+                            params.zimType !== 'zimit' && dirEntry.namespace === 'A') {
                             params.isLandingPage = false;
                             $('#activeContent').hide();
                             uiUtil.pollSpinner();
