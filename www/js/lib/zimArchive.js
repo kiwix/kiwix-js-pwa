@@ -188,6 +188,8 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
         // results much more quickly if we do this (and the user can click on a result before the rarer patterns complete)
         // NB duplicates are removed before processing search array
         var startArray = [];
+        // Check if user prefixed search with a namespace-like pattern. If so, do a search for namespace + url
+        if (/^[-ABCHIJMUVWX]\//.test(search.prefix)) search.searchUrlIndex = true;
         // Regex below breaks the string into the pattern: group 1: alphanumericsearch; group 2: regex beginning with .* or .+, or contained in (?:regex)
         var isPrefixRegExp = search.prefix.match(/^((?:[^(.]|\((?!\?:)|\.(?![*+]))*)(\(\?:.*\)|\.[*+].*)$/);
         search.rgxPrefix = null;
@@ -304,20 +306,28 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
         var saveStartIndex = startIndex;
         startIndex = startIndex || 0;
         prefix = prefix || '';
-        var that = this;
         var cns = this.getContentNamespace();
         // Search v1 article listing if available, otherwise fallback to v0
         var articleCount = this._file.articleCount || this._file.entryCount;
+        var searchFunction = appstate.selectedArchive._file.dirEntryByTitleIndex;
+        if (search.searchUrlIndex) {
+            articleCount = this._file.entryCount;
+            searchFunction = appstate.selectedArchive._file.dirEntryByUrlIndex;
+        }
         util.binarySearch(startIndex, articleCount, function(i) {
-            return that._file.dirEntryByTitleIndex(i).then(function(dirEntry) {
+            return searchFunction(i).then(function(dirEntry) {
                 if (search.status === 'cancelled') return 0;
                 var ns = dirEntry.namespace;
-                // DEV: This search is redundant if we managed to populate articlePtrLst and articleCount, but it only takes two instructions and
-                // provides maximum compatibility with rare ZIMs where attempts to find first and last article (in zimArchive.js) may have failed
-                if (ns < cns) return 1;
-                if (ns > cns) return -1;
-                // We should now be in namespace A (old format ZIM) or C (new format ZIM)
-                return prefix <= dirEntry.getTitleOrUrl() ? -1 : 1;
+                if (!search.searchUrlIndex) {
+                    // DEV: This search is redundant if we managed to populate articlePtrLst and articleCount, but it only takes two instructions and
+                    // provides maximum compatibility with rare ZIMs where attempts to find first and last article (in zimArchive.js) may have failed
+                    if (ns < cns) return 1;
+                    if (ns > cns) return -1;
+                    // We should now be in namespace A (old format ZIM) or C (new format ZIM)
+                    return prefix <= dirEntry.getTitleOrUrl() ? -1 : 1;
+                } else {
+                    return prefix <= ns + '/' + dirEntry.getTitleOrUrl() ? -1 : 1;
+                }
             });
         }, true).then(function(firstIndex) {
             var vDirEntries = [];
@@ -332,11 +342,13 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                         'nextStart': index
                     };
                 }
-                return that._file.dirEntryByTitleIndex(index).then(function(dirEntry) {
+                return searchFunction(index).then(function(dirEntry) {
                     search.scanCount++;
                     var title = dirEntry.getTitleOrUrl();
+                    // If we are searching by URL, display namespace also
+                    if (search.searchUrlIndex) title = dirEntry.namespace + '/' + title;
                     // Only return dirEntries with titles that actually begin with prefix
-                    if (saveStartIndex === null || dirEntry.namespace === cns && title.indexOf(prefix) === 0) {
+                    if (saveStartIndex === null || (search.searchUrlIndex || dirEntry.namespace === cns) && title.indexOf(prefix) === 0) {
                         if (!search.rgxPrefix || search.rgxPrefix && search.rgxPrefix.test(title.replace(prefix, ''))) { 
                             vDirEntries.push(dirEntry);
                             // Report interim result
