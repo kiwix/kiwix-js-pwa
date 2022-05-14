@@ -26,8 +26,8 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'settingsStore', 'transformStyles', 'kiwixServe'],
-    function ($, zimArchiveLoader, uiUtil, util, cache, images, settingsStore, transformStyles, kiwixServe) {
+define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images', 'settingsStore', 'transformStyles', 'kiwixServe'],
+    function ($, zimArchiveLoader, uiUtil, util, utf8, cache, images, settingsStore, transformStyles, kiwixServe) {
 
         /**
          * The delay (in milliseconds) between two "keepalive" messages
@@ -3200,9 +3200,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             }
             window.timeoutKeyUpPrefix = window.setTimeout(function () {
                 var prefix = document.getElementById('prefix').value;
-                // console.debug(appstate.tempPrefix);
-                // console.debug(appstate.search.prefix);
-                if (prefix === appstate.tempPrefix) return;
+                // Don't process anything if it's the same prefix as recently entered (this prevents searching
+                // if user is simply using arrow key to correct something typed).
+                if (!/^\s/.test(prefix) && prefix === appstate.tempPrefix) return;
                 if (prefix && prefix.length > 0 && (prefix !== appstate.search.prefix || /^\s/.test(prefix))) {
                     appstate.tempPrefix = prefix;
                     document.getElementById('searchArticles').click();
@@ -3288,22 +3288,23 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
          * @param {String} prefix Optional search prefix from which to start an alphabetical search
          */
         function showZIMIndex(start, prefix) {
+            var searchUrlIndex =  /^[-ABCHIJMUVWX]?\//.test(prefix) ? true : false;
             // If we're searching by title index number (other than 0 or null), we should ignore any prefix
             if (isNaN(start)) {
                 prefix = prefix || '';
             } else {
                 prefix = start > 0 ? '' : prefix;
             }
-            var search = {'prefix': prefix, 'state': '', 'size': params.maxSearchResultsSize, 'window': params.maxSearchResultsSize};
+            appstate.search = {'prefix': prefix, 'state': '', 'searchUrlIndex': searchUrlIndex, 'size': params.maxSearchResultsSize, 'window': params.maxSearchResultsSize};
             if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
-                appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntryArray, nextStart) {
+                appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, appstate.search, function (dirEntryArray, nextStart) {
                     var docBody = document.getElementById('largeModal');
                     var newHtml = "";
                     for (var i = 0; i < dirEntryArray.length; i++) {
                         var dirEntry = dirEntryArray[i];
                         // NB Ensure you use double quotes for HTML attributes below - see comment in populateListOfArticles
                         newHtml += '\n<a  class="list-group-item" href="#" dirEntryId="' + encodeURIComponent(dirEntry.toStringId()) +
-                            '">' + dirEntry.getTitleOrUrl() + '</a>';
+                            '">' + (appstate.search.searchUrlIndex ? dirEntry.namespace + '/' : '') + dirEntry.getTitleOrUrl() + '</a>';
                     }
                     start = start ? start : 0;
                     var back = start ? '<a href="#" data-start="' + (start - params.maxSearchResultsSize) +
@@ -3316,16 +3317,24 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     // Set up the alphabetic selector
                     var lower = params.alphaChar.charCodeAt();
                     var upper = params.omegaChar.charCodeAt();
+                    if (appstate.search.searchUrlIndex) {
+                        lower = '-'.charCodeAt(); upper = 'X'.charCodeAt();
+                    }
                     if (upper <= lower) {
                         alphaSelector.push('<a href="#" class="alphaSelector" data-sel="A">PLEASE SELECT VALID START AND END ALPHABET CHARACTERS IN CONFIGURATION</a>');
                     } else {
                         for (i = lower; i <= upper; i++) {
                             var char = String.fromCharCode(i);
+                            if (appstate.search.searchUrlIndex) {
+                                // In URL search mode, we only show namespaces in alphabet
+                                if (!/^[-ABCHIJMUVWX]/.test(char)) continue;
+                                char = char + '/'; 
+                            }
                             alphaSelector.push('<a href="#" class="alphaSelector" data-sel="' + char + '">' + char + '</a>');
                         }
                     }
                     // Add selectors for diacritics, etc. for Roman alphabet
-                    if (params.alphaChar === 'A' && params.omegaChar == 'Z') {
+                    if (String.fromCharCode(lower) === 'A' && String.fromCharCode(upper) == 'Z') {
                         alphaSelector.push('<a href="#" class="alphaSelector" data-sel="¡">¡¿ÀÑ</a>');
                         alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="!">!#123</a>');
                         // Add way of selecting a non-Roman alphabet
@@ -3353,7 +3362,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                         alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="΄">ΆΈΉ</a>');
                     }
 
-                    var alphaString = '<div style="text-align:center">[ ' + alphaSelector.join(' | \n') + ' ]</div>\n';
+                    var alphaString = '<div style="text-align:center">' + (appstate.search.searchUrlIndex ? 'ZIM Namespaces: ' : '') + '[ ' + alphaSelector.join(' | \n') + ' ]</div>\n';
                     var closeButton = '<button class="close" aria-hidden="true" type="button" data-dismiss="modal">&nbsp;&times;&nbsp;</button>';
                     docBody.innerHTML = closeButton + '<br />\n<div style="font-size:120%;"><br />\n' + alphaString + '<br />' + backNext + '</div>\n' +
                         '<h2>ZIM Archive Index</h2>\n' +
@@ -3371,7 +3380,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                     $(continueAnchors).on('click', function (e) {
                         document.getElementById('prefix').value = '';
                         var start = ~~this.dataset.start;
-                        showZIMIndex(start);
+                        showZIMIndex(start, (appstate.search.searchUrlIndex ? '/' : ''));
                         return false;
                     });
                     alphaSelector = docBody.querySelectorAll('.alphaSelector');
@@ -3412,7 +3421,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 message = 'Searching [' + appstate.search.type + ']... found: ' + nbDirEntry + '...' +
                 (reportingSearch.scanCount ? ' [scanning ' + reportingSearch.scanCount + ' titles] <a href="#">stop</a>' : '');
             } else if (nbDirEntry >= params.maxSearchResultsSize) {
-                message = 'First ' + params.maxSearchResultsSize + ' articles found: refine your search.';
+                message = 'First ' + params.maxSearchResultsSize + (reportingSearch.searchUrlIndex ? ' assets' : ' articles') + ' found: refine your search.';
             } else if (reportingSearch.status === 'error') {
                 message = 'Incorrect search syntax! See <a href="#searchSyntaxError" id="searchSyntaxLink">Search syntax</a> in About!'; 
             } else {
@@ -3435,7 +3444,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 // Info: encodeURIComponent encodes all characters except  A-Z a-z 0-9 - _ . ! ~ * ' ( ) 
                 var dirEntryStringId = encodeURIComponent(dirEntry.toStringId());
                 articleListDivHtml += '<a href="#" dirEntryId="' + dirEntryStringId +
-                    '" class="list-group-item">' + dirEntry.getTitleOrUrl() + '</a>';
+                    '" class="list-group-item">' + (reportingSearch.searchUrlIndex ? dirEntry.namespace + '/' : '') + dirEntry.getTitleOrUrl() + '</a>';
             }
             articleListDiv.innerHTML = articleListDivHtml;
             // We have to use mousedown below instead of click as otherwise the prefix blur event fires first 
@@ -3539,10 +3548,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
                 });
                 if (!/\bhtml\b/i.test(mimeType)) {
                     // If the selected article isn't HTML, e.g. it might be a PDF, we can either download it if we recognize the type, or ask the SW to deal with it
-                    if (params.zimType === 'zimit' && /\/(epub|pdf|zip|png|jpeg|webp|svg|gif|tiff|mp4|webm|mpeg|mp3|octet-stream)/i.test(mimeType)) {
+                    if ((params.zimType === 'zimit' || appstate.search.searchUrlIndex) && 
+                        /\/(plain|javascript|css|csv|.*officedocument|epub|pdf|zip|png|jpeg|webp|svg|gif|tiff|mp4|webm|mpeg|mp3|octet-stream|warc-headers)/i.test(mimeType)) {
                         var download = true;
                         return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                            uiUtil.displayFileDownloadAlert(dirEntry.title || mimeType.replace(/\//, '-'), download, mimeType, content);
+                            if (/^text|\/javascript|\/warc-headers/i.test(mimeType)) {
+                                content = utf8.parse(content);
+                                displayArticleContentInContainer(fileDirEntry, content);
+                            } else {
+                                uiUtil.displayFileDownloadAlert(dirEntry.title || mimeType.replace(/\//, '-'), download, mimeType, content);
+                            }
                             uiUtil.clearSpinner();
                         });
                     } else if (params.contentInjectionMode === 'serviceworker') {
@@ -3903,7 +3918,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
         // Pattern to find the path in a url
         var regexpPath = /^(.*\/)[^\/]+$/;
         // Pattern to find a ZIM URL (with its namespace) - see https://wiki.openzim.org/wiki/ZIM_file_format#Namespaces
-        var regexpZIMUrlWithNamespace = /^[./]*([-ABCIJMUVWX]\/.+)$/;
+        var regexpZIMUrlWithNamespace = /^[./]*([-ABCHIJMUVWX]\/.+)$/;
         // The case-insensitive regex below finds images, scripts, stylesheets (not tracks) with ZIM-type metadata and image namespaces.
         // It first searches for <img, <script, <link, etc., then scans forward to find, on a word boundary, either src=["'] or href=["']
         // (ignoring any extra whitespace), and it then tests the path of the URL with a non-capturing negative lookahead (?!...) that excludes
@@ -3959,6 +3974,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'cache', 'images', 'sett
             //TESTING
             console.log("** HTML received **");
             
+            if (!/\bhtml\b/.test(dirEntry.getMimetype())) {
+                // Construct an HTML document to wrap the content
+                htmlArticle = '<html><body style="color:yellow;background:darkblue;"><pre>' + htmlArticle + '</pre></body></html>';
+                // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
+                articleWindow.kiwixType = appstate.target;
+                // Scroll the old container to the top
+                articleWindow.scrollTo(0,0);
+                articleDocument = articleWindow.document.documentElement;
+                articleDocument.innerHTML = htmlArticle;
+                return;
+            }
+
             params.isLandingPage = appstate.selectedArchive.landingPageUrl === dirEntry.namespace + '/' + dirEntry.url ?
                 true : params.isLandingPage;
             // Due to fast article retrieval algorithm, we need to embed a reference to the landing page in the html

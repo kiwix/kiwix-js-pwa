@@ -201,8 +201,8 @@ define(['xzdec_wrapper', 'zstddec_wrapper', 'util', 'utf8', 'zimDirEntry', 'file
      * @returns {Promise<DirEntry>} A Promise for the requested DirEntry
      */
     ZIMFile.prototype.dirEntryByUrlIndex = function (index) {
-        var that = this;
-        return this._readInteger(this.urlPtrPos + index * 8, 8).then(function (dirEntryPos) {
+        var that = appstate.selectedArchive._file;
+        return that._readInteger(that.urlPtrPos + index * 8, 8).then(function (dirEntryPos) {
             return that.dirEntry(dirEntryPos);
         });
     };
@@ -213,10 +213,10 @@ define(['xzdec_wrapper', 'zstddec_wrapper', 'util', 'utf8', 'zimDirEntry', 'file
      * @returns {Promise<DirEntry>} A Promise for the requested DirEntry
      */
     ZIMFile.prototype.dirEntryByTitleIndex = function (index) {
-        var that = this;
+        var that = appstate.selectedArchive._file;
         // Use v1 title pointerlist if available, or fall back to legacy v0 list
-        var ptrList = this.articlePtrPos || this.titlePtrPos;
-        return this._readInteger(ptrList + index * 4, 4).then(function (urlIndex) {
+        var ptrList = that.articlePtrPos || that.titlePtrPos;
+        return that._readInteger(ptrList + index * 4, 4).then(function (urlIndex) {
             return that.dirEntryByUrlIndex(urlIndex);
         });
     };

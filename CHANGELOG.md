@@ -2,6 +2,7 @@
 
 ## Interim bugfix release 1.9.93
 
+* FEATURE: Search for any asset in any ZIM by prefixing namespace
 * ENHANCEMENT: Filter out undesired files more effectively (Zimit ZIMs)
 * ENHANCEMENT: Process URLs in JavaScript files (Zimit ZIMs)
 * ENHANCEMENT: Ensure user clears the cache when switching to SW mode while a Zimit ZIM is loaded
