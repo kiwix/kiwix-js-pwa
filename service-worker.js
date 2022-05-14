@@ -93,7 +93,7 @@ const regexpExcludedURLSchema = /^(?:file|chrome-extension|example-extension):/i
  * In our case, there is also the ZIM file name used as a prefix in the URL
  * @type {RegExp}
  */
-const regexpZIMUrlWithNamespace = /(?:^|\/)([^/]+\/)([-ABCIJMUVWX])\/(.+)/;
+const regexpZIMUrlWithNamespace = /(?:^|\/)([^/]+\/)([-ABCHIJMUVWX])\/(.+)/;
 
 /**
  * The list of files that the app needs in order to run entirely from offline code
