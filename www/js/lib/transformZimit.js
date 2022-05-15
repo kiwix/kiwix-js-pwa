@@ -82,7 +82,7 @@ define([], function () {
             // Remove lazyimgage system and noscript tags that comment out images
             data = data.replace(/<noscript>\s*(<img\b[^>]+>)\s*<\/noscript>/ig, '$1');
             data = data.replace(/<span\b[^>]+lazy-image-placeholder[^<]+<\/span>\s*/ig, '');
-            var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track|meta)\b[^>]*?[\s;])(?:src|href|url)(=(["']))(?=\/|https?:\/\/)((?:[^>](?!\3|\?|#))+[^>])([^>]*>)/ig;
+            var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track|meta)\b[^>]*?[\s;])(?:src|href|url)\s*(=\s*(["']))(?=\/|https?:\/\/)((?:[^>](?!\3|\?|#))+[^>])([^>]*>)/ig;
             // Get stem for constructing an absolute URL
             var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(selectedArchive._file.name);
             data = data.replace(regexpZimitHtmlLinks, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
@@ -117,6 +117,11 @@ define([], function () {
                 data = data.replace(/(<div\s+class=['"]filterBar['"])/i, '$1 hidden');
                 // Remove onclick events
                 data = data.replace(/onclick="[^"]+"/ig, '');
+            }
+
+            // Remove shopping cart that attempts to post to server
+            if (/passco/i.test(params.zimitPrefix)) {
+                data = data.replace(/<script\b[^>]+cart-fragments(?:[^<]|<(?!\/script>))+<\/script>\s*/, '');
             }
             
         } // End of html transformations
