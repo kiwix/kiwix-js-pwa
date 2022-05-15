@@ -3793,7 +3793,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             }
                             // Note we sometimes can get HTML "moved permanently" as a response to a request for an image
                             // particularly in Zimit archives, so we have to exclude these here
-                            if (/\bhtml\b/i.test(mimetype) && !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm)$/i.test(dirEntry.url)) {
+                            if (/\bhtml\b/i.test(mimetype) && !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm)(\?|$)/i.test(dirEntry.url)) {
                                 loadingArticle = title;
                                 // Intercept files of type html and apply transformations
                                 var message = {
