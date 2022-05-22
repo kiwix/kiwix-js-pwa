@@ -17,6 +17,7 @@
 * FIX: Exception when reloading the last selected archive on certain platforms
 * FIX: Remove lazy image loading system if detected
 * FIX: Errors with parsing and display of archive links in download library
+* FIX: Adjustment to max page width restrictions is now applied on resize
 
 ## Release 1.9.9
 
