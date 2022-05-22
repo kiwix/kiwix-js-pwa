@@ -2,18 +2,21 @@
 
 These builds are packaged with the <<date>> English-language WikiMed archive `<<zim>>`. They will run on 32bit and 64bit editions of Windows or Linux (tested on Ubuntu, Debian and OpenSUSE - but see instructions below). The Windows builds are **not compatible with Windows XP or Windows Vista**. If you need an app compatible with those old platforms, get [Kiwix JS Windows reader](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html) and download the latest WikiMed archive from within the app.
 
-**Status of Store App: IN CERTIFICATION**
+**MS Store status: IN CERTIFICATION**
+**Winget status: IN CERTIFICATION**
 
 Please choose the correct version (only the Store version will self update):
 
 * **Windows**:
-  - **Windows 10/11 (UWP)**
+  - **Store app for Windows 10/11 (UWP)**
     + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9PHJSNP1CZ8J (it will self-update automatically) - *recommended*
-    + Or, on a PC, open a command prompt and run `winget install kiwix.wikimed`
-  - **Windows 7/8/10/11 (Electron)**
-    + Portable (just unzip, no install needed) - [WikiMed-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<base_tag>>-E.zip)
-    + Installable - [WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe)
-    + Or, on a PC, open a command prompt and run `winget install kiwix.wikimed.electron`
+    + Or, on a PC, open a command prompt and run `winget install wikimed -s msstore` (self-updates)
+    + Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.wikimed` - this doesn't auto-update, but you can upgrade easily by running `winget upgrade` or `winget upgrade --all`
+  - **Portable (Electron) - just unzip, no install needed**
+    + Windows 7/8/10/11 - [WikiMed-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<base_tag>>-E.zip)
+  - **Installable (Electron)**
+    + Windows 7/8/10/11 - [WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe)
+    + Alternatively, run `winget install kiwix.wikimed.electron` in a Windows 10/11 Terminal
 * **Linux** (read important instructions below screenshot):
   - **Portable (Electron)**
     + AppImage 64bit (Ubuntu, Debian, OpenSUSE) - [WikiMed-by-Kiwix-<<numeric_tag>>-E.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<numeric_tag>>-E.AppImage)
