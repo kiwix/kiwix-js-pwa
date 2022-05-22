@@ -246,6 +246,8 @@ define(['uiUtil'], function (uiUtil) {
                     });
                 }
             }
+            // Remove unneeded proprietary lazyload
+            documentImages[i].removeAttribute('loading');
             // We exempt images that are from the file system
             if (!~documentImages[i].getAttribute('src').indexOf(window.location.protocol)) {
                 documentImages[i].dataset.kiwixurl = documentImages[i].getAttribute('src');
