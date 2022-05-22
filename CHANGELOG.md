@@ -1,16 +1,18 @@
 # Changelog
 
-## Interim bugfix release 1.9.94
+## Release 1.9.9-WikiMed
 
+* UPDATE: Packaged archive updated to `mdwiki_en_all-app_maxi_2022-05.zim`
+* UPDATE: Remove landing page override for mdwiki at request of maintainer
+* UPDATE: Hyperlinking of images to high-res versions is now off by default
 * FEATURE: Search for any asset in any ZIM by prefixing namespace
+* FEATURE: Experimental support for reading Zimit ZIM archives
 * ENHANCEMENT: Filter out undesired files more effectively (Zimit ZIMs)
 * ENHANCEMENT: Process URLs in JavaScript files (Zimit ZIMs)
 * ENHANCEMENT: Ensure user clears the cache when switching to SW mode while a Zimit ZIM is loaded
 * ENHANCEMENT: Prevent expensive RegExp processing for irrelevant ZIM types
 * ENHANCEMENT: Driect download certain recognized content types for Zimit archives
 * ENHANCEMENT: Made PWA manifest compatible with Chromium installability criteria
-* UPDATE: Remove landing page override for mdwiki at request of maintainer
-* UPDATE: Hyperlinking of images to high-res versions is now off by default
 * FIX: Bug that caused repeating images when hyperlinking images to online high-res versions
 * FIX: Erroneous link handling for Zimit files
 * FIX: Add any missing file extension to downloadable files and construct MIME types if missing
@@ -18,10 +20,6 @@
 * FIX: Remove lazy image loading system if detected
 * FIX: Errors with parsing and display of archive links in download library
 * FIX: Adjustment to max page width restrictions is now applied on resize
-
-## Release 1.9.9
-
-* FEATURE: Experimental support for reading Zimit ZIM archives
 * FIX: Support for reading background and bullet images in Zimit CSS in Service Worker mode
 * FIX: Style of thumbinner Wikipedia images adjusted so that images are back in their original position
 * FIX: MDwiki thumbinner images now have an MDwiki-specific override to prevent text bleeding to left of image
@@ -30,6 +28,10 @@
 * FIX: Support percent-encoded ZIM URLs in Zimit archives
 * FIX: Transition away from testing file extensions for caching strategy
 * REGRESSION: Fix display of book thumbnails in Gutenberg ZIMs
+
+## Release 1.9.8-WikiMed
+
+* UPDATE: Packaged archive updated to `mdwiki_en_all-app_maxi_2022-04.zim`
 * BUILD: Nightly builds of main app are now uploaded to a new server (with sftp instead of ssh)
 * BUILD: Deploy PWA image on a k8s cluster
 * BUILD: PWA images are now uploaded to ghcr.io instead of Docker Hub
