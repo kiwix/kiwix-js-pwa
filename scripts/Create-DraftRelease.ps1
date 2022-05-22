@@ -128,12 +128,13 @@ if ($tag_name -cmatch 'E\+N') {
 }
 if ($tag_name -match '\+E') {
   $title_flavour = 'UWP/PWA/Electron'
-  $release_title = "Kiwix JS $text_tag/Linux $base_tag"
+  $release_title = "Kiwix JS Windows/Linux $base_tag"
+  if ($text_tag -imatch 'Wikivoyage|WikiMed') { $release_title = "$text_tag by Kiwix (Window/Linux) $base_tag" }
   $release_tag_name = $tag_name -creplace '\+E', ''
 }
 if ($tag_name -match '\+E\+N') {
+  # NB previous rule will already have matched
   $title_flavour = 'UWP/PWA/Electron/NWJS'
-  $release_title = "Kiwix JS $text_tag/Linux $base_tag"
   $release_tag_name = $tag_name -creplace '\+E\+N', ''
 }
 if ($text_tag -ne "Windows") { $branch = "Kiwix-JS-$text_tag" }
