@@ -142,6 +142,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 window.location.reload();
                 throw 'So long, and thanks for all the fish!';
             }
+            removePageMaxWidth();
             checkToolbar();
         }
         $(document).ready(function() {
@@ -1696,7 +1697,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         docStyle.border = "1px solid #a7d7f9";
                     }
                     if (params.removePageMaxWidth === "auto") {
-                        docStyle.maxWidth = cssSource === "desktop" ? "100%" : window.innerWidth > 1024 ? "90%" : "55.8em";
+                        docStyle.maxWidth = cssSource === "desktop" ? "100%" : window.innerWidth > 1024 ? "90%" :
+                            /android/i.test(params.appType) ? '98%' : "55.8em";
                         docStyle.cssText = docStyle.cssText.replace(/(max-width[^;]+)/i, "$1 !important");
                         docStyle.border = "0";
                     } else {
@@ -1715,7 +1717,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 cssSource = params.cssSource === "auto" ? zimType : params.cssSource;
                 html = html.replace(/(id=["'](?:content|bodyContent)["'](?=[^>]*?mw-)[^>]*)/ig, 
                     '$1 style="padding:1em; border:0; max-width:' +
-                    (cssSource === 'desktop' || params.removePageMaxWidth === true ? '100%' : window.innerWidth > 1024 ? '90%' : '55.8em') + 
+                    ((cssSource === 'desktop' || params.removePageMaxWidth === true) ? '100%' : 
+                        params.removePageMaxWidth && window.innerWidth > 1024 ? '90%' :
+                        params.removePageMaxWidth && /android/i.test(params.appType) ? '98%' : '55.8em') + 
                     ' !important; margin: 0 auto;"');
                 html = html.replace(/(<body\b[^>]+?article-list-home[^>]+)/i, '$1 style="padding:2em;"');
                 return html;
