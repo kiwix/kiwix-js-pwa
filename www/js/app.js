@@ -4021,8 +4021,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             // Replaces ZIM-style URLs of img, script, link and media tags with a data-kiwixurl to prevent 404 errors [kiwix-js #272 #376]
             // This replacement also processes the URL relative to the page's ZIM URL so that we can find the ZIM URL of the asset
             // with the correct namespace (this works for old-style -,I,J namespaces and for new-style C namespace)
-            if (params.linkToWikimediaImageFile && !params.isLandingPage && /(?:wikipedia|wikivoyage|wiktionary)_/i.test(appstate.selectedArchive._file.name)) {
-                var wikiLang = appstate.selectedArchive._file.name.replace(/(?:wikipedia|wikivoyage|wiktionary)_([^_]+).+/i, '$1');
+            if (params.linkToWikimediaImageFile && !params.isLandingPage && /(?:wikipedia|wikivoyage|wiktionary|mdwiki)_/i.test(appstate.selectedArchive._file.name)) {
+                var wikiLang = appstate.selectedArchive._file.name.replace(/(?:wikipedia|wikivoyage|wiktionary|mdwiki)_([^_]+).+/i, '$1');
                 var wikimediaZimFlavour = appstate.selectedArchive._file.name.replace(/_.+/, '');
             }
             if (params.isLandingPage && params.zimType === 'zimit') {
@@ -4050,8 +4050,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     newBlock = blockStart + 'data-kiwixurl' + equals + assetZIMUrlEnc + blockClose;
                     // For Wikipedia archives, hyperlink the image to the File version
                     if (wikiLang && /^<img/i.test(blockStart) && !/usemap=/i.test(match)) {
-                        newBlock = '<a href="https://' + wikiLang + '.' + wikimediaZimFlavour + '.org/wiki/File:' + 
-                            assetZIMUrlEnc.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1')
+                        newBlock = '<a href="https://' + (wikimediaZimFlavour !== 'mdwiki' ? wikiLang + '.' : '') + wikimediaZimFlavour
+                            + '.org/wiki/File:' + assetZIMUrlEnc.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1')
                             + '" target="_blank">' + newBlock + '</a>'
                     }
                     return newBlock;
@@ -4064,14 +4064,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 });
             } else if (wikiLang) {
                 htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
+                    newBlock = match;
                     // For Wikipedia archives, hyperlink the image to the File version
                     var assetZIMUrl = decodeURIComponent(relAssetUrl);
                     if (/^<img/i.test(blockStart) && !/usemap=/i.test(match)) {
-                        newBlock = '<a href="https://' + wikiLang + '.' + wikimediaZimFlavour + '.org/wiki/File:' + 
-                            assetZIMUrl.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1')
-                            + '" target="_blank">' + match + '</a>'
+                        newBlock = '<a href="https://' + (wikimediaZimFlavour !== 'mdwiki' ? wikiLang + '.' : '') + wikimediaZimFlavour
+                            + '.org/wiki/File:' + assetZIMUrl.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1')
+                            + '" target="_blank">' + newBlock + '</a>'
                     }
-                    return newBlock || match;
+                    return newBlock;
                 });
             }
             
