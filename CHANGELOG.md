@@ -1,6 +1,6 @@
 # Changelog
 
-## Interim bugfix release 1.9.93
+## Interim bugfix release 1.9.94
 
 * FEATURE: Search for any asset in any ZIM by prefixing namespace
 * ENHANCEMENT: Filter out undesired files more effectively (Zimit ZIMs)
@@ -9,10 +9,13 @@
 * ENHANCEMENT: Prevent expensive RegExp processing for irrelevant ZIM types
 * ENHANCEMENT: Driect download certain recognized content types for Zimit archives
 * ENHANCEMENT: Made PWA manifest compatible with Chromium installability criteria
+* UPDATE: Remove landing page override for mdwiki at request of maintainer
+* UPDATE: Hyperlinking of images to high-res versions is now off by default
+* FIX: Bug that caused repeating images when hyperlinking images to online high-res versions
 * FIX: Erroneous link handling for Zimit files
 * FIX: Add any missing file extension to downloadable files and construct MIME types if missing
 * FIX: Exception when reloading the last selected archive on certain platforms
-* FIX: Remove lazy image loading system if detected in Zimit archives
+* FIX: Remove lazy image loading system if detected
 * FIX: Errors with parsing and display of archive links in download library
 
 ## Release 1.9.9
