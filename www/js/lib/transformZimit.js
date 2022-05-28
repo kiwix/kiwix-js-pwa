@@ -45,7 +45,7 @@ define([], function () {
      */
     function filterReplayFiles(dirEntry) {
         if (!(dirEntry && dirEntry.url)) return null;
-        if (/(?:chunk\.js|\bload\.js|\bsw\.js|analytics.*\.js|remote.loader\.js|survey\.js)(?:[?#]|$)/i.test(dirEntry.url)) {
+        if (/(?:chunk\.js|\bload\.js|\bsw\.js|analytics.*\.js|remote.loader\.js|survey\.js|yuiloader\.js)(?:[?#]|$)/i.test(dirEntry.url)) {
             dirEntry.nullify = true;
         } else if (params.isLandingPage && /^index\.html(?:[?#]|$)/.test(dirEntry.url)) {
             dirEntry.inspect = true;
@@ -89,7 +89,7 @@ define([], function () {
                 var newBlock = match;
                 var assetUrl = relAssetUrl;
                 // Remove google analytics and other analytics files that cause stall
-                if (/google|analytics/i.test(assetUrl)) return '';
+                if (/google|analytics|typepad.*stats/i.test(assetUrl)) return '';
                 // For Zimit assets that begin with https: or // the zimitPrefix is derived from the URL
                 assetUrl = /^(?:https?:)?\/\//i.test(assetUrl) ? assetUrl.replace(/^(?:https?:)?\/\//i, '/' + dirEntry.namespace + '/') :
                 // For root-relative links, we need to add the zimitPrefix
@@ -102,6 +102,9 @@ define([], function () {
             
             // Remove any <base href...> statements
             data = data.replace(/<base\b[^>]+href\b[^>]+>\s*/i, '');
+
+            // Remove any residual analytics
+            data = data.replace(/<script\b([^<]|<(?!\/script>))+?google.*?analytics([^<]|<(?!\/script>))+<\/script>\s*/i, '');
             
             // ZIM-specific overrides
             if (/(?:journals\.openedition\.org)/i.test(params.zimitPrefix)) {
@@ -161,6 +164,8 @@ define([], function () {
                 var assetUrl = url;
                 assetUrl = assetUrl.replace(/^\/\//, dirEntry.namespace + '/');
                 assetUrl = assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
+                // Remove analytics
+                assetUrl = /google|analytics|typepad.*stats/i.test(assetUrl) ? '' : assetUrl; 
                 // if (assetUrl === url) return match; // If nothing was transformed, return
                 newBlock = params.contentInjectionMode === 'serviceworker' ?
                     newBlock.replace(url, '/' + selectedArchive._file.name + '/' + assetUrl) :
