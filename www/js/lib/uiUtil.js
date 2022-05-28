@@ -352,9 +352,9 @@ define(rqDef, function(util) {
                 '<strong>' + (params.contentInjectionMode === 'jquery' ? 'Limited Zimit' : 'Experimental') + ' support:</strong> ' + 
                 (params.contentInjectionMode === 'jquery' ? 'Please <a id="swModeLink" href="#contentInjectionModeDiv" ' + 
                 'class="alert-link">switch to Service Worker mode</a> if your platform supports it. ' : 
-                'This app only has experimental support for <b>Zimit</b> ZIMs. It may not run all active content or play audio/video. ') + 
-                '<br />Search for your content above. Start your search with <b>.*</b> to match part of a title. ' +
-                'To use the Archive Index <b><i>type a space</i></b> in box above.&nbsp;' +
+                'Support for <b>Zimit</b> ZIMs is provisional. Some content (e.g. audio/video) may fail. ') + 
+                '<br />Search for your content above. Start your search with <b>.*</b> to match part of a title, ' +
+                'or <b><i>type a space</i></b> to use the Archive Index.&nbsp;' +
                 '[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
         }
