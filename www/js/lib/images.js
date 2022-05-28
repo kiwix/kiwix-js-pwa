@@ -303,6 +303,8 @@ define(['uiUtil'], function (uiUtil) {
         var documentImages = doc.querySelectorAll('img[data-kiwixurl]');
         var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
         indexRoot = indexRoot.replace(/^\//, '');
+        // Zimit ZIMs work better if all images are extracted
+        if (params.zimType === 'zimit') forPrinting = true;
         // In case there are no images in the doc, we need to schedule the loadMathJax function here
         setTimeout(function() {
             loadMathJax();
