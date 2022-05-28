@@ -38,7 +38,7 @@ On Windows 10 version 1909 and earlier, sideloading requires some additional con
 
 ## Windows 10 Mobile
 
-Download the .appx or .appxbundle (inside `AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/` folder above) and save it in your downloads folder, or other accessible folder, on the phone. NB DO NOT DOWNLOAD the .appxupload files you see above, as these are useless for installation. Instead of one of the packages above, you may prefer to use an .appxbundle from https://github.com/kiwix/kiwix-js-windows/releases (they are the same).
+Download the .appx or .appxbundle from [Releases](https://github.com/kiwix/kiwix-js-windows/releases), or open an `AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/` folder above, and save it in your downloads folder, or other accessible folder, on the phone. NB DO NOT DOWNLOAD the .appxupload files you see above, as these are useless for installation.
 
 Enable Developer mode on your device (Settings / Updates and security / For developers). Open the File Explorer on the phone, navigate to the downloads folder and tap the KiwixWebApp bundle. You will be asked if you wish to install, but it then installs silently in the background. Be patient: it can take a minute or so for the Kiwix icon to appear in the All Apps list. You will also need to download a ZIM file to use with the app (see below).
 
