@@ -1,6 +1,6 @@
 # Changelog
 
-## Interim bugfix release 1.9.94
+## In-progress release 2.0.0
 
 * FEATURE: Search for any asset in any ZIM by prefixing namespace
 * ENHANCEMENT: Filter out undesired files more effectively (Zimit ZIMs)
@@ -9,6 +9,7 @@
 * ENHANCEMENT: Prevent expensive RegExp processing for irrelevant ZIM types
 * ENHANCEMENT: Driect download certain recognized content types for Zimit archives
 * ENHANCEMENT: Made PWA manifest compatible with Chromium installability criteria
+* UPDATE: Refresh Kiwix icons
 * UPDATE: Remove landing page override for mdwiki at request of maintainer
 * UPDATE: Hyperlinking of images to high-res versions is now off by default
 * FIX: Bug that caused repeating images when hyperlinking images to online high-res versions
