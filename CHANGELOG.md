@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 2.0.0
+## Release 2.0.0
 
 * FEATURE: Search for any asset in any ZIM by prefixing namespace
 * ENHANCEMENT: Filter out undesired files more effectively (Zimit ZIMs)
@@ -19,6 +19,8 @@
 * FIX: Remove lazy image loading system if detected
 * FIX: Errors with parsing and display of archive links in download library
 * FIX: Adjustment to max page width restrictions is now applied on resize
+* FIX: Remove more analytics spy scripts from Zimit ZIMs
+* FIX: Incorrect meta tag encoding for some Zimit archives
 
 ## Release 1.9.9
 
