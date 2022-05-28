@@ -3787,7 +3787,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             var mimetype = dirEntry.getMimetype();
                             var imageDisplayMode = params.imageDisplayMode;
                             // These ZIM types have so much dynamic content that we have to allow all images
-                            if (params.imageDisplay && (/gutenberg|phet/i.test(appstate.selectedArchive._file.name) || params.isLandingPage)) {
+                            if (params.imageDisplay && (/gutenberg|phet/i.test(appstate.selectedArchive._file.name) ||
+                                params.isLandingPage || params.zimType === 'zimit')) {
                                 imageDisplayMode = 'all';
                             }
                             // console.debug('Spinner should show now: [' + mimetype + '] ' + title);
@@ -4958,6 +4959,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 anchorParameter = anchorParameter ? anchorParameter[1] : '';
                 var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
                 var zimUrl;
+                var zimUrlFullEncoding;
                 if (params.zimType === 'zimit') { 
                     if(!href.indexOf(indexRoot)) { // If begins with indexRoot
                         zimUrl = href.replace(indexRoot, '').replace('#' + anchorParameter, '');
@@ -4966,11 +4968,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         // deriveZimUrlFromRelativeUrls strips any querystring and decodes
                         zimUrl = encodeURI(uiUtil.deriveZimUrlFromRelativeUrl(href, baseUrl)) + 
                             href.replace(encodeURI(uriComponent), '').replace('#' + anchorParameter, '');
+                        zimUrlFullEncoding = encodeURI(uiUtil.deriveZimUrlFromRelativeUrl(href, baseUrl) + 
+                            href.replace(encodeURI(uriComponent), '').replace('#' + anchorParameter, ''));
                     }
                 } else {
                     zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
                 }
-                goToArticle(zimUrl, downloadAttrValue, contentType);
+                goToArticle(zimUrl, downloadAttrValue, contentType, zimUrlFullEncoding);
                 setTimeout(reset, 1400);
             };
             
@@ -5263,9 +5267,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
          * @param {String} path The pathname (namespace + filename) to the article or file to be extracted
          * @param {Boolean|String} download A Bolean value that will trigger download of title, or the filename that should
          *     be used to save the file in local FS (in HTML5 spec, a string value for the download attribute is optional)
-         * @param {String} contentType The mimetype of the downloadable file, if known 
+         * @param {String} contentType The mimetype of the downloadable file, if known
+         * @param {String} pathEnc The fully encoded version of the path for use with some Zimit archives
          */
-        function goToArticle(path, download, contentType) {
+        function goToArticle(path, download, contentType, pathEnc) {
             //This removes any search highlighting
             clearFindInArticle();
             uiUtil.pollSpinner();
@@ -5280,11 +5285,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     uiUtil.clearSpinner();
                     console.error("Article with title " + path + " not found in the archive");
                     if (params.zimType === 'zimit') {
-                        path = path.replace(/^[AC]\//, 'http://');
-                        uiUtil.systemAlert('<p>We could not find an offline version of the requested article in this Zimit archive.</p>' +
-                            '<p>If you would like to open this page online in a new tab, please click this link:</p>' + 
-                            '<p><a href="' + path + '" target="_blank">' + path.replace(/^http:\/\//, '') + '</a></p>');
-                        setTab();
+                        if (pathEnc) {
+                            // We failed to get path, so we should try the fully encoded version instead
+                            goToArticle(pathEnc, download, contentType);
+                        } else {
+                            path = path.replace(/^[AC]\//, 'http://');
+                            uiUtil.systemAlert('<p>We could not find an offline version of the requested article in this Zimit archive.</p>' +
+                                '<p>If you would like to open this page online in a new tab, please click this link:</p>' + 
+                                '<p><a href="' + path + '" target="_blank">' + path.replace(/^http:\/\//, '') + '</a></p>');
+                            setTab();
+                        }
                     } else {
                         uiUtil.systemAlert('<p>We could not find the article ' + path + ' in this archive!</p>' +
                             '<p>Redirecting to landing page...</p>');
