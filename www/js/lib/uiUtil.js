@@ -405,7 +405,7 @@ define(rqDef, function(util) {
                 '    <span id="alertMessage"></span>' +
                 '</div>';
         // Download code adapted from https://stackoverflow.com/a/19230668/9727685 
-        if (!contentType) {
+        if (!contentType || /application.download/i.test(contentType)) {
             // DEV: Add more contentTypes here for downloadable files
             contentType = 
                 /\.epub([?#]|$)/i.test(title) ? 'application/epub+zip' :
