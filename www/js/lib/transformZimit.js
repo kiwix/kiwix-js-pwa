@@ -104,8 +104,9 @@ define([], function () {
             data = data.replace(/<base\b[^>]+href\b[^>]+>\s*/i, '');
 
             // Remove any residual analytics
-            data = data.replace(/<script\b([^<]|<(?!\/script>))+?google.*?analytics([^<]|<(?!\/script>))+<\/script>\s*/i, '');
-            
+            data = data.replace(/<script\b([^<]|<(?!\/script>))+?(?:google.*?analytics|adsbygoogle)([^<]|<(?!\/script>))+<\/script>\s*/i, '');
+            data = data.replace(/<ins\b(?:[^<]|<(?!\/ins>))+?adsbygoogle(?:[^<]|<(?!\/ins>))+<\/ins>\s*/ig, '');
+
             // ZIM-specific overrides
             if (/(?:journals\.openedition\.org)/i.test(params.zimitPrefix)) {
                 // Neutralize all inline scripts, excluding math blocks or react templates, as they cause a loop on loading article
