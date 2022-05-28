@@ -392,8 +392,28 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
      */
     ZIMArchive.prototype.readUtf8File = function(dirEntry, callback) {
         return dirEntry.readData().then(function(data) {
-            data = utf8.parse(data);
             var mimetype = dirEntry.getMimetype();
+            if (window.TextDecoder) {
+                data = new TextDecoder('utf-8').decode(data);    
+            } else {
+                // Support for IE11 and Edge Legacy - only support UTF-8 decoding
+                data = utf8.parse(data);
+            }
+            if (/\bhtml\b/i.test(mimetype)) {
+                // If the data were encoded with a differen mimtype, here is how to change it
+                // var encoding = decData.match(/<meta\b[^>]+?Content-Type[^>]+?charset=([^'"\s]+)/i);
+                // encoding = encoding ? encoding[1] : '';
+                // if (encoding && !/utf-8/i.test(encoding)) decData = new TextDecoder(encoding).decode(data);
+                
+                // Some Zimit archives have an incorrect meta charset tag. See https://github.com/openzim/warc2zim/issues/88.
+                // So we remove it!
+                data = data.replace(/<meta\b[^>]+?Content-Type[^>]+?charset=([^'"\s]+)[^>]+>\s*/i, function (m0, m1) {
+                    if (!/utf-8/i.test(m1)) {
+                        return '';
+                    }
+                    return m0;
+                });
+            }
             if (dirEntry.inspect) {
                 dirEntry = transformZimit.getZimitLandingPage(dirEntry, data);
             } else {
