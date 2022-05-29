@@ -31,8 +31,9 @@ On Windows 10 version 1909 and earlier, sideloading requires some additional con
 * Then, launch a PowerShell command window: press Windows key and type PowerShell, right-click and "Run as Administrator".
 * Type the following command: `Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser`
 * Accept the warnings and ensure the script finished correctly. (The above steps are one-time only: you shouldn't need to repeat them to install future builds.)
-* Now go to the latest `AppPackages/KiwixWebApp_x.x.x.x_[AnyCPU]_Test/` folder above and download **all** the files in the folder and subfolder. You can either do this by cloning the repository, or you can use https://minhaskamal.github.io/DownGit to download a zipped version of the folder (recommended).
-* Unzip in your downloads folder, or other accessible folder. Ensure the directory structure is intact.
+* Follow ONE of the following procedures:
+  + EITHER if you got the bundle from Releases, then also download the corresponding file `PowerShell.Installation.Script.KiwixWebApp_x.x.x.x_Test.zip` from the Release. Unzip this and put the appxbundle in the same folder where you unzipped the files.
+  + OR if you want a bundle from above, then go to `AppPackages/KiwixWebApp_x.x.x.x_[AnyCPU]_Test/` folder above and download **all** the files in the folder and subfolder. You can either do this by cloning the repository, or you can use https://minhaskamal.github.io/DownGit to download a zipped version of the folder (recommended). Unzip in your downloads folder, or other accessible folder. Ensure the directory structure is intact.
 * Now you can right-click `Add-AppDevPackage.ps1` and select `Run with PowerShell`. This is the simplest method to install the certificate and the app at the same time.
 * If you see a red message flash, and the window closes, then go to your PowerShell terminal, navigate to the folder containing the script, and type `.\Add-AppDevPackage.ps1` (NB the `.\` is important). Observe and follow instructions to address the issue.
 
