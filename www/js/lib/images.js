@@ -359,7 +359,7 @@ define(['uiUtil'], function (uiUtil) {
         // There are images remaining, so set up an event listener to load more images once user has stopped scrolling the iframe or window
         var scrollPos;
         // var rateLimiter = 0;
-        var rate = 80; // DEV: Set the milliseconds to wait before allowing another iteration of the image stack
+        var rate = 8; // DEV: Set the milliseconds to wait before allowing another iteration of the image stack
         var timeout;
         // NB we add the event listener this way so we can access it in app.js
         container.onscroll = function () {
