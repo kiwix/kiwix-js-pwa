@@ -1220,7 +1220,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 } else if (window.nw) {
                     uiUtil.systemAlert('Unfortunately there is currently no way to save an image to disk in the NWJS version of this app.<br>You can do this in the PWA version: please visit https://pwa.kiwix.org.');
                 } else if (params.contentInjectionMode === 'serviceworker') {
-                    uiUtil.systemAlert('Please be aware that Image manipulation can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). If you cannot access the articles in such a ZIM, please turn this setting off.');
+                    uiUtil.systemAlert('Please be aware that Image manipulation can interfere with non-Wikimedia ZIMs (particularly ZIMs that have active content). If you cannot access the articles in such a ZIM, please turn this setting off.');
                 } else if (/PWA/.test(params.appType)) {
                     uiUtil.systemAlert('Be aware that this option may interfere with active content if you switch to Service Worker mode.');
                 }
