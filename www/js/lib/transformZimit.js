@@ -96,6 +96,8 @@ define([], function () {
                 /^\//.test(assetUrl) ? assetUrl.replace(/^\//, '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/') : assetUrl; 
                 // Deal with <meta http-equiv refresh...> directives
                 if (/<meta\s+http-equiv[^>]+refresh\b/i.test(newBlock)) dirEntry.zimitRedirect = assetUrl.replace(/^\//, '');
+                // Disable lazy loading of images even if manipulateImages is off
+                if (/<img\b/i.test(newBlock) && !params.manipulateImages) assetUrl = assetUrl + '?kiwix-display';
                 newBlock = newBlock.replace(relAssetUrl, indexRoot + assetUrl);
                 return newBlock;
             });
