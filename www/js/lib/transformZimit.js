@@ -76,15 +76,17 @@ define([], function () {
      * The main function for transforming Zimit URLs into standard ZIM URLs.
      * @param {dirEntry} dirEntry The directory entry that points to the extracted data
      * @param {String} data The deocmpressed and extracted textual data that the dirEntry points to
-     * @param {String} mimetype The reporte mimetype of the data (this is also in the dirEntry)
+     * @param {String} mimetype The reported mimetype of the data (this is also in the dirEntry)
      * @param {Object} selectedArchive The archive object (needed only for the standardized filename used as a prefix)
      * @returns {String} The data string with any URLs it contains transformed into ZIM URLs 
      */
     function transformReplayUrls(dirEntry, data, mimetype, selectedArchive) {
         /**
          * Transform URL links in HTML files
+         * Note that some Zimit ZIMs have mimteypes like 'text/html;raw=true', so we can't simply match 'text/html'
+         * Other ZIMs have mimetype like 'html' (with no 'text/'), so we have to match as generically as possible
          */
-        if (/\bhtml\b/i.test(mimetype)) {
+        if (/\bhtml\b/i.test(mimetype)) { // 
             var zimitPrefix = data.match(/link\s+rel=["']canonical["']\s+href=(['"])https?:\/\/([^\/]+)(.+?)\1/i);
             zimitPrefix = zimitPrefix ? zimitPrefix[2] : params.zimitPrefix;
             // Remove lazyimgage system and noscript tags that comment out images
