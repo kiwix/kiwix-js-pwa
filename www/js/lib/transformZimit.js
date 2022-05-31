@@ -82,7 +82,7 @@ define([], function () {
             // Remove lazyimgage system and noscript tags that comment out images
             data = data.replace(/<noscript>\s*(<img\b[^>]+>)\s*<\/noscript>/ig, '$1');
             data = data.replace(/<span\b[^>]+lazy-image-placeholder[^<]+<\/span>\s*/ig, '');
-            var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track|meta)\b[^>]*?[\s;])(?:src|href|url)\s*(=\s*(["']))(?=\/|https?:\/\/)((?:[^>](?!\3|\?|#))+[^>])([^>]*>)/ig;
+            var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track|meta)\b[^>]*?[\s;])(?:src\b|href|url)\s*(=\s*(["']))(?=\/|https?:\/\/)((?:[^>](?!\3|\?|#))+[^>])([^>]*>)/ig;
             // Get stem for constructing an absolute URL
             var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(selectedArchive._file.name);
             data = data.replace(regexpZimitHtmlLinks, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
@@ -99,7 +99,28 @@ define([], function () {
                 newBlock = newBlock.replace(relAssetUrl, indexRoot + assetUrl);
                 return newBlock;
             });
-            
+
+            // Deal with image srcsets
+            data = data.replace(/<img\b[^>]+\ssrcset=["']([^"']+)/ig, function (match, srcset) {
+                var srcsetArr = srcset.split(',');
+                for (var i=0; i < srcsetArr.length; i++) {
+                    srcsetArr[i] = /^(?:\s?https?:)?\/\//i.test(srcsetArr[i]) ? srcsetArr[i].replace(/^(?:\s?https?:)?\/\//i, '/' + dirEntry.namespace + '/') :
+                    // For root-relative links, we need to add the zimitPrefix
+                    /^\s?\//.test(srcsetArr[i]) ? srcsetArr[i].replace(/^\s?\//, '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/') : srcsetArr[i];
+                    srcsetArr[i] = srcsetArr[i].replace(/(\s|$)/, '?kiwix-display$1');
+                    srcsetArr[i] = indexRoot + srcsetArr[i];
+                }
+                match = match.replace(srcset, srcsetArr.join(', '));
+                return match;
+            });
+
+            // Deal with urls embedded in div blocks (this is for YouTube player)
+            // data = data.replace(/<div\b[^>]+(https?:[\\/]+[^"]+)/gi, function (match, assetUrl) {
+            //     assetUrl = assetUrl.replace(/^(?:https?:)?[\\/]+/i, '\/' + dirEntry.namespace + '\/');
+            //     match = match.replace(assetUrl, indexRoot.replace(/\//g, '\/') + assetUrl);
+            // });
+
+
             // Remove any <base href...> statements
             data = data.replace(/<base\b[^>]+href\b[^>]+>\s*/i, '');
 
@@ -156,9 +177,9 @@ define([], function () {
         } // End of css transformations
 
         /**
-         * Transform links in JavaScript files
+         * Transform links in JavaScript files or script blocks in the html
          */
-        if (/\b(javascript)\b/i.test(mimetype)) {
+        if (/\b(javascript|html)\b/i.test(mimetype)) {
             var regexpZimitJavascriptLinks = /['"(]((?:https?:)?\/\/[^'"?#)]+)['"?#)]/ig;
             data = data.replace(regexpZimitJavascriptLinks, function (match, url) {
                 var newBlock = match;
