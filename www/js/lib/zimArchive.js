@@ -461,6 +461,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
      */
     ZIMArchive.prototype.getDirEntryByPath = function(path) {
         var that = this;
+        path = path.replace(/\?kiwix-display/, '');
         return util.binarySearch(0, this._file.entryCount, function(i) {
             return that._file.dirEntryByUrlIndex(i).then(function(dirEntry) {
                 var url = dirEntry.namespace + "/" + dirEntry.url;
