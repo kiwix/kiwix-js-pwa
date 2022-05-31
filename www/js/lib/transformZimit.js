@@ -116,11 +116,12 @@ define([], function () {
                 return match;
             });
 
-            // Deal with urls embedded in div blocks (this is for YouTube player)
-            // data = data.replace(/<div\b[^>]+(https?:[\\/]+[^"]+)/gi, function (match, assetUrl) {
-            //     assetUrl = assetUrl.replace(/^(?:https?:)?[\\/]+/i, '\/' + dirEntry.namespace + '\/');
-            //     match = match.replace(assetUrl, indexRoot.replace(/\//g, '\/') + assetUrl);
-            // });
+            // Deal with regex-style urls embedded in page
+            data = data.replace(/https?:\\\/\\\/[^"']+/gi, function (assetUrl) {
+                assetUrl = assetUrl.replace(/^https?:\\\/\\\//i, '\\/' + dirEntry.namespace + '\\/');
+                assetUrl = indexRoot.replace(/\//g, '\\/') + assetUrl;
+                return assetUrl;
+            });
 
 
             // Remove any <base href...> statements
@@ -157,7 +158,7 @@ define([], function () {
          * Transform css-style links in stylesheet files and stylesheet blocks in HTML
          */
         if (/\b(css|html)\b/i.test(mimetype)) {
-            var regexpZimitCssLinks = /url\s*\(['"\s]*([^)'"\s]+)['"\s]*\)/ig;
+            var regexpZimitCssLinks = /\burl\s*\(['"\s]*([^)'"\s]+)['"\s]*\)/ig;
             data = data.replace(regexpZimitCssLinks, function (match, url) {
                 var newBlock = match;
                 var assetUrl = url;
