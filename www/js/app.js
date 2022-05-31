@@ -1600,6 +1600,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             }
             document.getElementById('darkInvert').style.display = determinedWikiTheme == 'light' ? 'none' : 'block';
         }
+
         document.getElementById('resetDisplayOnResizeCheck').addEventListener('click', function () {
             params.resetDisplayOnResize = this.checked;
             settingsStore.setItem('resetDisplayOnResize', this.checked, Infinity);
@@ -3667,6 +3668,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     setupTableOfContents();
                     listenForSearchKeys();
                 }
+                switchCSSTheme();
                 //Set relative font size + Stackexchange-family multiplier
                 var zimType = /-\/s\/style\.css/i.test(doc.head.innerHTML) ? "desktop" : "mobile";
                 zimType = /-\/static\/main\.css/i.test(doc.head.innerHTML) ? "desktop-stx" : zimType; //Support stackexchange
@@ -4217,6 +4219,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             params.containsMathTex = params.useMathJax ? /<script\s+type\s*=\s*['"]\s*math\/tex\s*['"]/i.test(htmlArticle) : false;
             params.containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
 
+            // If there is no CSP, add one to prevent external scripts and content
+            if (!/<meta\b[^>]+Content-Security-Policy/i.test(htmlArticle)) {
+                htmlArticle = htmlArticle.replace(/(\s*<\/head>)/, '\n    <meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: blob: bingmaps: \'unsafe-inline\' \'unsafe-eval\';"></meta>$1');
+            }
+
             if (params.zimType === 'open') {
                 //Adapt German Wikivoyage POI data format
                 var regexpGeoLocationDE = /<span\s+class="[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<bdi\s[^>]+?listing-name[^>]+>(?:<a\b\s+href[^>]+>)?([^<]+))/ig;
@@ -4283,28 +4290,28 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 });
             }
 
-            // If there is no CSP, add one to prevent external scripts and content
-            if (!/<meta\b[^>]+Content-Security-Policy/i.test(htmlArticle)) {
-                htmlArticle = htmlArticle.replace(/(\s*<\/head>)/, '\n    <meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: blob: bingmaps: \'unsafe-inline\' \'unsafe-eval\';"></meta>$1');
-            }
-
-            //Preload stylesheets [kiwix-js #149]
-            console.log("Loading stylesheets...");
-            //Set up blobArray of promises
-            var prefix = (window.location.protocol + '//' + window.location.host + window.location.pathname).replace(/\/[^/]*$/, '');
-            var cssArray = htmlArticle.match(regexpSheetHref);
-            var blobArray = [];
-            var cssSource = params.cssSource;
-            var cssCache = params.cssCache;
-            var zimType = "";
-            if (cssArray) {
-                getBLOB(cssArray);
+            if (params.zimType === 'open' || params.contentInjectionMode === 'jquery') {
+                //Preload stylesheets [kiwix-js #149]
+                console.log("Loading stylesheets...");
+                //Set up blobArray of promises
+                var prefix = (window.location.protocol + '//' + window.location.host + window.location.pathname).replace(/\/[^/]*$/, '');
+                var cssArray = htmlArticle.match(regexpSheetHref);
+                var blobArray = [];
+                var cssSource = params.cssSource;
+                var cssCache = params.cssCache;
+                var zimType = "";
+                if (cssArray) {
+                    getBLOB(cssArray);
+                } else {
+                    // Apply dark or light content theme if necessary
+                    var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
+                    var contentThemeStyle = (determinedTheme == "dark") ? '<link href="' + prefix + '/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' :
+                        params.cssTheme == "invert" ? '<link href="' + prefix + '/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
+                    htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, contentThemeStyle + '$1');
+                    injectHTML();
+                }
             } else {
-                // Apply dark or light content theme if necessary
-                var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-                var contentThemeStyle = (determinedTheme == "dark") ? '<link href="' + prefix + '/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' :
-                    params.cssTheme == "invert" ? '<link href="' + prefix + '/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
-                htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, contentThemeStyle + '$1');
+                // Zimit ZIMs in SW mode should not manipulate styles
                 injectHTML();
             }
 
