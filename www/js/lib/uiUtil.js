@@ -88,7 +88,7 @@ define(rqDef, function(util) {
                 blob = new Blob([content], {
                     type: mimeType
                 });
-            // Establish the current window (avoids having to pass it to this function)
+                // Establish the current window (avoids having to pass it to this function)
                 var docWindow = node.ownerDocument.defaultView || node.ownerDocument.parentWindow || window;
                 url = docWindow.URL.createObjectURL(blob);
                 if (callback) callback(url);
