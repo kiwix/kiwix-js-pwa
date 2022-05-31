@@ -72,6 +72,14 @@ define([], function () {
         return dirEntry;
     }
 
+    /**
+     * The main function for transforming Zimit URLs into standard ZIM URLs.
+     * @param {dirEntry} dirEntry The directory entry that points to the extracted data
+     * @param {String} data The deocmpressed and extracted textual data that the dirEntry points to
+     * @param {String} mimetype The reporte mimetype of the data (this is also in the dirEntry)
+     * @param {Object} selectedArchive The archive object (needed only for the standardized filename used as a prefix)
+     * @returns {String} The data string with any URLs it contains transformed into ZIM URLs 
+     */
     function transformReplayUrls(dirEntry, data, mimetype, selectedArchive) {
         /**
          * Transform URL links in HTML files
