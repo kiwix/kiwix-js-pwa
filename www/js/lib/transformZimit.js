@@ -135,6 +135,8 @@ define([], function () {
 
 
             // Remove any <base href...> statements
+            // DEV: You should probably deal with this more intelligently, changing absolute links rather than just removing
+            // but so far, removing it seems to do the job
             data = data.replace(/<base\b[^>]+href\b[^>]+>\s*/i, '');
 
             // Remove any residual analytics
