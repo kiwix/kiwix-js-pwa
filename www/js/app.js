@@ -3309,7 +3309,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         var dirEntry = dirEntryArray[i];
                         // NB Ensure you use double quotes for HTML attributes below - see comment in populateListOfArticles
                         newHtml += '\n<a  class="list-group-item" href="#" dirEntryId="' + encodeURIComponent(dirEntry.toStringId()) +
-                            '">' + (appstate.search.searchUrlIndex ? dirEntry.namespace + '/' : '') + dirEntry.getTitleOrUrl() + '</a>';
+                            '">' + (appstate.search.searchUrlIndex ? dirEntry.namespace + '/' + dirEntry.url : '' + dirEntry.getTitleOrUrl()) + '</a>';
                     }
                     start = start ? start : 0;
                     var back = start ? '<a href="#" data-start="' + (start - params.maxSearchResultsSize) +
@@ -3449,7 +3449,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // Info: encodeURIComponent encodes all characters except  A-Z a-z 0-9 - _ . ! ~ * ' ( ) 
                 var dirEntryStringId = encodeURIComponent(dirEntry.toStringId());
                 articleListDivHtml += '<a href="#" dirEntryId="' + dirEntryStringId +
-                    '" class="list-group-item">' + (reportingSearch.searchUrlIndex ? dirEntry.namespace + '/' : '') + dirEntry.getTitleOrUrl() + '</a>';
+                    '" class="list-group-item">' + (reportingSearch.searchUrlIndex ? dirEntry.namespace + '/' + dirEntry.url : '' + dirEntry.getTitleOrUrl()) + '</a>';
             }
             articleListDiv.innerHTML = articleListDivHtml;
             // We have to use mousedown below instead of click as otherwise the prefix blur event fires first 
