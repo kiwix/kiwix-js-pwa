@@ -45,7 +45,8 @@ define([], function () {
      */
     function filterReplayFiles(dirEntry) {
         if (!(dirEntry && dirEntry.url)) return null;
-        if (/(?:chunk\.js|\bload\.js|\bsw\.js|analytics.*\.js|remote.loader\.js|survey\.js|yuiloader\.js)(?:[?#]|$)/i.test(dirEntry.url)) {
+        if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|remote.loader\.js|survey\.js|yuiloader\.js|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url)) {
+        // if (/(?:chunk\.js|\bload\.js|\bsw\.js|analytics.*\.js|remote.loader\.js|survey\.js|yuiloader\.js)(?:[?#]|$)/i.test(dirEntry.url)) {
             dirEntry.nullify = true;
         } else if (params.isLandingPage && /^index\.html(?:[?#]|$)/.test(dirEntry.url)) {
             dirEntry.inspect = true;
@@ -97,7 +98,8 @@ define([], function () {
          * Note that some Zimit ZIMs have mimeteypes like 'text/html;raw=true', so we can't simply match 'text/html'
          * Other ZIMs have a mimetype like 'html' (with no 'text/'), so we have to match as generically as possible
          */
-        if (/\bhtml\b/i.test(mimetype)) { // 
+        var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(selectedArchive._file.name);
+        if (/\bhtml\b/i.test(mimetype)) {
             var zimitPrefix = data.match(regexpGetZimitPrefix);
             zimitPrefix = zimitPrefix ? zimitPrefix[2] : params.zimitPrefix;
             // Remove lazyimgage system and noscript tags that comment out images
@@ -105,7 +107,6 @@ define([], function () {
             data = data.replace(/<noscript>\s*(<img\b[^>]+>)\s*<\/noscript>/ig, '$1');
             data = data.replace(/<span\b[^>]+lazy-image-placeholder[^<]+<\/span>\s*/ig, '');
             // Get stem for constructing an absolute URL
-            var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(selectedArchive._file.name);
             data = data.replace(regexpZimitHtmlLinks, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
                 var newBlock = match;
                 var assetUrl = relAssetUrl;
@@ -205,6 +206,7 @@ define([], function () {
          */
         if (/\b(javascript|html)\b/i.test(mimetype)) {
             data = data.replace(regexpZimitJavascriptLinks, function (match, url) {
+                if (/www\.w3\.org\/XML\//i.test(url)) return match;
                 var newBlock = match;
                 var assetUrl = url;
                 assetUrl = assetUrl.replace(/^\/\//, dirEntry.namespace + '/');
@@ -218,7 +220,11 @@ define([], function () {
                 // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
+            data = data.replace(/(['"])(?:\/?)((?:static|api)\/)/ig, '$1' + window.location.origin + indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/$2');
         } // End of JavaScript transformations
+
+        // Add a base href
+        // data = data.replace(/(<head\b[^>]*>\s*)/i, '$1<base href="' + window.location.origin + indexRoot + '/' + '">');
 
         return data;
     }
