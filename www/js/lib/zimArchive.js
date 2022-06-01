@@ -318,6 +318,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
             return searchFunction(i).then(function(dirEntry) {
                 if (search.status === 'cancelled') return 0;
                 var ns = dirEntry.namespace;
+                var ti = search.searchUrlIndex ? dirEntry.url : dirEntry.getTitleOrUrl();
                 if (!search.searchUrlIndex) {
                     // DEV: This search is redundant if we managed to populate articlePtrLst and articleCount, but it only takes two instructions and
                     // provides maximum compatibility with rare ZIMs where attempts to find first and last article (in zimArchive.js) may have failed
@@ -326,7 +327,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                     // We should now be in namespace A (old format ZIM) or C (new format ZIM)
                     return prefix <= dirEntry.getTitleOrUrl() ? -1 : 1;
                 } else {
-                    return prefix <= ns + '/' + dirEntry.getTitleOrUrl() ? -1 : 1;
+                    return prefix <= ns + '/' + ti ? -1 : 1;
                 }
             });
         }, true).then(function(firstIndex) {
@@ -346,7 +347,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                     search.scanCount++;
                     var title = dirEntry.getTitleOrUrl();
                     // If we are searching by URL, display namespace also
-                    if (search.searchUrlIndex) title = dirEntry.namespace + '/' + title;
+                    if (search.searchUrlIndex) title = dirEntry.namespace + '/' + dirEntry.url;
                     // Only return dirEntries with titles that actually begin with prefix
                     if (saveStartIndex === null || (search.searchUrlIndex || dirEntry.namespace === cns) && title.indexOf(prefix) === 0) {
                         if (!search.rgxPrefix || search.rgxPrefix && search.rgxPrefix.test(title.replace(prefix, ''))) { 
