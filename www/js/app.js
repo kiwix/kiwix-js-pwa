@@ -3917,6 +3917,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 }
                 thisMessagePort.postMessage(thisMessage);
                 appstate.messageChannelWaiting = false;
+                // Failsafe to turn off spinner
+                setTimeout(function () {
+                    uiUtil.clearSpinner();
+                }, 5000);
             } else {
                 setTimeout(postTransformedHTML, 500, thisMessage, thisMessagePort, thisDirEntry);
             }
@@ -4688,6 +4692,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     // cleared, or else Firefox overwrites the window immediately after we load the html content into it.
                     setTimeout(articleLoaded, 400);
                 }
+                // Failsafe for spinner
+                setTimeout(function () {
+                    uiUtil.clearSpinner();
+                }, 6000);
             } // End of injectHtml
 
             function insertMediaBlobsJQuery() {
