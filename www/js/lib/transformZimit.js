@@ -81,6 +81,7 @@ define([], function () {
     var regexpGetZimitPrefix = /link\s+rel=["']canonical["']\s+href=(['"])https?:\/\/([^\/]+)(.+?)\1/i;
     var regexpRemoveAnalytics1 = /<script\b([^<]|<(?!\/script>))+?(?:google.*?analytics|adsbygoogle)([^<]|<(?!\/script>))+<\/script>\s*/ig;
     var regexpRemoveAnalytics2 = /<ins\b(?:[^<]|<(?!\/ins>))+?adsbygoogle(?:[^<]|<(?!\/ins>))+<\/ins>\s*/ig;
+    var regexpInlineScriptsNotMaths = /<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig;
 
     /**
      * The main function for transforming Zimit URLs into standard ZIM URLs.
@@ -155,7 +156,7 @@ define([], function () {
             // ZIM-specific overrides
             if (/(?:journals\.openedition\.org)/i.test(params.zimitPrefix)) {
                 // Neutralize all inline scripts, excluding math blocks or react templates, as they cause a loop on loading article
-                data = data.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig, function (p0, p1) {
+                data = data.replace(regexpInlineScriptsNotMaths, function (p0, p1) {
                     return '<!-- ' + p1 + ' --!>';
                 });
             }
