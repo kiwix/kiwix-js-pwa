@@ -78,6 +78,9 @@ define([], function () {
     var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track|meta)\b[^>]*?[\s;])(?:src\b|href|url)\s*(=\s*(["']))(?=\/|https?:\/\/)((?:[^>](?!\3|\?|#))+[^>])([^>]*>)/ig;
     var regexpZimitJavascriptLinks = /['"(]((?:https?:)?\/\/[^'"?#)]+)['"?#)]/ig;
     var regexpZimitCssLinks = /\burl\s*\(['"\s]*([^)'"\s]+)['"\s]*\)/ig;
+    var regexpGetZimitPrefix = /link\s+rel=["']canonical["']\s+href=(['"])https?:\/\/([^\/]+)(.+?)\1/i;
+    var regexpRemoveAnalytics1 = /<script\b([^<]|<(?!\/script>))+?(?:google.*?analytics|adsbygoogle)([^<]|<(?!\/script>))+<\/script>\s*/ig;
+    var regexpRemoveAnalytics2 = /<ins\b(?:[^<]|<(?!\/ins>))+?adsbygoogle(?:[^<]|<(?!\/ins>))+<\/ins>\s*/ig;
 
     /**
      * The main function for transforming Zimit URLs into standard ZIM URLs.
@@ -94,7 +97,7 @@ define([], function () {
          * Other ZIMs have a mimetype like 'html' (with no 'text/'), so we have to match as generically as possible
          */
         if (/\bhtml\b/i.test(mimetype)) { // 
-            var zimitPrefix = data.match(/link\s+rel=["']canonical["']\s+href=(['"])https?:\/\/([^\/]+)(.+?)\1/i);
+            var zimitPrefix = data.match(regexpGetZimitPrefix);
             zimitPrefix = zimitPrefix ? zimitPrefix[2] : params.zimitPrefix;
             // Remove lazyimgage system and noscript tags that comment out images
             // DEV: Check if this is still necessary
@@ -146,8 +149,8 @@ define([], function () {
             data = data.replace(/<base\b[^>]+href\b[^>]+>\s*/i, '');
 
             // Remove any residual analytics and ads
-            data = data.replace(/<script\b([^<]|<(?!\/script>))+?(?:google.*?analytics|adsbygoogle)([^<]|<(?!\/script>))+<\/script>\s*/i, '');
-            data = data.replace(/<ins\b(?:[^<]|<(?!\/ins>))+?adsbygoogle(?:[^<]|<(?!\/ins>))+<\/ins>\s*/ig, '');
+            data = data.replace(regexpRemoveAnalytics1, '');
+            data = data.replace(regexpRemoveAnalytics2, '');
 
             // ZIM-specific overrides
             if (/(?:journals\.openedition\.org)/i.test(params.zimitPrefix)) {
