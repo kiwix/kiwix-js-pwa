@@ -73,6 +73,13 @@ define([], function () {
     }
 
     /**
+     * Establish some Regular Expressions used by the transformReplayUrls function
+     */
+    var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track|meta)\b[^>]*?[\s;])(?:src\b|href|url)\s*(=\s*(["']))(?=\/|https?:\/\/)((?:[^>](?!\3|\?|#))+[^>])([^>]*>)/ig;
+    var regexpZimitJavascriptLinks = /['"(]((?:https?:)?\/\/[^'"?#)]+)['"?#)]/ig;
+    var regexpZimitCssLinks = /\burl\s*\(['"\s]*([^)'"\s]+)['"\s]*\)/ig;
+
+    /**
      * The main function for transforming Zimit URLs into standard ZIM URLs.
      * @param {dirEntry} dirEntry The directory entry that points to the extracted data
      * @param {String} data The deocmpressed and extracted textual data that the dirEntry points to
@@ -83,16 +90,16 @@ define([], function () {
     function transformReplayUrls(dirEntry, data, mimetype, selectedArchive) {
         /**
          * Transform URL links in HTML files
-         * Note that some Zimit ZIMs have mimteypes like 'text/html;raw=true', so we can't simply match 'text/html'
-         * Other ZIMs have mimetype like 'html' (with no 'text/'), so we have to match as generically as possible
+         * Note that some Zimit ZIMs have mimeteypes like 'text/html;raw=true', so we can't simply match 'text/html'
+         * Other ZIMs have a mimetype like 'html' (with no 'text/'), so we have to match as generically as possible
          */
         if (/\bhtml\b/i.test(mimetype)) { // 
             var zimitPrefix = data.match(/link\s+rel=["']canonical["']\s+href=(['"])https?:\/\/([^\/]+)(.+?)\1/i);
             zimitPrefix = zimitPrefix ? zimitPrefix[2] : params.zimitPrefix;
             // Remove lazyimgage system and noscript tags that comment out images
+            // DEV: Check if this is still necessary
             data = data.replace(/<noscript>\s*(<img\b[^>]+>)\s*<\/noscript>/ig, '$1');
             data = data.replace(/<span\b[^>]+lazy-image-placeholder[^<]+<\/span>\s*/ig, '');
-            var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track|meta)\b[^>]*?[\s;])(?:src\b|href|url)\s*(=\s*(["']))(?=\/|https?:\/\/)((?:[^>](?!\3|\?|#))+[^>])([^>]*>)/ig;
             // Get stem for constructing an absolute URL
             var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(selectedArchive._file.name);
             data = data.replace(regexpZimitHtmlLinks, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
@@ -133,13 +140,12 @@ define([], function () {
                 return assetUrl;
             });
 
-
             // Remove any <base href...> statements
-            // DEV: You should probably deal with this more intelligently, changing absolute links rather than just removing
+            // DEV: You should probably deal with this more intelligently, changing absolute links rather than just removing,
             // but so far, removing it seems to do the job
             data = data.replace(/<base\b[^>]+href\b[^>]+>\s*/i, '');
 
-            // Remove any residual analytics
+            // Remove any residual analytics and ads
             data = data.replace(/<script\b([^<]|<(?!\/script>))+?(?:google.*?analytics|adsbygoogle)([^<]|<(?!\/script>))+<\/script>\s*/i, '');
             data = data.replace(/<ins\b(?:[^<]|<(?!\/ins>))+?adsbygoogle(?:[^<]|<(?!\/ins>))+<\/ins>\s*/ig, '');
 
@@ -170,7 +176,6 @@ define([], function () {
          * Transform css-style links in stylesheet files and stylesheet blocks in HTML
          */
         if (/\b(css|html)\b/i.test(mimetype)) {
-            var regexpZimitCssLinks = /\burl\s*\(['"\s]*([^)'"\s]+)['"\s]*\)/ig;
             data = data.replace(regexpZimitCssLinks, function (match, url) {
                 var newBlock = match;
                 var assetUrl = url;
@@ -195,7 +200,6 @@ define([], function () {
          * Transform links in JavaScript files or script blocks in the html
          */
         if (/\b(javascript|html)\b/i.test(mimetype)) {
-            var regexpZimitJavascriptLinks = /['"(]((?:https?:)?\/\/[^'"?#)]+)['"?#)]/ig;
             data = data.replace(regexpZimitJavascriptLinks, function (match, url) {
                 var newBlock = match;
                 var assetUrl = url;
