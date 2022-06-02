@@ -1499,6 +1499,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             cssUIThemeGetOrSet(params.cssUITheme);
             //Make subsequent check valid if params.cssTheme is "invert" rather than "dark"
             if (params.cssUITheme != params.cssTheme) $('#cssWikiDarkThemeCheck').click();
+            params.cssThemeOriginal = null;
         });
         document.getElementById('cssWikiDarkThemeCheck').addEventListener('click', function () {
             if (this.readOnly) this.checked = this.readOnly = false;
@@ -1515,6 +1516,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
             settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
             switchCSSTheme();
+            params.cssThemeOriginal = null;
         });
         $('input:checkbox[name=cssWikiDarkThemeInvert]').on('change', function (e) {
             if (this.checked) {
@@ -1525,6 +1527,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             }
             settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
             switchCSSTheme();
+            params.cssThemeOriginal = null;
         });
 
         function cssUIThemeGetOrSet(value, getOnly) {
@@ -2641,6 +2644,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
                             if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
                             if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
+                            if (params.zimType === 'zimit' && params.cssTheme !== 'light') {
+                                if (!params.cssThemeOriginal) params.cssThemeOriginal = params.cssTheme;
+                                params.cssTheme = 'light';
+                            }
+                        } else if (params.zimType === 'open' && params.cssThemeOriginal) {
+                            params.cssTheme = params.cssThemeOriginal;
+                            params.cssThemeOriginal = null;
                         }
                     }
                     // The archive is set : go back to home page to start searching
@@ -2996,15 +3006,22 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
                 // (this only affects jQuery mode)
                 appstate.target = 'iframe';
-                // The archive is set : go back to home page to start searching
                 if (params.contentInjectionMode === 'serviceworker') {
                     var wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
                     if (!wikimediaZimLoaded) {
                         if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
                         if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
                         if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
+                        if (params.zimType === 'zimit' && params.cssTheme !== 'light') {
+                            if (!params.cssThemeOriginal) params.cssThemeOriginal = params.cssTheme;
+                            params.cssTheme = 'light';
+                        }
+                    } else if (params.zimType === 'open' && params.cssThemeOriginal) {
+                        params.cssTheme = params.cssThemeOriginal;
+                        params.cssThemeOriginal = null;
                     }
                 }
+                // The archive is set : go back to home page to start searching
                 params.storedFile = archive._file._files[0].name;
                 settingsStore.setItem("lastSelectedArchive", params.storedFile, Infinity);
                 settingsStore.setItem("lastSelectedArchivePath", archive._file._files[0].path ? archive._file._files[0].path : '', Infinity);
