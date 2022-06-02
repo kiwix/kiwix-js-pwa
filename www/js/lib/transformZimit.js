@@ -118,8 +118,6 @@ define([], function () {
                 /^\//.test(assetUrl) ? assetUrl.replace(/^\//, '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/') : assetUrl; 
                 // Deal with <meta http-equiv refresh...> directives
                 if (/<meta\s+http-equiv[^>]+refresh\b/i.test(newBlock)) dirEntry.zimitRedirect = assetUrl.replace(/^\//, '');
-                // Disable lazy loading of images even if manipulateImages is off
-                if (/<img\b/i.test(newBlock) && !params.manipulateImages) assetUrl = assetUrl + '?kiwix-display';
                 newBlock = newBlock.replace(relAssetUrl, indexRoot + assetUrl);
                 return newBlock;
             });
@@ -131,7 +129,6 @@ define([], function () {
                     srcsetArr[i] = /^(?:\s?https?:)?\/\//i.test(srcsetArr[i]) ? srcsetArr[i].replace(/^(?:\s?https?:)?\/\//i, '/' + dirEntry.namespace + '/') :
                     // For root-relative links, we need to add the zimitPrefix
                     /^\s?\//.test(srcsetArr[i]) ? srcsetArr[i].replace(/^\s?\//, '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/') : srcsetArr[i];
-                    srcsetArr[i] = srcsetArr[i].replace(/(\s|$)/, '?kiwix-display$1');
                     srcsetArr[i] = indexRoot + srcsetArr[i];
                 }
                 match = match.replace(srcset, srcsetArr.join(', '));
@@ -190,9 +187,9 @@ define([], function () {
                 // Deal with absolute URLs
                 /^https?:\/\//i.test(assetUrl) ? assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/') : assetUrl; 
                 newBlock = params.contentInjectionMode === 'serviceworker' ?
-                    // If asset is relative, then just add the kiwix-display directive
-                    assetUrl === url ? newBlock.replace(url, assetUrl + '?kiwix-display') :
-                    newBlock.replace(url, '/' + selectedArchive._file.name + '/' + assetUrl + '?kiwix-display') :
+                    // If asset is relative, no transform needed
+                    assetUrl === url ? newBlock :
+                    newBlock.replace(url, '/' + selectedArchive._file.name + '/' + assetUrl) :
                     // For jQuery mode, no change needed for relative links
                     assetUrl === url ? newBlock :
                     newBlock.replace(url, '/' + assetUrl);
