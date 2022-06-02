@@ -82,12 +82,14 @@ define(['uiUtil'], function (uiUtil) {
                 return;
             }
             if (params.contentInjectionMode === 'serviceworker' && !(params.manipulateImages || params.allowHTMLExtraction)) {
-                image.addEventListener('load', function () {
+                var transition = function () {
                     image.style.transition = 'opacity 0.5s ease-in';
                     image.style.opacity = '1';
-                });
-                // Let's add kiwix-display to the end of the url so that the SW will ask for the image
-                image.src = imageUrl + '?kiwix-display';
+                    removeEventListener('load', transition);
+                }
+                image.addEventListener('load', transition);
+                // Let's remove kiwix-display from the end of the url so that the SW will ask for the image
+                image.src = imageUrl.replace(/\?kiwix-display/, '');
                 // Timeout allows the loop to complete so we get an accurate busy count
                 setTimeout(function () {
                     checkBatch();
