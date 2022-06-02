@@ -295,9 +295,9 @@ self.addEventListener('fetch', function (event) {
             // The response was not found in the cache so we look for it in the ZIM
             // and add it to the cache if it is an asset type (css or js)
             if (cache === ASSETS_CACHE && regexpZIMUrlWithNamespace.test(strippedUrl)) {
-                if (imageDisplay !== 'all' && /\/.*\.(jpe?g|png|svg|gif|webp)(?!.*?kiwix-display)/i.test(rqUrl)) {
+                if (imageDisplay !== 'all' && /\/.*\.(jpe?g|png|svg|gif|webp)(?=.*?kiwix-display)/i.test(rqUrl)) {
                     // If the user has disabled the display of images, and the browser wants an image, respond with empty SVG
-                    // A URL with "?kiwix-display" query string acts as a passthrough so that the regex will not match and
+                    // A URL without "?kiwix-display" query string acts as a passthrough so that the regex will not match and
                     // the image will be fetched by app.js  
                     // DEV: If you need to hide more image types, add them to regex below and also edit equivalent regex in app.js
                     var svgResponse;
