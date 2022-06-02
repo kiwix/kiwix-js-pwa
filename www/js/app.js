@@ -1137,14 +1137,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 );
             }
             if (this.value === 'serviceworker') {
+                var wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
                 if (params.displayHiddenBlockElements || params.manipulateImages || params.allowHTMLExtraction) {
-                    uiUtil.systemAlert(
+                    if (!wikimediaZimLoaded) uiUtil.systemAlert(
                         'Please note that we are disabling Image manipulation, Breakout link and/or Display hidden block elements, as these options can interfere with ZIMs that have active content. You may turn them back on, but be aware that they are only recommended for use with Wikimedia ZIMs.'
                     );
                 }
-                if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
-                if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
-                if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
+                if (!wikimediaZimLoaded) {
+                    if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
+                    if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
+                    if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
+                }
             }
             params.themeChanged = true; // This will reload the page
         });
@@ -1204,6 +1207,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             uiUtil.systemAlert('This setting will be applied on next app launch');           
         });
         $('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
+            if (params.contentInjectionMode === 'serviceworker' && !this.checked) {
+                uiUtil.systemAlert('Image display can only be turned off in JQuery mode!');
+                this.checked = true;
+                return;
+            }
             params.imageDisplay = this.checked ? true : false;
             params.imageDisplayMode = this.checked ? 'progressive' : 'manual';
             params.themeChanged = params.imageDisplay; //Only reload page if user asked for all images to be displayed
@@ -1219,7 +1227,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         '<p>You will then be able to right-click or long-press images in the exported page and save them.</p>');
                 } else if (window.nw) {
                     uiUtil.systemAlert('Unfortunately there is currently no way to save an image to disk in the NWJS version of this app.<br>You can do this in the PWA version: please visit https://pwa.kiwix.org.');
-                } else if (params.contentInjectionMode === 'serviceworker') {
+                } else if (params.contentInjectionMode === 'serviceworker' && appstate.selectedArchive
+                    && !/wikimedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name)) {
                     uiUtil.systemAlert('Please be aware that Image manipulation can interfere with non-Wikimedia ZIMs (particularly ZIMs that have active content). If you cannot access the articles in such a ZIM, please turn this setting off.');
                 } else if (/PWA/.test(params.appType)) {
                     uiUtil.systemAlert('Be aware that this option may interfere with active content if you switch to Service Worker mode.');
@@ -2572,7 +2581,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                                     readNodeDirectoryAndCreateNodeFileObjects(params.pickedFolder, archive)
                                     .then(function (fileset) {
                                         var selectedFiles = fileset[0];
-                                        if (appstate.selectArchive && appstate.selectArchive._file.files[0].name === selectedFiles[0].name) return;
+                                        if (appstate.selectedArchive && appstate.selectedArchive._file.files[0].name === selectedFiles[0].name) return;
                                         setLocalArchiveFromFileList(selectedFiles);
                                     });
                                 } else {
@@ -2626,6 +2635,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
                     // (this only affects jQuery mode)
                     appstate.target = 'iframe';
+                    if (params.contentInjectionMode === 'serviceworker') {
+                        var wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
+                        if (!wikimediaZimLoaded) {
+                            if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
+                            if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
+                            if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
+                        }
+                    }
                     // The archive is set : go back to home page to start searching
                     if (params.rescan) {
                         document.getElementById('btnConfigure').click();
@@ -2980,6 +2997,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // (this only affects jQuery mode)
                 appstate.target = 'iframe';
                 // The archive is set : go back to home page to start searching
+                if (params.contentInjectionMode === 'serviceworker') {
+                    var wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
+                    if (!wikimediaZimLoaded) {
+                        if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
+                        if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
+                        if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
+                    }
+                }
                 params.storedFile = archive._file._files[0].name;
                 settingsStore.setItem("lastSelectedArchive", params.storedFile, Infinity);
                 settingsStore.setItem("lastSelectedArchivePath", archive._file._files[0].path ? archive._file._files[0].path : '', Infinity);
@@ -3689,7 +3714,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 if (params.windowOpener) setTimeout(function () {
                     parseAnchorsJQuery(dirEntry);
                 }, 1500);
-                if (/manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker(articleWindow);
+                if (params.manipulateImages && /manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker(articleWindow);
                 if (params.allowHTMLExtraction && appstate.target === 'iframe') {
                     var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
                     uiUtil.insertBreakoutLink(determinedTheme);
@@ -4073,15 +4098,20 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 htmlArticle = htmlArticle.replace(/(<(audio|video)\b(?:[^<]|<(?!\/\2))+<\/\2>)/ig, function (p0) {
                     return /(?:src|data-kiwixurl)\s*=\s*["']/.test(p0) ? p0 : '';
                 });
-            } else if (wikiLang) {
+            } else if (wikiLang || params.manipulateImages) {
                 htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
                     newBlock = match;
-                    // For Wikipedia archives, hyperlink the image to the File version
-                    var assetZIMUrl = decodeURIComponent(relAssetUrl);
-                    if (/^<img/i.test(blockStart) && !/usemap=/i.test(match)) {
-                        newBlock = '<a href="https://' + (wikimediaZimFlavour !== 'mdwiki' ? wikiLang + '.' : '') + wikimediaZimFlavour
-                            + '.org/wiki/File:' + assetZIMUrl.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1')
-                            + '" target="_blank">' + newBlock + '</a>'
+                    // Add the kiwix-display directive so that the SW sends a dummy image instead
+                    if (params.manipulateImages && params.imageDisplay !== 'all' && /^<img/i.test(blockStart))
+                        newBlock = newBlock.replace(relAssetUrl, relAssetUrl + '?kiwix-display');
+                    if (wikiLang) {
+                        // For Wikipedia archives, hyperlink the image to the File version
+                        var assetZIMUrl = decodeURIComponent(relAssetUrl);
+                        if (/^<img/i.test(blockStart) && !/usemap=/i.test(match)) {
+                            newBlock = '<a href="https://' + (wikimediaZimFlavour !== 'mdwiki' ? wikiLang + '.' : '') + wikimediaZimFlavour
+                                + '.org/wiki/File:' + assetZIMUrl.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1')
+                                + '" target="_blank">' + newBlock + '</a>'
+                        }
                     }
                     return newBlock;
                 });
