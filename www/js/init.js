@@ -84,7 +84,7 @@ params['cssTheme'] = getSetting('cssTheme') || 'light'; //Set default to 'auto',
 params['cssUITheme'] = getSetting('cssUITheme') || 'light'; //Set default to 'auto', 'light' or 'dark' to use respective themes for UI'
 params['resetDisplayOnResize'] = getSetting('resetDisplayOnResize') != null ? getSetting('resetDisplayOnResize') : false; // Default for the display reset feature that fixes bugs with secondary displays
 params['imageDisplay'] = getSetting('imageDisplay') != null ? getSetting('imageDisplay') : true; //Set default to display images from Zim
-params['manipulateImages'] = getSetting('manipulateImages') != null ? getSetting('manipulateImages') : false; //Makes dataURIs by default instead of BLOB URIs for images
+params['manipulateImages'] = getSetting('manipulateImages') != null ? getSetting('manipulateImages') : true; //Makes dataURIs by default instead of BLOB URIs for images
 params['linkToWikimediaImageFile'] = getSetting('linkToWikimediaImageFile') != null ? getSetting('linkToWikimediaImageFile') : false; //Links images to Wikimedia online version if ZIM archive is a Wikipedia archive
 params['hideToolbars'] = getSetting('hideToolbars') != null ? getSetting('hideToolbars') : true; //Set default to true (hides both), 'top' (hides top only), or false (no hiding)
 params['rememberLastPage'] = getSetting('rememberLastPage') != null ? getSetting('rememberLastPage') : true; //Set default option to remember the last visited page between sessions
