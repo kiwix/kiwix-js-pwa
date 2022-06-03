@@ -850,21 +850,31 @@ define(rqDef, function(util) {
         if (!clickedAnchor) clickedAnchor = event.target;
         var target = clickedAnchor.target;
         var href = clickedAnchor.protocol ? clickedAnchor.href : 'http://' + clickedAnchor.href;
-        var message = '<p>Do you want to open this external link?';
+        var message = '<p>Click the link to open this ' + (/https:\/\/www.openstreetmap.*?mlat/.test(href) ? 'map' : 'external page');
         if (!target || target === '_blank') {
+            target = '_blank';
             message += ' (in a new tab)';
         }
-        message += '</p><p style="word-break:break-all;">' + clickedAnchor.href + '</p>';
+        var anchor = '<a id="kiwixExternalLink" href="' + href + '" target="' + target + '" style="word-break:break-all;">' + clickedAnchor.href + '</a>';
+        message += ':</p>' + anchor;
+        var opener = function (response) {
+            if (response) {
+                window.open(href, target);
+            }
+        };
         if (params.openExternalLinksInNewTabs) {
-            systemAlert(message, 'Opening external link', true).then(function (response) {
-                if (response) {
-                    if (!target) target = '_blank';
+            systemAlert(message, 'Opening external link');
+            // Close dialog box if user clicks the link
+            document.getElementById('kiwixExternalLink').addEventListener('click', function (e) {
+                if (/https:\/\/www.openstreetmap.*?mlat/.test(href)) {
+                    e.preventDefault();
+                    e.stopPropagation();
                     window.open(href, target);
                 }
+                document.getElementById('closeMessage').click();
             });
         } else {
-            if (!target) target = '_blank';
-            window.open(href, target);
+            opener(true);
         }
     }
 
