@@ -79,7 +79,7 @@ define([], function () {
     var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track|meta)\b[^>]*?[\s;])(?:src\b|href|url)\s*(=\s*(["']))(?=\/|https?:\/\/)((?:[^>](?!\3|\?|#))+[^>])([^>]*>)/ig;
     var regexpZimitJavascriptLinks = /['"(]((?:https?:)?\/\/[^'"?#)]+)['"?#)]/ig;
     var regexpZimitCssLinks = /\burl\s*\(['"\s]*([^)'"\s]+)['"\s]*\)/ig;
-    var regexpGetZimitPrefix = /link\s+rel=["']canonical["']\s+href=(['"])https?:\/\/([^\/]+)(.+?)\1/i;
+    var regexpGetZimitPrefix = /link\s+rel=["']canonical["']\s+href="https?:\/\/([^/"]+)/i;
     var regexpRemoveAnalytics1 = /<script\b([^<]|<(?!\/script>))+?(?:google.*?analytics|adsbygoogle)([^<]|<(?!\/script>))+<\/script>\s*/ig;
     var regexpRemoveAnalytics2 = /<ins\b(?:[^<]|<(?!\/ins>))+?adsbygoogle(?:[^<]|<(?!\/ins>))+<\/ins>\s*/ig;
     var regexpInlineScriptsNotMaths = /<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig;
@@ -101,11 +101,15 @@ define([], function () {
         var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(selectedArchive._file.name);
         if (/\bhtml\b/i.test(mimetype)) {
             var zimitPrefix = data.match(regexpGetZimitPrefix);
-            zimitPrefix = zimitPrefix ? zimitPrefix[2] : params.zimitPrefix;
+            zimitPrefix = zimitPrefix ? zimitPrefix[1] : params.zimitPrefix;
             // Remove lazyimgage system and noscript tags that comment out images
             // DEV: Check if this is still necessary
             data = data.replace(/<noscript>\s*(<img\b[^>]+>)\s*<\/noscript>/ig, '$1');
             data = data.replace(/<span\b[^>]+lazy-image-placeholder[^<]+<\/span>\s*/ig, '');
+
+            // // Inject the helper script wombat.js
+            // data = data.replace(/(<\/head>\s*)/i, '<script src="https://' + params.zimitPrefix + '/static/wombat.js"></script>\n');
+
             // Get stem for constructing an absolute URL
             data = data.replace(regexpZimitHtmlLinks, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
                 var newBlock = match;
