@@ -11,6 +11,7 @@
 * FIX: Process correctly the `srcset` property in image sets for Zimit ZIMs
 * FIX: Disable lazy image loading in Zimit ZIMs
 * FIX: Add some failsafe code to hide spinner if it runs too long (does not handle app crashes) 
+* FIX: Dark theme for new Stackexchange ZIMs
 
 ## Release 2.0.0
 
