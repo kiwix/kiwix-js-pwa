@@ -1215,9 +1215,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         document.getElementById('manipulateImagesCheck').addEventListener('click', function () {
             params.manipulateImages = this.checked;
             settingsStore.setItem('manipulateImages', params.manipulateImages, Infinity);
-            if (this.checked && !params.displayHiddenBlockElements) {
+            if (this.checked && !params.displayHiddenBlockElements && !params.noWarning) {
                 if (/UWP/.test(params.appType)) {
-                    uiUtil.systemAlert('<p>This option does not work in UWP apps.</p><p><b>WORKAROUND:</b> To save an image to disk, please select the ' +
+                    uiUtil.systemAlert('<p><b>WORKAROUND FOR UWP APP:</b> To save an image to disk, please select the ' +
                         '"Add breakout link ..." option below, load the article you require, and export it to a browser window by clicking the breakout link.</p>' +
                         '<p>You will then be able to right-click or long-press images in the exported page and save them.</p>');
                 } else if (window.nw) {
@@ -2652,7 +2652,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             params.cssThemeOriginal = null;
                         }
                         if (wikimediaZimLoaded) {
+                            params.noWarning = true;
                             if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
+                            params.noWarning = false;
                         }
                     }
                     // The archive is set : go back to home page to start searching
@@ -3023,7 +3025,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         params.cssThemeOriginal = null;
                     }
                     if (wikimediaZimLoaded) {
+                        params.noWarning = true;
                         if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
+                        params.noWarning = false;
                     }
                 }
                 // The archive is set : go back to home page to start searching
