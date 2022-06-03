@@ -123,25 +123,15 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in version <span class="version">1.9</span></h3>
                         <ul style="padding-left: 15px;">
-                            <li>Improved support for reading Zimit ZIM archives</li>
-                            <li>Search the full URL index of the ZIM (for images, assets, metadata) with namespace or space + /</li>
-                            <li>Refreshed Kiwix icons</li>
-                            <li>Add any missing file extension to downloadable files</li>
-                            <li>Prevent expensive RegExp processing for irrelevant ZIM types</li>
-                            <li>Filter out undesired files more effectively (Zimit ZIMs)</li>
-                            <li>Process URLs in JavaScript files</li>
-                            <li>Made PWA manifest compatible with Chromium installability criteria</li>
-                            <li>Remove landing page override for mdwiki at request of maintainer</li>
-                            <li>Hyperlinking of images to high-res versions is now off by default</li>
-                            <li>Ensure user clears the cache when switching to SW mode while a Zimit ZIM is loaded</li>
-                            <li>Fix bug that caused repeating images when hyperlinking images to online high-res versions</li>
-                            <li>Fix an exception when reloading the last selected archive on certain platforms</li>
-                            <li>Direct download certain recognized content types for Zimit archives</li>
-                            <li>Remove lazy image loading system if detected</li>
-                            <li>Fix errors with parsing and display of archive links in download library</li>
-                            <li>Adjustment to max page width restrictions is now applied on resize</li>
-                            <li>Removal of analytics scripts from Zimit archives (they were blocked, but caused stall on loading)</li>
-                            <li>Fixed incorrect meta tag encoding for some Zimit archives</li>
+                            <li>Radical improvement in CSS rendering in Zimit ZIMs</li>
+                            <li>Reduce delay between image loads when lazy-loading images (Wikimedia ZIMs)</li>
+                            <li>Speed up regex processing of Zimit transforms</li>
+                            <li>Intelligently auto-switch image manipulation setting if supported by ZIM type</li>
+                            <li>Intelligently turn off dark theme if ZIM does not support it</li>
+                            <li>Searching for assets in url index now properly shows the url instead of title</li>
+                            <li>Process correctly the <code>srcset</code> property in image sets for Zimit ZIMs</li>
+                            <li>Disable lazy image loading in Zimit ZIMs</li>
+                            <li>Add some failsafe code to hide spinner if it runs too long (does not handle app crashes)</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md" target="_blank">And there's more...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>
