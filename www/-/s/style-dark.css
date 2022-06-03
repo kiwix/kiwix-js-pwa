@@ -409,7 +409,7 @@ img[data-kiwixsrc*=".svg"][height="16"], img[data-kiwixsrc*=".svg"][height="17"]
     background-color: #222 !important;
 }
 
-div.tagsblob, .tagsblob ul, .tags li, .tags a {
+div.tagsblob, .tagsblob ul, .tags li, .tags a, .post-tag, .nav-links--link {
     background: darkslategray !important;
 }
 
