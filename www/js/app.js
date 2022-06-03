@@ -5365,7 +5365,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             goToArticle(pathEnc, download, contentType);
                         } else {
                             var anchor = {
-                                href: path.replace(/^[AC]\//, 'http://'),
+                                href: path.replace(/^[AC]\//, ''),
                                 target: '_blank'
                             };
                             uiUtil.warnAndOpenExternalLinkInNewTab(null, anchor)
