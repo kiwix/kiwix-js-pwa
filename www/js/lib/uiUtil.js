@@ -837,6 +837,7 @@ define(rqDef, function(util) {
         }
         if (!clickedAnchor) clickedAnchor = event.target;
         var target = clickedAnchor.target;
+        var href = clickedAnchor.protocol ? clickedAnchor.href : 'http://' + clickedAnchor.href;
         var message = '<p>Do you want to open this external link?';
         if (!target || target === '_blank') {
             message += ' (in a new tab)';
@@ -846,12 +847,12 @@ define(rqDef, function(util) {
             systemAlert(message, 'Opening external link', true).then(function (response) {
                 if (response) {
                     if (!target) target = '_blank';
-                    window.open(clickedAnchor.href, target);
+                    window.open(href, target);
                 }
             });
         } else {
             if (!target) target = '_blank';
-            window.open(clickedAnchor.href, target);
+            window.open(href, target);
         }
     }
 
