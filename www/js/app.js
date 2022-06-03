@@ -1255,6 +1255,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             params.hideActiveContentWarning = this.checked ? true : false;
             settingsStore.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
         });
+        $('input:checkbox[name=openExternalLinksInNewTabs]').on('change', function () {
+            params.openExternalLinksInNewTabs = this.checked ? true : false;
+            settingsStore.setItem('openExternalLinksInNewTabs', params.openExternalLinksInNewTabs, Infinity);
+        });
         document.getElementById('tabOpenerCheck').addEventListener('click', function () {
             params.windowOpener = this.checked ? 'tab' : false;
             if (params.windowOpener && /UWP\|PWA/.test(params.appType) && params.contentInjectionMode === 'jquery') {
@@ -4935,14 +4939,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     anchor.setAttribute('href', '#' + anchorTarget[1]);
                 } else if (anchor.protocol !== currentProtocol || anchor.host !== currentHost) {
                     // It's an external URL : we should open it in a new tab
-                    anchor.target = '_blank';
-                    if (anchor.protocol === 'bingmaps:') {
-                        anchor.removeAttribute('target');
-                        anchor.parentElement.addEventListener('click', function (e) {
-                            e.preventDefault();
+                    anchor.addEventListener('click', function (event) {
+                        if (anchor.protocol === 'bingmaps:') {
+                            anchor.removeAttribute('target');
+                            event.preventDefault();
                             window.location = href;
-                        });
-                    }
+                        } else {
+                            // Find the closest enclosing A tag
+                            var clickedAnchor = uiUtil.closestAnchorEnclosingElement(event.target);
+                            uiUtil.warnAndOpenExternalLinkInNewTab(event, clickedAnchor);
+                        }
+                    });
                 } else {
                     addListenersToLink(anchor, href, params.baseURL);
                 }
@@ -5357,10 +5364,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             // We failed to get path, so we should try the fully encoded version instead
                             goToArticle(pathEnc, download, contentType);
                         } else {
-                            path = path.replace(/^[AC]\//, 'http://');
-                            uiUtil.systemAlert('<p>We could not find an offline version of the requested article in this Zimit archive.</p>' +
-                                '<p>If you would like to open this page online in a new tab, please click this link:</p>' + 
-                                '<p><a href="' + path + '" target="_blank">' + path.replace(/^http:\/\//, '') + '</a></p>');
+                            var anchor = {
+                                href: path.replace(/^[AC]\//, 'http://'),
+                                target: '_blank'
+                            };
+                            uiUtil.warnAndOpenExternalLinkInNewTab(null, anchor)
                             setTab();
                         }
                     } else {
