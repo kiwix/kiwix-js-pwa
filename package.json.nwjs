@@ -35,7 +35,7 @@
     }
   },
   "build-x64": {
-    "nwVersion": "0.63.1",
+    "nwVersion": "0.65.0",
     "output": "bld/nwjs/win-x64",
     "files": [
       "archives/**",
@@ -50,7 +50,7 @@
     }
   },
   "build": {
-    "nwVersion": "0.63.1",
+    "nwVersion": "0.65.0",
     "output": "bld/nwjs/win-x86",
     "files": [
       "service-worker.js",
