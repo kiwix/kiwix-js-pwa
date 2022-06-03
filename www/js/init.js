@@ -100,6 +100,7 @@ params['omegaChar'] = getSetting('omegaChar') || 'Z'; //Set default end of alpha
 params['contentInjectionMode'] = getSetting('contentInjectionMode') || ((navigator.serviceWorker && !/^(ms-appx-web:)$/i.test(window.location.protocol)
     && !/Android/.test(params.appType) && !window.nw) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
 params['allowInternetAccess'] = getSetting('allowInternetAccess');
+params['openExternalLinksInNewTabs'] = getSetting('openExternalLinksInNewTabs') !== null ? getSetting('openExternalLinksInNewTabs') : true; // Parameter to turn on/off opening external links in new tab
 params['windowOpener'] = getSetting('windowOpener'); // 'tab|window|false' A setting that determines whether right-click/long-press of a ZIM link opens a new window/tab
 params['rightClickType'] = getSetting('rightClickType'); // 'single|double|false' A setting that determines whether a single or double right-click is used to open a new window/tab
 params['navButtonsPos'] = getSetting('navButtonsPos') || 'bottom'; // 'top|bottom' A setting that determines where the back-forward nav buttons appear
@@ -240,6 +241,7 @@ document.getElementById('hideToolbarsCheck').checked = params.hideToolbars === t
 document.getElementById('hideToolbarsCheck').indeterminate = params.hideToolbars === "top";
 document.getElementById('hideToolbarsCheck').readOnly = params.hideToolbars === "top";
 document.getElementById('hideToolbarsState').innerHTML = (params.hideToolbars === "top" ? "top" : params.hideToolbars ? "both" : "never");
+document.getElementById('openExternalLinksInNewTabsCheck').checked = params.openExternalLinksInNewTabs;
 if (params.windowOpener === null) { // Setting has never been activated, so determine a sensible default
     params.windowOpener = /UWP/.test(params.appType) && params.contentInjectionMode === 'jquery' ? false : 
     'MSBlobBuilder' in window ? 'window' : // IE11/Edge/UWP work best in window mode, not in tab mode!

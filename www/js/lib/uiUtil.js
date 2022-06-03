@@ -823,6 +823,66 @@ define(rqDef, function(util) {
         document.getElementById('apiStatusDiv').className = 'panel panel-danger';
     }
 
+
+    /**
+     * Warn the user that he/she clicked on an external link, and open it in a new tab
+     * 
+     * @param {Event} event The click event (on an anchor) to handle
+     * @param {Element} clickedAnchor The DOM anchor that has been clicked (optional, defaults to event.target)
+     */
+    function warnAndOpenExternalLinkInNewTab(event, clickedAnchor) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        if (!clickedAnchor) clickedAnchor = event.target;
+        var target = clickedAnchor.target;
+        var message = '<p>Do you want to open this external link?';
+        if (!target || target === '_blank') {
+            message += ' (in a new tab)';
+        }
+        message += '</p><p style="word-break:break-all;">' + clickedAnchor.href + '</p>';
+        if (params.openExternalLinksInNewTabs) {
+            systemAlert(message, 'Opening external link', true).then(function (response) {
+                if (response) {
+                    if (!target) target = '_blank';
+                    window.open(clickedAnchor.href, target);
+                }
+            });
+        } else {
+            if (!target) target = '_blank';
+            window.open(clickedAnchor.href, target);
+        }
+    }
+
+    /**
+     * Finds the closest <a> or <area> enclosing tag of an element.
+     * Returns undefined if there isn't any.
+     * 
+     * @param {Element} element The element to test
+     * @returns {Element} closest enclosing anchor tag (if any)
+     */
+    function closestAnchorEnclosingElement(element) {
+        if (Element.prototype.closest) {
+            // Recent browsers support that natively. See https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
+            return element.closest('a,area');
+        } else {
+            // For other browsers, notably IE, we do that by hand (we did not manage to make polyfills work on IE11)
+            var currentElement = element;
+            while (currentElement.tagName !== 'A' && currentElement.tagName !== 'AREA') {
+                // If there is no parent Element, we did not find any enclosing A tag
+                if (!currentElement.parentElement) {
+                    return;
+                } else {
+                    // Else we try the next parent Element
+                    currentElement = currentElement.parentElement;
+                }
+            }
+            // If we reach this line, it means the currentElement is the enclosing Anchor we're looking for
+            return currentElement;
+        }
+    }
+
     // If global variable webpMachine is true (set in init.js), then we need to initialize the WebP Polyfill
     if (webpMachine) webpMachine = new webpHero.WebpMachine();
 
@@ -850,6 +910,8 @@ define(rqDef, function(util) {
         extractHTML: extractHTML,
         checkServerIsAccessible: checkServerIsAccessible,
         initTouchZoom: initTouchZoom,
-        reportAssemblerErrorToAPIStatusPanel: reportAssemblerErrorToAPIStatusPanel
+        reportAssemblerErrorToAPIStatusPanel: reportAssemblerErrorToAPIStatusPanel,
+        warnAndOpenExternalLinkInNewTab: warnAndOpenExternalLinkInNewTab,
+        closestAnchorEnclosingElement: closestAnchorEnclosingElement
     };
 });
