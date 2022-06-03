@@ -1116,11 +1116,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 this.checked = false;
                 document.getElementById('serviceworkerModeRadio').checked = true;
                 return;
-            } else if (this.value === 'serviceworker' && params.zimType === 'zimit') {
-                cache.clear('all', refreshAPIStatus);
-                uiUtil.systemAlert('We need to clear the assets cache when switching to Service Worker mode ' + 
-                    'while using a Zimit ZIM, to be sure you are served the correct assets.<br >' + 
-                    '<b>N.B. You may also need to re-pick the ZIM.</b>', 'Clearing cache...')
             }
             var returnDivs = document.getElementsByClassName("returntoArticle");
             for (var i = 0; i < returnDivs.length; i++) {
@@ -4397,7 +4392,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 }
                 for (var i = 0; i < arr.length; i++) {
                     var zimLink = arr[i].match(/(?:href|data-kiwixurl)\s*=\s*['"]([^'"]+)/i);
-                    zimLink = zimLink ? decodeURIComponent(uiUtil.removeUrlParameters(zimLink[1])) : '';
+                    zimLink = zimLink ? params.zimType === 'zimit' ? zimLink[1] : decodeURIComponent(uiUtil.removeUrlParameters(zimLink[1])) : '';
                     //Remove path DON'T DO THIS! SW mode fails if you do...
                     //zimLink = zimLink.replace(/^[.\/]*([\S\s]+)$/, '$1');
                     /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
