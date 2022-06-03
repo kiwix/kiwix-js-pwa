@@ -190,13 +190,9 @@ define([], function () {
                 /^\//.test(assetUrl) ? assetUrl.replace(/^\//, dirEntry.namespace + '/' + params.zimitPrefix + '/') :
                 // Deal with absolute URLs
                 /^https?:\/\//i.test(assetUrl) ? assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/') : assetUrl; 
-                newBlock = params.contentInjectionMode === 'serviceworker' ?
-                    // If asset is relative, no transform needed
-                    assetUrl === url ? newBlock :
-                    newBlock.replace(url, '/' + selectedArchive._file.name + '/' + assetUrl) :
-                    // For jQuery mode, no change needed for relative links
-                    assetUrl === url ? newBlock :
-                    newBlock.replace(url, '/' + assetUrl);
+                // Relative assets
+                newBlock = assetUrl === url ? newBlock :
+                    newBlock.replace(url, '/' + selectedArchive._file.name + '/' + assetUrl);
                 // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
@@ -214,10 +210,8 @@ define([], function () {
                 assetUrl = assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
                 // Remove analytics
                 assetUrl = /google|analytics|typepad.*stats/i.test(assetUrl) ? '' : assetUrl; 
-                // if (assetUrl === url) return match; // If nothing was transformed, return
-                newBlock = params.contentInjectionMode === 'serviceworker' ?
-                    newBlock.replace(url, '/' + selectedArchive._file.name + '/' + assetUrl) :
-                    newBlock.replace(url, '/' + assetUrl);
+                // Relative assets
+                newBlock = newBlock.replace(url, '/' + selectedArchive._file.name + '/' + assetUrl);
                 // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
