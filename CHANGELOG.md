@@ -3,11 +3,13 @@
 ## In-progress release 2.0.4
 
 * ENHANCEMENT: Radical improvement in CSS rendering in Zimit ZIMs
+* ENHANCEMENT: Option to warn before opening external links
 * ENHANCEMENT: Reduce delay between image loads when lazy-loading images (Wikimedia ZIMs)
 * ENHANCEMENT: Speed up regex processing of Zimit transforms
 * ENHANCEMENT: Intelligently auto-switch image manipulation setting if supported by ZIM type
 * ENHANCEMENT: Intelligently turn off dark theme if ZIM does not support it
 * FIX: Searching for assets in url index now properly shows the url instead of title
+* FIX: System alert dialogue box now handles keyboard events
 * FIX: Process correctly the `srcset` property in image sets for Zimit ZIMs
 * FIX: Disable lazy image loading in Zimit ZIMs
 * FIX: Add some failsafe code to hide spinner if it runs too long (does not handle app crashes) 
