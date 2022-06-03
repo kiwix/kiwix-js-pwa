@@ -14,6 +14,7 @@
 * FIX: Disable lazy image loading in Zimit ZIMs
 * FIX: Add some failsafe code to hide spinner if it runs too long (does not handle app crashes) 
 * FIX: Dark theme for new Stackexchange ZIMs
+* FIX: Interoperability between JQuery and Service Worker modes with Zimit archives
 
 ## Release 2.0.0
 
