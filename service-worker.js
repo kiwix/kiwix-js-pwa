@@ -176,6 +176,7 @@ let precacheFiles = [
   "www/js/lib/transformStyles.js",
   "www/js/lib/transformZimit.js",
   "www/js/lib/uiUtil.js",
+  "www/js/lib/updater.js",
   "www/js/lib/utf8.js",
   "www/js/lib/util.js",
   //"www/js/lib/webpHeroBundle_0.0.0-dev.27.js",
