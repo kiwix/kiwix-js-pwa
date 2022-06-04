@@ -26,8 +26,8 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images', 'settingsStore', 'transformStyles', 'kiwixServe'],
-    function ($, zimArchiveLoader, uiUtil, util, utf8, cache, images, settingsStore, transformStyles, kiwixServe) {
+define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images', 'settingsStore', 'transformStyles', 'kiwixServe', 'updater'],
+    function ($, zimArchiveLoader, uiUtil, util, utf8, cache, images, settingsStore, transformStyles, kiwixServe, updater) {
 
         /**
          * The delay (in milliseconds) between two "keepalive" messages
@@ -866,6 +866,27 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             });
         }
 
+        // Check for GitHub updates
+        function checkUpdateServer() {
+            if (!params.allowInternetAccess) {
+                console.log("The update check was blocked because the user has not allowed Internet access.")
+                return;
+            }
+            updater.getLatestUpdates(function (tag, url, releases) {
+                var updateSpan = document.getElementById('updateStatus');
+                if (!tag) {
+                    updateSpan.innerHTML = '[ <b><i>App is up to date</i></b> ]';
+                    console.log('No new update was found.');
+                    return;
+                }
+                console.log('We found this update: [' + tag + '] ' + url, releases);
+                updateSpan.innerHTML = '[ <b><i><a href="#alertBoxPersistent">New update!</a></i></b> ]';
+                uiUtil.showUpgradeReady(tag.replace(/^v/, ''), 'download', url);
+            });
+        }
+        // Do check on startup
+        setTimeout(checkUpdateServer, 15000);
+
         function setActiveBtn(activeBtn) {
             document.getElementById('btnHome').classList.remove("active");
             document.getElementById('btnRandomArticle').classList.remove("active");
@@ -1125,7 +1146,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             setContentInjectionMode(this.value);
             // If we're in a PWA UWP app, warn the user that this does not disable the PWA
             if (this.value === 'jquery' && /^http/i.test(window.location.protocol) && /UWP\|PWA/.test(params.appType) &&
-                settingsStore.getItem('allowInternetAccess') === 'true') {
+                params.allowInternetAccess === 'true') {
                 uiUtil.systemAlert(
                     '<p>Please note that switching content injection mode does not revert to local code.</p>' +
                     '<p>If you wish to exit the PWA, you will need to turn off "Allow Internet access?" above.</p>'
@@ -1188,8 +1209,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         });
                     }
                 }
-                settingsStore.setItem('allowInternetAccess', false, Infinity);
+            } else {
+                // We can check for updates if the user has allowed Internet access
+                checkUpdateServer();
             }
+            settingsStore.setItem('allowInternetAccess', params.allowInternetAccess, Infinity);
         });
         $('input:checkbox[name=cssCacheMode]').on('change', function (e) {
             params.cssCache = this.checked ? true : false;
