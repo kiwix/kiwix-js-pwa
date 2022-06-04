@@ -674,17 +674,19 @@ define(rqDef, function(util) {
     /**
      * Shows that an upgrade is ready to install
      * @param {String} ver The version of the upgrade 
-     * @param {String} type Either 'load' or 'install' according to the type of upgrade 
+     * @param {String} type Either 'load', 'install' or 'download' according to the type of upgrade
+     * @param {String} url An optional download URL
      */
-    function showUpgradeReady(ver, type) {
+    function showUpgradeReady(ver, type, url) {
         params.upgradeNeeded = true;
         document.getElementById('alertBoxPersistent').innerHTML =
             '<div id="upgradeAlert" class="alert alert-info alert-dismissible">\n' +
             '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
             '    <span id="persistentMessage"></span>\n' +
             '</div>\n';
-        document.getElementById('persistentMessage').innerHTML = 'Version ' + ver + ' is ready to '
-            + type + '! (Re-launch app to ' + type + '.)';
+        document.getElementById('persistentMessage').innerHTML = 'Version ' + ver + 
+            (url ? ' is available to ' + type + '! Go to <a href="' + url + '" style="color:white;" target="_blank">' + url + '</a>' 
+            : ' is ready to ' + type + '! (Re-launch app to ' + type + '.)');
     }
     
     /**
