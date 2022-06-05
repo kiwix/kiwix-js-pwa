@@ -42,6 +42,7 @@ if ($VERSION -match '^v?[\d.]') {
     (Get-Content ./www/js/init.js) -replace '(appVersion..\s*=\s*["''])[^"'']+', "`${1}$VERSION" | Set-Content -encoding "utf8BOM" ./www/js/init.js
     $PackageJson = Get-Content -Raw ./package.json
     $nwVersion = $PackageJson -match '"build":\s\{[^"]+"nwVersion":\s"([^"'']+)'
+    $CustomVersion = $VERSION -replace '-(WikiMed|Wikivoyage)', ''
     $CustomVersion = $VERSION -replace '^([^-]+)(-[0-9a-z]{7})?.*', '$1$2-E'
     if ($nwVersion) {
         $nwVersion = $matches[1]

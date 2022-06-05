@@ -25,7 +25,7 @@ if ($VERSION -match '^v?[\d.]') {
     $PackageJsonNW = Get-Content -Raw ./package.json.nwjs
     $nwVersion = $PackageJsonNW -match '"build":\s\{[^"]+"nwVersion":\s"([^"'']+)'
     $nwVersion = $matches[1]
-    $CustomVersion = $VERSION -replace '^([^-]+)', '$1-E'
+    $CustomVersion = $VERSION -replace '^([^-]+).*', '$1-E'
     "Setting App Version to $CustomVersion in package.json ...`n"
     $PackageJson = $PackageJson -replace '("version":\s+")[^"]+', "`${1}$CustomVersion"
     # DEV: don't set BOM, as Linux tools crash with it
