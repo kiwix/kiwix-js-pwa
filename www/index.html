@@ -657,13 +657,14 @@
                         <h2 style="margin-top:0;">Configuration</h2>
                         <div id="alertBoxPersistent"></div>
                         <p id="usage" style="margin: 1em auto 1em;">For <b>instructions</b> and <b>usage guide</b>, please see the <a href="#" class="aboutLink"><b>About tab</b> <span class="glyphicon glyphicon-info-sign"></span></a> (top right).</p>
+                        <p>App version: <b><span class="version"></span></b> <span id="updateCheck">[<a class="unhideLibrary" href="#btnRescanDeviceStorage">check for updates</a>]</span> </p>
                         <p class="packagedInfo" style="display: none; margin-top: 1em;">
                             Packaged ZIM archive: <b><span class="fileVersion"></span></b>
                             <button style="display:none;" id="reloadPackagedArchive" type="button" class="btn btn-primary btn-xs">Reload</button>
                         </p>
                         <p id="currentArchive" style="display: none;"></p>
                         <p id="downloadLinksText">
-                            <a id="otherLangs" href="#btnRescanDeviceStorage"><i>Download more archives from the <b>Archive Library</b>.</i></a>
+                            <a class="unhideLibrary" href="#btnRescanDeviceStorage"><i>Download more archives from the <b>Archive Library</b>.</i></a>
                         </p>
                         <p></p>
                     </div>
@@ -739,7 +740,7 @@
                                     <label class="checkbox">
                                         <input type="checkbox" name="allowInternetAccess" id="allowInternetAccessCheck">
                                         <span class="checkmark"></span>
-                                        <b>Allow Internet access?</b> <span id="updateStatus">(and check for updates)</span>
+                                        <b>Allow Internet access?</b> <span id="updateStatus">and <b>check for updates</b></span>
                                     </label>
                                 </div>
                                 <div id="downloadLinks" style="display: none;"></div>
