@@ -168,6 +168,7 @@
     <Content Include="www\js\lib\arrayFromPolyfill.js" />
     <Content Include="www\js\lib\promisePolyfill.js" />
     <Content Include="www\js\lib\transformZimit.js" />
+    <Content Include="www\js\lib\updater.js" />
     <Content Include="www\js\lib\webpHeroBundle_0.0.0-dev.27.js" />
     <Content Include="www\js\lib\xzdec-asm.js" />
     <Content Include="www\js\lib\xzdec-wasm.js" />
