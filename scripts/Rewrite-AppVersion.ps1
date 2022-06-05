@@ -43,7 +43,7 @@ if ($VERSION -match '^v?[\d.]') {
     $PackageJson = Get-Content -Raw ./package.json
     $nwVersion = $PackageJson -match '"build":\s\{[^"]+"nwVersion":\s"([^"'']+)'
     $CustomVersion = $VERSION -replace '-(WikiMed|Wikivoyage)', ''
-    $CustomVersion = $VERSION -replace '^([^-]+)(-[0-9a-z]{7})?.*', '$1$2-E'
+    $CustomVersion = $CustomVersion -replace '^([^-]+)(-[0-9a-z]{7})?.*', '$1$2-E'
     if ($nwVersion) {
         $nwVersion = $matches[1]
         $CustomVersion = $customversion -creplace '-E', '-N'
