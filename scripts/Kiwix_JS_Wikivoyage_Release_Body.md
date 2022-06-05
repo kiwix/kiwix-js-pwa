@@ -7,7 +7,8 @@ Please choose the correct version (only the Store version will self update):
 * **Windows**:
   - **Store app for Windows 10/11 (UWP)**
     + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9N5SB90Q4JBJ (it will self-update automatically) - *recommended*
-    + Or, on a PC, open a command prompt and run `winget install kiwix.wikivoyage`; you can also sideload it (see instructions below)
+    + Or, on a PC, open a command prompt and run `winget install wikivoyag -s msstore`
+	+ Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.wikivoyage` - this doesn't auto-update, but you can upgrade easily by running  `winget upgrade` or `winget upgrade --all`
   - **Portable (Electron) - just unzip, no install needed**
     + Windows 7/8/10/11: [Wikivoyage-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<base_tag>>-E.zip)
   - **Installable (Electron)**
@@ -54,24 +55,6 @@ Full installation instructions are after the screenshot.
 
 ## Instructions for sideloading (UWP)
 
-### Windows 10/11 Desktop/Tablet
+**New!** You can sideload the app easily by typing `winget install kiwix.wikivoyage` in a Command Prompt or PowerShell terminal (Windows 10 or 11).
 
-**New!** You can sideload the app easily by typing `winget install kiwix.wikivoyage` in a Command Prompt or PowerShell terminal. If you don't yet have [`winget`](https://docs.microsoft.com/en-us/windows/package-manager/winget/), use these manual instructions:
-
-**Uninstall any previous installation of Wikivoyage by Kiwix before you follow this procedure**.
-
-Download the signed app bundle [KiwixWebAppWikivoyage_<<base_tag>>.0_AnyCPU.appxbundle](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/KiwixWebAppWikivoyage_<<base_tag>>.0_AnyCPU.appxbundle) and run/launch it (depending on the browser, you may need to single-click or double-click the file or "download complete" notification). The App Installer should open and ask you whether you wish to install (it may also ask you if you wish to allow sideloading apps: if so, answer yes). If you are satisfied that the app is trusted, click Install.
-
-On slightly older versions of Windows 10, you may need to enable sideloading of apps beforehand: go to Settings / Update and security / For developers and select "Sideload apps". You may be asked to reboot.
-
-If the above procedures fail, or the App Installer is not available, then download and unzip into a folder the `PowerShell.Installation.Script...` from Assets, place the `.appxbundle` in the same folder, and follow PowerShell Installation instructions [here](https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#windows-10-tablet--pc) (except that you don't need to download further files, all the needed ones are included in the zip file `PowerShell.Installation.Script...`).
-
-In case you are still unable to sideload, try the Electron version above.
-
-### Windows 10 Mobile
-
-**Uninstall any previous installation of Wikivoyage by Kiwix before you follow this procedure**.
-
-Download [KiwixWebAppWikivoyage_<<base_tag>>.0_AnyCPU.appxbundle](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/KiwixWebAppWikivoyage_<<base_tag>>.0_AnyCPU.appxbundle) to your downloads folder, or other accessible folder, on the phone. Enable Developer mode on your device (Settings / Updates and security / For developers). 
-
-Open the File Explorer on the phone, navigate to the downloads folder and tap the KiwixWebAppWikivoyage bundle. You will be asked if you wish to install, but it then installs silently in the background. Be patient: it can take a minute or so for the Wikivoyage icon to appear in the All Apps list.
+For Windows Mobile or for sideloading manually, please see detailed instructions at https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#readme.
