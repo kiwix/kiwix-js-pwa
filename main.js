@@ -87,6 +87,10 @@ function registerListeners() {
             }
         });
     });
+    ipcMain.on('check-updates', function (event) {
+        console.log('Auto-update check request received...\n');
+        autoUpdater.checkForUpdates();
+    });
 }
 
 app.whenReady().then(() => {
@@ -119,15 +123,15 @@ app.whenReady().then(() => {
     var appName = app.getName();
     console.log('App name: ' + appName);
         
-    setTimeout(function () {
-        // Don't auto update if the app is a packaged app
-        if (/wikimed|wikivoyage/i.test(appName)) {
-            console.log('Auto-update: Packaged apps with large ZIM archives are not auto-updated.\n');
-            return;
-        }
-        console.log('Auto-update: checking for update...\n');
-        autoUpdater.checkForUpdates();
-    }, 30000);
+    // setTimeout(function () {
+    //     // Don't auto update if the app is a packaged app
+    //     if (/wikimed|wikivoyage/i.test(appName)) {
+    //         console.log('Auto-update: Packaged apps with large ZIM archives are not auto-updated.\n');
+    //         return;
+    //     }
+    //     console.log('Auto-update: checking for update...\n');
+    //     autoUpdater.checkForUpdates();
+    // }, 30000);
 
     // Send message to renderer if update is available
     autoUpdater.on('update-downloaded', function (info) {
