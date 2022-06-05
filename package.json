@@ -95,7 +95,7 @@
   "maintainer": "Jaifroid",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^19.0.0",
+    "electron": "19.0.0",
     "electron-builder": "^23.0.3",
     "electron-packager": "^15.4.0"
   },
