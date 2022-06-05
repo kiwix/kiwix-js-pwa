@@ -858,7 +858,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             setTimeout(resizeIFrame, 100);
         }
 
-        // Check for Electron update
+        // Electron callback listener if an update is found by main.js
         if (window.electronAPI) {
             electronAPI.on('update-available', function (data) {
                 console.log('Upgrade is available:' + data);
@@ -866,12 +866,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             });
         }
 
-        // Check for GitHub updates
+        // Check for GitHub and Electron updates
         function checkUpdateServer() {
             if (!params.allowInternetAccess) {
                 console.log("The update check was blocked because the user has not allowed Internet access.")
                 return;
             }
+            // GitHub updates
+            console.log('Checking for updates from Releases...');
             updater.getLatestUpdates(function (tag, url, releases) {
                 var updateSpan = document.getElementById('updateStatus');
                 if (!tag) {
@@ -883,6 +885,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 updateSpan.innerHTML = '[ <b><i><a href="#alertBoxPersistent">New update!</a></i></b> ]';
                 uiUtil.showUpgradeReady(tag.replace(/^v/, ''), 'download', url);
             });
+            // Electron updates
+            if (window.electronAPI) {
+                var baseApp = (params.packagedFile && /wikivoyage/.test(params.packagedFile)) ? 'wikivoyage' :
+                    (params.packagedFile && /wikmed|mdwiki/.test(params.packagedFile)) ? 'wikimed' :
+                    'electron';
+                if (baseApp === 'electron') {
+                    console.log('Launching Electron auto-updater...');
+                    electronAPI.checkForUpdates();
+                } else {
+                    console.log('Auto-update: Packaged apps with large ZIM archives are not currently auto-updated.');
+                }
+            }
         }
         // Do check on startup
         setTimeout(checkUpdateServer, 15000);
@@ -1852,6 +1866,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 });
                 // On some platforms, bootstrap's jQuery functions have not been injected yet, so we have to run in a timeout
                 setTimeout(function () {
+                    $('#myModal').on('hide.bs.modal', function () {
+                        if (!params.allowInternetAccess) {
+                            var updateServer = params.updateServer.url.replace(/^([^:]+:\/\/[^/]+).*/, '$1');
+                            uiUtil.systemAlert('<p>Do you want this app to check for updates on startup?<br />(this will allow access to <i>' + updateServer + '</i>)</p>' + 
+                                '<p><i>If you change your mind, use the <b>"Allow Internet Access"</b> option in Configuration to turn on or off.</i></p>'
+                                , 'Updates check disabled!', true)
+                            .then(function (response) {
+                                if (response) document.getElementById('allowInternetAccessCheck').click();
+                            });
+                        }
+                    });
                     $('#myModal').modal({
                         backdrop: "static"
                     });
