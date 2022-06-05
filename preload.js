@@ -17,8 +17,11 @@ contextBridge.exposeInMainWorld('fs', {
     close: close, 
     stat: stat
 });
-// Event callback for electronAPI (you can add events to listen to, so long as main.js sends a message with name of the event)
+// Exposed events and Event callback for electronAPI (you can add events to listen to, so long as main.js sends a message with name of the event)
 contextBridge.exposeInMainWorld('electronAPI', {
+    checkForUpdates: function () {
+        ipcRenderer.send('check-updates');
+    },
     on: function (event, callback) {
         ipcRenderer.on(event, function (_, data) {
             callback(data);
