@@ -1,7 +1,8 @@
 # Changelog
 
-## In-progress release 2.0.4
+## In-progress release 2.0.5
 
+* FEATURE: Optionally check for app updates and inform user of availability
 * ENHANCEMENT: Radical improvement in CSS rendering in Zimit ZIMs
 * ENHANCEMENT: Option to warn before opening external links
 * ENHANCEMENT: Reduce delay between image loads when lazy-loading images (Wikimedia ZIMs)
