@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-wikivoyage",
   "productName": "Wikivoyage by Kiwix",
-  "version": "2.0.5-E",
+  "version": "2.0.2-E",
   "description": "Kiwix JS packaged for the Electron framework",
   "main": "main.js",
   "build": {
@@ -102,4 +102,6 @@
     "electron-updater": "^5.0.3"
   }
 }
+
+
 
