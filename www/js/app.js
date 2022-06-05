@@ -837,7 +837,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 }
             }
             // Check for upgrade of PWA
-            if (!params.upgradeNeeded && /PWA/.test(params.appType) && activeBtn === 'btnConfigure') {
+            if (!params.upgradeNeeded && /^(?!.*Electron).*PWA/.test(params.appType) && activeBtn === 'btnConfigure') {
                 caches.keys().then(function (keyList) {
                     var cachePrefix = cache.APPCACHE.replace(/^([^\d]+).+/, '$1');
                     document.getElementById('alertBoxPersistent').innerHTML = '';
@@ -867,6 +867,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         }
 
         // Check for GitHub and Electron updates
+        var updateCheck = document.getElementById('updateCheck');
+        if (params.allowInternetAccess) updateCheck.style.display = 'none';
         function checkUpdateServer() {
             if (!params.allowInternetAccess) {
                 console.log("The update check was blocked because the user has not allowed Internet access.")
@@ -882,7 +884,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             updater.getLatestUpdates(function (tag, url, releases) {
                 var updateSpan = document.getElementById('updateStatus');
                 if (!tag) {
-                    updateSpan.innerHTML = '[ <b><i>App is up to date</i></b> ]';
+                    var upToDate = '[&nbsp;<b><i>Latest&nbsp;version</i></b>&nbsp;]';
+                    updateCheck.style.display = 'inline';
+                    updateCheck.innerHTML = upToDate;
+                    updateSpan.innerHTML = upToDate;
                     console.log('No new update was found.');
                     return;
                 }
@@ -1233,6 +1238,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 checkUpdateServer();
             }
             settingsStore.setItem('allowInternetAccess', params.allowInternetAccess, Infinity);
+            library.style.borderColor = '';
+            library.style.borderStyle = '';
         });
         $('input:checkbox[name=cssCacheMode]').on('change', function (e) {
             params.cssCache = this.checked ? true : false;
@@ -1806,16 +1813,20 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             settingsStore.setItem('useMathJax', params.useMathJax, Infinity);
             params.themeChanged = true;
         });
-        document.getElementById('otherLangs').addEventListener('click', function () {
-            if (!params.showFileSelectors) document.getElementById('displayFileSelectorsCheck').click();
-            var library = document.getElementById('libraryArea');
-            library.style.borderColor = 'red';
-            library.style.borderStyle = 'solid';
-            document.getElementById('downloadTrigger').addEventListener('mousedown', function () {
-                library.style.borderColor = '';
-                library.style.borderStyle = '';
+        var library = document.getElementById('libraryArea');
+        var unhideArchiveLibraryAnchors = document.getElementsByClassName("unhideLibrary");
+        for (var i = 0; i < unhideArchiveLibraryAnchors.length; i++) {
+            unhideArchiveLibraryAnchors[i].addEventListener('click', function () {
+                if (!params.showFileSelectors) document.getElementById('displayFileSelectorsCheck').click();
+                library.style.borderColor = 'red';
+                library.style.borderStyle = 'solid';
             });
+        }
+        document.getElementById('downloadTrigger').addEventListener('mousedown', function () {
+            library.style.borderColor = '';
+            library.style.borderStyle = '';
         });
+        
         $('input:checkbox[name=displayFileSelectors]').on('change', function (e) {
             params.showFileSelectors = this.checked ? true : false;
             document.getElementById('rescanStorage').style.display = "block";
