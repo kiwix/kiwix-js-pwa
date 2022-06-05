@@ -100,30 +100,3 @@ foreach ($build in $builds) {
     Compress-Archive "$PSScriptRoot\..\bld\nwjs\$build-$version\*" "$PSScriptRoot\..\bld\nwjs\$foldername.zip" -Force
     "Build $OBuild finished.`n"
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
