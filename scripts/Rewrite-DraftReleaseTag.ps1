@@ -16,7 +16,7 @@ if ($INPUT_VERSION) {
     if ($from -match '^v[0-9.]+(-WikiMed|-Wikivoyage)?$') {
         $to = $from -replace '^(v[0-9.]+)(.*)$', '$1-E'
     } elseif ($from -cmatch '^v[0-9.]+-E') {
-        $to = $from -creplace '-E', ''
+        $to = $INPUT_VERSION
     }
 }
 
