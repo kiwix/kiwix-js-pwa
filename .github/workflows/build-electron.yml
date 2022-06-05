@@ -72,7 +72,7 @@ jobs:
       run: |
         if (-not ($Env:CRON_LAUNCHED -or ($Env:INPUT_TARGET -eq 'nightly'))) {
           $GITHUB_TOKEN = $Env:GITHUB_TOKEN
-          $INPUT_VERSION_E = $Env:INPUT_VERSION -replace '^(v[0-9.]+)E?(.*)', '$1E$2'
+          $INPUT_VERSION_E = $Env:INPUT_VERSION -replace '^(v[0-9.]+).*', '$1E'
           ./scripts/Create-DraftRelease -buildonly -tag_name $INPUT_VERSION_E -portableonly -wingetprompt N
         }
     - name: publish packages

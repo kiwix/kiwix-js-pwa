@@ -356,31 +356,33 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         $deleteBundle = -Not ( $deleteBundle -imatch 'n' )
         If ((-Not $dryrun) -and $deleteBundle) {
           rm $ReleaseBundle
+          $ReleaseBundle = ""
         }
     }
-    "`nBuilding UWP app..."
-    if (-Not ($appxmanifest -match "Version=['`"]$numeric_tag\.0['`"]")) {
-      "The requested release version does not match the version in package.appxmanifest"
-      "Updating..."
-      $appxmanifest = $appxmanifest -replace "(\sVersion=['`"])\d+\.\d+\.\d+(\.0['`"])", "`${1}$numeric_tag`${2}"
-      if (-Not $dryrun) {
-        Set-Content $PSScriptRoot/../package.appxmanifest $appxmanifest
-      } else {
-        "[DRYRUN] Would have written package.appxmanifest:"
-        "$appxmanifest"
+    if (-Not $ReleaseBundle) {
+      "`nBuilding UWP app..."
+      if (-Not ($appxmanifest -match "Version=['`"]$numeric_tag\.0['`"]")) {
+        "The requested release version does not match the version in package.appxmanifest"
+        "Updating..."
+        $appxmanifest = $appxmanifest -replace "(\sVersion=['`"])\d+\.\d+\.\d+(\.0['`"])", "`${1}$numeric_tag`${2}"
+        if (-Not $dryrun) {
+          Set-Content $PSScriptRoot/../package.appxmanifest $appxmanifest
+        } else {
+          "[DRYRUN] Would have written package.appxmanifest:"
+          "$appxmanifest"
+        }
       }
-    }
-    if (-Not $dryrun) {
-      $projstub = $text_tag
-      if ($text_tag -eq "Windows") { $projstub = "" }
-      $buildmode = "SideloadOnly"
-      if ($buildstorerelease) { $buildmode = "StoreUpload" }
-      # We have to rename node_modules or else msbuild won't run due to rogue dependency versions
-      ren $PSScriptRoot/../node_modules node_modules_electron
-      cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && msbuild.exe KiwixWebApp$projstub.jsproj /p:Configuration=Release /p:UapAppxPackageBuildMode=$buildmode"
-      ren $PSScriptRoot/../node_modules_electron node_modules
-    }
-    
+      if (-Not $dryrun) {
+        $projstub = $text_tag
+        if ($text_tag -eq "Windows") { $projstub = "" }
+        $buildmode = "SideloadOnly"
+        if ($buildstorerelease) { $buildmode = "StoreUpload" }
+        # We have to rename node_modules or else msbuild won't run due to rogue dependency versions
+        ren $PSScriptRoot/../node_modules node_modules_electron
+        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && msbuild.exe KiwixWebApp$projstub.jsproj /p:Configuration=Release /p:UapAppxPackageBuildMode=$buildmode"
+        ren $PSScriptRoot/../node_modules_electron node_modules
+      }
+    }  
     # If we are releasing the MS Store version we have to copy it from a different location
     if ($buildstorerelease) {
       if (-Not ($appxmanifest -match "Publisher=['`"]CN=Association\sKiwix")) {
