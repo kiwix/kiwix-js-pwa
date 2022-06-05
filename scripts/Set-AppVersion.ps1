@@ -28,12 +28,15 @@ if ($VERSION -match '^v?[\d.]') {
     $CustomVersion = $VERSION -replace '^([^-]+).*', '$1-E'
     "Setting App Version to $CustomVersion in package.json ...`n"
     $PackageJson = $PackageJson -replace '("version":\s+")[^"]+', "`${1}$CustomVersion"
+    # Remove extra whitespace
+    $PackageJson = $PackageJson -replace '\s+$', ''
     # DEV: don't set BOM, as Linux tools crash with it
     Set-Content ./package.json $PackageJson
     if ($nwVersion) {
         $CustomVersion = $CustomVersion -creplace '-E', '-N'
         "Setting package.json.nwjs to $CustomVersion ..."
         $PackageJsonNW = $PackageJsonNW -replace '("version":\s+")[^"]+', "`${1}$CustomVersion"
+        $PackageJsonNW = $PackageJsonNW -replace '\s+$', ''
         # DEV: don't set BOM, as Linux tools crash with it
         Set-Content ./package.json.nwjs $PackageJsonNW
         $BuildNWJSScript = Get-Content -Raw ./scripts/Build-NWJS.ps1
@@ -41,6 +44,7 @@ if ($VERSION -match '^v?[\d.]') {
         $BuildNWJSScript = $BuildNWJSScript -replace '(appBuild\s*=\s*["''])[^"'']+', ("`${1}$CustomVersion")
         "Setting NWJS build to $nwVersion in Build-NWJS.ps1 ..."
         $BuildNWJSScript = $BuildNWJSScript -replace '(version10\s*=\s*["''])[^"'']+', "`${1}$nwVersion"
+        $BuildNWJSScript = $BuildNWJSScript -replace '\s+$', ''
         Set-Content -encoding "utf8BOM" ./scripts/Build-NWJS.ps1 $BuildNWJSScript
     }
 } else {
