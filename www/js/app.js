@@ -868,7 +868,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
 
         // Check for GitHub and Electron updates
         var updateCheck = document.getElementById('updateCheck');
-        if (params.allowInternetAccess) updateCheck.style.display = 'none';
+        params.isUWPStoreApp = /UWP/.test(params.appType) && Windows.ApplicationModel && Windows.ApplicationModel.Package &&
+            !/Association.Kiwix/.test(Windows.ApplicationModel.Package.current.id.publisher);
+        if (params.allowInternetAccess || params.isUWPStoreApp) updateCheck.style.display = 'none';
         function checkUpdateServer() {
             if (!params.allowInternetAccess) {
                 console.log("The update check was blocked because the user has not allowed Internet access.")
@@ -876,9 +878,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             }
             // If it's a PWA that is not also an Electron/NWJS or UWP app, don't check for updates
             if (/^(?!.*(Electron|UWP)).*PWA/.test(params.appType)) return;
-            if (/UWP/.test(params.appType) && Windows.ApplicationModel && Windows.ApplicationModel.Package &&
-                !/Association.Kiwix/.test(Windows.ApplicationModel.Package.current.id.publisher))
-                return; // It's a UWP app installed from the Store, so it will self update
+            if (params.isUWPStoreApp) return; // It's a UWP app installed from the Store, so it will self update
             // GitHub updates
             console.log('Checking for updates from Releases...');
             updater.getLatestUpdates(function (tag, url, releases) {
@@ -1883,9 +1883,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // On some platforms, bootstrap's jQuery functions have not been injected yet, so we have to run in a timeout
                 setTimeout(function () {
                     $('#myModal').on('hide.bs.modal', function () {
-                        if (/UWP/.test(params.appType) && Windows.ApplicationModel && Windows.ApplicationModel.Package &&
-                            !/Association.Kiwix/.test(Windows.ApplicationModel.Package.current.id.publisher))
-                            return; // It's a UWP app installed from the Store, so it will self update
+                        if (params.isUWPStoreApp) return; // It's a UWP app installed from the Store, so it will self update
                         if (!params.allowInternetAccess) {
                             var updateServer = params.updateServer.url.replace(/^([^:]+:\/\/[^/]+).*/, '$1');
                             uiUtil.systemAlert('<p>Do you want this app to check for updates on startup?<br />(this will allow access to <i>' + updateServer + '</i>)</p>' + 
