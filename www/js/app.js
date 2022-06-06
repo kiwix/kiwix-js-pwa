@@ -870,7 +870,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         var updateCheck = document.getElementById('updateCheck');
         params.isUWPStoreApp = /UWP/.test(params.appType) && Windows.ApplicationModel && Windows.ApplicationModel.Package &&
             !/Association.Kiwix/.test(Windows.ApplicationModel.Package.current.id.publisher);
-        if (params.allowInternetAccess || params.isUWPStoreApp) updateCheck.style.display = 'none';
+        // If Internet access is allowed, or it's a UWP Store app, or it's a PWA that is not Electron/NWJS ...
+        if (params.allowInternetAccess || params.isUWPStoreApp || /^(?!.*(Electron|UWP)).*PWA/.test(params.appType))
+            updateCheck.style.display = 'none'; // ... hide the update check link
         function checkUpdateServer() {
             if (!params.allowInternetAccess) {
                 console.log("The update check was blocked because the user has not allowed Internet access.")
