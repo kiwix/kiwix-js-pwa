@@ -57,4 +57,4 @@ Full installation instructions are after the screenshot.
 
 **New!** You can sideload the app easily by typing `winget install kiwix.wikivoyage` in a Command Prompt or PowerShell terminal (Windows 10 or 11).
 
-For Windows Mobile or for sideloading manually, please see detailed instructions at https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#readme.
+For Windows Mobile or for sideloading manually, please see detailed instructions at https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#readme. You will need this file: [KiwixWebAppWikivoyage_<<base_tag>>.0_AnyCPU.appxbundle](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/KiwixWebAppWikivoyage_<<base_tag>>.0_AnyCPU.appxbundle) and the zipped PowerShell script from Assets below.
