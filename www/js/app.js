@@ -797,6 +797,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     fileVersionDivs[i].innerHTML = i ? params.fileVersion.replace(/\s+.+$/, '') : params.fileVersion;
                 }
             }
+            var appType = document.getElementById('appType');
+            appType.innerHTML = /^(?=.*PWA).*UWP/.test(params.appType) ? 'UWP (PWA) ' :
+                /UWP/.test(params.appType) ? 'UWP ' : 
+                /NWJS/.test(params.appType) ? 'NWJS ' : 
+                /Electron/.test(params.appType) ? 'Electron ' : 
+                /PWA/.test(params.appType) ? 'PWA ' : '';
             var update = document.getElementById('update');
             if (update) document.getElementById('logUpdate').innerHTML = update.innerHTML.match(/<ul[^>]*>[\s\S]+/i);
             var features = document.getElementById('features');
