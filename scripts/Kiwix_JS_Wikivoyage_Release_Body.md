@@ -1,6 +1,11 @@
 ## Portable and installable builds for UWP and Electron
 
+![image](https://user-images.githubusercontent.com/4304337/118415611-46484d00-b6a3-11eb-8586-11b23e3391be.png)
+
 These custom apps are packaged with the <<date>> English-language Wikivoyage archive `<<zim>>`. They will run on 32bit and 64bit editions of Windows or Linux (tested on Ubuntu, Debian and OpenSUSE - but see instructions below). The Windows builds are **not compatible with Windows XP or Windows Vista**. If you need an app compatible with those old platforms, get [Kiwix JS Windows reader](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html) and download the latest Wikivoyage archive from within the app.
+
+**MS Store status: IN CERTIFICATION**
+**Winget status: IN CERTIFICATION**
 
 Please choose the correct version (only the Store version will self update):
 
@@ -21,12 +26,6 @@ Please choose the correct version (only the Store version will self update):
   - **Installable (Electron)**
     + Deb package 64bit (Ubuntu, Debian) - [kiwix-js-wikivoyage_<<numeric_tag>>-E_amd64.deb](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/kiwix-js-wikivoyage_<<numeric_tag>>-E_amd64.deb)
     + Deb package 32bit (Ubuntu, Debian) - [kiwix-js-wikivoyage_<<numeric_tag>>-E_i386.deb](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/kiwix-js-wikivoyage_<<numeric_tag>>-E_i386.deb)
-
-Full installation instructions are after the screenshot.
-
-**Status of Store App: IN CERTIFICATION**
-
-![image](https://user-images.githubusercontent.com/4304337/118415611-46484d00-b6a3-11eb-8586-11b23e3391be.png)
 
 ## Installation Instructions - Electron
 
@@ -57,4 +56,4 @@ Full installation instructions are after the screenshot.
 
 **New!** You can sideload the app easily by typing `winget install kiwix.wikivoyage` in a Command Prompt or PowerShell terminal (Windows 10 or 11).
 
-For Windows Mobile or for sideloading manually, please see detailed instructions at https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#readme. You will need this file: [KiwixWebAppWikivoyage_<<base_tag>>.0_AnyCPU.appxbundle](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/KiwixWebAppWikivoyage_<<base_tag>>.0_AnyCPU.appxbundle) and the zipped PowerShell script from Assets below.
+For Windows Mobile or for sideloading manually, please download [KiwixWebAppWikivoyage_<<base_tag>>.0_AnyCPU.appxbundle](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/KiwixWebAppWikivoyage_<<base_tag>>.0_AnyCPU.appxbundle) and the zipped PowerShell script from Assets below. Then follow the detailed instructions at https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#readme.
