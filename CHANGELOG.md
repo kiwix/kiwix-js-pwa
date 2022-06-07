@@ -1,6 +1,6 @@
 # Changelog
 
-## Release 2.0.2-Wikivoyage
+## In-progress release 2.0.6
 
 * FEATURE: Optionally check for app updates and inform user of availability
 * FEATURE: Search for any asset in any ZIM by prefixing namespace
