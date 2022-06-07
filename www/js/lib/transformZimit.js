@@ -184,9 +184,9 @@ define([], function () {
                 data = data.replace(/onclick="[^"]+"/ig, '');
             }
 
-            // Remove shopping cart that attempts to post to server
+            // Remove shopping cart that attempts to post to server or scripts that take a very long time to fail and block page
             if (/passco/i.test(params.zimitPrefix)) {
-                data = data.replace(/<script\b[^>]+cart-fragments(?:[^<]|<(?!\/script>))+<\/script>\s*/, '');
+                data = data.replace(/<script\b[^>]+(?:cart-fragments|lp-global\.min\.js)(?:[^<]|<(?!\/script>))+<\/script>\s*/, '');
             }
             
         } // End of html transformations
