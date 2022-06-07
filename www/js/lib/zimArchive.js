@@ -392,6 +392,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
      * @param {callbackStringContent} callback
      */
     ZIMArchive.prototype.readUtf8File = function(dirEntry, callback) {
+        var that = this;
         return dirEntry.readData().then(function(data) {
             var mimetype = dirEntry.getMimetype();
             if (window.TextDecoder) {
@@ -416,15 +417,20 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                 });
             }
             if (dirEntry.inspect) {
-                dirEntry = transformZimit.getZimitLandingPage(dirEntry, data);
-            } else {
+                dirEntry = transformZimit.getZimitRedirect(dirEntry, data, that.getContentNamespace());
+                if (dirEntry.zimitRedirect) {
+                    return that.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
+                        return that.readUtf8File(rd, callback);
+                    });
+                }
+           } else {
                 // DEV: Note that we cannot terminate regex below with $ because there is a (rogue?) mimetype
                 // of 'text/html;raw=true'
                 if (params.zimType === 'zimit' && /\/(?:html|css|javascript)\b/i.test(mimetype)) {
                     data = transformZimit.transformReplayUrls(dirEntry, data, mimetype, appstate.selectedArchive);
                 }
+                callback(dirEntry, data);
             }
-            callback(dirEntry, data);
         });
     };
 
@@ -443,7 +449,12 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
         return dirEntry.readData().then(function(data) {
             var mimetype = dirEntry.getMimetype();
             if (dirEntry.inspect) {
-                dirEntry = transformZimit.getZimitLandingPage(dirEntry, utf8.parse(data));
+                dirEntry = transformZimit.getZimitRedirect(dirEntry, utf8.parse(data), that.getContentNamespace());
+                if (dirEntry.zimitRedirect) {
+                    return that.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
+                        return that.readBinaryFile(rd, callback);
+                    })
+                }
             } else {
                 // DEV: Note that we cannot terminate regex below with $ because there is a (rogue?) mimetype
                 // of 'text/html;raw=true'
@@ -458,9 +469,10 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
     /**
      * Searches the URL pointer list of Directory Entries by pathname
      * @param {String} path The pathname of the DirEntry that is required (namespace + filename)
+     * @param {Boolean} zimitResolving A flag to indicate that the a Zimit path is in a lookup loop
      * @return {Promise<DirEntry>} A Promise that resolves to a Directory Entry, or null if not found.
      */
-    ZIMArchive.prototype.getDirEntryByPath = function(path) {
+    ZIMArchive.prototype.getDirEntryByPath = function(path, zimitResolving) {
         var that = this;
         path = path.replace(/\?kiwix-display/, '');
         return util.binarySearch(0, this._file.entryCount, function(i) {
@@ -477,13 +489,21 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
             if (index === null) return null;
             return that._file.dirEntryByUrlIndex(index);
         }).then(function(dirEntry) {
-            // Filter out Zimit files that we cannot handle without error
-            if (that.type === 'zimit') dirEntry = transformZimit.filterReplayFiles(dirEntry);
-            if ((dirEntry === null || dirEntry === undefined) && /^[AC]\/[^/]+\/.+/i.test(path)) {
+            // Filter Zimit dirEntries and do somee initial transforms
+            if (that.type === 'zimit')
+                dirEntry = transformZimit.filterReplayFiles(dirEntry);
+            if (!dirEntry) {
+                // We couldn't get the dirEntry
+                if (!zimitResolving && that.type === 'zimit' && /^[AC]\//.test(path)) {
+                    // We need to look the file up in the Header namespace
+                    path = path.replace(/^[AC]\//, 'H/');
+                    console.debug('DirEntry not found, looking up header: ' + path);
+                    return that.getDirEntryByPath(path, true);
+                }
+                var newpath = path.replace(/^([AC]\/)[^/]+\/(.+)$/, '$1$2');
+                if (newpath === path) return null; // No further paths to explore!
                 console.log("Article " + path + " not available, but moving up one directory to compensate for ZIM coding error...");
-                if (/www\.nomadicchangthang/i.test(path)) path = path.replace(/www\./i, '');
-                else path = path.replace(/^([AC]\/)[^/]+\/(.+)$/, '$1$2');
-                return that.getDirEntryByPath(path);
+                return that.getDirEntryByPath(newpath);
             } else {
                 if (dirEntry) console.log('Found ' + path);
                 return dirEntry;
