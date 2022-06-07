@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 2.0.5
+## In-progress release 2.0.6
 
 * FEATURE: Optionally check for app updates and inform user of availability
 * ENHANCEMENT: Radical improvement in CSS rendering in Zimit ZIMs
@@ -9,6 +9,8 @@
 * ENHANCEMENT: Speed up regex processing of Zimit transforms
 * ENHANCEMENT: Intelligently auto-switch image manipulation setting if supported by ZIM type
 * ENHANCEMENT: Intelligently turn off dark theme if ZIM does not support it
+* FIX: Skipping forwards and backwards in videos inside Chromium frameworks
+* FIX: Derive redirect information from Zimit Headers if the response is mising from the archive
 * FIX: Searching for assets in url index now properly shows the url instead of title
 * FIX: System alert dialogue box now handles keyboard events
 * FIX: Process correctly the `srcset` property in image sets for Zimit ZIMs
