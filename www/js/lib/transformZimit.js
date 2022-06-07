@@ -122,7 +122,8 @@ define([], function () {
             // DEV: Check if this is still necessary
             data = data.replace(/<noscript>\s*(<img\b[^>]+>)\s*<\/noscript>/ig, '$1');
             data = data.replace(/<span\b[^>]+lazy-image-placeholder[^<]+<\/span>\s*/ig, '');
-
+            // Remove meta http-equiv refresh
+            data = data.replace(/<meta\s+http-equiv[^>]+refresh\b[^>]+>\/s*/i, '');
             // // Inject the helper script wombat.js
             // data = data.replace(/(<\/head>\s*)/i, '<script src="https://' + params.zimitPrefix + '/static/wombat.js"></script>\n');
 
@@ -139,7 +140,7 @@ define([], function () {
                 // For fully relative links, we have to remove any '..' if we are in root directory
                 if (rootDirectory) assetUrl = assetUrl.replace(/^(\.\.\/?)+/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/'); 
                 // Deal with <meta http-equiv refresh...> directives
-                if (/<meta\s+http-equiv[^>]+refresh\b/i.test(newBlock)) dirEntry.zimitRedirect = assetUrl.replace(/^\//, '');
+                // if (/<meta\s+http-equiv[^>]+refresh\b/i.test(newBlock)) dirEntry.zimitRedirect = assetUrl.replace(/^\//, '');
                 newBlock = newBlock.replace(relAssetUrl, '@kiwixtransformed@' + assetUrl);
                 console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
