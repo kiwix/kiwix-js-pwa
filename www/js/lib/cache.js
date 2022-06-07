@@ -443,7 +443,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
             var title = key.replace(/^[^/]+\//, '');
             getItem(key, function (result) {
                 if (result !== null && result !== false && typeof result !== 'undefined') {
-                    console.log("Cache supplied " + title);
+                    // console.debug("Cache supplied " + title);
                     if (/\.css$/.test(title)) {
                         assetsCache.cssLoading--;
                         if (assetsCache.cssLoading <= 0) {
