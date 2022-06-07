@@ -4355,7 +4355,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
 
             // If there is no CSP, add one to prevent external scripts and content
             if (!/<meta\b[^>]+Content-Security-Policy/i.test(htmlArticle)) {
-                htmlArticle = htmlArticle.replace(/(\s*<\/head>)/, '\n    <meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: blob: bingmaps: \'unsafe-inline\' \'unsafe-eval\';"></meta>$1');
+                htmlArticle = htmlArticle.replace(/(<head\b[^>]*>)\s*/, '$1\n    <meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: blob: bingmaps: \'unsafe-inline\' \'unsafe-eval\';"></meta>\n    ');
             }
 
             if (params.zimType === 'open') {
