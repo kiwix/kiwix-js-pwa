@@ -3815,7 +3815,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 if (params.windowOpener) setTimeout(function () {
                     parseAnchorsJQuery(dirEntry);
                 }, 1500);
-                if (params.manipulateImages && /manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker(articleWindow);
+                if (params.zimType === 'open' && /manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker(articleWindow);
                 if (params.allowHTMLExtraction && appstate.target === 'iframe') {
                     var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
                     uiUtil.insertBreakoutLink(determinedTheme);
