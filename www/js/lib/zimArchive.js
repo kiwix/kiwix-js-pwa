@@ -451,8 +451,8 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
             if (dirEntry.inspect) {
                 dirEntry = transformZimit.getZimitRedirect(dirEntry, utf8.parse(data), appstate.selectedArchive.getContentNamespace());
                 if (dirEntry.zimitRedirect) {
-                    return that.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
-                        return that.readBinaryFile(rd, callback);
+                    return appstate.selectedArchive.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
+                        return appstate.selectedArchive.readBinaryFile(rd, callback);
                     })
                 }
             } else {
