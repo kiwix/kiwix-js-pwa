@@ -449,7 +449,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
         return dirEntry.readData().then(function(data) {
             var mimetype = dirEntry.getMimetype();
             if (dirEntry.inspect) {
-                dirEntry = transformZimit.getZimitRedirect(dirEntry, utf8.parse(data), that.getContentNamespace());
+                dirEntry = transformZimit.getZimitRedirect(dirEntry, utf8.parse(data), appstate.selectedArchive.getContentNamespace());
                 if (dirEntry.zimitRedirect) {
                     return that.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
                         return that.readBinaryFile(rd, callback);
