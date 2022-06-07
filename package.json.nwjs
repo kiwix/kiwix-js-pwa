@@ -1,7 +1,7 @@
 {
   "name": "kiwix_js_windows",
   "productName": "Kiwix JS Windows",
-  "version": "2.0.5-N",
+  "version": "2.0.6-N",
   "description": "Kiwix JS Windows for NWJS",
   "main": "index.html",
   "domain": "kiwix.js.windows",
