@@ -1749,6 +1749,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
          * @returns {String} A string containing the transformed HTML
          */
         function removePageMaxWidth(html) {
+            if (params.zimType === 'zimit' && params.removePageMaxWidth === "auto") return html;
             var zimType;
             var cssSource;
             if (!html) {
