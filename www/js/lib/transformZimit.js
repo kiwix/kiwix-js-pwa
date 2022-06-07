@@ -38,38 +38,50 @@ define([], function () {
 
     /**
      * Filters out the Replay system files (since these cannot be loaded alongside a Service Worker without error)
-     * In the case of the landing page, an 'inspect' property is added to the dirEntry, so that we can discover
+     * In the case of the H namespace or the landing page, an 'inspect' property is added to the dirEntry, so that we can discover
      * the underlying Zimit landing page below
      * @param {dirEntry} dirEntry The directory entry to modify or anull
      * @returns {dirEntry} The modified directory entry
      */
     function filterReplayFiles(dirEntry) {
         if (!(dirEntry && dirEntry.url)) return null;
-        if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|remote.loader\.js|survey\.js|yuiloader\.js|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url)) {
-        // if (/(?:chunk\.js|\bload\.js|\bsw\.js|analytics.*\.js|remote.loader\.js|survey\.js|yuiloader\.js)(?:[?#]|$)/i.test(dirEntry.url)) {
-            dirEntry.nullify = true;
-        } else if (params.isLandingPage && /^index\.html(?:[?#]|$)/.test(dirEntry.url)) {
+        if (dirEntry.namespace === 'H' || params.isLandingPage && /^index\.html(?:[?#]|$)/.test(dirEntry.url))
             dirEntry.inspect = true;
-        }
+        if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|remote.loader\.js|survey\.js|yuiloader\.js|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url))
+            dirEntry.nullify = true;
+        // if (/(?:chunk\.js|\bload\.js|\bsw\.js|analytics.*\.js|remote.loader\.js|survey\.js|yuiloader\.js)(?:[?#]|$)/i.test(dirEntry.url)) {
         return dirEntry;
     }
 
     /**
-     * Inspects the HTML of the ZIM archive's landing page to discover the Zimit landing page and
+     * Inspects the HTML of the ZIM archive's landing page or of the requested Header to discover the URL to redirect to
      * adds a custom redirect to the dirEntry
-     * @param {dirEntry} dirEntry The directory entry of the landing page to process 
-     * @param {String} data The decoded data which the dirEntry points to 
+     * @param {dirEntry} dirEntry The directory entry of the landing page or H namespace header to process 
+     * @param {String} data The decoded data which the dirEntry points to
+     * @param {String} cns The Content Name Space of the ZIM (usually 'C' or 'A')
      * @returns {dirEntry} The modified directory entry
      */
-    function getZimitLandingPage(dirEntry, data) {
-        var zimitStartPage = data.match(/window\.mainUrl\s*=\s*(['"])https?:\/\/([^\/]+)(.+?)\1/);
-        if (zimitStartPage && zimitStartPage[2] && zimitStartPage[3]) {
-            params.zimitPrefix = zimitStartPage[2];
-            params.zimitStartPage = dirEntry.namespace + '/' + params.zimitPrefix + zimitStartPage[3];
+    function getZimitRedirect(dirEntry, data, cns) {
+        var redirect;
+        if (dirEntry.namespace === 'H') {
+            // We are dealing with a Header redirect, so we need to find the Location: field
+            redirect = data.match(/^Location:\s*https?:\/\/([^\/]+)(.*)$/m);
+            if (!redirect) redirect = data.match(/^WARC-Target-URI:\s*https?:\/\/([^/]+)(.*)$/m)
+            if (redirect && redirect[1]) {
+                params.zimitPrefix = redirect[1];
+                dirEntry.zimitRedirect = cns + '/' + redirect[1] + redirect[2];
+            } else {
+                dirEntry.zimitRedirect = null;
+            }    
         } else {
-            params.zimitStartPage = null;
+            redirect = data.match(/window\.mainUrl\s*=\s*(['"])https?:\/\/([^\/]+)(.+?)\1/);
+            if (redirect && redirect[2] && redirect[3]) {
+                params.zimitStartPage = dirEntry.namespace + '/' + redirect[2] + redirect[3];
+            } else {
+                params.zimitStartPage = null;
+            }
+            dirEntry.zimitRedirect = params.zimitStartPage;
         }
-        dirEntry.zimitRedirect = params.zimitStartPage;
         return dirEntry;
     }
 
@@ -227,7 +239,7 @@ define([], function () {
     return {
         setZimType: setZimType,
         filterReplayFiles: filterReplayFiles,
-        getZimitLandingPage: getZimitLandingPage,
+        getZimitRedirect: getZimitRedirect,
         transformReplayUrls: transformReplayUrls
     };
 });
