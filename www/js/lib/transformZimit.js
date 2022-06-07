@@ -113,7 +113,7 @@ define([], function () {
         var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(selectedArchive._file.name);
         if (/\bhtml\b/i.test(mimetype)) {
             var zimitPrefix = data.match(regexpGetZimitPrefix);
-            zimitPrefix = zimitPrefix ? zimitPrefix[1] : params.zimitPrefix;
+            params.zimitPrefix = zimitPrefix ? zimitPrefix[1] : params.zimitPrefix;
             // Remove lazyimgage system and noscript tags that comment out images
             // DEV: Check if this is still necessary
             data = data.replace(/<noscript>\s*(<img\b[^>]+>)\s*<\/noscript>/ig, '$1');
