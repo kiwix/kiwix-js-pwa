@@ -76,6 +76,7 @@ define([], function () {
         } else {
             redirect = data.match(/window\.mainUrl\s*=\s*(['"])https?:\/\/([^\/]+)(.+?)\1/);
             if (redirect && redirect[2] && redirect[3]) {
+                params.zimitPrefix = redirect[2];
                 params.zimitStartPage = dirEntry.namespace + '/' + redirect[2] + redirect[3];
             } else {
                 params.zimitStartPage = null;
