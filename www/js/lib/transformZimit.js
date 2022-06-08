@@ -142,7 +142,7 @@ define([], function () {
                 // Deal with <meta http-equiv refresh...> directives
                 // if (/<meta\s+http-equiv[^>]+refresh\b/i.test(newBlock)) dirEntry.zimitRedirect = assetUrl.replace(/^\//, '');
                 newBlock = newBlock.replace(relAssetUrl, '@kiwixtransformed@' + assetUrl);
-                console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+                // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
 
@@ -179,10 +179,12 @@ define([], function () {
 
             // ZIM-specific overrides
             if (/(?:journals\.openedition\.org)/i.test(params.zimitPrefix)) {
+                // DEV: Checked still necessary as of 8-6-2022
                 // Neutralize all inline scripts, excluding math blocks or react templates, as they cause a loop on loading article
                 data = data.replace(regexpInlineScriptsNotMaths, function (p0, p1) {
                     return '<!-- ' + p1 + ' --!>';
                 });
+                // data = data.replace(/<script\b[^>]+tarteaucitron[^"']*?\.js(?:[^<]|<(?!\/script>))+<\/script>\s*/i, '');
             }
 
             // Collapse open menu bar
@@ -215,7 +217,7 @@ define([], function () {
                 // Relative assets
                 newBlock = assetUrl === url ? newBlock :
                     newBlock.replace(url, '@kiwixtransformed@' + '/' + selectedArchive._file.name + '/' + assetUrl);
-                console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+                // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
         } // End of css transformations
