@@ -3815,7 +3815,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 if (params.windowOpener) setTimeout(function () {
                     parseAnchorsJQuery(dirEntry);
                 }, 1500);
-                if (params.zimType === 'open' && /manual|progressive/.test(params.imageDisplayMode)) images.prepareImagesServiceWorker(articleWindow);
+                if ((params.zimType === 'open' || params.manipulateImages) && /manual|progressive/.test(params.imageDisplayMode)) {
+                    images.prepareImagesServiceWorker(articleWindow);
+                } else {
+                    setTimeout(function () {
+                        images.loadMathJax(articleWindow);
+                    }, 1000);
+                }
                 if (params.allowHTMLExtraction && appstate.target === 'iframe') {
                     var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
                     uiUtil.insertBreakoutLink(determinedTheme);
@@ -4322,7 +4328,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
 
             //MathJax detection:
             params.containsMathTexRaw = params.useMathJax &&
-                /stackexchange|askubuntu|superuser|stackoverflow|mathoverflow|serverfault|stackapps|proofwiki/i.test(params.storedFile) ?
+                /stackexchange|askubuntu|superuser|stackoverflow|mathoverflow|serverfault|stackapps|proofwiki/i.test(appstate.selectedArchive._file.name) ?
                 /[^\\](\$\$?)((?:\\\$|(?!\1)[\s\S])+)\1/.test(htmlArticle) : false;
             //if (params.containsMathTexRaw) {
             //    //Replace undefined \size controlscript with \normalsize (found on proofwiki)
@@ -4348,11 +4354,19 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     math = math.replace(/mbox{/g, 'fbox{');
                     return '<script type="math/tex">' + math + '</script>';
                 });
-                
             }
 
-            params.containsMathTex = params.useMathJax ? /<script\s+type\s*=\s*['"]\s*math\/tex\s*['"]/i.test(htmlArticle) : false;
+            params.containsMathTex = params.useMathJax ? /<(script|span)\s+(type|class)\s*=\s*['"]\s*(math\/tex|latex)\s*['"]/i.test(htmlArticle) : false;
             params.containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
+
+            // if (params.useMathJax && params.containsMathTex) {
+            //     // Proofwiki blocks
+            //     htmlArticle = htmlArticle.replace(/(<(?:dd|td|span)\b[^>]*>)((?:\$|\\)(?:[^<]|<(?!\/(?:dd|td|span)))+)(<\/(?:dd|td|span)>)/ig, function (m0, left, math, right) {
+            //         // math = math.replace(/\\ds\s/g, '\\displaystyle ');
+            //         math = math.replace(/\\map\s/g, '\\mapsto ');
+            //         return left + math + right;
+            //     });
+            // }
 
             // If there is no CSP, add one to prevent external scripts and content
             if (!/<meta\b[^>]+Content-Security-Policy/i.test(htmlArticle)) {
