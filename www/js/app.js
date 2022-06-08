@@ -4326,14 +4326,23 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             //     });
             }
 
-            //MathJax detection:
+            /**
+             * MathML detection
+             */
+            
+            // Get out of the way if Service Worker mode and there is an existing MathJax installation
+            params.useMathJax = params.contentInjectionMode === 'serviceworker' && /<script\b[^>]+MathJax\.js/i.test(htmlArticle) ? 
+                false : params.useMathJax;
+            // Detect raw MathML on page for certain ZIMs that are expected to have it
             params.containsMathTexRaw = params.useMathJax &&
                 /stackexchange|askubuntu|superuser|stackoverflow|mathoverflow|serverfault|stackapps|proofwiki/i.test(appstate.selectedArchive._file.name) ?
                 /[^\\](\$\$?)((?:\\\$|(?!\1)[\s\S])+)\1/.test(htmlArticle) : false;
+            
             //if (params.containsMathTexRaw) {
             //    //Replace undefined \size controlscript with \normalsize (found on proofwiki)
             //    htmlArticle = htmlArticle.replace(/(\\)size\b/g, '$1normalsize');
             //}
+            
             //Replace all TeX SVGs with MathJax scripts
             if (params.useMathJax) {
                 // Deal with any newer MathML blocks
