@@ -798,7 +798,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 }
             }
             var appType = document.getElementById('appType');
-            appType.innerHTML = /^(?=.*PWA).*UWP/.test(params.appType) ? 'UWP (PWA) ' :
+            appType.innerHTML = /^(?=.*PWA).*UWP/.test(params.appType) &&
+                /^https:/i.test(location.protocol) ? 'UWP (PWA) ' :
                 /UWP/.test(params.appType) ? 'UWP ' : 
                 /NWJS/.test(params.appType) ? 'NWJS ' : 
                 /Electron/.test(params.appType) ? 'Electron ' : 
