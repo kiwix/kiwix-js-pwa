@@ -381,8 +381,15 @@ define(['uiUtil'], function (uiUtil) {
         };
     }
 
-    function loadMathJax() {
+    /**
+     * Attaches KaTeX scripts to the window of the document, if there is MathML to process
+     * 
+     * @param {Object} win The window that contains the document to be processed 
+     * @returns {Null} Returns null if the function was aborted
+     */
+    function loadMathJax(win) {
         if (!params.useMathJax) return;
+        container = container || win;
         var doc = container.document;
         var prefix = '';
         if (params.contentInjectionMode === 'serviceworker') {
@@ -404,22 +411,25 @@ define(['uiUtil'], function (uiUtil) {
                 script2.type = "text/javascript";
                 script2.src = prefix + "js/katex/contrib/mathtex-script-type.min.js";
             }
-            if (params.containsMathTexRaw) {
+            if (params.containsMathTex || params.containsMathTexRaw) {
                 script3 = doc.createElement("script");
                 script3.type = "text/javascript";
                 script3.src = prefix + "js/katex/contrib/auto-render.min.js";
                 script3.onload = function() {
                     container.renderMathInElement(doc.body, { 
-                        delimiters: [{
-                            left: "$$",
-                            right: "$$",
-                            display: true
-                        },
-                        {
-                            left: "$",
-                            right: "$",
-                            display: false
-                        }]
+                        delimiters: [
+                            {left: "$$", right: "$$", display: true},
+                            {left: "$", right: "$", display: false},
+                            {left: "\\(", right: "\\)", display: false},
+                            // {left: "\\begin{equation}", right: "\\end{equation}", display: true},
+                            // {left: "\\begin{align}", right: "\\end{align}", display: true},
+                            // {left: "\\begin{alignat}", right: "\\end{alignat}", display: true},
+                            // {left: "\\begin{gather}", right: "\\end{gather}", display: true},
+                            // {left: "\\begin{CD}", right: "\\end{CD}", display: true},
+                            {left: "\\[", right: "\\]", display: true}
+                        ],
+                        globalGroup: true,
+                        throwOnError: false
                     });
                 };
             }
