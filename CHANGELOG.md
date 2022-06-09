@@ -1,25 +1,24 @@
 # Changelog
 
-## In-progress release 2.0.6
+## Release 2.0.4-WikiMed
 
 * FEATURE: Optionally check for app updates and inform user of availability
+* UPDATE: Packaged archive updated to `mdwiki_en_all-app_maxi_2022-06.zim`
+* UPDATE: KaTeX library updated to 0.16
 * ENHANCEMENT: Radical improvement in CSS rendering in Zimit ZIMs
 * ENHANCEMENT: Option to warn before opening external links
 * ENHANCEMENT: Reduce delay between image loads when lazy-loading images (Wikimedia ZIMs)
-* ENHANCEMENT: Speed up regex processing of Zimit transforms
 * ENHANCEMENT: Intelligently auto-switch image manipulation setting if supported by ZIM type
 * ENHANCEMENT: Intelligently turn off dark theme if ZIM does not support it
+* ENHANCEMENT: Improve MathML detection
 * FIX: Skipping forwards and backwards in videos inside Chromium frameworks
-* FIX: Derive redirect information from Zimit Headers if the response is mising from the archive
 * FIX: Searching for assets in url index now properly shows the url instead of title
 * FIX: System alert dialogue box now handles keyboard events
-* FIX: Process correctly the `srcset` property in image sets for Zimit ZIMs
-* FIX: Disable lazy image loading in Zimit ZIMs
-* FIX: Add some failsafe code to hide spinner if it runs too long (does not handle app crashes) 
-* FIX: Dark theme for new Stackexchange ZIMs
-* FIX: Interoperability between JQuery and Service Worker modes with Zimit archives
+* FIX: Add some failsafe code to hide spinner if it runs too long (does not handle app crashes)
+* FIX: More robust insertion of Contet Security Policy into article
+* FIX: Failure to interpret MathML in some circumstances
 
-## Release 2.0.0
+## Release 1.9.9-WikiMed
 
 * UPDATE: Packaged archive updated to `mdwiki_en_all-app_maxi_2022-05.zim`
 * UPDATE: Remove landing page override for mdwiki at request of maintainer
@@ -32,9 +31,6 @@
 * ENHANCEMENT: Prevent expensive RegExp processing for irrelevant ZIM types
 * ENHANCEMENT: Driect download certain recognized content types for Zimit archives
 * ENHANCEMENT: Made PWA manifest compatible with Chromium installability criteria
-* UPDATE: Refresh Kiwix icons
-* UPDATE: Remove landing page override for mdwiki at request of maintainer
-* UPDATE: Hyperlinking of images to high-res versions is now off by default
 * FIX: Bug that caused repeating images when hyperlinking images to online high-res versions
 * FIX: Erroneous link handling for Zimit files
 * FIX: Add any missing file extension to downloadable files and construct MIME types if missing
@@ -42,13 +38,6 @@
 * FIX: Remove lazy image loading system if detected
 * FIX: Errors with parsing and display of archive links in download library
 * FIX: Adjustment to max page width restrictions is now applied on resize
-* FIX: Remove more analytics spy scripts from Zimit ZIMs
-* FIX: Incorrect meta tag encoding for some Zimit archives
-
-## Release 1.9.9
-
-* UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-04`
-* FEATURE: Experimental support for reading Zimit ZIM archives
 * FIX: Support for reading background and bullet images in Zimit CSS in Service Worker mode
 * FIX: Style of thumbinner Wikipedia images adjusted so that images are back in their original position
 * FIX: MDwiki thumbinner images now have an MDwiki-specific override to prevent text bleeding to left of image
