@@ -1,6 +1,6 @@
 # Changelog
 
-## Release 2.0.4-WikiMed
+## In-progress release 2.0.7
 
 * FEATURE: Optionally check for app updates and inform user of availability
 * UPDATE: Packaged archive updated to `mdwiki_en_all-app_maxi_2022-06.zim`
