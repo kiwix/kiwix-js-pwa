@@ -17,6 +17,7 @@
 * FIX: Add some failsafe code to hide spinner if it runs too long (does not handle app crashes)
 * FIX: More robust insertion of Contet Security Policy into article
 * FIX: Failure to interpret MathML in some circumstances
+* FIX: Max page width manipulation in IE11
 
 ## Release 1.9.9-WikiMed
 
