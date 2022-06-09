@@ -1754,28 +1754,33 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             var zimType;
             var cssSource;
             if (!html) {
+                var contentElement;
+                var docStyle;
+                var updatedCssText;
                 var doc = articleWindow.document;
                 if (!doc || !doc.head) return;
                 zimType = /<link\b[^>]+(?:minerva|mobile)/i.test(doc.head.innerHTML) ? "mobile" : "desktop";
                 cssSource = params.cssSource === "auto" ? zimType : params.cssSource;
                 var idArray = ["content", "bodyContent"];
                 for (var i = 0; i < idArray.length; i++) {
-                    var contentElement = doc.getElementById(idArray[i]);
+                    contentElement = doc.getElementById(idArray[i]);
                     if (!contentElement) continue;
-                    var docStyle = contentElement.style;
+                    docStyle = contentElement.style;
                     if (!docStyle) continue;
                     if (contentElement.className === "mw-body") {
                         docStyle.padding = "1em";
                         docStyle.border = "1px solid #a7d7f9";
                     }
                     if (params.removePageMaxWidth === "auto") {
-                        docStyle.maxWidth = cssSource === "desktop" ? "100%" : window.innerWidth > 1024 ? "90%" :
-                            /android/i.test(params.appType) ? '98%' : "55.8em";
-                        docStyle.cssText = docStyle.cssText.replace(/(max-width[^;]+)/i, "$1 !important");
+                        updatedCssText = cssSource === 'desktop' ? '100%' : window.innerWidth > 1024 ? '90%' :
+                            /android/i.test(params.appType) ? '98%' : '55.8em';
+                        docStyle.maxWidth = updatedCssText;
+                        docStyle.cssText = docStyle.cssText.replace(/max-width:[^;]+/i, 'max-width: ' + updatedCssText + ' !important');
                         docStyle.border = "0";
                     } else {
-                        docStyle.maxWidth = params.removePageMaxWidth ? "100%" : "55.8em";
-                        docStyle.cssText = docStyle.cssText.replace(/(max-width[^;]+)/i, "$1 !important");
+                        updatedCssText = params.removePageMaxWidth ? "100%" : "55.8em";
+                        docStyle.maxWidth = updatedCssText;
+                        docStyle.cssText = docStyle.cssText.replace(/max-width:[^;]+/i, 'max-width: ' + updatedCssText + ' !important');
                         if (params.removePageMaxWidth || zimType == "mobile") docStyle.border = "0";
                     }
                     docStyle.margin = "0 auto";
