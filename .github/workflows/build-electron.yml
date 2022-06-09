@@ -76,7 +76,6 @@ jobs:
           if ($Env:INPUT_VERSION -match '-Wiki[\w]+') {
             $INPUT_VERSION_E += $matches[0]
           }
-          $INPUT_VERSION_E = $Env:INPUT_VERSION -
           ./scripts/Create-DraftRelease -buildonly -tag_name $INPUT_VERSION_E -portableonly -wingetprompt N
         }
     - name: publish packages
