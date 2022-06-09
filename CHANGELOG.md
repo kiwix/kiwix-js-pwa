@@ -3,7 +3,8 @@
 ## In-progress release 2.0.6
 
 * FEATURE: Optionally check for app updates and inform user of availability
-* FEATURE: Search for any asset in any ZIM by prefixing namespace
+* UPDATE: KaTeX library updated to 0.16
+* ENHANCEMENT: Radical improvement in CSS rendering in Zimit ZIMs
 * ENHANCEMENT: Option to warn before opening external links
 * ENHANCEMENT: Reduce delay between image loads when lazy-loading images (Wikimedia ZIMs)
 * ENHANCEMENT: Intelligently auto-switch image manipulation setting if supported by ZIM type
