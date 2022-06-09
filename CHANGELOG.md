@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 2.0.6
+## In-progress release 2.0.7
 
 * FEATURE: Optionally check for app updates and inform user of availability
 * UPDATE: KaTeX library updated to 0.16
