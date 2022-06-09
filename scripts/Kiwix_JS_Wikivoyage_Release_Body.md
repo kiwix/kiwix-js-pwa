@@ -12,7 +12,7 @@ Please choose the correct version (only the Store version will self update):
 * **Windows**:
   - **Store app for Windows 10/11 (UWP)**
     + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9N5SB90Q4JBJ (it will self-update automatically) - *recommended*
-    + Or, on a PC, open a command prompt and run `winget install wikivoyage -s msstore`
+    + Or, on a PC, open a command prompt and run `winget install wikivoyage -s msstore` (self-updates)
 	+ Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.wikivoyage` - this doesn't auto-update, but you can upgrade easily by running  `winget upgrade` or `winget upgrade --all`
   - **Portable (Electron) - just unzip, no install needed**
     + Windows 7/8/10/11: [Wikivoyage-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<base_tag>>-E.zip)
@@ -44,7 +44,8 @@ Please choose the correct version (only the Store version will self update):
 * It supports dark mode, and opening different navigable windows by right-clicking or ctrl-clicking a link (see Configuration);
 * You can print by pressing Ctrl-P or using the print icon. If local printers are not available (after clicking on More options...) then print to PDF and use another app to print;
 * You can open a new browsable window by right-clicking, middle-clicking or ctrl-clicking an article link (not available in every mode, see option in Configuration);
-* In title search, you can use wildcards `.*` or `.+` (this works best if you start the search with a normal alphanumeric string). You can include a more complex regular expression by enclosing it within `(?:my_regular_expression)`. See Configuration -> About for more details and limitations.
+* In title search, you can use wildcards `.*` or `.+` (this works best if you start the search with a normal alphanumeric string). You can include a more complex regular expression by enclosing it within `(?:my_regular_expression)`. See Configuration -> About for more details and limitations;
+* You can search for any file in a ZIM by prefixing the namespace, e.g. `I/isaac.*newton` for images of Isaac Newton (or in no-namespace ZIMs `C/isaac.*newton.*webp`).
 
 ### Known Issues
 
