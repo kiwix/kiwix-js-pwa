@@ -366,7 +366,7 @@ define([], function () {
         }
         var xhttp = new XMLHttpRequest();
         //DEV: timeout set here to 20s (except for meta4 links); if this isn't long enough for your target countries, increase
-        var timeout = /\.meta4$/i.test(URL) ? 6000 : 20000;
+        var timeout = /\.magnet$/i.test(URL) ? 3000 : /\.meta4$/i.test(URL) ? 6000 : 20000;
         var xhttpTimeout = setTimeout(ajaxTimeout, timeout);
         function ajaxTimeout() {
             xhttp.abort();
@@ -374,8 +374,9 @@ define([], function () {
             responseMessageBox.innerHTML = "Connection attempt timed out (failed)";
             if (/https?:|file:/.test(window.location.protocol)) responseMessageBox.innerHTML = "Browser's CORS Policy disallowed access!";
             if (/\.meta4$/i.test(URL)) responseMessageBox.innerHTML = "Archive descriptor xml file (meta4) is missing!";
+            if (/\.magnet$/i.test(URL)) responseMessageBox.innerHTML = "Unable to get magnet link!";
             document.getElementById('serverResponse').style.display = "inline";
-            serverError(URL);
+            if (!/\.magnet$/i.test(URL)) serverError(URL);
             return;
         }
         xhttp.onreadystatechange = function () {
@@ -390,8 +391,8 @@ define([], function () {
                     URL = URL.replace(/\?.*/, '');
                     if (/\.meta4$/i.test(URL)) {
                         processMetaLink(this.responseText);
-                    } else {
-                        processXhttpData(this.responseText);
+                    } else if (/\.magnet$/i.test(URL)) {
+                        processMagnetLink(this.responseText);
                     }
                 } else if (this.status == 0 && window.location.protocol == "file:") {
                     document.getElementById('serverResponse').innerHTML = 'Cannot use XMLHttpRequest with file:// protocol';
@@ -466,8 +467,10 @@ define([], function () {
             bodyDoc += megabytes > 2000 ? ' style="color:red;"> WARNING: ' : '>';
             bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unknown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
             if (megabytes > 200) bodyDoc += '<p><b>Consider using BitTorrent to download file:</b></p>\r\n' + 
-                '<p><b>BitTorrent link</b>: <a href="' + URL.replace(/\.meta4$/, ".torrent") + '" target="_blank">' +
-                URL.replace(/\.meta4$/, ".torrent") + '</a></p>';
+                '<p><b>BitTorrent file</b>: <a href="' + URL.replace(/\.meta4$/, ".torrent") + '" target="_blank">' +
+                    URL.replace(/\.meta4$/, ".torrent") + '</a><br />\r\n' + 
+                '<b>Magnet link</b>: <a id="magnet" href="' + URL.replace(/\.meta4$/, ".magnet") + '" target="_blank">' +
+                    URL.replace(/\.meta4$/, ".magnet") + '</a> (if this does not open your torrent app directly, copy and paste link into the app)</p>';
             if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
                 bodyDoc += '<p style="color:red;">This archive is larger than the maximum file size permitted on an SD card formatted as FAT32 (max size is approx. 4GB). On Windows, this is not normally a problem. However, if your card or other storage area is formatted in this way, you will need to download the file on a PC and split it into chunks less than 4GB: see <a href="https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#download-a-zim-archive-all-platforms" target="_blank">Download a ZIM archive</a>.</p>\r\n';
                 // bodyDoc += '<p><b>To browse for a split version of this archive click here: <a id="portable" href="#" data-kiwix-dl="' +
@@ -483,6 +486,8 @@ define([], function () {
             bodyDoc += '<p><i>Links will open in a new browser window</i></p><ol>\r\n' + doc + '</ol>\r\n';
             //if (mirrorservice) bodyDoc += '*** Note: mirrorservice.org currently has a download bug with ZIM archives: on some browsers it will download the ZIM file as plain text in browser window';
             bodyDoc += '<br /><br />';
+            // Try to get magnet link
+            requestXhttpData(URL.replace(/\.meta4$/, ".magnet"));
             var header = document.getElementById('dl-panel-heading');
             header.outerHTML = header.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + headerDoc + '</div>');
             var body = document.getElementById('dl-panel-body');
@@ -505,6 +510,16 @@ define([], function () {
             if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
                 document.getElementById('portable').addEventListener('click', submitSelectValues);
             }
+        }
+
+        function processMagnetLink(link) {
+            var magnetLink = document.getElementById('magnet');
+            magnetLink.href = link;
+            magnetLink.innerHTML = 'click to show or launch link';
+            magnetLink.removeAttribute('target');
+            magnetLink.addEventListener('click', function () {
+                window.location = this.href;
+            });
         }
 
         function processXhttpData(doc) {
