@@ -49,7 +49,6 @@ define([], function () {
             dirEntry.inspect = true;
         if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|remote.loader\.js|survey\.js|yuiloader\.js|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url))
             dirEntry.nullify = true;
-        // if (/(?:chunk\.js|\bload\.js|\bsw\.js|analytics.*\.js|remote.loader\.js|survey\.js|yuiloader\.js)(?:[?#]|$)/i.test(dirEntry.url)) {
         return dirEntry;
     }
 
@@ -188,12 +187,12 @@ define([], function () {
             }
 
             // Collapse open menu bar
-            if (/cheatography/i.test(params.zimitPrefix)) {
-                data = data.replace(/(<div\s+id=['"]menubar['"])/i, '$1 hidden');
-                data = data.replace(/(<div\s+class=['"]filterBar['"])/i, '$1 hidden');
-                // Remove onclick events
-                data = data.replace(/onclick="[^"]+"/ig, '');
-            }
+            // if (/cheatography/i.test(params.zimitPrefix)) {
+            //     data = data.replace(/(<div\s+id=['"]menubar['"])/i, '$1 hidden');
+            //     data = data.replace(/(<div\s+class=['"]filterBar['"])/i, '$1 hidden');
+            //     // Remove onclick events
+            //     data = data.replace(/onclick="[^"]+"/ig, '');
+            // }
 
             // Remove shopping cart that attempts to post to server or scripts that take a very long time to fail and block page
             if (/passco/i.test(params.zimitPrefix)) {
