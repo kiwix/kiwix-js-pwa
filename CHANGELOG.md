@@ -6,6 +6,8 @@
 * UPDATE: KaTeX library updated to 0.16
 * ENHANCEMENT: Radical improvement in CSS rendering in Zimit ZIMs
 * ENHANCEMENT: Option to warn before opening external links
+* ENHANCEMENT: Provide magnet torrent links in Archive Library
+* ENHANCEMENT: Provide link to preview of live ZIM archive on library.kiwix.org
 * ENHANCEMENT: Reduce delay between image loads when lazy-loading images (Wikimedia ZIMs)
 * ENHANCEMENT: Intelligently auto-switch image manipulation setting if supported by ZIM type
 * ENHANCEMENT: Intelligently turn off dark theme if ZIM does not support it
