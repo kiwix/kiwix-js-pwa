@@ -90,7 +90,7 @@ define([], function () {
      * Establish some Regular Expressions used by the transformReplayUrls function
      */
     var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track|meta)\b[^>]*?[\s;])(?:src\b|href|url)\s*(=\s*(["']))(?=[./]+|https?)((?:[^>](?!\3|\?|#))+[^>])([^>]*>)/ig;
-    var regexpZimitJavascriptLinks = /['"(]((?:https?:)?\/\/[^'"?#)]+)['"?#)]/ig;
+    var regexpZimitJavascriptLinks = /['"(]((?:https?:)?\/\/[^'"?#)]*)['"?#)]/ig;
     var regexpZimitCssLinks = /\burl\s*\(['"\s]*([^)'"\s]+)['"\s]*\)/ig;
     var regexpGetZimitPrefix = /link\s+rel=["']canonical["']\s+href="https?:\/\/([^/"]+)/i;
     var regexpRemoveAnalytics1 = /<script\b([^<]|<(?!\/script>))+?(?:google.*?analytics|adsbygoogle)([^<]|<(?!\/script>))+<\/script>\s*/ig;
