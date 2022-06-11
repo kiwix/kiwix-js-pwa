@@ -512,6 +512,7 @@ define([], function () {
         }
 
         function processMagnetLink(link) {
+            link = link.replace(/&amp;/g, '&');
             var magnetLink = document.getElementById('magnet');
             // Set up backup link
             var magnetLinkAlt = document.getElementById('magnetAlt');
