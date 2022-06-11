@@ -6,6 +6,8 @@
 * UPDATE: KaTeX library updated to 0.16
 * ENHANCEMENT: Radical improvement in CSS rendering in Zimit ZIMs
 * ENHANCEMENT: Option to warn before opening external links
+* ENHANCEMENT: Provide magnet torrent links in Archive Library
+* ENHANCEMENT: Provide link to preview of live ZIM archive on library.kiwix.org
 * ENHANCEMENT: Reduce delay between image loads when lazy-loading images (Wikimedia ZIMs)
 * ENHANCEMENT: Speed up regex processing of Zimit transforms
 * ENHANCEMENT: Intelligently auto-switch image manipulation setting if supported by ZIM type
@@ -20,7 +22,7 @@
 * FIX: Failure to interpret MathML in some circumstances
 * FIX: Process correctly the `srcset` property in image sets for Zimit ZIMs
 * FIX: Disable lazy image loading in Zimit ZIMs
-* FIX: Add some failsafe code to hide spinner if it runs too long (does not handle app crashes) 
+* FIX: Add some failsafe code to hide spinner if it runs too long (does not handle app crashes)
 * FIX: Dark theme for new Stackexchange ZIMs
 * FIX: Interoperability between JQuery and Service Worker modes with Zimit archives
 * FIX: Max page width manipulation in IE11
