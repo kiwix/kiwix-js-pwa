@@ -1,9 +1,8 @@
 # Changelog
 
-## In-progress release 2.0.7
+## Release 2.0.8
 
 * FEATURE: Optionally check for app updates and inform user of availability
-* UPDATE: KaTeX library updated to 0.16
 * ENHANCEMENT: Radical improvement in CSS rendering in Zimit ZIMs
 * ENHANCEMENT: Option to warn before opening external links
 * ENHANCEMENT: Provide magnet torrent links in Archive Library
