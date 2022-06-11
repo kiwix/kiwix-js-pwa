@@ -95,7 +95,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             iframe.style.transform = 'translateY(-1px)';
             // iframe.style.height = window.innerHeight + 'px';
             // DEV: if we set the iframe with clientHeight, then it takes into account any zoom
-            iframe.style.height = document.documentElement.clientHeight + 'px';
+            iframe.style.height = document.documentElement.clientHeight-1 + 'px';
+            // This is needed to cause a reflow in Zimit ZIMs
+            setTimeout(function() {
+                iframe.style.height = document.documentElement.clientHeight + 'px';
+            }, 0);
 
             //Re-enable top-level scrolling
             scrollbox.style.height = window.innerHeight - navbarHeight + 'px';
@@ -4385,7 +4389,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
 
             // If there is no CSP, add one to prevent external scripts and content
             if (!/<meta\b[^>]+Content-Security-Policy/i.test(htmlArticle)) {
-                htmlArticle = htmlArticle.replace(/(<head\b[^>]*>)\s*/, '$1\n    <meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: blob: bingmaps: \'unsafe-inline\' \'unsafe-eval\';"></meta>\n    ');
+                htmlArticle = htmlArticle.replace(/(<head\b[^>]*>)\s*/, '$1\n    <meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: blob: bingmaps: about: \'unsafe-inline\' \'unsafe-eval\';"></meta>\n    ');
             }
 
             if (params.zimType === 'open') {
