@@ -1,5 +1,7 @@
 ## Portable and installable builds for UWP, PWA, NWJS and Electron
 
+![Composition_Clñimate_Change](https://user-images.githubusercontent.com/4304337/156934052-9260c976-095a-4309-9dcc-a7c307f7575d.png)
+
 This app comes packaged with a small sample ZIM archve containing a collection of summary articles from Wikipedia on the topic of Climate Change (`<<zim>>`, <<date>>). For what's new, see the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md). Builds are provided for 32bit and 64bit editions of Windows and Linux (tested on Ubuntu, Debian and OpenSUSE - but see instructions below). ARM is supported via the UWP app.
 
 **MS Store status: IN CERTIFICATION**
@@ -31,10 +33,6 @@ Please choose the correct version (those marked [**AUTO-UPDATE**] will self-upda
 * **Any modern OS (PWA)**
   + Try out our new **installable PWA** (Progressive Web App) simply by visiting https://pwa.kiwix.org/ [**AUTO-UPDATE**]. No store or download required! It works offline once the app has cached its code, and in Chrome/Edge/Chromium, you can install it right from within the app (in Firefox you can bookmark it).
 
-Full installation instructions are after the screenshot.
-
-![Composition_Clñimate_Change](https://user-images.githubusercontent.com/4304337/156934052-9260c976-095a-4309-9dcc-a7c307f7575d.png)
-
 ## Installation Instructions - NWJS/Electron
 
 * For the Windows Portable build, unzip the contents of the [kiwix_js_windows-<<base_tag>>-N-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-<<numeric_tag>>-N-win-ia32.zip) archive (or the XP version if you're using that) to any folder, or to a flash drive / thumb drive, and double click on `Start Kiwix JS Windows` or `Start Kiwix JS Windows via batch file.bat`, or open the `kiwix_js_windows-...` folder and double click on `nw.exe`;
@@ -52,9 +50,11 @@ Full installation instructions are after the screenshot.
 * This app is packaged with a sample archive of summary articles on Climate Change from Wikipedia, `<<zim>>`, dated <<date>>. Apart from the landing page, this archive has no images in articles, and only the lede (summary) of each article is included in order to minimize download size. The packaged archive is located in the `archives` folder (where this is accessible). See the readme in that folder for more information;
 * You can download many different archives in multiple languages from the Configuration page;
 * It supports dark mode, and opening different navigable windows by right-clicking or ctrl-clicking a link (see Configuration);
+* New experimental support for reading Zimit archives;
 * You can print by pressing Ctrl-P or using the print icon. If local printers are not available (after clicking on More options...) then print to PDF and use another app to print;
 * You can open a new browsable window by right-clicking, middle-clicking or ctrl-clicking an article link (not available in every mode, see option in Configuration);
 * In title search, you can use wildcards `.*` or `.+` (this works best if you start the search with a normal alphanumeric string). You can include a more complex regular expression by enclosing it within `(?:my_regular_expression)`. See Configuration -> About for more details and limitations.
+* You can search for any file in a ZIM by prefixing the namespace, e.g. `I/isaac.*newton` for images of Isaac Newton (or in no-namespace ZIMs `C/isaac.*newton.*webp`).
 
 ### Known Issues
 
@@ -67,24 +67,6 @@ Full installation instructions are after the screenshot.
 
 ## Instructions for sideloading (UWP)
 
-### Windows 10/11 Desktop/Tablet
+**New!** You can sideload the app easily by typing `winget install kiwix.kiwixjs` in a Command Prompt or PowerShell terminal (Windows 10/11).
 
-**New!** You can sideload the app easily by typing `winget install kiwix.kiwixjs` in a Command Prompt or PowerShell terminal. If you don't yet have [`winget`](https://docs.microsoft.com/en-us/windows/package-manager/winget/), use these manual instructions:
-
-**Uninstall any previous installation of Kiwix JS Windows before you follow this procedure**.
-
-Download the signed app bundle [KiwixWebApp_<<base_tag>>.0_AnyCPU.appxbundle](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/KiwixWebApp_<<base_tag>>.0_AnyCPU.appxbundle) and run/launch it (depending on the browser, you may need to single-click or double-click the file or "download complete" notification). The App Installer should open and ask you whether you wish to install (it may also ask you if you wish to allow sideloading apps: if so, answer yes). If you are satisfied that the app is trusted, click Install.
-
-On slightly older versions of Windows 10, you may need to enable sideloading of apps beforehand: go to Settings / Update and security / For developers and select "Sideload apps". You may be asked to reboot.
-
-If the above procedures fail, or the App Installer is not available, then download and unzip into a folder the `PowerShell.Installation.Script...` from Assets, place the `.appxbundle` in the same folder, and follow PowerShell Installation instructions [here](https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#windows-10-tablet--pc) (except that you don't need to download further files, all the needed ones are included in the zip file `PowerShell.Installation.Script...`).
-
-In case you are still unable to sideload, try the PWA, NWJS or Electron versions above.
-
-### Windows 10 Mobile
-
-**Uninstall any previous installation of Kiwix JS Windows before you follow this procedure**.
-
-Download [KiwixWebApp_<<base_tag>>.0_AnyCPU.appxbundle](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/KiwixWebApp_<<base_tag>>.0_AnyCPU.appxbundle) to your downloads folder, or other accessible folder, on the phone. Enable Developer mode on your device (Settings / Updates and security / For developers).
-
-Open the File Explorer on the phone, navigate to the downloads folder and tap the KiwixWebApp bundle. You will be asked if you wish to install, but it then installs silently in the background. Be patient: it can take a minute or so for the Kiwix JS Windows icon to appear in the All Apps list.
+For Windows Mobile or for sideloading manually, please download [KiwixWebApp_<<base_tag>>.0_AnyCPU.appxbundle](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/KiwixWebApp_<<base_tag>>.0_AnyCPU.appxbundle) and the zipped PowerShell script from Assets below. Then follow the detailed instructions at https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#readme.
