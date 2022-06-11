@@ -182,6 +182,7 @@
     <Content Include="www\I\COVID-19_lifecycle.jpg" />
     <Content Include="www\I\Hand_sanitizer_banner.jpg" />
     <Content Include="www\I\IriomoteBanner1.jpg" />
+    <Content Include="www\js\katex\contrib\render-a11y-string.min.js" />
     <Content Include="www\js\lib\arrayFromPolyfill.js" />
     <Content Include="www\js\lib\promisePolyfill.js" />
     <Content Include="www\js\lib\transformZimit.js" />
@@ -268,7 +269,6 @@
     <Content Include="www\js\app.js" />
     <Content Include="www\js\init.js" />
     <Content Include="www\js\katex\contrib\auto-render.min.js" />
-    <Content Include="www\js\katex\contrib\copy-tex.min.css" />
     <Content Include="www\js\katex\contrib\copy-tex.min.js" />
     <Content Include="www\js\katex\contrib\mathtex-script-type.min.js" />
     <Content Include="www\js\katex\contrib\mhchem.min.js" />
