@@ -366,7 +366,7 @@ define([], function () {
         }
         var xhttp = new XMLHttpRequest();
         //DEV: timeout set here to 20s (except for meta4 links); if this isn't long enough for your target countries, increase
-        var timeout = /\.meta4$/i.test(URL) ? 6000 : 20000;
+        var timeout = /\.magnet$/i.test(URL) ? 3000 : /\.meta4$/i.test(URL) ? 6000 : 20000;
         var xhttpTimeout = setTimeout(ajaxTimeout, timeout);
         function ajaxTimeout() {
             xhttp.abort();
@@ -374,8 +374,9 @@ define([], function () {
             responseMessageBox.innerHTML = "Connection attempt timed out (failed)";
             if (/https?:|file:/.test(window.location.protocol)) responseMessageBox.innerHTML = "Browser's CORS Policy disallowed access!";
             if (/\.meta4$/i.test(URL)) responseMessageBox.innerHTML = "Archive descriptor xml file (meta4) is missing!";
+            if (/\.magnet$/i.test(URL)) responseMessageBox.innerHTML = "Unable to get magnet link!";
             document.getElementById('serverResponse').style.display = "inline";
-            serverError(URL);
+            if (!/\.magnet$/i.test(URL)) serverError(URL);
             return;
         }
         xhttp.onreadystatechange = function () {
@@ -390,6 +391,8 @@ define([], function () {
                     URL = URL.replace(/\?.*/, '');
                     if (/\.meta4$/i.test(URL)) {
                         processMetaLink(this.responseText);
+                    } else if (/\.magnet$/i.test(URL)) {
+                        processMagnetLink(this.responseText);
                     } else {
                         processXhttpData(this.responseText);
                     }
@@ -447,16 +450,8 @@ define([], function () {
             size = size.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
             var megabytes$ = megabytes.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
             doc = "";
-            //var mirrorservice = false;
             for (var i = 1; i < linkArray.length; i++) { //NB we'ere intentionally discarding first link to kiwix.org (not to zim)
-                //DEV: Mirrorservice download bug now fixed [kiwix-js-windows #28] @TODO: remove this after period of stable downloads fully tested
-                //ZIP files work fine with mirrorservice, so test for ZIM type only
-                //if (/\.zim\.meta4$/i.test(URL) && /mirrorservice\.org/i.test(linkArray[i])) {
-                //    mirrorservice = true;
-                //    doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li>*** Server has download bug, see note ***<br />$1</li>\r\n');
-                //} else {
-                    doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li><a href="$1" target="_blank">$1</a></li>\r\n');
-                //}
+            doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li><a href="$1" target="_blank">$1</a></li>\r\n');
             }
             var headerDoc = 'We found the following links to your file:';
             var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^\/]*\.meta4$/i, "\/") + '">&lt;&lt; Back to list of files</a></p>\r\n';
@@ -465,11 +460,14 @@ define([], function () {
             bodyDoc += "<h5";
             bodyDoc += megabytes > 2000 ? ' style="color:red;"> WARNING: ' : '>';
             bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unknown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
-            if (megabytes > 200) bodyDoc += '<p><b>Consider using BitTorrent to download file:</b></p>\r\n' + 
-                '<p><b>BitTorrent link</b>: <a href="' + URL.replace(/\.meta4$/, ".torrent") + '" target="_blank">' +
-                URL.replace(/\.meta4$/, ".torrent") + '</a></p>';
+            bodyDoc += '<p><b>New! <i><a id="preview" target="_blank">Preview this archive</a></i></b> in your browser before downloading it</p>';
+            if (megabytes > 200) bodyDoc += '<p><b>Consider using BitTorrent to download file:</b></p>\r\n<ul>' + 
+                '<li><b>Magnet link</b>: <a id="magnet" href="' + URL.replace(/\.meta4$/, ".magnet") + '" target="_blank">' +
+                    URL.replace(/\.meta4$/, ".magnet") + '</a> (if torrent app doesn\'t launch, <a id="magnetAlt" href="#" target="_blank">tap here</a> and copy/paste link into your app)<br /></li>\r\n' + 
+                '<li><b>BitTorrent file</b>: <a href="' + URL.replace(/\.meta4$/, ".torrent") + '" target="_blank">' +
+                    URL.replace(/\.meta4$/, ".torrent") + '</a></li></ul>\r\n';
             if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
-                bodyDoc += '<p style="color:red;">This archive is larger than the maximum file size permitted on an SD card formatted as FAT32 (max size is approx. 4GB). On Windows, this is not normally a problem. However, if your card or other storage area is formatted in this way, you will need to download the file on a PC and split it into chunks less than 4GB: see <a href="https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#download-a-zim-archive-all-platforms" target="_blank">Download a ZIM archive</a>.</p>\r\n';
+                bodyDoc += '<p style="color:red;">If you plan to store this archive on a drive/microSD formatted as <b>FAT32</b> (most are not), then you will need to download the file on a PC and split it into chunks less than 4GB: see <a href="https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#download-a-zim-archive-all-platforms" target="_blank">Download a ZIM archive</a>.</p>\r\n';
                 // bodyDoc += '<p><b>To browse for a split version of this archive click here: <a id="portable" href="#" data-kiwix-dl="' +
                 //    URL.replace(/\/zim\/([^/]+\/).*$/m, "/portable/$1") + '">' + URL.replace(/\/zim\/([^/]+\/).*$/m, "/portable/$1") +
                 //    '</a>.</b></p>\r\n';
@@ -480,9 +478,10 @@ define([], function () {
                     'File Explorer. You will need to extract the contents of the folder <span style="font-family: monospace;"><b>&gt; data &gt; content</b></span>,\r\n' +
                     'and transfer ALL of the files there to an accessible folder on your device. After that, you can search for the folder in this app (see above).</p>\r\n';
             }
-            bodyDoc += '<p><i>Links will open in a new browser window</i></p><ol>\r\n' + doc + '</ol>\r\n';
-            //if (mirrorservice) bodyDoc += '*** Note: mirrorservice.org currently has a download bug with ZIM archives: on some browsers it will download the ZIM file as plain text in browser window';
+            bodyDoc += '<p><b>Direct download:</b> (<i>links will open in a new browser window</i>)</p><ol>\r\n' + doc + '</ol>\r\n';
             bodyDoc += '<br /><br />';
+            // Try to get magnet link
+            if (megabytes > 200) requestXhttpData(URL.replace(/\.meta4$/, ".magnet"));
             var header = document.getElementById('dl-panel-heading');
             header.outerHTML = header.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + headerDoc + '</div>');
             var body = document.getElementById('dl-panel-body');
@@ -499,12 +498,32 @@ define([], function () {
                 var dateID = dateSel ? dateSel.value === 'All' ? '' : dateSel.value : '';
                 requestXhttpData(this.dataset.kiwixDl, langID, subjID, dateID);
             };
-            //Add event listener for click on return link, to go back to list of archives
+            // Add event listener for click on return link, to go back to list of archives
             document.getElementById('returnLink').addEventListener('click', submitSelectValues);
-            //Add event listener for split archive link, if necessary
-            if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
-                document.getElementById('portable').addEventListener('click', submitSelectValues);
-            }
+            // Set up preview link
+            document.getElementById('preview').href = URL.replace(/^([^/]+\/\/[^/]+\/)(.+\/)([^/]+)\.zim.+$/i, function (m0, domain, path, file) {
+                domain = domain.replace(/download/, 'library');
+                return domain + file;
+            });
+            // Add event listener for split archive link, if necessary
+            // if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
+            //     document.getElementById('portable').addEventListener('click', submitSelectValues);
+            // }
+        }
+
+        function processMagnetLink(link) {
+            var magnetLink = document.getElementById('magnet');
+            // Set up backup link
+            var magnetLinkAlt = document.getElementById('magnetAlt');
+            magnetLinkAlt.href = magnetLink.href;
+            // Now point main link to the magnet URL so torrent app will open if installed
+            magnetLink.href = link;
+            magnetLink.innerHTML = 'tap to launch link';
+            magnetLink.removeAttribute('target');
+            magnetLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                window.location = this.href;
+            });
         }
 
         function processXhttpData(doc) {
