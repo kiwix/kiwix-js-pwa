@@ -1,10 +1,8 @@
 # Changelog
 
-## In-progress release 2.0.7
+## Release 2.0.8
 
 * FEATURE: Optionally check for app updates and inform user of availability
-* UPDATE: Packaged archive updated to `mdwiki_en_all-app_maxi_2022-06.zim`
-* UPDATE: KaTeX library updated to 0.16
 * ENHANCEMENT: Radical improvement in CSS rendering in Zimit ZIMs
 * ENHANCEMENT: Option to warn before opening external links
 * ENHANCEMENT: Provide magnet torrent links in Archive Library
@@ -13,6 +11,7 @@
 * ENHANCEMENT: Intelligently auto-switch image manipulation setting if supported by ZIM type
 * ENHANCEMENT: Intelligently turn off dark theme if ZIM does not support it
 * ENHANCEMENT: Improve MathML detection
+* UPDATE: KaTeX library updated to 0.16
 * FIX: Skipping forwards and backwards in videos inside Chromium frameworks
 * FIX: Searching for assets in url index now properly shows the url instead of title
 * FIX: System alert dialogue box now handles keyboard events
