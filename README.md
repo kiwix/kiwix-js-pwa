@@ -82,15 +82,16 @@ WikiMed Offline Medical Wikipedia works offline, and does not collect or record 
 only remembers your browsing history for the duration of a session (for the purpose of returning to previously
 viewed pages). This history is lost on exiting the app with the optional exception of the last-visited page.
 
-If you access this app from a secure web server (e.g. the PWA server), it will only work offline if your browser is
-capable of installing a Service Worker. If you install or bookmark the PWA version, then it will work offline, but
-note that **by design** any PWA will periodically check the PWA server (in this case, https://pwa.kiwix.org/), if it
-is available, to check for an updated Service Worker.
+If you access this application from a secure web server (e.g. the PWA server), it will only work offline if your browser
+is capable of installing a Service Worker. If you install or bookmark the PWA version in Service Worker mode, then it
+will work offline, but note that **by design** any PWA will periodically check the PWA server (in this case, 
+https://pwa.kiwix.org/), if it is available, to check for an updated Service Worker.
 
-Versions of the app that are not installed via a Store or that are not PWAs, will offer to check for updates on startup,
-but this functionality is optional and can be kept off. Some Electron apps will also optionally self-update, if you allow
-them to check for updates. This applies to the installer (setup) version for Windows, and to the AppImage version for Linux.
-The Store version and the PWA also self-update, but this is not controllable within the app.
+Versions of the app that are not installed via a Store or that are not PWAs, will offer to check the GitHub Releases API
+for updates on startup, but this functionality is optional and can be kept off. Some Electron apps will also optionally
+self-update (via the same API), if you allow them to check for updates. This applies to the installer (setup) version for
+Windows, and to the AppImage version for Linux. The Store version and the PWA also self-update, but this is not 
+controllable within the app.
 
 By default, this application will remember your last-visited page between sessions using local stoarage or a cookie
 that is accessible only on this device. If you are accessing sensitive information that you do not wish to be displayed
