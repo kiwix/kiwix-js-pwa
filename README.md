@@ -87,31 +87,33 @@ capable of installing a Service Worker. If you install or bookmark the PWA versi
 note that **by design** any PWA will periodically check the PWA server (in this case, https://pwa.kiwix.org/), if it
 is available, to check for an updated Service Worker.
 
-Electron versions of the app may access GitHub on each start of the app to check for an update. This applies to the installer
-(setup) version for Windows, and to the AppImage version for Linux. Other versions for Electron or NWJS do not auto-upaate
-(and do not access the server).
+Versions of the app that are not installed via a Store or that are not PWAs, will offer to check for updates on startup,
+but this functionality is optional and can be kept off. Some Electron apps will also optionally self-update, if you allow
+them to check for updates. This applies to the installer (setup) version for Windows, and to the AppImage version for Linux.
+The Store version and the PWA also self-update, but this is not controllable within the app.
 
 By default, this application will remember your last-visited page between sessions using local stoarage or a cookie
-that is accessible only by this app on this device. If you are accessing sensitive information that you do
-not wish to be displayed next time you open this app, we recommend that you turn this option off in the Configuration options.
+that is accessible only on this device. If you are accessing sensitive information that you do not wish to be displayed
+next time you open this app, we recommend that you turn this option off in the Configuration options.
 
-This application only reads the archive files that you explicitly select on your device and files included in
-its own package: it is not capable of reading any other files. It will only access the Kiwix download server if
-you specifically request it to access the download library for ZIM archives on the Configuration page. If you
-run the app as a PWA, it will cache its own code from the secure PWA server and then can be used offline.
-Some ZIM archives contain active content (scripts) which may, in rare circumstances, attempt to
-contact external servers for incidental files such as fonts. These scripts will only run if you enable Service
-Worker mode in Configuration.
+This application only reads the archive files that you explicitly select on your device and files included in its own
+package: it is not capable of reading any other files. It will only access the Kiwix archive download server if
+you specifically request it to access the download library for ZIM archives on the Configuration page. If you run the
+app as a PWA, it will cache its own code from the secure PWA server and then can be used offline. Some ZIM archives
+contain active content (scripts) which may, in rare circumstances, attempt to contact external servers for incidental files
+such as fonts. We block these with a Content Security Policy injected into articles, but in some cases, if the article already
+has a CSP, ours may be overwritten. Note that scripts only run if you enable Service Worker mode in Configuration.
 
-**If you believe your Internet access is insecure, or is being observed or censored, we recommend that you completely shut down your Internet access (Data or WiFi) before using the application.**
+**If you believe your Internet access is insecure, or is being observed or censored, we recommend that you completely shut
+down your Internet access (Data or WiFi) before using the application.**
 
-Additionally, if you obtained this app from a Vendor Store (including extensions), then the Store operator may
-track your usage of the app (e.g. download, install, uninstall, date and number of sessions) for the purpose of
-providing anonymous, aggregate usage statistics to developers. If this concerns you, you should check the relevant
-Store Privacy Policy for further information.
+Additionally, if you obtained this app from a Vendor Store (including extensions), then the Store operator may track your
+usage of the app (e.g. download, install, uninstall, date and number/duration of sessions) for the purpose of providing
+anonymous, aggregate usage statistics to developers. If this concerns you, you should check the relevant Store Privacy Policy
+for further information.
 
 **Builds of this app are available that do not use a Store or an online Service Worker.** Please see:
 
 * [Releases](https://github.com/kiwix/kiwix-js-windows/releases/)
 * [NWJS version](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html) - this version is completely standalone
-  and will never self-update or access servers unless you allow it to.
+  and will never access servers unless you allow it to.
