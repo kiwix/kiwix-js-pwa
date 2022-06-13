@@ -865,7 +865,7 @@ define(rqDef, function(util) {
             }
         };
         if (params.openExternalLinksInNewTabs) {
-            systemAlert(message, 'Opening external link');
+            systemAlert(message, 'Opening external link', false, null, null, 'Close');
             // Close dialog box if user clicks the link
             document.getElementById('kiwixExternalLink').addEventListener('click', function (e) {
                 if (/https:\/\/www.openstreetmap.*?mlat/.test(href)) {
