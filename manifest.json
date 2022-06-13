@@ -36,7 +36,7 @@
   ],
   "file_handlers": [
     {
-      "action": "www/",
+      "action": "www/index.html",
       "accept": {
         "application/octet-stream": [ ".zim" ]
       },
