@@ -181,8 +181,9 @@ if (!/^http/i.test(window.location.protocol) && params.localUWPSettings &&
         window.location.href = params.PWAServer + 'www/index.html' + uriParams;
         // This will trigger the error catching above, cleanly dematerialize this script and transport us swiftly to PWA land
         throw 'Beam me up, Scotty!';
-    } else if (params.localUWPSettings.PWA_launch === 'fail') {
-        console.error('PWA failed to launch correctly last time! Setting failsafe to avoid boot-loop...');
+    } else {
+        console.error('PWA may have failed to launch correctly last time! Setting failsafe to avoid boot-loop...');
+        params.localUWPSettings.PWA_launch = 'fail';
     }
 }
 
