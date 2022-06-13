@@ -5479,9 +5479,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             setTab();
                         }
                     } else {
-                        uiUtil.systemAlert('<p>We could not find the article ' + path + ' in this archive!</p>' +
-                            '<p>Redirecting to landing page...</p>');
-                        goToMainArticle();
+                        uiUtil.systemAlert('<p>Sorry, but we couldn\'t find the article:</p><p><i>' + path + '</i></p><p>in this archive!</p>');
                     }
                 } else if (download || /\/(epub|pdf|zip|png|jpeg|webp|svg|gif|tiff|mp4|webm|mpeg|mp3|octet-stream)/i.test(mimetype)) {
                     download = true;
