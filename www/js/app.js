@@ -705,6 +705,21 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             document.getElementById('btnHome').click();
         });
 
+        // Deal with the Windows Mobile / Tablet back button
+        if (typeof Windows !== 'undefined' &&
+            typeof Windows.UI !== 'undefined' &&
+            typeof Windows.ApplicationModel !== 'undefined') {
+            var onBackRequested = function (eventArgs) {
+                window.history.back();
+                eventArgs.handled = true;
+            }
+            Windows.UI.Core.SystemNavigationManager.getForCurrentView().
+                appViewBackButtonVisibility =
+                Windows.UI.Core.AppViewBackButtonVisibility.visible;
+            Windows.UI.Core.SystemNavigationManager.getForCurrentView().
+                addEventListener("backrequested", onBackRequested);
+        }
+
         document.getElementById('btnTop').addEventListener('click', function () {
             var header = document.getElementById('top');
             var iframe = document.getElementById('articleContent');
