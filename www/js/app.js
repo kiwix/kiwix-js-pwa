@@ -805,7 +805,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             appType.innerHTML = /^(?=.*PWA).*UWP/.test(params.appType) &&
                 /^https:/i.test(location.protocol) ? 'UWP (PWA) ' :
                 /UWP/.test(params.appType) ? 'UWP ' : 
-                /NWJS/.test(params.appType) ? 'NWJS ' : 
+                window.nw ? 'NWJS ' : 
                 /Electron/.test(params.appType) ? 'Electron ' : 
                 /PWA/.test(params.appType) ? 'PWA ' : '';
             var update = document.getElementById('update');
