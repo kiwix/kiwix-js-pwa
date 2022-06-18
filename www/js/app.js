@@ -751,6 +751,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             }
         });
 
+        var currentArchive = document.getElementById('currentArchive');
+        var currentArchiveLink = document.getElementById('currentArchiveLink');
+        var openCurrentArchive = document.getElementById('openCurrentArchive');
+
         function setTab(activeBtn) {
             // Highlight the selected section in the navbar
             $('#liHomeNav').attr("class", "active");
@@ -791,9 +795,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             }
             document.getElementById('libraryArea').style.borderColor = '';
             document.getElementById('libraryArea').style.borderStyle = '';
-            var currentArchive = document.getElementById('currentArchive');
             if (params.packagedFile && params.storedFile && params.storedFile !== params.packagedFile) {
-                currentArchive.innerHTML = "Currently loaded archive: <b>" + params.storedFile.replace(/\.zim$/i, "") + "</b>";
+                currentArchiveLink.innerHTML = params.storedFile.replace(/\.zim$/i, '');
                 currentArchive.style.display = "block";
                 document.getElementById('downloadLinksText').style.display = "none";
                 document.getElementById('usage').style.display = "none";
@@ -1018,8 +1021,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             cache.idxDB('pickedFSHandle', function(val) {
                 if (val) {
                     var handle = val;
-                    return cache.verifyPermission(handle, false).then(function(accessible) {
+                    return cache.verifyPermission(handle, false).then(function (accessible) {
                         if (accessible) {
+                            openCurrentArchive.style.display = 'none';
                             if (callback) {
                                 callback(handle);
                                 return;
@@ -1030,6 +1034,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                                 return processNativeDirHandle(handle);
                             }
                         } else {
+                            openCurrentArchive.style.display = 'inline';
                             if (callback) {
                                 callback(handle);
                             } else {
@@ -1086,7 +1091,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 selectArchive(e);
             }
         });
-        document.getElementById('archiveList').addEventListener('mousedown', selectArchive);
+        document.getElementById('archiveList').addEventListener('click', selectArchive);
+        currentArchiveLink.addEventListener('click', function (e) {
+            e.target.value = currentArchiveLink.innerHTML;
+            selectArchive(e);
+        });
+        openCurrentArchive.addEventListener('click', function (e) {
+            e.target.value = currentArchiveLink.innerHTML;
+            selectArchive(e);
+        });
 
         function selectArchive(list) {
             if (selectFired) return;
@@ -1869,8 +1882,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             document.getElementById('downloadLinksText').style.display = params.showFileSelectors ? "none" : "inline";
             document.getElementById('usage').style.display = params.showFileSelectors ? "none" : "inline";
             if (params.packagedFile && params.storedFile && params.storedFile != params.packagedFile) {
-                var currentArchive = document.getElementById('currentArchive');
-                currentArchive.innerHTML = "Currently loaded archive: <b>" + params.storedFile.replace(/\.zim$/i, "") + "</b>";
+                currentArchiveLink.innerHTML = params.storedFile.replace(/\.zim$/i, '');
                 currentArchive.style.display = params.showFileSelectors ? "none" : "block";
                 document.getElementById('downloadLinksText').style.display = params.showFileSelectors ? "none" : "block";
             }
@@ -2615,9 +2627,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             return;
                         } else if (!params.pickedFile && params.pickedFolder && params.pickedFolder.kind) {
                             // Native FS support
-                            cache.verifyPermission(params.pickedFolder).then(function(permission) {
+                            return cache.verifyPermission(params.pickedFolder).then(function (permission) {
                                 if (!permission) {
                                     console.log('User denied permission to access the folder');
+                                    openCurrentArchive.style.display = 'inline';
                                     return;
                                 } else if (params.pickedFolder.kind === 'directory') {
                                     return processNativeDirHandle(params.pickedFolder, function(fileHandles) {
@@ -2673,6 +2686,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                                         }
                                     });
                                 }
+                                openCurrentArchive.style.display = 'none';
+                            }).catch(function () {
+                                openCurrentArchive.style.display = 'inline';
                             });
                             return;
                         } else if (window.fs) {
@@ -3143,7 +3159,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         document.getElementById("usage").style.display = "none";
                     } else {
                         reloadLink.style.display = "none";
-                        document.getElementById('currentArchive').style.display = "none";
+                        currentArchive.style.display = "none";
                         document.getElementById("usage").style.display = "inline";
                     }
                 }
