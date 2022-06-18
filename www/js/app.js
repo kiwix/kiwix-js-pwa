@@ -2495,7 +2495,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             }
             // Store the list of archives in a cookie, to avoid rescanning at each start
             settingsStore.setItem("listOfArchives", archiveDirectories.join('|'), Infinity);
-            comboArchiveList.size = comboArchiveList.length;
+            comboArchiveList.size = comboArchiveList.length > 15 ? 15 : comboArchiveList.length;
             //Kiwix-Js-Windows #23 - remove dropdown caret if only one archive
             if (comboArchiveList.length > 1) comboArchiveList.removeAttribute("multiple");
             if (comboArchiveList.length == 1) comboArchiveList.setAttribute("multiple", "1");
