@@ -4,13 +4,20 @@
   "name": "Kiwix JS PWA Edition",
   "display": "standalone",
   "display_override": ["standalone", "tabbed"],
+  "iarc_rating_id": "3596f0d9-387e-4d64-a165-5fef16a6c8e3",
   "start_url": ".",
   "short_name": "Kiwix PWA",
-  "theme_color": "black",
+  "theme_color": "#008080",
   "description": "Offline Wikipedia reader",
   "orientation": "any",
-  "background_color": "transparent",
-  "related_applications": [],
+  "background_color": "#003233",
+  "related_applications": [
+    {
+      "platform": "windows",
+      "url": "https://www.microsoft.com/store/apps/9P8SLZ4J979J",
+      "id": "9P8SLZ4J979J"
+    }
+  ],
   "prefer_related_applications": false,
   "icons": [
     {
