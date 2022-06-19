@@ -679,15 +679,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             document.getElementById('search-article').style.fontSize = value + "%";
             document.getElementById('relativeUIFontSizeSlider').value = value;
             var forms = document.querySelectorAll('.form-control');
-            for (var i = 0; i < forms.length; i++) {
+            var i;
+            for (i = 0; i < forms.length; i++) {
                 forms[i].style.fontSize = ~~(value * 14 / 100) + "px";
             }
             var buttons = document.getElementsByClassName('btn');
-            for (var i = 0; i < buttons.length; i++) {
-                buttons[i].style.fontSize = buttons[i].id == "reloadPackagedArchive" ? ~~(value * 10 / 100) + "px" : ~~(value * 14 / 100) + "px";
+            for (i = 0; i < buttons.length; i++) {
+                // The two buttons with id ending ...Archive need to be smaller
+                buttons[i].style.fontSize = /Archive/.test(buttons[i].id) ? ~~(value * 10 / 100) + "px" : ~~(value * 14 / 100) + "px";
             }
             var heads = document.querySelectorAll("h1, h2, h3, h4");
-            for (var i = 0; i < heads.length; i++) {
+            for (i = 0; i < heads.length; i++) {
                 var multiplier = 1;
                 var head = heads[i].tagName;
                 multiplier = head == "H4" ? 1.4 : head == "H3" ? 1.9 : head == "H2" ? 2.3 : head == "H1" ? 2.8 : multiplier;
