@@ -29,7 +29,7 @@ recently Electron and NWJS, as well as to work as an installable PWA.
 
 The UWP app is available in the Microsoft Store at:
 
-[https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j](https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j)
+[https://www.microsoft.com/store/apps/9P8SLZ4J979J](https://www.microsoft.com/store/apps/9P8SLZ4J979J)
 
 It can also be installed (in Windows 10/11) by opening a Command Prompt or PowerShell terminal and typing `winget install kiwix.kiwixjs` (but this version
 will not auto-update, unlike the Store version). Alternative sideloading instructions are available in the 
