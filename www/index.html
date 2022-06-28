@@ -123,28 +123,14 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
                         <ul style="padding-left: 15px;">
-                            <li>Optionally check for app updates and inform user of availability</li>
-                            <li>Radical improvement in CSS rendering in Zimit ZIMs</li>
-                            <li>Option to warn before opening external links</li>
-                            <li>Provide magnet torrent links in Archive Library</li>
-                            <li>Provide link to preview of live ZIM archive on library.kiwix.org</li>
-                            <li>Reduce delay between image loads when lazy-loading images (Wikimedia ZIMs)</li>
-                            <li>Speed up regex processing of Zimit transforms</li>
-                            <li>Intelligently auto-switch image manipulation setting if supported by ZIM type</li>
-                            <li>Intelligently turn off dark theme if ZIM does not support it</li>
-                            <li>Searching for assets in url index now properly shows the url instead of title</li>
-                            <li>System alert dialogue box now recognizes Enter and Escape keys</li>
-                            <li>Fix skipping forwards and backwards in videos inside Chromium frameworks</li>
-                            <li>Derive redirect information from Zimit Headers if the response is mising from the archive</li>
-                            <li>Process correctly the <code>srcset</code> property in image sets for Zimit ZIMs</li>
-                            <li>Disable lazy image loading in Zimit ZIMs</li>
-                            <li>Add some failsafe code to hide spinner if it runs too long (does not handle app crashes)</li>
-                            <li>Improve MathML detection</li>
-                            <li>KaTeX library updated to 0.16</li>
-                            <li>More robust insertion of Contet Security Policy into article</li>
-                            <li>Fix dark theme for new Stackexchange ZIMs</li>
-                            <li>Fix interoperability between JQuery and Service Worker modes with Zimit archives</li>
-                            <li>Fixed max page width manipulation in IE11</li>
+                            <li>System back button in UWP app no longer exits the app</li>
+                            <li>Hyperlink the currently loaded archive so that user can re-open it easily with a click</li>
+                            <li>Make archive links combo box scrollable</li>
+                            <li>Make buttons more visible in dark mode</li>
+                            <li>Do not redirect to landing page if requested article is not found</li>
+                            <li>Prevent app entering an anomalous state if launch of Service Worker mode fails</li>
+                            <li>Fix file handling API (works with latest Chrome, and with Edge Beta)</li>
+                            <li>Distinguish between Electron and NWJS when reporting app type to UI</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md" target="_blank">And there's more...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>
