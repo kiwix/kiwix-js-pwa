@@ -1,5 +1,17 @@
 # Changelog
 
+## Release 2.0.9
+
+* ENHANCEMENT: System back button in UWP app no longer exits the app
+* ENHANCEMENT: Hyperlink the currently loaded archive so that user can re-open it easily with a click
+* ENHANCEMENT: Make archive links combo box scrollable
+* ENHANCEMENT: Make buttons more visible in dark mode
+* FIX: Do not redirect to landing page if requested article is not found
+* FIX: Prevent app entering an anomalous state if launch of Service Worker mode fails
+* FIX: File handling API (works with latest Chrome, and with Edge Beta)
+* FIX: Distinguish between Electron and NWJS when reporting app type to UI
+
+
 ## Release 2.0.8
 
 * FEATURE: Optionally check for app updates and inform user of availability
