@@ -270,6 +270,11 @@ nav a.btn-primary, .input-group-addon {
     border-color: #222 !important;
 }
 
+.dark .btn-inline {
+    background: #182828 !important;
+    border-color: darkslategray !important;
+}
+
 .dark .btn:hover, .dark .btn:active, .dark .btn-primary:active, .dark .btn-primary.active {
     background: darkslategray !important;
     background-color: darkslategray !important;
