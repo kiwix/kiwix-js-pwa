@@ -10,7 +10,7 @@
 * FIX: Prevent app entering an anomalous state if launch of Service Worker mode fails
 * FIX: File handling API (works with latest Chrome, and with Edge Beta)
 * FIX: Distinguish between Electron and NWJS when reporting app type to UI
-
+* FIX: Dark style for new Stackexchange ZIMs
 
 ## Release 2.0.8
 
