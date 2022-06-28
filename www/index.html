@@ -656,7 +656,7 @@
                 <div id="configuration" style="display: none;" class="container category-padding">
                     <div id="returntoArticle" class="returntoArticle" style="text-align:center;padding-top:30px;"></div>
                     <div id="divInstall2" style="display:none; float:right;">
-                        <button id="btnInstall2" class="btn btn-xs btn-primary">Install PWA</button>
+                        <button id="btnInstall2" class="btn btn-xs btn-primary btn-inline">Install PWA</button>
                     </div>
                     <div class="row" style="padding-bottom:1em;">
                         <h2 style="margin-top:0;">Configuration</h2>
@@ -665,11 +665,11 @@
                         <p id="usage">For <b>instructions</b> and <b>usage guide</b>, please see the <a href="#" class="aboutLink"><b>About tab</b> <span class="glyphicon glyphicon-info-sign"></span></a> (top right).</p>
                         <p class="packagedInfo" style="display: none; margin-top: 1em;">
                             Packaged ZIM archive: <b><span class="fileVersion"></span></b>
-                            <button style="display:none;" id="reloadPackagedArchive" type="button" class="btn btn-primary btn-xs">Reload</button>
+                            <button style="display:none;" id="reloadPackagedArchive" type="button" class="btn btn-primary btn-xs btn-inline">Reload</button>
                         </p>
                         <p id="currentArchive" style="display: none;">
                             Current archive: <b><a href="#" id="currentArchiveLink"></a></b>
-                            <button id="openCurrentArchive" style="display: none;" type="button" class="btn btn-primary btn-xs">Open</button>
+                            <button id="openCurrentArchive" style="display: none;" type="button" class="btn btn-primary btn-xs btn-inline">Open</button>
                         </p>
                         <p id="downloadLinksText">
                             <a class="unhideLibrary" href="#btnRescanDeviceStorage"><i>Download more archives from the <b>Archive Library</b>.</i></a>
@@ -693,10 +693,10 @@
                             <div id="openLocalFiles" style="display: block;">
                                 <div class="row">
                                     <div class="col-xs-6">
-                                        <input type="button" class="btn btn-primary" value="Select file" id="archiveFile" />
+                                        <input type="button" class="btn btn-primary btn-inline" value="Select file" id="archiveFile" />
                                     </div>
                                     <div class="col-xs-6">
-                                        <input type="button" class="btn btn-primary" value="Select folder" id="archiveFiles" />
+                                        <input type="button" class="btn btn-primary btn-inline" value="Select folder" id="archiveFiles" />
                                     </div>
                                 </div>
                                 <div id="UWPInstructions" class="row">
@@ -714,7 +714,7 @@
                                     </p>
                                 </div>
                                 <div class="row">
-                                    <input style="display:none;" type="file" class="btn btn-primary" value="Select folder with ZIM files" id="archiveFilesLegacy" multiple accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
+                                    <input style="display:none;" type="file" class="btn btn-primary btn-inline" value="Select folder with ZIM files" id="archiveFilesLegacy" multiple accept=".zim,.dat,.idx,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
                                 </div>
                                 <div class="row">
                                     <div class="col-xs-12">
@@ -724,7 +724,7 @@
                             </div>
                             <div id="rescanStorage" style="display:none;" class="row">
                                 <div class="col-xs-11">
-                                    <input style="float:left; margin-right:1em;" type="button" class="btn btn-primary" value="Select storage" id="btnRescanDeviceStorage" />
+                                    <input style="float:left; margin-right:1em;" type="button" class="btn btn-primary btn-inline" value="Select storage" id="btnRescanDeviceStorage" />
                                     Tap to select app's local storage or to select a file or folder. <b>You can also drag and drop a ZIM file into the app.</b>
                                 </div>
                                 <div class="col-xs-1">
@@ -738,7 +738,7 @@
                                 <div id="libraryArea" class="col-xs-12">
                                     <table>
                                         <tr>
-                                            <td><input id="downloadTrigger" type="button" class="btn btn-primary" value="Open library" style="float:left; margin-right:1em;" /></td>
+                                            <td><input id="downloadTrigger" type="button" class="btn btn-primary btn-inline" value="Open library" style="float:left; margin-right:1em;" /></td>
                                             <td style="width:100%;">Opens library of archives for download:<br /><i>Warning:</i> this will use data</td>
                                         </tr>
                                     </table>
