@@ -250,9 +250,9 @@ if ($updatewinget) {
     }
     if (-Not $dryrun) {
       "`nSubmitting to winget-pkg repository..."
-      & wingetcreate.exe update -i $package_id -v "$winget_version" -u $package_url -s -t $github_token
+      & wingetcreate.exe update $package_id -v "$winget_version" -u $package_url -s -t $github_token
     } else {
-      "`n[DRYRUN:] & wingetcreate.exe update -i $package_id -v $winget_version -u $package_url -s -t $github_token"
+      "`n[DRYRUN:] & wingetcreate.exe update $package_id -v $winget_version -u $package_url -s -t $github_token"
     }
 }
   
