@@ -1,5 +1,9 @@
 # Changelog
 
+## In-progress release 2.1.0
+
+* FIX: Package and install icons for WikiMed and Wikivoyage
+
 ## Release 2.0.9
 
 * ENHANCEMENT: System back button in UWP app no longer exits the app
