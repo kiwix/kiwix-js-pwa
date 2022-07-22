@@ -65,7 +65,7 @@
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>8C36A49B9212BDB8E5241D47EF0C0322BFD9D091</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>916AE2C9A5B176145DB3B74E2BA254AD526DCCF2</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
@@ -179,7 +179,6 @@
     <Content Include="www\js\lib\zstddec-wasm.wasm" />
     <Content Include="www\js\lib\zstddec_wrapper.js" />
     <None Include="Package.StoreAssociation.xml" />
-    <None Include="KiwixWebApp_StoreKey.pfx" />
     <Content Include="manifest.json" />
     <Content Include="service-worker.js" />
     <Content Include="www\-\static\main.css" />
