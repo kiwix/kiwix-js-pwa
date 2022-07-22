@@ -65,7 +65,7 @@
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>6B6AB3D53BEAB92C72AA2DAB28F5A5EC08AEF2CF</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>CAF03AF5A11FF501802B3179E5DF080832FF6831</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
@@ -141,7 +141,6 @@
     <Content Include="images\Wide310x150Logo.scale-150.png" />
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="images\Wide310x150Logo.scale-400.png" />
-    <None Include="KiwixWebAppWikivoyage_StoreKey.pfx" />
     <Content Include="www\-\mw\content.parsoid.css" />
     <Content Include="www\-\mw\ext.cite.a11y.css" />
     <Content Include="www\-\mw\ext.cite.styles.css" />
