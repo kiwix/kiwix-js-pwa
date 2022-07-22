@@ -1,35 +1,31 @@
 # Changelog
 
-## In-progress release 2.1.0
-
-* FIX: Package and install icons for WikiMed and Wikivoyage
-
 ## Release 2.0.9
 
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2022-07`
 * ENHANCEMENT: System back button in UWP app no longer exits the app
 * ENHANCEMENT: Hyperlink the currently loaded archive so that user can re-open it easily with a click
 * ENHANCEMENT: Make archive links combo box scrollable
 * ENHANCEMENT: Make buttons more visible in dark mode
+* ENHANCEMENT: Provide magnet torrent links in Archive Library
+* ENHANCEMENT: Provide link to preview of live ZIM archive on library.kiwix.org
 * FIX: Do not redirect to landing page if requested article is not found
 * FIX: Prevent app entering an anomalous state if launch of Service Worker mode fails
 * FIX: File handling API (works with latest Chrome, and with Edge Beta)
 * FIX: Distinguish between Electron and NWJS when reporting app type to UI
-* FIX: Dark style for new Stackexchange ZIMs
 
-## Release 2.0.8
+## Release 2.0.2-Wikivoyage
 
 * FEATURE: Optionally check for app updates and inform user of availability
-* ENHANCEMENT: Radical improvement in CSS rendering in Zimit ZIMs
+* FEATURE: Search for any asset in any ZIM by prefixing namespace
 * ENHANCEMENT: Option to warn before opening external links
-* ENHANCEMENT: Provide magnet torrent links in Archive Library
-* ENHANCEMENT: Provide link to preview of live ZIM archive on library.kiwix.org
 * ENHANCEMENT: Reduce delay between image loads when lazy-loading images (Wikimedia ZIMs)
 * ENHANCEMENT: Intelligently auto-switch image manipulation setting if supported by ZIM type
 * ENHANCEMENT: Intelligently turn off dark theme if ZIM does not support it
 * ENHANCEMENT: Ensure user clears the cache when switching to SW mode while a Zimit ZIM is loaded
 * ENHANCEMENT: Prevent expensive RegExp processing for irrelevant ZIM types
 * ENHANCEMENT: Made PWA manifest compatible with Chromium installability criteria
-* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2022-05`
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2022-06`
 * UPDATE: Refresh Kiwix icons
 * UPDATE: Hyperlinking of images to high-res versions is now off by default
 * FIX: Searching for assets in url index now properly shows the url instead of title
