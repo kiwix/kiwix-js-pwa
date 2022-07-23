@@ -65,30 +65,28 @@
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>CAF03AF5A11FF501802B3179E5DF080832FF6831</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>AC88CB5C77BD1D6D2ECC0849F5C200C427E0ECCA</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
-    <PackageCertificateKeyFile>KiwixWebAppWikivoyage_StoreKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="archives\wikivoyage_en_all_maxi_2022-06.zimaa" />
-    <Content Include="archives\wikivoyage_en_all_maxi_2022-06.zimab" />
-    <Content Include="archives\wikivoyage_en_all_maxi_2022-06.zimac" />
-    <Content Include="archives\wikivoyage_en_all_maxi_2022-06.zimad" />
-    <Content Include="archives\wikivoyage_en_all_maxi_2022-06.zimae" />
-    <Content Include="archives\wikivoyage_en_all_maxi_2022-06.zimaf" />
-    <Content Include="archives\wikivoyage_en_all_maxi_2022-06.zimag" />
-    <Content Include="archives\wikivoyage_en_all_maxi_2022-06.zimah" />
-    <Content Include="archives\wikivoyage_en_all_maxi_2022-06.zimai" />
-    <Content Include="archives\wikivoyage_en_all_maxi_2022-06.zimaj" />
-    <Content Include="archives\wikivoyage_en_all_maxi_2022-06.zimak" />
-    <Content Include="archives\wikivoyage_en_all_maxi_2022-06.zimal" />
-    <Content Include="archives\wikivoyage_en_all_maxi_2022-06.zimam" />
-    <Content Include="archives\wikivoyage_en_all_maxi_2022-06.ziman" />
-    <Content Include="archives\wikivoyage_en_all_maxi_2022-06.zimao" />
-    <Content Include="archives\wikivoyage_en_all_maxi_2022-06.zimap" />
-    <Content Include="archives\wikivoyage_en_all_maxi_2022-06.zimaq" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2022-07.zimaa" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2022-07.zimab" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2022-07.zimac" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2022-07.zimad" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2022-07.zimae" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2022-07.zimaf" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2022-07.zimag" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2022-07.zimah" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2022-07.zimai" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2022-07.zimaj" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2022-07.zimak" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2022-07.zimal" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2022-07.zimam" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2022-07.ziman" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2022-07.zimao" />
+    <Content Include="archives\wikivoyage_en_all_maxi_2022-07.zimap" />
     <Content Include="images\BadgeLogo.scale-100.png" />
     <Content Include="images\BadgeLogo.scale-125.png" />
     <Content Include="images\BadgeLogo.scale-150.png" />
