@@ -1,7 +1,8 @@
 # Changelog
 
-## In-progress release 2.1.0
+## In-progress release 2.0.91
 
+* FIX: Initial fixes to enable reading of Type 1 Zimit ZIM archvies
 * FIX: Package and install icons for WikiMed and Wikivoyage
 
 ## Release 2.0.9
