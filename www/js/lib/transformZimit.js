@@ -38,16 +38,17 @@ define([], function () {
 
     /**
      * Filters out the Replay system files (since these cannot be loaded alongside a Service Worker without error)
-     * In the case of the H namespace or the landing page, an 'inspect' property is added to the dirEntry, so that we can discover
+     * In the case of the H prefix or the landing page, an 'inspect' property is added to the dirEntry, so that we can discover
      * the underlying Zimit landing page below
      * @param {dirEntry} dirEntry The directory entry to modify or anull
      * @returns {dirEntry} The modified directory entry
      */
     function filterReplayFiles(dirEntry) {
         if (!(dirEntry && dirEntry.url)) return null;
-        if (dirEntry.namespace === 'H' || params.isLandingPage && /^index\.html(?:[?#]|$)/.test(dirEntry.url))
+        if (dirEntry.namespace === 'H' || dirEntry.namespace === 'C' && /^H\//.test(dirEntry.url) 
+            || params.isLandingPage && /^(A\/)?index\.html(?:[?#]|$)/.test(dirEntry.url))
             dirEntry.inspect = true;
-        if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|remote.loader\.js|survey\.js|yuiloader\.js|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url))
+        if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|update\.googleapis|remote.loader\.js|survey\.js|yuiloader\.js|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url))
             dirEntry.nullify = true;
         return dirEntry;
     }
@@ -55,28 +56,31 @@ define([], function () {
     /**
      * Inspects the HTML of the ZIM archive's landing page or of the requested Header to discover the URL to redirect to
      * adds a custom redirect to the dirEntry
-     * @param {dirEntry} dirEntry The directory entry of the landing page or H namespace header to process 
+     * @param {dirEntry} dirEntry The directory entry of the landing page or H-prefixed header to process 
      * @param {String} data The decoded data which the dirEntry points to
      * @param {String} cns The Content Name Space of the ZIM (usually 'C' or 'A')
      * @returns {dirEntry} The modified directory entry
      */
     function getZimitRedirect(dirEntry, data, cns) {
         var redirect;
-        if (dirEntry.namespace === 'H') {
+        // Type 1 ZIMs don't use the H namespace, and instead use H as prefix to the URL
+        if (dirEntry.namespace === 'H' || cns === 'C' && /^H\//.test(dirEntry.url)) {
             // We are dealing with a Header redirect, so we need to find the Location: field
             redirect = data.match(/^Location:\s*https?:\/\/([^\/]+)(.*)$/m);
             if (!redirect) redirect = data.match(/^WARC-Target-URI:\s*https?:\/\/([^/]+)(.*)$/m)
             if (redirect && redirect[1]) {
-                params.zimitPrefix = redirect[1];
-                dirEntry.zimitRedirect = cns + '/' + redirect[1] + redirect[2];
+                // Type 1 Zimit ZIMs need intermediary 'A' prefix, since there is no longer any A namespace
+                params.zimitPrefix = (cns === 'C' ? 'A/' : '') + redirect[1];
+                dirEntry.zimitRedirect =  cns + '/' + params.zimitPrefix + redirect[2];
             } else {
                 dirEntry.zimitRedirect = null;
             }    
         } else {
             redirect = data.match(/window\.mainUrl\s*=\s*(['"])https?:\/\/([^\/]+)(.+?)\1/);
             if (redirect && redirect[2] && redirect[3]) {
-                params.zimitPrefix = redirect[2];
-                params.zimitStartPage = dirEntry.namespace + '/' + redirect[2] + redirect[3];
+                // Logic added for Type 1 Zimit ZIMs
+                params.zimitPrefix = (dirEntry.namespace === 'C' ? 'A/' : '') + redirect[2];
+                params.zimitStartPage =  dirEntry.namespace + '/' + params.zimitPrefix + redirect[3];
             } else {
                 params.zimitStartPage = null;
             }
@@ -116,7 +120,7 @@ define([], function () {
             // If the URL is the same as the URL with everything after the first / removed, then we are in the root directory
             // We use this to decide whether to remove any relative link prefixes like ../
             var rootDirectory = dirEntry.url === dirEntry.url.replace(/^([^/]+\/?).*/, '$1');
-            params.zimitPrefix = zimitPrefix ? zimitPrefix[1] : params.zimitPrefix;
+            params.zimitPrefix = zimitPrefix ? (dirEntry.namespace === 'C' ? 'A/' : '') + zimitPrefix[1] : params.zimitPrefix;
             // Remove lazyimgage system and noscript tags that comment out images
             // DEV: Check if this is still necessary
             data = data.replace(/<noscript>\s*(<img\b[^>]+>)\s*<\/noscript>/ig, '$1');
