@@ -378,7 +378,11 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
      * @param {callbackDirEntry} callback
      */
     ZIMArchive.prototype.resolveRedirect = function(dirEntry, callback) {
-        this._file.dirEntryByUrlIndex(dirEntry.redirectTarget).then(callback);
+        var that = this;
+        this._file.dirEntryByUrlIndex(dirEntry.redirectTarget).then(function (resolvedDirEntry) {
+            if (that.type === 'zimit') resolvedDirEntry = transformZimit.filterReplayFiles(resolvedDirEntry);
+            callback(resolvedDirEntry);
+        });
     };
     
     /**
@@ -493,14 +497,14 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
             if (that.type === 'zimit')
                 dirEntry = transformZimit.filterReplayFiles(dirEntry);
             if (!dirEntry) {
-                // We couldn't get the dirEntry
-                if (!zimitResolving && that.type === 'zimit' && /^[AC]\//.test(path)) {
-                    // We need to look the file up in the Header namespace
-                    path = path.replace(/^[AC]\//, 'H/');
+                // We couldn't get the dirEntry, so look it up the Zimit header
+                if (!zimitResolving && that.type === 'zimit' && !/^(H|C\/H)\//.test(path)) {
+                    // We need to look the file up in the Header namespace (double replacement ensures both types of ZIM are supported)
+                    path = path.replace(/^A\//, 'H/').replace(/^(C\/)A\//, '$1H/');
                     console.debug('DirEntry not found, looking up header: ' + path);
                     return that.getDirEntryByPath(path, true);
                 }
-                var newpath = path.replace(/^([AC]\/)[^/]+\/(.+)$/, '$1$2');
+                var newpath = path.replace(/^((?:A|C\/A)\/)[^/]+\/(.+)$/, '$1$2');
                 if (newpath === path) return null; // No further paths to explore!
                 console.log("Article " + path + " not available, but moving up one directory to compensate for ZIM coding error...");
                 return that.getDirEntryByPath(newpath);
