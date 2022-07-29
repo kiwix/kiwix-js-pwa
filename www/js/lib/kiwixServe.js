@@ -462,10 +462,10 @@ define([], function () {
             bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unknown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
             bodyDoc += '<p><b>New! <i><a id="preview" target="_blank">Preview this archive</a></i></b> in your browser before downloading it</p>';
             if (megabytes > 200) bodyDoc += '<p><b>Consider using BitTorrent to download file:</b></p>\r\n<ul>' + 
-                '<li><b>Magnet link</b>: <a id="magnet" href="' + URL.replace(/\.meta4$/, ".magnet") + '" target="_blank">' +
-                    URL.replace(/\.meta4$/, ".magnet") + '</a> (if torrent app doesn\'t launch, <a id="magnetAlt" href="#" target="_blank">tap here</a> and copy/paste link into your app)<br /></li>\r\n' + 
                 '<li><b>BitTorrent file</b>: <a href="' + URL.replace(/\.meta4$/, ".torrent") + '" target="_blank">' +
-                    URL.replace(/\.meta4$/, ".torrent") + '</a></li></ul>\r\n';
+                    URL.replace(/\.meta4$/, ".torrent") + '</a></li>\r\n' + 
+                 '<li><b>Magnet link</b>: <a id="magnet" href="' + URL.replace(/\.meta4$/, ".magnet") + '" target="_blank">' +
+                    URL.replace(/\.meta4$/, ".magnet") + '</a> (if torrent app doesn\'t launch, <a id="magnetAlt" href="#" target="_blank">tap here</a> and copy/paste link into your app)<br /></li></ul>\r\n';
             if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
                 bodyDoc += '<p style="color:red;">If you plan to store this archive on a drive/microSD formatted as <b>FAT32</b> (most are not), then you will need to download the file on a PC and split it into chunks less than 4GB: see <a href="https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#download-a-zim-archive-all-platforms" target="_blank">Download a ZIM archive</a>.</p>\r\n';
                 // bodyDoc += '<p><b>To browse for a split version of this archive click here: <a id="portable" href="#" data-kiwix-dl="' +
