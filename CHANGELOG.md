@@ -2,6 +2,9 @@
 
 ## In-progress release 2.0.91
 
+* UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-07`
+* UPDATE: Packages are now signed with new Kiwix coding certificate
+* UPDATE: BitTorrent files are now displayed before magnet links in the download library
 * FIX: Initial fixes to enable reading of Type 1 Zimit ZIM archvies
 * FIX: Package and install icons for WikiMed and Wikivoyage
 
