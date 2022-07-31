@@ -188,6 +188,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
         // results much more quickly if we do this (and the user can click on a result before the rarer patterns complete)
         // NB duplicates are removed before processing search array
         var startArray = [];
+        var cns = this.getContentNamespace();
         // Check if user prefixed search with a namespace-like pattern. If so, do a search for namespace + url
         if (/^[-ABCHIJMUVWX]\//.test(search.prefix)) search.searchUrlIndex = true;
         // Regex below breaks the string into the pattern: group 1: alphanumericsearch; group 2: regex beginning with .* or .+, or contained in (?:regex)
@@ -210,6 +211,18 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                 return;
             }
         } 
+        var prefixNameSpaces = '';
+        if (search.searchUrlIndex) {
+            var rgxSplitPrefix = /^[-ABCHIJMUVWX]\//;
+            if (that.type === 'zimit' && cns === 'C') {
+                // We have to account for the Zimit prefix in Type 1 ZIMs
+                rgxSplitPrefix = /^[CMWX]\/(?:[AH]\/)?/;
+            }
+            var splitPrefix = prefix.match(rgxSplitPrefix);
+            prefixNameSpaces = splitPrefix ? splitPrefix[0] : '';
+            var splitSuffix = prefix.split(rgxSplitPrefix);
+            prefix = splitSuffix ? splitSuffix[1] : prefix;
+        }
         // Ensure a search is done on the string exactly as typed
         startArray.push(prefix);
         // Normalize any spacing and make string all lowercase
@@ -247,7 +260,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
             search.status = 'interim';
             if (!noInterim) callback(dirEntries, search);
             search.found = dirEntries.length;
-            var prefix = prefixVariants[0];
+            var prefix = prefixNameSpaces + prefixVariants[0];
             // console.debug('Searching for: ' + prefixVariants[0]);
             prefixVariants = prefixVariants.slice(1);
             // Search window sets an upper limit on how many matching dirEntries will be scanned in a full index search
