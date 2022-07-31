@@ -25,7 +25,7 @@
  * This code makes an assumption that no Directory Entry will be larger that MAX_SUPPORTED_DIRENTRY_SIZE bytes.
  * If a larger dirEntry is encountered, an error will display in console. Increase this value if necessary.
  */
-const MAX_SUPPORTED_DIRENTRY_SIZE = 4096;
+const MAX_SUPPORTED_DIRENTRY_SIZE = 5120;
 
 /**
  * Add Polyfill currently required by IE11 to run zstddec-asm and xzdec-asm
@@ -196,6 +196,9 @@ define(['xzdec_wrapper', 'zstddec_wrapper', 'util', 'utf8', 'zimDirEntry', 'file
                 for (pos; pos <= MAX_SUPPORTED_DIRENTRY_SIZE; pos++) {
                     if (data[pos] === 0) break;
                 }
+                // DEBUG
+                if (pos > 3072) console.debug('Found dirEntry.url of size > 3KB!' + (!data[pos] ? ' (' + pos + ')' : ''), dirEntry.url);
+                // END DEGUG
                 if (data[pos] !== 0) {
                     console.warn('WARNING! A Directory Entry URL larger than ' + MAX_SUPPORTED_DIRENTRY_SIZE + ' bytes was encountered! ' +
                         'The dirEntry.url is likely to be invalid.', dirEntry.url
@@ -311,7 +314,7 @@ define(['xzdec_wrapper', 'zstddec_wrapper', 'util', 'utf8', 'zimDirEntry', 'file
      * @param {Array<DirListing>} listings An array of DirListing objects (see zimArchive.js for examples)
      * @returns {Promise} A promise that populates calculated entries in the ZIM file header
      */
-    ZIMFile.prototype.setListings = function(listings) {
+    ZIMFile.prototype.setListings = function (listings) {
         var that = this;
         // If we are in a legacy ZIM archive, we need to calculate the true article count (of entries in the A namespace)
         // This effectively emulates the v1 article pointerlist
