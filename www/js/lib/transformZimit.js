@@ -139,7 +139,7 @@ define([], function () {
                 // For root-relative links, we need to add the zimitPrefix
                 assetUrl = assetUrl.replace(/^\/(?!\/)/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
                 // For Zimit assets that begin with https: or // the zimitPrefix is derived from the URL
-                assetUrl = assetUrl.replace(/^(?:https?:)?\/\//i, indexRoot + '/' + dirEntry.namespace + '/');
+                assetUrl = assetUrl.replace(/^(?:https?:)?\/\//i, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
                 // For fully relative links, we have to remove any '..' if we are in root directory
                 if (rootDirectory) assetUrl = assetUrl.replace(/^(\.\.\/?)+/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/'); 
                 // Deal with <meta http-equiv refresh...> directives
