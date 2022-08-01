@@ -1,12 +1,15 @@
 # Changelog
 
-## In-progress release 2.0.91
+## Release 2.1.0
 
 * UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-07`
 * UPDATE: Packages are now signed with new Kiwix coding certificate
 * UPDATE: BitTorrent files are now displayed before magnet links in the download library
-* FIX: Initial fixes to enable reading of Type 1 Zimit ZIM archvies
+* FIX: Support reading of Zimit archives using new Type 1 C-namespace ZIM format
+* FIX: Searching for namespaces with Type 1 Zimit ZIMs
+* FIX: Hyperlink transformations for Type 1 Zimit ZIMs
 * FIX: Package and install icons for WikiMed and Wikivoyage
+* FIX: Bug which caused app to hang when encountering URLs larger than 2KB in length
 
 ## Release 2.0.9
 
