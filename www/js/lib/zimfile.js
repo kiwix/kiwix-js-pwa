@@ -23,7 +23,7 @@
 
 /**
  * This code makes an assumption that no Directory Entry will be larger that MAX_SUPPORTED_DIRENTRY_SIZE bytes.
- * If a larger dirEntry is encountered, an error will display in console. Increase this value if necessary.
+ * If a larger dirEntry is encountered, a warning will display in console. Increase this value if necessary.
  */
 const MAX_SUPPORTED_DIRENTRY_SIZE = 5120;
 
@@ -197,7 +197,7 @@ define(['xzdec_wrapper', 'zstddec_wrapper', 'util', 'utf8', 'zimDirEntry', 'file
                     if (data[pos] === 0) break;
                 }
                 // DEBUG
-                if (pos > 3072) console.debug('Found dirEntry.url of size > 3KB!' + (!data[pos] ? ' (' + pos + ')' : ''), dirEntry.url);
+                // if (pos > 3072) console.debug('Found dirEntry.url of size > 3KB!' + (!data[pos] ? ' (' + pos + ')' : ''), dirEntry.url);
                 // END DEGUG
                 if (data[pos] !== 0) {
                     console.warn('WARNING! A Directory Entry URL larger than ' + MAX_SUPPORTED_DIRENTRY_SIZE + ' bytes was encountered! ' +
