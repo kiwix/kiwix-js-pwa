@@ -5173,11 +5173,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 anchorParameter = href.match(/#([^#;]+)$/);
                 anchorParameter = anchorParameter ? anchorParameter[1] : '';
                 var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
+                var zimRoot = indexRoot.replace(/^.+?\/www\//, '/');
                 var zimUrl;
                 var zimUrlFullEncoding;
                 if (params.zimType === 'zimit') { 
-                    if(!href.indexOf(indexRoot)) { // If begins with indexRoot
+                    if (!href.indexOf(indexRoot)) { // If begins with indexRoot
                         zimUrl = href.replace(indexRoot, '').replace('#' + anchorParameter, '');
+                    } else if (!href.indexOf(zimRoot)) { // If begins with zimRoot
+                        zimUrl = href.replace(zimRoot, '').replace('#' + anchorParameter, '');
                     } else {
                         // Zimit ZIMs store URLs percent-encoded and with querystring and
                         // deriveZimUrlFromRelativeUrls strips any querystring and decodes
