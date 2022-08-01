@@ -475,7 +475,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
             } else {
                 // DEV: Note that we cannot terminate regex below with $ because there is a (rogue?) mimetype
                 // of 'text/html;raw=true'
-                if (params.zimType === 'zimit' && /^text\/(?:html|css|javascript)\b/i.test(mimetype)) {
+                if (params.zimType === 'zimit' && /\/(?:html|css|javascript)\b/i.test(mimetype)) {
                     data = transformZimit.transformReplayUrls(dirEntry, utf8.parse(data), mimetype, that);
                 }
             }
