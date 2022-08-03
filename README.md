@@ -1,4 +1,4 @@
-# Kiwix JS for PWA, Electron, NWJS and Universal Windows Platform
+# WikiMed Offline Medical Wikipedia for Electron and Universal Windows Platform
 
 **Kiwix is an offline reader for multilingual content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, etc. It makes knowledge
 available to people with limited or no Internet access. The software as well as the content is free for anyone to use. It requires an offline ZIM archive
@@ -27,9 +27,9 @@ This project began as a simple port of [Kiwix JS](https://github.com/kiwix/kiwix
 although significant development has been undertaken to add functionality and to make the app sit happily with the Universal Windows Platform, and more
 recently Electron and NWJS, as well as to work as an installable PWA.
 
-The UWP app is available in the Microsoft Store at:
+The easiest way to install WikiMed is from the Microsoft Store:
 
-[https://www.microsoft.com/store/apps/9P8SLZ4J979J](https://www.microsoft.com/store/apps/9P8SLZ4J979J)
+https://www.microsoft.com/en-gb/store/p/wikimed/9phjsnp1cz8j
 
 It can also be installed (in Windows 10/11) by opening a Command Prompt or PowerShell terminal and typing `winget install kiwix.kiwixjs` (but this version
 will not auto-update, unlike the Store version). Alternative sideloading instructions are available in the 
@@ -78,11 +78,9 @@ to Wikipedia or Wikivoyage articles.
 
 # Privacy Policy
 
-When installed, Kiwix JS Windows and Linux is capable of working entirely offline. This application does not collect or
-record any of your personal data, though if you installed it from a Store, the Store operator may collect anonymous
-usage data (see below). The app only remembers your browsing history for the duration of a session (for the purpose
-of returning to previously viewed pages). This history is lost on exiting the app with the optional exception of the
-last-visited page.
+WikiMed Offline Medical Wikipedia works offline, and does not collect or record any of your personal data. It
+only remembers your browsing history for the duration of a session (for the purpose of returning to previously
+viewed pages). This history is lost on exiting the app with the optional exception of the last-visited page.
 
 If you access this application from a secure web server (e.g. the PWA server), it will only work offline if your browser
 is capable of installing a Service Worker. If you install or bookmark the PWA version in Service Worker mode, then it
