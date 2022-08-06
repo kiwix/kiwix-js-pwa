@@ -1,6 +1,6 @@
 ## Portable and installable builds for UWP, PWA, NWJS and Electron
 
-![Composition_Clñimate_Change](https://user-images.githubusercontent.com/4304337/156934052-9260c976-095a-4309-9dcc-a7c307f7575d.png)
+![Composition_Climate_Change](https://user-images.githubusercontent.com/4304337/156934052-9260c976-095a-4309-9dcc-a7c307f7575d.png)
 
 This app comes packaged with a small sample ZIM archve containing a collection of summary articles from Wikipedia on the topic of Climate Change (`<<zim>>`, <<date>>). For what's new, see the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md). Builds are provided for 32bit and 64bit editions of Windows and Linux (tested on Ubuntu, Debian and OpenSUSE - but see instructions below). ARM is supported via the UWP app.
 
@@ -13,7 +13,7 @@ Please choose the correct version (those marked [**AUTO-UPDATE**] will self-upda
   - **Store app for Windows 10/11 (UWP)**
     + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9P8SLZ4J979J [**AUTO-UPDATE**] - *recommended*
     + Or, on a PC, open a command prompt and run `winget install 'kiwix js' -s msstore` [**AUTO-UPDATE**]
-    + Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.kiwixjs` - this doesn't auto-update, but you can upgrade easily by running `winget upgrade` or `winget upgrade --all`
+    + Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.kiwixjs` - this doesn't auto-update, but you can upgrade easily by running `winget upgrade kiwix.kiwixjs` or `winget upgrade --all`
   - **Installable (Electron)**
     + Windows 7/8/10/11 - [Kiwix-JS-Electron-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix-JS-Electron-Setup-<<numeric_tag>>-E.exe) [**AUTO-UPDATE**]
     + Alternatively, run `winget install kiwix.kiwixjs.electron` in a Windows 10/11 Terminal [**AUTO-UPDATE**]
