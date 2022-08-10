@@ -7,15 +7,16 @@ makes knowledge available to people with limited or no Internet access. The soft
 Get the app and download your choice of offline content (a ZIM archive, which can be downloaded in the app). There are hundreds of free
 archives to choose from, on many different topics and subjects. Build a whole digital library of offline knowledge!** 
 
-See [Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html) for the latest release for different
-operating systems. We also have packaged apps of [WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html) (a
-complete medical encyclopaedia), and [Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html) (a complete
+See **[Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html)** for the latest release for different
+operating systems. We also have packaged apps of **[WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html)** (a
+complete medical encyclopaedia), and **[Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html)** (a complete
 travel guide) in English -- no extra download needed!
 
-If you are using Windows 10 or 11, then all three apps are conveniently available in the Microsoft Store:
-[Kiwix JS UWP](https://www.microsoft.com/store/apps/9P8SLZ4J979J), [WikiMed by Kiwix](https://www.microsoft.com/store/apps/9PHJSNP1CZ8J),
-and [Wikivoyage by Kiwix](https://www.microsoft.com/store/apps/9N5SB90Q4JBJ). They will automatically update when a new package is
-available. If you are using Linux, then the AppImage Electron package of Kiwix JS also (optionally) self-updates, as does the
+If you are using **Windows 10 or 11**, then all three apps are conveniently available in the Microsoft Store:
+**[Kiwix JS UWP](https://www.microsoft.com/store/apps/9P8SLZ4J979J)**,
+**[WikiMed by Kiwix](https://www.microsoft.com/store/apps/9PHJSNP1CZ8J)**,
+and **[Wikivoyage by Kiwix](https://www.microsoft.com/store/apps/9N5SB90Q4JBJ)**. They will automatically update when a new package is
+available. If you are using **Linux**, then the AppImage Electron package of Kiwix JS also (optionally) self-updates, as does the
 installable Windows Electron package. All other apps can (optionally) notify you when a new version is available, and give you a download
 link.
 
@@ -34,39 +35,31 @@ Installable and portable versions for Windows (XP/Vista/7/10/11) and Linux (32bi
 Electron and NWJS apps are available together with a [development deployment](https://kiwix.github.io/kiwix-js-windows/), but code may be
 buggy and change rapidly.
 
-This is a lightweight HTML/JavaScript port of the Kiwix Offline reader. The UWP version targets Windows 10/11 (x86, x64, ARM, mobile,
-tablet, Xbox, Surface Hub, Holographic) while the NWJS and Electron versions also run on earlier Windows (all the way back to Windows XP)
-and Linux: see the respective [releases](https://github.com/kiwix/kiwix-js-windows/releases/) for more information. The PWA should work
-with any browser that supports Service Workers, but has only been tested on Edge Chromium, Edge Legacy, Firefox and Samsung Internet
-Browser. The PWA uses the File System Access API and the File Handling API for a native-like experience in browsers supporting those
-APIs. For more info about these APIs, see the bottom of this page:
+The code is based on [Kiwix JS](https://github.com/kiwix/kiwix-js), a lightweight HTML/JavaScript port of the Kiwix Offline reader.
+Significant development has gone into packaging this app for various frameworks, and to add some features which are often backported
+upstream. The UWP version targets Windows 10/11 (x86, x64, ARM, mobile, tablet, Xbox, Surface Hub, Holographic) while the NWJS and
+Electron versions also run on earlier Windows (all the way back to Windows XP) and Linux: see the respective
+[releases](https://github.com/kiwix/kiwix-js-windows/releases/) for more information. The PWA should work with any browser that supports
+Service Workers, but has only been tested on Edge Chromium, Edge Legacy, Firefox and Samsung Internet Browser. The PWA uses the File
+System Access API and the File Handling API for a native-like experience in browsers supporting those APIs. For more info about these
+APIs, see the bottom of this page:
 [File System Access API and File Handling](screenshots/Install-PWA.md#file-system-access-api-and-file-handling).
 
-Offline ZIM archives are available from the [Kiwix repository](https://library.kiwix.org), including full Wikipedia versions with or
-without images in many different languages. This app is regularly tested fully on Wikimedia ZIM files, though a number of other ZIM file
-types work. There is *preliminary* support for Zimit ZIMs from version 1.9.8 onwards, and Type 1 Zimit ZIMs are supported from 2.1.0
-onwards.
-
-This project began as a simple port of [Kiwix JS](https://github.com/kiwix/kiwix-js), the HTML5 web app provided upstream at
-https://github.com/kiwix/kiwix-js, although significant development has been undertaken to add functionality and to make the app sit
-happily with the Universal Windows Platform, and more recently Electron and NWJS, as well as to work as an installable PWA.
-
-All three apps are available in the WinGet Package Manager. Install the UWP version (in Windows 10/11) by opening a Command Prompt or
-PowerShell terminal and typing `winget install kiwix.kiwixjs` (this version will not auto-update, but it will let you know when a new
-update is ready to install). Alternative sideloading instructions are available in the
+All three apps are available in the WinGet Package Manager. You can sideload the UWP version (in Windows 10/11) by opening a Command
+Prompt or PowerShell terminal and typing `winget install kiwix.kiwixjs` (this version will not auto-update, but it will let you know when
+a new update is ready to install). Alternative sideloading instructions are available in the
 [release notes](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html). The Electron version can be installed with
 `winget install kiwix.kiwixjs.electron`, or else by downloading a package from
-[Releases](https://github.com/kiwix/kiwix-js-windows/releases/).
+[Releases](https://github.com/kiwix/kiwix-js-windows/releases/). For testing, the Store, Electron and NWJS versions come packaged with an
+archive of Wikipedia articles related to Climate Change (as a starter ZIM).
 
-For testing, the Store, Electron and NWJS versions come packaged with an archive of Wikipedia articles related to Climate Change (as a
-starter ZIM), while packaged aps of [WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html) and 
-[Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html) are also available.
-
-You can download archives in-app, or from the [Kiwix repository](http://library.kiwix.org) on a regular PC. Some archives are very large
-indeed, for example full English Wikipedia with images is currently around 90GB, and you should download this with a BitTorrent client
-(torrent and magnet links are provided in the app). For most storage types (including microSD cards) that are formatted as exFAT or NTFS,
-you can store even these very large files in the storage with no problem. However, if you plan to store your ZIM file on an SD card
-formatted as **FAT32**, and you wish to use an archive larger than 4GB, then you will need to split the ZIM: see
+Offline ZIM archives are available in-app, or from the [Kiwix repository](https://library.kiwix.org). This app is regularly tested fully
+on Wikimedia ZIM files, though a number of other ZIM file types work. There is preliminary, useable support for most Zimit ZIMs from
+version 1.9.8 onwards, and Type 1 Zimit ZIMs are supported from 2.1.0 onwards. Some archives are very large indeed, for example full
+English Wikipedia with images is currently around 90GB, and you should download this with a BitTorrent client (torrent and magnet links
+are provided in the app). For most storage types (including microSD cards) that are formatted as exFAT or NTFS, you can store even these
+very large files in the storage with no problem. However, if you plan to store your ZIM file on an SD card formatted as **FAT32**, and
+you wish to use an archive larger than 4GB, then you will need to split the ZIM: see
 [file splitting instructions](https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#download-a-zim-archive-all-platforms).
 
 A lot of development for this app happens upstream in the [Kiwix JS repository](https://kiwix.github.io/kiwix-js/) to which I ontribute
