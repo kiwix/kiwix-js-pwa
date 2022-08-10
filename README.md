@@ -3,17 +3,21 @@
 ![WikiMed montage](https://user-images.githubusercontent.com/4304337/182706203-eca53649-8dea-44b9-ac4a-b08cc05c4252.png)
 
 **Kiwix is an offline reader for multilingual content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, etc. It
-makes knowledge available to people with limited or no Internet access. The software as well as the content is free for anyone to use.
-It requires an offline ZIM archive (which can be downloaded in the app). See [Kiwix JS for Windows and Linux]
-(https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html) for the latest release of Electron, UWP and NWJS packages. There are also
-two apps that come with content: [WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html) and [Wikivoyage by Kiwix]
-(https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html) (no extra download needed).**
+makes knowledge available to people with limited or no Internet access. The software and the content are free for anyone to use.
+As well as the app, you will need an offline archive (which can be downloaded in the app). There are hundreds of free archives (ZIM
+archives) available on many different topics and subjects: build a whole digital library of offline knowledge!** 
 
-*Try this app instantly by opening the installable PWA (Progressive Web App) in your browser at
-**[pwa.kiwix.org](https://pwa.kiwix.org/)**. Get a free ZIM archive to use with it from the [Configuration page]
+See [Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html) for the latest release of Electron, UWP
+and NWJS packages. We also have packaged apps of WikiMed (a complete medical encyclopaedia), and Wikivoyage (a complete travel guide) in
+English: [WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html) and [Wikivoyage by Kiwix]
+(https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html) (no extra download needed). If you are using Windows 10 or 11, all three
+apps are available in the Microsoft Store (just search for Kiwix), and they will automatically update when a new package is available.
+
+*Don't like stores or packages? We've got you covered! Launch this app instantly by opening the installable PWA (Progressive Web App) in
+your browser right now at **[pwa.kiwix.org](https://pwa.kiwix.org/)**. Get a free ZIM archive to use with it from the [Configuration page]
 (https://pwa.kiwix.org/www/index.html#downloads) of the app, or you can preview a ZIM at [library.kiwix.org](https://library.kiwix.org)
-before you download one.* Once installed or bookmarked, the PWA works offline! [Take a look at our demo](screenshots/Install-PWA.md) that
-shows you how easy it is to install the PWA.
+before you download one. Once installed or bookmarked, the PWA works offline! [Take a look at our demo](screenshots/Install-PWA.md) that
+shows you how easy it is to install the PWA.*
 
 This repository is for development of the Kiwix JS app for PWA, Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP).
 The latest code is usually on the master branch, but this is used for active development and may be several commits ahead of releases.
