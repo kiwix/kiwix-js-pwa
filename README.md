@@ -4,51 +4,54 @@
 
 **Kiwix is an offline reader for multilingual content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, etc. It
 makes knowledge available to people with limited or no Internet access. The software and the content are free for anyone to use.
-As well as the app, you will need an offline archive (which can be downloaded in the app). There are hundreds of free archives (ZIM
-archives) available on many different topics and subjects: build a whole digital library of offline knowledge!** 
+Get the app and download your choice of offline content (a ZIM archive, which can be downloaded in the app). There are hundreds of free
+archives to choose from, on many different topics and subjects. Build a whole digital library of offline knowledge!** 
 
 See [Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html) for the latest release of Electron, UWP
-and NWJS packages. We also have packaged apps of WikiMed (a complete medical encyclopaedia), and Wikivoyage (a complete travel guide) in
-English: [WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html) and [Wikivoyage by Kiwix]
-(https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html) (no extra download needed). If you are using Windows 10 or 11, all three
-apps are available in the Microsoft Store (just search for Kiwix), and they will automatically update when a new package is available.
+and NWJS packages. We also have packaged apps of [WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html) (a
+complete medical encyclopaedia), and [Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html) (a complete travel guide) in English (no extra download needed).
+
+If you are using Windows 10 or 11, all three apps are available in the Microsoft Store (just search for "Kiwix"), and they will automatically update when a new package is available.
 
 *Don't like stores or packages? We've got you covered! Launch this app instantly by opening the installable PWA (Progressive Web App) in
-your browser right now at **[pwa.kiwix.org](https://pwa.kiwix.org/)**. Get a free ZIM archive to use with it from the [Configuration page]
-(https://pwa.kiwix.org/www/index.html#downloads) of the app, or you can preview a ZIM at [library.kiwix.org](https://library.kiwix.org)
-before you download one. Once installed or bookmarked, the PWA works offline! [Take a look at our demo](screenshots/Install-PWA.md) that
-shows you how easy it is to install the PWA.*
+your browser right now at **[pwa.kiwix.org](https://pwa.kiwix.org/)**. Get a free ZIM archive to use with it from the
+[Configuration page](https://pwa.kiwix.org/www/index.html#downloads) of the app, or you can preview a ZIM at
+[library.kiwix.org](https://library.kiwix.org) before you download one. Once installed or bookmarked, the PWA works offline!
+[Take a look at our demo](screenshots/Install-PWA.md) that shows how quick and easy it is to install the PWA.*
+
+## Information for developers
 
 This repository is for development of the Kiwix JS app for PWA, Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP).
 The latest code is usually on the master branch, but this is used for active development and may be several commits ahead of releases.
-Installable and portable versions for Windows (XP/Vista/7/10/11) and Linux (32bit and 64bit) are available from [releases]
-(https://github.com/kiwix/kiwix-js-windows/releases/). Unstable [nightly builds](https://download.kiwix.org/nightly/) of the Electron and
-NWJS apps are available together with a [development deployment](https://kiwix.github.io/kiwix-js-windows/), but code may be buggy and
-change rapidly.
+Installable and portable versions for Windows (XP/Vista/7/10/11) and Linux (32bit and 64bit) are available from
+[releases](https://github.com/kiwix/kiwix-js-windows/releases/). Unstable [nightly builds](https://download.kiwix.org/nightly/) of the
+Electron and NWJS apps are available together with a [development deployment](https://kiwix.github.io/kiwix-js-windows/), but code may be
+buggy and change rapidly.
 
+This is a lightweight HTML/JavaScript port of the Kiwix Offline Wikipedia (and other Wiki) reader. The UWP version targets Windows 10/11
+(x86, x64, ARM, mobile, tablet, Xbox, Surface Hub, Holographic) while the NWJS and Electron versions also run on earlier Windows and
+Linux (see the respective [releases](https://github.com/kiwix/kiwix-js-windows/releases/) for more information). The PWA should work with
+any browser that supports Service Workers, but has only been tested on Edge Chromium, Edge Legacy, Firefox and Samsung Internet Browser.
+The PWA can be installed from a browser without visiting a Store (using Chromium-based browsers) and will work offline.
 
-This is a lightweight HTML/JavaScript port of the Kiwix Offline Wikipedia (and other Wiki) reader. The UWP version targets Windows 10/11 (x86, x64, ARM,
-mobile, tablet, Xbox, Surface Hub, Holographic) while the NWJS and Electron versions also run on earlier Windows and Linux (see the respective
-[releases](https://github.com/kiwix/kiwix-js-windows/releases/) for more information). The PWA should work with any browser that supports Service
-Workers, but has only been tested on Edge Chromium, Edge Legacy, Firefox and Samsung Internet Browser. The PWA can be installed from a browser without
-visiting a Store (using Chromium-based browsers) and will work offline.
+Offline ZIM archives are available from the [Kiwix repository](https://library.kiwix.org), including full Wikipedia versions with or
+without images in many different languages. This app is regularly tested fully on Wikimedia ZIM files, though a number of other ZIM file
+types work. There is *preliminary* support for Zimit ZIMs from version 1.9.8 onwards, and Type 1 Zimit ZIMs are supported from 2.1.0
+onwards.
 
-Offline ZIM archives are available from the [Kiwix repository](https://library.kiwix.org), including full Wikipedia versions with or without images
-in many different languages. This app is regularly tested fully on Wikimedia ZIM files, though a number of other ZIM file types work. There is *preliminary*
-support for Zimit ZIMs from version 1.9.8 onwards.
-
-This project began as a simple port of [Kiwix JS](https://github.com/kiwix/kiwix-js), the HTML5 web app provided upstream at https://github.com/kiwix/kiwix-js,
-although significant development has been undertaken to add functionality and to make the app sit happily with the Universal Windows Platform, and more
-recently Electron and NWJS, as well as to work as an installable PWA.
+This project began as a simple port of [Kiwix JS](https://github.com/kiwix/kiwix-js), the HTML5 web app provided upstream at
+https://github.com/kiwix/kiwix-js, although significant development has been undertaken to add functionality and to make the app sit
+happily with the Universal Windows Platform, and more recently Electron and NWJS, as well as to work as an installable PWA.
 
 The UWP app is available in the Microsoft Store at:
 
 [https://www.microsoft.com/store/apps/9P8SLZ4J979J](https://www.microsoft.com/store/apps/9P8SLZ4J979J)
 
-It can also be installed (in Windows 10/11) by opening a Command Prompt or PowerShell terminal and typing `winget install kiwix.kiwixjs` (but this version
-will not auto-update, unlike the Store version). Alternative sideloading instructions are available in the 
-[release notes](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html). The Electron version can be installed with `winget install kiwix.kiwixjs.electron`,
-or else by downloading a package from [Releases](https://github.com/kiwix/kiwix-js-windows/releases/).
+It can also be installed (in Windows 10/11) by opening a Command Prompt or PowerShell terminal and typing `winget install kiwix.kiwixjs`
+(but this version will not auto-update, unlike the Store version). Alternative sideloading instructions are available in the 
+[release notes](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html). The Electron version can be installed with
+`winget install kiwix.kiwixjs.electron`, or else by downloading a package from
+[Releases](https://github.com/kiwix/kiwix-js-windows/releases/).
 
 **You will need a ZIM file to work with this app.** For testing, the Store, Electron and NWJS versions come packaged with an archive of Wikipedia articles
 related to Climate Change (as a starter ZIM), while packaged aps of [WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html) and 
