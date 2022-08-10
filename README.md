@@ -29,7 +29,7 @@ from the [Configuration page](https://pwa.kiwix.org/www/index.html#downloads) of
 
 ## How do I get all of Wikipedia offline?
 
-If you want it with images, then plese be aware that it's a big download: the English version is around 90 Gigabytes! We recommend you
+If you want it with images, then please be aware that it's a big download: the English version is around 90 Gigabytes! We recommend you
 try it out first with one of the themed, much smaller, archives, like Astronomy, Chemistry, Maths, Physics, etc. In-app, you'll find a
 handy dropdown that allows you to choose your language and your theme, and then download it. The archive will download in your browser.
 
