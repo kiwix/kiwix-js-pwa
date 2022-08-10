@@ -1,12 +1,15 @@
 # Installing the Kiwix JS PWA
 
-Simply visit **_[pwa.kiwix.org](https://pwa.kiwix.org)_** in a modern browser.
-
-In **Chromium browsers** (e.g. Chrome, Edge), you can install the PWA (Progressive Web App) as an offline-first app: an "Install" button will show up in Configuration. **Firefox** doesn't support installing PWAs, but instead you can bookmark it and (after your first visit) it will also work offline when you open the bookmark. This should work in any browser that supports [Service Workers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API). See the benefits of installing the app, and differen ways of loading a ZIM archive, after the demo below.
-
-## Demo: installing the PWA in Windows 11
+Simply visit **_[pwa.kiwix.org](https://pwa.kiwix.org)_** in a modern browser. Read more after the demo:
 
 ![Install-PWA demo](Install-PWA_demo.gif)
+
+## Install in Chrome/Edge, bookmark in Firefox
+
+In **Chromium browsers** (e.g. Chrome, Edge), you can install the PWA (Progressive Web App) as an offline-first app as in the demo above:
+an "Install" button will show up in Configuration. **Firefox** doesn't support installing PWAs, but instead you can bookmark it and
+(after your first visit) it will also work offline when you open the bookmark. This should work in any browser that supports
+[Service Workers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API).
 
 ## So why bother installing the app?
 
