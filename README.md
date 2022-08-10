@@ -39,7 +39,7 @@ tablet, Xbox, Surface Hub, Holographic) while the NWJS and Electron versions als
 and Linux: see the respective [releases](https://github.com/kiwix/kiwix-js-windows/releases/) for more information. The PWA should work
 with any browser that supports Service Workers, but has only been tested on Edge Chromium, Edge Legacy, Firefox and Samsung Internet
 Browser. The PWA uses the File System Access API and the File Handling API for a native-like experience in browsers supporting those
-APIs. For more info about these APIs, see
+APIs. For more info about these APIs, see the bottom of this page:
 [File System Access API and File Handling](screenshots/Install-PWA.md#file-system-access-api-and-file-handling).
 
 Offline ZIM archives are available from the [Kiwix repository](https://library.kiwix.org), including full Wikipedia versions with or
