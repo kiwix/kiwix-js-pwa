@@ -27,6 +27,18 @@ from the [Configuration page](https://pwa.kiwix.org/www/index.html#downloads) of
 [library.kiwix.org](https://library.kiwix.org) before you download one. Once installed or bookmarked, the PWA works fully offline!*
 **[Take a look at our demo](screenshots/Install-PWA.md) that shows how quick and easy it is to install the PWA.**
 
+## How do I get all of Wikipedia offline?
+
+If you want it with images, then plese be aware that it's a big download: the English version is around 90 Gigabytes! We recommend you
+try it out first with one of the themed, much smaller, archives, like Astronomy, Chemistry, Maths, Physics, etc. In-app, you'll find a
+handy dropdown that allows you to choose your language and your theme, and then download it. The archive will download in your browser.
+
+If you really want full English Wikipedia with images, then we strongly recommend you use the open-source app
+[qBittorrent](https://www.qbittorrent.org/) to download it on a PC with plenty of disk space. First install qBittorrent. Then, when you
+select a large archive for download in the app, it will provide you with a torrent link. Click the link and allow your browser to
+download and open the torrent file. This small file will open in qBittorrent and you'll be asked where you want to save the archive you
+wnat to download. It's much easier than it sounds!
+
 ## Technical information
 
 This repository is for development of the Kiwix JS app for PWA, Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP).
