@@ -2,17 +2,25 @@
 
 ![WikiMed montage](https://user-images.githubusercontent.com/4304337/182706203-eca53649-8dea-44b9-ac4a-b08cc05c4252.png)
 
-**Kiwix is an offline reader for multilingual content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, etc. It makes knowledge
-available to people with limited or no Internet access. The software as well as the content is free for anyone to use. It requires an offline ZIM archive
-(which can be downloaded in the app). See [Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html) for the latest release of Electron, UWP and NWJS packages. There are also two apps that come with content: [WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html) and [Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html) (no extra download needed).**
+**Kiwix is an offline reader for multilingual content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, etc. It
+makes knowledge available to people with limited or no Internet access. The software as well as the content is free for anyone to use.
+It requires an offline ZIM archive (which can be downloaded in the app). See [Kiwix JS for Windows and Linux]
+(https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html) for the latest release of Electron, UWP and NWJS packages. There are also
+two apps that come with content: [WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html) and [Wikivoyage by Kiwix]
+(https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html) (no extra download needed).**
 
-*Try this app instantly by opening the installable PWA (Progressive Web App) in your browser at **[pwa.kiwix.org](https://pwa.kiwix.org/)**. Get a free ZIM archive to use with it from the [Configuration page](https://pwa.kiwix.org/www/index.html#downloads) of the app, or you can preview a ZIM at [library.kiwix.org](https://library.kiwix.org) before you download one.* Once installed or bookmarked, the PWA works offline!
+*Try this app instantly by opening the installable PWA (Progressive Web App) in your browser at
+**[pwa.kiwix.org](https://pwa.kiwix.org/)**. Get a free ZIM archive to use with it from the [Configuration page]
+(https://pwa.kiwix.org/www/index.html#downloads) of the app, or you can preview a ZIM at [library.kiwix.org](https://library.kiwix.org)
+before you download one.* Once installed or bookmarked, the PWA works offline! [Take a look at our demo](screenshots/Install-PWA.md) that
+shows you how easy it is to install the PWA.
 
-This repository is for development of the Kiwix JS app for PWA, Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP). The latest code is usually
-on the master branch, but this is used for active development and may be several commits ahead of releases. Installable and portable versions for Windows
-(XP/Vista/7/10/11) and Linux (32bit and 64bit) are available from [releases](https://github.com/kiwix/kiwix-js-windows/releases/).
-Unstable [nightly builds](https://download.kiwix.org/nightly/) of the Electron and NWJS apps are available together with a [development deployment](https://kiwix.github.io/kiwix-js-windows/),
-but code may be buggy and change rapidly.
+This repository is for development of the Kiwix JS app for PWA, Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP).
+The latest code is usually on the master branch, but this is used for active development and may be several commits ahead of releases.
+Installable and portable versions for Windows (XP/Vista/7/10/11) and Linux (32bit and 64bit) are available from [releases]
+(https://github.com/kiwix/kiwix-js-windows/releases/). Unstable [nightly builds](https://download.kiwix.org/nightly/) of the Electron and
+NWJS apps are available together with a [development deployment](https://kiwix.github.io/kiwix-js-windows/), but code may be buggy and
+change rapidly.
 
 
 This is a lightweight HTML/JavaScript port of the Kiwix Offline Wikipedia (and other Wiki) reader. The UWP version targets Windows 10/11 (x86, x64, ARM,
