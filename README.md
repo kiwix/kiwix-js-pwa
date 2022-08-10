@@ -16,9 +16,10 @@ If you are using **Windows 10 or 11**, then all three apps are conveniently avai
 **[Kiwix JS UWP](https://www.microsoft.com/store/apps/9P8SLZ4J979J)**,
 **[WikiMed by Kiwix](https://www.microsoft.com/store/apps/9PHJSNP1CZ8J)**,
 and **[Wikivoyage by Kiwix](https://www.microsoft.com/store/apps/9N5SB90Q4JBJ)**. They will automatically update when a new package is
-available. If you are using **Linux**, then the AppImage Electron package of Kiwix JS also (optionally) self-updates, as does the
-installable Windows Electron package. All other apps can (optionally) notify you when a new version is available, and give you a download
-link.
+available. If you are using **Linux**, then the
+[Electron AppImage package](http://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html) of Kiwix JS also (optionally) self-updates,
+as does the installable [Windows Electron package](http://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html). All other apps can
+(optionally) notify you when a new version is available, and give you a download link.
 
 *Don't like stores or packages? We've got you covered! Launch this app instantly by opening the installable, offline-capable PWA
 (Progressive Web App) in your browser right now at **[pwa.kiwix.org](https://pwa.kiwix.org/)**. Get a free ZIM archive to use with it
@@ -68,14 +69,14 @@ then Kiwix HTML5, which eventually became Kiwix JS. The original source code run
 to how well written that app is. The port and further development of Kiwix JS Windows for Windows 10/11 (including Mobile) is by Geoffrey
 Kantaris. I can be contacted by email: egk10 at cam ac uk.
 
-# Reporting bugs
+## Reporting bugs
 
 Please use this repository's [issue tracker](https://github.com/kiwix/kiwix-js-windows/issues) to report any bugs you have found with the software. Open a new
 issue (after checking that the issue you identified doesn't have an issue already). In all cases, please state clearly the version number you are using (see
 the About page in the app), and which browser or platform you are using. Please read the
 [Kiwix JS bug reporting guidelines](https://github.com/kiwix/kiwix-js/blob/master/REPORT_BUG.md) before opening your issue.
 
-# Contributing code
+## Contributing code
 
 If you have coding experience and are interested in contributing to this project, we suggest you start by contributing to the upstream [Kiwix JS repository](https://kiwix.github.io/kiwix-js/),
 as much of the code contributed there is subsequently ported to this repository. Please see [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/master/CONTRIBUTING.md) for details.
@@ -83,7 +84,7 @@ If you wish to contribute to a specific Kiwix JS Windows/Linux feature, then ple
 aim to contribute and how you propose this should be done. You should be comfortable creating PRs and have good knowledge of JavaScript. Follow the same
 [contributing guidelines](https://github.com/kiwix/kiwix-js/blob/master/CONTRIBUTING.md) as for Kiwix JS.
 
-# Other contributions / donations
+## Other contributions / donations
 
 If you like this project and would like to contribute financially towards keeping it running, you can make one-off or regular donations on the Kiwix
 [Support page](https://www.kiwix.org/en/support/). Donations help pay for servers, coding certificates, maintenance, etc. If you would like to contribute
@@ -91,7 +92,7 @@ time and expertise rather than money, and you have good knowledge of a foreign l
 Alternatively, you can help improve Wikimedia projects by [making edits or corrections](https://en.wikipedia.org/wiki/Wikipedia:Contributing_to_Wikipedia)
 to Wikipedia or Wikivoyage articles. 
 
-# Privacy Policy
+## Privacy Policy
 
 When installed, Kiwix JS Windows and Linux is capable of working entirely offline. This application does not collect or
 record any of your personal data, though if you installed it from a Store, the Store operator may collect anonymous
