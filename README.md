@@ -7,21 +7,23 @@ makes knowledge available to people with limited or no Internet access. The soft
 Get the app and download your choice of offline content (a ZIM archive, which can be downloaded in the app). There are hundreds of free
 archives to choose from, on many different topics and subjects. Build a whole digital library of offline knowledge!** 
 
-See [Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html) for the latest release of Electron, UWP
-and NWJS packages. We also have packaged apps of [WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html) (a
-complete medical encyclopaedia), and [Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html) (a complete travel guide) in English -- no extra download needed.
+See [Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html) for the latest release for different
+operating systems. We also have packaged apps of [WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html) (a
+complete medical encyclopaedia), and [Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html) (a complete
+travel guide) in English -- no extra download needed!
 
-If you are using Windows 10 or 11, all three apps are available in the Microsoft Store:
-[Kiwix JS](https://www.microsoft.com/store/apps/9P8SLZ4J979J), [WikiMed](https://www.microsoft.com/store/apps/9PHJSNP1CZ8J),
-[Wikivoyage](https://www.microsoft.com/store/apps/9N5SB90Q4JBJ). They will automatically update when a new package is available. If you
-are using Linux, then the AppImage Electron package of the core app also (optionally) self-updates. All other apps can (optionally)
-notify you when a new version is available, and give you a download link.
+If you are using Windows 10 or 11, then all three apps are conveniently available in the Microsoft Store:
+[Kiwix JS UWP](https://www.microsoft.com/store/apps/9P8SLZ4J979J), [WikiMed by Kiwix](https://www.microsoft.com/store/apps/9PHJSNP1CZ8J),
+and [Wikivoyage by Kiwix](https://www.microsoft.com/store/apps/9N5SB90Q4JBJ). They will automatically update when a new package is
+available. If you are using Linux, then the AppImage Electron package of Kiwix JS also (optionally) self-updates, as does the
+installable Windows Electron package. All other apps can (optionally) notify you when a new version is available, and give you a download
+link.
 
 *Don't like stores or packages? We've got you covered! Launch this app instantly by opening the installable, offline-capable PWA
 (Progressive Web App) in your browser right now at **[pwa.kiwix.org](https://pwa.kiwix.org/)**. Get a free ZIM archive to use with it
 from the [Configuration page](https://pwa.kiwix.org/www/index.html#downloads) of the app, or you can preview a ZIM at
-[library.kiwix.org](https://library.kiwix.org) before you download one. Once installed or bookmarked, the PWA works fully offline!
-[Take a look at our demo](screenshots/Install-PWA.md) that shows how quick and easy it is to install the PWA.*
+[library.kiwix.org](https://library.kiwix.org) before you download one. Once installed or bookmarked, the PWA works fully offline!*
+**[Take a look at our demo](screenshots/Install-PWA.md) that shows how quick and easy it is to install the PWA.**
 
 ## Information for developers
 
@@ -32,11 +34,13 @@ Installable and portable versions for Windows (XP/Vista/7/10/11) and Linux (32bi
 Electron and NWJS apps are available together with a [development deployment](https://kiwix.github.io/kiwix-js-windows/), but code may be
 buggy and change rapidly.
 
-This is a lightweight HTML/JavaScript port of the Kiwix Offline Wikipedia (and other Wiki) reader. The UWP version targets Windows 10/11
-(x86, x64, ARM, mobile, tablet, Xbox, Surface Hub, Holographic) while the NWJS and Electron versions also run on earlier Windows and
-Linux (see the respective [releases](https://github.com/kiwix/kiwix-js-windows/releases/) for more information). The PWA should work with
-any browser that supports Service Workers, but has only been tested on Edge Chromium, Edge Legacy, Firefox and Samsung Internet Browser.
-The PWA can be installed from a browser without visiting a Store (using Chromium-based browsers) and will work offline.
+This is a lightweight HTML/JavaScript port of the Kiwix Offline reader. The UWP version targets Windows 10/11 (x86, x64, ARM, mobile,
+tablet, Xbox, Surface Hub, Holographic) while the NWJS and Electron versions also run on earlier Windows (all the way back to Windows XP)
+and Linux: see the respective [releases](https://github.com/kiwix/kiwix-js-windows/releases/) for more information. The PWA should work
+with any browser that supports Service Workers, but has only been tested on Edge Chromium, Edge Legacy, Firefox and Samsung Internet
+Browser. The PWA uses the File System Access API and the File Handling API for a native-like experience in browsers supporting those
+APIs. For more info about these APIs, see
+[File System Access API and File Handling](screenshots/Install-PWA.md#file-system-access-api-and-file-handling).
 
 Offline ZIM archives are available from the [Kiwix repository](https://library.kiwix.org), including full Wikipedia versions with or
 without images in many different languages. This app is regularly tested fully on Wikimedia ZIM files, though a number of other ZIM file
