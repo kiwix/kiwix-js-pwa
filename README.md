@@ -62,7 +62,7 @@ For testing, the Store, Electron and NWJS versions come packaged with an archive
 starter ZIM), while packaged aps of [WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html) and 
 [Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html) are also available.
 
-You can download files in the app, or from the [Kiwix repository](http://library.kiwix.org) on a regular PC. Some archives are very large
+You can download archives in-app, or from the [Kiwix repository](http://library.kiwix.org) on a regular PC. Some archives are very large
 indeed, for example full English Wikipedia with images is currently around 90GB, and you should download this with a BitTorrent client
 (torrent and magnet links are provided in the app). For most storage types (including microSD cards) that are formatted as exFAT or NTFS,
 you can store even these very large files in the storage with no problem. However, if you plan to store your ZIM file on an SD card
