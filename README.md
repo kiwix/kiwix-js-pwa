@@ -25,7 +25,7 @@ from the [Configuration page](https://pwa.kiwix.org/www/index.html#downloads) of
 [library.kiwix.org](https://library.kiwix.org) before you download one. Once installed or bookmarked, the PWA works fully offline!*
 **[Take a look at our demo](screenshots/Install-PWA.md) that shows how quick and easy it is to install the PWA.**
 
-## Information for developers
+## Technical information
 
 This repository is for development of the Kiwix JS app for PWA, Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP).
 The latest code is usually on the master branch, but this is used for active development and may be several commits ahead of releases.
