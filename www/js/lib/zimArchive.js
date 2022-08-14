@@ -513,8 +513,9 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                 // We couldn't get the dirEntry, so look it up the Zimit header
                 if (!zimitResolving && that.type === 'zimit' && !/^(H|C\/H)\//.test(path)) {
                     // We need to look the file up in the Header namespace (double replacement ensures both types of ZIM are supported)
+                    var oldPath = path;
                     path = path.replace(/^A\//, 'H/').replace(/^(C\/)A\//, '$1H/');
-                    console.debug('DirEntry not found, looking up header: ' + path);
+                    console.debug('DirEntry ' + oldPath + ' not found, looking up header: ' + path);
                     return that.getDirEntryByPath(path, true);
                 }
                 var newpath = path.replace(/^((?:A|C\/A)\/)[^/]+\/(.+)$/, '$1$2');
