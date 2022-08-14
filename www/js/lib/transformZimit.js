@@ -119,7 +119,7 @@ define([], function () {
             var zimitPrefix = data.match(regexpGetZimitPrefix);
             // If the URL is the same as the URL with everything after the first / removed, then we are in the root directory
             // We use this to decide whether to remove any relative link prefixes like ../
-            var rootDirectory = dirEntry.url === dirEntry.url.replace(/^([^/]+\/?).*/, '$1');
+            var rootDirectory = dirEntry.url === dirEntry.url.replace(/^((?:A\/)?[^/]+\/?).*/, '$1');
             params.zimitPrefix = zimitPrefix ? (dirEntry.namespace === 'C' ? 'A/' : '') + zimitPrefix[1] : params.zimitPrefix;
             // Remove lazyimgage system and noscript tags that comment out images
             // DEV: Check if this is still necessary
@@ -134,6 +134,8 @@ define([], function () {
             data = data.replace(regexpZimitHtmlLinks, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
                 var newBlock = match;
                 var assetUrl = relAssetUrl;
+                    // DEBUG:
+                    // console.log(assetUrl);
                 // Remove google analytics and other analytics files that cause stall
                 if (/google|analytics|typepad.*stats/i.test(assetUrl)) return '';
                 // For root-relative links, we need to add the zimitPrefix
