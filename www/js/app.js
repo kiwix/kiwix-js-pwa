@@ -4159,7 +4159,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             //}		
 
             //TESTING
-            console.log("** HTML received **");
+            console.log('** HTML received for article ' + dirEntry.url + ' **');
             
             if (!/\bhtml\b/.test(dirEntry.getMimetype())) {
                 // Construct an HTML document to wrap the content
