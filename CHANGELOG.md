@@ -1,5 +1,10 @@
 # Changelog
 
+## In-progress release 2.1.1
+
+* FIX: Correct location of relative links on Zimit landing pages
+* UPDATE: Provide more complete documentation on GitHub
+
 ## Release 2.1.0
 
 * UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-07`
