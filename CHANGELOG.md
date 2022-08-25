@@ -2,6 +2,7 @@
 
 ## In-progress release 2.1.2
 
+* ENHANCEMENT: Basic Zimit file reading in IE11
 * FIX: Correct location of relative links on Zimit landing pages
 * FIX: Add more asset types to Type 1 C-namespace Zimit support
 * UPDATE: Provide more complete documentation on GitHub
