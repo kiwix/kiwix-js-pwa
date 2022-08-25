@@ -158,7 +158,7 @@ define([], function () {
                     // For root-relative links, we need to add the zimitPrefix
                     srcsetArr[i] = srcsetArr[i].replace(/^\s?\/(?!\/)/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
                     // Zimit prefix is in the URL for absolute URLs
-                    srcsetArr[i] = srcsetArr[i].replace(/^(?:\s?https?:)?\/\//i, indexRoot + '/' + dirEntry.namespace + '/');
+                    srcsetArr[i] = srcsetArr[i].replace(/^(?:\s?https?:)?\/\//i, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
                     if (rootDirectory) srcsetArr[i] = srcsetArr[i].replace(/^(\.\.\/?)+/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
                     srcsetArr[i] = '@kiwixtransformed@' + srcsetArr[i];
                 }
@@ -168,7 +168,7 @@ define([], function () {
 
             // Deal with regex-style urls embedded in page
             data = data.replace(/https?:\\\/\\\/[^"']+/gi, function (assetUrl) {
-                assetUrl = assetUrl.replace(/^https?:\\\/\\\//i, '\\/' + dirEntry.namespace + '\\/');
+                assetUrl = assetUrl.replace(/^https?:\\\/\\\//i, '\\/' + dirEntry.namespace + '\\/' + (dirEntry.namespace === 'C' ? 'A\\/' : ''));
                 assetUrl = indexRoot.replace(/\//g, '\\/') + assetUrl;
                 return assetUrl;
             });
@@ -217,7 +217,7 @@ define([], function () {
                 // For root-relative links, we need to add the zimitPrefix
                 assetUrl = assetUrl.replace(/^\/(?!\/)/, dirEntry.namespace + '/' + params.zimitPrefix + '/');
                 // Deal with absolute URLs
-                assetUrl = assetUrl.replace(/^(https?:)?\/\//i, dirEntry.namespace + '/');
+                assetUrl = assetUrl.replace(/^(https?:)?\/\//i, dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
                 if (rootDirectory) assetUrl = assetUrl.replace(/^(\.\.\/?)+/, '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/'); 
                 // Relative assets
                 newBlock = assetUrl === url ? newBlock :
@@ -236,8 +236,8 @@ define([], function () {
                 var newBlock = match;
                 var assetUrl = url;
                 assetUrl = assetUrl.replace(/^\/(?!\/)/, dirEntry.namespace + '/' + params.zimitPrefix + '/');
-                assetUrl = assetUrl.replace(/^\/\//, dirEntry.namespace + '/');
-                assetUrl = assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/'); 
+                assetUrl = assetUrl.replace(/^\/\//, dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
+                assetUrl = assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : '')); 
                 // Remove analytics
                 assetUrl = /google|analytics|typepad.*stats/i.test(assetUrl) ? '' : assetUrl; 
                 // Relative assets
