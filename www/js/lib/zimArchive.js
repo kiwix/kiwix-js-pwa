@@ -521,10 +521,10 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                 else
                     return 0;
             });
-        }).then(function(index) {
+        }).then(function (index) {
             if (index === null) return null;
             return that._file.dirEntryByUrlIndex(index);
-        }).then(function(dirEntry) {
+        }).then(function (dirEntry) {
             // Filter Zimit dirEntries and do somee initial transforms
             if (that._file.type === 'zimit')
                 dirEntry = transformZimit.filterReplayFiles(dirEntry);
