@@ -24,19 +24,6 @@
 define([], function () {
 
     /**
-     * Detects whether the supplied archive is a Zimit-style archive or an OpenZIM archive and
-     * sets an archive.type and file.type property accordingly; also returns the detected type
-     * @param {Object} archive The archive to be tested
-     * @returns {String} Either 'zimit' for a Zimit archive, or 'open' for an OpenZIM archive
-     */
-    function setZimType(archive) {
-        archive.type = /warc-headers/i.test(Array.from(archive._file.mimeTypes)) ? 'zimit' : 'open';
-        archive._file.type = archive.type;
-        console.debug('Archive type set to: ' + archive.type);
-        return archive.type;
-    }
-
-    /**
      * Filters out the Replay system files (since these cannot be loaded alongside a Service Worker without error)
      * In the case of the H prefix or the landing page, an 'inspect' property is added to the dirEntry, so that we can discover
      * the underlying Zimit landing page below
@@ -258,7 +245,6 @@ define([], function () {
     }
 
     return {
-        setZimType: setZimType,
         filterReplayFiles: filterReplayFiles,
         getZimitRedirect: getZimitRedirect,
         transformReplayUrls: transformReplayUrls

@@ -55,8 +55,8 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
         var that = this;
         that._file = null;
         that._language = ""; //@TODO
-        var createZimfile = function(fileArray) {
-            zimfile.fromFileArray(fileArray).then(function(file) {
+        var createZimfile = function (fileArray) {
+            zimfile.fromFileArray(fileArray).then(function (file) {
                 that._file = file;
                 // File has been created, but we need to add any Listings which extend the archive metadata
                 that._file.setListings([
@@ -76,10 +76,8 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                         countName: 'articleCount'
                     }
                 ]);
-
-                // Set the ZIM type ('zimit' or 'open')
-                params.zimType = transformZimit.setZimType(that);
-
+                // Set the archive file type ('open' or 'zimit')
+                params.zimType = that.setZimType();
                 // DEV: Currently, extended listings are only used for title (=article) listings when the user searches
                 // for an article or uses the Random button, by which time the listings will have been extracted.
                 // If, in the future, listings are used in a more time-critical manner, consider forcing a wait before
@@ -96,13 +94,13 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
         } else {
             if (/.*zim..$/.test(path)) {
                 // split archive
-                that._searchArchiveParts(storage, path.slice(0, -2)).then(function(fileArray) {
+                that._searchArchiveParts(storage, path.slice(0, -2)).then(function (fileArray) {
                     createZimfile(fileArray);
                 }).catch(function (error) {
                     callbackError("Error reading files in split archive " + path + ": " + error, "Error reading archive files");
                 });
             } else {
-                storage.get(path).then(function(file) {
+                storage.get(path).then(function (file) {
                     createZimfile([file]);
                 }).catch(function (error) {
                     callbackError("Error reading ZIM file " + path + " : " + error, "Error reading archive file");
@@ -139,10 +137,31 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
     ZIMArchive.prototype.isReady = function() {
         return this._file !== null;
     };
-    
+
+    /**
+     * Detects whether the supplied archive is a Zimit-style archive or an OpenZIM archive and
+     * sets a file.type property accordingly; also returns the detected type. Extends ZIMFile.
+     * @returns {String} Either 'zimit' for a Zimit archive, or 'open' for an OpenZIM archive
+     */
+     ZIMArchive.prototype.setZimType = function () {
+        var fileType = null;
+        if (this.isReady()) {
+            fileType = 'open';
+            this._file.mimeTypes.forEach(function (v) {
+                if (/warc-headers/i.test(v)) fileType = 'zimit';
+            });
+            this._file.type = fileType;
+            console.debug('Archive type set to: ' + fileType);
+        } else {
+            console.error('ZIMArchive is not ready! Cannot set ZIM type.');
+        }
+        return fileType;
+    };
+
     /**
      * Looks for the DirEntry of the main page
      * @param {callbackDirEntry} callback
+     * @returns {Promise} that resolves to the DirEntry
      */
     ZIMArchive.prototype.getMainPageDirEntry = function(callback) {
         if (this.isReady()) {
@@ -150,7 +169,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
             var that = this;
             this._file.dirEntryByUrlIndex(mainPageUrlIndex).then(function (dirEntry) {
                 // Filter out Zimit files that we cannot handle without error
-                if (that.type === 'zimit') dirEntry = transformZimit.filterReplayFiles(dirEntry);
+                if (that._file.type === 'zimit') dirEntry = transformZimit.filterReplayFiles(dirEntry);
                 callback(dirEntry);
             });
         }
@@ -214,7 +233,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
         var prefixNameSpaces = '';
         if (search.searchUrlIndex) {
             var rgxSplitPrefix = /^[-ABCHIJMUVWX]\//;
-            if (that.type === 'zimit' && cns === 'C') {
+            if (that._file.type === 'zimit' && cns === 'C') {
                 // We have to account for the Zimit prefix in Type 1 ZIMs
                 rgxSplitPrefix = /^[CMWX]\/(?:[AH]\/)?/;
             }
@@ -393,7 +412,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
     ZIMArchive.prototype.resolveRedirect = function(dirEntry, callback) {
         var that = this;
         this._file.dirEntryByUrlIndex(dirEntry.redirectTarget).then(function (resolvedDirEntry) {
-            if (that.type === 'zimit') resolvedDirEntry = transformZimit.filterReplayFiles(resolvedDirEntry);
+            if (that._file.type === 'zimit') resolvedDirEntry = transformZimit.filterReplayFiles(resolvedDirEntry);
             callback(resolvedDirEntry);
         });
     };
@@ -507,11 +526,11 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
             return that._file.dirEntryByUrlIndex(index);
         }).then(function(dirEntry) {
             // Filter Zimit dirEntries and do somee initial transforms
-            if (that.type === 'zimit')
+            if (that._file.type === 'zimit')
                 dirEntry = transformZimit.filterReplayFiles(dirEntry);
             if (!dirEntry) {
                 // We couldn't get the dirEntry, so look it up the Zimit header
-                if (!zimitResolving && that.type === 'zimit' && !/^(H|C\/H)\//.test(path)) {
+                if (!zimitResolving && that._file.type === 'zimit' && !/^(H|C\/H)\//.test(path)) {
                     // We need to look the file up in the Header namespace (double replacement ensures both types of ZIM are supported)
                     var oldPath = path;
                     path = path.replace(/^A\//, 'H/').replace(/^(C\/)A\//, '$1H/');
