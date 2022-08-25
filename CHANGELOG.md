@@ -1,8 +1,9 @@
 # Changelog
 
-## In-progress release 2.1.1
+## In-progress release 2.1.2
 
 * FIX: Correct location of relative links on Zimit landing pages
+* FIX: Add more asset types to Type 1 C-namespace Zimit support
 * UPDATE: Provide more complete documentation on GitHub
 
 ## Release 2.1.0
