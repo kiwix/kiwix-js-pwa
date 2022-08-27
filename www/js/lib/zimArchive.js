@@ -140,7 +140,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
 
     /**
      * Detects whether the supplied archive is a Zimit-style archive or an OpenZIM archive and
-     * sets a file.type property accordingly; also returns the detected type. Extends ZIMFile.
+     * sets a _file.zimType property accordingly; also returns the detected type. Extends ZIMFile.
      * @returns {String} Either 'zimit' for a Zimit archive, or 'open' for an OpenZIM archive
      */
      ZIMArchive.prototype.setZimType = function () {
@@ -150,7 +150,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
             this._file.mimeTypes.forEach(function (v) {
                 if (/warc-headers/i.test(v)) fileType = 'zimit';
             });
-            this._file.type = fileType;
+            this._file.zimType = fileType;
             console.debug('Archive type set to: ' + fileType);
         } else {
             console.error('ZIMArchive is not ready! Cannot set ZIM type.');
@@ -169,7 +169,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
             var that = this;
             this._file.dirEntryByUrlIndex(mainPageUrlIndex).then(function (dirEntry) {
                 // Filter out Zimit files that we cannot handle without error
-                if (that._file.type === 'zimit') dirEntry = transformZimit.filterReplayFiles(dirEntry);
+                if (that._file.zimType === 'zimit') dirEntry = transformZimit.filterReplayFiles(dirEntry);
                 callback(dirEntry);
             });
         }
@@ -233,7 +233,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
         var prefixNameSpaces = '';
         if (search.searchUrlIndex) {
             var rgxSplitPrefix = /^[-ABCHIJMUVWX]\//;
-            if (that._file.type === 'zimit' && cns === 'C') {
+            if (that._file.zimType === 'zimit' && cns === 'C') {
                 // We have to account for the Zimit prefix in Type 1 ZIMs
                 rgxSplitPrefix = /^[CMWX]\/(?:[AH]\/)?/;
             }
@@ -412,7 +412,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
     ZIMArchive.prototype.resolveRedirect = function(dirEntry, callback) {
         var that = this;
         this._file.dirEntryByUrlIndex(dirEntry.redirectTarget).then(function (resolvedDirEntry) {
-            if (that._file.type === 'zimit') resolvedDirEntry = transformZimit.filterReplayFiles(resolvedDirEntry);
+            if (that._file.zimType === 'zimit') resolvedDirEntry = transformZimit.filterReplayFiles(resolvedDirEntry);
             callback(resolvedDirEntry);
         });
     };
@@ -526,11 +526,11 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
             return that._file.dirEntryByUrlIndex(index);
         }).then(function (dirEntry) {
             // Filter Zimit dirEntries and do somee initial transforms
-            if (that._file.type === 'zimit')
+            if (that._file.zimType === 'zimit')
                 dirEntry = transformZimit.filterReplayFiles(dirEntry);
             if (!dirEntry) {
                 // We couldn't get the dirEntry, so look it up the Zimit header
-                if (!zimitResolving && that._file.type === 'zimit' && !/^(H|C\/H)\//.test(path)) {
+                if (!zimitResolving && that._file.zimType === 'zimit' && !/^(H|C\/H)\//.test(path)) {
                     // We need to look the file up in the Header namespace (double replacement ensures both types of ZIM are supported)
                     var oldPath = path;
                     path = path.replace(/^A\//, 'H/').replace(/^(C\/)A\//, '$1H/');
