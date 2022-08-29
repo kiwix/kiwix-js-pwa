@@ -2,7 +2,7 @@
 
 ![Composition_Climate_Change](https://user-images.githubusercontent.com/4304337/156934052-9260c976-095a-4309-9dcc-a7c307f7575d.png)
 
-This app comes packaged with a small sample ZIM archve containing a collection of summary articles from Wikipedia on the topic of Climate Change (`<<zim>>`, <<date>>). For what's new, see the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md). Builds are provided for 32bit and 64bit editions of Windows and Linux (tested on Ubuntu, Debian and OpenSUSE - but see instructions below). ARM is supported via the UWP app.
+This app only comes packaged with a small sample ZIM archve containing a collection of summary articles from Wikipedia on the topic of Climate Change (`<<zim>>`, <<date>>). A separate (free) download is required to get other content: see Download Library on Configuration page. For what's new, see the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md). Builds are provided for 32bit and 64bit editions of Windows and Linux (tested on Ubuntu, Debian and OpenSUSE - but see instructions below). ARM is supported via the UWP app.
 
 **MS Store status: IN CERTIFICATION**
 **Winget status: IN CERTIFICATION**
