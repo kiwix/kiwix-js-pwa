@@ -1,4 +1,4 @@
-# Kiwix JS for PWA, Electron, NWJS and Universal Windows Platform
+# Kiwix JS for PWA, Windows and Linux (Electron, NWJS, UWP)
 
 ![WikiMed montage](https://user-images.githubusercontent.com/4304337/182706203-eca53649-8dea-44b9-ac4a-b08cc05c4252.png)
 
