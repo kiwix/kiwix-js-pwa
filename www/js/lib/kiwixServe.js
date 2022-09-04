@@ -382,6 +382,7 @@ define([], function () {
         xhttp.onreadystatechange = function () {
             serverResponse.innerHTML = "Server response: 0 Waiting...";
             serverResponse.style.display = "inline";
+            console.debug('Server responded: readyState ' + this.readyState + '; status ' + this.status);
             if (this.readyState == 4) {
                 serverResponse.innerHTML = "Server response: " + this.status + " " + this.statusText + " Waiting....";
                 if (this.status == 200) {
@@ -396,14 +397,18 @@ define([], function () {
                     } else {
                         processXhttpData(this.responseText);
                     }
-                } else if (this.status == 0 && window.location.protocol == "file:") {
-                    document.getElementById('serverResponse').innerHTML = 'Cannot use XMLHttpRequest with file:// protocol';
-                    document.getElementById('serverResponse').style.display = "inline";
-                    serverError();
-                    return;
+                } else if (this.status == 0) {
+                    if (window.location.protocol == "file:") {
+                        document.getElementById('serverResponse').innerHTML = 'Cannot use XMLHttpRequest with file:// protocol';
+                        document.getElementById('serverResponse').style.display = "inline";
+                    } else {
+                        clearTimeout(xhttpTimeout);
+                        serverResponse.innerHTML = 'Archive descriptor xml file (meta4) is missing!';
+                    }
+                    serverError(URL);
                 }
             } else {
-                serverResponse.innerHTML = "Server response: " + this.status + "/" + this.readyState + " " + this.statusText + " Waiting...";
+                serverResponse.innerHTML = 'Server response: ' + this.status + '/' + this.readyState + ' ' + this.statusText + ' Waiting...';
             }
         };
         // var urlArr = URL.split('?');
@@ -420,20 +425,32 @@ define([], function () {
                 var header = document.getElementById('dl-panel-heading');
                 var headerDoc = 'There is a server issue, but please try the following links to your file:';
                 if (~URL.indexOf(params.kiwixHiddenDownloadLink)) {
-                    headerDoc = 'This file is only available via direct download. Please use the following link:';
+                    headerDoc = 'This file is only available via direct download:';
                 }
                 header.outerHTML = header.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + headerDoc + '</div>');
                 var body = document.getElementById('dl-panel-body');
-                var bodyDoc = '<p><b>Directly download ZIM archive:</b></p>' + 
+                var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^\/]*\.meta4$/i, "\/") + '">&lt;&lt; Back to list of files</a></p>\r\n';
+                bodyDoc += '<p><b>Directly download ZIM archive:</b></p>' + 
                 '<p><a href="' + requestedURL + '" target="_blank">' + requestedURL + '</a></p>' +
                 (altURL ? '<p><b>Possible mirror:</b></p>' + 
                 '<p><a href="' + altURL + '" target="_blank">' + altURL + '</a></p>' : '') +
                 (~URL.indexOf(params.kiwixHiddenDownloadLink) ? '' :
                     '<p><b>Download with bittorrent:</b></p>' + 
                     '<p><a href="' + torrentURL + '" target="_blank">' + torrentURL + '</a></p>');
-                body.outerHTML = body.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<pre$1>' + bodyDoc + '</pre>');
+                body.outerHTML = body.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + bodyDoc + '</div>');
                 downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, "File in");
                 downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, "panel-warning");
+                var langSel = document.getElementById('langs');
+                var subjSel = document.getElementById('subjects');
+                var dateSel = document.getElementById('dates');
+                var submitSelectValues = function () {
+                    var langID = langSel ? langSel.value === 'All' ? '' : langSel.value : '';
+                    var subjID = subjSel ? subjSel.value === 'All' ? '' : subjSel.value : '';
+                    var dateID = dateSel ? dateSel.value === 'All' ? '' : dateSel.value : '';
+                    requestXhttpData(this.dataset.kiwixDl, langID, subjID, dateID);
+                };
+                // Add event listener for click on return link, to go back to list of archives
+                document.getElementById('returnLink').addEventListener('click', submitSelectValues);
             } else {
                 downloadLinks.innerHTML = '<span style="font-weight:bold;font-family:consolas,monospace;">' +
                     '<p style="color:salmon;">Unable to access the server. Please see message below for reason.</p>' +
@@ -542,8 +559,12 @@ define([], function () {
                 '<pre id="dl-panel-body" class="panel panel-body" style="max-height:360px;word-wrap:normal;margin-bottom:10px;overflow:auto;">');
             //Remove hr at end of page and add extra </div>           
             doc = doc.replace(/<hr\b[^>]*>(\s*<\/pre>)/i, "$1</div>");
+            // Remove any residual hr
+            doc = doc.replace(/<hr><div/, '<div');
             //Move header into panel-header (NB regex is deliberately redundant to increase specificity of search)
             doc = doc.replace(/\$\#\$\#([\s\S]+?)(<a\s+href[^>]+>name<[\s\S]+?last\s+modified<[\s\S]+?)<hr>\s*/i, "$2$1");
+            // If this failed, we're probably in a non-mirrored directory, so add simple header
+            doc = doc.replace(/\$\#\$\#/, 'Name');
             if (/\dK|\dM|\dG/.test(doc)) {
                 //Swap size and date fields to make file size more prominent on narrow screens
                 doc = doc.replace(/(<a\b[^>]*>last\s+modified<\/a>\s*)(<a\b[^>]*>size<\/a>)\s*/ig, " $2    $1");
@@ -771,7 +792,7 @@ define([], function () {
             var links = downloadLinks.getElementsByTagName("a");
             for (i = 0; i < links.length; i++) {
                 //Store the href
-                links[i].setAttribute("data-kiwix-dl", links[i].href.replace(/[^/]*\//g, ''));
+                links[i].setAttribute("data-kiwix-dl", links[i].getAttribute('href'));
                 // Preserve sort order
                 if (!/\?C=\w;O=\w/.test(links[i].href)) links[i].href = "#";
                 if (/\.\.\//.test(links[i].innerHTML)) links[i].innerHTML = 'Parent Directory'; 
