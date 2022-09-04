@@ -1,5 +1,10 @@
 # Changelog
 
+## In-progress release 2.1.5
+
+* FIX: Downloading of non-mirrored content in the Library
+* FIX: Recognize XHTML documents and applications in Zimit ZIMs and treat as HTML
+
 ## Release 2.1.4
 
 * ENHANCEMENT: Basic Zimit file reading in IE11
