@@ -549,19 +549,19 @@ define([], function () {
         }
 
         function processXhttpData(doc) {
-            //Remove images
+            // Remove images
             doc = doc.replace(/<img\b[^>]*>\s*/ig, "");
-            //Reduce size of header
+            // Reduce size of header
             doc = doc.replace(/<h1\b[^>]*>([^<]*)<\/h1>/ig, '<h3 id="indexHeader">$1</h3>');
             //Limit height of pre box and prevent word wrapping
             doc = doc.replace(/<pre>/i, '<div class="panel panel-success">\r\n' +
                 '<pre id="dl-panel-heading" class="panel-heading" style="overflow-x:auto;word-wrap:normal;">$#$#</pre>\r\n' +
                 '<pre id="dl-panel-body" class="panel panel-body" style="max-height:360px;word-wrap:normal;margin-bottom:10px;overflow:auto;">');
-            //Remove hr at end of page and add extra </div>           
+            // Remove hr at end of page and add extra </div>           
             doc = doc.replace(/<hr\b[^>]*>(\s*<\/pre>)/i, "$1</div>");
             // Remove any residual hr
-            doc = doc.replace(/<hr><div/, '<div');
-            //Move header into panel-header (NB regex is deliberately redundant to increase specificity of search)
+            doc = doc.replace(/<hr>\s*<(\/?div|\/body)/ig, '<$1');
+            // Move header into panel-header (NB regex is deliberately redundant to increase specificity of search)
             doc = doc.replace(/\$\#\$\#([\s\S]+?)(<a\s+href[^>]+>name<[\s\S]+?last\s+modified<[\s\S]+?)<hr>\s*/i, "$2$1");
             // If this failed, we're probably in a non-mirrored directory, so add simple header
             doc = doc.replace(/\$\#\$\#/, 'Name');
@@ -580,7 +580,7 @@ define([], function () {
             }
             var stDoc; // Placeholder for standardized doc to be used to get arrays
             if (/^[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$/m.test(doc)) {
-                //Delete lines that do not match regexpFilter (this ensures packaged apps only show ZIMs appropriate to the package)
+                // Delete lines that do not match regexpFilter (this ensures packaged apps only show ZIMs appropriate to the package)
                 doc = regexpFilter ? doc.replace(regexpFilter, "") : doc;
                 stDoc = getStandardizedDoc(doc);
 
@@ -589,7 +589,7 @@ define([], function () {
                 var subjectArray = getSubjectArray(stDoc);
                 var dateArray = getDateArray(stDoc);
 
-                //Create dropdown language and date selectors
+                // Create dropdown language and date selectors
                 if (langArray) {
                     var dropdownLang = '<select class="dropdown" id="langs">\r\n';
                     for (var q = 0; q < langArray.length; q++) {
@@ -615,8 +615,8 @@ define([], function () {
                     }
                     dropdownDate += '</select>\r\n';
                 }
-                //Add language, subject and date spans to doc
-                if (/\/(mooc|phet|zimit|other)\b/i.test(URL)) {
+                // Add language, subject and date spans to doc
+                if (/\/(mooc|phet|zimit|other|dev)\b/i.test(URL)) {
                     doc = doc.replace(/^([^_\n\r]+_([^_\n\r\d]*)_?.*?(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2" data-kiwixdate="$3">$1<br /></span>');
                 } else if (/\/stack_exchange\b/i.test(URL)) {
                     doc = doc.replace(/^([^>\n\r]+>(?:.+(stackoverflow)|([^.\n\r]+))\.([^_\n\r]+)_([^_\n\r]+)_.*?(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$5" data-kiwixsubject="$2$3" data-kiwixdate="$6">$1<br /></span>');
