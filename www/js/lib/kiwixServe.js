@@ -419,14 +419,18 @@ define([], function () {
                 torrentURL = URL.replace(/\.meta4$/i, '.torrent');
                 var header = document.getElementById('dl-panel-heading');
                 var headerDoc = 'There is a server issue, but please try the following links to your file:';
+                if (~URL.indexOf(params.kiwixHiddenDownloadLink)) {
+                    headerDoc = 'This file is only available via direct download. Please use the following link:';
+                }
                 header.outerHTML = header.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + headerDoc + '</div>');
                 var body = document.getElementById('dl-panel-body');
                 var bodyDoc = '<p><b>Directly download ZIM archive:</b></p>' + 
                 '<p><a href="' + requestedURL + '" target="_blank">' + requestedURL + '</a></p>' +
                 (altURL ? '<p><b>Possible mirror:</b></p>' + 
                 '<p><a href="' + altURL + '" target="_blank">' + altURL + '</a></p>' : '') +
-                '<p><b>Download with bittorrent:</b></p>' + 
-                '<p><a href="' + torrentURL + '" target="_blank">' + torrentURL + '</a></p>';
+                (~URL.indexOf(params.kiwixHiddenDownloadLink) ? '' :
+                    '<p><b>Download with bittorrent:</b></p>' + 
+                    '<p><a href="' + torrentURL + '" target="_blank">' + torrentURL + '</a></p>');
                 body.outerHTML = body.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<pre$1>' + bodyDoc + '</pre>');
                 downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, "File in");
                 downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, "panel-warning");
@@ -550,6 +554,7 @@ define([], function () {
             // Add in some directories from hidden
             if (/wikipedia\//.test(doc)) {
                 doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>\s\s)([^<]+)/m, '<a href="#">custom_apps/</a>$3$1$2$3');
+                doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>\s\s)([^<]+)/m, '<a href="#">dev/</a>        $3$1$2$3');
                 doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>)([^<]+)/m, '<a href="#">endless/$2  $3$1$2$3');
             }
             var stDoc; // Placeholder for standardized doc to be used to get arrays
@@ -765,10 +770,11 @@ define([], function () {
             }
             var links = downloadLinks.getElementsByTagName("a");
             for (i = 0; i < links.length; i++) {
-                //Store the href - seems it's not useful?
-                //links[i].setAttribute("data-kiwix-dl", links[i].href);
+                //Store the href
+                links[i].setAttribute("data-kiwix-dl", links[i].href.replace(/[^/]*\//g, ''));
                 // Preserve sort order
                 if (!/\?C=\w;O=\w/.test(links[i].href)) links[i].href = "#";
+                if (/\.\.\//.test(links[i].innerHTML)) links[i].innerHTML = 'Parent Directory'; 
                 links[i].addEventListener('click', function (e) {
                     e.preventDefault();
                     var langSel = document.getElementById('langs');
@@ -777,14 +783,14 @@ define([], function () {
                     var langID = langSel ? langSel.value : '';
                     var dateID = dateSel ? dateSel.value : '';
                     var subjID = subjSel ? subjSel.value : '';
-                    var replaceURL = URL + this.text;
-                    replaceURL = /custom_apps\//.test(this.text) ? params.kiwixHiddenDownloadLink + '.hidden/' + this.text : replaceURL;
-                    replaceURL = /endless\//.test(this.text) ? params.kiwixHiddenDownloadLink + '.hidden/' + this.text : replaceURL;
+                    var replaceURL = URL + this.dataset.kiwixDl;
+                    replaceURL = /(custom_apps|endless|dev)\//.test(this.text) ? params.kiwixHiddenDownloadLink + '.hidden/' + this.text : replaceURL;
                     //Allow both zim and zip format
-                    if (/\.zi[mp]$/i.test(this.text)) {
+                    if (/\.zi[mp]$/i.test(this.dataset.kiwixDl)) {
                         replaceURL = replaceURL + ".meta4";
-                    } else if (/parent\s*directory/i.test(this.text)) {
+                    } else if (/parent\s*directory|\.\.\//i.test(this.text)) {
                         replaceURL = URL.replace(/\/[^\/]*\/$/i, '\/');
+                        replaceURL = replaceURL.replace(params.kiwixHiddenDownloadLink, params.kiwixDownloadLink);
                         replaceURL = replaceURL.replace(/\.hidden\//, '');
                     } else if (/Name|Size|Last\smodified|Description/.test(this.text)) {
                         replaceURL = this.getAttribute('href').replace(/;/g, '&');
