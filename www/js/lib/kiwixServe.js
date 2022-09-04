@@ -778,8 +778,8 @@ define([], function () {
                     var dateID = dateSel ? dateSel.value : '';
                     var subjID = subjSel ? subjSel.value : '';
                     var replaceURL = URL + this.text;
-                    replaceURL = /custom_apps\//.test(this.text) ? URL + '.hidden/' + this.text : replaceURL;
-                    replaceURL = /endless\//.test(this.text) ? URL + '.hidden/' + this.text : replaceURL;
+                    replaceURL = /custom_apps\//.test(this.text) ? params.kiwixHiddenDownloadLink + '.hidden/' + this.text : replaceURL;
+                    replaceURL = /endless\//.test(this.text) ? params.kiwixHiddenDownloadLink + '.hidden/' + this.text : replaceURL;
                     //Allow both zim and zip format
                     if (/\.zi[mp]$/i.test(this.text)) {
                         replaceURL = replaceURL + ".meta4";

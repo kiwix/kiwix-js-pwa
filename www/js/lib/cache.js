@@ -361,7 +361,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
         }
         // Check if we're actually setting an article 
         var keyArticle = key.match(/([^/]+)\/([AC]\/.+$)/);
-        if (keyArticle && /\bhtml\b/i.test(mimetype)) { // We're setting an article, so go to setArticle function
+        if (keyArticle && /\bx?html\b/i.test(mimetype)) { // We're setting an article, so go to setArticle function
             setArticle(keyArticle[1], keyArticle[2], contents, callback);
             return;
         }
@@ -472,7 +472,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                         }
                         var shortTitle = key.replace(/[^/]+\//g, '').substring(0, 18);
                         // Since there was no result, post UI messages and look up asset in ZIM
-                        if (/\bhtml\b/.test(mimetype) && !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm|woff2?)(\?|$)/i.test(resolvedDirEntry.url)) {
+                        if (/\bx?html\b/.test(mimetype) && !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm|woff2?)(\?|$)/i.test(resolvedDirEntry.url)) {
                             uiUtil.pollSpinner();
                             if (params.isLandingPage) uiUtil.pollSpinner('Loading ' + shortTitle + '...');
                         } else if (/(css|javascript|video|vtt)/i.test(mimetype)) {
@@ -488,7 +488,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                                 content = transform(content, title.replace(/^.*\.([^.]+)$/, '$1'));
                             }
                             // Hide article while it is rendering
-                            if (/\bhtml\b/i.test(mimetype)) {
+                            if (/\bx?html\b/i.test(mimetype)) {
                                 // Count CSS so we can attempt to show article before JS/images are fully loaded
                                 var cssCount = content.match(/<(?:link)[^>]+?href=["']([^"']+)[^>]+>/ig);
                                 assetsCache.cssLoading = cssCount ? cssCount.length : 0;
