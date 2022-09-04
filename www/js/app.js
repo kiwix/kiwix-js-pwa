@@ -3720,7 +3720,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 .replace(/[^/]+/g, function(m) {
                     return encodeURIComponent(m);
                 });
-                if (!/\bhtml\b/i.test(mimeType)) {
+                if (!/\bx?html\b/i.test(mimeType)) {
                     // If the selected article isn't HTML, e.g. it might be a PDF, we can either download it if we recognize the type, or ask the SW to deal with it
                     if ((params.zimType === 'zimit' || appstate.search.searchUrlIndex) && 
                         /\/(plain|.*javascript|css|csv|.*officedocument|epub|pdf|zip|png|jpeg|webp|svg|gif|tiff|mp4|webm|mpeg|mp3|octet-stream|warc-headers)/i.test(mimeType)) {
@@ -3975,7 +3975,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             }
                             // Note we sometimes can get HTML "moved permanently" as a response to a request for an image
                             // particularly in Zimit archives, so we have to exclude these here
-                            if (/\bhtml\b/i.test(mimetype) && !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm|woff2?)(\?|$)/i.test(dirEntry.url)) {
+                            if (/\bx?html\b/i.test(mimetype) && !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm|woff2?)(\?|$)/i.test(dirEntry.url)) {
                                 loadingArticle = title;
                                 // Intercept files of type html and apply transformations
                                 var message = {
@@ -4161,7 +4161,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             //TESTING
             console.log('** HTML received for article ' + dirEntry.url + ' **');
             
-            if (!/\bhtml\b/.test(dirEntry.getMimetype())) {
+            if (!/\bx?html\b/.test(dirEntry.getMimetype())) {
                 // Construct an HTML document to wrap the content
                 htmlArticle = '<html><body style="color:yellow;background:darkblue;"><pre>' + htmlArticle + '</pre></body></html>';
                 // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)

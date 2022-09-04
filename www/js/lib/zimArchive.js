@@ -437,7 +437,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                 // Support for IE11 and Edge Legacy - only support UTF-8 decoding
                 data = utf8.parse(data);
             }
-            if (/\bhtml\b/i.test(mimetype)) {
+            if (/\bx?html\b/i.test(mimetype)) {
                 // If the data were encoded with a differen mimtype, here is how to change it
                 // var encoding = decData.match(/<meta\b[^>]+?Content-Type[^>]+?charset=([^'"\s]+)/i);
                 // encoding = encoding ? encoding[1] : '';

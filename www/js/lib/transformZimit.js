@@ -102,7 +102,7 @@ define([], function () {
          * Other ZIMs have a mimetype like 'html' (with no 'text/'), so we have to match as generically as possible
          */
         var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(selectedArchive._file.name);
-        if (/\bhtml\b/i.test(mimetype)) {
+        if (/\bx?html\b/i.test(mimetype)) {
             var zimitPrefix = data.match(regexpGetZimitPrefix);
             // If the URL is the same as the URL with everything after the first / removed, then we are in the root directory
             // We use this to decide whether to remove any relative link prefixes like ../
