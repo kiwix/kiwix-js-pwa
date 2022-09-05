@@ -106,11 +106,9 @@ to Wikipedia or Wikivoyage articles.
 
 ## Privacy Policy
 
-When installed, Kiwix JS Windows and Linux is capable of working entirely offline. This application does not collect or
-record any of your personal data, though if you installed it from a Store, the Store operator may collect anonymous
-usage data (see below). The app only remembers your browsing history for the duration of a session (for the purpose
-of returning to previously viewed pages). This history is lost on exiting the app with the optional exception of the
-last-visited page.
+WikiMed Offline Medical Wikipedia works offline, and does not collect or record any of your personal data. It
+only remembers your browsing history for the duration of a session (for the purpose of returning to previously
+viewed pages). This history is lost on exiting the app with the optional exception of the last-visited page.
 
 If you access this application from a secure web server (e.g. the PWA server), it will only work offline if your browser
 is capable of installing a Service Worker. If you install or bookmark the PWA version in Service Worker mode, then it
