@@ -79,7 +79,7 @@ define([], function () {
     /**
      * Establish some Regular Expressions used by the transformReplayUrls function
      */
-    var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track|meta)\b[^>]*?[\s;])(?:src\b|href|url)\s*(=\s*(["']))(?=[./]+|https?)((?:[^>](?!\3|\?|#))+[^>])([^>]*>)/ig;
+    var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track|meta|iframe)\b[^>]*?[\s;])(?:src\b|href|url)\s*(=\s*(["']))(?=[./]+|https?)((?:[^>](?!\3|\?|#))+[^>])([^>]*>)/ig;
     var regexpZimitJavascriptLinks = /['"(]((?:https?:)?\/\/[^'"?#)]*)['"?#)]/ig;
     var regexpZimitCssLinks = /\burl\s*\(['"\s]*([^)'"\s]+)['"\s]*\)/ig;
     var regexpGetZimitPrefix = /link\s+rel=["']canonical["']\s+href="https?:\/\/([^/"]+)/i;
@@ -101,7 +101,7 @@ define([], function () {
          * Note that some Zimit ZIMs have mimeteypes like 'text/html;raw=true', so we can't simply match 'text/html'
          * Other ZIMs have a mimetype like 'html' (with no 'text/'), so we have to match as generically as possible
          */
-        var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(selectedArchive._file.name);
+        var indexRoot = window.location.origina + window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(selectedArchive._file.name);
         if (/\bx?html\b/i.test(mimetype)) {
             var zimitPrefix = data.match(regexpGetZimitPrefix);
             // If the URL is the same as the URL with everything after the first / removed, then we are in the root directory
@@ -122,9 +122,9 @@ define([], function () {
                 var newBlock = match;
                 var assetUrl = relAssetUrl;
                     // DEBUG:
-                    // console.log(assetUrl);
+                    console.log('Asset URL: ' + assetUrl);
                 // Remove google analytics and other analytics files that cause stall
-                if (/google|analytics|typepad.*stats/i.test(assetUrl)) return '';
+                if (/analytics|typepad.*stats/i.test(assetUrl)) return '';
                 // For root-relative links, we need to add the zimitPrefix
                 assetUrl = assetUrl.replace(/^\/(?!\/)/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
                 // For Zimit assets that begin with https: or // the zimitPrefix is derived from the URL
@@ -134,7 +134,7 @@ define([], function () {
                 // Deal with <meta http-equiv refresh...> directives
                 // if (/<meta\s+http-equiv[^>]+refresh\b/i.test(newBlock)) dirEntry.zimitRedirect = assetUrl.replace(/^\//, '');
                 newBlock = newBlock.replace(relAssetUrl, '@kiwixtransformed@' + assetUrl);
-                // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+                console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
 
@@ -209,7 +209,7 @@ define([], function () {
                 // Relative assets
                 newBlock = assetUrl === url ? newBlock :
                     newBlock.replace(url, '@kiwixtransformed@' + '/' + selectedArchive._file.name + '/' + assetUrl);
-                // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+                console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
         } // End of css transformations
@@ -226,13 +226,13 @@ define([], function () {
                 assetUrl = assetUrl.replace(/^\/\//, dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
                 assetUrl = assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : '')); 
                 // Remove analytics
-                assetUrl = /google|analytics|typepad.*stats/i.test(assetUrl) ? '' : assetUrl; 
+                assetUrl = /analytics|typepad.*stats/i.test(assetUrl) ? '' : assetUrl; 
                 // Relative assets
                 newBlock = newBlock.replace(url, '/' + selectedArchive._file.name + '/' + assetUrl);
-                // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+                console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
-            data = data.replace(/(['"])(?:\/?)((?:static|api)\/)/ig, '$1' + window.location.origin + indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/$2');
+            data = data.replace(/(['"])(?:\/?)((?:static|api)\/)/ig, '$1' + indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/$2');
         } // End of JavaScript transformations
 
         // Add a base href
