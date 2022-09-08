@@ -101,7 +101,7 @@ define([], function () {
          * Note that some Zimit ZIMs have mimeteypes like 'text/html;raw=true', so we can't simply match 'text/html'
          * Other ZIMs have a mimetype like 'html' (with no 'text/'), so we have to match as generically as possible
          */
-        var indexRoot = window.location.origina + window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(selectedArchive._file.name);
+        var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(selectedArchive._file.name);
         if (/\bx?html\b/i.test(mimetype)) {
             var zimitPrefix = data.match(regexpGetZimitPrefix);
             // If the URL is the same as the URL with everything after the first / removed, then we are in the root directory
@@ -134,6 +134,7 @@ define([], function () {
                 // Deal with <meta http-equiv refresh...> directives
                 // if (/<meta\s+http-equiv[^>]+refresh\b/i.test(newBlock)) dirEntry.zimitRedirect = assetUrl.replace(/^\//, '');
                 newBlock = newBlock.replace(relAssetUrl, '@kiwixtransformed@' + assetUrl);
+                if (/^<a\s/i.test(newBlock)) newBlock = newBlock.replace('@kiwixtransformed@', '@kiwixtrans')`;`
                 console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
@@ -156,7 +157,7 @@ define([], function () {
             // Deal with regex-style urls embedded in page
             data = data.replace(/https?:\\\/\\\/[^"']+/gi, function (assetUrl) {
                 assetUrl = assetUrl.replace(/^https?:\\\/\\\//i, '\\/' + dirEntry.namespace + '\\/' + (dirEntry.namespace === 'C' ? 'A\\/' : ''));
-                assetUrl = indexRoot.replace(/\//g, '\\/') + assetUrl;
+                assetUrl = (window.location.origin + indexRoot).replace(/\//g, '\\/') + assetUrl;
                 return assetUrl;
             });
 
@@ -202,13 +203,13 @@ define([], function () {
                 var newBlock = match;
                 var assetUrl = url;
                 // For root-relative links, we need to add the zimitPrefix
-                assetUrl = assetUrl.replace(/^\/(?!\/)/, dirEntry.namespace + '/' + params.zimitPrefix + '/');
+                assetUrl = assetUrl.replace(/^\/(?!\/)/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
                 // Deal with absolute URLs
-                assetUrl = assetUrl.replace(/^(https?:)?\/\//i, dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
-                if (rootDirectory) assetUrl = assetUrl.replace(/^(\.\.\/?)+/, '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/'); 
+                assetUrl = assetUrl.replace(/^(https?:)?\/\//i, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
+                if (rootDirectory) assetUrl = assetUrl.replace(/^(\.\.\/?)+/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/'); 
                 // Relative assets
                 newBlock = assetUrl === url ? newBlock :
-                    newBlock.replace(url, '@kiwixtransformed@' + '/' + selectedArchive._file.name + '/' + assetUrl);
+                    newBlock.replace(url, '@kiwixtransformed@' + assetUrl);
                 console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
@@ -222,24 +223,25 @@ define([], function () {
                 if (/www\.w3\.org\/XML\//i.test(url)) return match;
                 var newBlock = match;
                 var assetUrl = url;
-                assetUrl = assetUrl.replace(/^\/(?!\/)/, dirEntry.namespace + '/' + params.zimitPrefix + '/');
-                assetUrl = assetUrl.replace(/^\/\//, dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
-                assetUrl = assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : '')); 
+                assetUrl = assetUrl.replace(/^\/(?!\/)/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
+                assetUrl = assetUrl.replace(/^\/\//, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
+                assetUrl = assetUrl.replace(/^https?:\/\//i, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : '')); 
                 // Remove analytics
                 assetUrl = /analytics|typepad.*stats/i.test(assetUrl) ? '' : assetUrl; 
                 // Relative assets
-                newBlock = newBlock.replace(url, '/' + selectedArchive._file.name + '/' + assetUrl);
+                newBlock = newBlock.replace(url, '@kiwixtransformed@' + assetUrl);
                 console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
-            data = data.replace(/(['"])(?:\/?)((?:static|api)\/)/ig, '$1' + indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/$2');
+            data = data.replace(/(['"])(?:\/?)((?:static|api)\/)/ig, '$1' + window.location.origin + indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/$2');
         } // End of JavaScript transformations
 
         // Add a base href
         // data = data.replace(/(<head\b[^>]*>\s*)/i, '$1<base href="' + window.location.origin + indexRoot + '/' + '">');
 
         // Remove the placeholders used to prevent further matching
-        data = data.replace(/@kiwixtransformed@/g, '');
+        data = data.replace(/@kiwixtransformed@/g, window.location.origin);
+        data = data.replace(/@kiwixtrans@/g, '');
 
         return data;
     }
