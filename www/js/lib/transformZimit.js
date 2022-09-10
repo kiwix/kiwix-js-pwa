@@ -83,7 +83,7 @@ define([], function () {
     var regexpZimitJavascriptLinks = /['"(]((?:https?:)?\/\/[^'"?#)]*)['"?#)]/ig;
     var regexpZimitCssLinks = /\burl\s*\(['"\s]*([^)'"\s]+)['"\s]*\)/ig;
     var regexpGetZimitPrefix = /link\s+rel=["']canonical["']\s+href="https?:\/\/([^/"]+)/i;
-    var regexpRemoveAnalytics1 = /<script\b([^<]|<(?!\/script>))+?(?:google.*?analytics|adsbygoogle)([^<]|<(?!\/script>))+<\/script>\s*/ig;
+    var regexpRemoveAnalytics1 = /<script\b([^<]|<(?!\/script>))+?(?:google.*?analytics|adsbygoogle|goggleads|doubleclick)([^<]|<(?!\/script>))+<\/script>\s*/ig;
     var regexpRemoveAnalytics2 = /<ins\b(?:[^<]|<(?!\/ins>))+?adsbygoogle(?:[^<]|<(?!\/ins>))+<\/ins>\s*/ig;
     var regexpInlineScriptsNotMaths = /<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig;
 
@@ -124,17 +124,16 @@ define([], function () {
                     // DEBUG:
                     console.log('Asset URL: ' + assetUrl);
                 // Remove google analytics and other analytics files that cause stall
-                if (/analytics|typepad.*stats/i.test(assetUrl)) return '';
+                if (/analytics|typepad.*stats|googleads|doubleclick/i.test(assetUrl)) return '';
                 // For root-relative links, we need to add the zimitPrefix
                 assetUrl = assetUrl.replace(/^\/(?!\/)/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
                 // For Zimit assets that begin with https: or // the zimitPrefix is derived from the URL
                 assetUrl = assetUrl.replace(/^(?:https?:)?\/\//i, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
                 // For fully relative links, we have to remove any '..' if we are in root directory
                 if (rootDirectory) assetUrl = assetUrl.replace(/^(\.\.\/?)+/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/'); 
-                // Deal with <meta http-equiv refresh...> directives
-                // if (/<meta\s+http-equiv[^>]+refresh\b/i.test(newBlock)) dirEntry.zimitRedirect = assetUrl.replace(/^\//, '');
-                newBlock = newBlock.replace(relAssetUrl, '@kiwixtransformed@' + assetUrl);
-                if (/^<a\s/i.test(newBlock)) newBlock = newBlock.replace('@kiwixtransformed@', '@kiwixtrans')`;`
+                // We have to mark potential assets that are not easily identified as assets, due to so many html mimetypes being returned for them
+                newBlock = newBlock.replace(relAssetUrl, '@kiwixtransformed@' + assetUrl + (params.contentInjectionMode === 'serviceworker' ? '?isKiwixAsset' : ''));
+                if (/^<a\s/i.test(newBlock)) newBlock = newBlock.replace('@kiwixtransformed@', '@kiwixtrans@');
                 console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
@@ -219,6 +218,8 @@ define([], function () {
          * Transform links in JavaScript files or script blocks in the html
          */
         if (/\b(javascript|html)\b/i.test(mimetype)) {
+            // Special rules for youtube videos (aka fuzzy matching...)
+            data = data.replace(/(\/youtubei\/)/g, 'https://www.youtube.com$1');
             data = data.replace(regexpZimitJavascriptLinks, function (match, url) {
                 if (/www\.w3\.org\/XML\//i.test(url)) return match;
                 var newBlock = match;
@@ -236,11 +237,8 @@ define([], function () {
             data = data.replace(/(['"])(?:\/?)((?:static|api)\/)/ig, '$1' + window.location.origin + indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/$2');
         } // End of JavaScript transformations
 
-        // Add a base href
-        // data = data.replace(/(<head\b[^>]*>\s*)/i, '$1<base href="' + window.location.origin + indexRoot + '/' + '">');
-
         // Remove the placeholders used to prevent further matching
-        data = data.replace(/@kiwixtransformed@/g, window.location.origin);
+        data = data.replace(/@kiwixtransformed@/g, params.contentInjectionMode === 'serviceworker' ? window.location.origin : '');
         data = data.replace(/@kiwixtrans@/g, '');
 
         return data;

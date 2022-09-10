@@ -3922,8 +3922,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // We received a message from the ServiceWorker
                 if (event.data.action === "askForContent") {
                     // Zimit archives store URLs encoded, and also need the URI component (search parameter) if any
-                    // var title = params.zimType === 'zimit' ? encodeURI(event.data.title + event.data.search) : event.data.title;
                     var title = params.zimType === 'zimit' ? encodeURIComponent(event.data.title).replace(/\%2F/g, '/') + event.data.search : event.data.title;
+                    // If it's an asset, we have to mark the dirEntry so that we don't load it if it has an html MIME type
+                    var titleIsAsset = /\??isKiwixAsset/.test(title);
+                    title = title.replace(/\??isKiwixAsset/, '');
                     if (appstate.selectedArchive.landingPageUrl === title) params.isLandingPage = true;
                     var messagePort = event.ports[0];
                     if (!anchorParameter && event.data.anchorTarget) anchorParameter = event.data.anchorTarget;
@@ -3973,9 +3975,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                                 var shortTitle = dirEntry.url.replace(/[^/]+\//g, '').substring(0, 18);
                                 uiUtil.pollSpinner('Getting ' + shortTitle + '...');
                             }
-                            // Note we sometimes can get HTML "moved permanently" as a response to a request for an image
-                            // particularly in Zimit archives, so we have to exclude these here
-                            if (/\bx?html\b/i.test(mimetype) && !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm|woff2?|embed\/.*)(\?|$)/i.test(dirEntry.url)) {
+                            // If it's an HTML type and not an asset, we load it in a new page instance
+                            if (/\bx?html\b/i.test(mimetype) && !dirEntry.isAsset) {
                                 loadingArticle = title;
                                 // Intercept files of type html and apply transformations
                                 var message = {
@@ -4031,12 +4032,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             });
                         }
                     };
-                    if (params.zimType === 'zimit') title = title.replace(/^([^?]+)(\?[^?]*)?$/, function (m0, m1, m2) {
-                        // Note that Zimit ZIMs store ZIM URLs encoded, but SOME incorrectly encode using encodeURIComponent, instead of encodeURI!
-                        return m1.replace(/[&]/g, '%26').replace(/,/g, '%2C') + (m2 || '');
-                        // return encodeURI(m1) + (m2 || '');
-                    });
-                    appstate.selectedArchive.getDirEntryByPath(title).then(readFile).catch(function (err) {
+                    if (params.zimType === 'zimit') {
+                        title = title.replace(/^([^?]+)(\?[^?]*)?$/, function (m0, m1, m2) {
+                            // Note that Zimit ZIMs store ZIM URLs encoded, but SOME incorrectly encode using encodeURIComponent, instead of encodeURI!
+                            return m1.replace(/[&]/g, '%26').replace(/,/g, '%2C') + (m2 || '');
+                            // return encodeURI(m1) + (m2 || '');
+                        })
+                    };
+                    appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
+                        if (dirEntry) dirEntry.isAsset = titleIsAsset;
+                        return readFile(dirEntry);
+                    }).catch(function (err) {
                         console.error('Failed to read ' + title, err);
                         messagePort.postMessage({
                             'action': 'giveContent',
