@@ -1,4 +1,4 @@
-﻿/**
+/**
  * transformZimit.js: Functions to enable reading of Zimit ZIM format.
  *
  * Copyright 2022 Jaifroid, Mossroy and contributors.
@@ -244,9 +244,22 @@ define([], function () {
         return data;
     }
 
+    /**
+     * Transform fuzzy URL
+     * Rules adapted from https://github.com/webrecorder/wabac.js/blob/main/src/fuzzymatcher.js
+     * @param {String} url The URL to transform through fuzzy matching 
+     */
+    function transformFuzzyUrl(url) {
+        if (/videoId/i.test(url)) {
+            url = url.replace(/\/(?:www\.)?youtube(?:-nocookie)?\.com\/(youtubei\/v1\/[^?]+\?).*(videoId[^&]+).*/i, '/youtube.fuzzy.replayweb.page/$1$2');
+        }
+        return url;
+    }
+
     return {
         filterReplayFiles: filterReplayFiles,
         getZimitRedirect: getZimitRedirect,
-        transformReplayUrls: transformReplayUrls
+        transformReplayUrls: transformReplayUrls,
+        transformFuzzyUrl: transformFuzzyUrl
     };
 });
