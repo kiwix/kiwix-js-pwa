@@ -26,8 +26,8 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images', 'settingsStore', 'transformStyles', 'kiwixServe', 'updater'],
-    function ($, zimArchiveLoader, uiUtil, util, utf8, cache, images, settingsStore, transformStyles, kiwixServe, updater) {
+define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images', 'settingsStore', 'transformStyles', 'transformZimit', 'kiwixServe', 'updater'],
+    function ($, zimArchiveLoader, uiUtil, util, utf8, cache, images, settingsStore, transformStyles, transformZimit, kiwixServe, updater) {
 
         /**
          * The delay (in milliseconds) between two "keepalive" messages
@@ -4033,11 +4033,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         }
                     };
                     if (params.zimType === 'zimit') {
+                        // Do any fuzzy transformations
+                        if (/youtube|googlevideo/i.test(title)) {
+                            title = transformZimit.transformFuzzyUrl(title);
+                        }
                         title = title.replace(/^([^?]+)(\?[^?]*)?$/, function (m0, m1, m2) {
                             // Note that Zimit ZIMs store ZIM URLs encoded, but SOME incorrectly encode using encodeURIComponent, instead of encodeURI!
                             return m1.replace(/[&]/g, '%26').replace(/,/g, '%2C') + (m2 || '');
                             // return encodeURI(m1) + (m2 || '');
-                        })
+                        });
                     };
                     appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
                         if (dirEntry) dirEntry.isAsset = titleIsAsset;
