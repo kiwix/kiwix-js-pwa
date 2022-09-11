@@ -283,8 +283,8 @@ let fetchCaptureEnabled = false;
  * Intercept selected Fetch requests from the browser window
  */
 self.addEventListener('fetch', function (event) {
-    // Only cache GET requests
-    if (event.request.method !== "GET") return;
+    // Only handle GET or POST requests (POST is intended to handle video in Zimit ZIMs)
+    if (!/GET|POST/.test(event.request.method)) return;
     var rqUrl = event.request.url;
     var urlObject = new URL(rqUrl);
     // Test the URL with parameters removed
