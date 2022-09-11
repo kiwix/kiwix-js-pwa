@@ -156,7 +156,7 @@ define([], function () {
             // Deal with regex-style urls embedded in page
             data = data.replace(/https?:\\\/\\\/[^"']+/gi, function (assetUrl) {
                 assetUrl = assetUrl.replace(/^https?:\\\/\\\//i, '\\/' + dirEntry.namespace + '\\/' + (dirEntry.namespace === 'C' ? 'A\\/' : ''));
-                assetUrl = (window.location.origin + indexRoot).replace(/\//g, '\\/') + assetUrl;
+                assetUrl = (window.location.origin + indexRoot).replace(/\\/g, '\\').replace(/([\\/])/g, '\\$1') + assetUrl;
                 return assetUrl;
             });
 
