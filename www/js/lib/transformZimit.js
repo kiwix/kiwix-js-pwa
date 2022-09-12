@@ -1,4 +1,4 @@
-/**
+﻿/**
  * transformZimit.js: Functions to enable reading of Zimit ZIM format.
  *
  * Copyright 2022 Jaifroid, Mossroy and contributors.
@@ -131,9 +131,10 @@ define([], function () {
                 assetUrl = assetUrl.replace(/^(?:https?:)?\/\//i, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
                 // For fully relative links, we have to remove any '..' if we are in root directory
                 if (rootDirectory) assetUrl = assetUrl.replace(/^(\.\.\/?)+/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/'); 
-                // We have to mark potential assets that are not easily identified as assets, due to so many html mimetypes being returned for them
-                newBlock = newBlock.replace(relAssetUrl, '@kiwixtransformed@' + assetUrl + (params.contentInjectionMode === 'serviceworker' ? '?isKiwixAsset' : ''));
-                if (/^<a\s/i.test(newBlock)) newBlock = newBlock.replace('@kiwixtransformed@', '@kiwixtrans@');
+                // Add placeholder to prevent further transformations
+                if (/^<a\s/i.test(newBlock)) newBlock = newBlock.replace(relAssetUrl, '@kiwixtrans@' + assetUrl);
+                // But for non-anchor URLs, We have to mark potential assets that are not easily identified as assets, due to so many html mimetypes being returned for them
+                else newBlock = newBlock.replace(relAssetUrl, '@kiwixtransformed@' + assetUrl + (params.contentInjectionMode === 'serviceworker' ? '?isKiwixAsset' : ''));
                 console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
