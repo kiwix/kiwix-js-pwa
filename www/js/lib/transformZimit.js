@@ -35,7 +35,7 @@ define([], function () {
         if (dirEntry.namespace === 'H' || dirEntry.namespace === 'C' && /^H\//.test(dirEntry.url) 
             || params.isLandingPage && /^(A\/)?index\.html(?:[?#]|$)/.test(dirEntry.url))
             dirEntry.inspect = true;
-        if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|update\.googleapis|remote.loader\.js|survey\.js|yuiloader\.js|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url))
+        if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|update\.googleapis|survey\.js|yuiloader\.js|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url))
             dirEntry.nullify = true;
         return dirEntry;
     }
@@ -62,6 +62,11 @@ define([], function () {
             } else {
                 dirEntry.zimitRedirect = null;
             }    
+        } else if (/301\s*moved\s+permanently/i.test(data)) {
+            redirect = data.match(/moved\s+permanently(?:[^<]|<(?!a\s))+<a\s[^"']+["'](?:https?:)?\/?\/?([^"']+)/i);
+            if (redirect && redirect[1]) {
+                dirEntry.zimitRedirect = cns + '/' + (cns === 'C' ? 'A/' : '') + redirect[1];
+            }
         } else {
             redirect = data.match(/window\.mainUrl\s*=\s*(['"])https?:\/\/([^\/]+)(.+?)\1/);
             if (redirect && redirect[2] && redirect[3]) {
