@@ -67,6 +67,7 @@ define([], function () {
             if (redirect && redirect[1]) {
                 dirEntry.zimitRedirect = cns + '/' + (cns === 'C' ? 'A/' : '') + redirect[1];
             }
+            console.debug('*** Asset moved permanently! Redirecting to: ' + dirEntry.zimitRedirect + ' ***');
         } else {
             redirect = data.match(/window\.mainUrl\s*=\s*(['"])https?:\/\/([^\/]+)(.+?)\1/);
             if (redirect && redirect[2] && redirect[3]) {
@@ -118,7 +119,7 @@ define([], function () {
             data = data.replace(/<noscript>\s*(<img\b[^>]+>)\s*<\/noscript>/ig, '$1');
             data = data.replace(/<span\b[^>]+lazy-image-placeholder[^<]+<\/span>\s*/ig, '');
             // Remove meta http-equiv refresh
-            data = data.replace(/<meta\s+http-equiv[^>]+refresh\b[^>]+>\/s*/i, '');
+            data = data.replace(/<meta\s+http-equiv[^>]+refresh\b[^>]+>\s*/i, '');
             // // Inject the helper script wombat.js
             // data = data.replace(/(<\/head>\s*)/i, '<script src="https://' + params.zimitPrefix + '/static/wombat.js"></script>\n');
 
