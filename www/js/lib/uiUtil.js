@@ -458,6 +458,13 @@ define(rqDef, function(util) {
         alertMessage.innerHTML = '<strong>Download</strong> If the download does not start, please tap the following link: ';
         // We have to add the anchor to a UI element for Firefox to be able to click it programmatically: see https://stackoverflow.com/a/27280611/9727685
         alertMessage.appendChild(a);
+        // For IE11 we need to force use of the saveBlob method with the onclick event 
+        if (window.navigator && window.navigator.msSaveBlob) {
+            a.addEventListener('click', function (e) {
+                window.navigator.msSaveBlob(blob, filename);
+                e.preventDefault();
+            });
+        } 
         try {
             a.click();
             // Following line should run only if there was no error, leaving the alert showing in case of error
@@ -474,22 +481,13 @@ define(rqDef, function(util) {
             if (autoDismiss) $('#downloadAlert').alert('close');
         }
         catch (err) {
-            // If the click fails, user may be able to download by manually clicking the link
-            // But for IE11 we need to force use of the saveBlob method with the onclick event 
-            if (window.navigator && window.navigator.msSaveBlob) {
-                a.addEventListener('click', function (e) {
-                    window.navigator.msSaveBlob(blob, filename);
-                    e.preventDefault();
-                });
+            // And try to launch through UWP download
+            if (Windows && Windows.Storage) {
+                downloadBlobUWP(blob, filename, alertMessage);
+                if (autoDismiss) $('#downloadAlert').alert('close');
             } else {
-                // And try to launch through UWP download
-                if (Windows && Windows.Storage) {
-                    downloadBlobUWP(blob, filename, alertMessage);
-                    if (autoDismiss) $('#downloadAlert').alert('close');
-                } else {
-                    // Last gasp attempt to open automatically
-                    window.open(a.href);
-                }
+                // Last gasp attempt to open automatically
+                window.open(a.href);
             }
         }
     }
