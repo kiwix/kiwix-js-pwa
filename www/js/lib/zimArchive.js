@@ -428,7 +428,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
      * @param {callbackStringContent} callback
      */
     ZIMArchive.prototype.readUtf8File = function(dirEntry, callback) {
-        var that = this;
+        var cns = appstate.selectedArchive.getContentNamespace();
         return dirEntry.readData().then(function(data) {
             var mimetype = dirEntry.getMimetype();
             if (window.TextDecoder) {
@@ -438,11 +438,14 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                 data = utf8.parse(data);
             }
             if (/\bx?html\b/i.test(mimetype)) {
-                // If the data were encoded with a differen mimtype, here is how to change it
+                // If the data were encoded with a different mimtype, here is how to change it
                 // var encoding = decData.match(/<meta\b[^>]+?Content-Type[^>]+?charset=([^'"\s]+)/i);
                 // encoding = encoding ? encoding[1] : '';
                 // if (encoding && !/utf-8/i.test(encoding)) decData = new TextDecoder(encoding).decode(data);
                 
+                //Some Zimit assets have moved location and we need to follow the moved permanently data
+                if (/301\s*moved\s+permanently/i.test(data)) dirEntry = transformZimit.getZimitRedirect(dirEntry, data, cns);
+
                 // Some Zimit archives have an incorrect meta charset tag. See https://github.com/openzim/warc2zim/issues/88.
                 // So we remove it!
                 data = data.replace(/<meta\b[^>]+?Content-Type[^>]+?charset=([^'"\s]+)[^>]+>\s*/i, function (m0, m1) {
@@ -452,11 +455,11 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                     return m0;
                 });
             }
-            if (dirEntry.inspect) {
-                dirEntry = transformZimit.getZimitRedirect(dirEntry, data, that.getContentNamespace());
+            if (dirEntry.inspect || dirEntry.zimitRedirect) {
+                if (dirEntry.inspect) dirEntry = transformZimit.getZimitRedirect(dirEntry, data, cns);
                 if (dirEntry.zimitRedirect) {
-                    return that.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
-                        return that.readUtf8File(rd, callback);
+                    return appstate.selectedArchive.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
+                        return appstate.selectedArchive.readUtf8File(rd, callback);
                     });
                 }
            } else {

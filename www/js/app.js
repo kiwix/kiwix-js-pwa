@@ -3976,7 +3976,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                                 uiUtil.pollSpinner('Getting ' + shortTitle + '...');
                             }
                             // If it's an HTML type and not an asset, we load it in a new page instance
-                            if (/\bx?html\b/i.test(mimetype) && !dirEntry.isAsset) {
+                            if (/\bx?html\b/i.test(mimetype) && !dirEntry.isAsset && !/\.(png|gif|jpe?g|css|js|mpe?g|mp4|webp|webm|woff2?)(\?|$)/i.test(dirEntry.url)) {
                                 loadingArticle = title;
                                 // Intercept files of type html and apply transformations
                                 var message = {
