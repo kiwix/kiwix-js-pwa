@@ -118,8 +118,8 @@ define([], function () {
             // DEV: Check if this is still necessary
             data = data.replace(/<noscript>\s*(<img\b[^>]+>)\s*<\/noscript>/ig, '$1');
             data = data.replace(/<span\b[^>]+lazy-image-placeholder[^<]+<\/span>\s*/ig, '');
-            // Remove meta http-equiv refresh
-            data = data.replace(/<meta\s+http-equiv[^>]+refresh\b[^>]+>\s*/i, '');
+            // Remove meta http-equiv refresh from assets
+            if (dirEntry.isAsset) data = data.replace(/<meta\s+http-equiv[^>]+refresh\b[^>]+>\s*/i, '');
             // // Inject the helper script wombat.js
             // data = data.replace(/(<\/head>\s*)/i, '<script src="https://' + params.zimitPrefix + '/static/wombat.js"></script>\n');
 
