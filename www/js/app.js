@@ -4033,27 +4033,26 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         }
                     };
                     if (params.zimType === 'zimit') {
-                        // Do any fuzzy transformations
-                        if (/youtube|googlevideo/i.test(title)) {
-                            title = transformZimit.transformFuzzyUrl(title);
-                        }
                         title = title.replace(/^([^?]+)(\?[^?]*)?$/, function (m0, m1, m2) {
                             // Note that Zimit ZIMs store ZIM URLs encoded, but SOME incorrectly encode using encodeURIComponent, instead of encodeURI!
                             return m1.replace(/[&]/g, '%26').replace(/,/g, '%2C') + (m2 || '');
                             // return encodeURI(m1) + (m2 || '');
                         });
-                    };
-                    appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
-                        if (dirEntry) dirEntry.isAsset = titleIsAsset;
-                        return readFile(dirEntry);
-                    }).catch(function (err) {
-                        console.error('Failed to read ' + title, err);
-                        messagePort.postMessage({
-                            'action': 'giveContent',
-                            'title': title,
-                            'content': new Uint8Array
+                        // Do any video transformations
+                        transformZimit.transformVideoUrl(title, function (transformedTitle) {
+                            appstate.selectedArchive.getDirEntryByPath(transformedTitle).then(function (dirEntry) {
+                                if (dirEntry) dirEntry.isAsset = titleIsAsset;
+                                return readFile(dirEntry);
+                            }).catch(function (err) {
+                                console.error('Failed to read ' + transformedTitle, err);
+                                messagePort.postMessage({
+                                    'action': 'giveContent',
+                                    'title': title,
+                                    'content': new Uint8Array
+                                });
+                            });
                         });
-                    });
+                    };
                 } else {
                     console.error("Invalid message received", event.data);
                 }

@@ -252,21 +252,67 @@ define([], function () {
     }
 
     /**
-     * Transform fuzzy URL
+     * Transform video URL through fuzzy matching
      * Rules adapted from https://github.com/webrecorder/wabac.js/blob/main/src/fuzzymatcher.js
-     * @param {String} url The URL to transform through fuzzy matching 
+     * @param {String} url The URL to transform through fuzzy matching
+     * @param {Function} callback The function to call with the transformed url
+     * @returns {Promise<String>} A Promise for the transformed URL
      */
-    function transformFuzzyUrl(url) {
-        if (/videoId/i.test(url)) {
-            url = url.replace(/\/(?:www\.)?youtube(?:-nocookie)?\.com\/(youtubei\/v1\/[^?]+\?).*(videoId[^&]+).*/i, '/youtube.fuzzy.replayweb.page/$1$2');
+    function transformVideoUrl(url, callback) {
+        if (/\.youtu(?:be(?:-nocookie)?\.com|\.be)/i.test(url)) {
+            // See https://webapps.stackexchange.com/questions/54443/format-for-id-of-youtube-video for explanation of format
+            var videoId = url.match(/(?:videoid=|watch\?v=|embed\/|\/)([a-zA-Z0-9_-]{10}[048AEIMQUYcgkosw](?:&|\s*$))/i);
+            videoId = videoId ? videoId[1] : null;
+            if (!videoId) {
+                callback(url);
+                return
+            };
+            var cns = appstate.selectedArchive.getContentNamespace();
+            var prefix = (cns === 'C' ? cns + '/' : '') + 'H/www.youtube.com/ptracking';
+            // Set up regular expression search of URL index (aka fuzzy search)
+            var search = {
+                rgxPrefix: new RegExp('.*' + videoId, 'i'),
+                searchUrlIndex: true,
+                size: 1
+            }
+            appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
+                if (dirEntry && dirEntry[0] && dirEntry[0].url) {
+                    dirEntry = dirEntry[0];
+                    console.log('PASS 1: FOUND DIRENTRY: ', dirEntry);
+                    var cpn = dirEntry.url.match(/cpn=([^&]+)/i);
+                    cpn = cpn ? cpn[1] : null;
+                    var ei = dirEntry.url.match(/ei=([^&]+)/i);
+                    ei = ei ? ei[1] : null;
+                    if (cpn||ei) {
+                        prefix = (cns === 'C' ? cns + '/' : '') + 'A/rr';
+                        search = {
+                            rgxPrefix: new RegExp('.*' + (ei ? 'ei=' + ei : '') + (cpn ? '.*cpn=' + cpn : ''), 'i'),
+                            searchUrlIndex: true,
+                            size: 1
+                        }
+                        appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
+                            if (dirEntry && dirEntry[0] && dirEntry[0].url) {
+                                dirEntry = dirEntry[0];
+                                console.log('PASS 2: FOUND DIRENTRY: ', dirEntry);
+                                callback(dirEntry.url);
+                            }
+                        });
+                    } else {
+                        callback(url);
+                    }
+                } else {
+                    callback(url);
+                }
+            });
+        } else {
+            callback(url);
         }
-        return url;
     }
 
     return {
         filterReplayFiles: filterReplayFiles,
         getZimitRedirect: getZimitRedirect,
         transformReplayUrls: transformReplayUrls,
-        transformFuzzyUrl: transformFuzzyUrl
+        transformVideoUrl: transformVideoUrl
     };
 });
