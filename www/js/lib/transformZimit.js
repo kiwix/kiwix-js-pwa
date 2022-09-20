@@ -99,9 +99,10 @@ define([], function () {
      * @param {String} data The deocmpressed and extracted textual data that the dirEntry points to
      * @param {String} mimetype The reported mimetype of the data (this is also in the dirEntry)
      * @param {Object} selectedArchive The archive object (needed only for the standardized filename used as a prefix)
+     * @param {Function} callback The function to call with the transformed data
      * @returns {String} The data string with any URLs it contains transformed into ZIM URLs 
      */
-    function transformReplayUrls(dirEntry, data, mimetype, selectedArchive) {
+    function transformReplayUrls(dirEntry, data, mimetype, selectedArchive, callback) {
         /**
          * Transform URL links in HTML files
          * Note that some Zimit ZIMs have mimeteypes like 'text/html;raw=true', so we can't simply match 'text/html'
@@ -256,7 +257,6 @@ define([], function () {
      * Rules adapted from https://github.com/webrecorder/wabac.js/blob/main/src/fuzzymatcher.js
      * @param {String} url The URL to transform through fuzzy matching
      * @param {Function} callback The function to call with the transformed url
-     * @returns {Promise<String>} A Promise for the transformed URL
      */
     function transformVideoUrl(url, callback) {
         if (/\.youtu(?:be(?:-nocookie)?\.com|\.be)/i.test(url)) {
