@@ -4039,20 +4039,26 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             // return encodeURI(m1) + (m2 || '');
                         });
                         // Do any video transformations
-                        transformZimit.transformVideoUrl(title, function (transformedTitle) {
-                            appstate.selectedArchive.getDirEntryByPath(transformedTitle).then(function (dirEntry) {
-                                if (dirEntry) dirEntry.isAsset = titleIsAsset;
-                                return readFile(dirEntry);
-                            }).catch(function (err) {
-                                console.error('Failed to read ' + transformedTitle, err);
-                                messagePort.postMessage({
-                                    'action': 'giveContent',
-                                    'title': title,
-                                    'content': new Uint8Array
-                                });
-                            });
+                        // transformZimit.transformVideoUrl(title, function (dirEntry) {
+                        //     appstate.selectedArchive.getDirEntryByPath(transformedTitle).then(function (dirEntry) {
+                        //         if (dirEntry) dirEntry.isAsset = titleIsAsset;
+                        //         return readFile(dirEntry);
+                        //     }).catch(function (err) {
+                        //         console.error('Failed to read ' + transformedTitle, err);
+                        //     });
+                        // });
+                    }
+                    appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
+                        if (dirEntry) dirEntry.isAsset = titleIsAsset;
+                        return readFile(dirEntry);
+                    }).catch(function (err) {
+                        console.error('Failed to read ' + title, err);
+                        messagePort.postMessage({
+                            'action': 'giveContent',
+                            'title': title,
+                            'content': new Uint8Array
                         });
-                    };
+                    });
                 } else {
                     console.error("Invalid message received", event.data);
                 }
