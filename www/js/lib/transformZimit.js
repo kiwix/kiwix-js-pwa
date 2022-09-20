@@ -99,8 +99,7 @@ define([], function () {
      * @param {String} data The deocmpressed and extracted textual data that the dirEntry points to
      * @param {String} mimetype The reported mimetype of the data (this is also in the dirEntry)
      * @param {Object} selectedArchive The archive object (needed only for the standardized filename used as a prefix)
-     * @param {Function} callback The function to call with the transformed data
-     * @returns {String} The data string with any URLs it contains transformed into ZIM URLs 
+     * @param {Function} callback The function to call with the transformed data string
      */
     function transformReplayUrls(dirEntry, data, mimetype, selectedArchive, callback) {
         /**
@@ -226,8 +225,6 @@ define([], function () {
          * Transform links in JavaScript files or script blocks in the html
          */
         if (/\b(javascript|html)\b/i.test(mimetype)) {
-            // Special rules for youtube videos (aka fuzzy matching...)
-            data = data.replace(/(\/youtubei\/)/g, 'https://www.youtube.com$1');
             data = data.replace(regexpZimitJavascriptLinks, function (match, url) {
                 if (/www\.w3\.org\/XML\//i.test(url)) return match;
                 var newBlock = match;
@@ -245,29 +242,55 @@ define([], function () {
             data = data.replace(/(['"])(?:\/?)((?:static|api)\/)/ig, '$1' + window.location.origin + indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/$2');
         } // End of JavaScript transformations
 
-        // Remove the placeholders used to prevent further matching
-        data = data.replace(/@kiwixtransformed@/g, params.contentInjectionMode === 'serviceworker' ? window.location.origin : '');
-        data = data.replace(/@kiwixtrans@/g, '');
+        var removePlaceholdersAndCallback = function (transData) {
+            // Remove the placeholders used to prevent further matching
+            transData = transData.replace(/@kiwixtransformed@/g, params.contentInjectionMode === 'serviceworker' ? window.location.origin : '');
+            transData = transData.replace(/@kiwixtrans@/g, '');
+            callback(transData);
+        }
 
-        return data;
+        // Transform video URLs
+        if (/\.youtu(?:be(?:-nocookie)?\.com|\.be)/i.test(data)) {
+            var cns = selectedArchive.getContentNamespace();
+            var rgxTrimUrl = new RegExp('@kiwixtrans(?:[^/]|\\/(?!' + cns + '\\/))+\\/');
+            var youTubeVideoLinks = data.match(/@kiwixtrans(?:[^"')>@]|@(?!kiwixtrans))*youtu(?:be(?:-nocookie)?\.com|\.be)[^"')>]*/ig);
+            if (youTubeVideoLinks && youTubeVideoLinks.length) {
+                var i = 0;
+                youTubeVideoLinks.forEach(function (link) {
+                    var pureUrl = link.replace(rgxTrimUrl, '');
+                    transformVideoUrl(pureUrl, selectedArchive, function (transUrl) {
+                        i++;
+                        console.debug('i=' + i);
+                        data = data.replace(link, link.replace(pureUrl, transUrl));
+                        if (i === youTubeVideoLinks.length) {
+                            i = 0;
+                            removePlaceholdersAndCallback(data);
+                        }
+                    });
+                });
+            }
+        } else {
+            removePlaceholdersAndCallback(data);
+        }
     }
 
     /**
      * Transform video URL through fuzzy matching
      * Rules adapted from https://github.com/webrecorder/wabac.js/blob/main/src/fuzzymatcher.js
      * @param {String} url The URL to transform through fuzzy matching
+     * @param {Object} selectedArchive The selected archive 
      * @param {Function} callback The function to call with the transformed url
      */
-    function transformVideoUrl(url, callback) {
-        if (/\.youtu(?:be(?:-nocookie)?\.com|\.be)/i.test(url)) {
+    function transformVideoUrl(url, selectedArchive, callback) {
+        if (/youtu(?:be(?:-nocookie)?\.com|\.be)/i.test(url)) {
             // See https://webapps.stackexchange.com/questions/54443/format-for-id-of-youtube-video for explanation of format
-            var videoId = url.match(/(?:videoid=|watch\?v=|embed\/|\/)([a-zA-Z0-9_-]{10}[048AEIMQUYcgkosw](?:&|\s*$))/i);
+            var videoId = url.match(/(?:videoid=|watch\?v=|embed\/|\/)([a-zA-Z0-9_-]{10}[048AEIMQUYcgkosw](?:&|\?|\s*$))/i);
             videoId = videoId ? videoId[1] : null;
             if (!videoId) {
                 callback(url);
                 return
             };
-            var cns = appstate.selectedArchive.getContentNamespace();
+            var cns = selectedArchive.getContentNamespace();
             var prefix = (cns === 'C' ? cns + '/' : '') + 'H/www.youtube.com/ptracking';
             // Set up regular expression search of URL index (aka fuzzy search)
             var search = {
@@ -275,7 +298,7 @@ define([], function () {
                 searchUrlIndex: true,
                 size: 1
             }
-            appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
+            selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
                 if (dirEntry && dirEntry[0] && dirEntry[0].url) {
                     dirEntry = dirEntry[0];
                     console.log('PASS 1: FOUND DIRENTRY: ', dirEntry);
@@ -290,11 +313,11 @@ define([], function () {
                             searchUrlIndex: true,
                             size: 1
                         }
-                        appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
+                        selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
                             if (dirEntry && dirEntry[0] && dirEntry[0].url) {
                                 dirEntry = dirEntry[0];
                                 console.log('PASS 2: FOUND DIRENTRY: ', dirEntry);
-                                callback(dirEntry.url);
+                                callback(dirEntry.namespace + '/' + dirEntry.url);
                             }
                         });
                     } else {
