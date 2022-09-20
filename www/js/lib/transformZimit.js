@@ -98,16 +98,15 @@ define([], function () {
      * @param {dirEntry} dirEntry The directory entry that points to the extracted data
      * @param {String} data The deocmpressed and extracted textual data that the dirEntry points to
      * @param {String} mimetype The reported mimetype of the data (this is also in the dirEntry)
-     * @param {Object} selectedArchive The archive object (needed only for the standardized filename used as a prefix)
      * @param {Function} callback The function to call with the transformed data string
      */
-    function transformReplayUrls(dirEntry, data, mimetype, selectedArchive, callback) {
+    function transformReplayUrls(dirEntry, data, mimetype, callback) {
         /**
          * Transform URL links in HTML files
          * Note that some Zimit ZIMs have mimeteypes like 'text/html;raw=true', so we can't simply match 'text/html'
          * Other ZIMs have a mimetype like 'html' (with no 'text/'), so we have to match as generically as possible
          */
-        var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(selectedArchive._file.name);
+        var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name);
         if (/\bx?html\b/i.test(mimetype)) {
             var zimitPrefix = data.match(regexpGetZimitPrefix);
             // If the URL is the same as the URL with everything after the first / removed, then we are in the root directory
@@ -251,14 +250,14 @@ define([], function () {
 
         // Transform video URLs
         if (/\.youtu(?:be(?:-nocookie)?\.com|\.be)/i.test(data)) {
-            var cns = selectedArchive.getContentNamespace();
+            var cns = appstate.selectedArchive.getContentNamespace();
             var rgxTrimUrl = new RegExp('@kiwixtrans(?:[^/]|\\/(?!' + cns + '\\/))+\\/');
             var youTubeVideoLinks = data.match(/@kiwixtrans(?:[^"')>@]|@(?!kiwixtrans))*youtu(?:be(?:-nocookie)?\.com|\.be)[^"')>]*/ig);
             if (youTubeVideoLinks && youTubeVideoLinks.length) {
                 var i = 0;
                 youTubeVideoLinks.forEach(function (link) {
                     var pureUrl = link.replace(rgxTrimUrl, '');
-                    transformVideoUrl(pureUrl, selectedArchive, function (transUrl) {
+                    transformVideoUrl(pureUrl, appstate.selectedArchive, function (transUrl) {
                         i++;
                         console.debug('i=' + i);
                         data = data.replace(link, link.replace(pureUrl, transUrl));
@@ -278,10 +277,9 @@ define([], function () {
      * Transform video URL through fuzzy matching
      * Rules adapted from https://github.com/webrecorder/wabac.js/blob/main/src/fuzzymatcher.js
      * @param {String} url The URL to transform through fuzzy matching
-     * @param {Object} selectedArchive The selected archive 
      * @param {Function} callback The function to call with the transformed url
      */
-    function transformVideoUrl(url, selectedArchive, callback) {
+    function transformVideoUrl(url, callback) {
         if (/youtu(?:be(?:-nocookie)?\.com|\.be)/i.test(url)) {
             // See https://webapps.stackexchange.com/questions/54443/format-for-id-of-youtube-video for explanation of format
             var videoId = url.match(/(?:videoid=|watch\?v=|embed\/|\/)([a-zA-Z0-9_-]{10}[048AEIMQUYcgkosw](?:&|\?|\s*$))/i);
@@ -290,7 +288,7 @@ define([], function () {
                 callback(url);
                 return
             };
-            var cns = selectedArchive.getContentNamespace();
+            var cns = appstate.selectedArchive.getContentNamespace();
             var prefix = (cns === 'C' ? cns + '/' : '') + 'H/www.youtube.com/ptracking';
             // Set up regular expression search of URL index (aka fuzzy search)
             var search = {
@@ -298,7 +296,7 @@ define([], function () {
                 searchUrlIndex: true,
                 size: 1
             }
-            selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
+            appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
                 if (dirEntry && dirEntry[0] && dirEntry[0].url) {
                     dirEntry = dirEntry[0];
                     console.log('PASS 1: FOUND DIRENTRY: ', dirEntry);
@@ -313,7 +311,7 @@ define([], function () {
                             searchUrlIndex: true,
                             size: 1
                         }
-                        selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
+                        appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
                             if (dirEntry && dirEntry[0] && dirEntry[0].url) {
                                 dirEntry = dirEntry[0];
                                 console.log('PASS 2: FOUND DIRENTRY: ', dirEntry);
