@@ -4032,13 +4032,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             });
                         }
                     };
-                    if (params.zimType === 'zimit') {
-                        title = title.replace(/^([^?]+)(\?[^?]*)?$/, function (m0, m1, m2) {
-                            // Note that Zimit ZIMs store ZIM URLs encoded, but SOME incorrectly encode using encodeURIComponent, instead of encodeURI!
-                            return m1.replace(/[&]/g, '%26').replace(/,/g, '%2C') + (m2 || '');
-                            // return encodeURI(m1) + (m2 || '');
-                        });
-                    }
+                    if (params.zimType === 'zimit') title = title.replace(/^([^?]+)(\?[^?]*)?$/, function (m0, m1, m2) {
+                        // Note that Zimit ZIMs store ZIM URLs encoded, but SOME incorrectly encode using encodeURIComponent, instead of encodeURI!
+                        return m1.replace(/[&]/g, '%26').replace(/,/g, '%2C') + (m2 || '');
+                    });
                     appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
                         if (dirEntry) dirEntry.isAsset = titleIsAsset;
                         return readFile(dirEntry);
