@@ -4038,15 +4038,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             return m1.replace(/[&]/g, '%26').replace(/,/g, '%2C') + (m2 || '');
                             // return encodeURI(m1) + (m2 || '');
                         });
-                        // Do any video transformations
-                        // transformZimit.transformVideoUrl(title, function (dirEntry) {
-                        //     appstate.selectedArchive.getDirEntryByPath(transformedTitle).then(function (dirEntry) {
-                        //         if (dirEntry) dirEntry.isAsset = titleIsAsset;
-                        //         return readFile(dirEntry);
-                        //     }).catch(function (err) {
-                        //         console.error('Failed to read ' + transformedTitle, err);
-                        //     });
-                        // });
                     }
                     appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
                         if (dirEntry) dirEntry.isAsset = titleIsAsset;

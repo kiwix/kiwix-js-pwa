@@ -249,7 +249,7 @@ define([], function () {
         }
 
         // Transform video URLs
-        if (/\.youtu(?:be(?:-nocookie)?\.com|\.be)/i.test(data)) {
+        if (/youtu(?:be(?:-nocookie)?\.com|\.be)\//i.test(data)) {
             var cns = appstate.selectedArchive.getContentNamespace();
             var rgxTrimUrl = new RegExp('@kiwixtrans(?:[^/]|\\/(?!' + cns + '\\/))+\\/');
             var youTubeVideoLinks = data.match(/@kiwixtrans(?:[^"')>@]|@(?!kiwixtrans))*youtu(?:be(?:-nocookie)?\.com|\.be)[^"')>]*/ig);
