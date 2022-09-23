@@ -5067,7 +5067,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             // Pattern to match a local anchor in an href even if prefixed by escaped url; will also match # on its own
             // Note that we exclude any # with a semicolon between it and the end of the string, to avoid accidentally matching e.g. &#39;
             var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#;]*$)');
-            Array.prototype.slice.call(articleDocument.querySelectorAll('a, area')).forEach(function (anchor) {
+            Array.prototype.slice.call(articleDocument.querySelectorAll('a, area, iframe')).forEach(function (anchor) {
                 // Attempts to access any properties of 'this' with malformed URLs causes app crash in Edge/UWP [kiwix-js #430]
                 try {
                     var testHref = anchor.href;
@@ -5076,6 +5076,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     return;
                 }
                 var href = anchor.getAttribute('href');
+                if (anchor.tagName === 'IFRAME') href = anchor.getAttribute('src');
                 if (href === null || href === undefined || /^javascript:/i.test(anchor.protocol)) return;
                 var anchorTarget = href.match(regexpLocalAnchorHref);
                 if (href.length === 0) {
@@ -5083,7 +5084,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 } else if (anchorTarget) {
                     // It's a local anchor link : remove escapedUrl if any (see above)
                     anchor.setAttribute('href', '#' + anchorTarget[1]);
-                } else if (anchor.protocol !== currentProtocol || anchor.host !== currentHost) {
+                } else if (anchor.protocol && anchor.protocol !== currentProtocol || anchor.host && anchor.host !== currentHost) {
                     // It's an external URL : we should open it in a new tab
                     anchor.addEventListener('click', function (event) {
                         if (anchor.protocol === 'bingmaps:') {
@@ -5097,7 +5098,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         }
                     });
                 } else {
-                    addListenersToLink(anchor, href, params.baseURL);
+                    // Intercept YouTube videos in Zimit archives
+                    if (params.zimType === 'zimit' && /youtu(?:be(?:-nocookie)?\.com|\.be)\//i.test(href)) {
+                        transformZimit.transformVideoUrl(href, function (transHref) {
+                            addListenersToLink(anchor, transHref, params.baseURL);
+                        });
+                    } else {
+                        addListenersToLink(anchor, href, params.baseURL);
+                    }
                 }
             });
             // Add event listeners to the main heading so user can open current document in new tab or window by clicking on it
@@ -5134,7 +5142,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 contentType = a.getAttribute('type');
             }
             // DEV: We need to use the '#' location trick here for cross-browser compatibility with opening a new tab/window
-            if (params.windowOpener) a.setAttribute('href', '#' + href);
+            if (params.windowOpener && a.tagName !== 'IFRAME') a.setAttribute('href', '#' + href);
             // Store the current values, as they may be changed if user switches to another tab before returning to this one
             var kiwixTarget = appstate.target;
             var thisWindow = articleWindow;
@@ -5155,11 +5163,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 if (a.tagName === 'H1') {
                     // We have registered a click on the header
                     if (!a.newcontainer) return; // A new tab wasn't requested, so ignore
-                    // If we're not clicking within the scope of an H1, H2, etc., ignore the click
-                    // if (!uiUtil.getClosestMatchForTagname(e.target, /H\d/)) {
-                    //     setTimeout(reset, 1400);
-                    //     return;
-                    // }
                 }
                 if (params.windowOpener) {
                     // This processes Ctrl-click, Command-click, the long-press event, and middle-click
