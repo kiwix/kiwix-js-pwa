@@ -1,9 +1,14 @@
 # Changelog
 
-## In-progress release 2.1.5
+## In-progress release 2.1.6
 
+* ENHANCEMENT: Clearer signposting of Archive Index vs URL Index
 * FIX: Downloading of non-mirrored content in the Library
 * FIX: Recognize XHTML documents and applications in Zimit ZIMs and treat as HTML
+* FIX: Wikivoyage package and install icons
+* FIX: Patch Nautilus-based ZIMs to eliminate race condition on load
+* FIX: Recognize Nautilus-based ZIMs for active content warning
+* FIX: Provide instructions for showing URL Index in active content warning
 
 ## Release 2.1.4
 
