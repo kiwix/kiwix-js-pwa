@@ -4489,6 +4489,25 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : '';
                     return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>';
                 });
+
+                if (params.contentInjectionMode === 'serviceworker') {                
+                    // Dirty patch for nautilus-based ZIMs
+                    // @DEV: remove when fixed in source
+                    var nautilus = htmlArticle.match(/<script\b[^>]+['"]([^'"]*nautilus\.js[^'"]*)[^>]*>[^<]*<\/script>\s*/i);
+                    if (nautilus && nautilus[0]) {
+                        var zimWriterFS = htmlArticle.match(/<script\b[^>]+['"]([^'"]*zimwriterfs\.js[^'"]*)[^>]*>[^<]*<\/script>\s*/i);
+                        var init = htmlArticle.match(/<script\b[^>]+['"]([^'"]*\binit\.js[^'"]*)[^>]*>[^<]*<\/script>\s*/i);
+                        htmlArticle = htmlArticle.replace(nautilus[0], '');
+                        htmlArticle = htmlArticle.replace(zimWriterFS[0], '');
+                        htmlArticle = htmlArticle.replace(init[0], '');
+                        htmlArticle = htmlArticle.replace(/(<\/body>)/i, '    ' + '<script>setTimeout(function() {\n' + 
+                            '    var js1 = document.createElement("script"); js1.src = "' + zimWriterFS[1] + '"; document.head.appendChild(js1);\n' + 
+                            '    var js2 = document.createElement("script"); js2.src = "' + nautilus[1] + '"; document.head.appendChild(js2);\n' + 
+                            '    var js3 = document.createElement("script"); js3.src = "' + init[1] + '"; document.head.appendChild(js3);\n' + 
+                            '    }, 1000);</script>\n$1');
+                    }
+                }
+            
             }
 
             if (params.zimType === 'open' || params.contentInjectionMode === 'jquery') {
