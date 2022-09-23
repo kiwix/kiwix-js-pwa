@@ -1,4 +1,4 @@
-﻿/**
+/**
  * transformZimit.js: Functions to enable reading of Zimit ZIM format.
  *
  * Copyright 2022 Jaifroid, Mossroy and contributors.
@@ -98,7 +98,7 @@ define([], function () {
      * @param {dirEntry} dirEntry The directory entry that points to the extracted data
      * @param {String} data The deocmpressed and extracted textual data that the dirEntry points to
      * @param {String} mimetype The reported mimetype of the data (this is also in the dirEntry)
-     * @param {Function} callback The function to call with the transformed data string
+     * @returns {String} The transformed data string
      */
     function transformReplayUrls(dirEntry, data, mimetype, callback) {
         /**
@@ -185,14 +185,6 @@ define([], function () {
                 // data = data.replace(/<script\b[^>]+tarteaucitron[^"']*?\.js(?:[^<]|<(?!\/script>))+<\/script>\s*/i, '');
             }
 
-            // Collapse open menu bar
-            // if (/cheatography/i.test(params.zimitPrefix)) {
-            //     data = data.replace(/(<div\s+id=['"]menubar['"])/i, '$1 hidden');
-            //     data = data.replace(/(<div\s+class=['"]filterBar['"])/i, '$1 hidden');
-            //     // Remove onclick events
-            //     data = data.replace(/onclick="[^"]+"/ig, '');
-            // }
-
             // Remove shopping cart that attempts to post to server or scripts that take a very long time to fail and block page
             if (/passco/i.test(params.zimitPrefix)) {
                 data = data.replace(/<script\b[^>]+(?:cart-fragments|lp-global\.min\.js)(?:[^<]|<(?!\/script>))+<\/script>\s*/, '');
@@ -241,36 +233,11 @@ define([], function () {
             data = data.replace(/(['"])(?:\/?)((?:static|api)\/)/ig, '$1' + window.location.origin + indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/$2');
         } // End of JavaScript transformations
 
-        var removePlaceholdersAndCallback = function (transData) {
-            // Remove the placeholders used to prevent further matching
-            transData = transData.replace(/@kiwixtransformed@/g, params.contentInjectionMode === 'serviceworker' ? window.location.origin : '');
-            transData = transData.replace(/@kiwixtrans@/g, '');
-            callback(transData);
-        }
+        // Remove the placeholders used to prevent further matching
+        data = data.replace(/@kiwixtransformed@/g, params.contentInjectionMode === 'serviceworker' ? window.location.origin : '');
+        data = data.replace(/@kiwixtrans@/g, '');
 
-        // Transform video URLs
-        if (/youtu(?:be(?:-nocookie)?\.com|\.be)\//i.test(data)) {
-            var cns = appstate.selectedArchive.getContentNamespace();
-            var rgxTrimUrl = new RegExp('@kiwixtrans(?:[^/]|\\/(?!' + cns + '\\/))+\\/');
-            var youTubeVideoLinks = data.match(/@kiwixtrans(?:[^"')>@]|@(?!kiwixtrans))*youtu(?:be(?:-nocookie)?\.com|\.be)[^"')>]*/ig);
-            if (youTubeVideoLinks && youTubeVideoLinks.length) {
-                var i = 0;
-                youTubeVideoLinks.forEach(function (link) {
-                    var pureUrl = link.replace(rgxTrimUrl, '');
-                    transformVideoUrl(pureUrl, appstate.selectedArchive, function (transUrl) {
-                        i++;
-                        console.debug('i=' + i);
-                        data = data.replace(link, link.replace(pureUrl, transUrl));
-                        if (i === youTubeVideoLinks.length) {
-                            i = 0;
-                            removePlaceholdersAndCallback(data);
-                        }
-                    });
-                });
-            }
-        } else {
-            removePlaceholdersAndCallback(data);
-        }
+        return data;    
     }
 
     /**
@@ -281,8 +248,11 @@ define([], function () {
      */
     function transformVideoUrl(url, callback) {
         if (/youtu(?:be(?:-nocookie)?\.com|\.be)/i.test(url)) {
+            var cns = appstate.selectedArchive.getContentNamespace();
+            var rgxTrimUrl = new RegExp('(?:[^/]|\\/(?!' + cns + '\\/))+\\/');
+            var pureUrl = url.replace(rgxTrimUrl, '');
             // See https://webapps.stackexchange.com/questions/54443/format-for-id-of-youtube-video for explanation of format
-            var videoId = url.match(/(?:videoid=|watch\?v=|embed\/|\/)([a-zA-Z0-9_-]{10}[048AEIMQUYcgkosw](?:&|\?|\s*$))/i);
+            var videoId = pureUrl.match(/(?:videoid=|watch\?v=|embed\/|\/)([a-zA-Z0-9_-]{10}[048AEIMQUYcgkosw](?:&|\?|\s*$))/i);
             videoId = videoId ? videoId[1] : null;
             if (!videoId) {
                 callback(url);
@@ -299,7 +269,6 @@ define([], function () {
             appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
                 if (dirEntry && dirEntry[0] && dirEntry[0].url) {
                     dirEntry = dirEntry[0];
-                    console.log('PASS 1: FOUND DIRENTRY: ', dirEntry);
                     var cpn = dirEntry.url.match(/cpn=([^&]+)/i);
                     cpn = cpn ? cpn[1] : null;
                     var ei = dirEntry.url.match(/ei=([^&]+)/i);
@@ -312,10 +281,12 @@ define([], function () {
                             size: 1
                         }
                         appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
-                            if (dirEntry && dirEntry[0] && dirEntry[0].url) {
+                            if (dirEntry && dirEntry[0] && dirEntry[0].url && !search.found) {
                                 dirEntry = dirEntry[0];
-                                console.log('PASS 2: FOUND DIRENTRY: ', dirEntry);
-                                callback(dirEntry.namespace + '/' + dirEntry.url);
+                                search.found = true;
+                                var transUrl = url.replace(pureUrl, dirEntry.namespace + '/' + dirEntry.url);
+                                console.debug('TRANSFORMED VIDEO URL ' + pureUrl + ' --> \n' + transUrl);
+                                callback(transUrl);
                             }
                         });
                     } else {

@@ -466,12 +466,9 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                 // DEV: Note that we cannot terminate regex below with $ because there is a (rogue?) mimetype
                 // of 'text/html;raw=true'
                 if (params.zimType === 'zimit' && /\/(?:html|css|javascript)\b/i.test(mimetype)) {
-                    transformZimit.transformReplayUrls(dirEntry, data, mimetype, function (transData) {
-                        callback(dirEntry, transData);
-                    });
-                } else {
-                    callback(dirEntry, data);
-                }
+                    data = transformZimit.transformReplayUrls(dirEntry, data, mimetype);
+                } 
+                callback(dirEntry, data);
             }
         });
     };
@@ -501,12 +498,9 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                 // DEV: Note that we cannot terminate regex below with $ because there is a (rogue?) mimetype
                 // of 'text/html;raw=true'
                 if (params.zimType === 'zimit' && /\/(?:html|css|javascript)\b/i.test(mimetype)) {
-                    transformZimit.transformReplayUrls(dirEntry, utf8.parse(data), mimetype, function (transData) {
-                        callback(dirEntry, transData);
-                    });
-                } else {
-                    callback(dirEntry, data);
+                    data = transformZimit.transformReplayUrls(dirEntry, utf8.parse(data), mimetype);
                 }
+                callback(dirEntry, data);
             }
         });
     };
