@@ -323,14 +323,15 @@ define(rqDef, function(util) {
 
     /**
      * Displays a Bootstrap warning alert with information about how to access content in a ZIM with unsupported active UI
+     * @param {String} type The ZIM archive type ('open' or 'zimit')
      */
     function displayActiveContentWarning(type) {
         // We have to add the alert box in code, because Bootstrap removes it completely from the DOM when the user dismisses it
         var alertHTML =
             '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
                 '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
-                '<strong>Unable to display active content:</strong> To use Archive Index <b><i>type a space</i></b> in the box above, or else ' +
-                '<a id="swModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to Service Worker mode</a> ' +
+            '<strong>Unable to display active content:</strong> To use <b>Archive Index</b> type a <b><i>space</i></b>, or for <b>URL Index</b> type ' +
+                '<b><i>space + / </i></b>, or else <a id="swModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to Service Worker mode</a> ' +
                 'if your platform supports it. &nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
         if (params.contentInjectionMode === 'serviceworker' && (params.manipulateImages || params.displayHiddenBlockElements || params.allowHTMLExtraction)) {
@@ -354,7 +355,7 @@ define(rqDef, function(util) {
                 'class="alert-link">switch to Service Worker mode</a> if your platform supports it. ' : 
                 'Support for <b>Zimit</b> ZIMs is preliminary. Some content (e.g. audio/video) may fail. ') + 
                 '<br />Search for your content above. Start your search with <b>.*</b> to match part of a title, ' +
-                'or <b><i>type a space</i></b> to use the Archive Index.&nbsp;' +
+                'or type a <b><i>space</i></b> to use the Archive Index, or <b><i>space + / </i></b> for URL Index.&nbsp;' +
                 '[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
         }
