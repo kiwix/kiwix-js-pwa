@@ -3539,7 +3539,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     var alphaString = '<div style="text-align:center">' + (appstate.search.searchUrlIndex ? 'ZIM Namespaces: ' : '') + '[ ' + alphaSelector.join(' | \n') + ' ]</div>\n';
                     var closeButton = '<button class="close" aria-hidden="true" type="button" data-dismiss="modal">&nbsp;&times;&nbsp;</button>';
                     docBody.innerHTML = closeButton + '<br />\n<div style="font-size:120%;"><br />\n' + alphaString + '<br />' + backNext + '</div>\n' +
-                        '<h2>ZIM Archive Index</h2>\n' +
+                        '<h2>ZIM ' + (appstate.search.searchUrlIndex ? 'URL' : 'Archive') + ' Index</h2>\n' +
                         '<div id="zimIndex" class="list-group">' + newHtml + '\n</div>\n' +
                         '<div style="font-size:120%">\n' + backNext + '<br /><br />' + alphaString + '</div>\n';
                     var indexEntries = docBody.querySelectorAll('.list-group-item');
@@ -4117,12 +4117,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         // Similar to above, but tailored for Zimit links
         // params.regexpZimitLinks = /(<(?:a|img|script|link|track)\b[^>]*?\s)(?:src|href)(=(["']))(?!#)(.+?)(?=\3|\?|#)([\s\S]*?>)/ig;
         // Regex below tests the html of an article for active content [kiwix-js #466]
-        // It inspects every <script> block in the html and matches in the following cases: 1) the script loads a UI application called app.js;
+        // It inspects every <script> block in the html and matches in the following cases: 1) the script loads a UI application called app.js or init.js;
         // 2) the script block has inline content that does not contain "importScript()", "toggleOpenSection" or an "articleId" assignment
         // (these strings are used widely in our fully supported wikimedia ZIMs, so they are excluded); 3) the script block is not of type "math" 
         // (these are MathJax markup scripts used extensively in Stackexchange ZIMs). Note that the regex will match ReactJS <script type="text/html">
         // markup, which is common in unsupported packaged UIs, e.g. PhET ZIMs.
-        var regexpActiveContent = /<script\b(?:(?![^>]+src\b)|(?=[^>]+src\b=["'][^"']+?app\.js))(?![^<]+(?:importScript\(\)|toggleOpenSection|articleId\s?=\s?['"]|window.NREUM))(?![^>]+type\s*=\s*["'](?:math\/|[^"']*?math))/i;
+        var regexpActiveContent = /<script\b(?:(?![^>]+src\b)|(?=[^>]+src\b=["'][^"']+?\b(?:app|init)\.js))(?![^<]+(?:importScript\(\)|toggleOpenSection|articleId\s?=\s?['"]|window.NREUM))(?![^>]+type\s*=\s*["'](?:math\/|[^"']*?math))/i;
 
         // DEV: The regex below matches ZIM links (anchor hrefs) that should have the html5 "donwnload" attribute added to 
         // the link. This is currently the case for epub and pdf files in Project Gutenberg ZIMs -- add any further types you need
