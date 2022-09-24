@@ -4490,27 +4490,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>';
                 });
 
-                if (params.contentInjectionMode === 'serviceworker') {                
-                    // Dirty patch for nautilus-based ZIMs
-                    // @DEV: remove when fixed in source
-                    var nautilus = htmlArticle.match(/<script\b[^>]+['"]([^'"]*nautilus\.js[^'"]*)[^>]*>[^<]*<\/script>\s*/i);
-                    if (nautilus && nautilus[0]) {
-                        var zimWriterFS = htmlArticle.match(/<script\b[^>]+['"]([^'"]*zimwriterfs\.js[^'"]*)[^>]*>[^<]*<\/script>\s*/i);
-                        var init = htmlArticle.match(/<script\b[^>]+['"]([^'"]*\binit\.js[^'"]*)[^>]*>[^<]*<\/script>\s*/i);
-                        htmlArticle = htmlArticle.replace(nautilus[0], '');
-                        htmlArticle = htmlArticle.replace(zimWriterFS[0], '');
-                        htmlArticle = htmlArticle.replace(init[0], '');
-                        htmlArticle = htmlArticle.replace(/(<\/body>)/i, '    ' + '<script>setTimeout(function() {\n' + 
-                            '    var js1 = document.createElement("script"); js1.src = "' + zimWriterFS[1] + '"; document.head.appendChild(js1);\n' + 
-                            '    var js2 = document.createElement("script"); js2.src = "' + nautilus[1] + '"; document.head.appendChild(js2);\n' + 
-                            '    var js3 = document.createElement("script"); js3.src = "' + init[1] + '"; document.head.appendChild(js3);\n' + 
-                            '    }, 1000);</script>\n$1');
-                    }
-                }
+                // Exempt Nautilus-based ZIMs from stylesheet preloading
+                var nautilus = params.contentInjectionMode === 'serviceworker' ? 
+                    htmlArticle.match(/<script\b[^>]+['"]([^'"]*nautilus\.js[^'"]*)[^>]*>[^<]*<\/script>\s*/i) : null;
             
             }
 
-            if (params.zimType === 'open' || params.contentInjectionMode === 'jquery') {
+            if (params.zimType === 'open' && !nautilus || params.contentInjectionMode === 'jquery') {
                 //Preload stylesheets [kiwix-js #149]
                 console.log("Loading stylesheets...");
                 //Set up blobArray of promises
@@ -4557,8 +4543,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 for (var i = 0; i < arr.length; i++) {
                     var zimLink = arr[i].match(/(?:href|data-kiwixurl)\s*=\s*['"]([^'"]+)/i);
                     zimLink = zimLink ? params.zimType === 'zimit' ? zimLink[1] : decodeURIComponent(uiUtil.removeUrlParameters(zimLink[1])) : '';
-                    //Remove path DON'T DO THIS! SW mode fails if you do...
-                    //zimLink = zimLink.replace(/^[.\/]*([\S\s]+)$/, '$1');
                     /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
                     var filteredLink = transformStyles.filterCSS(zimLink, zimType, cssCache, cssSource, i);
                     if (filteredLink.rtnFunction == "injectCSS") {
