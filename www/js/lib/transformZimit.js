@@ -1,4 +1,4 @@
-/**
+﻿/**
  * transformZimit.js: Functions to enable reading of Zimit ZIM format.
  *
  * Copyright 2022 Jaifroid, Mossroy and contributors.
@@ -288,14 +288,14 @@ define([], function () {
                                 console.debug('TRANSFORMED VIDEO URL ' + pureUrl + ' --> \n' + transUrl);
                                 callback(transUrl);
                             }
-                        });
+                        }, null); // null prevents callbacks with incomplete results
                     } else {
                         callback(url);
                     }
                 } else {
                     callback(url);
                 }
-            });
+            }, null);
         } else {
             callback(url);
         }
