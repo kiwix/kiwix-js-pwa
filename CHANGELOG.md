@@ -1,13 +1,15 @@
 # Changelog
 
-## In-progress release 2.1.6
+## In-progress release 2.1.7
 
+* FEATURE: Enable playback of most offline **embedded** YouTube video in Zimit ZIMs
+* ENHANCEMENT: YouTube video **links** can also be played offline if the video was scraped (Zimit)
 * ENHANCEMENT: Clearer signposting of Archive Index vs URL Index
 * FIX: Downloading of non-mirrored content in the Library
 * FIX: Recognize XHTML documents and applications in Zimit ZIMs and treat as HTML
 * FIX: Wikivoyage package and install icons
-* FIX: Patch Nautilus-based ZIMs to eliminate race condition on load
-* FIX: Recognize Nautilus-based ZIMs for active content warning
+* FIX: Bug preventing loading of Nautilus-based ZIM assets
+* FIX: Detect more ZIMs for active content warning
 * FIX: Provide instructions for showing URL Index in active content warning
 
 ## Release 2.1.4
