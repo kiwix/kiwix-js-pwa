@@ -369,7 +369,7 @@ self.addEventListener('fetch', function (event) {
             fetchCaptureEnabled = true;
         } else if (event.data.action === 'disable') {
             // On 'disable' message, we delete the outgoingMessagePort and disable the fetchEventListener
-            outgoingMessagePort = null;
+            // outgoingMessagePort = null;
             fetchCaptureEnabled = false;
         }
         var oldValue;
