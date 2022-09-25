@@ -509,10 +509,12 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
      * Searches the URL pointer list of Directory Entries by pathname
      * @param {String} path The pathname of the DirEntry that is required (namespace + filename)
      * @param {Boolean} zimitResolving A flag to indicate that the a Zimit path is in a lookup loop
+     * @param {String} originalPath Optional string used internally to prevent infinite loop
      * @return {Promise<DirEntry>} A Promise that resolves to a Directory Entry, or null if not found.
      */
-    ZIMArchive.prototype.getDirEntryByPath = function(path, zimitResolving) {
+    ZIMArchive.prototype.getDirEntryByPath = function(path, zimitResolving, originalPath) {
         var that = this;
+        if (originalPath) appstate.originalPath = originalPath;
         path = path.replace(/\?kiwix-display/, '');
         return util.binarySearch(0, this._file.entryCount, function(i) {
             return that._file.dirEntryByUrlIndex(i).then(function(dirEntry) {
@@ -533,12 +535,12 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                 dirEntry = transformZimit.filterReplayFiles(dirEntry);
             if (!dirEntry) {
                 // We couldn't get the dirEntry, so look it up the Zimit header
-                if (!zimitResolving && that._file.zimType === 'zimit' && !/^(H|C\/H)\//.test(path)) {
+                if (!zimitResolving && that._file.zimType === 'zimit' && !/^(H|C\/H)\//.test(path) && path !== appstate.originalPath) {
                     // We need to look the file up in the Header namespace (double replacement ensures both types of ZIM are supported)
                     var oldPath = path;
                     path = path.replace(/^A\//, 'H/').replace(/^(C\/)A\//, '$1H/');
                     console.debug('DirEntry ' + oldPath + ' not found, looking up header: ' + path);
-                    return that.getDirEntryByPath(path, true);
+                    return that.getDirEntryByPath(path, true, oldPath);
                 }
                 var newpath = path.replace(/^((?:A|C\/A)\/)[^/]+\/(.+)$/, '$1$2');
                 if (newpath === path) return null; // No further paths to explore!
