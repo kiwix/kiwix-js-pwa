@@ -843,7 +843,7 @@ define(rqDef, function(util) {
      * @param {Event} event The click event (on an anchor) to handle
      * @param {Element} clickedAnchor The DOM anchor that has been clicked (optional, defaults to event.target)
      */
-    function warnAndOpenExternalLinkInNewTab(event, clickedAnchor) {
+    function warnAndOpenExternalLinkInNewTab(event, clickedAnchor, message) {
         if (event) {
             event.preventDefault();
             event.stopPropagation();
@@ -851,7 +851,8 @@ define(rqDef, function(util) {
         if (!clickedAnchor) clickedAnchor = event.target;
         var target = clickedAnchor.target;
         var href = clickedAnchor.protocol ? clickedAnchor.href : 'http://' + clickedAnchor.href;
-        var message = '<p>Click the link to open this ' + (/https:\/\/www.openstreetmap.*?mlat/.test(href) ? 'map' : 'external page');
+        clickedAnchor.type = clickedAnchor.type || (/https:\/\/www.openstreetmap.*?mlat/.test(href) ? 'map' : 'link');
+        var message = message || '<p>Click the link to open this external ' + clickedAnchor.type;
         if (!target || target === '_blank') {
             target = '_blank';
             message += ' (in a new tab)';
@@ -864,7 +865,7 @@ define(rqDef, function(util) {
             }
         };
         if (params.openExternalLinksInNewTabs) {
-            systemAlert(message, 'Opening external link', false, null, null, 'Close');
+            systemAlert(message, 'Opening external ' + clickedAnchor.type, false, null, null, 'Close');
             // Close dialog box if user clicks the link
             document.getElementById('kiwixExternalLink').addEventListener('click', function (e) {
                 if (/https:\/\/www.openstreetmap.*?mlat/.test(href)) {

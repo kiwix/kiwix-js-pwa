@@ -4036,6 +4036,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         // Note that Zimit ZIMs store ZIM URLs encoded, but SOME incorrectly encode using encodeURIComponent, instead of encodeURI!
                         return m1.replace(/[&]/g, '%26').replace(/,/g, '%2C') + (m2 || '');
                     });
+                    // Intercept YouTube vidoe requests
+                    if (params.zimType === 'zimit' && /youtubei.*player/.test(title)) {
+                        var cns = appstate.selectedArchive.getContentNamespace();
+                        var newTitle = (cns === 'C' ? 'C/' : '') + 'A/' + 'youtube.com/embed/' + title.replace(/^[^?]+\?key=([^&]+).*/, '$1');
+                        newTitle = 'videoembed/' + newTitle; // This is purely to match the regex in transformZimit
+                        transformZimit.transformVideoUrl(newTitle, articleDocument, function (newVideoUrl) {
+                            // NB this will intentionally fail, as we don't want to look up content yet
+                            return newVideoUrl;
+                        });
+                        return;
+                    }
                     appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
                         if (dirEntry) dirEntry.isAsset = titleIsAsset;
                         return readFile(dirEntry);
@@ -5067,7 +5078,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             // Pattern to match a local anchor in an href even if prefixed by escaped url; will also match # on its own
             // Note that we exclude any # with a semicolon between it and the end of the string, to avoid accidentally matching e.g. &#39;
             var regexpLocalAnchorHref = new RegExp('^(?:#|' + escapedUrl + '#)([^#;]*$)');
-            Array.prototype.slice.call(articleDocument.querySelectorAll('a, area, iframe')).forEach(function (anchor) {
+            Array.prototype.slice.call(articleDocument.querySelectorAll('a, area')).forEach(function (anchor) {
                 // Attempts to access any properties of 'this' with malformed URLs causes app crash in Edge/UWP [kiwix-js #430]
                 try {
                     var testHref = anchor.href;
@@ -5076,7 +5087,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     return;
                 }
                 var href = anchor.getAttribute('href');
-                if (anchor.tagName === 'IFRAME') href = anchor.getAttribute('src');
                 if (href === null || href === undefined || /^javascript:/i.test(anchor.protocol)) return;
                 var anchorTarget = href.match(regexpLocalAnchorHref);
                 if (href.length === 0) {
@@ -5100,7 +5110,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 } else {
                     // Intercept YouTube videos in Zimit archives
                     if (params.zimType === 'zimit' && /youtu(?:be(?:-nocookie)?\.com|\.be)\//i.test(href)) {
-                        transformZimit.transformVideoUrl(href, function (transHref) {
+                        transformZimit.transformVideoUrl(href, articleDocument, function (transHref) {
                             addListenersToLink(anchor, transHref, params.baseURL);
                         });
                     } else {

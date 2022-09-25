@@ -21,7 +21,7 @@
  */
 'use strict';
 
-define([], function () {
+define(['uiUtil'], function (uiUtil) {
 
     /**
      * Filters out the Replay system files (since these cannot be loaded alongside a Service Worker without error)
@@ -176,6 +176,16 @@ define([], function () {
             data = data.replace(regexpRemoveAnalytics2, '');
 
             // ZIM-specific overrides
+            // Deal with YouTube embedded keys
+            var youTubeKey = data.match(/INNERTUBE_API_KEY['":]+([^'"]+)/);
+            if (youTubeKey && youTubeKey[1]) {
+                var videoId = data.match(/originalUrl['":]+[^'"]+?youtube.com\/embed\/([^'"]+)/);
+                if (videoId && videoId[1]) {
+                    var rgxYouTubeKey = new RegExp(youTubeKey[1].replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), 'g');
+                    data = data.replace(rgxYouTubeKey, videoId[1]);
+                }
+            }
+
             if (/(?:journals\.openedition\.org)/i.test(params.zimitPrefix)) {
                 // DEV: Checked still necessary as of 8-6-2022
                 // Neutralize all inline scripts, excluding math blocks or react templates, as they cause a loop on loading article
@@ -246,19 +256,18 @@ define([], function () {
      * @param {String} url The URL to transform through fuzzy matching
      * @param {Function} callback The function to call with the transformed url
      */
-    function transformVideoUrl(url, callback) {
+    function transformVideoUrl(url, articleDocument, callback) {
         if (/youtu(?:be(?:-nocookie)?\.com|\.be)/i.test(url)) {
             var cns = appstate.selectedArchive.getContentNamespace();
             var rgxTrimUrl = new RegExp('(?:[^/]|\\/(?!' + cns + '\\/))+\\/');
             var pureUrl = url.replace(rgxTrimUrl, '');
             // See https://webapps.stackexchange.com/questions/54443/format-for-id-of-youtube-video for explanation of format
-            var videoId = pureUrl.match(/(?:videoid=|watch\?v=|embed\/|\/)([a-zA-Z0-9_-]{10}[048AEIMQUYcgkosw](?:&|\?|\s*$))/i);
+            var videoId = pureUrl.match(/(?:videoid=|watch\?v=|embed\/|\/)([a-zA-Z0-9_-]{10}[048AEIMQUYcgkosw])(?:[&?#%]|\s*$)/i);
             videoId = videoId ? videoId[1] : null;
             if (!videoId) {
                 callback(url);
                 return
             };
-            var cns = appstate.selectedArchive.getContentNamespace();
             var prefix = (cns === 'C' ? cns + '/' : '') + 'H/www.youtube.com/ptracking';
             // Set up regular expression search of URL index (aka fuzzy search)
             var search = {
@@ -286,6 +295,16 @@ define([], function () {
                                 search.found = true;
                                 var transUrl = url.replace(pureUrl, dirEntry.namespace + '/' + dirEntry.url);
                                 console.debug('TRANSFORMED VIDEO URL ' + pureUrl + ' --> \n' + transUrl);
+                                // If we are dealing with embedded video, we have to find the embedded URL and subsitute it
+                                if (/\/embed\//i.test(pureUrl)) {
+                                    var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name);
+                                    Array.prototype.slice.call(articleDocument.querySelectorAll('iframe')).forEach(function (frame) {
+                                        if (~frame.src.indexOf(videoId)) {
+                                            var newUrl = window.location.origin + indexRoot + transUrl.replace(/videoembed/, '');
+                                            frame.src = newUrl;
+                                        }
+                                    });
+                                }
                                 callback(transUrl);
                             }
                         }, null); // null prevents callbacks with incomplete results
@@ -294,6 +313,13 @@ define([], function () {
                     }
                 } else {
                     callback(url);
+                    if (/youtube\.com\/embed\//i.test(pureUrl)) {
+                        var anchor = { protocol : 'https:',
+                            href : 'https://www.youtube.com/watch?v=' + videoId,
+                            type : 'video'
+                        }
+                        uiUtil.warnAndOpenExternalLinkInNewTab(null, anchor, 'This video is not available offline in this ZIM. To view online, please open the following URL');
+                    }
                 }
             }, null);
         } else {
