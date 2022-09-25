@@ -107,6 +107,7 @@ div:not(.panel-success, .alert-message) {
 
 #articleList {
     margin-bottom: 12px !important;
+    overflow-wrap: break-word;
 }
 
 #scrollbox {

@@ -21,7 +21,7 @@
  */
 'use strict';
 
-define([], function () {
+define(['uiUtil'], function (uiUtil) {
 
     /**
      * Filters out the Replay system files (since these cannot be loaded alongside a Service Worker without error)
@@ -35,7 +35,7 @@ define([], function () {
         if (dirEntry.namespace === 'H' || dirEntry.namespace === 'C' && /^H\//.test(dirEntry.url) 
             || params.isLandingPage && /^(A\/)?index\.html(?:[?#]|$)/.test(dirEntry.url))
             dirEntry.inspect = true;
-        if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|update\.googleapis|remote.loader\.js|survey\.js|yuiloader\.js|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url))
+        if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|update\.googleapis|survey\.js|yuiloader\.js|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url))
             dirEntry.nullify = true;
         return dirEntry;
     }
@@ -62,6 +62,12 @@ define([], function () {
             } else {
                 dirEntry.zimitRedirect = null;
             }    
+        } else if (/301\s*moved\s+permanently/i.test(data)) {
+            redirect = data.match(/moved\s+permanently(?:[^<]|<(?!a\s))+<a\s[^"']+["'](?:https?:)?\/?\/?([^"']+)/i);
+            if (redirect && redirect[1]) {
+                dirEntry.zimitRedirect = cns + '/' + (cns === 'C' ? 'A/' : '') + redirect[1];
+            }
+            console.debug('*** Asset moved permanently! Redirecting to: ' + dirEntry.zimitRedirect + ' ***');
         } else {
             redirect = data.match(/window\.mainUrl\s*=\s*(['"])https?:\/\/([^\/]+)(.+?)\1/);
             if (redirect && redirect[2] && redirect[3]) {
@@ -79,11 +85,11 @@ define([], function () {
     /**
      * Establish some Regular Expressions used by the transformReplayUrls function
      */
-    var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track|meta)\b[^>]*?[\s;])(?:src\b|href|url)\s*(=\s*(["']))(?=[./]+|https?)((?:[^>](?!\3|\?|#))+[^>])([^>]*>)/ig;
+    var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track|meta|iframe)\b[^>]*?[\s;])(?:src\b|href|url)\s*(=\s*(["']))(?=[./]+|https?)((?:[^>](?!\3|\?|#))+[^>])([^>]*>)/ig;
     var regexpZimitJavascriptLinks = /['"(]((?:https?:)?\/\/[^'"?#)]*)['"?#)]/ig;
     var regexpZimitCssLinks = /\burl\s*\(['"\s]*([^)'"\s]+)['"\s]*\)/ig;
     var regexpGetZimitPrefix = /link\s+rel=["']canonical["']\s+href="https?:\/\/([^/"]+)/i;
-    var regexpRemoveAnalytics1 = /<script\b([^<]|<(?!\/script>))+?(?:google.*?analytics|adsbygoogle)([^<]|<(?!\/script>))+<\/script>\s*/ig;
+    var regexpRemoveAnalytics1 = /<script\b([^<]|<(?!\/script>))+?(?:google.*?analytics|adsbygoogle|goggleads|doubleclick)([^<]|<(?!\/script>))+<\/script>\s*/ig;
     var regexpRemoveAnalytics2 = /<ins\b(?:[^<]|<(?!\/ins>))+?adsbygoogle(?:[^<]|<(?!\/ins>))+<\/ins>\s*/ig;
     var regexpInlineScriptsNotMaths = /<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig;
 
@@ -92,16 +98,15 @@ define([], function () {
      * @param {dirEntry} dirEntry The directory entry that points to the extracted data
      * @param {String} data The deocmpressed and extracted textual data that the dirEntry points to
      * @param {String} mimetype The reported mimetype of the data (this is also in the dirEntry)
-     * @param {Object} selectedArchive The archive object (needed only for the standardized filename used as a prefix)
-     * @returns {String} The data string with any URLs it contains transformed into ZIM URLs 
+     * @returns {String} The transformed data string
      */
-    function transformReplayUrls(dirEntry, data, mimetype, selectedArchive) {
+    function transformReplayUrls(dirEntry, data, mimetype, callback) {
         /**
          * Transform URL links in HTML files
          * Note that some Zimit ZIMs have mimeteypes like 'text/html;raw=true', so we can't simply match 'text/html'
          * Other ZIMs have a mimetype like 'html' (with no 'text/'), so we have to match as generically as possible
          */
-        var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(selectedArchive._file.name);
+        var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name);
         if (/\bx?html\b/i.test(mimetype)) {
             var zimitPrefix = data.match(regexpGetZimitPrefix);
             // If the URL is the same as the URL with everything after the first / removed, then we are in the root directory
@@ -112,8 +117,8 @@ define([], function () {
             // DEV: Check if this is still necessary
             data = data.replace(/<noscript>\s*(<img\b[^>]+>)\s*<\/noscript>/ig, '$1');
             data = data.replace(/<span\b[^>]+lazy-image-placeholder[^<]+<\/span>\s*/ig, '');
-            // Remove meta http-equiv refresh
-            data = data.replace(/<meta\s+http-equiv[^>]+refresh\b[^>]+>\/s*/i, '');
+            // Remove meta http-equiv refresh from assets
+            if (dirEntry.isAsset) data = data.replace(/<meta\s+http-equiv[^>]+refresh\b[^>]+>\s*/i, '');
             // // Inject the helper script wombat.js
             // data = data.replace(/(<\/head>\s*)/i, '<script src="https://' + params.zimitPrefix + '/static/wombat.js"></script>\n');
 
@@ -122,19 +127,20 @@ define([], function () {
                 var newBlock = match;
                 var assetUrl = relAssetUrl;
                     // DEBUG:
-                    // console.log(assetUrl);
+                    console.log('Asset URL: ' + assetUrl);
                 // Remove google analytics and other analytics files that cause stall
-                if (/google|analytics|typepad.*stats/i.test(assetUrl)) return '';
+                if (/analytics|typepad.*stats|googleads|doubleclick/i.test(assetUrl)) return '';
                 // For root-relative links, we need to add the zimitPrefix
                 assetUrl = assetUrl.replace(/^\/(?!\/)/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
                 // For Zimit assets that begin with https: or // the zimitPrefix is derived from the URL
                 assetUrl = assetUrl.replace(/^(?:https?:)?\/\//i, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
                 // For fully relative links, we have to remove any '..' if we are in root directory
                 if (rootDirectory) assetUrl = assetUrl.replace(/^(\.\.\/?)+/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/'); 
-                // Deal with <meta http-equiv refresh...> directives
-                // if (/<meta\s+http-equiv[^>]+refresh\b/i.test(newBlock)) dirEntry.zimitRedirect = assetUrl.replace(/^\//, '');
-                newBlock = newBlock.replace(relAssetUrl, '@kiwixtransformed@' + assetUrl);
-                // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+                // Add placeholder to prevent further transformations
+                if (/^<a\s/i.test(newBlock)) newBlock = newBlock.replace(relAssetUrl, '@kiwixtrans@' + assetUrl);
+                // But for non-anchor URLs, We have to mark potential assets that are not easily identified as assets, due to so many html mimetypes being returned for them
+                else newBlock = newBlock.replace(relAssetUrl, '@kiwixtransformed@' + assetUrl + (params.contentInjectionMode === 'serviceworker' ? '?isKiwixAsset' : ''));
+                console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
 
@@ -156,7 +162,7 @@ define([], function () {
             // Deal with regex-style urls embedded in page
             data = data.replace(/https?:\\\/\\\/[^"']+/gi, function (assetUrl) {
                 assetUrl = assetUrl.replace(/^https?:\\\/\\\//i, '\\/' + dirEntry.namespace + '\\/' + (dirEntry.namespace === 'C' ? 'A\\/' : ''));
-                assetUrl = indexRoot.replace(/\//g, '\\/') + assetUrl;
+                assetUrl = (window.location.origin + indexRoot).replace(/\\/g, '\\\\').replace(/\//g, '\\/') + assetUrl;
                 return assetUrl;
             });
 
@@ -170,6 +176,16 @@ define([], function () {
             data = data.replace(regexpRemoveAnalytics2, '');
 
             // ZIM-specific overrides
+            // Deal with YouTube embedded keys
+            var youTubeKey = data.match(/INNERTUBE_API_KEY['":]+([^'"]+)/);
+            if (youTubeKey && youTubeKey[1]) {
+                var videoId = data.match(/originalUrl['":]+[^'"]+?youtube.com\/embed\/([^'"]+)/);
+                if (videoId && videoId[1]) {
+                    var rgxYouTubeKey = new RegExp(youTubeKey[1].replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), 'g');
+                    data = data.replace(rgxYouTubeKey, videoId[1]);
+                }
+            }
+
             if (/(?:journals\.openedition\.org)/i.test(params.zimitPrefix)) {
                 // DEV: Checked still necessary as of 8-6-2022
                 // Neutralize all inline scripts, excluding math blocks or react templates, as they cause a loop on loading article
@@ -178,14 +194,6 @@ define([], function () {
                 });
                 // data = data.replace(/<script\b[^>]+tarteaucitron[^"']*?\.js(?:[^<]|<(?!\/script>))+<\/script>\s*/i, '');
             }
-
-            // Collapse open menu bar
-            // if (/cheatography/i.test(params.zimitPrefix)) {
-            //     data = data.replace(/(<div\s+id=['"]menubar['"])/i, '$1 hidden');
-            //     data = data.replace(/(<div\s+class=['"]filterBar['"])/i, '$1 hidden');
-            //     // Remove onclick events
-            //     data = data.replace(/onclick="[^"]+"/ig, '');
-            // }
 
             // Remove shopping cart that attempts to post to server or scripts that take a very long time to fail and block page
             if (/passco/i.test(params.zimitPrefix)) {
@@ -202,14 +210,14 @@ define([], function () {
                 var newBlock = match;
                 var assetUrl = url;
                 // For root-relative links, we need to add the zimitPrefix
-                assetUrl = assetUrl.replace(/^\/(?!\/)/, dirEntry.namespace + '/' + params.zimitPrefix + '/');
+                assetUrl = assetUrl.replace(/^\/(?!\/)/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
                 // Deal with absolute URLs
-                assetUrl = assetUrl.replace(/^(https?:)?\/\//i, dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
-                if (rootDirectory) assetUrl = assetUrl.replace(/^(\.\.\/?)+/, '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/'); 
+                assetUrl = assetUrl.replace(/^(https?:)?\/\//i, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
+                if (rootDirectory) assetUrl = assetUrl.replace(/^(\.\.\/?)+/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/'); 
                 // Relative assets
                 newBlock = assetUrl === url ? newBlock :
-                    newBlock.replace(url, '@kiwixtransformed@' + '/' + selectedArchive._file.name + '/' + assetUrl);
-                // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+                    newBlock.replace(url, '@kiwixtransformed@' + assetUrl);
+                console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
         } // End of css transformations
@@ -222,31 +230,107 @@ define([], function () {
                 if (/www\.w3\.org\/XML\//i.test(url)) return match;
                 var newBlock = match;
                 var assetUrl = url;
-                assetUrl = assetUrl.replace(/^\/(?!\/)/, dirEntry.namespace + '/' + params.zimitPrefix + '/');
-                assetUrl = assetUrl.replace(/^\/\//, dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
-                assetUrl = assetUrl.replace(/^https?:\/\//i, dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : '')); 
+                assetUrl = assetUrl.replace(/^\/(?!\/)/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
+                assetUrl = assetUrl.replace(/^\/\//, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
+                assetUrl = assetUrl.replace(/^https?:\/\//i, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : '')); 
                 // Remove analytics
-                assetUrl = /google|analytics|typepad.*stats/i.test(assetUrl) ? '' : assetUrl; 
+                assetUrl = /analytics|typepad.*stats/i.test(assetUrl) ? '' : assetUrl; 
                 // Relative assets
-                newBlock = newBlock.replace(url, '/' + selectedArchive._file.name + '/' + assetUrl);
-                // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+                newBlock = newBlock.replace(url, '@kiwixtransformed@' + assetUrl);
+                console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
             data = data.replace(/(['"])(?:\/?)((?:static|api)\/)/ig, '$1' + window.location.origin + indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/$2');
         } // End of JavaScript transformations
 
-        // Add a base href
-        // data = data.replace(/(<head\b[^>]*>\s*)/i, '$1<base href="' + window.location.origin + indexRoot + '/' + '">');
-
         // Remove the placeholders used to prevent further matching
-        data = data.replace(/@kiwixtransformed@/g, '');
+        data = data.replace(/@kiwixtransformed@/g, params.contentInjectionMode === 'serviceworker' ? window.location.origin : '');
+        data = data.replace(/@kiwixtrans@/g, '');
 
-        return data;
+        return data;    
+    }
+
+    /**
+     * Transform video URL through fuzzy matching
+     * Rules adapted from https://github.com/webrecorder/wabac.js/blob/main/src/fuzzymatcher.js
+     * @param {String} url The URL to transform through fuzzy matching
+     * @param {Function} callback The function to call with the transformed url
+     */
+    function transformVideoUrl(url, articleDocument, callback) {
+        if (/youtu(?:be(?:-nocookie)?\.com|\.be)/i.test(url)) {
+            var cns = appstate.selectedArchive.getContentNamespace();
+            var rgxTrimUrl = new RegExp('(?:[^/]|\\/(?!' + cns + '\\/))+\\/');
+            var pureUrl = url.replace(rgxTrimUrl, '');
+            // See https://webapps.stackexchange.com/questions/54443/format-for-id-of-youtube-video for explanation of format
+            var videoId = pureUrl.match(/(?:videoid=|watch\?v=|embed\/|\/)([a-zA-Z0-9_-]{10}[048AEIMQUYcgkosw])(?:[&?#%]|\s*$)/i);
+            videoId = videoId ? videoId[1] : null;
+            if (!videoId) {
+                callback(url);
+                return
+            };
+            var prefix = (cns === 'C' ? cns + '/' : '') + 'H/www.youtube.com/ptracking';
+            // Set up regular expression search of URL index (aka fuzzy search)
+            var search = {
+                rgxPrefix: new RegExp('.*' + videoId, 'i'),
+                searchUrlIndex: true,
+                size: 1
+            }
+            appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
+                if (dirEntry && dirEntry[0] && dirEntry[0].url) {
+                    dirEntry = dirEntry[0];
+                    var cpn = dirEntry.url.match(/cpn=([^&]+)/i);
+                    cpn = cpn ? cpn[1] : null;
+                    var ei = dirEntry.url.match(/ei=([^&]+)/i);
+                    ei = ei ? ei[1] : null;
+                    if (cpn||ei) {
+                        prefix = (cns === 'C' ? cns + '/' : '') + 'A/rr';
+                        search = {
+                            rgxPrefix: new RegExp('.*' + (ei ? 'ei=' + ei : '') + (cpn ? '.*cpn=' + cpn : ''), 'i'),
+                            searchUrlIndex: true,
+                            size: 1
+                        }
+                        appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, search, function (dirEntry) {
+                            if (dirEntry && dirEntry[0] && dirEntry[0].url && !search.found) {
+                                dirEntry = dirEntry[0];
+                                search.found = true;
+                                var transUrl = url.replace(pureUrl, dirEntry.namespace + '/' + dirEntry.url);
+                                console.debug('TRANSFORMED VIDEO URL ' + pureUrl + ' --> \n' + transUrl);
+                                // If we are dealing with embedded video, we have to find the embedded URL and subsitute it
+                                if (/\/embed\//i.test(pureUrl)) {
+                                    var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name);
+                                    Array.prototype.slice.call(articleDocument.querySelectorAll('iframe')).forEach(function (frame) {
+                                        if (~frame.src.indexOf(videoId)) {
+                                            var newUrl = window.location.origin + indexRoot + transUrl.replace(/videoembed/, '');
+                                            frame.src = newUrl;
+                                        }
+                                    });
+                                }
+                                callback(transUrl);
+                            }
+                        }, null); // null prevents callbacks with incomplete results
+                    } else {
+                        callback(url);
+                    }
+                } else {
+                    callback(url);
+                    if (/youtube\.com\/embed\//i.test(pureUrl)) {
+                        var anchor = { protocol : 'https:',
+                            href : 'https://www.youtube.com/watch?v=' + videoId,
+                            type : 'video'
+                        }
+                        uiUtil.warnAndOpenExternalLinkInNewTab(null, anchor, 'This video is not available offline in this ZIM. To view online, please open the following URL');
+                    }
+                }
+            }, null);
+        } else {
+            callback(url);
+        }
     }
 
     return {
         filterReplayFiles: filterReplayFiles,
         getZimitRedirect: getZimitRedirect,
-        transformReplayUrls: transformReplayUrls
+        transformReplayUrls: transformReplayUrls,
+        transformVideoUrl: transformVideoUrl
     };
 });
