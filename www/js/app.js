@@ -2091,10 +2091,25 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         function setContentInjectionMode(value) {
             params.contentInjectionMode = value;
             if (value === 'jquery') {
-                // Because the "outer" Service Worker still runs in a PWA app, we don't actually disable the SW in this context, but it will no longer
-                // be intercepting requests
+                // Because the Service Worker must still run in a PWA app so that it can work offline, we don't actually disable the SW in this context,
+                // but it will no longer be intercepting requests for ZIM assets (only requests for the app's own code)
                 if ('serviceWorker' in navigator) {
                     serviceWorkerRegistration = null;
+                }
+                // User has switched to jQuery mode, so no longer needs ASSETS_CACHE
+                // We should empty it and turn it off to prevent unnecessary space usage
+                if ('caches' in window && isMessageChannelAvailable()) {
+                    if (isServiceWorkerAvailable() && navigator.serviceWorker.controller) {
+                        var channel = new MessageChannel();
+                        navigator.serviceWorker.controller.postMessage({
+                            'action': { 'assetsCache': 'disable' }
+                        }, [channel.port2]);
+                        var channel2 = new MessageChannel();
+                        navigator.serviceWorker.controller.postMessage({
+                            'action': 'disable'
+                        }, [channel2.port2]);
+                    }
+                    caches.delete(cache.ASSETS_CACHE);
                 }
                 refreshAPIStatus();
             } else if (value === 'serviceworker') {
