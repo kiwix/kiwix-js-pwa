@@ -283,8 +283,8 @@ let fetchCaptureEnabled = false;
  * Intercept selected Fetch requests from the browser window
  */
 self.addEventListener('fetch', function (event) {
-    // Only cache GET requests
-    if (event.request.method !== "GET") return;
+    // Only handle GET or POST requests (POST is intended to handle video in Zimit ZIMs)
+    if (!/GET|POST/.test(event.request.method)) return;
     var rqUrl = event.request.url;
     var urlObject = new URL(rqUrl);
     // Test the URL with parameters removed
@@ -310,7 +310,8 @@ self.addEventListener('fetch', function (event) {
         }, function () {
             // The response was not found in the cache so we look for it in the ZIM
             // and add it to the cache if it is an asset type (css or js)
-            if (cache === ASSETS_CACHE && regexpZIMUrlWithNamespace.test(strippedUrl)) {
+            // YouTube links from Zimit archives are dealt with specially
+            if (/youtubei.*player/.test(strippedUrl) || cache === ASSETS_CACHE && regexpZIMUrlWithNamespace.test(strippedUrl)) {
                 let range = event.request.headers.get('range');
                 if (imageDisplay !== 'all' && /\/.*\.(jpe?g|png|svg|gif|webp)(?=.*?kiwix-display)/i.test(rqUrl)) {
                     // If the user has disabled the display of images, and the browser wants an image, respond with empty SVG
@@ -368,7 +369,7 @@ self.addEventListener('fetch', function (event) {
             fetchCaptureEnabled = true;
         } else if (event.data.action === 'disable') {
             // On 'disable' message, we delete the outgoingMessagePort and disable the fetchEventListener
-            outgoingMessagePort = null;
+            // outgoingMessagePort = null;
             fetchCaptureEnabled = false;
         }
         var oldValue;
@@ -409,9 +410,9 @@ function fetchUrlFromZIM(urlObject, range) {
         // Be sure that you haven't encoded any querystring along with the URL.
         var barePathname = decodeURIComponent(urlObject.pathname);
         var partsOfZIMUrl = regexpZIMUrlWithNamespace.exec(barePathname);
-        var prefix = partsOfZIMUrl[1];
-        var nameSpace = partsOfZIMUrl[2];
-        var title = partsOfZIMUrl[3];
+        var prefix = partsOfZIMUrl ? partsOfZIMUrl[1] : '';
+        var nameSpace = partsOfZIMUrl ? partsOfZIMUrl[2]: '';
+        var title = partsOfZIMUrl ? partsOfZIMUrl[3] : barePathname;
         var anchorTarget = urlObject.hash.replace(/^#/, '');
         var uriComponent = urlObject.search.replace(/\?kiwix-display/, '');
         var titleWithNameSpace = nameSpace + '/' + title;

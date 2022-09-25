@@ -350,11 +350,11 @@ define(rqDef, function(util) {
             alertHTML =
             '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
                 '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
-                '<strong>' + (params.contentInjectionMode === 'jquery' ? 'Limited Zimit' : 'Experimental') + ' support:</strong> ' + 
-                (params.contentInjectionMode === 'jquery' ? 'Please <a id="swModeLink" href="#contentInjectionModeDiv" ' + 
+                // '<strong>' + (params.contentInjectionMode === 'jquery' ? 'Limited Zimit' : 'Experimental') + ' support:</strong> ' + 
+                (params.contentInjectionMode === 'jquery' ? '<b>Limited support!</b> Please <a id="swModeLink" href="#contentInjectionModeDiv" ' + 
                 'class="alert-link">switch to Service Worker mode</a> if your platform supports it. ' : 
-                'Support for <b>Zimit</b> ZIMs is preliminary. Some content (e.g. audio/video) may fail. ') + 
-                '<br />Search for your content above. Start your search with <b>.*</b> to match part of a title, ' +
+                'Support for <b>Zimit</b> ZIMs is experimental. Some content (e.g. audio/video) may fail. ') + 
+                'You can search for content above. <br />Start your search with <b>.*</b> to match part of a title, ' +
                 'or type a <b><i>space</i></b> to use the Archive Index, or <b><i>space + / </i></b> for URL Index.&nbsp;' +
                 '[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
@@ -458,6 +458,13 @@ define(rqDef, function(util) {
         alertMessage.innerHTML = '<strong>Download</strong> If the download does not start, please tap the following link: ';
         // We have to add the anchor to a UI element for Firefox to be able to click it programmatically: see https://stackoverflow.com/a/27280611/9727685
         alertMessage.appendChild(a);
+        // For IE11 we need to force use of the saveBlob method with the onclick event 
+        if (window.navigator && window.navigator.msSaveBlob) {
+            a.addEventListener('click', function (e) {
+                window.navigator.msSaveBlob(blob, filename);
+                e.preventDefault();
+            });
+        } 
         try {
             a.click();
             // Following line should run only if there was no error, leaving the alert showing in case of error
@@ -474,22 +481,13 @@ define(rqDef, function(util) {
             if (autoDismiss) $('#downloadAlert').alert('close');
         }
         catch (err) {
-            // If the click fails, user may be able to download by manually clicking the link
-            // But for IE11 we need to force use of the saveBlob method with the onclick event 
-            if (window.navigator && window.navigator.msSaveBlob) {
-                a.addEventListener('click', function (e) {
-                    window.navigator.msSaveBlob(blob, filename);
-                    e.preventDefault();
-                });
+            // And try to launch through UWP download
+            if (Windows && Windows.Storage) {
+                downloadBlobUWP(blob, filename, alertMessage);
+                if (autoDismiss) $('#downloadAlert').alert('close');
             } else {
-                // And try to launch through UWP download
-                if (Windows && Windows.Storage) {
-                    downloadBlobUWP(blob, filename, alertMessage);
-                    if (autoDismiss) $('#downloadAlert').alert('close');
-                } else {
-                    // Last gasp attempt to open automatically
-                    window.open(a.href);
-                }
+                // Last gasp attempt to open automatically
+                window.open(a.href);
             }
         }
     }
@@ -845,7 +843,7 @@ define(rqDef, function(util) {
      * @param {Event} event The click event (on an anchor) to handle
      * @param {Element} clickedAnchor The DOM anchor that has been clicked (optional, defaults to event.target)
      */
-    function warnAndOpenExternalLinkInNewTab(event, clickedAnchor) {
+    function warnAndOpenExternalLinkInNewTab(event, clickedAnchor, message) {
         if (event) {
             event.preventDefault();
             event.stopPropagation();
@@ -853,7 +851,8 @@ define(rqDef, function(util) {
         if (!clickedAnchor) clickedAnchor = event.target;
         var target = clickedAnchor.target;
         var href = clickedAnchor.protocol ? clickedAnchor.href : 'http://' + clickedAnchor.href;
-        var message = '<p>Click the link to open this ' + (/https:\/\/www.openstreetmap.*?mlat/.test(href) ? 'map' : 'external page');
+        clickedAnchor.type = clickedAnchor.type || (/https:\/\/www.openstreetmap.*?mlat/.test(href) ? 'map' : 'link');
+        var message = message || '<p>Click the link to open this external ' + clickedAnchor.type;
         if (!target || target === '_blank') {
             target = '_blank';
             message += ' (in a new tab)';
@@ -866,7 +865,7 @@ define(rqDef, function(util) {
             }
         };
         if (params.openExternalLinksInNewTabs) {
-            systemAlert(message, 'Opening external link', false, null, null, 'Close');
+            systemAlert(message, 'Opening external ' + clickedAnchor.type, false, null, null, 'Close');
             // Close dialog box if user clicks the link
             document.getElementById('kiwixExternalLink').addEventListener('click', function (e) {
                 if (/https:\/\/www.openstreetmap.*?mlat/.test(href)) {

@@ -26,8 +26,8 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images', 'settingsStore', 'transformStyles', 'kiwixServe', 'updater'],
-    function ($, zimArchiveLoader, uiUtil, util, utf8, cache, images, settingsStore, transformStyles, kiwixServe, updater) {
+define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images', 'settingsStore', 'transformStyles', 'transformZimit', 'kiwixServe', 'updater'],
+    function ($, zimArchiveLoader, uiUtil, util, utf8, cache, images, settingsStore, transformStyles, transformZimit, kiwixServe, updater) {
 
         /**
          * The delay (in milliseconds) between two "keepalive" messages
@@ -2091,10 +2091,25 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         function setContentInjectionMode(value) {
             params.contentInjectionMode = value;
             if (value === 'jquery') {
-                // Because the "outer" Service Worker still runs in a PWA app, we don't actually disable the SW in this context, but it will no longer
-                // be intercepting requests
+                // Because the Service Worker must still run in a PWA app so that it can work offline, we don't actually disable the SW in this context,
+                // but it will no longer be intercepting requests for ZIM assets (only requests for the app's own code)
                 if ('serviceWorker' in navigator) {
                     serviceWorkerRegistration = null;
+                }
+                // User has switched to jQuery mode, so no longer needs ASSETS_CACHE
+                // We should empty it and turn it off to prevent unnecessary space usage
+                if ('caches' in window && isMessageChannelAvailable()) {
+                    if (isServiceWorkerAvailable() && navigator.serviceWorker.controller) {
+                        var channel = new MessageChannel();
+                        navigator.serviceWorker.controller.postMessage({
+                            'action': { 'assetsCache': 'disable' }
+                        }, [channel.port2]);
+                        var channel2 = new MessageChannel();
+                        navigator.serviceWorker.controller.postMessage({
+                            'action': 'disable'
+                        }, [channel2.port2]);
+                    }
+                    caches.delete(cache.ASSETS_CACHE);
                 }
                 refreshAPIStatus();
             } else if (value === 'serviceworker') {
@@ -3922,8 +3937,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // We received a message from the ServiceWorker
                 if (event.data.action === "askForContent") {
                     // Zimit archives store URLs encoded, and also need the URI component (search parameter) if any
-                    // var title = params.zimType === 'zimit' ? encodeURI(event.data.title + event.data.search) : event.data.title;
                     var title = params.zimType === 'zimit' ? encodeURIComponent(event.data.title).replace(/\%2F/g, '/') + event.data.search : event.data.title;
+                    // If it's an asset, we have to mark the dirEntry so that we don't load it if it has an html MIME type
+                    var titleIsAsset = /\??isKiwixAsset/.test(title);
+                    title = title.replace(/\??isKiwixAsset/, '');
                     if (appstate.selectedArchive.landingPageUrl === title) params.isLandingPage = true;
                     var messagePort = event.ports[0];
                     if (!anchorParameter && event.data.anchorTarget) anchorParameter = event.data.anchorTarget;
@@ -3973,9 +3990,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                                 var shortTitle = dirEntry.url.replace(/[^/]+\//g, '').substring(0, 18);
                                 uiUtil.pollSpinner('Getting ' + shortTitle + '...');
                             }
-                            // Note we sometimes can get HTML "moved permanently" as a response to a request for an image
-                            // particularly in Zimit archives, so we have to exclude these here
-                            if (/\bx?html\b/i.test(mimetype) && !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm|woff2?)(\?|$)/i.test(dirEntry.url)) {
+                            // If it's an HTML type and not an asset, we load it in a new page instance
+                            if (/\bx?html\b/i.test(mimetype) && !dirEntry.isAsset && !/\.(png|gif|jpe?g|css|js|mpe?g|mp4|webp|webm|woff2?)(\?|$)/i.test(dirEntry.url)) {
                                 loadingArticle = title;
                                 // Intercept files of type html and apply transformations
                                 var message = {
@@ -4034,9 +4050,22 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     if (params.zimType === 'zimit') title = title.replace(/^([^?]+)(\?[^?]*)?$/, function (m0, m1, m2) {
                         // Note that Zimit ZIMs store ZIM URLs encoded, but SOME incorrectly encode using encodeURIComponent, instead of encodeURI!
                         return m1.replace(/[&]/g, '%26').replace(/,/g, '%2C') + (m2 || '');
-                        // return encodeURI(m1) + (m2 || '');
                     });
-                    appstate.selectedArchive.getDirEntryByPath(title).then(readFile).catch(function (err) {
+                    // Intercept YouTube vidoe requests
+                    if (params.zimType === 'zimit' && /youtubei.*player/.test(title)) {
+                        var cns = appstate.selectedArchive.getContentNamespace();
+                        var newTitle = (cns === 'C' ? 'C/' : '') + 'A/' + 'youtube.com/embed/' + title.replace(/^[^?]+\?key=([^&]+).*/, '$1');
+                        newTitle = 'videoembed/' + newTitle; // This is purely to match the regex in transformZimit
+                        transformZimit.transformVideoUrl(newTitle, articleDocument, function (newVideoUrl) {
+                            // NB this will intentionally fail, as we don't want to look up content yet
+                            return newVideoUrl;
+                        });
+                        return;
+                    }
+                    appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
+                        if (dirEntry) dirEntry.isAsset = titleIsAsset;
+                        return readFile(dirEntry);
+                    }).catch(function (err) {
                         console.error('Failed to read ' + title, err);
                         messagePort.postMessage({
                             'action': 'giveContent',
@@ -5080,7 +5109,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 } else if (anchorTarget) {
                     // It's a local anchor link : remove escapedUrl if any (see above)
                     anchor.setAttribute('href', '#' + anchorTarget[1]);
-                } else if (anchor.protocol !== currentProtocol || anchor.host !== currentHost) {
+                } else if (anchor.protocol && anchor.protocol !== currentProtocol || anchor.host && anchor.host !== currentHost) {
                     // It's an external URL : we should open it in a new tab
                     anchor.addEventListener('click', function (event) {
                         if (anchor.protocol === 'bingmaps:') {
@@ -5094,7 +5123,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         }
                     });
                 } else {
-                    addListenersToLink(anchor, href, params.baseURL);
+                    // Intercept YouTube videos in Zimit archives
+                    if (params.zimType === 'zimit' && /youtu(?:be(?:-nocookie)?\.com|\.be)\//i.test(href)) {
+                        transformZimit.transformVideoUrl(href, articleDocument, function (transHref) {
+                            addListenersToLink(anchor, transHref, params.baseURL);
+                        });
+                    } else {
+                        addListenersToLink(anchor, href, params.baseURL);
+                    }
                 }
             });
             // Add event listeners to the main heading so user can open current document in new tab or window by clicking on it
@@ -5131,7 +5167,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 contentType = a.getAttribute('type');
             }
             // DEV: We need to use the '#' location trick here for cross-browser compatibility with opening a new tab/window
-            if (params.windowOpener) a.setAttribute('href', '#' + href);
+            if (params.windowOpener && a.tagName !== 'IFRAME') a.setAttribute('href', '#' + href);
             // Store the current values, as they may be changed if user switches to another tab before returning to this one
             var kiwixTarget = appstate.target;
             var thisWindow = articleWindow;
@@ -5152,11 +5188,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 if (a.tagName === 'H1') {
                     // We have registered a click on the header
                     if (!a.newcontainer) return; // A new tab wasn't requested, so ignore
-                    // If we're not clicking within the scope of an H1, H2, etc., ignore the click
-                    // if (!uiUtil.getClosestMatchForTagname(e.target, /H\d/)) {
-                    //     setTimeout(reset, 1400);
-                    //     return;
-                    // }
                 }
                 if (params.windowOpener) {
                     // This processes Ctrl-click, Command-click, the long-press event, and middle-click

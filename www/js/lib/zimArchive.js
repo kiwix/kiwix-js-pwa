@@ -428,7 +428,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
      * @param {callbackStringContent} callback
      */
     ZIMArchive.prototype.readUtf8File = function(dirEntry, callback) {
-        var that = this;
+        var cns = appstate.selectedArchive.getContentNamespace();
         return dirEntry.readData().then(function(data) {
             var mimetype = dirEntry.getMimetype();
             if (window.TextDecoder) {
@@ -438,11 +438,14 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                 data = utf8.parse(data);
             }
             if (/\bx?html\b/i.test(mimetype)) {
-                // If the data were encoded with a differen mimtype, here is how to change it
+                // If the data were encoded with a different mimtype, here is how to change it
                 // var encoding = decData.match(/<meta\b[^>]+?Content-Type[^>]+?charset=([^'"\s]+)/i);
                 // encoding = encoding ? encoding[1] : '';
                 // if (encoding && !/utf-8/i.test(encoding)) decData = new TextDecoder(encoding).decode(data);
                 
+                //Some Zimit assets have moved location and we need to follow the moved permanently data
+                if (/301\s*moved\s+permanently/i.test(data)) dirEntry = transformZimit.getZimitRedirect(dirEntry, data, cns);
+
                 // Some Zimit archives have an incorrect meta charset tag. See https://github.com/openzim/warc2zim/issues/88.
                 // So we remove it!
                 data = data.replace(/<meta\b[^>]+?Content-Type[^>]+?charset=([^'"\s]+)[^>]+>\s*/i, function (m0, m1) {
@@ -452,19 +455,19 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                     return m0;
                 });
             }
-            if (dirEntry.inspect) {
-                dirEntry = transformZimit.getZimitRedirect(dirEntry, data, that.getContentNamespace());
+            if (dirEntry.inspect || dirEntry.zimitRedirect) {
+                if (dirEntry.inspect) dirEntry = transformZimit.getZimitRedirect(dirEntry, data, cns);
                 if (dirEntry.zimitRedirect) {
-                    return that.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
-                        return that.readUtf8File(rd, callback);
+                    return appstate.selectedArchive.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
+                        return appstate.selectedArchive.readUtf8File(rd, callback);
                     });
                 }
            } else {
                 // DEV: Note that we cannot terminate regex below with $ because there is a (rogue?) mimetype
                 // of 'text/html;raw=true'
                 if (params.zimType === 'zimit' && /\/(?:html|css|javascript)\b/i.test(mimetype)) {
-                    data = transformZimit.transformReplayUrls(dirEntry, data, mimetype, appstate.selectedArchive);
-                }
+                    data = transformZimit.transformReplayUrls(dirEntry, data, mimetype);
+                } 
                 callback(dirEntry, data);
             }
         });
@@ -495,10 +498,10 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                 // DEV: Note that we cannot terminate regex below with $ because there is a (rogue?) mimetype
                 // of 'text/html;raw=true'
                 if (params.zimType === 'zimit' && /\/(?:html|css|javascript)\b/i.test(mimetype)) {
-                    data = transformZimit.transformReplayUrls(dirEntry, utf8.parse(data), mimetype, that);
+                    data = transformZimit.transformReplayUrls(dirEntry, utf8.parse(data), mimetype);
                 }
+                callback(dirEntry, data);
             }
-            callback(dirEntry, data);
         });
     };
     
@@ -506,10 +509,12 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
      * Searches the URL pointer list of Directory Entries by pathname
      * @param {String} path The pathname of the DirEntry that is required (namespace + filename)
      * @param {Boolean} zimitResolving A flag to indicate that the a Zimit path is in a lookup loop
+     * @param {String} originalPath Optional string used internally to prevent infinite loop
      * @return {Promise<DirEntry>} A Promise that resolves to a Directory Entry, or null if not found.
      */
-    ZIMArchive.prototype.getDirEntryByPath = function(path, zimitResolving) {
+    ZIMArchive.prototype.getDirEntryByPath = function(path, zimitResolving, originalPath) {
         var that = this;
+        if (originalPath) appstate.originalPath = originalPath;
         path = path.replace(/\?kiwix-display/, '');
         return util.binarySearch(0, this._file.entryCount, function(i) {
             return that._file.dirEntryByUrlIndex(i).then(function(dirEntry) {
@@ -530,12 +535,12 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                 dirEntry = transformZimit.filterReplayFiles(dirEntry);
             if (!dirEntry) {
                 // We couldn't get the dirEntry, so look it up the Zimit header
-                if (!zimitResolving && that._file.zimType === 'zimit' && !/^(H|C\/H)\//.test(path)) {
+                if (!zimitResolving && that._file.zimType === 'zimit' && !/^(H|C\/H)\//.test(path) && path !== appstate.originalPath) {
                     // We need to look the file up in the Header namespace (double replacement ensures both types of ZIM are supported)
                     var oldPath = path;
                     path = path.replace(/^A\//, 'H/').replace(/^(C\/)A\//, '$1H/');
                     console.debug('DirEntry ' + oldPath + ' not found, looking up header: ' + path);
-                    return that.getDirEntryByPath(path, true);
+                    return that.getDirEntryByPath(path, true, oldPath);
                 }
                 var newpath = path.replace(/^((?:A|C\/A)\/)[^/]+\/(.+)$/, '$1$2');
                 if (newpath === path) return null; // No further paths to explore!
