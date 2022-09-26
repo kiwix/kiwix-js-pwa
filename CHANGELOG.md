@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 2.1.7
+## Release 2.1.8
 
 * FEATURE: Enable playback of most offline **embedded** YouTube video in Zimit ZIMs (SW mode)
 * ENHANCEMENT: YouTube video **links** can be played offline if video available (JQuery and SW modes)
