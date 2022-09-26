@@ -428,9 +428,11 @@ define(rqDef, function(util) {
         var a = document.createElement('a');
         var blob = new Blob([content], { 'type': contentType });
         // If the filename to use for saving has not been specified, construct it from title
-        var filename = download === true ? title.replace(/^.*\/([^\/]+)$/, '$1') : download;
+        var filename = download === true ? title.replace(/^.*\/([^\\/?#&]*).*$/, '$1') : download;
+        // If not match was possible from the title, give it a generic name
+        if (filename === title || !filename) filename = 'downloadfile';
         // Make filename safe
-        filename = filename.replace(/[\/\\:*?"<>|]/g, '_');
+        filename = filename.replace(/[\/\\:*?"<>|#&]/g, '_');
         // If the file doesn't have an extension, add one for compatibility with older browsers
         if (!/\.(epub|pdf|zip|png|jpe?g|webp|svg|gif|tiff|mp4|webm|mpe?g|mp3)([?#]|$)/i.test(filename)) {
             var extension = 
