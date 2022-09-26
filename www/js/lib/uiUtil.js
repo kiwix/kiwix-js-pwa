@@ -331,7 +331,7 @@ define(rqDef, function(util) {
             '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
                 '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
             '<strong>Unable to display active content:</strong> To use <b>Archive Index</b> type a <b><i>space</i></b>, or for <b>URL Index</b> type ' +
-                '<b><i>space + / </i></b>, or else <a id="swModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to Service Worker mode</a> ' +
+                '<b><i>space / </i></b>, or else <a id="swModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to Service Worker mode</a> ' +
                 'if your platform supports it. &nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
         if (params.contentInjectionMode === 'serviceworker' && (params.manipulateImages || params.displayHiddenBlockElements || params.allowHTMLExtraction)) {
@@ -342,8 +342,8 @@ define(rqDef, function(util) {
                 '<a id="hbeModeLink" href="#displayHiddenBlockElementsDiv" class="alert-link">disable Display hidden block elements</a> ' :
                 params.manipulateImages ? '<a id="imModeLink" href="#imageManipulationDiv" class="alert-link">disable Image manipulation</a> ' : '') + 
                 (params.allowHTMLExtraction ? (params.displayHiddenBlockElements || params.manipulateImages ? 'and ' : '') + 
-                'disable Breakout link ' : '') + 'for this content to work properly. To use Archive Index <b><i>type a space</i></b> ' +
-                'in the box above.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
+                'disable Breakout link ' : '') + 'for this content to work properly. To use Archive Index type a <b><i>space</i></b> ' +
+                'in the box above, or <b><i>space / </i></b> for URL Index.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
         }
         if (type === 'zimit') {
@@ -355,7 +355,7 @@ define(rqDef, function(util) {
                 'class="alert-link">switch to Service Worker mode</a> if your platform supports it. ' : 
                 'Support for <b>Zimit</b> ZIMs is experimental. Some content (e.g. audio/video) may fail. ') + 
                 'You can search for content above. <br />Start your search with <b>.*</b> to match part of a title, ' +
-                'or type a <b><i>space</i></b> to use the Archive Index, or <b><i>space + / </i></b> for URL Index.&nbsp;' +
+                'or type a <b><i>space</i></b> to use the Archive Index, or <b><i>space / </i></b> for URL Index.&nbsp;' +
                 '[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
         }
