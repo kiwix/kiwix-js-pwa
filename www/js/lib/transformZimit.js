@@ -182,7 +182,7 @@ define(['uiUtil'], function (uiUtil) {
                 var videoId = data.match(/originalUrl['":]+[^'"]+?youtube.com\/embed\/([^'"]+)/);
                 if (videoId && videoId[1]) {
                     var rgxYouTubeKey = new RegExp(youTubeKey[1].replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), 'g');
-                    data = data.replace(rgxYouTubeKey, videoId[1]);
+                    data = data.replace(rgxYouTubeKey, videoId[1] + '?iskiwixasset');
                 }
             }
 
