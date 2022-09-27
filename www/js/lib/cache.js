@@ -351,8 +351,9 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
      * @param {String} contents The file contents to be stored in the cache
      * @param {String} mimetype The MIME type of the contents
      * @param {Function} callback Callback function to report outcome of operation
+     * @param {Boolean} isAsset Optional indicator that a file is an asset
      */
-    function setItem(key, contents, mimetype, callback) {
+    function setItem(key, contents, mimetype, callback, isAsset) {
         // Prevent use of storage if user has deselected the option in Configuration
         // or if the asset is of the wrong type
         if (params.assetsCache === false || !regexpMimeTypes.test(mimetype)) {
@@ -361,7 +362,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
         }
         // Check if we're actually setting an article 
         var keyArticle = key.match(/([^/]+)\/([AC]\/.+$)/);
-        if (keyArticle && /\bx?html\b/i.test(mimetype)) { // We're setting an article, so go to setArticle function
+        if (keyArticle && !isAsset && /\bx?html\b/i.test(mimetype) && !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm|woff2?|mp[43])(\?|$)/i.test(key)) { // We're setting an article, so go to setArticle function
             setArticle(keyArticle[1], keyArticle[2], contents, callback);
             return;
         }
@@ -472,14 +473,14 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                         }
                         var shortTitle = key.replace(/[^/]+\//g, '').substring(0, 18);
                         // Since there was no result, post UI messages and look up asset in ZIM
-                        if (/\bx?html\b/.test(mimetype) && !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm|woff2?)(\?|$)/i.test(resolvedDirEntry.url)) {
+                        if (/\bx?html\b/.test(mimetype) && !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm|woff2?|mp[43])(\?|$)/i.test(resolvedDirEntry.url)) {
                             uiUtil.pollSpinner();
                             if (params.isLandingPage) uiUtil.pollSpinner('Loading ' + shortTitle + '...');
                         } else if (/(css|javascript|video|vtt)/i.test(mimetype)) {
                             uiUtil.pollSpinner('Getting ' + shortTitle + '...');
                         }
                         // Set the read function to use according to filetype
-                        var readFile = /\b(?:html|css|javascript)\b/i.test(mimetype) ?
+                        var readFile = /\b(?:x?html|css|javascript)\b/i.test(mimetype) ?
                             selectedArchive.readUtf8File : selectedArchive.readBinaryFile;
                         readFile(resolvedDirEntry, function (fileDirEntry, content) {
                             if (regexpMimeTypes.test(mimetype)) {
@@ -488,7 +489,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                                 content = transform(content, title.replace(/^.*\.([^.]+)$/, '$1'));
                             }
                             // Hide article while it is rendering
-                            if (/\bx?html\b/i.test(mimetype)) {
+                            if (!fileDirEntry.isAsset && /\bx?html\b/i.test(mimetype)  && !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm|woff2?|mp[34])(\?|$)/i.test(key)) {
                                 // Count CSS so we can attempt to show article before JS/images are fully loaded
                                 var cssCount = content.match(/<(?:link)[^>]+?href=["']([^"']+)[^>]+>/ig);
                                 assetsCache.cssLoading = cssCount ? cssCount.length : 0;
@@ -508,7 +509,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                                 } else {
                                     console.error('Cache: failed to store asset ' + title);
                                 }
-                            });
+                            }, fileDirEntry.isAsset);
                             resolve(content);
                         });
                     }
