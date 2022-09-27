@@ -5,6 +5,7 @@
 * FEATURE: Enable playback of most offline **embedded** YouTube video in Zimit ZIMs (SW mode)
 * ENHANCEMENT: YouTube video **links** can be played offline if video available (JQuery and SW modes)
 * ENHANCEMENT: Clearer signposting of Archive Index vs URL Index
+* ENHANCEMENT: Show an alert to user if main page is not an article
 * WORKAROUND: Assets with erroneous MIME types were misrecognized as articles (blocking reload of some articles)
 * FIX: Downloading of non-mirrored content in the Library
 * FIX: Recognize XHTML documents and applications in Zimit ZIMs and treat as HTML
