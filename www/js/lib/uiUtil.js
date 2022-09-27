@@ -351,10 +351,10 @@ define(rqDef, function(util) {
             '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
                 '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
                 // '<strong>' + (params.contentInjectionMode === 'jquery' ? 'Limited Zimit' : 'Experimental') + ' support:</strong> ' + 
-                (params.contentInjectionMode === 'jquery' ? '<b>Limited support!</b> Please <a id="swModeLink" href="#contentInjectionModeDiv" ' + 
+                (params.contentInjectionMode === 'jquery' ? '<b>Limited Zimit support!</b> Please <a id="swModeLink" href="#contentInjectionModeDiv" ' + 
                 'class="alert-link">switch to Service Worker mode</a> if your platform supports it. ' : 
-                'Support for <b>Zimit</b> ZIMs is experimental. Some content (e.g. audio/video) may fail. ') + 
-                'You can search for content above. <br />Start your search with <b>.*</b> to match part of a title, ' +
+                'Support for <b>Zimit</b> archives is experimental. Some content (e.g. audio/video) may fail. ') + 
+                'You can search for content above. Start your search with <b>.*</b> to match part of a title, ' +
                 'or type a <b><i>space</i></b> to use the Archive Index, or <b><i>space / </i></b> for URL Index.&nbsp;' +
                 '[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
