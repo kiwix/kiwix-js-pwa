@@ -5626,6 +5626,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         console.error("The main page of this archive does not seem to be an article");
                         uiUtil.clearSpinner();
                         $("#welcomeText").show();
+                        uiUtil.systemAlert('The main page of this archive does not seem to be an article!<br />' + 
+                            'Please check that this ZIM archive is valid. You may be able to search for other pages in the ZIM above.',
+                            'Invalid article!');
                     }
                 }
             });
