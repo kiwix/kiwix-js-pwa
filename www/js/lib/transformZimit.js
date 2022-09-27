@@ -205,7 +205,7 @@ define(['uiUtil'], function (uiUtil) {
         /**
          * Transform css-style links in stylesheet files and stylesheet blocks in HTML
          */
-        if (/\b(css|html)\b/i.test(mimetype)) {
+        if (/\b(css|x?html)\b/i.test(mimetype)) {
             data = data.replace(regexpZimitCssLinks, function (match, url) {
                 var newBlock = match;
                 var assetUrl = url;
@@ -216,7 +216,7 @@ define(['uiUtil'], function (uiUtil) {
                 if (rootDirectory) assetUrl = assetUrl.replace(/^(\.\.\/?)+/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/'); 
                 // Relative assets
                 newBlock = assetUrl === url ? newBlock :
-                    newBlock.replace(url, '@kiwixtransformed@' + assetUrl);
+                    newBlock.replace(url, '@kiwixtransformed@' + assetUrl + (params.contentInjectionMode === 'serviceworker' ? '?isKiwixAsset' : ''));
                 console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
@@ -225,7 +225,7 @@ define(['uiUtil'], function (uiUtil) {
         /**
          * Transform links in JavaScript files or script blocks in the html
          */
-        if (/\b(javascript|html)\b/i.test(mimetype)) {
+        if (/\b(javascript|x?html)\b/i.test(mimetype)) {
             data = data.replace(regexpZimitJavascriptLinks, function (match, url) {
                 if (/www\.w3\.org\/XML\//i.test(url)) return match;
                 var newBlock = match;
