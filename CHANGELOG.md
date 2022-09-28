@@ -1,5 +1,9 @@
 # Changelog
 
+## In-progress version 2.1.81
+
+* FIX: Display of landing pages of YouTube-based archives (e.g. TED Talks)
+
 ## Release 2.1.8
 
 * FEATURE: Enable playback of most offline **embedded** YouTube video in Zimit ZIMs (SW mode)
