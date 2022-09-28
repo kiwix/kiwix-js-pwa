@@ -130,10 +130,8 @@ define(['uiUtil'], function (uiUtil) {
             var originalHeight = documentImages[i].getAttribute('height') || '';
             //Ensure 36px clickable image height so user can request images by tapping
             documentImages[i].height = '36';
-            if (params.contentInjectionMode === 'jquery') {
-                documentImages[i].style.background = 'lightblue';
-                documentImages[i].style.opacity = '1';
-            }
+            documentImages[i].style.background = 'lightblue';
+            documentImages[i].style.opacity = '1';
             documentImages[i].dataset.kiwixheight = originalHeight;
             documentImages[i].addEventListener('click', function (e) {
                 // Line below ensures documentImages remains in scope
@@ -278,11 +276,6 @@ define(['uiUtil'], function (uiUtil) {
             return;
         }
 
-        // Extract all images if we are on the landing page
-        if (params.isLandinPage) {
-            extractImages(documentImages);
-        }
-
         if (forPrinting) {
             if (params.preloadAllImages) uiUtil.pollSpinner();
             extractImages(documentImages, params.preloadingAllImages ? params.preloadAllImages : params.printImagesLoaded);
@@ -290,10 +283,15 @@ define(['uiUtil'], function (uiUtil) {
             if (params.imageDisplayMode === 'manual') {
                 prepareManualExtraction(container);
             } else {
-                // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
-                setTimeout(function() {
-                    lazyLoad(documentImages);
-                }, 400);
+                // Extract all images if we are on the landing page
+                if (params.isLandinPage) {
+                    extractImages(documentImages);
+                } else {
+                    // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
+                    setTimeout(function() {
+                        lazyLoad(documentImages);
+                    }, 400);
+                }
             }
         }
     }
@@ -336,18 +334,18 @@ define(['uiUtil'], function (uiUtil) {
             }
         }
 
-        // Extract all images if we are on the landing page
-        if (params.isLandinPage) {
-            extractImages(documentImages);
-        }
-
         if (forPrinting) {
             extractImages(documentImages, params.preloadingAllImages ? params.preloadAllImages : params.printImagesLoaded);
         } else if (params.imageDisplayMode === 'progressive') {
-            // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
-            setTimeout(function() {
-                lazyLoad(documentImages);
-            }, 500);
+            // Extract all images if we are on the landing page
+            if (params.isLandinPage) {
+                extractImages(documentImages);
+            } else {
+                // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
+                setTimeout(function() {
+                    lazyLoad(documentImages);
+                }, 500);
+            }
         } else {
             // User wishes to extract images manually
             prepareManualExtraction(container);
