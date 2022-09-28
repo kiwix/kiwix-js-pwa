@@ -278,6 +278,11 @@ define(['uiUtil'], function (uiUtil) {
             return;
         }
 
+        // Extract all images if we are on the landing page
+        if (params.isLandinPage) {
+            extractImages(documentImages);
+        }
+
         if (forPrinting) {
             if (params.preloadAllImages) uiUtil.pollSpinner();
             extractImages(documentImages, params.preloadingAllImages ? params.preloadAllImages : params.printImagesLoaded);
@@ -330,6 +335,12 @@ define(['uiUtil'], function (uiUtil) {
                 image.dataset.kiwixurl = image.dataset.kiwixurl.replace(indexRoot, '');
             }
         }
+
+        // Extract all images if we are on the landing page
+        if (params.isLandinPage) {
+            extractImages(documentImages);
+        }
+
         if (forPrinting) {
             extractImages(documentImages, params.preloadingAllImages ? params.preloadAllImages : params.printImagesLoaded);
         } else if (params.imageDisplayMode === 'progressive') {
