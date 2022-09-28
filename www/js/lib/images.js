@@ -284,7 +284,7 @@ define(['uiUtil'], function (uiUtil) {
                 prepareManualExtraction(container);
             } else {
                 // Extract all images if we are on the landing page
-                if (params.isLandinPage) {
+                if (params.isLandingPage) {
                     extractImages(documentImages);
                 } else {
                     // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
@@ -338,7 +338,7 @@ define(['uiUtil'], function (uiUtil) {
             extractImages(documentImages, params.preloadingAllImages ? params.preloadAllImages : params.printImagesLoaded);
         } else if (params.imageDisplayMode === 'progressive') {
             // Extract all images if we are on the landing page
-            if (params.isLandinPage) {
+            if (params.isLandingPage) {
                 extractImages(documentImages);
             } else {
                 // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
