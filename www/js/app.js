@@ -4051,7 +4051,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         // Note that Zimit ZIMs store ZIM URLs encoded, but SOME incorrectly encode using encodeURIComponent, instead of encodeURI!
                         return m1.replace(/[&]/g, '%26').replace(/,/g, '%2C') + (m2 || '');
                     });
-                    // Intercept YouTube vidoe requests
+                    // Intercept YouTube video requests
                     if (params.zimType === 'zimit' && /youtubei.*player/.test(title)) {
                         var cns = appstate.selectedArchive.getContentNamespace();
                         var newTitle = (cns === 'C' ? 'C/' : '') + 'A/' + 'youtube.com/embed/' + title.replace(/^[^?]+\?key=([^&]+).*/, '$1');
@@ -4523,9 +4523,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>';
                 });
 
-                // Exempt Nautilus-based ZIMs from stylesheet preloading
+                // Exempt Nautilus and YouTube based ZIMs from stylesheet preloading
                 var nautilus = params.contentInjectionMode === 'serviceworker' ? 
-                    htmlArticle.match(/<script\b[^>]+['"]([^'"]*nautilus\.js[^'"]*)[^>]*>[^<]*<\/script>\s*/i) : null;
+                    htmlArticle.match(/<script\b[^>]+['"][^'"]*(?:nautilus|zim_prefix)\.js[^'"]*[^>]*>[^<]*<\/script>\s*/i) : null;
             
             }
 
@@ -4879,15 +4879,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         htmlArticle = htmlArticle.replace(/(<html\b[^>]+?style=['"])/i, '$1zoom:' + params.relativeFontSize + '%; ');
                         htmlArticle = htmlArticle.replace(/(<html\b(?![^>]+?style=['"])\s)/i, '$1style="zoom:' + params.relativeFontSize + '%;" ');
                     }
-                    // Move problematic scripts in YouTube-based ZIMs which executes before DOM is ready
-                    ['zim_prefix.js', 'app.js'].forEach(function (script) {
-                        var regexpMoveScript = new RegExp('<script src="[^"]+assets/' + script + '[^<]+?</script>\\s*');
-                        var moveScript = htmlArticle.match(regexpMoveScript);
-                        if (moveScript) {
-                            htmlArticle = htmlArticle.replace(moveScript[0], '');
-                            htmlArticle = htmlArticle.replace(/(<\/body>)/i, moveScript[0] + '$1');
-                        }
-                    });
+                    // Move problematic scripts in YouTube-based ZIMs which execute before DOM is ready
+                    // ['zim_prefix.js', 'app.js'].forEach(function (script) {
+                    //     var regexpMoveScript = new RegExp('<script src="[^"]+assets/' + script + '[^<]+?</script>\\s*');
+                    //     var moveScript = htmlArticle.match(regexpMoveScript);
+                    //     if (moveScript) {
+                    //         htmlArticle = htmlArticle.replace(moveScript[0], '');
+                    //         htmlArticle = htmlArticle.replace(/(<\/body>)/i, moveScript[0] + '$1');
+                    //     }
+                    // });
                     
                     // Add doctype if missing so that scripts run in standards mode
                     // (quirks mode prevents katex from running, and is incompatible with jQuery)

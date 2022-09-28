@@ -285,7 +285,9 @@ define(['uiUtil'], function (uiUtil) {
             } else {
                 // Extract all images if we are on the landing page
                 if (params.isLandingPage) {
-                    extractImages(documentImages);
+                    setTimeout(function () {
+                        extractImages(documentImages);
+                    }, 0);
                 } else {
                     // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
                     setTimeout(function() {
@@ -339,12 +341,14 @@ define(['uiUtil'], function (uiUtil) {
         } else if (params.imageDisplayMode === 'progressive') {
             // Extract all images if we are on the landing page
             if (params.isLandingPage) {
-                extractImages(documentImages);
+                setTimeout(function () {
+                    extractImages(documentImages);
+                }, 0);
             } else {
                 // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
                 setTimeout(function() {
                     lazyLoad(documentImages);
-                }, 500);
+                }, 400);
             }
         } else {
             // User wishes to extract images manually
