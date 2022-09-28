@@ -6,6 +6,7 @@
 * ENHANCEMENT: YouTube video **links** can be played offline if video available (JQuery and SW modes)
 * ENHANCEMENT: Clearer signposting of Archive Index vs URL Index
 * ENHANCEMENT: Show an alert to user if main page is not an article
+* UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-09`
 * WORKAROUND: Assets with erroneous MIME types were misrecognized as articles (blocking reload of some articles)
 * FIX: Downloading of non-mirrored content in the Library
 * FIX: Recognize XHTML documents and applications in Zimit ZIMs and treat as HTML
@@ -14,6 +15,8 @@
 * FIX: Detect more ZIMs for active content warning
 * FIX: Provide instructions for showing URL Index in active content warning
 * FIX: Download of files with very long filenames
+* FIX: Bug causing incomplete loading of images on image-heavy landing pages
+* FIX: Display of blue placeholders for manual image extraction in SW mode
 
 ## Release 2.1.4
 
