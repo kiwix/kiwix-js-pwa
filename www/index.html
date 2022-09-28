@@ -123,6 +123,7 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
                         <ul style="padding-left: 15px;">
+                            <li>Fixed display of landing pages of YouTube-based archives (e.g. TED Talks)</li>
                             <li>Enable playback of most offline <b>embedded</b> YouTube video in Zimit ZIMs (SW mode)</li>
                             <li>YouTube video <b>links</b> can be played offline if video was scraped (JQuery and SW modes)</li>
                             <li>Clearer signposting of Archive Index vs URL Index</li>
@@ -787,10 +788,10 @@
                                                     <span class="checkmark"></span>
                                                     <b>Set dark theme for articles</b>: [ <b><span id="cssWikiDarkThemeState"></span></b> ]  (<i>experimental</i>: tested with Wikimedia ZIMs)
                                                 </label>
-                                                <label id="darkInvert" style="display:none;" class="checkbox" title="This is a generic inversion style, and should work with all ZIM types. It tries not to invert images, but transparent images sometimes fail to show against the background.">
+                                                <label id="darkInvert" style="display:none;" class="checkbox" title="This is a generic inversion style, and may work with some other ZIM types. It tries not to invert images, but transparent images sometimes fail to show against the background.">
                                                     <input type="checkbox" name="cssWikiDarkThemeInvert" id="cssWikiDarkThemeInvertCheck">
                                                     <span class="checkmark"></span>
-                                                    <b>Use simple inversion for dark theme</b> (should work with all archive types)
+                                                    <b>Use simple inversion for dark theme</b> (may work with some other archive types)
                                                 </label>
                                                 <label id="resetDisplayOnResize" style="display:none;" class="checkbox" title="This resets the display on app launch or when the app is resized, to fix UI on excternal monitors. It increases load time, so turn off if you do not use a secondary display.">
                                                     <input type="checkbox" name="resetDisplayOnResize" id="resetDisplayOnResizeCheck">
