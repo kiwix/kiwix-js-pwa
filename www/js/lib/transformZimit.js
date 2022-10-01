@@ -244,8 +244,8 @@ define(['uiUtil'], function (uiUtil) {
         } // End of JavaScript transformations
 
         // Remove the placeholders used to prevent further matching
-        data = data.replace(/@kiwixtransformed@/g, params.contentInjectionMode === 'serviceworker' ? window.location.origin : '');
-        data = data.replace(/@kiwixtrans@/g, '');
+        data = data.replace(/@kiwixtransformed@(?!\.)/g, params.contentInjectionMode === 'serviceworker' ? window.location.origin : '');
+        data = data.replace(/@kiwixtrans(?:formed)?@/g, '');
 
         return data;    
     }
