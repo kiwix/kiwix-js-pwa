@@ -8,6 +8,19 @@ param (
 if ($customversion) {
     "`nUser set custom input version: $customversion"
     $INPUT_VERSION = $customversion
+} else {
+    $init_params = Get-Content -Raw "$PSScriptRoot\..\www\js\init.js"
+    $file_tag = ''
+    if ($init_params -match 'params\[[''"]appVersion[''"]]\s*=\s*[''"]([^''"]+)') {
+        $file_tag = 'v' + $matches[1] 
+    }
+    $tag_name = Read-Host "`nEnter the tag name for this release, Enter to accept suggested tag [$file_tag]"
+    if ($tag_name -eq "") { $tag_name = $file_tag }
+    if ($tag_name -NotMatch '^v\d+\.\d+\.\d+([+EN-]|$)') {
+        "`nTag name must be in the format " + '"v0.0.0[E][N][-text]"!' + "`n"
+        exit
+    }
+    $INPUT_VERSION = $tag_name
 }
 
 if ($INPUT_VERSION) {
