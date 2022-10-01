@@ -3,6 +3,7 @@
 ## In-progress version 2.1.81
 
 * FIX: Display of landing pages of YouTube-based archives (e.g. TED Talks)
+* FIX: Ensure page is blanked and scrolled to top between article loads
 
 ## Release 2.1.8
 
