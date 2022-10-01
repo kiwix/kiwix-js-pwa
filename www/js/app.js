@@ -5189,8 +5189,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 appstate.target = kiwixTarget;
                 articleWindow = thisWindow;
                 articleContainer = thisContainer;
-                if (a.tagName === 'H1') {
-                    // We have registered a click on the header
+                if (a.tagName === 'H1' || a.dataset.popup) {
+                    // We have registered a click on the header or on a dynamic link (e.g. in Nautilus archives)
+                    if (a.dataset.popup) {
+                        // Pop-up window sometimes opens out of view, so we have to scroll into view
+                        iframe.contentWindow.scrollTo({
+                            top: '0',
+                            behavior: 'smooth'
+                        });
+                    }
                     if (!a.newcontainer) return; // A new tab wasn't requested, so ignore
                 }
                 if (params.windowOpener) {
@@ -5231,6 +5238,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
                 }
                 goToArticle(zimUrl, downloadAttrValue, contentType, zimUrlFullEncoding);
+                // Hide article and make sure it is scrolled to top
+                iframe.style.display = 'none';
+                iframe.contentWindow.scrollTo(0, 0);
                 setTimeout(reset, 1400);
             };
             
