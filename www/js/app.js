@@ -3920,7 +3920,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         };
 
         var messageChannel;
-        var spinnerTimer;
         var loadingArticle = '';
 
         /**
@@ -4015,14 +4014,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             var cacheKey = appstate.selectedArchive._file.name + '/' + title;
                             cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(function (content) {
                                 console.log('SW read binary file for: ' + dirEntry.namespace + '/' + dirEntry.url);
-                                if (/\b(css|javascript|video|vtt|webm)\b/i.test(mimetype)) {
-                                    var shortTitle = dirEntry.url.replace(/[^/]+\//g, '').substring(0, 18);
-                                    uiUtil.pollSpinner('Getting ' + shortTitle + '...');
-                                    clearTimeout(spinnerTimer);
-                                    // Android is extremely slow, so this presents the spinner flashing on and off too much
-                                    if (/Android/i.test(params.appType)) spinnerTimer = setTimeout(uiUtil.clearSpinner, 1500);
-                                    else spinnerTimer = setTimeout(uiUtil.clearSpinner, 300);
-                                }
                                 // Let's send the content to the ServiceWorker
                                 var buffer = content.buffer ? content.buffer : content;
                                 var message = {
@@ -4668,15 +4659,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
                     console.log("All CSS resolved");
                     injectHTML(); //Pass the revised HTML to the image and JS subroutine...
-                } else {
-                    uiUtil.pollSpinner("Waiting for CSS # " + (cssArray.length - blobArrayLength) + " out of " + cssArray.length + "...");
                 }
             }
             //End of preload stylesheets code
 
             function injectHTML() {
                 //Inject htmlArticle into iframe
-                uiUtil.pollSpinner(); //Void progress messages
+                // uiUtil.pollSpinner(); //Void progress messages
                 // Extract any css classes from the html tag (they will be stripped when injected in iframe with .innerHTML)
                 var htmlCSS;
                 if (params.contentInjectionMode === 'jquery') htmlCSS = htmlArticle.match(/<html[^>]*class\s*=\s*["']\s*([^"']+)/i);
@@ -5539,7 +5528,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         function goToArticle(path, download, contentType, pathEnc) {
             //This removes any search highlighting
             clearFindInArticle();
-            uiUtil.pollSpinner();
+            var shortTitle = path.replace(/[^/]+\//g, '').substring(0, 18);
+            uiUtil.pollSpinner('Loading ' + shortTitle);
             var zimName = appstate.selectedArchive._file.name.replace(/\.[^.]+$/, '').replace(/_\d+-\d+$/, '');
             if (~path.indexOf(params.cachedStartPages[zimName])) {
                 goToMainArticle();
@@ -5599,7 +5589,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             params.zimType !== 'zimit' && dirEntry.namespace === 'A') {
                             params.isLandingPage = false;
                             $('#activeContent').hide();
-                            uiUtil.pollSpinner();
                             readArticle(dirEntry);
                         } else {
                             // If the random title search did not end up on an article,
@@ -5625,9 +5614,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     console.error("Error finding main article.");
                     uiUtil.clearSpinner();
                     $("#welcomeText").show();
+                    uiUtil.systemAlert('We cannot find the landing page!<br />' + 
+                            'Please check that this ZIM archive is valid. You may be able to search for other pages in the ZIM above.',
+                            'Main page not found!');
                 } else {
-                // DEV: see comment above under goToRandomArticle()
-                if (dirEntry.redirect || /text/.test(dirEntry.getMimetype()) || dirEntry.namespace === 'A') {
+                    // DEV: see comment above under goToRandomArticle()
+                    if (dirEntry.redirect || /text/.test(dirEntry.getMimetype()) || dirEntry.namespace === 'A') {
                         params.isLandingPage = true;
                         appstate.selectedArchive.landingPageUrl = dirEntry.namespace + '/' + dirEntry.url;
                         readArticle(dirEntry);

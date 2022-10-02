@@ -189,6 +189,9 @@ define(rqDef, function(util) {
         cachingAssets.innerHTML = msg;
         if (msg) cachingAssets.style.display = 'block';
         else cachingAssets.style.display = 'none';
+        // Never allow spinner to run for more than 3s
+        clearTimeout(clearSpinner);
+        setTimeout(clearSpinner, 3000);
     }
 
     function clearSpinner() {
