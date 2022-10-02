@@ -1,9 +1,13 @@
 # Changelog
 
-## In-progress version 2.1.81
+## In-progress version 2.1.83
 
+* ENHANCEMENT: Better suggestions for mirrors when Library server does not provide mirror info
+* UPDATE: Steamline polling of spinner and messaging
+* FIX: Ensure spinner never shows for more than 3 seconds
 * FIX: Display of landing pages of YouTube-based archives (e.g. TED Talks)
-* FIX: Ensure page is blanked and scrolled to top between article loads
+* FIX: Ensure page is scrolled to top between article loads
+* FIX: Regression preventing load of some relative assets in Zimit archives
 
 ## Release 2.1.8
 
