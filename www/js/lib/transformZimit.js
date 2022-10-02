@@ -140,7 +140,7 @@ define(['uiUtil'], function (uiUtil) {
                 if (/^<a\s/i.test(newBlock)) newBlock = newBlock.replace(relAssetUrl, '@kiwixtrans@' + assetUrl);
                 // But for non-anchor URLs, We have to mark potential assets that are not easily identified as assets, due to so many html mimetypes being returned for them
                 else newBlock = newBlock.replace(relAssetUrl, '@kiwixtransformed@' + assetUrl + (params.contentInjectionMode === 'serviceworker' ? '?isKiwixAsset' : ''));
-                console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+                // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
 
@@ -217,7 +217,7 @@ define(['uiUtil'], function (uiUtil) {
                 // Relative assets
                 newBlock = assetUrl === url ? newBlock :
                     newBlock.replace(url, '@kiwixtransformed@' + assetUrl + (params.contentInjectionMode === 'serviceworker' ? '?isKiwixAsset' : ''));
-                console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+                // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
         } // End of css transformations
@@ -237,7 +237,7 @@ define(['uiUtil'], function (uiUtil) {
                 assetUrl = /analytics|typepad.*stats/i.test(assetUrl) ? '' : assetUrl; 
                 // Relative assets
                 newBlock = newBlock.replace(url, '@kiwixtransformed@' + assetUrl);
-                console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+                // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
             data = data.replace(/(['"])(?:\/?)((?:static|api)\/)/ig, '$1' + window.location.origin + indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/$2');
