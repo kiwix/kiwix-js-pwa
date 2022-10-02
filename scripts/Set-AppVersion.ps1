@@ -14,6 +14,14 @@ if ($customversion) {
     if ($init_params -match 'params\[[''"]appVersion[''"]]\s*=\s*[''"]([^''"]+)') {
         $file_tag = 'v' + $matches[1] 
     }
+    if ($file_tag) {
+        "`nCurrent app version is: $file_tag"
+        if ($file_tag -match '(^.*\.)([0-9]+)(.*$)') {
+            if ($matches[2]) {
+                $file_tag = $matches[1] + ($matches[2] / 1 + 1) + $matches[3]
+            }
+        }
+    }
     $tag_name = Read-Host "`nEnter the tag name for this release, Enter to accept suggested tag [$file_tag]"
     if ($tag_name -eq "") { $tag_name = $file_tag }
     if ($tag_name -NotMatch '^v\d+\.\d+\.\d+([+EN-]|$)') {
