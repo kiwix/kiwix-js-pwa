@@ -473,9 +473,9 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                         }
                         var shortTitle = key.replace(/[^/]+\//g, '').substring(0, 18);
                         // Since there was no result, post UI messages and look up asset in ZIM
-                        if (/\bx?html\b/.test(mimetype) && !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm|woff2?|mp[43])(\?|$)/i.test(resolvedDirEntry.url)) {
-                            uiUtil.pollSpinner();
-                            if (params.isLandingPage) uiUtil.pollSpinner('Loading ' + shortTitle + '...');
+                        if (/\bx?html\b/.test(mimetype) && !resolvedDirEntry.isAsset && 
+                            !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm|woff2?|mp[43])(\?|$)/i.test(resolvedDirEntry.url)) {
+                            uiUtil.pollSpinner('Loading ' + shortTitle + '...');
                         } else if (/(css|javascript|video|vtt)/i.test(mimetype)) {
                             uiUtil.pollSpinner('Getting ' + shortTitle + '...');
                         }
