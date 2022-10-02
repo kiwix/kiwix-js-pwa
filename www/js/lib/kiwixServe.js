@@ -426,6 +426,7 @@ define([], function () {
                 var headerDoc = 'There is a server issue, but please try the following links to your file:';
                 if (~URL.indexOf(params.kiwixHiddenDownloadLink)) {
                     headerDoc = 'This file is only available via direct download:';
+                    altURL = requestedURL.replace(/\/master\./i, '/mirror.');
                 }
                 header.outerHTML = header.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + headerDoc + '</div>');
                 var body = document.getElementById('dl-panel-body');
