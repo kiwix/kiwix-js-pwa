@@ -6,7 +6,7 @@
 * UPDATE: Streamline polling of spinner and messaging
 * FIX: Ensure spinner never shows for more than 3 seconds
 * FIX: Display of landing pages of YouTube-based archives (e.g. TED Talks)
-* FIX: Ensure page is scrolled to top between article loads
+* FIX: Ensure dynamic element is scrolled into view when clicked in collection archives
 * FIX: Regression preventing load of some relative assets in Zimit archives
 
 ## Release 2.1.8
