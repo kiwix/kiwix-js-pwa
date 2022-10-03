@@ -5227,11 +5227,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
                 }
                 goToArticle(zimUrl, downloadAttrValue, contentType, zimUrlFullEncoding);
-                // Hide article and make sure it is scrolled to top
-                // iframe.style.display = 'none';
-                setTimeout(function () {
-                    iframe.contentWindow.scrollTo(0, 0);
-                }, 100);
                 setTimeout(reset, 1400);
             };
             
