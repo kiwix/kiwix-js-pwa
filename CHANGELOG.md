@@ -1,16 +1,20 @@
 # Changelog
 
-## In-progress release 2.1.7
+## Release 2.1.8-WikiMed
 
-* FEATURE: Enable playback of most offline **embedded** YouTube video in Zimit ZIMs
-* ENHANCEMENT: YouTube video **links** can also be played offline if the video was scraped (Zimit)
+* UPDATE: Packaged archive updated to `mdwiki_en_all-app_maxi_2022-10.zim`
+* UPDATE: Streamline polling of spinner and messaging
 * ENHANCEMENT: Clearer signposting of Archive Index vs URL Index
-* FIX: Downloading of non-mirrored content in the Library
-* FIX: Recognize XHTML documents and applications in Zimit ZIMs and treat as HTML
-* FIX: Wikivoyage package and install icons
-* FIX: Bug preventing loading of Nautilus-based ZIM assets
+* ENHANCEMENT: Better suggestions for mirrors when Library server does not provide mirror info
+* ENHANCEMENT: Show an alert to user if main page is not an article
+* WORKAROUND: Assets with erroneous MIME types were misrecognized as articles (blocking reload of some articles)
 * FIX: Detect more ZIMs for active content warning
 * FIX: Provide instructions for showing URL Index in active content warning
+* FIX: Download of files with very long filenames
+* FIX: Bug causing incomplete loading of images on image-heavy landing pages
+* FIX: Display of blue placeholders for manual image extraction in SW mode
+* FIX: Ensure spinner never shows for more than 3 seconds
+* FIX: Downloading of non-mirrored content in the Library
 
 ## Release 2.1.5-WikiMed
 
