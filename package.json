@@ -1,15 +1,15 @@
 {
-  "name": "kiwix-js-electron",
-  "productName": "Kiwix JS Electron",
-  "version": "2.1.83-E",
-  "description": "Kiwix JS packaged for the Electron framework",
+  "name": "kiwix-js-wikimed",
+  "productName": "WikiMed by Kiwix",
+  "version": "2.1.7-E",
+  "description": "WikiMed by Kiwix packaged for the Electron framework",
   "main": "main.js",
   "build": {
-    "appId": "kiwix.js.electron",
-    "productName": "Kiwix JS Electron",
+    "appId": "kiwix.js.wikimed",
+    "productName": "WikiMed by Kiwix",
     "directories": {
       "output": "bld/Electron",
-      "buildResources": "electron_icons"
+      "buildResources": "build"
     },
     "afterPack": "./scripts/appimage-fix.js",
     "win": {
@@ -41,13 +41,6 @@
             "x64",
             "ia32"
           ]
-        },
-        {
-          "target": "rpm",
-          "arch": [
-            "x64",
-            "ia32"
-          ]
         }
       ],
       "category": "Education"
@@ -75,15 +68,21 @@
     "dist-linux": "electron-builder build --linux",
     "publish": "electron-builder",
     "package-mac": "electron-packager . kiwix-js-windows --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
-    "package-win": "electron-packager . kiwix-js-windows --overwrite --electron-version='18.2.1' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --platform=win32 --arch=ia32 --icon=www/img/icons/kiwix-64.ico --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Kiwix JS Windows Electron Edition'",
+    "package-win": "electron-packager . kiwix-js-windows --overwrite --electron-version='18.2.1' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --platform=win32 --arch=ia32 --icon=www/img/icons/kiwix-64.ico --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='WikiMed by Kiwix Electron Edition'",
     "postpackage-win": "(robocopy archives bld\\Electron\\kiwix-js-windows-win32-ia32\\resources\\app\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0",
-    "package-linux": "electron-packager . kiwix-js-windows --overwrite --platform=linux --icon=www/img/icons/kiwix-64.png --electron-version='18.2.1' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --arch=x64 --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Kiwix JS Windows Electron Edition'",
+    "package-linux": "electron-packager . kiwix-js-windows --overwrite --platform=linux --icon=www/img/icons/kiwix-64.png --electron-version='18.2.1' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --arch=x64 --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='WikiMed by Kiwix Electron Edition'",
     "postpackage-linux": "(robocopy archives bld\\Electron\\kiwix-js-windows-linux-x64\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0"
   },
   "repository": "https://github.com/kiwix/kiwix-js-windows",
   "keywords": [
     "Kiwix",
+    "WikiMed",
     "offline",
+    "medical",
+    "medicine",
+    "medicines",
+    "pharmaceutical",
+    "pharmaceuticals",
     "Wikipedia",
     "ZIM",
     "reader"
@@ -95,13 +94,13 @@
   "maintainer": "Jaifroid",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "18.3.14",
-    "electron-builder": "^23.3.3",
+    "electron": "18.3.5",
+    "electron-builder": "^23.1.0",
     "electron-packager": "^15.4.0"
   },
   "dependencies": {
     "@types/fs-extra": "^9.0.11",
     "electron-context-menu": "^3.1.1",
-    "electron-updater": "^5.2.4"
+    "electron-updater": "^5.0.3"
   }
 }
