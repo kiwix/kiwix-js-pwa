@@ -37,8 +37,12 @@ if ($init_params -match 'params\[[''"]appVersion[''"]]\s*=\s*[''"]([^''"]+)') {
   exit
 }
 if (-Not (Test-Path $PSScriptRoot/../node_modules -PathType Container)) {
-  "`n*** WARNING: Cannot find node_modules folder: perhaps you renamed it?`n"
-  exit
+  mv $PSScriptRoot/../node_modules_electron $PSScriptRoot/../node_modules
+  if (-Not (Test-Path $PSScriptRoot/../node_modules -PathType Container)) { 
+    "`n*** WARNING: Cannot find node_modules folder and cannot rename it!`n"
+    exit
+  }
+  "`nWe renamed node_modules_electron to node_modules."
 }
 
 $sw_tag = ''
