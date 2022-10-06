@@ -150,6 +150,8 @@ if (-not $githubonly) {
             if ($CRON_LAUNCHED) {
                 # Remove the version number
                 $filename = $filename -replace '_[0-9.]+([-_.])', '$1'
+                # Add the date
+                $filename = $filename -replace '[^_]+(\.[^.]+)$', ($current_date + '$1')
             }
             # Put back together
             $renamed_file = "$directory$filename"

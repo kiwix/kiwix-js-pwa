@@ -37,6 +37,8 @@ for file in ./bld/Electron/* ; do
         if [[ "qq${CRON_LAUNCHED}" != "qq" ]]; then 
             # Delete release number other than SHA if there is a SHA
             filename=$(sed -E 's/_[0-9.]+([-_.])/\1/' <<<"$filename")
+            # Add date to filename
+            filename=$(sed -E "s/[^_]+(\.[^.]+)$/$CURRENT_DATE\1/" <<<"$filename")
         fi
         # Put it all together
         renamed_file="$directory$filename"
