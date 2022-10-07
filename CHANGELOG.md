@@ -4,6 +4,8 @@
 
 * ENHANCEMENT: Better suggestions for mirrors when Library server does not provide mirror info
 * UPDATE: Streamline polling of spinner and messaging
+* FIX: Selection of languages in Library
+* FIX: Display of some irregularly formatted filenames in Library
 * FIX: Ensure spinner never shows for more than 3 seconds
 * FIX: Display of landing pages of YouTube-based archives (e.g. TED Talks)
 * FIX: Ensure dynamic element is scrolled into view when clicked in collection archives
