@@ -16,6 +16,10 @@
       "publish": [
         "github"
       ],
+      "extraResources": {
+        "from": "archives",
+        "to": "archives"
+      },
       "target": [
         {
           "target": "NSIS",
@@ -28,6 +32,11 @@
       ]
     },
     "linux": {
+      "asar": "false",
+      "extraResources": {
+        "from": "archives",
+        "to": "app/archives"
+      },
       "publish": [
         "github"
       ],
@@ -60,10 +69,6 @@
       "oneClick": "false",
       "allowElevation": "true",
       "runAfterFinish": "true"
-    },
-    "extraResources": {
-      "from": "archives",
-      "to": "archives"
     },
     "files": [
       "service-worker.js",
