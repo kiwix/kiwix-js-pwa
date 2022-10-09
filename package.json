@@ -20,6 +20,10 @@
         {
           "target": "NSIS",
           "arch": "ia32"
+        },
+        {
+          "target": "portable",
+          "arch": "ia32"
         }
       ]
     },
@@ -57,7 +61,6 @@
       "allowElevation": "true",
       "runAfterFinish": "true"
     },
-    "asar": false,
     "files": [
       "archives/**",
       "service-worker.js",
@@ -105,3 +108,5 @@
     "electron-updater": "^5.2.4"
   }
 }
+
+
