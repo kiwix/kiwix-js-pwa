@@ -2398,6 +2398,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // because a new path is established each time the image's filesystem is mounted. So we reset to default.
                 var archiveFilePath = params.storedFilePath;
                 if (params.storedFile === params.packagedFile) {
+                    // If the app is packed inside an asar archive, we need to alter the archivePath to point outside the asar directory
+                    if (/\/app.asar\//.test(document.location.href) && !/^\.\.[\\/]/.test(params.archivePath)) params.archivePath = '../' + params.archivePath;
                     archiveFilePath = params.archivePath + '/' + params.packagedFile;
                     if (~params.storedFilePath.indexOf(archiveFilePath)) {
                         params.storedFilePath = archiveFilePath;
@@ -3225,6 +3227,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 settingsStore.removeItem('lastSelectedArchivePath');
                 params.lastPageVisit = '';
                 if (params.packagedFile && params.storedFile !== params.packagedFile) {
+                    // If the app is packed inside an asar archive, we need to alter the archivePath to point outside the asar directory
+                    if (/\/app.asar\//.test(document.location.href) && !/^\.\.[\\/]/.test(params.archivePath)) params.archivePath = '../' + params.archivePath;
                     readNodeDirectoryAndCreateNodeFileObjects(params.archivePath, params.packagedFile).then(function (fileset) {
                         var fileObjects = fileset[0], fileNames = fileset[1];
                         // params.pickedFile = params.packagedFile;
