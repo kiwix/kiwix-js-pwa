@@ -343,8 +343,21 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       } else {
         "`n**WARNING: The app manifest is not correct for building an app for release on GitHub! Please associate the app with 'Association Kiwix' in Visual Studio and try again"
         "or else run this script with the flag -buildstorerelease`n"
-        if (-Not $dryrun) { return }
-        else { "App would exit now if not dryrun.`n" }
+        $rename_check = Read-Host "Would you like to set the app for a GitHub release? [Y/N]"
+        $rename_check = -Not ( $rename_check -imatch 'n' )
+        if ($rename_check) {
+          mv $PSScriptRoot/../KiwixWebApp.jsproj $PSScriptRoot/../KiwixWebApp-msstore.jsproj
+          mv $PSScriptRoot/../package.appxmanifest $PSScriptRoot/../package-msstore.appxmanifest
+          mv $PSScriptRoot/../KiwixWebApp-github.jsproj $PSScriptRoot/../KiwixWebApp.jsproj
+          mv $PSScriptRoot/../package-github.appxmanifest $PSScriptRoot/../package.appxmanifest
+          $appxmanifest = Get-Content -Raw $PSScriptRoot/../package.appxmanifest
+          if (-Not ($appxmanifest -match "Publisher=['`"]CN=Association\sKiwix")) {
+            "`bSomething went wrong! We were not able to associate the app with a GitHub release!"
+            return
+          }
+        } elseif (-Not $dryrun) {
+          return
+        } else { "App would exit now if not dryrun.`n" }
       }
     } else {
       "`nBe aware that the version you are building is good for public release on GitHub, but not for upload to the Microsoft Store."
