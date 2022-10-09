@@ -61,8 +61,11 @@
       "allowElevation": "true",
       "runAfterFinish": "true"
     },
+    "extraResources": {
+      "from": "archives",
+      "to": "archives"
+    },
     "files": [
-      "archives/**",
       "service-worker.js",
       "index.html",
       "CHANGELOG.md",
