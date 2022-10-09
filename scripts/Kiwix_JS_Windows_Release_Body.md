@@ -9,6 +9,9 @@ This app only comes packaged with a small sample ZIM archve containing a collect
 
 Please choose the correct version (those marked [**AUTO-UPDATE**] will self-update automatically when there is a new version):
 
+* **Any modern OS (PWA)**
+  + Try out our new **installable PWA** (Progressive Web App) simply by visiting https://pwa.kiwix.org/ [**AUTO-UPDATE**]. Incredibly light, no store or download required, no heavy framework! It works offline once the app has cached its code, and in Chrome/Edge/Chromium, you can install it right from within the app (in Firefox you can bookmark it).
+
 * **Windows**:
   - **Store app for Windows 10/11 (UWP)**
     + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9P8SLZ4J979J [**AUTO-UPDATE**] - *recommended*
@@ -22,6 +25,7 @@ Please choose the correct version (those marked [**AUTO-UPDATE**] will self-upda
     + **_New!_** [Electron] Windows 7/8/10/11: self-contained **portable** version, no unzip needed - [Kiwix-JS-Electron-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E.exe) (if you find this version slow to launch, try the Setup version above, or a zipped version below)
     + [Electron] Windows 7/8/10/11: just unzip to any drive or folder - [Kiwix-JS-Electron-<<numeric_tag>>-E.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E.zip)
     + [NWJS] Windows 7/8/10/11: just unzip to any drive or folder - [kiwix_js_windows-<<base_tag>>-N-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-<<base_tag>>-N-win-ia32.zip)
+
 * **Linux** (read important instructions below screenshot):
   - **Portable (Electron)**
     + AppImage 64bit (Ubuntu, Debian, OpenSUSE): [Kiwix-JS-Electron-<<numeric_tag>>-E.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E.AppImage) [**AUTO-UPDATE**]
@@ -31,9 +35,6 @@ Please choose the correct version (those marked [**AUTO-UPDATE**] will self-upda
     + Deb package 32bit (Ubuntu, Debian): [kiwix-js-electron_<<numeric_tag>>-E_i386.deb](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix-js-electron_<<numeric_tag>>-E_i386.deb)
     + RPM package 64bit OpenSUSE): [kiwix-js-electron-<<numeric_tag>>-E.x86_64.rpm](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix-js-electron-<<numeric_tag>>-E.x86_64.rpm)
     + RPM package 32bit (OpenSUSE): [kiwix-js-electron-<<numeric_tag>>-E.i686.rpm](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix-js-electron-<<numeric_tag>>-E.i686.rpm)
-
-* **Any modern OS (PWA)**
-  + Try out our new **installable PWA** (Progressive Web App) simply by visiting https://pwa.kiwix.org/ [**AUTO-UPDATE**]. No store or download required! It works offline once the app has cached its code, and in Chrome/Edge/Chromium, you can install it right from within the app (in Firefox you can bookmark it).
 
 ## Installation Instructions - NWJS/Electron
 
