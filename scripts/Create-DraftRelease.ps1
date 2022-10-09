@@ -345,7 +345,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         "or else run this script with the flag -buildstorerelease`n"
         $rename_check = Read-Host "Would you like to set the app for a GitHub release? [Y/N]"
         $rename_check = -Not ( $rename_check -imatch 'n' )
-        if ($rename_check) {
+        if ($rename_check -and (-not $dryrun)) {
           mv $PSScriptRoot/../KiwixWebApp.jsproj $PSScriptRoot/../KiwixWebApp-msstore.jsproj
           mv $PSScriptRoot/../package.appxmanifest $PSScriptRoot/../package-msstore.appxmanifest
           mv $PSScriptRoot/../KiwixWebApp-github.jsproj $PSScriptRoot/../KiwixWebApp.jsproj
@@ -357,7 +357,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
           }
         } elseif (-Not $dryrun) {
           return
-        } else { "App would exit now if not dryrun.`n" }
+        } else { "App would either rename manifests or exit now if not dryrun.`n" }
       }
     } else {
       "`nBe aware that the version you are building is good for public release on GitHub, but not for upload to the Microsoft Store."
@@ -452,6 +452,12 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       } else {
         'cmd.exe /c " "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" && SignTool sign /fd SHA256 /a /f ' + $PSScriptRoot + '\kiwix2022.pfx /p ' + $pfxpwd + ' /tr http://timestamp.digicert.com  /td SHA256 ' + $ReleaseBundle + ' "'
       }
+    }
+    if ($rename_check -and (-not $dryrun)) {
+      mv $PSScriptRoot/../KiwixWebApp.jsproj $PSScriptRoot/../KiwixWebApp-github.jsproj
+      mv $PSScriptRoot/../package.appxmanifest $PSScriptRoot/../package-github.appxmanifest
+      mv $PSScriptRoot/../KiwixWebApp-msstore.jsproj $PSScriptRoot/../KiwixWebApp.jsproj
+      mv $PSScriptRoot/../package-msstore.appxmanifest $PSScriptRoot/../package.appxmanifest
     }
     # ZIP the remaining assets
     "`nCompressing remaining assets..."
