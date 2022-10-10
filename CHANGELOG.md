@@ -1,8 +1,9 @@
 # Changelog
 
-## In-progress version 2.1.83
+## Release 2.1.9
 
 * ENHANCEMENT: Better suggestions for mirrors when Library server does not provide mirror info
+* ENHANCEMENT: A self-contained portable Windows executable is now available for Electron
 * UPDATE: Streamline polling of spinner and messaging
 * FIX: Selection of languages in Library
 * FIX: Display of some irregularly formatted filenames in Library
