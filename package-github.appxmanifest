@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5" IgnorableNamespaces="uap mp uap3 uap5">
-  <Identity Name="Kiwix.KiwixJS" Version="2.1.8.0" Publisher="CN=Association Kiwix, O=Association Kiwix, L=Lausanne, C=CH" />
+  <Identity Name="Kiwix.KiwixJS" Version="2.1.9.0" Publisher="CN=Association Kiwix, O=Association Kiwix, L=Lausanne, C=CH" />
   <mp:PhoneIdentity PhoneProductId="9983be8d-4e36-4018-bfb3-5170659bf447" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Kiwix JS</DisplayName>
