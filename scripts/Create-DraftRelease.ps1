@@ -328,7 +328,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         "[DRYRUN] would have written:`n"
         $script_body
       } else {
-        Set-Content "$PSScriptRoot/Build-NWJS.ps1" $script_body
+        Set-Content -encoding "utf8BOM" "$PSScriptRoot/Build-NWJS.ps1" $script_body
         "Building NWJS packages..."
         & $PSScriptRoot/Build-NWJS.ps1
         $found = $true
@@ -383,7 +383,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         "Updating..."
         $appxmanifest = $appxmanifest -replace "(\sVersion=['`"])\d+\.\d+\.\d+(\.0['`"])", "`${1}$numeric_tag`${2}"
         if (-Not $dryrun) {
-          Set-Content $PSScriptRoot/../package.appxmanifest $appxmanifest
+          Set-Content -encoding "utf8BOM" $PSScriptRoot/../package.appxmanifest $appxmanifest
         } else {
           "[DRYRUN] Would have written package.appxmanifest:"
           "$appxmanifest"
