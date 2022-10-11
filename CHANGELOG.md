@@ -3,6 +3,7 @@
 ## In progress release 2.1.91
 
 * FIX: Regression preventing UWP app from remaining in Service Worker mode
+* FIX: Failure to confirm with user before launching SW mode in UWP app
 
 ## Release 2.1.9
 
