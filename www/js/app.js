@@ -2283,7 +2283,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         '<p>Please try again when you have a stable Internet connection.</p>', 'Error!');
                 });
             };
-            if (settingsStore.getItem('allowInternetAccess') === 'true' && params.localUWPSettings.PWA_launch !== 'fail') {
+            if (settingsStore.getItem('allowInternetAccess') === 'true' && params.localUWPSettings.PWA_launch && params.localUWPSettings.PWA_launch !== 'fail') {
                 if (params.localUWPSettings.PWA_launch === 'success') launchPWA();
                 else checkPWAIsOnline();
                 return;
