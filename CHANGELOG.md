@@ -1,5 +1,9 @@
 # Changelog
 
+## In progress release 2.1.91
+
+* FIX: Regression preventing UWP app from remaining in Service Worker mode
+
 ## Release 2.1.9
 
 * ENHANCEMENT: Better suggestions for mirrors when Library server does not provide mirror info
