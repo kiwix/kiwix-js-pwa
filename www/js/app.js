@@ -1262,6 +1262,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
                             uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
                             uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
+                            // Void the PWA_launch signal so that user will be asked again next time
+                            params.localUWPSettings.PWA_launch = '';
                             window.location.href = 'ms-appx-web:///www/index.html' + uriParams;
                             throw 'Beam me down, Scotty!';
                         };
