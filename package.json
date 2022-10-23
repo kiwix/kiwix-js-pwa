@@ -1,15 +1,15 @@
 {
-  "name": "kiwix-js-electron",
-  "productName": "Kiwix JS Electron",
+  "name": "kiwix-js-wikivoyage",
+  "productName": "Wikivoyage by Kiwix",
   "version": "2.1.91-E",
-  "description": "Kiwix JS packaged for the Electron framework",
+  "description": "Wikivoyage packaged for the Electron framework",
   "main": "main.js",
   "build": {
-    "appId": "kiwix.js.electron",
-    "productName": "Kiwix JS Electron",
+    "appId": "kiwix.js.wikivoyage",
+    "productName": "Wikivoyage by Kiwix",
     "directories": {
       "output": "bld/Electron",
-      "buildResources": "electron_icons"
+      "buildResources": "build"
     },
     "afterPack": "./scripts/appimage-fix.js",
     "win": {
@@ -23,10 +23,6 @@
       "target": [
         {
           "target": "NSIS",
-          "arch": "ia32"
-        },
-        {
-          "target": "portable",
           "arch": "ia32"
         }
       ]
@@ -50,13 +46,6 @@
         },
         {
           "target": "deb",
-          "arch": [
-            "x64",
-            "ia32"
-          ]
-        },
-        {
-          "target": "rpm",
           "arch": [
             "x64",
             "ia32"
@@ -86,15 +75,19 @@
     "dist-linux": "electron-builder build --linux",
     "publish": "electron-builder",
     "package-mac": "electron-packager . kiwix-js-windows --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
-    "package-win": "electron-packager . kiwix-js-windows --overwrite --electron-version='18.3.14' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=electron_icons$ --ignore=manifests$ --ignore=screenshots$ --ignore=scripts$  --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --platform=win32 --arch=ia32 --icon=www/img/icons/kiwix-64.ico --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Kiwix JS Windows Electron Edition'",
+    "package-win": "electron-packager . kiwix-js-windows --overwrite --electron-version='18.3.14' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --platform=win32 --arch=ia32 --icon=www/img/icons/kiwix-64.ico --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Wikivoyage by Kiwix Electron Edition'",
     "postpackage-win": "(robocopy archives bld\\Electron\\kiwix-js-windows-win32-ia32\\resources\\app\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0",
-    "package-linux": "electron-packager . kiwix-js-windows --overwrite --platform=linux --icon=www/img/icons/kiwix-64.png --electron-version='18.3.14' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --arch=x64 --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Kiwix JS Linux Electron Edition'",
+    "package-linux": "electron-packager . kiwix-js-windows --overwrite --platform=linux --icon=www/img/icons/kiwix-64.png --electron-version='18.3.14' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --arch=x64 --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Wikivoyage by Kiwix Electron Edition'",
     "postpackage-linux": "(robocopy archives bld\\Electron\\kiwix-js-windows-linux-x64\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0"
   },
   "repository": "https://github.com/kiwix/kiwix-js-windows",
   "keywords": [
     "Kiwix",
+    "Wikivoyage",
     "offline",
+    "travel",
+    "guide",
+    "tourism",
     "Wikipedia",
     "ZIM",
     "reader"

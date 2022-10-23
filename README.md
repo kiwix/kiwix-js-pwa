@@ -106,7 +106,7 @@ to Wikipedia or Wikivoyage articles.
 
 ## Privacy Policy
 
-When installed, Kiwix JS Windows and Linux is capable of working entirely offline. This application does not collect or
+When installed, Wikivoyage by Kiwix is capable of working entirely offline. This application does not collect or
 record any of your personal data, though if you installed it from a Store, the Store operator may collect anonymous
 usage data (see below). The app only remembers your browsing history for the duration of a session (for the purpose
 of returning to previously viewed pages). This history is lost on exiting the app with the optional exception of the
