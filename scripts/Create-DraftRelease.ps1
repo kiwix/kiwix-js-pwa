@@ -337,6 +337,8 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   } else {
     # We need to check for UWP assets - let's see what type the user last built
     $appxmanifest = Get-Content -Raw $PSScriptRoot/../package.appxmanifest
+    $projstub = $text_tag
+    if ($text_tag -eq "Windows") { $projstub = "" }
     if (-Not ($appxmanifest -match "Publisher=['`"]CN=Association\sKiwix")) {
       if ($buildstorerelease) {
       "`n** App manifest is correctly associated with the MS Store..."
@@ -346,9 +348,9 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         $rename_check = Read-Host "Would you like to set the app for a GitHub release? [Y/N]"
         $rename_check = -Not ( $rename_check -imatch 'n' )
         if ($rename_check -and (-not $dryrun)) {
-          mv $PSScriptRoot/../KiwixWebApp.jsproj $PSScriptRoot/../KiwixWebApp-msstore.jsproj
+          mv $PSScriptRoot/../KiwixWebApp$projstub.jsproj $PSScriptRoot/../KiwixWebApp$projstub-msstore.jsproj
           mv $PSScriptRoot/../package.appxmanifest $PSScriptRoot/../package-msstore.appxmanifest
-          mv $PSScriptRoot/../KiwixWebApp-github.jsproj $PSScriptRoot/../KiwixWebApp.jsproj
+          mv $PSScriptRoot/../KiwixWebApp$projstub-github.jsproj $PSScriptRoot/../KiwixWebApp$projstub.jsproj
           mv $PSScriptRoot/../package-github.appxmanifest $PSScriptRoot/../package.appxmanifest
           $appxmanifest = Get-Content -Raw $PSScriptRoot/../package.appxmanifest
           if (-Not ($appxmanifest -match "Publisher=['`"]CN=Association\sKiwix")) {
@@ -454,9 +456,9 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       }
     }
     if ($rename_check -and (-not $dryrun)) {
-      mv $PSScriptRoot/../KiwixWebApp.jsproj $PSScriptRoot/../KiwixWebApp-github.jsproj
+      mv $PSScriptRoot/../KiwixWebApp$projstub.jsproj $PSScriptRoot/../KiwixWebApp$projstub-github.jsproj
       mv $PSScriptRoot/../package.appxmanifest $PSScriptRoot/../package-github.appxmanifest
-      mv $PSScriptRoot/../KiwixWebApp-msstore.jsproj $PSScriptRoot/../KiwixWebApp.jsproj
+      mv $PSScriptRoot/../KiwixWebApp$projstub-msstore.jsproj $PSScriptRoot/../KiwixWebApp$projstub.jsproj
       mv $PSScriptRoot/../package-msstore.appxmanifest $PSScriptRoot/../package.appxmanifest
     }
     # ZIP the remaining assets
