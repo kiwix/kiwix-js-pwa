@@ -1,6 +1,8 @@
 ﻿## If you are viewing this folder on GitHub or a cloned repository…
 
-Due to GitHub filesize restrictions, it is not possible to upload ZIMs that are larger than 100Mb to this directory. If you wish to build the source code yourself, you will need to add the appropriate packaged ZIM file to your local repository before building. See below.
+Due to GitHub filesize restrictions, it is not possible to upload ZIMs that are larger than 100Mb to this directory. If you wish to build the source code yourself,
+you will need to add the appropriate packaged ZIM file to your local repository before building, or else commit a
+[split ZIM archive](https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#download-a-zim-archive-all-platforms) in chunks ideally below 50MB each chunk.
 
 ## How to change the packaged archive
 
@@ -13,7 +15,7 @@ params['cachedStartPages'] = false;
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
 ```
 
-You can have more than one ZIM archive in `archives`, but only one will launch on app startup as the packaged file. If you do have more than one, then be sure to set `params['showFileSelectors'] = true;` to aid in discoverability of the other archive, otherwise your users will not eaeily realize it is there. Keeping that parameter as `false` dedicates the app to the packaged archive, but users can still override and pick a different ZIM by changing the value in Expert Settings (Config).
+You can have more than one ZIM archive in `archives`, but only one will launch on app startup as the packaged file. If you do have more than one, then be sure to set `params['showFileSelectors'] = true;` to aid in discoverability of the other archive, otherwise your users will not easily realize it is there. Keeping that parameter as `false` dedicates the app to the packaged archive, but users can still override and pick a different ZIM by changing the value in Expert Settings (Config).
 
 ## Building the app
 
