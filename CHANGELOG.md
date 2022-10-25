@@ -1,32 +1,15 @@
 # Changelog
 
-## In progress release 2.1.91
+## Release 2.1.9-Wikivoyage
 
-* FIX: Regression preventing UWP app from remaining in Service Worker mode
-* FIX: Failure to confirm with user before launching SW mode in UWP app
-
-## Release 2.1.9
-
-* ENHANCEMENT: Better suggestions for mirrors when Library server does not provide mirror info
-* ENHANCEMENT: A self-contained portable Windows executable is now available for Electron
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2022-10`
 * UPDATE: Streamline polling of spinner and messaging
-* FIX: Selection of languages in Library
-* FIX: Display of some irregularly formatted filenames in Library
-* FIX: Ensure spinner never shows for more than 3 seconds
-* FIX: Display of landing pages of YouTube-based archives (e.g. TED Talks)
-* FIX: Ensure dynamic element is scrolled into view when clicked in collection archives
-* FIX: Regression preventing load of some relative assets in Zimit archives
-
-## Release 2.1.8
-
-* FEATURE: Enable playback of most offline **embedded** YouTube video in Zimit ZIMs (SW mode)
-* ENHANCEMENT: YouTube video **links** can be played offline if video available (JQuery and SW modes)
 * ENHANCEMENT: Clearer signposting of Archive Index vs URL Index
 * ENHANCEMENT: Show an alert to user if main page is not an article
-* UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-09`
+* ENHANCEMENT: Better suggestions for mirrors when Library server does not provide mirror info
+* ENHANCEMENT: A self-contained portable Windows executable is now available for Electron
 * WORKAROUND: Assets with erroneous MIME types were misrecognized as articles (blocking reload of some articles)
 * FIX: Downloading of non-mirrored content in the Library
-* FIX: Recognize XHTML documents and applications in Zimit ZIMs and treat as HTML
 * FIX: Wikivoyage package and install icons
 * FIX: Bug preventing loading of Nautilus-based ZIM assets
 * FIX: Detect more ZIMs for active content warning
@@ -34,12 +17,21 @@
 * FIX: Download of files with very long filenames
 * FIX: Bug causing incomplete loading of images on image-heavy landing pages
 * FIX: Display of blue placeholders for manual image extraction in SW mode
+* FIX: Selection of languages in Library
+* FIX: Display of some irregularly formatted filenames in Library
+* FIX: Ensure spinner never shows for more than 3 seconds
+* FIX: Regression preventing UWP app from remaining in Service Worker mode
+* FIX: Failure to confirm with user before launching SW mode in UWP app
 
-## Release 2.1.4
+## Release 2.1.5-Wikivoyage
 
-* ENHANCEMENT: Basic Zimit file reading in IE11
-* UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-08`
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2022-08`
+* UPDATE: Packages are now signed with new Kiwix coding certificate
+* UPDATE: BitTorrent files are now displayed before magnet links in the download library
 * UPDATE: Provide more complete documentation on GitHub
+* ENHANCEMENT: Basic Zimit file reading in IE11
+* FIX: Downloading of non-mirrored content in the Library
+* FIX: Recognize XHTML documents and applications in Zimit ZIMs and treat as HTML
 * FIX: Correct location of relative links on Zimit landing pages
 * FIX: Add more asset types to Type 1 C-namespace Zimit support
 * FIX: Support reading of Zimit archives using new Type 1 C-namespace ZIM format
