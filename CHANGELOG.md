@@ -7,11 +7,9 @@
 * ENHANCEMENT: Clearer signposting of Archive Index vs URL Index
 * ENHANCEMENT: Show an alert to user if main page is not an article
 * ENHANCEMENT: Better suggestions for mirrors when Library server does not provide mirror info
-* ENHANCEMENT: A self-contained portable Windows executable is now available for Electron
 * WORKAROUND: Assets with erroneous MIME types were misrecognized as articles (blocking reload of some articles)
 * FIX: Downloading of non-mirrored content in the Library
 * FIX: Wikivoyage package and install icons
-* FIX: Bug preventing loading of Nautilus-based ZIM assets
 * FIX: Detect more ZIMs for active content warning
 * FIX: Provide instructions for showing URL Index in active content warning
 * FIX: Download of files with very long filenames
