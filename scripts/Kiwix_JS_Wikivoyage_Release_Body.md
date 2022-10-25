@@ -1,8 +1,8 @@
 ## Portable and installable builds for UWP and Electron
 
-![image](https://user-images.githubusercontent.com/4304337/118415611-46484d00-b6a3-11eb-8586-11b23e3391be.png)
+![Wikiovyage montage trans](https://user-images.githubusercontent.com/4304337/197711210-b17cdff0-dc40-4d25-ada8-25d2863fd4f0.png)
 
-These custom apps are packaged with the <<date>> English-language Wikivoyage archive `<<zim>>`. They will run on 32bit and 64bit editions of Windows or Linux (tested on Ubuntu, Debian and OpenSUSE - but see instructions below). The Windows builds are **not compatible with Windows XP or Windows Vista**. If you need an app compatible with those old platforms, get [Kiwix JS Windows reader](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html) and download the latest Wikivoyage archive from within the app.
+These custom apps are packaged with the <<date>> English-language Wikivoyage archive `<<zim>>`. They will run on 32bit and 64bit editions of Windows or Linux (tested on Ubuntu, Debian, Fedora and OpenSUSE - but see instructions below). The Windows builds are **not compatible with Windows XP or Windows Vista**. If you need an app compatible with those old platforms, get [Kiwix JS Windows reader](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html) and download the latest Wikivoyage archive from within the app.
 
 **MS Store status: IN CERTIFICATION**
 **Winget status: IN CERTIFICATION**
@@ -13,7 +13,7 @@ Please choose the correct version (only the Store version will self update):
   - **Store app for Windows 10/11 (UWP)**
     + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9N5SB90Q4JBJ (it will self-update automatically) - *recommended*
     + Or, on a PC, open a command prompt and run `winget install wikivoyage -s msstore` (self-updates)
-	+ Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.wikivoyage` - this doesn't auto-update, but you can upgrade easily by running  `winget upgrade wikivoyage` or `winget upgrade --all`
+	+ Or, if you cannot use the Store, ~~sideload a signed package with `winget install kiwix.wikivoyage`~~ (this is currently broken on the winget side) - this doesn't auto-update, but you can upgrade easily by running  `winget upgrade wikivoyage` or `winget upgrade --all`
   - **Portable (Electron) - just unzip, no install needed**
     + Windows 7/8/10/11: [Wikivoyage-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<base_tag>>-E.zip)
   - **Installable (Electron)**
@@ -21,8 +21,8 @@ Please choose the correct version (only the Store version will self update):
     + Alternatively, run `winget install kiwix.wikivoyage.electron` in a Windows 10/11 Terminal
 * **Linux** (read important instructions below):
   - **Portable (Electron)**
-    + AppImage 64bit (Ubuntu, Debian, OpenSUSE) - [Wikivoyage-by-Kiwix-<<numeric_tag>>-E.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E.AppImage)
-    + AppImage 32bit (Ubuntu, Debian, OpenSUSE) - [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-i386.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-i386.AppImage)
+    + AppImage 64bit (Ubuntu, Debian,Fedora, OpenSUSE) - [Wikivoyage-by-Kiwix-<<numeric_tag>>-E.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E.AppImage)
+    + AppImage 32bit (Ubuntu, Debian, Fedora, OpenSUSE) - [Wikivoyage-by-Kiwix-<<numeric_tag>>-E-i386.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<numeric_tag>>-E-i386.AppImage)
   - **Installable (Electron)**
     + Deb package 64bit (Ubuntu, Debian) - [kiwix-js-wikivoyage_<<numeric_tag>>-E_amd64.deb](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/kiwix-js-wikivoyage_<<numeric_tag>>-E_amd64.deb)
     + Deb package 32bit (Ubuntu, Debian) - [kiwix-js-wikivoyage_<<numeric_tag>>-E_i386.deb](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/kiwix-js-wikivoyage_<<numeric_tag>>-E_i386.deb)
@@ -31,7 +31,7 @@ Please choose the correct version (only the Store version will self update):
 
 * For the Windows Portable build, unzip the contents of the [Wikivoyage-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-<<base_tag>>-E.zip) archive to any folder, or to a flash drive / thumb drive, and double click on `Start Wikivoyage by Kiwix` or `Start Wikivoyage by Kiwix.bat`, or open the `kiwix-js-windows-win32-ia32` folder and double click on `Wikivoyage by Kiwix.exe`.
 * For the Windows Setup (installable) build, simply download and launch. It will install itself, together with a shortcut in your shortcut menu, and run. When you want to update the app, just install a new version over it (it will uninstall the old one for you).
-* For the Linux portable builds, download and save the correct AppImage file anywhere (e.g. your Desktop), and double-click it. If it doesn’t work, open Terminal and run `chmod a+x Wikivoyage-by-Kiwix*.AppImage` and then `./Wikivoyage-by-Kiwix*.AppImage`. On **Debian**, you will probably need to add the `--no-sandbox` switch to the command like this `./Wikivoyage-by-Kiwix*.AppImage --no-sandbox` (see https://github.com/electron/electron/issues/17972#issuecomment-516957971). On **OpenSUSE**, you may need to use these commandline switches instead: `./Wikivoyage-by-Kiwix*.AppImage --use-gl=disabled --disable-gpu-compositing`.¹
+* For the Linux portable builds, download and save the correct AppImage file anywhere (e.g. your Desktop), and double-click it. If it doesn’t work, open Terminal and run `chmod a+x Wikivoyage-by-Kiwix*.AppImage` and then `./Wikivoyage-by-Kiwix*.AppImage`. On **Debian**, you will probably need to add the `--no-sandbox` switch to the command like this `./Wikivoyage-by-Kiwix*.AppImage --no-sandbox` (see https://github.com/electron/electron/issues/17972#issuecomment-516957971). On older versions of **OpenSUSE**, you may need to use these commandline switches instead: `./Wikivoyage-by-Kiwix*.AppImage --use-gl=disabled --disable-gpu-compositing`.¹
 * For the Linux installable builds, download the correct `.deb` package. Open a terminal, `cd` to the directory containing the package, and type `sudo apt install ./kiwix-js-wikivoyage*.deb`. Once installed, on **Debian**, you may have to run the app by opening terminal and typing `kiwix-js-wikivoyage --no-sandbox`. On **Ubuntu**, you should be able to run it from its installed icon. When you want to update, just install the new version, and it will install over the old version. To install on **OpenSUSE**, it may be easiest to extract the files from the AppImage instead of using the Deb package. The executable is `kiwix-js-wikivoyage` and you may need to add the commandline switches `--use-gl=disabled --disable-gpu-compositing`.¹
 * Windows portable version: If you get a Windows Smartscreen notification on first launch, follow instructions to "Run anyway" if you trust this site. If you prefer, use the installable version [Wikivoyage-by-Kiwix-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/Wikivoyage-by-Kiwix-Setup-<<numeric_tag>>-E.exe) which is digitally signed.
 
@@ -55,6 +55,6 @@ Please choose the correct version (only the Store version will self update):
 
 ## Instructions for sideloading (UWP)
 
-**New!** You can sideload the app easily by typing `winget install kiwix.wikivoyage` in a Command Prompt or PowerShell terminal (Windows 10 or 11).
+**New!** ~~You can sideload the app easily by typing `winget install kiwix.wikivoyage` in a Command Prompt or PowerShell terminal (Windows 10 or 11).~~ Unfortunately this sideloading method is currently broken due to a bug in winget validation. Workaround is simply to download the appxbundle (see below) and double click it. The app installer should launch and will let you install it.
 
 For Windows Mobile or for sideloading manually, please download [KiwixWebAppWikivoyage_<<base_tag>>.0_AnyCPU.appxbundle](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-Wikivoyage/KiwixWebAppWikivoyage_<<base_tag>>.0_AnyCPU.appxbundle) and the zipped PowerShell script from Assets below. Then follow the detailed instructions at https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#readme.
