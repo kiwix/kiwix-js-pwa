@@ -4790,7 +4790,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     parseAnchorsJQuery(dirEntry);
                     images.prepareImagesJQuery(articleWindow);
                     //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
-                    insertMediaBlobsJQuery();
                     var determinedTheme = params.cssTheme === 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
                     if (params.allowHTMLExtraction && appstate.target === 'iframe') {
                         uiUtil.insertBreakoutLink(determinedTheme);
@@ -4925,101 +4924,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     uiUtil.clearSpinner();
                 }, 6000);
             } // End of injectHtml
-
-            function insertMediaBlobsJQuery() {
-                var trackBlob;
-                var media = articleDocument.querySelectorAll('video, audio, source');
-                Array.prototype.slice.call(media).forEach(function (mediaSource) {
-                    var source = mediaSource.getAttribute('src');
-                    source = source ? uiUtil.deriveZimUrlFromRelativeUrl(source, params.baseURL) : null;
-                    if (!source || !regexpZIMUrlWithNamespace.test(source)) {
-                        if (source) console.error('No usable media source was found for: ' + source);
-                        return;
-                    }
-                    var mediaElement = /audio|video/i.test(mediaSource.tagName) ? mediaSource : mediaSource.parentElement;
-                    // If the "controls" property is missing, we need to add it to ensure jQuery-only users can operate the video. See kiwix-js #760.
-                    if (/audio|video/i.test(mediaElement.tagName) && !mediaElement.hasAttribute('controls')) mediaElement.setAttribute('controls', '');
-                    // Create custom subtitle / cc load menu if it doesn't already exist
-                    if (!articleWindow.document.getElementById('kiwixCCMenu')) buildCustomCCMenu(articleWindow.document, mediaElement, function (ccBlob) {
-                        trackBlob = ccBlob;
-                    });
-                    // Load media file
-                    appstate.selectedArchive.getDirEntryByPath(decodeURIComponent(source)).then(function (dirEntry) {
-                        return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, mediaArray) {
-                            var mimeType = mediaSource.type ? mediaSource.type : dirEntry.getMimetype();
-                            var blob = new Blob([mediaArray], {
-                                type: mimeType
-                            });
-                            mediaSource.src = URL.createObjectURL(blob);
-                            // In Firefox and Chromium it is necessary to re-register the inserted media source
-                            // but do not reload for text tracks (closed captions / subtitles)
-                            if (/track/i.test(mediaSource.tagName)) return;
-                            mediaElement.load();
-                            // Add a download link in case media source not supported
-                            if (articleWindow.kiwixType === 'iframe') {
-                                var iframe = document.getElementById('articleContent').contentDocument;
-                                document.getElementById('alertBoxFooter').innerHTML =
-                                    '<div id="downloadAlert" class="alert alert-info alert-dismissible">\n' +
-                                    '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
-                                    '    <span id="alertMessage"></span>\n' +
-                                    '</div>\n';
-                                var alertMessage = document.getElementById('alertMessage');
-                                var filename = iframe.title + '_' + dirEntry.url.replace(/^.*\/([^\/]+)$/, '$1');
-                                // Make filename safe
-                                filename = filename.replace(/[\/\\:*?"<>|]/g, '_');
-                                alertMessage.innerHTML = '<a href="#" class="alert-link" id="downloadMedia">Download this file</a> (and any selected subtitles) to play with another app';
-                                document.getElementById('downloadMedia').addEventListener('click', function () {
-                                    var downloadFiles = [];
-                                    downloadFiles.push({
-                                        'blob': blob,
-                                        'filename': filename,
-                                        'src': mediaSource.src
-                                    });
-                                    // Add any selected subtitle file to the download package
-                                    var selTextTrack = iframe.getElementById('kiwixSelCC');
-                                    if (selTextTrack) {
-                                        var selTextExt = selTextTrack.dataset.kiwixurl.replace(/^.*\.([^.]+)$/, '$1');
-                                        // Subtitle files should have same name as video + .es.vtt (for example)
-                                        downloadFiles.push({
-                                            'blob': trackBlob,
-                                            'filename': filename.replace(/^(.*)\.[^.]+$/, '$1.' + selTextTrack.srclang + '.' + selTextExt),
-                                            'src': selTextTrack.src
-                                        });
-                                    }
-                                    for (var j = downloadFiles.length; j--;) {
-                                        if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
-                                            uiUtil.downloadBlobUWP(downloadFiles[j].blob, downloadFiles[j].filename, alertMessage);
-                                        } else {
-                                            var mimeType = downloadFiles[j].blob.type ? downloadFiles[j].blob.type : 'application/octet-stream';
-                                            var a = document.createElement('a');
-                                            a.href = downloadFiles[j].src;
-                                            a.target = '_blank';
-                                            a.type = mimeType;
-                                            a.download = downloadFiles[j].filename;
-                                            alertMessage.appendChild(a); // NB we have to add the anchor to the document for Firefox to be able to click it
-                                            try {
-                                                a.click();
-                                            } catch (err) {
-                                                // If the click fails, use an alternative download method
-                                                if (window.navigator && window.navigator.msSaveBlob) {
-                                                    // This works for IE11
-                                                    window.navigator.msSaveBlob(downloadFiles[j].blob, downloadFiles[j].filename);
-                                                }
-                                            }
-                                        }
-                                    }
-                                    articleContainer.addEventListener('unload', function (e) {
-                                        alertMessage.remove();
-                                    });
-                                });
-                            }
-                        });
-                    });
-                });
-                // For TED ZIMs, the initial video div height is set incorectly, so we correct it
-                var videoWrapper = articleWindow.document.getElementById('video-wrapper');
-                if (videoWrapper) videoWrapper.style.height = 'auto';
-            }
 
             /**
              * Create a custom dropdown menu item beneath the given mediaElement (audio or video block) to allow the user to

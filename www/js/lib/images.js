@@ -66,6 +66,10 @@ define(['uiUtil'], function (uiUtil) {
             if (!remaining) queueImages();
         };
         Array.prototype.slice.call(images).forEach(function (image) {
+            if (image.tagName !== 'IMG') {
+                insertMediaBlobsJQuery([image]);
+                return;
+            }
             var imageUrl = image.getAttribute('data-kiwixurl');
             if (!imageUrl) { remaining--; return; }
             // Create data-kiwixsrc needed for stylesheets
@@ -189,7 +193,7 @@ define(['uiUtil'], function (uiUtil) {
         var batchCount = 0;
         //console.log('Images requested...');
         for (var i = 0, l = docImgs.length; i < l; i++) {
-            if (docImgs[i].queued || !docImgs[i].dataset.kiwixurl) continue;
+            if (docImgs[i].queued || docImgs[i].tagName === 'IMG' && !docImgs[i].dataset.kiwixurl) continue;
             if (uiUtil.isElementInView(container, docImgs[i], null, margin)) {
                 visible.push(docImgs[i]);
                 if (action !== 'extract') continue;
@@ -307,7 +311,7 @@ define(['uiUtil'], function (uiUtil) {
     function prepareImagesJQuery (win, forPrinting) {
         container = win;
         var doc = container.document;
-        var documentImages = doc.querySelectorAll('img[data-kiwixurl]');
+        var documentImages = doc.querySelectorAll('img[data-kiwixurl], video, audio, source');
         var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
         indexRoot = indexRoot.replace(/^\//, '');
         // Zimit ZIMs work better if all images are extracted
@@ -322,17 +326,19 @@ define(['uiUtil'], function (uiUtil) {
         var image;
         for (var i = documentImages.length; i--;) {
             image = documentImages[i];
-            image.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
-            image.style.opacity = '0';
-            // Set a minimum width to avoid some images not rendering in squashed hidden tables
-            if (params.displayHiddenBlockElements && image.width && !image.style.minWidth && 
-                /wiki|wiktionary/i.test(appstate.selectedArchive._file.name)) {
-                var imgX = image.width + '';
-                imgX = imgX.replace(/(\d+)$/, '$1px');
-                image.style.minWidth = imgX;
-            }
-            if (params.zimType === 'zimit' && !(image.dataset.kiwixurl).indexOf(indexRoot)) {
-                image.dataset.kiwixurl = image.dataset.kiwixurl.replace(indexRoot, '');
+            if (image.tagName === 'IMG') {
+                image.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
+                image.style.opacity = '0';
+                // Set a minimum width to avoid some images not rendering in squashed hidden tables
+                if (params.displayHiddenBlockElements && image.width && !image.style.minWidth && 
+                    /wiki|wiktionary/i.test(appstate.selectedArchive._file.name)) {
+                    var imgX = image.width + '';
+                    imgX = imgX.replace(/(\d+)$/, '$1px');
+                    image.style.minWidth = imgX;
+                }
+                if (params.zimType === 'zimit' && !(image.dataset.kiwixurl).indexOf(indexRoot)) {
+                    image.dataset.kiwixurl = image.dataset.kiwixurl.replace(indexRoot, '');
+                }
             }
         }
 
@@ -355,6 +361,107 @@ define(['uiUtil'], function (uiUtil) {
             prepareManualExtraction(container);
         }
     }
+
+    /**
+     * Extracts media blobs in jQuery mode and offers to download them
+     * @param {Array} media An array of media to extract
+     */
+    function insertMediaBlobsJQuery(media) {
+        var trackBlob;
+        // var media = articleDocument.querySelectorAll('video, audio, source');
+        Array.prototype.slice.call(media).forEach(function (mediaSource) {
+            var source = mediaSource.getAttribute('src');
+            source = source ? uiUtil.deriveZimUrlFromRelativeUrl(source, params.baseURL) : null;
+            if (!source || !regexpZIMUrlWithNamespace.test(source)) {
+                if (source) console.error('No usable media source was found for: ' + source);
+                return;
+            }
+            var mediaElement = /audio|video/i.test(mediaSource.tagName) ? mediaSource : mediaSource.parentElement;
+            // If the "controls" property is missing, we need to add it to ensure jQuery-only users can operate the video. See kiwix-js #760.
+            if (/audio|video/i.test(mediaElement.tagName) && !mediaElement.hasAttribute('controls')) mediaElement.setAttribute('controls', '');
+            // Create custom subtitle / cc load menu if it doesn't already exist
+            if (!container.document.getElementById('kiwixCCMenu')) buildCustomCCMenu(container.document, mediaElement, function (ccBlob) {
+                trackBlob = ccBlob;
+            });
+            // Load media file
+            appstate.selectedArchive.getDirEntryByPath(decodeURIComponent(source)).then(function (dirEntry) {
+                return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, mediaArray) {
+                    var mimeType = mediaSource.type ? mediaSource.type : dirEntry.getMimetype();
+                    var blob = new Blob([mediaArray], {
+                        type: mimeType
+                    });
+                    mediaSource.src = URL.createObjectURL(blob);
+                    // In Firefox and Chromium it is necessary to re-register the inserted media source
+                    // but do not reload for text tracks (closed captions / subtitles)
+                    if (/track/i.test(mediaSource.tagName)) return;
+                    mediaElement.load();
+                    // Add a download link in case media source not supported
+                    if (container.kiwixType === 'iframe') {
+                        var iframe = container.document;
+                        document.getElementById('alertBoxFooter').innerHTML =
+                            '<div id="downloadAlert" class="alert alert-info alert-dismissible">\n' +
+                            '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
+                            '    <span id="alertMessage"></span>\n' +
+                            '</div>\n';
+                        var alertMessage = document.getElementById('alertMessage');
+                        var filename = iframe.title + '_' + dirEntry.url.replace(/^.*\/([^\/]+)$/, '$1');
+                        // Make filename safe
+                        filename = filename.replace(/[\/\\:*?"<>|]/g, '_');
+                        alertMessage.innerHTML = '<a href="#" class="alert-link" id="downloadMedia">Download this file</a> (and any selected subtitles) to play with another app';
+                        document.getElementById('downloadMedia').addEventListener('click', function () {
+                            var downloadFiles = [];
+                            downloadFiles.push({
+                                'blob': blob,
+                                'filename': filename,
+                                'src': mediaSource.src
+                            });
+                            // Add any selected subtitle file to the download package
+                            var selTextTrack = iframe.getElementById('kiwixSelCC');
+                            if (selTextTrack) {
+                                var selTextExt = selTextTrack.dataset.kiwixurl.replace(/^.*\.([^.]+)$/, '$1');
+                                // Subtitle files should have same name as video + .es.vtt (for example)
+                                downloadFiles.push({
+                                    'blob': trackBlob,
+                                    'filename': filename.replace(/^(.*)\.[^.]+$/, '$1.' + selTextTrack.srclang + '.' + selTextExt),
+                                    'src': selTextTrack.src
+                                });
+                            }
+                            for (var j = downloadFiles.length; j--;) {
+                                if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
+                                    uiUtil.downloadBlobUWP(downloadFiles[j].blob, downloadFiles[j].filename, alertMessage);
+                                } else {
+                                    var mimeType = downloadFiles[j].blob.type ? downloadFiles[j].blob.type : 'application/octet-stream';
+                                    var a = document.createElement('a');
+                                    a.href = downloadFiles[j].src;
+                                    a.target = '_blank';
+                                    a.type = mimeType;
+                                    a.download = downloadFiles[j].filename;
+                                    alertMessage.appendChild(a); // NB we have to add the anchor to the document for Firefox to be able to click it
+                                    try {
+                                        a.click();
+                                    } catch (err) {
+                                        // If the click fails, use an alternative download method
+                                        if (window.navigator && window.navigator.msSaveBlob) {
+                                            // This works for IE11
+                                            window.navigator.msSaveBlob(downloadFiles[j].blob, downloadFiles[j].filename);
+                                        }
+                                    }
+                                }
+                            }
+                            articleContainer.addEventListener('unload', function (e) {
+                                alertMessage.remove();
+                            });
+                        });
+                    }
+                });
+            });
+        });
+        // For TED ZIMs, the initial video div height is set incorectly, so we correct it
+        var videoWrapper = container.document.getElementById('video-wrapper');
+        if (videoWrapper) videoWrapper.style.height = 'auto';
+    }
+
+
 
     /**
      * Processes an array or collection of image nodes so that they will be lazy loaded (progressive extraction)
