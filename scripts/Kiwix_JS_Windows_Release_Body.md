@@ -68,6 +68,7 @@ Please choose the correct version (those marked [**AUTO-UPDATE**] will self-upda
 * INCONSISTENCY: When printing in jQuery mode, all sections are opened before printing (if the user had closed any), whereas in SW mode, closed sections are not opened before printing, if they were closed.
 * On the XP build with some recent ZIMs __there is a CSS error in rendering the landing page of this ZIM__, due to the age of the Chromium build included in the runtime package. However, you can access all articles by __pressing a space in the search box__.
 * In the Electron and NWJS apps, if you download an archive from within the app (from Configuration), you will be able to pick a download directory, and the download will start, but then there will be no further indication that a download is in progress. You will need to check the chosen download directory to see if the download has completed.
+* The NWJS app for Windows 7/8/10/11 will occasionally crash and exit when running in ServiceWorker mode. For now, it is recommended to use this app only in JQuery mode until this issue is resolved.
 * In the NWJS app only, YouTube-based videos in **Zimit archives** do not play with sound (this does not affect other archives such as TED Talks or Khan Academy).
 * Image manipulation (e.g. saving image to disk) does not currently work with the NWJS app.
 * Please see https://github.com/kiwix/kiwix-js-windows/issues for further known issues. If you find a new issue, please open a new issue on that page.
