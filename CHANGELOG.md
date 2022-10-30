@@ -1,6 +1,6 @@
 # Changelog
 
-## In progress release 2.2.0
+## Release 2.2.0
 
 * UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-10.zim`
 * ENHANCEMENT: Display media download alert only when the medium is fetched from the ZIM
