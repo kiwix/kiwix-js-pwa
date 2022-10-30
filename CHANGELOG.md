@@ -3,8 +3,9 @@
 ## Release 2.2.0
 
 * UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-10.zim`
+* ENHANCEMENT: Enable ServiceWorker mode as the default (and deprecate JQuery mode) 
 * ENHANCEMENT: Display media download alert only when the medium is fetched from the ZIM
-* FIX: Regression preventing UWP app from remaining in Service Worker mode
+* FIX: Regression preventing UWP app from remaining in ServiceWorker mode
 * FIX: Failure to confirm with user before launching SW mode in UWP app
 
 ## Release 2.1.9
