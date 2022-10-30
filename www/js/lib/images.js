@@ -67,7 +67,7 @@ define(['uiUtil'], function (uiUtil) {
         };
         Array.prototype.slice.call(images).forEach(function (image) {
             if (image.tagName !== 'IMG') {
-                insertMediaBlobsJQuery([image]);
+                insertMediaBlobsJQuery(image);
                 return;
             }
             var imageUrl = image.getAttribute('data-kiwixurl');
@@ -311,7 +311,7 @@ define(['uiUtil'], function (uiUtil) {
     function prepareImagesJQuery (win, forPrinting) {
         container = win;
         var doc = container.document;
-        var documentImages = doc.querySelectorAll('img[data-kiwixurl], video, audio, source');
+        var documentImages = doc.querySelectorAll('img[data-kiwixurl], video, audio');
         var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
         indexRoot = indexRoot.replace(/^\//, '');
         // Zimit ZIMs work better if all images are extracted
@@ -364,15 +364,19 @@ define(['uiUtil'], function (uiUtil) {
 
     /**
      * Extracts media blobs in jQuery mode and offers to download them
-     * @param {Array} media An array of media to extract
+     * @param {Node} medium A DOM node representing a medium
      */
-    function insertMediaBlobsJQuery(media) {
+    function insertMediaBlobsJQuery(medium) {
         var trackBlob;
-        // var media = articleDocument.querySelectorAll('video, audio, source');
+        var media = [medium];
+        // Ensure we have a source or sources
+        if (!medium.getAttribute('src')) {
+            media = medium.querySelectorAll('source');
+        }
         Array.prototype.slice.call(media).forEach(function (mediaSource) {
             var source = mediaSource.getAttribute('src');
             source = source ? uiUtil.deriveZimUrlFromRelativeUrl(source, params.baseURL) : null;
-            if (!source || !regexpZIMUrlWithNamespace.test(source)) {
+            if (!source || !params.regexpZIMUrlWithNamespace.test(source)) {
                 if (source) console.error('No usable media source was found for: ' + source);
                 return;
             }
@@ -461,7 +465,64 @@ define(['uiUtil'], function (uiUtil) {
         if (videoWrapper) videoWrapper.style.height = 'auto';
     }
 
-
+    /**
+     * Create a custom dropdown menu item beneath the given mediaElement (audio or video block) to allow the user to
+     * select the language of text tracks (subtitles/CC) to extract from the ZIM (this is necessary because there is
+     * no universal onchange event that fires for subtitle changes in the html5 video widget when the URL is invalid)
+     * 
+     * @param {Document} doc The document in which the new menu will be placed (usually window.document or iframe)
+     * @param {Element} mediaElement The media element (usually audio or video block) which contains the text tracks
+     * @param {Function} callback The function to call wtih the blob
+     */
+    function buildCustomCCMenu(doc, mediaElement, callback) {
+        var optionList = [];
+        var langs = '';
+        var src = '';
+        var currentTracks = mediaElement.getElementsByTagName('track');
+        // Extract track data from current media element
+        for (var i = currentTracks.length; i--;) {
+            langs = currentTracks[i].label + ' [' + currentTracks[i].srclang + ']';
+            src = currentTracks[i].getAttribute('src');
+            src = src ? uiUtil.deriveZimUrlFromRelativeUrl(src, params.baseURL) : null;
+            if (src && params.regexpZIMUrlWithNamespace.test(src)) {
+                optionList.unshift('<option value="' + currentTracks[i].srclang + '" data-kiwixsrc="' +
+                    src + '" data-kiwixkind="' + currentTracks[i].kind + '">' + langs + '</option>');
+            }
+            currentTracks[i].parentNode.removeChild(currentTracks[i]);
+        }
+        optionList.unshift('<option value="" data-kiwixsrc="">None</option>');
+        var newKiwixCCMenu = '<select id="kiwixCCMenuLangList">\n' + optionList.join('\n') + '\n</select>';
+        // Create the new container and menu
+        var d = doc.createElement('DIV');
+        d.id = 'kiwixCCMenu';
+        d.setAttribute('style', 'margin-top: 1em; text-align: left; position: relative;');
+        d.innerHTML = 'Please select subtitle language: ' + newKiwixCCMenu;
+        mediaElement.parentElement.insertBefore(d, mediaElement.nextSibling);
+        // Add event listener to extract the text track from the ZIM and insert it into the media element when the user selects it
+        newKiwixCCMenu = doc.getElementById('kiwixCCMenu').addEventListener('change', function (v) {
+            var existingCC = doc.getElementById('kiwixSelCC');
+            if (existingCC) existingCC.parentNode.removeChild(existingCC);
+            var sel = v.target.options[v.target.selectedIndex];
+            if (!sel.value) return; // User selected "none"
+            appstate.selectedArchive.getDirEntryByPath(sel.dataset.kiwixsrc).then(function (dirEntry) {
+                return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, trackContents) {
+                    var blob = new Blob([trackContents], {
+                        type: 'text/vtt'
+                    });
+                    var t = doc.createElement('track');
+                    t.id = 'kiwixSelCC';
+                    t.kind = sel.dataset.kiwixkind;
+                    t.label = sel.innerHTML;
+                    t.srclang = sel.value;
+                    t.default = true;
+                    t.src = URL.createObjectURL(blob);
+                    t.dataset.kiwixurl = sel.dataset.kiwixsrc;
+                    mediaElement.appendChild(t);
+                    callback(blob);
+                });
+            });
+        });
+    }
 
     /**
      * Processes an array or collection of image nodes so that they will be lazy loaded (progressive extraction)
