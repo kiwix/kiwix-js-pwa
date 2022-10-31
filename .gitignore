@@ -21,3 +21,4 @@ null
 /scripts/*secret*
 /scripts/*rsa
 /scripts/github_token
+*.ppk
