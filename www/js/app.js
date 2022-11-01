@@ -4874,9 +4874,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         htmlArticle = htmlArticle.replace(/(<html\b(?![^>]+?style=['"])\s)/i, '$1style="zoom:' + params.relativeFontSize + '%;" ');
                     }
                     // Add darkreader script to article
-                    htmlArticle = htmlArticle.replace(/(<\/head>)/i, '<script type="text/javascript" src="' + 
-                        document.location.pathname.replace(/index\.html/i, 'js/lib/darkreader.min.js') + '"></script>\r\n' + 
-                        '<script>DarkReader.setFetchMethod(window.fetch);\r\nDarkReader.enable();</script>\r\n$1');
+                    var wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
+                    if (!wikimediaZimLoaded) {
+                        params.cssTheme = settingsStore.getItem('cssTheme');
+                        var determinedWikiTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
+                        if (determinedWikiTheme !== 'light') {
+                            htmlArticle = htmlArticle.replace(/(<\/head>)/i, '<script type="text/javascript" src="' + 
+                                document.location.pathname.replace(/index\.html/i, 'js/lib/darkreader.min.js') + '"></script>\r\n' + 
+                                '<script>DarkReader.setFetchMethod(window.fetch);\r\nDarkReader.enable();</script>\r\n$1');
+                        }
+                    }
                     // Add doctype if missing so that scripts run in standards mode
                     // (quirks mode prevents katex from running, and is incompatible with jQuery)
                     params.transformedHTML = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(htmlArticle) ? '<!DOCTYPE html>\n' + htmlArticle : htmlArticle;
