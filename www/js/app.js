@@ -4296,7 +4296,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     return newBlock;
                 });
             }
-            
+
             if (params.zimType === 'open') {
                 //Some documents (e.g. Ray Charles Index) can't be scrolled to the very end, as some content remains benath the footer
                 //so add some whitespace at the end of the document
@@ -4383,7 +4383,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
 
             if (params.contentInjectionMode == 'jquery') {
                 // Neutralize all inline scripts for now (later use above), excluding math blocks or react templates
-                htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig, function (p0, p1) {
+                htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?![^<]*darkreader\.)(?:[^<]|<(?!\/script>))+<\/script)>/ig, function (p0, p1) {
                     return '<!-- ' + p1 + ' --!>';
                 });
                 //Neutralize onload events, as they cause a crash in ZIMs with proprietary UIs
@@ -4873,16 +4873,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         htmlArticle = htmlArticle.replace(/(<html\b[^>]+?style=['"])/i, '$1zoom:' + params.relativeFontSize + '%; ');
                         htmlArticle = htmlArticle.replace(/(<html\b(?![^>]+?style=['"])\s)/i, '$1style="zoom:' + params.relativeFontSize + '%;" ');
                     }
-                    // Move problematic scripts in YouTube-based ZIMs which execute before DOM is ready
-                    // ['zim_prefix.js', 'app.js'].forEach(function (script) {
-                    //     var regexpMoveScript = new RegExp('<script src="[^"]+assets/' + script + '[^<]+?</script>\\s*');
-                    //     var moveScript = htmlArticle.match(regexpMoveScript);
-                    //     if (moveScript) {
-                    //         htmlArticle = htmlArticle.replace(moveScript[0], '');
-                    //         htmlArticle = htmlArticle.replace(/(<\/body>)/i, moveScript[0] + '$1');
-                    //     }
-                    // });
-                    
+                    // Add darkreader script to article
+                    htmlArticle = htmlArticle.replace(/(<\/head>)/i, '<script type="text/javascript" src="' + 
+                        document.location.pathname.replace(/index\.html/i, 'js/lib/darkreader.min.js') + '"></script>\r\n' + 
+                        '<script>DarkReader.setFetchMethod(window.fetch);\r\nDarkReader.enable();</script>\r\n$1');
                     // Add doctype if missing so that scripts run in standards mode
                     // (quirks mode prevents katex from running, and is incompatible with jQuery)
                     params.transformedHTML = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(htmlArticle) ? '<!DOCTYPE html>\n' + htmlArticle : htmlArticle;
