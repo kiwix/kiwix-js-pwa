@@ -55,7 +55,7 @@ function createWindow() {
         minWidth: 640,
         minHeight: 480,
         autoHideMenuBar: true,
-        icon: path.join(__dirname, 'www/img/icons/kiwix-64.png'),
+        icon: path.join(__dirname, 'build/64x64.png'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js')
             , nativeWindowOpen: true
