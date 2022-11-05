@@ -2811,14 +2811,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
                             if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
                             if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
-                            if (params.zimType === 'zimit' && params.cssTheme !== 'light') {
-                                // if (!params.cssThemeOriginal) params.cssThemeOriginal = params.cssTheme;
-                                params.cssTheme = 'darkReader';
+                            if (params.zimType === 'zimit' && params.cssTheme !== 'light' && params.cssTheme !== 'darkReader') {
+                                document.getElementById('cssWikiDarkThemeDarkReaderCheck').click();
                             }
-                        } // else if (params.cssThemeOriginal) {
-                        //     params.cssTheme = params.cssThemeOriginal;
-                        //     params.cssThemeOriginal = null;
-                        // }
+                        }
                         if (wikimediaZimLoaded) {
                             params.noWarning = true;
                             if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
@@ -3184,14 +3180,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
                         if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
                         if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
-                        if (params.zimType === 'zimit' && params.cssTheme !== 'light') {
-                            // if (!params.cssThemeOriginal) params.cssThemeOriginal = params.cssTheme;
-                            params.cssTheme = 'darkReader';
+                        if (params.zimType === 'zimit' && params.cssTheme !== 'light' && params.cssTheme !== 'darkReader') {
+                            document.getElementById('cssWikiDarkThemeDarkReaderCheck').click();
                         }
-                    } // else if (params.cssThemeOriginal) {
-                    //     params.cssTheme = params.cssThemeOriginal;
-                    //     params.cssThemeOriginal = null;
-                    // }
+                    }
                     if (wikimediaZimLoaded) {
                         params.noWarning = true;
                         if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
