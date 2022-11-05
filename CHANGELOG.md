@@ -5,7 +5,6 @@
 * UPDATE: Packaged archive updated to `mdwiki_en_all-app_maxi_2022-11.zim`
 * UPDATE: Streamline polling of spinner and messaging
 * ENHANCEMENT: Better suggestions for mirrors when Library server does not provide mirror info
-* ENHANCEMENT: Enable ServiceWorker mode as the default (and deprecate JQuery mode) 
 * ENHANCEMENT: Display media download alert only when the medium is fetched from the ZIM
 * FIX: Regression preventing UWP app from remaining in ServiceWorker mode
 * FIX: Failure to confirm with user before launching SW mode in UWP app
