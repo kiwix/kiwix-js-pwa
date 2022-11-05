@@ -775,7 +775,12 @@
                                                 <label class="checkbox" title="Tap three times for dark | auto | light. This is tuned to work with Wikimedia ZIMs, but will also work with some other common ZIM types.">
                                                     <input type="checkbox" name="cssWikiDarkTheme" id="cssWikiDarkThemeCheck">
                                                     <span class="checkmark"></span>
-                                                    <b>Set dark theme for articles</b>: [ <b><span id="cssWikiDarkThemeState"></span></b> ]  (<i>experimental</i>: tested with Wikimedia ZIMs)
+                                                    <b>Set dark theme for articles</b>: [ <b><span id="cssWikiDarkThemeState"></span></b> ]  (for Wikimedia, Gutenberg and Stackexchange ZIMs only)
+                                                </label>
+                                                <label id="darkDarkReader" style="display:none;" class="checkbox" title="This uses the DarkReader plugin, and should work with a wider range of archives. It is automatically set if you load a Zimit archive, but can be unset.">
+                                                    <input type="checkbox" name="cssWikiDarkThemeDarkReader" id="cssWikiDarkThemeDarkReaderCheck">
+                                                    <span class="checkmark"></span>
+                                                    <b>Use the <a href="https://github.com/darkreader/darkreader" target="_blank">DarkReader plugin</a></b> (works with wider range of archive types)
                                                 </label>
                                                 <label id="darkInvert" style="display:none;" class="checkbox" title="This is a generic inversion style, and may work with some other ZIM types. It tries not to invert images, but transparent images sometimes fail to show against the background.">
                                                     <input type="checkbox" name="cssWikiDarkThemeInvert" id="cssWikiDarkThemeInvertCheck">

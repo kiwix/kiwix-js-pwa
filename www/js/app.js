@@ -1576,9 +1576,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 };
             }
         }
-        // Code below is needed on startup to show or hide the inverted dark theme checkbox; 
+        // Code below is needed on startup to show or hide the inverted and DarkReader theme checkboxes; 
         // similar code also runs in switchCSSTheme(), but that is not evoked on startup
         if (params.cssTheme == 'auto') document.getElementById('darkInvert').style.display = cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'block';
+        if (params.cssTheme == 'auto') document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'block' : 'none';
         document.getElementById('cssUIDarkThemeCheck').addEventListener('click', function () {
             //This code implements a tri-state checkbox
             if (this.readOnly) this.checked = this.readOnly = false;
@@ -1606,15 +1607,30 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             if (params.cssTheme == "light") document.getElementById('cssWikiDarkThemeInvertCheck').checked = false;
             if (determinedValue == "dark") document.getElementById('footer').classList.add("darkfooter");
             document.getElementById('darkInvert').style.display = determinedValue == 'light' ? 'none' : 'block';
+            document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? determinedValue == 'light' ? 'none' : 'block' : 'none';
             params.cssTheme = document.getElementById('cssWikiDarkThemeInvertCheck').checked && determinedValue == 'dark' ? 'invert' : params.cssTheme;
+            params.cssTheme = document.getElementById('darkDarkReader').checked && determinedValue == 'dark' ? 'darkReader' : params.cssTheme;
             document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
             settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
             switchCSSTheme();
             params.cssThemeOriginal = null;
         });
-        $('input:checkbox[name=cssWikiDarkThemeInvert]').on('change', function (e) {
+        document.getElementById('cssWikiDarkThemeInvertCheck').addEventListener('click', function () {
             if (this.checked) {
                 params.cssTheme = 'invert';
+                document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = false;
+            } else {
+                var darkThemeCheckbox = document.getElementById('cssWikiDarkThemeCheck');
+                params.cssTheme = darkThemeCheckbox.indeterminate ? 'auto' : darkThemeCheckbox.checked ? 'dark' : 'light';
+            }
+            settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
+            switchCSSTheme();
+            params.cssThemeOriginal = null;
+        });
+        document.getElementById('cssWikiDarkThemeDarkReaderCheck').addEventListener('click', function () {
+            if (this.checked) {
+                params.cssTheme = 'darkReader';
+                document.getElementById('cssWikiDarkThemeInvertCheck').checked = false;
             } else {
                 var darkThemeCheckbox = document.getElementById('cssWikiDarkThemeCheck');
                 params.cssTheme = darkThemeCheckbox.indeterminate ? 'auto' : darkThemeCheckbox.checked ? 'dark' : 'light';
@@ -1694,7 +1710,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             var breakoutLink = doc.getElementById('breakoutLink');
             // Construct an absolute reference becuase Service Worker needs this
             var prefix = window.location.pathname.replace(/\/[^/]*$/, '');
-            if (determinedWikiTheme != "light") {
+            if (determinedWikiTheme !== 'light' && params.cssTheme !== 'darkReader') {
                 var link = doc.createElement("link");
                 link.setAttribute("rel", "stylesheet");
                 link.setAttribute("type", "text/css");
@@ -1705,6 +1721,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 if (breakoutLink) breakoutLink.src = prefix + '/img/icons/new_window.svg';
             }
             document.getElementById('darkInvert').style.display = determinedWikiTheme == 'light' ? 'none' : 'block';
+            document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? determinedWikiTheme == 'light' ? 'none' : 'block' : 'none';
         }
 
         document.getElementById('resetDisplayOnResizeCheck').addEventListener('click', function () {
@@ -2781,13 +2798,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
                             if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
                             if (params.zimType === 'zimit' && params.cssTheme !== 'light') {
-                                if (!params.cssThemeOriginal) params.cssThemeOriginal = params.cssTheme;
-                                params.cssTheme = 'light';
+                                // if (!params.cssThemeOriginal) params.cssThemeOriginal = params.cssTheme;
+                                params.cssTheme = 'darkReader';
                             }
-                        } else if (params.cssThemeOriginal) {
-                            params.cssTheme = params.cssThemeOriginal;
-                            params.cssThemeOriginal = null;
-                        }
+                        } // else if (params.cssThemeOriginal) {
+                        //     params.cssTheme = params.cssThemeOriginal;
+                        //     params.cssThemeOriginal = null;
+                        // }
                         if (wikimediaZimLoaded) {
                             params.noWarning = true;
                             if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
@@ -3154,13 +3171,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
                         if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
                         if (params.zimType === 'zimit' && params.cssTheme !== 'light') {
-                            if (!params.cssThemeOriginal) params.cssThemeOriginal = params.cssTheme;
-                            params.cssTheme = 'light';
+                            // if (!params.cssThemeOriginal) params.cssThemeOriginal = params.cssTheme;
+                            params.cssTheme = 'darkReader';
                         }
-                    } else if (params.cssThemeOriginal) {
-                        params.cssTheme = params.cssThemeOriginal;
-                        params.cssThemeOriginal = null;
-                    }
+                    } // else if (params.cssThemeOriginal) {
+                    //     params.cssTheme = params.cssThemeOriginal;
+                    //     params.cssThemeOriginal = null;
+                    // }
                     if (wikimediaZimLoaded) {
                         params.noWarning = true;
                         if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
@@ -4541,7 +4558,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 } else {
                     // Apply dark or light content theme if necessary
                     var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-                    var contentThemeStyle = (determinedTheme == "dark") ? '<link href="' + prefix + '/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' :
+                    var contentThemeStyle = (determinedTheme == "dark" && params.cssTheme !== 'darkReader') ? '<link href="' + prefix + '/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' :
                         params.cssTheme == "invert" ? '<link href="' + prefix + '/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
                     htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, contentThemeStyle + '$1');
                     injectHTML();
@@ -4658,7 +4675,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     cssArray$ = cssArray$.replace(/<link\shref="#"[^>]+>\s*/g, '');
                     //Add dark mode CSS if required
                     var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-                    cssArray$ += (determinedTheme == "dark") ? '<link href="' + prefix + '/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' :
+                    cssArray$ += (determinedTheme === 'dark' && params.cssTheme !== 'darkReader') ? '<link href="' + prefix + '/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' :
                         params.cssTheme == "invert" ? '<link href="' + prefix + '/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
                     //Ensure all headings are open
                     //htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
@@ -4874,16 +4891,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         htmlArticle = htmlArticle.replace(/(<html\b(?![^>]+?style=['"])\s)/i, '$1style="zoom:' + params.relativeFontSize + '%;" ');
                     }
                     // Add darkreader script to article
-                    var wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
-                    if (!wikimediaZimLoaded) {
-                        params.cssTheme = settingsStore.getItem('cssTheme');
+                    // var wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
+                    // if (!wikimediaZimLoaded) {
+                        // params.cssTheme = settingsStore.getItem('cssTheme');
                         var determinedWikiTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-                        if (determinedWikiTheme !== 'light') {
+                        if (determinedWikiTheme !== 'light' && params.cssTheme === 'darkReader') {
                             htmlArticle = htmlArticle.replace(/(<\/head>)/i, '<script type="text/javascript" src="' + 
                                 document.location.pathname.replace(/index\.html/i, 'js/lib/darkreader.min.js') + '"></script>\r\n' + 
                                 '<script>DarkReader.setFetchMethod(window.fetch);\r\nDarkReader.enable();</script>\r\n$1');
                         }
-                    }
+                    // }
                     // Add doctype if missing so that scripts run in standards mode
                     // (quirks mode prevents katex from running, and is incompatible with jQuery)
                     params.transformedHTML = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(htmlArticle) ? '<!DOCTYPE html>\n' + htmlArticle : htmlArticle;
