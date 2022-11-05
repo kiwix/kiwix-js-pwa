@@ -1,18 +1,14 @@
 # Changelog
 
-## Release 2.2.0
+## Release 2.2.0-WikiMed
 
-* UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-10.zim`
+* UPDATE: Packaged archive updated to `mdwiki_en_all-app_maxi_2022-11.zim`
+* UPDATE: Streamline polling of spinner and messaging
+* ENHANCEMENT: Better suggestions for mirrors when Library server does not provide mirror info
 * ENHANCEMENT: Enable ServiceWorker mode as the default (and deprecate JQuery mode) 
 * ENHANCEMENT: Display media download alert only when the medium is fetched from the ZIM
 * FIX: Regression preventing UWP app from remaining in ServiceWorker mode
 * FIX: Failure to confirm with user before launching SW mode in UWP app
-
-## Release 2.1.9
-
-* ENHANCEMENT: Better suggestions for mirrors when Library server does not provide mirror info
-* ENHANCEMENT: A self-contained portable Windows executable is now available for Electron
-* UPDATE: Streamline polling of spinner and messaging
 * FIX: Selection of languages in Library
 * FIX: Display of some irregularly formatted filenames in Library
 
