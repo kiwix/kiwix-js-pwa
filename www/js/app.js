@@ -4271,6 +4271,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         uiUtil.displayActiveContentWarning('zimit');
                     }, 1000);
                 }
+            } else if (document.getElementById('activeContent').style.display !== 'none') {
+                $('#activeContent').hide();
             }
             var newBlock;
             var assetZIMUrlEnc;
