@@ -133,7 +133,7 @@ if ($tag_name -cmatch 'E\+N') {
 if ($tag_name -match '\+E') {
   $title_flavour = 'UWP/PWA/Electron'
   $release_title = "Kiwix JS Windows/Linux $base_tag"
-  if ($text_tag -imatch 'Wikivoyage|WikiMed') { $release_title = "$text_tag by Kiwix (Window/Linux) $base_tag" }
+  if ($text_tag -imatch 'Wikivoyage|WikiMed') { $release_title = "$text_tag by Kiwix (Windows/Linux) $base_tag" }
   $release_tag_name = $tag_name -creplace '\+E', ''
 }
 if ($tag_name -match '\+E\+N') {
