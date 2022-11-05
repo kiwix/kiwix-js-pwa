@@ -1711,13 +1711,27 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             // Construct an absolute reference becuase Service Worker needs this
             var prefix = window.location.pathname.replace(/\/[^/]*$/, '');
             if (determinedWikiTheme !== 'light' && params.cssTheme !== 'darkReader') {
-                var link = doc.createElement("link");
-                link.setAttribute("rel", "stylesheet");
-                link.setAttribute("type", "text/css");
-                link.setAttribute("href", prefix + (determinedWikiTheme == "dark" ? '/-/s/style-dark.css' : '/-/s/style-dark-invert.css'));
+                var link = doc.createElement('link');
+                link.setAttribute('rel', 'stylesheet');
+                link.setAttribute('type', 'text/css');
+                link.setAttribute('href', prefix + (determinedWikiTheme == 'dark' ? '/-/s/style-dark.css' : '/-/s/style-dark-invert.css'));
                 doc.head.appendChild(link);
+                var stopDarkReader = doc.createElement('script');
+                stopDarkReader.setAttribute('type', 'text/javascript');
+                stopDarkReader.innerHTML = 'if (DarkReader) { DarkReader.disable(); }'
+                doc.head.appendChild(stopDarkReader);
                 if (breakoutLink) breakoutLink.src = prefix + '/img/icons/new_window_lb.svg';
             } else {
+                if (params.cssTheme === 'darkReader') {
+                    var darkReader = doc.createElement('script');
+                    darkReader.setAttribute('type', 'text/javascript');
+                    darkReader.setAttribute('src', prefix + '/js/lib/darkreader.min.js');
+                    doc.head.appendChild(darkReader);
+                    var startDarkReader = doc.createElement('script');
+                    startDarkReader.setAttribute('type', 'text/javascript');
+                    startDarkReader.innerHTML = 'setTimeout(function() { DarkReader.setFetchMethod(window.fetch);\r\nDarkReader.enable(); }, 500);'
+                    doc.head.appendChild(startDarkReader);
+                }
                 if (breakoutLink) breakoutLink.src = prefix + '/img/icons/new_window.svg';
             }
             document.getElementById('darkInvert').style.display = determinedWikiTheme == 'light' ? 'none' : 'block';
@@ -4891,16 +4905,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         htmlArticle = htmlArticle.replace(/(<html\b(?![^>]+?style=['"])\s)/i, '$1style="zoom:' + params.relativeFontSize + '%;" ');
                     }
                     // Add darkreader script to article
-                    // var wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
-                    // if (!wikimediaZimLoaded) {
-                        // params.cssTheme = settingsStore.getItem('cssTheme');
-                        var determinedWikiTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-                        if (determinedWikiTheme !== 'light' && params.cssTheme === 'darkReader') {
-                            htmlArticle = htmlArticle.replace(/(<\/head>)/i, '<script type="text/javascript" src="' + 
-                                document.location.pathname.replace(/index\.html/i, 'js/lib/darkreader.min.js') + '"></script>\r\n' + 
-                                '<script>DarkReader.setFetchMethod(window.fetch);\r\nDarkReader.enable();</script>\r\n$1');
-                        }
-                    // }
+                    var determinedWikiTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
+                    if (determinedWikiTheme !== 'light' && params.cssTheme === 'darkReader') {
+                        htmlArticle = htmlArticle.replace(/(<\/head>)/i, '<script type="text/javascript" src="' + 
+                            document.location.pathname.replace(/index\.html/i, 'js/lib/darkreader.min.js') + '"></script>\r\n' + 
+                            '<script>DarkReader.setFetchMethod(window.fetch);\r\nDarkReader.enable();</script>\r\n$1');
+                    }
                     // Add doctype if missing so that scripts run in standards mode
                     // (quirks mode prevents katex from running, and is incompatible with jQuery)
                     params.transformedHTML = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(htmlArticle) ? '<!DOCTYPE html>\n' + htmlArticle : htmlArticle;
