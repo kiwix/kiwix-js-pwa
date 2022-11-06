@@ -2811,8 +2811,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
                             if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
                             if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
-                            if (params.zimType === 'zimit' && params.cssTheme !== 'light' && params.cssTheme !== 'darkReader') {
-                                document.getElementById('cssWikiDarkThemeDarkReaderCheck').click();
+                            // Set defaults that allow for greatest compabitibility with Zimit ZIM types
+                            if (params.zimType === 'zimit') { 
+                                if (params.cssTheme !== 'light' && params.cssTheme !== 'darkReader') {
+                                    document.getElementById('cssWikiDarkThemeDarkReaderCheck').click();
+                                }
+                                if (!params.windowOpener) {
+                                    document.getElementById('tabOpenerCheck').click();
+                                }
                             }
                         }
                         if (wikimediaZimLoaded) {
@@ -3180,8 +3186,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
                         if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
                         if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
-                        if (params.zimType === 'zimit' && params.cssTheme !== 'light' && params.cssTheme !== 'darkReader') {
-                            document.getElementById('cssWikiDarkThemeDarkReaderCheck').click();
+                        // Set defaults that allow for greatest compabitibility with Zimit ZIM types
+                        if (params.zimType === 'zimit') { 
+                            if (params.cssTheme !== 'light' && params.cssTheme !== 'darkReader') {
+                                document.getElementById('cssWikiDarkThemeDarkReaderCheck').click();
+                            }
+                            if (!params.windowOpener) {
+                                document.getElementById('tabOpenerCheck').click();
+                            }
                         }
                     }
                     if (wikimediaZimLoaded) {
@@ -3967,7 +3979,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     // Zimit archives store URLs encoded, and also need the URI component (search parameter) if any
                     var title = params.zimType === 'zimit' ? encodeURIComponent(event.data.title).replace(/\%2F/g, '/') + event.data.search : event.data.title;
                     // If it's an asset, we have to mark the dirEntry so that we don't load it if it has an html MIME type
-                    var titleIsAsset = /\??isKiwixAsset/.test(title) || /\.(png|gif|jpe?g|css|js|mpe?g|webp|webm|woff2?|mp[43])(\?|$)/i.test(title);
+                    var titleIsAsset = /\??isKiwixAsset/.test(title) || /\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|mp[43])(\?|$)/i.test(title);
                     title = title.replace(/\??isKiwixAsset/, '');
                     if (appstate.selectedArchive.landingPageUrl === title) params.isLandingPage = true;
                     var messagePort = event.ports[0];
@@ -4026,7 +4038,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                                 uiUtil.pollSpinner('Getting ' + shortTitle + '...');
                             }
                             // If it's an HTML type and not an asset, we load it in a new page instance
-                            if (/\bx?html\b/i.test(mimetype) && !dirEntry.isAsset && !/\.(png|gif|jpe?g|css|js|mpe?g|mp4|webp|webm|woff2?)(\?|$)/i.test(dirEntry.url)) {
+                            if (/\bx?html\b/i.test(mimetype) && !dirEntry.isAsset && !/\.(png|gif|jpe?g|svg|css|js|mpe?g|mp4|webp|webm|woff2?)(\?|$)/i.test(dirEntry.url)) {
                                 loadingArticle = title;
                                 // Intercept files of type html and apply transformations
                                 var message = {
