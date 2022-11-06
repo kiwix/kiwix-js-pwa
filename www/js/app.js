@@ -3967,14 +3967,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     // Zimit archives store URLs encoded, and also need the URI component (search parameter) if any
                     var title = params.zimType === 'zimit' ? encodeURIComponent(event.data.title).replace(/\%2F/g, '/') + event.data.search : event.data.title;
                     // If it's an asset, we have to mark the dirEntry so that we don't load it if it has an html MIME type
-                    var titleIsAsset = /\??isKiwixAsset/.test(title);
+                    var titleIsAsset = /\??isKiwixAsset/.test(title) || /\.(png|gif|jpe?g|css|js|mpe?g|webp|webm|woff2?|mp[43])(\?|$)/i.test(title);
                     title = title.replace(/\??isKiwixAsset/, '');
                     if (appstate.selectedArchive.landingPageUrl === title) params.isLandingPage = true;
                     var messagePort = event.ports[0];
                     if (!anchorParameter && event.data.anchorTarget) anchorParameter = event.data.anchorTarget;
                     // Intercept landing page if already transformed (because this might have a fake dirEntry)
-                    if (params.transformedHTML && params.transDirEntry &&
-                        title === params.transDirEntry.namespace + '/' + params.transDirEntry.url) {
+                    // Note that due to inconsistencies in Zimit archives, we need to test the encoded and the decoded version of the title
+                    if (params.transformedHTML && params.transDirEntry && (title === params.transDirEntry.namespace + '/' + params.transDirEntry.url
+                        || decodeURIComponent(title) === params.transDirEntry.namespace + '/' + params.transDirEntry.url)) {
                         var message = {
                             'action': 'giveContent',
                             'title': title,
@@ -3991,7 +3992,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                                 'title': title,
                                 'content': ''
                             });
-                            if (title === loadingArticle) goToMainArticle();
+                            if (!titleIsAsset && params.zimType === 'zimit') {
+                                // Use special routine to handle not-found titles for Zimit
+                                goToArticle(decodeURIComponent(title));
+                            } else {
+                                if (title === loadingArticle) goToMainArticle();
+                            }
+                            return;
                         } else if (dirEntry.isRedirect()) {
                             appstate.selectedArchive.resolveRedirect(dirEntry, function (resolvedDirEntry) {
                                 var redirectURL = resolvedDirEntry.namespace + "/" + resolvedDirEntry.url;
