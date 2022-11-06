@@ -4164,7 +4164,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 setTimeout(function () {
                     uiUtil.clearSpinner();
                 }, 5000);
-            } else {
+            } else if (appstate.messageChannelWaiting) {
                 setTimeout(postTransformedHTML, 500, thisMessage, thisMessagePort, thisDirEntry);
             }
         }
