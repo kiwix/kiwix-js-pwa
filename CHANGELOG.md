@@ -1,5 +1,11 @@
 # Changelog
 
+## In-progress release 2.2.1
+
+* ENHANCEMENT: Experimental option to use DarkReader plugin (SW mode only)
+* FIX: Deal with Zimit links correctly when link handling is disabled
+* FIX: Test both the encoded and decoded path for Zimit hyperlinks, due to inconsistencies in format 
+
 ## Release 2.2.0
 
 * UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-10.zim`
