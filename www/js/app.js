@@ -4290,8 +4290,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         uiUtil.displayActiveContentWarning('zimit');
                     }, 1000);
                 }
-            } else if (document.getElementById('activeContent').style.display !== 'none') {
-                $('#activeContent').hide();
+            } else {
+                // Hide any active content warning still hanging around
+                var activeContentWarning = document.getElementById('activeContent');
+                if (activeContentWarning && activeContentWarning.style && activeContentWarning.style.display !== 'none') {
+                    activeContentWarning.style.display = 'none';
+                }
             }
             var newBlock;
             var assetZIMUrlEnc;
