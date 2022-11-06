@@ -474,7 +474,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                         var shortTitle = key.replace(/[^/]+\//g, '').substring(0, 18);
                         // Since there was no result, post UI messages and look up asset in ZIM
                         if (/\bx?html\b/.test(mimetype) && !resolvedDirEntry.isAsset && 
-                            !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm|woff2?|mp[43])(\?|$)/i.test(resolvedDirEntry.url)) {
+                            !/\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|mp[43])(\?|$)/i.test(resolvedDirEntry.url)) {
                             uiUtil.pollSpinner('Loading ' + shortTitle + '...');
                         } else if (/(css|javascript|video|vtt)/i.test(mimetype)) {
                             uiUtil.pollSpinner('Getting ' + shortTitle + '...');
@@ -489,7 +489,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                                 content = transform(content, title.replace(/^.*\.([^.]+)$/, '$1'));
                             }
                             // Hide article while it is rendering
-                            if (!fileDirEntry.isAsset && /\bx?html\b/i.test(mimetype)  && !/\.(png|gif|jpe?g|css|js|mpe?g|webp|webm|woff2?|mp[34])(\?|$)/i.test(key)) {
+                            if (!fileDirEntry.isAsset && /\bx?html\b/i.test(mimetype)  && !/\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|mp[34])(\?|$)/i.test(key)) {
                                 // Count CSS so we can attempt to show article before JS/images are fully loaded
                                 var cssCount = content.match(/<(?:link)[^>]+?href=["']([^"']+)[^>]+>/ig);
                                 assetsCache.cssLoading = cssCount ? cssCount.length : 0;
