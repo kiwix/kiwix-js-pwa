@@ -1716,21 +1716,21 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 link.setAttribute('type', 'text/css');
                 link.setAttribute('href', prefix + (determinedWikiTheme == 'dark' ? '/-/s/style-dark.css' : '/-/s/style-dark-invert.css'));
                 doc.head.appendChild(link);
-                var stopDarkReader = doc.createElement('script');
-                stopDarkReader.setAttribute('type', 'text/javascript');
-                stopDarkReader.innerHTML = 'if (DarkReader) { DarkReader.disable(); }'
-                doc.head.appendChild(stopDarkReader);
+                if (articleWindow.DarkReader) {
+                    articleWindow.DarkReader.disable();
+                }
                 if (breakoutLink) breakoutLink.src = prefix + '/img/icons/new_window_lb.svg';
             } else {
                 if (params.cssTheme === 'darkReader') {
-                    var darkReader = doc.createElement('script');
-                    darkReader.setAttribute('type', 'text/javascript');
-                    darkReader.setAttribute('src', prefix + '/js/lib/darkreader.min.js');
-                    doc.head.appendChild(darkReader);
-                    var startDarkReader = doc.createElement('script');
-                    startDarkReader.setAttribute('type', 'text/javascript');
-                    startDarkReader.innerHTML = 'setTimeout(function() { DarkReader.setFetchMethod(window.fetch);\r\nDarkReader.enable(); }, 500);'
-                    doc.head.appendChild(startDarkReader);
+                    if (!articleWindow.DarkReader) {
+                        var darkReader = doc.createElement('script');
+                        darkReader.setAttribute('type', 'text/javascript');
+                        darkReader.setAttribute('src', prefix + '/js/lib/darkreader.min.js');
+                        doc.head.appendChild(darkReader);
+                    }
+                    setTimeout(function () {
+                        articleWindow.DarkReader.enable();
+                    }, 500);
                 }
                 if (breakoutLink) breakoutLink.src = prefix + '/img/icons/new_window.svg';
             }
