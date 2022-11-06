@@ -128,6 +128,9 @@
                             <li>Display media download alert only when the medium is fetched from the ZIM</li>
                             <li>Fix regression preventing UWP app from remaining in Service Worker mode</li>
                             <li>Fix failure to confirm with user before launching SW mode in UWP app</li>
+                            <li>Experimental option to use DarkReader plugin (SW mode only)</li>
+                            <li>Deal with Zimit links correctly when link handling is disabled</li>
+                            <li>Test both the encoded and decoded path for Zimit hyperlinks, due to inconsistencies in format</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                     </div>
@@ -781,7 +784,7 @@
                                                 <label id="darkDarkReader" style="display:none;" class="checkbox" title="This uses the DarkReader plugin, and should work with a wider range of archives. It is automatically set if you load a Zimit archive, but can be unset.">
                                                     <input type="checkbox" name="cssWikiDarkThemeDarkReader" id="cssWikiDarkThemeDarkReaderCheck">
                                                     <span class="checkmark"></span>
-                                                    <b>Use the <a href="https://github.com/darkreader/darkreader" target="_blank">DarkReader plugin</a></b> (works with wider range of archive types)
+                                                    <b>Use the <a href="https://github.com/darkreader/darkreader" target="_blank">DarkReader plugin</a></b> (<i>experimental</i>: should work with wider range of archive types)
                                                 </label>
                                                 <label id="darkInvert" style="display:none;" class="checkbox" title="This is a generic inversion style, and may work with some other ZIM types. It tries not to invert images, but transparent images sometimes fail to show against the background.">
                                                     <input type="checkbox" name="cssWikiDarkThemeInvert" id="cssWikiDarkThemeInvertCheck">
