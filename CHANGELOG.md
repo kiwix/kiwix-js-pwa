@@ -1,10 +1,11 @@
 # Changelog
 
-## In-progress release 2.2.1
+## In-progress release 2.2.3
 
 * ENHANCEMENT: Experimental option to use DarkReader plugin (SW mode only)
 * FIX: Deal with Zimit links correctly when link handling is disabled
-* FIX: Test both the encoded and decoded path for Zimit hyperlinks, due to inconsistencies in format 
+* FIX: Test both the encoded and decoded path for Zimit hyperlinks, due to inconsistencies in format
+* FIX: Infinite loop when hyperlinks are not being captured by window opener
 
 ## Release 2.2.0
 
