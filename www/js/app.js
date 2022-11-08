@@ -1624,6 +1624,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 params.cssTheme = darkThemeCheckbox.indeterminate ? 'auto' : darkThemeCheckbox.checked ? 'dark' : 'light';
             }
             settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
+            document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
             switchCSSTheme();
             params.cssThemeOriginal = null;
         });
@@ -1636,6 +1637,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 params.cssTheme = darkThemeCheckbox.indeterminate ? 'auto' : darkThemeCheckbox.checked ? 'dark' : 'light';
             }
             settingsStore.setItem('cssTheme', params.cssTheme, Infinity);
+            document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
             switchCSSTheme();
             params.cssThemeOriginal = null;
         });
