@@ -230,6 +230,7 @@ document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
 document.getElementById('darkInvert').style.display = /dark|invert|darkReader/i.test(params.cssTheme) ? "inline" : "none";
 document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' && /dark|invert|darkReader/i.test(params.cssTheme) ? "inline" : "none";
 document.getElementById('cssWikiDarkThemeInvertCheck').checked = params.cssTheme == 'invert';
+document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = params.cssTheme == 'darkReader';
 document.getElementById('resetDisplayOnResizeCheck').checked = params.resetDisplayOnResize;
 document.getElementById('useMathJaxRadio' + (params.useMathJax ? 'True' : 'False')).checked = true;
 document.getElementById('rememberLastPageCheck').checked = params.rememberLastPage;
