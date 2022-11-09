@@ -3202,6 +3202,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         params.noWarning = true;
                         if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
                         params.noWarning = false;
+                        if (params.cssTheme === 'darkReader') {
+                            document.getElementById('cssWikiDarkThemeDarkReaderCheck').click();
+                        }
                     }
                 }
                 // The archive is set : go back to home page to start searching
