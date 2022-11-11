@@ -1731,6 +1731,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         doc.head.appendChild(darkReader);
                     }
                     setTimeout(function () {
+                        articleWindow.DarkReader.setFetchMethod(articleWindow.fetch);
                         articleWindow.DarkReader.enable();
                     }, 500);
                 }
