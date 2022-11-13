@@ -63,8 +63,8 @@ Prompt or PowerShell terminal and typing `winget install kiwix.kiwixjs` (this ve
 a new update is ready to install). Alternative sideloading instructions are available in the
 [release notes](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html). The Electron version can be installed with
 `winget install kiwix.kiwixjs.electron`, or else by downloading a package from
-[Releases](https://github.com/kiwix/kiwix-js-windows/releases/). For testing, the Store, Electron and NWJS versions come packaged with an
-archive of Wikipedia articles related to Climate Change (as a starter ZIM).
+[Releases](https://github.com/kiwix/kiwix-js-windows/releases/). For testing, the Store, Electron and NWJS versions come packaged with a
+mini archive of the top 100 Wikipedia articles (without images and with only the lede paragraph).
 
 Offline ZIM archives are available in-app, or from the [Kiwix repository](https://library.kiwix.org). This app is regularly tested fully
 on Wikimedia ZIM files, though a number of other ZIM file types work. There is preliminary, useable support for most Zimit ZIMs from
