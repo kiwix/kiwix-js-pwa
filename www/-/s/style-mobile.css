@@ -233,15 +233,15 @@ body.mw-hide-empty-elt .mw-empty-elt {
 
 a {
     text-decoration: none;
-    color: #002bb8 !important
+    color: #002bb8
 }
 
     a:visited {
-        color: #5a3696 !important
+        color: #5a3696
     }
 
     a:active {
-        color: #faa700 !important
+        color: #faa700
     }
 
     a:hover {
@@ -249,11 +249,11 @@ a {
     }
 
     a.new, a.new:visited, a.new:hover {
-        color: #dd3333 !important
+        color: #dd3333
     }
 
         a.new > *, a.new:visited > *, a.new:hover > * {
-            color: #dd3333 !important
+            color: #dd3333
         }
 
     a.external {
