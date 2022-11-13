@@ -2816,7 +2816,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
                             // Set defaults that allow for greatest compabitibility with Zimit ZIM types
                             if (params.zimType === 'zimit') { 
-                                if (params.cssTheme !== 'light' && params.cssTheme !== 'darkReader') {
+                                if (params.cssTheme !== 'light' && params.cssTheme !== 'darkReader' && !/UWP/.test(params.appType)) {
                                     document.getElementById('cssWikiDarkThemeDarkReaderCheck').click();
                                 }
                                 if (!params.windowOpener) {
@@ -3194,7 +3194,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
                         // Set defaults that allow for greatest compabitibility with Zimit ZIM types
                         if (params.zimType === 'zimit') { 
-                            if (params.cssTheme !== 'light' && params.cssTheme !== 'darkReader') {
+                            if (params.cssTheme !== 'light' && params.cssTheme !== 'darkReader' && !/UWP/.test(params.appType)) {
                                 document.getElementById('cssWikiDarkThemeDarkReaderCheck').click();
                             }
                             if (!params.windowOpener) {
