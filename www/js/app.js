@@ -203,7 +203,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             var prefix = document.getElementById('prefix').value;
             // Do not initiate the same search if it is already in progress
             if (appstate.search.prefix === prefix && !/^(cancelled|complete)$/.test(appstate.search.status)) return;
-            $("#welcomeText").hide();
+            document.getElementById('welcomeText').style.display = 'none';
             $('.alert').hide();
             uiUtil.pollSpinner();
             pushBrowserHistoryState(null, prefix);
@@ -230,7 +230,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // Hide the article list
                 e.preventDefault();
                 e.stopPropagation();
-                $('#articleListWithHeader').hide();
+                document.getElementById('articleListWithHeader').style.display = 'none';
                 $('#articleContent').focus();
                 $("#myModal").modal('hide'); // This is in case the modal box is showing with an index search
                 keyPressHandled = true;
@@ -294,7 +294,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // If user had previously had the archive index open, clear it
                 document.getElementById('prefix').value = '';
             } else if (prefixVal !== '') {
-                $('#articleListWithHeader').show();
+                document.getElementById('articleListWithHeader').style.display = '';
             }
             document.getElementById('scrollbox').style.position = 'absolute';
             document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
@@ -746,9 +746,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             document.getElementById('search-article').scrollTop = 0;
             $('#articleContent').contents().empty();
             uiUtil.clearSpinner();
-            $('#welcomeText').show();
+            document.getElementById('welcomeText').style.display = '';
             if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
-                $('#welcomeText').hide();
+                document.getElementById('welcomeText').style.display = 'none';
                 goToMainArticle();
             }
         });
@@ -833,9 +833,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             var features = document.getElementById('features');
             if (features) document.getElementById('logFeatures').innerHTML = features.innerHTML;
             // Show the selected content in the page
-            $('#about').hide();
-            $('#configuration').hide();
-            $('#formArticleSearch').show();
+            document.getElementById('about').style.display = 'none';
+            document.getElementById('configuration').style.display = 'none';
+            document.getElementById('formArticleSearch').style.display = '';
             if (!activeBtn || activeBtn == 'btnHome') {
                 // document.getElementById('search-article').scrollTop = 0;
                 document.getElementById('scrollbox').style.height = 0;
@@ -849,9 +849,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             }
             $("#articleList").empty();
             $('#articleListHeaderMessage').empty();
-            $('#articleListWithHeader').hide();
+            document.getElementById('articleListWithHeader').style.display = 'none';
             $("#prefix").val("");
-            $("#welcomeText").hide();
+            document.getElementById('welcomeText').style.display = 'none';
             if (params.beforeinstallpromptFired) {
                 var divInstall1 = document.getElementById('divInstall1');
                 if (activeBtn !== 'btnConfigure' && !params.installLater && (params.pagesLoaded === 3 || params.pagesLoaded === 9)) {
@@ -984,11 +984,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             //Hide footer toolbar
             document.getElementById('footer').style.display = "none";
             // Show the selected content in the page
-            $('#configuration').show();
-            $('#articleContent').hide();
-            $('#downloadLinks').hide();
-            $('#serverResponse').hide();
-            $('#myModal').hide();
+            document.getElementById('configuration').style.display = '';
+            document.getElementById('articleContent').style.display = 'none';
+            document.getElementById('downloadLinks').style.display = 'none';
+            document.getElementById('serverResponse').style.display = 'none';
+            document.getElementById('myModal').style.display = 'none';
             refreshAPIStatus();
             //Re-enable top-level scrolling
             document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
@@ -1080,8 +1080,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             //Hide footer toolbar
             document.getElementById('footer').style.display = "none";
             // Show the selected content in the page
-            $('#about').show();
-            $('#articleContent').hide();
+            document.getElementById('about').style.display = '';
+            document.getElementById('articleContent').style.display = 'none';
             $('.alert').hide();
             //Re-enable top-level scrolling
             document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
@@ -2368,7 +2368,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         function searchForArchivesInStorage() {
             // If DeviceStorage is available, we look for archives in it
             document.getElementById('btnConfigure').click();
-            $('#scanningForArchives').show();
+            document.getElementById('scanningForArchives').style.display = '';
             if (params.localStorage && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 scanUWPFolderforArchives(params.localStorage);
             } else {
@@ -2504,10 +2504,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // siwtches to a tab and navigates history without first clicking on a link
                 if (appstate.target === 'window') articleWindow = event.target;
                 $('#prefix').val("");
-                $("#welcomeText").hide();
+                document.getElementById('welcomeText').style.display = 'none';
                 uiUtil.clearSpinner();
-                $('#configuration').hide();
-                $('#articleListWithHeader').hide();
+                document.getElementById('configuration').style.display = 'none';
+                document.getElementById('articleListWithHeader').style.display = 'none';
                 $('#articleContent').contents().empty();
                 if (title && !("" === title)) {
                     goToArticle(title);
@@ -2530,8 +2530,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
          * @param {Array.<String>} archiveDirectories
          */
         function populateDropDownListOfArchives(archiveDirectories, displayOnly) {
-            $('#scanningForArchives').hide();
-            $('#chooseArchiveFromLocalStorage').show();
+            document.getElementById('scanningForArchives').style.display = 'none';
+            document.getElementById('chooseArchiveFromLocalStorage').style.display = '';
             document.getElementById('rescanStorage').style.display = params.rescan ? "none" : "block";
             document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
             var plural = 's';
@@ -2838,7 +2838,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         document.getElementById('btnConfigure').click();
                         params.rescan = false;
                     } else {
-                        $('#openLocalFiles').hide();
+                        document.getElementById('openLocalFiles').style.display = 'none';
                         document.getElementById('usage').style.display = 'none';
                         document.getElementById('btnHome').click();
                     }
@@ -3237,7 +3237,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         params.rescan = false;
                     }, 100);
                 } else {
-                    $('#openLocalFiles').hide();
+                    document.getElementById('openLocalFiles').style.display = 'none';
                     document.getElementById('usage').style.display = 'none';
                     if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile.replace(/\.zim(\w\w)?$/, ''))) {
                         var lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, "");
@@ -3500,7 +3500,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 appstate.search.status = 'cancelled';
                 // Initiate a new search object and point appstate.search to it (the zimAcrhive search object will continue to point to the old object)
                 appstate.search = {'prefix': prefix, 'status': 'init', 'type': '', 'size': params.maxSearchResultsSize};
-                $('#activeContent').hide();
+                document.getElementById('activeContent').style.display = 'none';
                 if (!prefix || /^\s/.test(prefix)) {
                     var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
                     if (sel.length) {
@@ -3630,7 +3630,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         return false;
                     });
                     uiUtil.clearSpinner();
-                    $('#articleListWithHeader').hide();
+                    document.getElementById('articleListWithHeader').style.display = 'none';
                     var modalTheme = document.getElementById('modalTheme');
                     modalTheme.classList.remove('dark');
                     var determinedTheme = params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme;
@@ -3697,7 +3697,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 return false;
             });
             if (!stillSearching) uiUtil.clearSpinner();
-            $('#articleListWithHeader').show();
+            document.getElementById('articleListWithHeader').style.display = '';
             if (reportingSearch.status === 'error') {
                 document.getElementById('searchSyntaxLink').addEventListener('click', function () {
                     setTab('about');
@@ -4735,7 +4735,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 htmlCSS = htmlCSS ? htmlCSS[1].replace(/\s+/g, ' ').split(' ') : '';
 
                 // Hide any alert box that was activated in uiUtil.displayFileDownloadAlert function
-                $('#downloadAlert').hide();
+                document.getElementById('downloadAlert').style.display = 'none';
 
                 // Code below will run after we have written the new article to the articleContainer
                 var articleLoaded = params.contentInjectionMode === 'serviceworker' ? function() {} : function() {
@@ -5490,7 +5490,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         if (appstate.selectedArchive._file.minorVersion === 1 || /text\/html\b/i.test(dirEntry.getMimetype()) || 
                             params.zimType !== 'zimit' && dirEntry.namespace === 'A') {
                             params.isLandingPage = false;
-                            $('#activeContent').hide();
+                            document.getElementById('activeContent').style.display = 'none';
                             readArticle(dirEntry);
                         } else {
                             // If the random title search did not end up on an article,
@@ -5515,7 +5515,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     params.isLandingPage = false;
                     console.error("Error finding main article.");
                     uiUtil.clearSpinner();
-                    $("#welcomeText").show();
+                    document.getElementById('welcomeText').style.display = '';
                     uiUtil.systemAlert('We cannot find the landing page!<br />' + 
                             'Please check that this ZIM archive is valid. You may be able to search for other pages in the ZIM above.',
                             'Main page not found!');
@@ -5529,7 +5529,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         params.isLandingPage = false;
                         console.error("The main page of this archive does not seem to be an article");
                         uiUtil.clearSpinner();
-                        $("#welcomeText").show();
+                        document.getElementById('welcomeText').style.display = '';
                         uiUtil.systemAlert('The main page of this archive does not seem to be an article!<br />' + 
                             'Please check that this ZIM archive is valid. You may be able to search for other pages in the ZIM above.',
                             'Invalid article!');
