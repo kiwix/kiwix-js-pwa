@@ -4735,7 +4735,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 htmlCSS = htmlCSS ? htmlCSS[1].replace(/\s+/g, ' ').split(' ') : '';
 
                 // Hide any alert box that was activated in uiUtil.displayFileDownloadAlert function
-                document.getElementById('downloadAlert').style.display = 'none';
+                var downloadAlert = document.getElementById('downloadAlert');
+                if (downloadAlert) downloadAlert.style.display = 'none';
 
                 // Code below will run after we have written the new article to the articleContainer
                 var articleLoaded = params.contentInjectionMode === 'serviceworker' ? function() {} : function() {
