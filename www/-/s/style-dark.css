@@ -385,12 +385,12 @@ ul, .portlet li {
   }
 
   /*** invert images ***/
-img[title="Wikipedia"], .bookshelf-container .bookend, img.mwe-math-fallback-image-inline, img.mwe-math-fallback-image-display,
+img[title="Wikipedia"], .bookshelf-container .bookend, img[class|="mwe-math-fallback-image"], img[class^="latex"], 
 #mw-wsmfinal-close, img[data-kiwixsrc*="Speaker_Icon"], .infobox img[alt*="structure"][data-kiwixsrc*=".svg"], img[data-kiwixsrc*=".png"]:active,
 img[data-kiwixsrc*=".svg"][height="16"], img[data-kiwixsrc*=".svg"][height="17"], img[data-kiwixsrc*=".svg"][height="18"], img[data-kiwixsrc*="Kiwix_icon"],
 .oo-ui-iconElement-icon:not(.mw-echo-notifications-badge), .RTsettings, #gtx-host, .jfk-bubble-closebtn,
 #pt-notifications-notice .mw-echo-notifications-badge:before, .oo-ui-pendingElement-pending,
-#pt-notifications-alert .mw-echo-notifications-badge:before, .mw-ui-icon-arrow, .latex {
+#pt-notifications-alert .mw-echo-notifications-badge:before, .mw-ui-icon-arrow {
     -webkit-filter: invert(100%) !important;
     filter: invert(100%) !important;
     background-color: transparent !important;
