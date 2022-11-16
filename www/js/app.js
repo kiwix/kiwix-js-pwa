@@ -3500,7 +3500,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 appstate.search.status = 'cancelled';
                 // Initiate a new search object and point appstate.search to it (the zimAcrhive search object will continue to point to the old object)
                 appstate.search = {'prefix': prefix, 'status': 'init', 'type': '', 'size': params.maxSearchResultsSize};
-                document.getElementById('activeContent').style.display = 'none';
+                var activeContent = document.getElementById('activeContent');
+                if (activeContent) activeContent.style.display = 'none';
                 if (!prefix || /^\s/.test(prefix)) {
                     var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
                     if (sel.length) {
@@ -4301,10 +4302,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 }
             } else {
                 // Hide any active content warning still hanging around
-                var activeContentWarning = document.getElementById('activeContent');
-                if (activeContentWarning && activeContentWarning.style && activeContentWarning.style.display !== 'none') {
-                    activeContentWarning.style.display = 'none';
-                }
+                var activeContent = document.getElementById('activeContent');
+                if (activeContent) activeContent.style.display = 'none';
             }
             var newBlock;
             var assetZIMUrlEnc;
@@ -5491,7 +5490,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         if (appstate.selectedArchive._file.minorVersion === 1 || /text\/html\b/i.test(dirEntry.getMimetype()) || 
                             params.zimType !== 'zimit' && dirEntry.namespace === 'A') {
                             params.isLandingPage = false;
-                            document.getElementById('activeContent').style.display = 'none';
+                            var activeContent = document.getElementById('activeContent');
+                            if (activeContent) activeContent.style.display = 'none';
                             readArticle(dirEntry);
                         } else {
                             // If the random title search did not end up on an article,
