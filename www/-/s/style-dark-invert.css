@@ -4,8 +4,7 @@ video {
     filter: invert(1) hue-rotate(180deg);
 }
 
-img.mwe-math-fallback-image-inline,
-img.mwe-math-fallback-image-display, img.latex {
+img[class|="mwe-math-fallback-image"], img[class^="latex"] {
     filter: hue-rotate(180deg);
 }
 
