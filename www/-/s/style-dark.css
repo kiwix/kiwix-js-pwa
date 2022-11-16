@@ -390,7 +390,7 @@ img[title="Wikipedia"], .bookshelf-container .bookend, img.mwe-math-fallback-ima
 img[data-kiwixsrc*=".svg"][height="16"], img[data-kiwixsrc*=".svg"][height="17"], img[data-kiwixsrc*=".svg"][height="18"], img[data-kiwixsrc*="Kiwix_icon"],
 .oo-ui-iconElement-icon:not(.mw-echo-notifications-badge), .RTsettings, #gtx-host, .jfk-bubble-closebtn,
 #pt-notifications-notice .mw-echo-notifications-badge:before, .oo-ui-pendingElement-pending,
-#pt-notifications-alert .mw-echo-notifications-badge:before, .mw-ui-icon-arrow {
+#pt-notifications-alert .mw-echo-notifications-badge:before, .mw-ui-icon-arrow, .latex {
     -webkit-filter: invert(100%) !important;
     filter: invert(100%) !important;
     background-color: transparent !important;
