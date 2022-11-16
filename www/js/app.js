@@ -1723,7 +1723,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 }
                 if (breakoutLink) breakoutLink.src = prefix + '/img/icons/new_window_lb.svg';
             } else {
-                if (params.cssTheme === 'darkReader') {
+                if (params.contentInjectionMode === 'serviceworker' && params.cssTheme === 'darkReader') {
                     if (!articleWindow.DarkReader) {
                         var darkReader = doc.createElement('script');
                         darkReader.setAttribute('type', 'text/javascript');
