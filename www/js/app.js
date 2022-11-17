@@ -4300,10 +4300,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         uiUtil.displayActiveContentWarning('zimit');
                     }, 1000);
                 }
-            } else {
-                // Hide any active content warning still hanging around
-                var activeContent = document.getElementById('activeContent');
-                if (activeContent) activeContent.style.display = 'none';
             }
             var newBlock;
             var assetZIMUrlEnc;
