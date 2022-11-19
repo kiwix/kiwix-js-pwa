@@ -24,15 +24,18 @@ th[style*="background-color: #fff"], .mw-echo-notifications-badge,
 }
 
   /*** Overall ***/
-td:not([style*="background"]), p, li, th:not([style*="background"]), caption, div {
+  td:not([style*="background"]), p, li, th:not(.infobox-above, [style*="background"]), caption, div {
     color: lightgray !important;
-}
+  }
 
-    p code, label code, dl code {
-        background-color: #111;
-        color: lightgray !important;
-    }
+  th.infobox-above, th.infobox-header {
+    background-color: darkslategray !important;
+  }
 
+  p code, label code, dl code {
+      background-color: #111;
+      color: lightgray !important;
+  }
 
 blockquote {
     background-color: transparent !important;
