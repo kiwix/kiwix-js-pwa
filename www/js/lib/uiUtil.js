@@ -437,10 +437,11 @@ define(rqDef, function(util) {
         // Make filename safe
         filename = filename.replace(/[\/\\:*?"<>|#&]/g, '_');
         // If the file doesn't have an extension, add one for compatibility with older browsers
-        if (!/\.(epub|pdf|zip|png|jpe?g|webp|svg|gif|tiff|mp4|webm|mpe?g|mp3)([?#]|$)/i.test(filename)) {
+        if (!/\.(epub|pdf|odt|zip|png|jpe?g|webp|svg|gif|tiff|mp4|webm|mpe?g|mp3)([?#]|$)/i.test(filename)) {
             var extension = 
                 /epub/i.test(contentType) ? '.epub' : 
                 /pdf/i.test(contentType) ? '.pdf' : 
+                /opendument/i.test(contentType) ? '.odt' : 
                 /\/zip$/i.test(contentType) ? '.zip' : 
                 /png/i.test(contentType) ? '.png' : 
                 /jpeg/i.test(contentType) ? '.jpeg' : 
