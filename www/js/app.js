@@ -1259,7 +1259,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         var launchLocal = function () {
                             settingsStore.setItem('allowInternetAccess', false, Infinity);
                             var uriParams = '?allowInternetAccess=false&contentInjectionMode=jquery';
-                            uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
+                            // Commented line below causes crash when there are too many archives
+                            // uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
                             uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
                             uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
                             // Void the PWA_launch signal so that user will be asked again next time
@@ -2299,7 +2300,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // except on first launch of SW mode
                 uriParams += params.allowInternetAccess ? '' : '&contentInjectionMode=serviceworker';
                 uriParams += '&manipulateImages=false&allowHTMLExtraction=false';
-                uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
+                // Commented line below causes crash if there are too many archives
+                // uriParams += '&listOfArchives=' + encodeURIComponent(settingsStore.getItem('listOfArchives'));
                 uriParams += '&lastSelectedArchive=' + encodeURIComponent(params.storedFile);
                 // DEV: Line below causes crash when switching to SW mode in UWP app!
                 // uriParams += '&lastPageVisit=' + encodeURIComponent(params.lastPageVisit);
