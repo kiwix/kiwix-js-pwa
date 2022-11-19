@@ -3789,7 +3789,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 if (!/\bx?html\b/i.test(mimeType)) {
                     // If the selected article isn't HTML, e.g. it might be a PDF, we can either download it if we recognize the type, or ask the SW to deal with it
                     if ((params.zimType === 'zimit' || appstate.search.searchUrlIndex) && 
-                        /\/(plain|.*javascript|css|csv|.*officedocument|epub|pdf|zip|png|jpeg|webp|svg|gif|tiff|mp4|webm|mpeg|mp3|octet-stream|warc-headers)/i.test(mimeType)) {
+                        /\/(plain|.*javascript|css|csv|.*officedocument|.*opendocument|epub|pdf|zip|png|jpeg|webp|svg|gif|tiff|mp4|webm|mpeg|mp3|octet-stream|warc-headers)/i.test(mimeType)) {
                         var download = true;
                         return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                             if (/^text|\/.*javascript|\/warc-headers/i.test(mimeType)) {
@@ -4204,7 +4204,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         // DEV: The regex below matches ZIM links (anchor hrefs) that should have the html5 "donwnload" attribute added to 
         // the link. This is currently the case for epub and pdf files in Project Gutenberg ZIMs -- add any further types you need
         // to support to this regex. The "zip" has been added here as an example of how to support further filetypes
-        var regexpDownloadLinks = /^.*?\.epub($|\?)|^.*?\.pdf($|\?)|^.*?\.zip($|\?)/i;
+        var regexpDownloadLinks = /^.*?\.epub($|\?)|^.*?\.pdf($|\?)|^.*?\.odt($|\?)|^.*?\.zip($|\?)/i;
 
         // This matches the data-kiwixurl of all <link> tags containing rel="stylesheet" or "...icon" in raw HTML unless commented out
         var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["'](?:stylesheet|[^"']*icon))[^>]*(?:href|data-kiwixurl)\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
@@ -5453,7 +5453,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     } else {
                         uiUtil.systemAlert('<p>Sorry, but we couldn\'t find the article:</p><p><i>' + path + '</i></p><p>in this archive!</p>');
                     }
-                } else if (download || /\/(epub|pdf|zip|png|jpeg|webp|svg|gif|tiff|mp4|webm|mpeg|mp3|octet-stream)/i.test(mimetype)) {
+                } else if (download || /\/(epub|pdf|zip|.*opendocument|.*officedocument|png|jpeg|webp|svg|gif|tiff|mp4|webm|mpeg|mp3|octet-stream)/i.test(mimetype)) {
                     download = true;
                     appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                         uiUtil.displayFileDownloadAlert(path, download, mimetype, content);
