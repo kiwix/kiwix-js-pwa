@@ -32,6 +32,10 @@ th[style*="background-color: #fff"], .mw-echo-notifications-badge,
     background-color: darkslategray !important;
   }
 
+  td.infobox-subheader {
+    background-color: dimgray !important;
+  }
+
   p code, label code, dl code {
       background-color: #111;
       color: lightgray !important;
