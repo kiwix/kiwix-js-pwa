@@ -1,4 +1,4 @@
-﻿/**
+/**
  * app.js : User Interface implementation
  * This file handles the interaction between the application and the user
  * 
@@ -3208,7 +3208,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         params.noWarning = true;
                         if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
                         params.noWarning = false;
-                        if (params.cssTheme === 'darkReader') {
+                        if (params.cssTheme === 'darkReader' && /UWP/.test(params.appType)) {
                             document.getElementById('cssWikiDarkThemeDarkReaderCheck').click();
                         }
                     }
