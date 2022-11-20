@@ -1,4 +1,4 @@
-/**
+﻿/**
  * app.js : User Interface implementation
  * This file handles the interaction between the application and the user
  * 
