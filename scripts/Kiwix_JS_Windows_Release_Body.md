@@ -55,8 +55,8 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
 
 * In order to minimize download size, the sample archive (where provided) has no images in articles apart from the landing page, and only the lede (summary) of each article is included. The packaged archive is located in the `archives` folder (where this is accessible). See the readme in that folder for more information.
 * You can download many different archives in multiple languages from the Configuration page.
-* There is experimental support for reading Zimit archives, most of which require you to enable Service Worker mode to read most content (this is not available in older browsers or OSs).
-* The app supports dark mode for Wikimedia, Gutenberg and Stackexchange ZIMs, but not for Zimit archives unless the archive provides its own dark mode.
+* There is experimental support for reading Zimit archives, most of which require you to enable ServiceWorker mode to read most content (this is not available in older browsers or OSs).
+* The app natively supports dark mode for Wikimedia, Gutenberg and Stack Exchange ZIMs (see Configuration). For Zimit archives in particular, we recommend you try the new DarkReader plugin (you can enable this from Configuration in ServiceWorker mode only).
 * You can print by pressing Ctrl-P or using the print icon. If local printers are not available (after clicking on More options...) then print to PDF and use another app to print.
 * You can open a new browsable window by right-clicking, middle-clicking or ctrl-clicking an article link (not available in every mode, see option in Configuration).
 * You can open the ZIM's article index by typing a space in the search box. Sometimes you may need to search the URL index instead: to open this, type **_space /_** (a space followed by a forward slash) in the search box. In older ZIMs, you will find articles under the `A/` namespace and images under the `I/` namespace, but in newer ZIMs almost all content is under the `C/` namesapce.
