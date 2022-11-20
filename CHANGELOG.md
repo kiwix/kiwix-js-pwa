@@ -5,6 +5,7 @@
 * UPDATE: Sample archive changed to `wikipedia_en_100_mini_2022-10`
 * ENHANCEMENT: Experimental option to use DarkReader plugin (SW mode only)
 * ENHANCEMENT: Added support for Open Document download types (.odt)
+* ENHANCEMENT: UWP app size reduced from 13MB to 5.4MB!
 * FIX: A number of glitches with standard and inverted dark themes
 * FIX: Crash in UWP app when switching between modes if there are too many archives in a loaded directory
 * FIX: Deal with Zimit links correctly when link handling is disabled
