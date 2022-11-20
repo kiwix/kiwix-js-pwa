@@ -1,14 +1,17 @@
 # Changelog
 
-## In-progress release 2.2.4
+## Release 2.2.5
 
 * UPDATE: Sample archive changed to `wikipedia_en_100_mini_2022-10`
 * ENHANCEMENT: Experimental option to use DarkReader plugin (SW mode only)
+* ENHANCEMENT: Added support for Open Document download types (.odt)
 * FIX: A number of glitches with standard and inverted dark themes
+* FIX: Crash in UWP app when switching between modes if there are too many archives in a loaded directory
 * FIX: Deal with Zimit links correctly when link handling is disabled
 * FIX: Test both the encoded and decoded path for Zimit hyperlinks, due to inconsistencies in format
 * FIX: Infinite loop when hyperlinks are not being captured by window opener
 * FIX: Recognize more file types as assets, to avoid accidentally loading them as articles
+* FIX: Failure to display active content warning in some instances
 
 ## Release 2.2.0
 
