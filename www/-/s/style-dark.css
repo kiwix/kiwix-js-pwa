@@ -24,7 +24,7 @@ th[style*="background-color: #fff"], .mw-echo-notifications-badge,
 }
 
   /*** Overall ***/
-  td:not([style*="background"]), p, li, th:not(.infobox-above, [style*="background"]), caption, div {
+  p, li, td:not([style*="background"]), th:not([style*="background"]), caption, div {
     color: lightgray !important;
   }
 
