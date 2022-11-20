@@ -107,8 +107,8 @@ params['navButtonsPos'] = getSetting('navButtonsPos') || 'bottom'; // 'top|botto
 
 //Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['imageDisplayMode'] = params.imageDisplay ? 'progressive' : 'manual';
-params['storedFile'] = getSetting('lastSelectedArchive') || params['packagedFile'] || '';
-params.storedFile = launchArguments ? launchArguments.files[0].name : params.storedFile;
+params['storedFile'] = getSetting('lastSelectedArchive');
+params.storedFile = launchArguments ? launchArguments.files[0].name : params.storedFile || params['packagedFile'] || '';
 params['lastPageVisit'] = params.rememberLastPage && params.storedFile ? getSetting(params.storedFile.replace(/(\.zim)\w?\w?$/, '$1')) || '' : '';
 params.lastPageVisit = params.lastPageVisit ? params.lastPageVisit + '@kiwixKey@' + params.storedFile : '';
 params['storedFilePath'] = getSetting('lastSelectedArchivePath');
@@ -142,7 +142,7 @@ params['mapsURI'] = getSetting('mapsURI') || (/UWP|Windows/.test(params.appType)
                 // Store new values
                 setSetting(paramKey, paramVal);
                 paramKey = paramKey === 'lastSelectedArchive' ? 'storedFile' : paramKey;
-                params[paramKey] = paramVal;
+                params[paramKey] = paramVal === 'false' ? false : paramVal === 'true' ? true : paramVal;
             }
         }
         matches = rgx.exec(window.location.search);
