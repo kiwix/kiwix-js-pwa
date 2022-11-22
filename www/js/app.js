@@ -212,9 +212,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             clearFindInArticle();
             //Re-enable top-level scrolling
             document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
-            if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
-                document.getElementById('navbarToggle').click();
-            }
             // This flag is set to true in the mousedown event below
             searchArticlesFocused = false;
         });
@@ -761,12 +758,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
 
         function setTab(activeBtn) {
             // Highlight the selected section in the navbar
-            document.getElementById('liHomeNav').setAttribute('class', 'active');
-            document.getElementById('liConfigureNav').setAttribute('class', '');
-            document.getElementById('liAboutNav').setAttribute('class', '');
-            if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
-                document.getElementById('navbarToggle').click();
-            }
             setActiveBtn(activeBtn);
             var btnAbout = document.getElementById('btnAbout');
             if (!activeBtn || activeBtn == "btnHome" || activeBtn == "findText") {
@@ -977,14 +968,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 return;
             }
             $('.alert').hide();
-            setTab('btnConfigure');
             // Highlight the selected section in the navbar
-            document.getElementById('liHomeNav').setAttribute('class', '');
-            document.getElementById('liConfigureNav').setAttribute('class', 'active');
-            document.getElementById('liAboutNav').setAttribute('class', '');
-            if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
-                document.getElementById('navbarToggle').click();
-            }
+            setTab('btnConfigure');
             //Hide footer toolbar
             document.getElementById('footer').style.display = "none";
             // Show the selected content in the page
@@ -1074,12 +1059,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 return;
             }
             // Highlight the selected section in the navbar
-            document.getElementById('liHomeNav').setAttribute('class', '');
-            document.getElementById('liConfigureNav').setAttribute('class', '');
-            document.getElementById('liAboutNav').setAttribute('class', 'active');
-            if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
-                document.getElementById('navbarToggle').click();
-            }
             setTab('btnAbout');
             //Hide footer toolbar
             document.getElementById('footer').style.display = "none";
