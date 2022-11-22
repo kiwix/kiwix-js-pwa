@@ -213,7 +213,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             //Re-enable top-level scrolling
             document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
             if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
-                $('#navbarToggle').click();
+                document.getElementById('navbarToggle').click();
             }
             // This flag is set to true in the mousedown event below
             searchArticlesFocused = false;
@@ -231,7 +231,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 e.preventDefault();
                 e.stopPropagation();
                 document.getElementById('articleListWithHeader').style.display = 'none';
-                $('#articleContent').focus();
+                document.getElementById('articleContent').focus();
                 $("#myModal").modal('hide'); // This is in case the modal box is showing with an index search
                 keyPressHandled = true;
             }
@@ -744,7 +744,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             appstate.target = 'iframe';
             setTab('btnHome');
             document.getElementById('search-article').scrollTop = 0;
-            $('#articleContent').contents().empty();
+            let articleContent = document.getElementById('articleContent');
+            let articleContentDoc = articleContent ? articleContent.contentDocument : null;
+            while (articleContentDoc.firstChild) articleContentDoc.removeChild(articleContentDoc.firstChild);
             uiUtil.clearSpinner();
             document.getElementById('welcomeText').style.display = '';
             if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
@@ -759,11 +761,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
 
         function setTab(activeBtn) {
             // Highlight the selected section in the navbar
-            $('#liHomeNav').attr("class", "active");
-            $('#liConfigureNav').attr("class", "");
-            $('#liAboutNav').attr("class", "");
+            document.getElementById('liHomeNav').setAttribute('class', 'active');
+            document.getElementById('liConfigureNav').setAttribute('class', '');
+            document.getElementById('liAboutNav').setAttribute('class', '');
             if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
-                $('#navbarToggle').click();
+                document.getElementById('navbarToggle').click();
             }
             setActiveBtn(activeBtn);
             var btnAbout = document.getElementById('btnAbout');
@@ -847,8 +849,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     }
                 }, 50);
             }
-            $("#articleList").empty();
-            $('#articleListHeaderMessage').empty();
+            let articleList = document.getElementById('articleList');
+            let articleListHeaderMessage =  document.getElementById('articleListHeaderMessage');
+            while (articleList.firstChild) articleList.removeChild(articleList.firstChild);
+            while (articleListHeaderMessage.firstChild) articleListHeaderMessage.removeChild(articleListHeaderMessage.firstChild);
             document.getElementById('articleListWithHeader').style.display = 'none';
             $("#prefix").val("");
             document.getElementById('welcomeText').style.display = 'none';
@@ -975,11 +979,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             $('.alert').hide();
             setTab('btnConfigure');
             // Highlight the selected section in the navbar
-            $('#liHomeNav').attr("class", "");
-            $('#liConfigureNav').attr("class", "active");
-            $('#liAboutNav').attr("class", "");
+            document.getElementById('liHomeNav').setAttribute('class', '');
+            document.getElementById('liConfigureNav').setAttribute('class', 'active');
+            document.getElementById('liAboutNav').setAttribute('class', '');
             if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
-                $('#navbarToggle').click();
+                document.getElementById('navbarToggle').click();
             }
             //Hide footer toolbar
             document.getElementById('footer').style.display = "none";
@@ -1070,11 +1074,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 return;
             }
             // Highlight the selected section in the navbar
-            $('#liHomeNav').attr("class", "");
-            $('#liConfigureNav').attr("class", "");
-            $('#liAboutNav').attr("class", "active");
+            document.getElementById('liHomeNav').setAttribute('class', '');
+            document.getElementById('liConfigureNav').setAttribute('class', '');
+            document.getElementById('liAboutNav').setAttribute('class', 'active');
             if ($('#navbarToggle').is(":visible") && $('#liHomeNav').is(':visible')) {
-                $('#navbarToggle').click();
+                document.getElementById('navbarToggle').click();
             }
             setTab('btnAbout');
             //Hide footer toolbar
@@ -1594,7 +1598,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             document.getElementById('cssUIDarkThemeState').innerHTML = params.cssUITheme;
             cssUIThemeGetOrSet(params.cssUITheme);
             //Make subsequent check valid if params.cssTheme is "invert" rather than "dark"
-            if (params.cssUITheme != params.cssTheme) $('#cssWikiDarkThemeCheck').click();
+            if (params.cssUITheme != params.cssTheme) document.getElementById('cssWikiDarkThemeCheck').click();
             params.cssThemeOriginal = null;
         });
         document.getElementById('cssWikiDarkThemeCheck').addEventListener('click', function () {
@@ -2510,7 +2514,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 uiUtil.clearSpinner();
                 document.getElementById('configuration').style.display = 'none';
                 document.getElementById('articleListWithHeader').style.display = 'none';
-                $('#articleContent').contents().empty();
+                let articleContent = document.getElementById('articleContent');
+                let articleContentDoc = articleContent ? articleContent.contentDocument : null;
+                while (articleContentDoc.firstChild) articleContentDoc.removeChild(articleContentDoc.firstChild);
                 if (title && !("" === title)) {
                     goToArticle(title);
                 }
@@ -2519,7 +2525,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     if (titleSearch !== appstate.search.prefix) {
                         searchDirEntriesFromPrefix(titleSearch);
                     } else {
-                        $('#prefix').focus();
+                        document.getElementById('prefix').focus();
                     }
                 }
             }
@@ -3519,7 +3525,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 uiUtil.clearSpinner();
                 // We have to remove the focus from the search field,
                 // so that the keyboard does not stay above the message
-                $('#searchArticles').focus();
+                document.getElementById('searchArticles').focus();
                 uiUtil.systemAlert("Archive not set: please select an archive!");
                 document.getElementById('btnConfigure').click();
             }
