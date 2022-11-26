@@ -1,7 +1,6 @@
 # Kiwix JS for PWA, Windows and Linux (Electron, NWJS, UWP)
 
-
-![ContactSheet-Kiwix-5x6_sphere@0 5x](https://user-images.githubusercontent.com/4304337/203170183-938c551d-4db2-4d8d-8ec0-41152383ef3a.png)
+![WikiMed montage](https://user-images.githubusercontent.com/4304337/182706203-eca53649-8dea-44b9-ac4a-b08cc05c4252.png)
 
 **Kiwix is an offline reader for multilingual content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, etc. It
 makes knowledge available to people with limited or no Internet access. The software and the content are free for anyone to use.
@@ -40,7 +39,7 @@ select a large archive for download in the app, it will provide you with a torre
 download and open the torrent file. This small file will open in qBittorrent and you'll be asked where you want to save the archive you
 want to download. It's much easier than it sounds!
 
-![WikiMed montage](https://user-images.githubusercontent.com/4304337/182706203-eca53649-8dea-44b9-ac4a-b08cc05c4252.png)
+![ContactSheet-Kiwix-5x6_sphere@0 5x_masked](https://user-images.githubusercontent.com/4304337/204076458-d95cf440-294a-4655-bc59-2529b123708c.png)
 
 ## Technical information
 
