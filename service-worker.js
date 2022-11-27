@@ -231,7 +231,6 @@ if ('WebAssembly' in self) {
   );
 }
 
-
 // Process install event
 self.addEventListener("install", function (event) {
     console.debug("[SW] Install Event processing");
