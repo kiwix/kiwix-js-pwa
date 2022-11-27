@@ -842,6 +842,13 @@ define(rqDef, function(util) {
         document.getElementById('apiStatusDiv').className = 'panel panel-danger';
     }
 
+    // Reports the search provider to the API Status Panel
+    function reportSearchProviderToAPIStatusPanel(provider) {
+        var providerAPI = document.getElementById('searchProvider');
+        providerAPI.innerHTML = 'Search Provider: ' + (provider === 'fulltext' ? 'Title + Xapian (full text)' : 'Title only');
+        providerAPI.className = provider === 'fulltext' ? 'apiAvailable' : 'apiUnavailable';
+    }
+
 
     /**
      * Warn the user that he/she clicked on an external link, and open it in a new tab
@@ -942,6 +949,7 @@ define(rqDef, function(util) {
         checkServerIsAccessible: checkServerIsAccessible,
         initTouchZoom: initTouchZoom,
         reportAssemblerErrorToAPIStatusPanel: reportAssemblerErrorToAPIStatusPanel,
+        reportSearchProviderToAPIStatusPanel: reportSearchProviderToAPIStatusPanel,
         warnAndOpenExternalLinkInNewTab: warnAndOpenExternalLinkInNewTab,
         closestAnchorEnclosingElement: closestAnchorEnclosingElement
     };
