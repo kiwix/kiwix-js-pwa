@@ -90,6 +90,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                     if ('WebAssembly' in self && that._file.fullTextIndex) {
                         console.log('Instantiating libzim Web Worker...');
                         libzimWorker = new Worker('js/lib/libzim-wasm.js');
+                        that.callLibzimWorker({action: "init", files: that._file._files});
                     };
                 });
                 // Set the archive file type ('open' or 'zimit')
@@ -414,6 +415,35 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
             return callback(objWithIndex.dirEntries, objWithIndex.nextStart);
         });
     };
+
+    /**
+     * Calls the libzim Web Worker with the given parameters, and returns a Promise with its response
+     * 
+     * @param {Object} parameters
+     * @returns {Promise}
+     */
+    ZIMArchive.prototype.callLibzimWorker = function (parameters) {
+        return new Promise(function (resolve, reject) {
+            console.debug("Calling libzim WebWorker with parameters", parameters);
+            var tmpMessageChannel = new MessageChannel();
+            // var t0 = performance.now();
+            tmpMessageChannel.port1.onmessage = function (event) {
+                // var t1 = performance.now();
+                // var readTime = Math.round(t1 - t0);
+                // console.debug("Response given by the WebWorker in " + readTime + " ms", event.data);
+                resolve(event.data);
+            };
+            tmpMessageChannel.port1.onerror = function (event) {
+                // var t1 = performance.now();
+                // var readTime = Math.round(t1 - t0);
+                // console.error("Error sent by the WebWorker in " + readTime + " ms", event.data);
+                reject(event.data);
+            };
+            libzimWorker.postMessage(parameters, [tmpMessageChannel.port2]);
+        });
+    }
+    
+
     
     /**
      * @callback callbackDirEntry
