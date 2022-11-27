@@ -179,8 +179,12 @@ div:not(.panel-success, .alert-message) {
     color: green;
 }
 
-.apiUnavailable {
+.apiUnavailable, .apiSuboptimal {
     color: orange;
+}
+
+.apiBroken {
+    color : red;
 }
 
 .loader {
