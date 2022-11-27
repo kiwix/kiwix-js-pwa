@@ -220,7 +220,9 @@ if ('WebAssembly' in self) {
     "www/js/lib/xzdec-wasm.js",
     "www/js/lib/xzdec-wasm.wasm",
     "www/js/lib/zstddec-wasm.js",
-    "www/js/lib/zstddec-wasm.wasm"
+    "www/js/lib/zstddec-wasm.wasm",
+    "www/js/lib/libzim-wasm.js",
+    "www/js/lib/libzim-wasm.wasm"
   );
 } else {
   precacheFiles.push(
