@@ -41,6 +41,11 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
      * @callback callbackMetadata
      * @param {String} data metadata string
      */
+
+    /**
+     * @param {Worker} libzimWorker A Web Worker to run the libzim Web Assembly binary
+     */
+    var libzimWorker; 
     
     /**
      * Creates a ZIM archive object to access the ZIM file at the given path in the given storage.
@@ -81,7 +86,12 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
                         ptrName: 'fullTextIndex',
                         countName: 'fullTextIndexSize'
                     }
-                ]);
+                ]).then(function () {
+                    if ('WebAssembly' in self && that._file.fullTextIndex) {
+                        console.log('Instantiating libzim Web Worker...');
+                        libzimWorker = new Worker('js/lib/libzim-wasm.js');
+                    };
+                });
                 // Set the archive file type ('open' or 'zimit')
                 params.zimType = that.setZimType();
                 // DEV: Currently, extended listings are only used for title (=article) listings when the user searches
