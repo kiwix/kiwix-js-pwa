@@ -441,9 +441,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'utf8'],
             };
             libzimWorker.postMessage(parameters, [tmpMessageChannel.port2]);
         });
-    }
-    
-
+    };
     
     /**
      * @callback callbackDirEntry
