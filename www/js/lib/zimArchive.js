@@ -93,7 +93,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                     var isSplitZim = /\.zima.$/i.test(that._file._files[0].name);
                     if ('WebAssembly' in self && that._file.fullTextIndex && !isSplitZim) {
                         console.log('Instantiating libzim Web Worker...');
-                        libzimWorker = new Worker('js/lib/libzim-wasm.js');
+                        libzimWorker = new Worker('js/lib/libzim-asm.js');
                         that.callLibzimWorker({action: "init", files: that._file._files})
                         .then(function () {
                             params.searchProvider = 'fulltext';
