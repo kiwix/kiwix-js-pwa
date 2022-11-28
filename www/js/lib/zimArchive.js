@@ -91,11 +91,12 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                 ]).then(function () {
                     // There is currently an exception thrown in the libzim wasm if we attempt to load a split ZIM archive, so we work around
                     var isSplitZim = /\.zima.$/i.test(that._file._files[0].name);
-                    if ('WebAssembly' in self && that._file.fullTextIndex && !isSplitZim) {
-                        console.log('Instantiating libzim Web Worker...');
-                        libzimWorker = new Worker('js/lib/libzim-asm.js');
-                        that.callLibzimWorker({action: "init", files: that._file._files})
-                        .then(function () {
+                    if (that._file.fullTextIndex && !isSplitZim) {
+                        var libzimReaderType = 'WebAssembly' in self ? 'wasm' : 'asm'; 
+                        console.log('Instantiating libzim ' + libzimReaderType + ' Web Worker...');
+                        libzimWorker = new Worker('js/lib/libzim-' + libzimReaderType + '.js');
+                        that.callLibzimWorker({action: "init", files: that._file._files}).then(function (msg) {
+                            // console.debug(msg);
                             params.searchProvider = 'fulltext';
                             // Update the API panel
                             uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider);
@@ -105,7 +106,8 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                         });
                     } else {
                         uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider);
-                        if (isSplitZim) console.warn('Full text searching was disabled because ZIM archive is split.');
+                        var message = isSplitZim ? 'Full text searching is not available because ZIM archive is split.' : 'Full text searching is not available in this ZIM.'
+                        console.warn(message);
                     }
                 });
                 // Set the archive file type ('open' or 'zimit')
