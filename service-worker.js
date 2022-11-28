@@ -228,8 +228,7 @@ if ('WebAssembly' in self) {
   precacheFiles.push(
     "www/js/lib/xzdec-asm.js",
     "www/js/lib/zstddec-asm.js",
-    "www/js/lib/libzim-asm.js",
-    "www/js/lib/libzim-asm.js.mem"
+    "www/js/lib/libzim-asm.js"
   );
 }
 
