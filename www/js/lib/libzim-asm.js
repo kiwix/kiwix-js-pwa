@@ -1,13 +1,4 @@
 var Module=typeof Module!="undefined"?Module:{};
-// startsWith polyfill for IE11
-if (!String.prototype.startsWith) {
-    Object.defineProperty(String.prototype, 'startsWith', {
-        value: function(search, rawPos) {
-            var pos = rawPos > 0 ? rawPos|0 : 0;
-            return this.substring(pos, pos + search.length) === search;
-        }
-    });
-}
 var Promise=function(){function noop(){}function bind(fn,thisArg){return function(){fn.apply(thisArg,arguments)}}function Promise(fn){if(!(this instanceof Promise))throw new TypeError("Promises must be constructed via new");if(typeof fn!="function")throw new TypeError("not a function");this._state=0;this._handled=false;this._value=undefined;this._deferreds=[];doResolve(fn,this)}function handle(self,deferred){while(self._state===3)self=self._value;if(self._state===0){self._deferreds.push(deferred);
 return}self._handled=true;Promise._immediateFn(function(){var cb=self._state===1?deferred.onFulfilled:deferred.onRejected;if(cb===null){(self._state===1?resolve:reject)(deferred.promise,self._value);return}var ret;try{ret=cb(self._value)}catch(e){reject(deferred.promise,e);return}resolve(deferred.promise,ret)})}function resolve(self,newValue){try{if(newValue===self)throw new TypeError("A promise cannot be resolved with itself.");if(newValue&&(typeof newValue=="object"||typeof newValue=="function")){var then=
 newValue.then;if(newValue instanceof Promise){self._state=3;self._value=newValue;finale(self);return}else if(typeof then=="function"){doResolve(bind(then,newValue),self);return}}self._state=1;self._value=newValue;finale(self)}catch(e){reject(self,e)}}function reject(self,newValue){self._state=2;self._value=newValue;finale(self)}function finale(self){if(self._state===2&&self._deferreds.length===0)Promise._immediateFn(function(){if(!self._handled)Promise._unhandledRejectionFn(self._value)});for(var i=
