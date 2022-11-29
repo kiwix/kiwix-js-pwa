@@ -383,7 +383,7 @@ define(['xzdec_wrapper', 'zstddec_wrapper', 'util', 'utf8', 'zimDirEntry', 'file
                 if (!dirEntry) return null;
                 // Detect a full text index
                 if (/fulltext\//.test(dirEntry.url)) {
-                    that[listing.ptrName] = dirEntry.namespace + '/' + dirEntry.url
+                    that[listing.ptrName] = dirEntry.namespace + '/' + dirEntry.url;
                 }
                 // Request the metadata for the blob represented by the dirEntry
                 return that.blob(dirEntry.cluster, dirEntry.blob, true);

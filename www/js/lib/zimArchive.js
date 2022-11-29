@@ -45,7 +45,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
     /**
      * @param {Worker} libzimWorker A Web Worker to run the libzim Web Assembly binary
      */
-    var libzimWorker; 
+    var libzimWorker;
     
     /**
      * Creates a ZIM archive object to access the ZIM file at the given path in the given storage.
@@ -63,6 +63,8 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
         var createZimfile = function (fileArray) {
             zimfile.fromFileArray(fileArray).then(function (file) {
                 that._file = file;
+                // Clear the previous libzimWoker
+                libzimWorker = null;
                 // Set a global parameter to report the search provider type
                 params.searchProvider = 'title';
                 // File has been created, but we need to add any Listings which extend the archive metadata
@@ -91,13 +93,13 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                 ]).then(function () {
                     // There is currently an exception thrown in the libzim wasm if we attempt to load a split ZIM archive, so we work around
                     var isSplitZim = /\.zima.$/i.test(that._file._files[0].name);
-                    if (that._file.fullTextIndex && !isSplitZim) {
-                        var libzimReaderType = 'WebAssembly' in self ? 'wasm' : 'asm'; 
+                    if (that._file.fullTextIndex && !isSplitZim && typeof Atomics !== 'undefined') {
+                        var libzimReaderType = 'WebAssembly' in self && !/UWP/.test(params.appType) ? 'wasm' : 'asm'; 
                         console.log('Instantiating libzim ' + libzimReaderType + ' Web Worker...');
                         libzimWorker = new Worker('js/lib/libzim-' + libzimReaderType + '.js');
                         that.callLibzimWorker({action: "init", files: that._file._files}).then(function (msg) {
                             // console.debug(msg);
-                            params.searchProvider = 'fulltext';
+                            params.searchProvider = 'fulltext: ' + libzimReaderType;
                             // Update the API panel
                             uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider);
                         }).catch(function (err) {
@@ -105,9 +107,16 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                             console.error('The libzim worker could not be instantiated!', err);
                         });
                     } else {
+                        var message = 'Full text searching is not available because ';
+                        if (!that._file.fullTextIndex) {
+                            params.searchProvider += ': no_fulltext'; message += 'this ZIM does not have a full-text index.';
+                        } else if (isSplitZim) {
+                            params.searchProvider += ': split_zim'; message += 'the ZIM archive is split.';
+                        } else {
+                            params.searchProvider += ': no_atomics'; message += 'this browser does not support Atomic operations.';
+                        }
                         uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider);
-                        var message = isSplitZim ? 'Full text searching is not available because ZIM archive is split.' : 'Full text searching is not available in this ZIM.'
-                        console.warn(message);
+                        uiUtil.systemAlert(message);
                     }
                 });
                 // Set the archive file type ('open' or 'zimit')
@@ -662,7 +671,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                 console.log("Article " + path + " not available, but moving up one directory to compensate for ZIM coding error...");
                 return that.getDirEntryByPath(newpath);
             } else {
-                if (dirEntry) console.log('Found ' + path);
+                if (dirEntry) console.debug('Found ' + path);
                 return dirEntry;
             }
         });

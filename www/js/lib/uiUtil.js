@@ -846,11 +846,11 @@ define(rqDef, function(util) {
     function reportSearchProviderToAPIStatusPanel(provider) {
         var providerAPI = document.getElementById('searchProvider');
         if (providerAPI) {
-            providerAPI.innerHTML = 'Search Provider: ' + (provider === 'fulltext' ? 'Title + Xapian (full text)' : 'Title only');
-            providerAPI.className = provider === 'fulltext' ? 'apiAvailable' : 'apiUnavailable';
+            providerAPI.innerHTML = 'Search Provider: ' + (/^fulltext/.test(provider) ? 'Title + Xapian [' + provider :
+                'Title only [' + provider) + ']';
+            providerAPI.className = /^fulltext/.test(provider) ? 'apiAvailable' : 'apiUnavailable';
         }
     }
-
 
     /**
      * Warn the user that he/she clicked on an external link, and open it in a new tab
