@@ -475,6 +475,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                 // Collect all the paths for full text search, pruning as we go
                 var path;
                 for (var j = 0; j < results.entries.length; j++) {
+                    search.scanCount++;
                     path = results.entries[j].path;
                     // Full-text search result paths are missing the namespace in Type 1 ZIMs, so we add it back
                     path = cns === 'C' ? cns + '/' + path : path;
