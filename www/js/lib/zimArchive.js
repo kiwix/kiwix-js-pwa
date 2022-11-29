@@ -93,8 +93,9 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                 ]).then(function () {
                     // There is currently an exception thrown in the libzim wasm if we attempt to load a split ZIM archive, so we work around
                     var isSplitZim = /\.zima.$/i.test(that._file._files[0].name);
-                    if (that._file.fullTextIndex && !isSplitZim && typeof Atomics !== 'undefined') {
-                        var libzimReaderType = 'WebAssembly' in self && !/UWP/.test(params.appType) ? 'wasm' : 'asm'; 
+                    if (params.debugLibzimASM || that._file.fullTextIndex && !isSplitZim && typeof Atomics !== 'undefined') {
+                        var libzimReaderType = params.debugLibzimASM || ('WebAssembly' in self // && !/UWP/.test(params.appType)
+                            ? 'wasm' : 'asm'); 
                         console.log('Instantiating libzim ' + libzimReaderType + ' Web Worker...');
                         libzimWorker = new Worker('js/lib/libzim-' + libzimReaderType + '.js');
                         that.callLibzimWorker({action: "init", files: that._file._files}).then(function (msg) {
