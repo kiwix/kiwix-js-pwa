@@ -671,7 +671,8 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                 console.log("Article " + path + " not available, but moving up one directory to compensate for ZIM coding error...");
                 return that.getDirEntryByPath(newpath);
             } else {
-                if (dirEntry) console.debug('Found ' + path);
+                // DEBUG: List found Directory Entry
+                // if (dirEntry) console.debug('Found ' + path);
                 return dirEntry;
             }
         });
