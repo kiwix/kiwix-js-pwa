@@ -104,7 +104,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                             // Update the API panel
                             uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider);
                         }).catch(function (err) {
-                            uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider);
+                            uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider + ': ERROR');
                             console.error('The libzim worker could not be instantiated!', err);
                         });
                     } else {
@@ -113,7 +113,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                             params.searchProvider += ': no_fulltext'; message += 'this ZIM does not have a full-text index.';
                         } else if (isSplitZim) {
                             params.searchProvider += ': split_zim'; message += 'the ZIM archive is split.';
-                        } else {
+                        } else if (typeof Atomics === 'undefined') {
                             params.searchProvider += ': no_atomics'; message += 'this browser does not support Atomic operations.';
                         }
                         uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider);

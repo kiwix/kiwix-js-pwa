@@ -848,7 +848,7 @@ define(rqDef, function(util) {
         if (providerAPI) {
             providerAPI.innerHTML = 'Search Provider: ' + (/^fulltext/.test(provider) ? 'Title + Xapian [' + provider :
                 'Title only [' + provider) + ']';
-            providerAPI.className = /^fulltext/.test(provider) ? 'apiAvailable' : 'apiUnavailable';
+            providerAPI.className = /^fulltext/.test(provider) ? 'apiAvailable' : !/ERROR/.test(provider) ? 'apiUnavailable' : 'apiBroken';
         }
     }
 
