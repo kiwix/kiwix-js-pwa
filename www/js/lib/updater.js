@@ -1,5 +1,5 @@
 ﻿/**
- * updater.js : Functions for checking and initiating app updtes
+ * updater.js : Functions for checking and initiating app updates
  * 
  * Copyright 2013-2022 Jaifroid, Mossroy and contributors
  * License GPL v3:
