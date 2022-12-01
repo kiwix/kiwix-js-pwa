@@ -844,12 +844,10 @@ define(rqDef, function(util) {
 
     // Reports the search provider to the API Status Panel
     function reportSearchProviderToAPIStatusPanel(provider) {
-        var providerAPI = document.getElementById('searchProvider');
-        if (providerAPI) {
-            providerAPI.innerHTML = 'Search Provider: ' + (/^fulltext/.test(provider) ? 'Title + Xapian [' + provider :
-                'Title only [' + provider) + ']';
-            providerAPI.className = /^fulltext/.test(provider) ? 'apiAvailable' : !/ERROR/.test(provider) ? 'apiUnavailable' : 'apiBroken';
-        }
+        var providerAPI = document.getElementById('searchProviderStatus');
+        providerAPI.innerHTML = 'Search Provider: ' + (/^fulltext/.test(provider) ? 'Title + Xapian [' + provider + ']' :
+            /^title/.test(provider) ? 'Title only [' + provider + ']' : 'Not initialized');
+        providerAPI.className = /^fulltext/.test(provider) ? 'apiAvailable' : !/ERROR/.test(provider) ? 'apiUnavailable' : 'apiBroken';
     }
 
     /**

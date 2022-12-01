@@ -2024,6 +2024,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             apiName = params.decompressorAPI.errorStatus || apiName || 'Not initialized';
             decompAPIStatusDiv.innerHTML = 'Decompressor API: ' + apiName;
 
+            // Update Search Provider
+            uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider);
+
             // Update PWA origin
             var pwaOriginStatusDiv = document.getElementById('pwaOriginStatus');
             pwaOriginStatusDiv.className = 'apiAvailable';

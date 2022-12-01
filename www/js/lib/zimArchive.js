@@ -108,16 +108,16 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                             console.error('The libzim worker could not be instantiated!', err);
                         });
                     } else {
-                        var message = 'Full text searching is not available because ';
+                        // var message = 'Full text searching is not available because ';
                         if (!that._file.fullTextIndex) {
-                            params.searchProvider += ': no_fulltext'; message += 'this ZIM does not have a full-text index.';
+                            params.searchProvider += ': no_fulltext'; // message += 'this ZIM does not have a full-text index.';
                         } else if (isSplitZim) {
-                            params.searchProvider += ': split_zim'; message += 'the ZIM archive is split.';
+                            params.searchProvider += ': split_zim'; // message += 'the ZIM archive is split.';
                         } else if (typeof Atomics === 'undefined') {
-                            params.searchProvider += ': no_atomics'; message += 'this browser does not support Atomic operations.';
+                            params.searchProvider += ': no_atomics'; // message += 'this browser does not support Atomic operations.';
                         }
                         uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider);
-                        uiUtil.systemAlert(message);
+                        // uiUtil.systemAlert(message);
                     }
                 });
                 // Set the archive file type ('open' or 'zimit')
