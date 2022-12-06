@@ -10,4 +10,4 @@ COPY ../CHANGELOG.md /usr/share/nginx/html
 COPY ../LICENSE /usr/share/nginx/html
 COPY ../www /usr/share/nginx/html/www
 COPY ../archives/README.md /usr/share/nginx/html/archives/README.md
-COPY secure_origin.conf /etc/nginx/conf.d/secure_origin.conf
+COPY ./secure_origin.conf /etc/nginx/conf.d/secure_origin.conf
