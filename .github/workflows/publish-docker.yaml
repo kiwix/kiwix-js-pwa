@@ -38,7 +38,7 @@ jobs:
             GHCRIO_TOKEN=${{ secrets.GHCR_TOKEN }}
           tag-pattern: /^v?([0-9.]+)$/
           latest-on-tag: true
-          dockerfile: Dockerfile.pwa
+          dockerfile: docker/dockerfile.pwa
           restrict-to: kiwix/kiwix-js-windows
           registries: ghcr.io
           manual-tag: ${{ github.event.inputs.version }}
