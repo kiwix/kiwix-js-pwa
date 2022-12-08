@@ -43,9 +43,9 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
      */
 
     /**
-     * @param {Worker} libzimWorker A Web Worker to run the libzim Web Assembly binary
+     * @param {Worker} LZ A Web Worker to run the libzim Web Assembly binary
      */
-    var libzimWorker;
+    var LZ;
     
     /**
      * Creates a ZIM archive object to access the ZIM file at the given path in the given storage.
@@ -64,7 +64,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
             zimfile.fromFileArray(fileArray).then(function (file) {
                 that._file = file;
                 // Clear the previous libzimWoker
-                libzimWorker = null;
+                LZ = null;
                 // Set a global parameter to report the search provider type
                 params.searchProvider = 'title';
                 // File has been created, but we need to add any Listings which extend the archive metadata
@@ -97,7 +97,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                         var libzimReaderType = params.debugLibzimASM || ('WebAssembly' in self // && !/UWP/.test(params.appType)
                             ? 'wasm' : 'asm'); 
                         console.log('Instantiating libzim ' + libzimReaderType + ' Web Worker...');
-                        libzimWorker = new Worker('js/lib/libzim-' + libzimReaderType + '.js');
+                        LZ = new Worker('js/lib/libzim-' + libzimReaderType + '.js');
                         that.callLibzimWorker({action: "init", files: that._file._files}).then(function (msg) {
                             // console.debug(msg);
                             params.searchProvider = 'fulltext: ' + libzimReaderType;
@@ -317,7 +317,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
             if (search.status === 'cancelled') return callback([], search);
             if (prefixVariants.length === 0 || dirEntries.length >= search.size) {
                 // We have found all the title-search entries we are going to get, so launch full-text search if we are still missing entries
-                if (libzimWorker) {
+                if (LZ) {
                     return that.findDirEntriesFromFullTextSearch(search, dirEntries).then(function (fullTextDirEntries) {
                         search.status = 'complete';
                         callback(fullTextDirEntries, search);
@@ -521,7 +521,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                 // console.error("Error sent by the WebWorker in " + readTime + " ms", event.data);
                 reject(event.data);
             };
-            libzimWorker.postMessage(parameters, [tmpMessageChannel.port2]);
+            LZ.postMessage(parameters, [tmpMessageChannel.port2]);
         });
     };
     
