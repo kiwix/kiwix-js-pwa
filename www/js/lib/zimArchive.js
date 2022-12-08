@@ -93,7 +93,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                 ]).then(function () {
                     // There is currently an exception thrown in the libzim wasm if we attempt to load a split ZIM archive, so we work around
                     var isSplitZim = /\.zima.$/i.test(that._file._files[0].name);
-                    if (params.debugLibzimASM || that._file.fullTextIndex && !isSplitZim && typeof Atomics !== 'undefined') {
+                    if (params.debugLibzimASM || that._file.fullTextIndex && !isSplitZim && typeof Atomics !== 'undefined' && !/Android/.test(params.appType)) {
                         var libzimReaderType = params.debugLibzimASM || ('WebAssembly' in self // && !/UWP/.test(params.appType)
                             ? 'wasm' : 'asm'); 
                         console.log('Instantiating libzim ' + libzimReaderType + ' Web Worker...');
@@ -115,6 +115,8 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                             params.searchProvider += ': split_zim'; // message += 'the ZIM archive is split.';
                         } else if (typeof Atomics === 'undefined') {
                             params.searchProvider += ': no_atomics'; // message += 'this browser does not support Atomic operations.';
+                        } else if (/Android/.test(params.appType)) {
+                            params.searchProvider += ': no_sharedArrayBuffer';
                         }
                         uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider);
                         // uiUtil.systemAlert(message);
