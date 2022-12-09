@@ -34,7 +34,7 @@ jobs:
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
         # Override language selection by uncommenting this and choosing your languages
-        # with:
+      with:
         languages: javascript
           # go, javascript, csharp, python, cpp, java, ruby
 
