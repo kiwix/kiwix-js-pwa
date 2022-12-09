@@ -27,7 +27,7 @@ jobs:
   Download_Archive:
     runs-on: windows-latest
     steps:
-    - uses: actions/chechout@v3
+    - uses: actions/checkout@v3
     - name: Enable GNU tar
       shell: cmd
       run: |
