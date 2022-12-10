@@ -66,7 +66,8 @@
       "LICENCE",
       "www/**",
       "preload.js",
-      "main.js"
+      "main.js",
+      "!**/*.dev.{js,wasm}"
     ]
   },
   "scripts": {
