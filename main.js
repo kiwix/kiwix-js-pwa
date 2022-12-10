@@ -57,8 +57,9 @@ function createWindow() {
         autoHideMenuBar: true,
         icon: path.join(__dirname, 'www/img/icons/kiwix-64.png'),
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js')
-            , nativeWindowOpen: true
+            preload: path.join(__dirname, 'preload.js'),
+            nativeWindowOpen: true,
+            nodeIntegrationInWorker: true
         }
     });
 
