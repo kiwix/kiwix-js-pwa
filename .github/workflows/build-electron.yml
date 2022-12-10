@@ -26,6 +26,8 @@ jobs:
 
   Download_Archive:
     runs-on: windows-latest
+    outputs:
+      file: ${{ steps.package.outputs.file }}
     steps:
     - uses: actions/checkout@v3
     - name: Enable GNU tar
@@ -33,12 +35,19 @@ jobs:
       run: |
         echo "Adding GNU tar to PATH"
         echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+    - name: Get packaged file name
+      id: package
+      run: |
+        $file = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1' 
+        if ($file) {
+          echo "file=$file" >> $env:GITHUB_OUTPUT
+        }
     - name: Set up or restore cache to use in subsequent jobs
       id: cache-archive
       uses: actions/cache@v3
       with:
         path: archives
-        key: ${{ hashFiles('www/js/init.js') }}
+        key: ${{ steps.package.outputs.file }}
     - name: Download archive if needed
       run: |
         $packagedFile = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1' 
@@ -48,6 +57,7 @@ jobs:
           Write-Host "`nDownloading https://download.kiwix.org/zim/$packagedFileGeneric"
           Invoke-WebRequest "https://download.kiwix.org/zim/$packagedFileGeneric" -OutFile "archives\$packagedFile"
         }
+        ls archives
         if ($packagedFile -and (Test-Path "archives\$packagedFile" -PathType Leaf)) {
           Write-Host "`nFile $packagedFile now available in 'archives'.`n" -ForegroundColor Green
         } else {
@@ -70,7 +80,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: archives
-        key: ${{ hashFiles('www/js/init.js') }}
+        key:  ${{ needs.Download_Archive.outputs.file }}
     - name: Rewrite app version number
       run: |
         chmod +x ./scripts/rewrite_app_version_number.sh
@@ -103,7 +113,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: archives
-        key: ${{ hashFiles('www/js/init.js') }}
+        key:  ${{ needs.Download_Archive.outputs.file }}
     - name: Rewrite app version number
       run: |
         $INPUT_VERSION = $Env:INPUT_VERSION
@@ -163,7 +173,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: archives
-        key: ${{ hashFiles('www/js/init.js') }}
+        key:  ${{ needs.Download_Archive.outputs.file }}
     - name: Rewrite app version number
       run: |
         $INPUT_VERSION = $Env:INPUT_VERSION
