@@ -2744,8 +2744,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                                     readNodeDirectoryAndCreateNodeFileObjects(params.pickedFolder, archive)
                                     .then(function (fileset) {
                                         var selectedFiles = fileset[0];
-                                        if (appstate.selectedArchive && appstate.selectedArchive._file.files[0].name === selectedFiles[0].name) return;
-                                        setLocalArchiveFromFileList(selectedFiles);
+                                        if (appstate.selectedArchive && appstate.selectedArchive._file._files[0].name === selectedFiles[0].name) {
+                                            document.getElementById('btnHome').click();
+                                        } else {
+                                            setLocalArchiveFromFileList(selectedFiles);
+                                        }
                                     });
                                 } else {
                                     uiUtil.systemAlert('We could not find the location of the file ' + archive + 
