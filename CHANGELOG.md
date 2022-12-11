@@ -1,5 +1,13 @@
 # Changelog
 
+## In-progress release 2.2.55
+
+* ENHANCEMENT: Experimental use of libzim WASM port to read Full Text index (PWA only for now)
+* ENHANCEMENT: Information added to API panel to show status of Full Text index
+* ENHANCEMENT: Building Electron app on GitHub actions now downloads the latest packaged archive before cloud-building
+* CLEANUP: Removal of several JQuery functions, replaced with native DOM methods 
+* CLEANUP: Remove some unused functions
+
 ## Release 2.2.5
 
 * ENHANCEMENT: Experimental option to use DarkReader plugin (SW mode only)
