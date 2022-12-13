@@ -95,7 +95,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                     var isSplitZim = /\.zima.$/i.test(that._file._files[0].name);
                     if (params.debugLibzimASM || that._file.fullTextIndex && !isSplitZim && typeof Atomics !== 'undefined' && !/Android/.test(params.appType)) {
                         var libzimReaderType = params.debugLibzimASM || ('WebAssembly' in self // && !/UWP/.test(params.appType)
-                            ? that._file._files[0].readMode === 'electron' ? 'wasm.electron' : 'wasm' : 'asm');
+                            ? 'wasm' : 'asm');
                         console.log('Instantiating libzim ' + libzimReaderType + ' Web Worker...');
                         LZ = new Worker('js/lib/libzim-' + libzimReaderType + '.js');
                         that.callLibzimWorker({action: "init", files: that._file._files}).then(function (msg) {
