@@ -24,37 +24,62 @@ env:
       
 jobs:
 
-  Download_Archive:
-    runs-on: windows-latest
-    outputs:
-      file: ${{ steps.package.outputs.file }}
+  Release_Linux:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Enable GNU tar
-      shell: cmd
+    - uses: actions/setup-node@v3
+    - name: Install dependencies
+      run: npm install
+    - name: Rewrite app version number and file name
       run: |
-        echo "Adding GNU tar to PATH"
-        echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
-    - name: Get packaged file name
-      id: package
+        chmod +x ./scripts/rewrite_app_version_number.sh
+        ./scripts/rewrite_app_version_number.sh
+        # Replace -app in archive name for Electron apps
+        sed -i -E "s/(mdwiki[^-]+)-app_/\1_/g" ./www/js/init.js
+    - name: Download archive if needed
+        # Get archive name
+        packagedFile="$(grep -m1 'params\[.packagedFile' www/js/init.js | sed -E 's/^[^"]+"([^"]+\.zim)".+/\1/')"
+        # If file doesn't exist in FS
+        if [! -f "archives/$packagedFile"]; then
+          # Generalize the name and download it
+          packagedFileGeneric=$(sed 's/_[0-9-]+(\.zim)/\1/' <<<"$packagedFile")
+          echo -e "\nDownloading https://download.kiwix.org/zim/$packagedFileGeneric"
+          wget "https://download.kiwix.org/zim/$packagedFileGeneric" -O "archives/$packagedFile"
+        fi
+        ls archives
+        if [ $packagedFile && -f "archives/$packagedFile" ]; then
+          echo -e "\nFile $packagedFile now available in 'archives'.\n"
+        else
+          echo -e "\nError! We could not obtain the requested archive $packagedFile!\n"
+          exit 1
+        fi
+    - name: Publish
       run: |
-        $file = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1' 
-        echo "File requested in package is: $file ..."
-        $file = $file -ireplace '-app', ''
-        echo "File to be requested for Electron apps: $file ..."
-        if ($file) {
-          echo "file=$file" >> $env:GITHUB_OUTPUT
-        }
-    - name: Set up or restore cache to use in subsequent jobs
-      id: cache-archive
-      uses: actions/cache@v3
-      with:
-        path: archives
-        key: ${{ steps.package.outputs.file }}
+        npm run publish
+        # echo "$SSH_KEY" > ./scripts/ssh_key
+        # chmod 600 ./scripts/ssh_key
+        # chmod +x ./scripts/publish_linux_packages_to_kiwix.sh
+        # ./scripts/publish_linux_packages_to_kiwix.sh
+
+  Release_Windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3      
+    - uses: actions/setup-node@v3
+    - name: Install dependencies
+      run: npm install
+    - name: Rewrite app version number and file name
+      run: |
+        $INPUT_VERSION = $Env:INPUT_VERSION
+        $INPUT_TARGET = $Env:INPUT_TARGET
+        $CRON_LAUNCHED = $Env:CRON_LAUNCHED
+        ./scripts/Rewrite-AppVersion.ps1
+        # Replace -app in archive name for Electron apps
+        (Get-Content ./www/js/init.js) -replace '(mdwiki[^-]+)-app_', '$1_' | Set-Content -encoding 'utf8BOM' ./www/js/init.js
     - name: Download archive if needed
       run: |
         $packagedFile = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1'
-        $packagedFile = $packagedFile -ireplace '-app', '' # Remove any -app for Electron apps 
         if ($packagedFile -and ! (Test-Path "archives\$packagedFile" -PathType Leaf)) {
           # File not in archives, so generalize the name and download it
           $packagedFileGeneric = $packagedFile -replace '_[0-9-]+(\.zim)', '$1'
@@ -68,66 +93,6 @@ jobs:
           Write-Host "`nError! We could not obtain the requested archive $packagedFile!`n" -ForegroundColor Red
           exit 1
         }
-
-  Release_Linux:
-    runs-on: ubuntu-latest
-    needs: Download_Archive
-    steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 16
-    - name: Install dependencies
-      run: npm install
-    - name: Restore cache
-      id: cache-archive
-      uses: actions/cache@v3
-      with:
-        path: archives
-        key:  ${{ needs.Download_Archive.outputs.file }}
-    - name: Rewrite app version number and file name
-      run: |
-        chmod +x ./scripts/rewrite_app_version_number.sh
-        ./scripts/rewrite_app_version_number.sh
-        # Replace -app in archive name for Electron apps
-        sed -i -E "s/(mdwiki[^-]+)-app_/\1_/g" ./www/js/init.js
-    - name: Publish
-      run: |
-        npm run publish
-        # echo "$SSH_KEY" > ./scripts/ssh_key
-        # chmod 600 ./scripts/ssh_key
-        # chmod +x ./scripts/publish_linux_packages_to_kiwix.sh
-        # ./scripts/publish_linux_packages_to_kiwix.sh
-
-  Release_Windows:
-    runs-on: windows-latest
-    needs: Download_Archive
-    steps:
-    - uses: actions/checkout@v3      
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 16
-    - name: Install dependencies
-      run: npm install
-    - name: Enable GNU tar
-      shell: cmd
-      run: |
-        echo "Adding GNU tar to PATH"
-        echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
-    - name: Restore cache
-      id: cache-archive
-      uses: actions/cache@v3
-      with:
-        path: archives
-        key:  ${{ needs.Download_Archive.outputs.file }}
-    - name: Rewrite app version number and file name
-      run: |
-        $INPUT_VERSION = $Env:INPUT_VERSION
-        $INPUT_TARGET = $Env:INPUT_TARGET
-        $CRON_LAUNCHED = $Env:CRON_LAUNCHED
-        ./scripts/Rewrite-AppVersion.ps1
-        # Replace -app in archive name for Electron apps
-        (Get-Content ./www/js/init.js) -replace '(mdwiki[^-]+)-app_', '$1_' | Set-Content -encoding 'utf8BOM' ./www/js/init.js
     - name: run electron builder
       run: | 
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
