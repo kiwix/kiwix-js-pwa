@@ -3307,6 +3307,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             // if (/^file:/i.test(filepath)) filepath = new URL(filepath);
             // and uncomment comment line below (seems to depend on node and fs versions) - this line conditionally turns the URL into a filepath string for Windows only
             filepath = /^file:\/+\w:[/\\]/i.test(filepath) ? filepath.replace(/^file:\/+/i, '') : filepath.replace(/^file:\/\//i, '');
+            // Remove any drive letter (incompatible with Emscripten NODERAWFS)
+            filepath = filepath.replace(/^\w:/, '');
             file.name = filename;
             file.path = filepath;
             file.readMode = 'electron';
