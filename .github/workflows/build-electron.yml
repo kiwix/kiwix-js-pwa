@@ -1,4 +1,7 @@
-name: 'Build Electron and NWJS packages'
+# Workflow to build Electron and (if not a packaged app) NWJS packages
+
+name: Build Electron and NWJS packages
+
 on:
   # schedule:
   # # Nightly run at 03:39 UTC
