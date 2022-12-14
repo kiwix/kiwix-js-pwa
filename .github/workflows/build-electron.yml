@@ -47,7 +47,7 @@ jobs:
         # If file doesn't exist in FS
         if [ ! -f "archives/$packagedFile" ]; then
           # Generalize the name and download it
-          packagedFileGeneric=$(sed 's/_[0-9-]+(\.zim)/\1/' <<<"$packagedFile")
+          packagedFileGeneric=$(sed -E 's/_[0-9-]+(\.zim)/\1/' <<<"$packagedFile")
           echo -e "\nDownloading https://download.kiwix.org/zim/$packagedFileGeneric"
           wget "https://download.kiwix.org/zim/$packagedFileGeneric" -O "archives/$packagedFile"
         fi
