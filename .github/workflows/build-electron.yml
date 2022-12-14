@@ -36,8 +36,9 @@ jobs:
         chmod +x ./scripts/rewrite_app_version_number.sh
         ./scripts/rewrite_app_version_number.sh
         # Replace -app in archive name for Electron apps
-        sed -i -E "s/(mdwiki[^-]+)-app_/\1_/g" ./www/js/init.js
+        sed -i -E 's/(mdwiki[^-]+)-app_/\1_/g' ./www/js/init.js
     - name: Download archive if needed
+      run: |
         # Get archive name
         packagedFile="$(grep -m1 'params\[.packagedFile' www/js/init.js | sed -E 's/^[^"]+"([^"]+\.zim)".+/\1/')"
         # If file doesn't exist in FS
