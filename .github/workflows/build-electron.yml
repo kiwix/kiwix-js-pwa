@@ -128,35 +128,37 @@ jobs:
 
   Release_NWJS:
     runs-on: windows-latest
-    needs: Download_Archive
     steps:
     - uses: actions/checkout@v3       
     - uses: actions/setup-node@v3
-      with:
-        node-version: 16
     - name: Select NWJS app
       run: |
         del package.json
         ren package.json.nwjs package.json
     - name: Install dependencies
       run: npm install
-    - name: Enable GNU tar
-      shell: cmd
-      run: |
-        echo "Adding GNU tar to PATH"
-        echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
-    - name: Restore cache
-      id: cache-archive
-      uses: actions/cache@v3
-      with:
-        path: archives
-        key:  ${{ needs.Download_Archive.outputs.file }}
     - name: Rewrite app version number
       run: |
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         ./scripts/Rewrite-AppVersion.ps1
+    - name: Download archive if needed
+      run: |
+        $packagedFile = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1'
+        if ($packagedFile -and ! (Test-Path "archives\$packagedFile" -PathType Leaf)) {
+          # File not in archives, so generalize the name and download it
+          $packagedFileGeneric = $packagedFile -replace '_[0-9-]+(\.zim)', '$1'
+          Write-Host "`nDownloading https://download.kiwix.org/zim/$packagedFileGeneric"
+          Invoke-WebRequest "https://download.kiwix.org/zim/$packagedFileGeneric" -OutFile "archives\$packagedFile"
+        }
+        ls archives
+        if ($packagedFile -and (Test-Path "archives\$packagedFile" -PathType Leaf)) {
+          Write-Host "`nFile $packagedFile now available in 'archives'.`n" -ForegroundColor Green
+        } else {
+          Write-Host "`nError! We could not obtain the requested archive $packagedFile!`n" -ForegroundColor Red
+          exit 1
+        }
     - name: Build NWJS app
       run: ./scripts/Build-NWJS.ps1 -only32bit
     - name: Publish
