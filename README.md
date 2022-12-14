@@ -2,15 +2,13 @@
 
 ![WikiMed montage](https://user-images.githubusercontent.com/4304337/182706203-eca53649-8dea-44b9-ac4a-b08cc05c4252.png)
 
-**Kiwix is an offline reader for multilingual content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, etc. It
-makes knowledge available to people with limited or no Internet access. The software and the content are free for anyone to use.
-Get the app and download your choice of offline content (a ZIM archive, which can be downloaded in the app). There are hundreds of free
-archives to choose from, on many different topics and subjects. Build a whole digital library of offline knowledge!** 
+**WikiMed by Kiwix is an offline reader for multilingual medical content from Wikipedia Project Medicine and MDWiki. It
+makes medical knowledge available to people with limited or no Internet access. The software and the content are free for anyone to use.
+The app comes packaged with WikiMed in English, but you can also download your choice of language (a ZIM archive, which can be downloaded in the app). There are different, multilingual editions of the WikiMed archives to choose from.** 
 
 See **[Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html)** for the latest release for different
-operating systems. We also have packaged apps of **[WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html)** (a
-complete medical encyclopaedia), and **[Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html)** (a complete
-travel guide) in English -- no extra download needed!
+operating systems of the base app from which WikiMed by Kiwix is built. We also have packaged apps of
+**[Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html)** (a complete travel guide) in English.
 
 If you are using **Windows 10 or 11**, then all three apps are conveniently available in the Microsoft Store:
 **[Kiwix JS UWP](https://www.microsoft.com/store/apps/9P8SLZ4J979J)**,
@@ -27,23 +25,9 @@ from the [Configuration page](https://pwa.kiwix.org/www/index.html#downloads) of
 [library.kiwix.org](https://library.kiwix.org) before you download one. Once installed or bookmarked, the PWA works fully offline!*
 **[Take a look at our demo](screenshots/Install-PWA.md) that shows how quick and easy it is to install the PWA.**
 
-## How do I get all of Wikipedia offline?
-
-If you want it with images, then please be aware that it's a big download: the English version is around 90 Gigabytes! We recommend you
-try it out first with one of the themed, much smaller, archives, like Astronomy, Chemistry, Maths, Physics, etc. In-app, you'll find a
-handy dropdown that allows you to choose your language and your theme, and then download it. The archive will download in your browser.
-
-If you really want full English Wikipedia with images, then we strongly recommend you use the open-source app
-[qBittorrent](https://www.qbittorrent.org/) to download it on a PC with plenty of disk space. First install qBittorrent. Then, when you
-select a large archive for download in the app, it will provide you with a torrent link. Click the link and allow your browser to
-download and open the torrent file. This small file will open in qBittorrent and you'll be asked where you want to save the archive you
-want to download. It's much easier than it sounds!
-
-![ContactSheet-Kiwix-5x6_sphere@0 5x_masked](https://user-images.githubusercontent.com/4304337/204076458-d95cf440-294a-4655-bc59-2529b123708c.png)
-
 ## Technical information
 
-This repository is for development of the Kiwix JS app for PWA, Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP).
+This branch is for development of the WikiMed app for Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP).
 The latest code is usually on the master branch, but this is used for active development and may be several commits ahead of releases.
 Installable and portable versions for Windows (XP/Vista/7/10/11) and Linux (32bit and 64bit) are available from
 [releases](https://github.com/kiwix/kiwix-js-windows/releases/). Unstable [nightly builds](https://download.kiwix.org/nightly/) of the
@@ -65,8 +49,7 @@ Prompt or PowerShell terminal and typing `winget install kiwix.kiwixjs` (this ve
 a new update is ready to install). Alternative sideloading instructions are available in the
 [release notes](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html). The Electron version can be installed with
 `winget install kiwix.kiwixjs.electron`, or else by downloading a package from
-[Releases](https://github.com/kiwix/kiwix-js-windows/releases/). For testing, the Store, Electron and NWJS versions come packaged with a
-mini archive of the top 100 Wikipedia articles (without images and with only the lede paragraph).
+[Releases](https://github.com/kiwix/kiwix-js-windows/releases/).
 
 Offline ZIM archives are available in-app, or from the [Kiwix repository](https://library.kiwix.org). This app is regularly tested fully
 on Wikimedia ZIM files, though a number of other ZIM file types work. There is preliminary, useable support for most Zimit ZIMs from
@@ -108,11 +91,11 @@ to Wikipedia or Wikivoyage articles.
 
 ## Privacy Policy
 
-When installed, Kiwix JS Windows and Linux is capable of working entirely offline. This application does not collect or
-record any of your personal data, though if you installed it from a Store, the Store operator may collect anonymous
-usage data (see below). The app only remembers your browsing history for the duration of a session (for the purpose
-of returning to previously viewed pages). This history is lost on exiting the app with the optional exception of the
-last-visited page.
+When installed, WikiMed Offline Medical Wikipedia is capable of working entirely offline. This application does not
+collect or record any of your personal data, though if you installed it from a Store, the Store operator may collect
+anonymous usage data (see below). The app only remembers your browsing history for the duration of a session (for the
+purpose of returning to previously viewed pages). This history is lost on exiting the app with the optional exception
+of the last-visited page.
 
 If you access this application from a secure web server (e.g. the PWA server), it will only work offline if your browser
 is capable of installing a Service Worker. If you install or bookmark the PWA version in Service Worker mode, then it
