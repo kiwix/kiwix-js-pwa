@@ -39,6 +39,9 @@ jobs:
       id: package
       run: |
         $file = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1' 
+        echo "File requested in package is: $file ..."
+        $file = $file -ireplace '-app', ''
+        echo "File to be requested for Electron apps: $file ..."
         if ($file) {
           echo "file=$file" >> $env:GITHUB_OUTPUT
         }
@@ -50,7 +53,8 @@ jobs:
         key: ${{ steps.package.outputs.file }}
     - name: Download archive if needed
       run: |
-        $packagedFile = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1' 
+        $packagedFile = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1'
+        $packagedFile = $packagedFile -ireplace '-app', '' # Remove any -app for Electron apps 
         if ($packagedFile -and ! (Test-Path "archives\$packagedFile" -PathType Leaf)) {
           # File not in archives, so generalize the name and download it
           $packagedFileGeneric = $packagedFile -replace '_[0-9-]+(\.zim)', '$1'
@@ -81,10 +85,12 @@ jobs:
       with:
         path: archives
         key:  ${{ needs.Download_Archive.outputs.file }}
-    - name: Rewrite app version number
+    - name: Rewrite app version number and file name
       run: |
         chmod +x ./scripts/rewrite_app_version_number.sh
         ./scripts/rewrite_app_version_number.sh
+        # Replace -app in archive name for Electron apps
+        sed -i -E "s/(mdwiki[^-]+)-app_/\1_/g" ./www/js/init.js
     - name: Publish
       run: |
         npm run publish
@@ -114,12 +120,14 @@ jobs:
       with:
         path: archives
         key:  ${{ needs.Download_Archive.outputs.file }}
-    - name: Rewrite app version number
+    - name: Rewrite app version number and file name
       run: |
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         ./scripts/Rewrite-AppVersion.ps1
+        # Replace -app in archive name for Electron apps
+        (Get-Content ./www/js/init.js) -replace '(mdwiki[^-]+)-app_', '$1_' | Set-Content -encoding 'utf8BOM' ./www/js/init.js
     - name: run electron builder
       run: | 
         $GITHUB_TOKEN = $Env:GITHUB_TOKEN
