@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-wikimed",
   "productName": "WikiMed by Kiwix",
-  "version": "2.2.6",
+  "version": "2.2.62-E",
   "description": "WikiMed by Kiwix packaged for the Electron framework",
   "main": "main.js",
   "build": {
@@ -112,5 +112,3 @@
     "electron-updater": "^5.3.0"
   }
 }
-
-
