@@ -1,5 +1,10 @@
 # Changelog
 
+## Release 2.2.61-WikiMed
+
+* BUGFIX: Re-issue WikiMed with fix for critical startup bug which prevented opening of packaged archive
+* FIX: Bug which prevented reload of last visited page on re-launch of app
+
 ## Release 2.2.6-WikiMed
 
 * UPDATE: Packaged archive updated to `mdwiki_en_all[-app]_maxi_2022-12.zim`
