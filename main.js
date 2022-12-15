@@ -62,7 +62,10 @@ function createWindow() {
             nodeIntegrationInWorker: true
         }
     });
-
+    
+    // DEV: Uncomment this to open dev tools early in load process
+    // mainWindow.webContents.openDevTools();
+    
     mainWindow.loadFile('www/index.html');
 }
 
