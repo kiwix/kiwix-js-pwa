@@ -2,6 +2,8 @@
 
 ## In-progress release 2.2.55
 
+* BUGFIX: Re-issue WikiMed with fix for critical startup bug which prevented opening of packaged archive
+* FIX: Bug which prevented reload of last visited page on re-launch of app
 * ENHANCEMENT: Experimental use of libzim WASM port to read Full Text index (PWA only for now)
 * ENHANCEMENT: Information added to API panel to show status of Full Text index
 * ENHANCEMENT: Building Electron app on GitHub actions now downloads the latest packaged archive before cloud-building
