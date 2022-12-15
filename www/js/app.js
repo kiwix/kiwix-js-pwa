@@ -2393,17 +2393,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             typeof window.fs !== 'undefined' || typeof window.showOpenFilePicker !== 'undefined') {
             if (!params.pickedFile && window.fs) {
                 // Below we compare the prefix of the files, i.e. the generic filename without date, so we can smoothly deal with upgrades
-                if (params.packagedFile && params.storedFile.replace(/_[\d-]+\.zim\w?\w?$/i, '') === params.packagedFile.replace(/_[\d-]+\.zim\w?\w?$/i, '')) {
+                if (params.packagedFile && params.storedFile.replace(/(?:[_-]app)?_maxi_[\d-]+\.zim\w?\w?$/i, '') === params.packagedFile.replace(/(?:[_-]app_)?_maxi_[\d-]+\.zim\w?\w?$/i, '')) {
                     // We're in Electron / NWJS and we need to load the packaged app, so we are forced to use the .fs code
                     params.pickedFile = params.packagedFile;
+                } else if (!params.storedFile) {
+                    // If there is no last selected archive, we need to use the .fs code anyway
+                    params.pickedFile = params.packagedFile;
                 }
-            //   else if (!window.showOpenFilePicker || !window.nw ) {
-            //     // We're in an Electron app, or an older NWJS app, so we need to use the .fs code anyway
-            //     params.pickedFile = params.storedFile;
-            // }
             }
             if (!params.pickedFile) {
                 if (params.storedFile && window.showOpenFilePicker) {
+                    // We are in an app with support for File System Access API, so we can't auto-load the file, show file pickers
                     document.getElementById('btnConfigure').click();
                 } else {
                     searchForArchivesInPreferencesOrStorage();
