@@ -2091,6 +2091,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     }, [tmpMessageChannel.port2]);
                 } else if (keepAliveServiceWorkerHandle) {
                     console.error('The Service Worker is active but is not controlling the current page! We have to reload.');
+                    // Turn off failsafe, as this is a controlled reboot
+                    settingsStore.setItem('lastPageLoad', '');
                     window.location.reload();
                 } else {
                     console.debug('The Service Worker needs more time to load...');
