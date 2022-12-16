@@ -2395,7 +2395,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             typeof window.fs !== 'undefined' || typeof window.showOpenFilePicker !== 'undefined') {
             if (!params.pickedFile && window.fs) {
                 // Below we compare the prefix of the files, i.e. the generic filename without date, so we can smoothly deal with upgrades
-                if (params.packagedFile && params.storedFile.replace(/(^[^-]+)/, '$1') === params.packagedFile.replace(/(^[^-]+)/, '$1')) {
+                if (params.packagedFile && params.storedFile.replace(/(^[^-]+all).+/, '$1') === params.packagedFile.replace(/(^[^-]+all).+/, '$1')) {
                     // We're in Electron / NWJS and we need to load the packaged app, so we are forced to use the .fs code
                     params.pickedFile = params.packagedFile;
                 } else if (!params.storedFile) {
