@@ -2398,6 +2398,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 if (params.packagedFile && params.storedFile.replace(/(^[^-]+all).+/, '$1') === params.packagedFile.replace(/(^[^-]+all).+/, '$1')) {
                     // We're in Electron / NWJS and we need to load the packaged app, so we are forced to use the .fs code
                     params.pickedFile = params.packagedFile;
+                    params.storedFile = params.packagedFile;
                 } else if (!params.storedFile) {
                     // If there is no last selected archive, we need to use the .fs code anyway
                     params.pickedFile = params.packagedFile;
