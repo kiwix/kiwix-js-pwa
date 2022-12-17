@@ -23,7 +23,7 @@
  */
 'use strict';
 
-define([], function() {
+define([], function () {
     /**
      * Set maximum number of cache blocks of BLOCK_SIZE bytes each
      * Maximum size of cache in bytes = MAX_CACHE_SIZE * BLOCK_SIZE
@@ -36,7 +36,7 @@ define([], function() {
      * The maximum blocksize to read or store via the block cache (bytes)
      * @constant
      * @type {Number}
-    */
+     */
     const BLOCK_SIZE = 4096;
 
     /**
@@ -62,7 +62,7 @@ define([], function() {
      * Tries to retrieve an element by its id. If it is not present in the cache, returns undefined; if it is present,
      * then the value is returned and the entry is moved to the bottom of the cache
      * @param {String} key The block cache entry key (file.id + ':' + byte offset)
-     * @returns {Uint8Array|undefined} The requested cache data or undefined 
+     * @returns {Uint8Array | undefined} The requested cache data or undefined 
      */
     LRUCache.prototype.get = function (key) {
         var entry = this.cache.get(key);
@@ -72,9 +72,9 @@ define([], function() {
         this.cache.delete(key);
         this.cache.set(key, entry);
         // Return the cached data
-            return entry;
+        return entry;
     };
-    
+
     /**
      * Stores a value in the cache by id and prunes the least recently used entry if the cache is larger than MAX_CACHE_SIZE
      * @param {String} key The key under which to store the value (file.id + ':' + byte offset from start of ZIM archive)
@@ -116,7 +116,7 @@ define([], function() {
      * @type {BlockCache}
      */
     var cache = new LRUCache();
-    
+
     /** CACHE TUNING **/ 
     // DEV: Uncomment this block and blocks below marked 'CACHE TUNING' to measure Cache hit and miss rates for different Cache sizes
     // var hits = 0;
@@ -131,7 +131,7 @@ define([], function() {
      * @return {Promise<Uint8Array>} A Promise that resolves to the correctly concatenated data from the cache 
      *     or from the ZIM archive
      */
-    var read = function(file, begin, end) {
+    var read = function (file, begin, end) {
         // Read large chunks bypassing the block cache because we would have to
         // stitch together too many blocks and would clog the cache
         if (end - begin > BLOCK_SIZE * 2) return file._readSplitSlice(begin, end);
@@ -146,8 +146,8 @@ define([], function() {
                 // misses++;
                 // DEV: This is a self-calling function, i.e. the function is called with an argument of <id> which then 
                 // becomes the <offset> parameter
-                readRequests.push(function(offset) {
-                    return file._readSplitSlice(offset, offset + BLOCK_SIZE).then(function(result) {
+                readRequests.push(function (offset) {
+                    return file._readSplitSlice(offset, offset + BLOCK_SIZE).then(function (result) {
                         cache.store(file.id + ':' + offset, result);
                         blocks[offset] = result;
                     });
@@ -166,7 +166,7 @@ define([], function() {
         //     misses = 0;
         // }
         // Wait for all the blocks to be read either from the cache or from the archive
-        return Promise.all(readRequests).then(function() {
+        return Promise.all(readRequests).then(function () {
             var result = new Uint8Array(end - begin);
             var pos = 0;
             // Stitch together the data parts in the right order
