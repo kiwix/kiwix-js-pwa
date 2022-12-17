@@ -2,7 +2,7 @@
 
 ## Release 2.2.7-Wikivoyage
 
-* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2022-12`
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2022-11`
 * ENHANCEMENT: Experimental use of libzim WASM port to read Full Text index (PWA only for now)
 * ENHANCEMENT: Information added to API panel to show status of Full Text index
 * ENHANCEMENT: Experimental option to use DarkReader plugin (SW mode only)
