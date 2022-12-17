@@ -133,12 +133,21 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
                         <ul style="padding-left: 15px;">
-                            <li>Emergency bugfix: bug which prevented access to packaged archive on app load</li>
-                            <li>Experimental use of libzim WASM port to read Full Text index (PWA/Electron only)</li>
-
+                            <li>Packaged archive updated to wikivoyage_en_all_maxi_2022-12</li>
+                            <li>Experimental use of libzim WASM port to read Full Text index (PWA only for now)</li>
                             <li>Information added to API panel to show status of Full Text index</li>
-                            <li>Removal of several JQuery functions, replaced with native DOM methods</li>
+                            <li>Experimental option to use DarkReader plugin (SW mode only)</li>
+                            <li>Enable ServiceWorker mode as the default (and deprecate JQuery mode)</li>
+                            <li>Display media download alert only when the medium is fetched from the ZIM</li>
+                            <li>Better suggestions for mirrors when Library server does not provide mirror info</li>
                             <li>Remove some unused functions</li>
+                            <li>Fix a number of glitches with standard and inverted dark themes</li>
+                            <li>Fix crash in UWP app when switching between modes if there are too many archives in a loaded directory<</li>
+                            <li>Fix infinite loop when hyperlinks are not being captured by window opener</li>
+                            <li>Fix Failure to display active content warning in some instances</li>
+                            <li>Fix regression preventing UWP app from remaining in ServiceWorker mode</li>
+                            <li>Fix failure to confirm with user before launching SW mode in UWP app</li>
+                            <li>Fix bug which prevented reload of last visited page on re-launch of app</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-Wikivoyage/CHANGELOG.md" target="_blank">And there's more! ...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>

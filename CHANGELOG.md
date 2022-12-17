@@ -1,36 +1,26 @@
 # Changelog
 
-## In-progress release 2.2.55
+## Release 2.2.7-Wikivoyage
 
-* BUGFIX: Re-issue WikiMed with fix for critical startup bug which prevented opening of packaged archive
-* FIX: Bug which prevented reload of last visited page on re-launch of app
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2022-12`
 * ENHANCEMENT: Experimental use of libzim WASM port to read Full Text index (PWA only for now)
 * ENHANCEMENT: Information added to API panel to show status of Full Text index
+* ENHANCEMENT: Experimental option to use DarkReader plugin (SW mode only)
+* ENHANCEMENT: Enable ServiceWorker mode as the default (and deprecate JQuery mode) 
+* ENHANCEMENT: Display media download alert only when the medium is fetched from the ZIM
+* ENHANCEMENT: Better suggestions for mirrors when Library server does not provide mirror info
 * ENHANCEMENT: Building Electron app on GitHub actions now downloads the latest packaged archive before cloud-building
 * CLEANUP: Removal of several JQuery functions, replaced with native DOM methods 
 * CLEANUP: Remove some unused functions
-
-## Release 2.2.5
-
-* ENHANCEMENT: Experimental option to use DarkReader plugin (SW mode only)
-* ENHANCEMENT: Added support for Open Document download types (.odt)
-* ENHANCEMENT: UWP app size reduced from 13MB to 5.4MB!
 * FIX: A number of glitches with standard and inverted dark themes
 * FIX: Crash in UWP app when switching between modes if there are too many archives in a loaded directory
 * FIX: Deal with Zimit links correctly when link handling is disabled
 * FIX: Test both the encoded and decoded path for Zimit hyperlinks, due to inconsistencies in format
 * FIX: Infinite loop when hyperlinks are not being captured by window opener
 * FIX: Failure to display active content warning in some instances
-
-## Release 2.2.0
-
-* UPDATE: Sample archive updated to `wikipedia_en_climate_change_mini_2022-10.zim`
-* ENHANCEMENT: Enable ServiceWorker mode as the default (and deprecate JQuery mode) 
-* ENHANCEMENT: Display media download alert only when the medium is fetched from the ZIM
 * FIX: Regression preventing UWP app from remaining in ServiceWorker mode
 * FIX: Failure to confirm with user before launching SW mode in UWP app
-* ENHANCEMENT: Better suggestions for mirrors when Library server does not provide mirror info
-* ENHANCEMENT: A self-contained portable Windows executable is now available for Electron
+* FIX: Bug which prevented reload of last visited page on re-launch of app
 
 ## Release 2.1.9-Wikivoyage
 
