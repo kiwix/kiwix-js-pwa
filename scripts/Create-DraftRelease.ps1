@@ -391,7 +391,33 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
           "$appxmanifest"
         }
       }
-      if (-Not $dryrun) {
+      # Check for the existence of the requested packaged archive
+      $packagedFile = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1'
+      if ($packagedFile -and ! (Test-Path "archives\$packagedFile" -PathType Leaf)) {
+        # File not in archives
+        $downloadArchiveChk = Read-Host "`nWe could not find the packaged archive, do you wish to download it? Y/N"
+        $downloadArchiveChk = $downloadArchiveChk -imatch 'y'
+        if (!$downloadArchiveChk) {
+          "We cannot continue without the archive, aborting..."
+          exit 1
+        }
+        # Generalize the name and download it
+        if (-not $dryrun) {
+          $packagedFileGeneric = $packagedFile -replace '_[0-9-]+(\.zim)', '$1'
+          Write-Host "`nDownloading https://download.kiwix.org/zim/$packagedFileGeneric"
+          Invoke-WebRequest "https://download.kiwix.org/zim/$packagedFileGeneric" -OutFile "archives\$packagedFile"
+        } else {
+          "[DRYRUN] Would have downloade $packagedFile..."
+        }
+      }
+      ls archives
+      if ($packagedFile -and (Test-Path "archives\$packagedFile" -PathType Leaf)) {
+        Write-Host "`nFile $packagedFile now available in 'archives'.`n" -ForegroundColor Green
+      } elseif (-not $dryrun) {
+        Write-Host "`nError! We could not obtain the requested archive $packagedFile!`n" -ForegroundColor Red
+        exit 1
+      }
+      if (-not $dryrun) {
         $projstub = $text_tag
         if ($text_tag -eq "Windows") { $projstub = "" }
         $buildmode = "SideloadOnly"
