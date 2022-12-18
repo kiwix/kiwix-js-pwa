@@ -255,12 +255,20 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
         // NB duplicates are removed before processing search array
         var startArray = [];
         var cns = this.getContentNamespace();
+        var dirEntries = [];
+        search.scanCount = 0;
         // Check if user prefixed search with a namespace-like pattern. If so, do a search for namespace + url
         if (/^[-ABCHIJMUVWX]\//.test(search.prefix)) search.searchUrlIndex = true;
         // Regex below breaks the string into the pattern: group 1: alphanumericsearch; group 2: regex beginning with .* or .+, or contained in (?:regex)
         var isPrefixRegExp = search.prefix.match(/^((?:[^(.]|\((?!\?:)|\.(?![*+]))*)(\(\?:.*\)|\.[*+].*)$/);
         search.rgxPrefix = null;
         var prefix = search.prefix;
+        // Launch a full-text search if possible
+        if (LZ) that.findDirEntriesFromFullTextSearch(search, dirEntries).then(function (fullTextDirEntries) {
+            dirEntries = fullTextDirEntries;
+            search.status = 'complete';
+            callback(dirEntries, search);
+        });
         if (isPrefixRegExp) {
             // User has initiated a regular expression search - note the only regexp special character allowed in the alphanumeric part is \s
             prefix = isPrefixRegExp[1].replace(/\\s/g, ' ');
@@ -312,21 +320,13 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                 )
             )
         );
-        var dirEntries = [];
-        search.scanCount = 0;
-
         function searchNextVariant() {
             // If user has initiated a new search, cancel this one
             if (search.status === 'cancelled') return callback([], search);
             if (prefixVariants.length === 0 || dirEntries.length >= search.size) {
-                // We have found all the title-search entries we are going to get, so launch full-text search if we are still missing entries
-                if (LZ) {
-                    return that.findDirEntriesFromFullTextSearch(search, dirEntries).then(function (fullTextDirEntries) {
-                        search.status = 'complete';
-                        callback(fullTextDirEntries, search);
-                    });
-                }
-                search.status = 'complete';
+                // We have found all the title-search entries we are going to get, so indicate search type if we're still searching
+                if (LZ && search.status !== 'complete') search.type = 'fulltext';
+                else search.status = 'complete';
                 return callback(dirEntries, search);
             }
             // Dynamically populate list of articles
@@ -466,7 +466,8 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
         var cns = this.getContentNamespace();
         var that = this;
         // We give ourselves an overhead in caclulating the results needed, because full-text search will return some results already found
-        var resultsNeeded = Math.floor(params.maxSearchResultsSize - dirEntries.length / 2);
+        // var resultsNeeded = Math.floor(params.maxSearchResultsSize - dirEntries.length / 2);
+        var resultsNeeded = params.maxSearchResultsSize;
         return this.callLibzimWorker({action: "search", text: search.prefix, numResults: resultsNeeded}).then(function (results) {
             if (results) {
                 var dirEntryPaths = [];
