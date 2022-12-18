@@ -261,6 +261,14 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
         var isPrefixRegExp = search.prefix.match(/^((?:[^(.]|\((?!\?:)|\.(?![*+]))*)(\(\?:.*\)|\.[*+].*)$/);
         search.rgxPrefix = null;
         var prefix = search.prefix;
+        var fullTextPaths = null;
+        if (LZ) {
+            // Get the full text search paths for use later
+            this.callLibzimWorker({action: "search", text: search.prefix, numResults: params.maxSearchResultsSize})
+            .then(function (results) {
+                fullTextPaths = results;
+            });
+        }
         if (isPrefixRegExp) {
             // User has initiated a regular expression search - note the only regexp special character allowed in the alphanumeric part is \s
             prefix = isPrefixRegExp[1].replace(/\\s/g, ' ');
@@ -319,12 +327,19 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
             // If user has initiated a new search, cancel this one
             if (search.status === 'cancelled') return callback([], search);
             if (prefixVariants.length === 0 || dirEntries.length >= search.size) {
-                // We have found all the title-search entries we are going to get, so launch full-text search if we are still missing entries
+                // We have found all the title-search entries we are going to get, so check if we have full-text results
                 if (LZ) {
-                    return that.findDirEntriesFromFullTextSearch(search, dirEntries).then(function (fullTextDirEntries) {
-                        search.status = 'complete';
-                        callback(fullTextDirEntries, search);
-                    });
+                    var counter = 20;
+                    var waitForFullTextResults = function () {
+                        counter--; // This is a safeguard in case something goes wrong, so we don't end up with an infinite loop
+                        console.debug(counter);
+                        if (fullTextPaths === null && counter > 0) setTimeout(waitForFullTextResults, 200);
+                        else return that.findDirEntriesFromFullTextSearch(fullTextPaths, search, dirEntries).then(function (fullTextDirEntries) {
+                            search.status = 'complete';
+                            callback(fullTextDirEntries, search);
+                        });
+                    }
+                    waitForFullTextResults();
                 }
                 search.status = 'complete';
                 return callback(dirEntries, search);
@@ -458,47 +473,46 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
     /**
      * Find Directory Entries corresponding to the requested search using Full Text search provided by libzim
      * 
+     * @param {Object} results The results path results returned from the libzim worker
      * @param {Object} search The appstate.search object
-     * @param {Array} dirEntries The array of already found Directory Entries
+     * @param {Array} dirEntries The array to which found Directory Entries will be pushed
      * @returns {Promise<callbackDirEntry>} The augmented array of Directory Entries with titles that correspond to search 
      */
-    ZIMArchive.prototype.findDirEntriesFromFullTextSearch = function (search, dirEntries) {
+    ZIMArchive.prototype.findDirEntriesFromFullTextSearch = function (results, search, dirEntries) {
         var cns = this.getContentNamespace();
         var that = this;
         // We give ourselves an overhead in caclulating the results needed, because full-text search will return some results already found
-        var resultsNeeded = Math.floor(params.maxSearchResultsSize - dirEntries.length / 2);
-        return this.callLibzimWorker({action: "search", text: search.prefix, numResults: resultsNeeded}).then(function (results) {
-            if (results) {
-                var dirEntryPaths = [];
-                var fullTextPaths = [];
-                // Collect all the found paths for the dirEntries
-                for (var i = 0; i < dirEntries.length; i++) {
-                    dirEntryPaths.push(dirEntries[i].namespace + '/' + dirEntries[i].url);
-                }
-                // Collect all the paths for full text search, pruning as we go
-                var path;
-                for (var j = 0; j < results.entries.length; j++) {
-                    search.scanCount++;
-                    path = results.entries[j].path;
-                    // Full-text search result paths are missing the namespace in Type 1 ZIMs, so we add it back
-                    path = cns === 'C' ? cns + '/' + path : path;
-                    if (~dirEntryPaths.indexOf(path)) continue;
-                    fullTextPaths.push(path);
-                }
-                var promisesForDirEntries = [];
-                for (var k = 0; k < fullTextPaths.length; k++) {
-                    promisesForDirEntries.push(that.getDirEntryByPath(fullTextPaths[k]));
-                }
-                return Promise.all(promisesForDirEntries).then(function (fullTextDirEntries) {
-                    for (var l = 0; l < fullTextDirEntries.length; l++) {
-                        dirEntries.push(fullTextDirEntries[l]);
-                    }
-                    return(dirEntries);
-                });
-            } else {
-                return(dirEntries);
+        // var resultsNeeded = Math.floor(params.maxSearchResultsSize - dirEntries.length / 2);
+        if (results) {
+            var dirEntryPaths = [];
+            var fullTextPaths = [];
+            // Collect all the found paths for the dirEntries
+            for (var i = 0; i < dirEntries.length; i++) {
+                dirEntryPaths.push(dirEntries[i].namespace + '/' + dirEntries[i].url);
             }
-        });
+            // Collect all the paths for full text search, pruning as we go
+            var path;
+            for (var j = 0; j < results.entries.length; j++) {
+                search.scanCount++;
+                path = results.entries[j].path;
+                // Full-text search result paths are missing the namespace in Type 1 ZIMs, so we add it back
+                path = cns === 'C' ? cns + '/' + path : path;
+                if (~dirEntryPaths.indexOf(path)) continue;
+                fullTextPaths.push(path);
+            }
+            var promisesForDirEntries = [];
+            for (var k = 0; k < fullTextPaths.length; k++) {
+                promisesForDirEntries.push(that.getDirEntryByPath(fullTextPaths[k]));
+            }
+            return Promise.all(promisesForDirEntries).then(function (fullTextDirEntries) {
+                for (var l = 0; l < fullTextDirEntries.length; l++) {
+                    dirEntries.push(fullTextDirEntries[l]);
+                }
+                return(dirEntries);
+            });
+        } else {
+            return(dirEntries);
+        }
     };
 
     /**
