@@ -1547,6 +1547,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             if (checkAuto && typeof Windows !== 'undefined' && Windows.UI && Windows.UI.ViewManagement) {
                 uiSettings = new Windows.UI.ViewManagement.UISettings();
                 uiSettings.oncolorvalueschanged = function () {
+                    params.cssTheme = settingsStore.getItem('cssTheme');
                     if (params.cssUITheme == 'auto') cssUIThemeGetOrSet('auto');
                     if (params.cssTheme == 'auto') switchCSSTheme();
                 };
@@ -1555,6 +1556,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             if (checkAuto && window.matchMedia('(prefers-color-scheme)').media !== 'not all') {
                 uiSettings = window.matchMedia('(prefers-color-scheme:dark)');
                 uiSettings.onchange = function () {
+                    params.cssTheme = settingsStore.getItem('cssTheme');
                     if (params.cssUITheme == 'auto') cssUIThemeGetOrSet('auto');
                     if (params.cssTheme == 'auto') switchCSSTheme();
                 };
@@ -1566,11 +1568,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         if (params.cssTheme == 'auto') document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'block' : 'none';
         document.getElementById('cssUIDarkThemeCheck').addEventListener('click', function () {
             //This code implements a tri-state checkbox
-            if (this.readOnly) this.checked = this.readOnly = false;
-            else if (!this.checked) this.readOnly = this.indeterminate = true;
+            // if (this.readOnly) this.checked = this.readOnly = false;
+            // else if (!this.checked) this.readOnly = this.indeterminate = true;
             //Code below shows how to invert the order
-            //if (this.readOnly) { this.checked = true; this.readOnly = false; }
-            //else if (this.checked) this.readOnly = this.indeterminate = true;
+            if (this.readOnly) { this.checked = true; this.readOnly = false; }
+            else if (this.checked) this.readOnly = this.indeterminate = true;
             params.cssUITheme = this.indeterminate ? "auto" : this.checked ? 'dark' : 'light';
             if (!uiSettings) initializeUISettings();
             settingsStore.setItem('cssUITheme', params.cssUITheme, Infinity);
@@ -1581,8 +1583,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             params.cssThemeOriginal = null;
         });
         document.getElementById('cssWikiDarkThemeCheck').addEventListener('click', function () {
-            if (this.readOnly) this.checked = this.readOnly = false;
-            else if (!this.checked) this.readOnly = this.indeterminate = true;
+            // if (this.readOnly) this.checked = this.readOnly = false;
+            // else if (!this.checked) this.readOnly = this.indeterminate = true;
+            // Invert order:
+            if (this.readOnly) { this.checked = true; this.readOnly = false; }
+            else if (this.checked) this.readOnly = this.indeterminate = true;
             params.cssTheme = this.indeterminate ? "auto" : this.checked ? 'dark' : 'light';
             if (!uiSettings) initializeUISettings();
             var determinedValue = params.cssTheme;
@@ -2811,21 +2816,23 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
                             if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
                             // Set defaults that allow for greatest compabitibility with Zimit ZIM types
-                            if (params.zimType === 'zimit') { 
-                                if (params.cssTheme !== 'light' && params.cssTheme !== 'darkReader' && !/UWP/.test(params.appType)) {
-                                    document.getElementById('cssWikiDarkThemeDarkReaderCheck').click();
+                            if (params.zimType === 'zimit') {
+                                var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
+                                if (params.cssTheme === 'auto' && determinedTheme !== 'light' && !/UWP/.test(params.appType)) {
+                                    params.cssTheme = 'darkReader';
+                                    document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = true;
                                 }
                                 if (!params.windowOpener) {
                                     document.getElementById('tabOpenerCheck').click();
                                 }
                             }
-                        }
-                        if (wikimediaZimLoaded) {
+                        } else {
                             params.noWarning = true;
                             if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
                             params.noWarning = false;
-                            if (params.cssTheme === 'darkReader' && /UWP/.test(params.appType)) {
-                                document.getElementById('cssWikiDarkThemeDarkReaderCheck').click();
+                            params.cssTheme = settingsStore.getItem('cssTheme');
+                            if (params.cssTheme === 'auto') {
+                                document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = false;
                             }
                         }
                     }
@@ -3189,21 +3196,23 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
                         if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
                         // Set defaults that allow for greatest compabitibility with Zimit ZIM types
-                        if (params.zimType === 'zimit') { 
-                            if (params.cssTheme !== 'light' && params.cssTheme !== 'darkReader' && !/UWP/.test(params.appType)) {
-                                document.getElementById('cssWikiDarkThemeDarkReaderCheck').click();
+                        if (params.zimType === 'zimit') {
+                            var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
+                            if (params.cssTheme === 'auto' && determinedTheme !== 'light' && !/UWP/.test(params.appType)) {
+                                params.cssTheme = 'darkReader';
+                                document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = true;
                             }
                             if (!params.windowOpener) {
                                 document.getElementById('tabOpenerCheck').click();
                             }
                         }
-                    }
-                    if (wikimediaZimLoaded) {
+                    } else {
                         params.noWarning = true;
                         if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
                         params.noWarning = false;
-                        if (params.cssTheme === 'darkReader' && /UWP/.test(params.appType)) {
-                            document.getElementById('cssWikiDarkThemeDarkReaderCheck').click();
+                        params.cssTheme = settingsStore.getItem('cssTheme');
+                        if (params.cssTheme === 'auto') {
+                            document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = false;
                         }
                     }
                 }
