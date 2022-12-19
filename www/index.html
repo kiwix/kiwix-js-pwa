@@ -123,12 +123,15 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
                         <ul style="padding-left: 15px;">
-                            <li>Emergency bugfix: bug which prevented access to packaged archive on app load</li>
                             <li>Experimental use of libzim WASM port to read Full Text index (PWA/Electron only)</li>
-
                             <li>Information added to API panel to show status of Full Text index</li>
+                            <li>Run full-text and title search in parallel for faster return of results</li>
+                            <li>Sample archive changed to wikipedia_en_100_mini_2022-11</li>
+                            <li>Building Electron app on GitHub actions now downloads the latest packaged archive before cloud-building</li>
                             <li>Removal of several JQuery functions, replaced with native DOM methods</li>
                             <li>Remove some unused functions</li>
+                            <li>Fix critical startup bug which prevented opening of some packaged archive</li>
+                            <li>Fix bug which prevented reload of last visited page on re-launch of app</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/master/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                     </div>

@@ -1,14 +1,16 @@
 # Changelog
 
-## In-progress release 2.2.55
+## Release 2.2.8
 
-* BUGFIX: Re-issue WikiMed with fix for critical startup bug which prevented opening of packaged archive
-* FIX: Bug which prevented reload of last visited page on re-launch of app
-* ENHANCEMENT: Experimental use of libzim WASM port to read Full Text index (PWA only for now)
+* ENHANCEMENT: Experimental use of libzim WASM port to read Full-Text index (PWA and Electron only)
 * ENHANCEMENT: Information added to API panel to show status of Full Text index
+* ENHANCEMENT: Run full-text and title search in parallel for faster return of results
 * ENHANCEMENT: Building Electron app on GitHub actions now downloads the latest packaged archive before cloud-building
+* UPDATE: Sample archive changed to `wikipedia_en_100_mini_2022-11`
 * CLEANUP: Removal of several JQuery functions, replaced with native DOM methods 
 * CLEANUP: Remove some unused functions
+* FIX: Critical startup bug which prevented opening of some packaged archive
+* FIX: Bug which prevented reload of last visited page on re-launch of app
 
 ## Release 2.2.5
 
