@@ -189,7 +189,7 @@ table.dataTable.display tbody tr.even:hover {
     color: lightgray;
 }
 
-tr[bgcolor] {
+tr[bgcolor], tr[style*="background-color: rgb"], tr[style*="background-color:#ddd"] {
     background-color: #2F3F4F !important;
     border-color: #524B4B !important;
 }
