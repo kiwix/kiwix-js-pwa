@@ -11,6 +11,7 @@
 * CLEANUP: Remove some unused functions
 * FIX: Critical startup bug which prevented opening of some packaged archive
 * FIX: Bug which prevented reload of last visited page on re-launch of app
+* FIX: When dark mode is set to auto, do not use darkReader for Wikimedia ZIMs
 
 ## Release 2.2.5
 
