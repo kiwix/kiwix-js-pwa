@@ -348,7 +348,8 @@
                     </p>
                     <p>
                         You can search through the titles of articles in each archive to find the one you want, or view all the article titles with the ZIM Archive Index (see
-                        <a href="#searchSyntax">Title search</a>). <b><i>Note that this app cannot (yet) do full text search of the contents of all articles in a ZIM.</i></b>
+                        <a href="#searchSyntax">Title search</a>). <b><i>There is experimental support for full-text search in the PWA and Electron apps (for ZIM archives that
+                        include a full-text index). Please note that UWP and NWJS apps are not yet supported.</i></b>
                     </p>
                     <p>
                         On some Wikipedia and Wikivoyage (English and German) pages you will see map pins: <img src="img/icons/map_marker-30px.png" width="18px" />. By default, on
@@ -484,8 +485,8 @@
                         your alphabet in Configuration for non-Roman alphabets. You can also show the <b>full URL index</b> by typing <b><i>space /</i></b> (a space followed by forward slash).
                     </p>
                     <p>
-                        If not enough results are returned in your searches, you can increase the maximum number of search results using the slider in Configuration. Please note that we are
-                        currently unable to support full text search of articles, though we have plans to do so in the future if it becomes technically possible.
+                        If not enough results are returned in your searches, you can increase the maximum number of search results using the slider in Configuration. Full-text search is available on Some
+                        platforms (Electron and PWA) for ZIMs that include a full-text index. The API panel in Configuration will tell you whether the loaded ZIM and app support full-text search.
                     </p>
                     <p>
                         <i>For the geeks</i>, you can also use <b>full regular expressions</b> enclosed in non-capturing parentheses, like <code>(?:My\sCrazy\sSearch(es)?$)</code>. Alternatively, you
