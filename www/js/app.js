@@ -2830,7 +2830,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             params.noWarning = true;
                             if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
                             params.noWarning = false;
-                            params.cssTheme = settingsStore.getItem('cssTheme');
+                            params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
                             if (params.cssTheme === 'auto') {
                                 document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = false;
                             }
@@ -3210,7 +3210,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         params.noWarning = true;
                         if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
                         params.noWarning = false;
-                        params.cssTheme = settingsStore.getItem('cssTheme');
+                        params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
                         if (params.cssTheme === 'auto') {
                             document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = false;
                         }
