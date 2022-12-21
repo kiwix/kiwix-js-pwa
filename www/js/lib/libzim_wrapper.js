@@ -1,4 +1,4 @@
-/**
+﻿/**
  * xzdec_wrapper.js: Javascript wrapper around compiled xz decompressor.
  *
  * Copyright 2022 Jaifroid and contributors
