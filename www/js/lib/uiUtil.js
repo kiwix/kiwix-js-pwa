@@ -837,7 +837,7 @@ define(rqDef, function(util) {
         params.decompressorAPI.assemblerMachineType = assemblerMachineType;
         params.decompressorAPI.errorStatus = 'Error loading ' + decoderType + ' decompressor!';
         var decompAPI = document.getElementById('decompressorAPIStatus');
-        decompAPI.innerHTML = 'Decompressor API: ' + params.decompressorAPI.errorStatus;
+        decompAPI.textContent = 'Decompressor API: ' + params.decompressorAPI.errorStatus;
         decompAPI.className = 'apiBroken';
         document.getElementById('apiStatusDiv').className = 'panel panel-danger';
     }
@@ -845,9 +845,11 @@ define(rqDef, function(util) {
     // Reports the search provider to the API Status Panel
     function reportSearchProviderToAPIStatusPanel(provider) {
         var providerAPI = document.getElementById('searchProviderStatus');
-        providerAPI.innerHTML = 'Search Provider: ' + (/^fulltext/.test(provider) ? 'Title + Xapian [' + provider + ']' :
-            /^title/.test(provider) ? 'Title only [' + provider + ']' : 'Not initialized');
-        providerAPI.className = /^fulltext/.test(provider) ? 'apiAvailable' : !/ERROR/.test(provider) ? 'apiUnavailable' : 'apiBroken';
+        if (providerAPI) { // NB we need this so that tests don't fail
+            providerAPI.textContent = 'Search Provider: ' + (/^fulltext/.test(provider) ? 'Title + Xapian [' + provider + ']' :
+                /^title/.test(provider) ? 'Title only [' + provider + ']' : 'Not initialized');
+            providerAPI.className = /^fulltext/.test(provider) ? 'apiAvailable' : !/ERROR/.test(provider) ? 'apiUnavailable' : 'apiBroken';
+        }
     }
 
     /**
