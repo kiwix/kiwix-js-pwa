@@ -1,5 +1,11 @@
 # Changelog
 
+## Release 2.2.82
+
+* BUGFIX: Fix libzim loading error in Electron app with large ZIM archives due to race condition
+* FIX: Prevent Electron app from rebooting on every load to reactivate the Service Worker
+* FIX: Add BOM to new JS files to conform to Microsoft Store requirements
+
 ## Release 2.2.8
 
 * ENHANCEMENT: Experimental use of libzim WASM port to read Full-Text index (PWA and Electron only)
@@ -9,7 +15,7 @@
 * UPDATE: Sample archive changed to `wikipedia_en_100_mini_2022-11`
 * CLEANUP: Removal of several JQuery functions, replaced with native DOM methods 
 * CLEANUP: Remove some unused functions
-* FIX: Critical startup bug which prevented opening of some packaged archive
+* FIX: Critical startup bug which prevented opening of some packaged archives
 * FIX: Bug which prevented reload of last visited page on re-launch of app
 * FIX: When dark mode is set to auto, do not use darkReader for Wikimedia ZIMs
 
