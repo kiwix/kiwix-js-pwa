@@ -83,7 +83,7 @@ if ($tag_name -eq "") {
   }
   if ($draftonly) {
     "Creating a draft release only with no assets attached."
-  } elseif (-Not ($buildonly -or $dryrun -or $updatewinget)) {
+  } elseif (-Not ($buildonly -or $updatewinget)) {
     $buildonly_check = Read-Host "Do you wish to Build only, or build and Release? [B/R]"
     $buildonly = -Not ( $buildonly_check -imatch 'r' )
     If ($buildonly) {
@@ -171,7 +171,7 @@ if ($json_object -imatch '"name":\s"([\w]+-[^"]+)') {
 # Determine type of Electron build if any
 if (($flavour -match '_E') -or $plus_electron) {
   if ($portableonly) { $electronbuild = 'local' }
-  if ($electronbuild -eq "") {
+  if ($electronbuild -eq "" -and -not $updatewinget) {
     ""
     $electronbuild_check = Read-Host "Do you want to build Electron packages on GitHub instead of locally? [Y/N]"
     $electronbuild_check = -Not ( $electronbuild_check -imatch 'n' )
@@ -527,15 +527,15 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   # Upload the release
   if ($flavour -eq '') { $upload_assets = @($compressed_archive, $ReleaseBundle) }
   if ($flavour -eq '_N') { $upload_assets = $NWJSAssets }
-  if ($flavour -eq '_E') { 
-    if ($old_windows_support) {
-      $upload_assets = ($AppImageArchives += $nwjs_archives)  
-    } else {
-      $upload_assets = ($AppImageArchives += $comp_electron_archive)
-    }
-    $upload_assets += $WinInstaller
-  }
-  if ($plus_electron) {
+  # if ($flavour -eq '_E') { 
+  #   if ($old_windows_support) {
+  #     $upload_assets = ($AppImageArchives += $nwjs_archives)  
+  #   } else {
+  #     $upload_assets = ($AppImageArchives += $comp_electron_archive)
+  #   }
+  #   $upload_assets += $WinInstaller
+  # }
+  if (($flavour -eq '_E') -or $plus_electron) {
     $upload_assets += $AppImageArchives
     if ($electronbuild -eq 'local' -and (-not $portableonly)) { $upload_assets += $WinInstaller }
     if ($old_windows_support) {
