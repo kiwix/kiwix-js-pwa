@@ -123,6 +123,8 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
                         <ul style="padding-left: 15px;">
+                            <li>Critical bugfix for Electron app: libzim loading error with large ZIM archives due to race condition</li>
+                            <li>Prevent Electron app from rebooting on every load to reactivate the Service Worker</li>
                             <li>Experimental use of libzim WASM port to read Full Text index in Electron/PWA apps only (<i><b>not currently supported in UWP app</b></i>)</li>
                             <li>Information added to API panel to show status of Full Text index</li>
                             <li>Run full-text and title search in parallel for faster return of results</li>
@@ -130,7 +132,7 @@
                             <li>Building Electron app on GitHub actions now downloads the latest packaged archive before cloud-building</li>
                             <li>Removal of several JQuery functions, replaced with native DOM methods</li>
                             <li>Remove some unused functions</li>
-                            <li>Fix critical startup bug which prevented opening of some packaged archive</li>
+                            <li>Fix critical startup bug which prevented opening of some packaged archives</li>
                             <li>Fix bug which prevented reload of last visited page on re-launch of app</li>
                             <li>When dark mode is set to auto, do not use darkReader for Wikimedia ZIMs</li>
                         </ul>
