@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-electron",
   "productName": "Kiwix JS Electron",
-  "version": "2.2.8-E",
+  "version": "2.2.82-E",
   "description": "Kiwix JS packaged for the Electron framework",
   "main": "main.js",
   "build": {
@@ -13,13 +13,14 @@
     },
     "afterPack": "./scripts/appimage-fix.js",
     "win": {
-      "publish": [
-        "github"
-      ],
+      "asar": "true",
       "extraResources": {
         "from": "archives",
         "to": "archives"
       },
+      "publish": [
+        "github"
+      ],
       "target": [
         {
           "target": "NSIS",

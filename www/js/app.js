@@ -2100,10 +2100,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     settingsStore.setItem('lastPageLoad', '');
                     window.location.reload();
                 } else {
+                    // If this is the first time we are initiating the SW, allow Promises to complete by delaying potential reload till next tick
                     console.debug('The Service Worker needs more time to load...');
-                    delay = 600;
+                    delay = 0;
                 }
-                messageChannel = tmpMessageChannel;
                 // Schedule to do it again regularly to keep the 2-way communication alive.
                 // See https://github.com/kiwix/kiwix-js/issues/145 to understand why
                 clearTimeout(keepAliveServiceWorkerHandle);
@@ -2163,21 +2163,21 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     return;
                 }
                 if (!isServiceWorkerReady()) {
-                    $('#serviceWorkerStatus').html("ServiceWorker API available : trying to register it...");
+                    var serviceWorkerStatus = document.getElementById('serviceWorkerStatus');
+                    serviceWorkerStatus.textContent = 'ServiceWorker API available : trying to register it...';
                     if (navigator.serviceWorker.controller) {
-                        console.log("Active service worker found, no need to register");
+                        console.log("Active Service Worker found, no need to register");
                         serviceWorkerRegistration = true;
-                        refreshAPIStatus();
                         // Remove any jQuery hooks from a previous jQuery session
                         $('#articleContent').contents().remove();
                         // Create the MessageChannel and send 'init'
                         initOrKeepAliveServiceWorker();
+                        refreshAPIStatus();
                     } else {
                         navigator.serviceWorker.register('../service-worker.js').then(function (reg) {
                             // The ServiceWorker is registered
                             console.log('Service worker is registered with a scope of ' + reg.scope);
                             serviceWorkerRegistration = reg;
-                            
                             // We need to wait for the ServiceWorker to be activated
                             // before sending the first init message
                             var serviceWorker = reg.installing || reg.waiting || reg.active;
@@ -2185,9 +2185,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                                 if (statechangeevent.target.state === 'activated') {
                                     // Remove any jQuery hooks from a previous jQuery session
                                     $('#articleContent').contents().remove();
-                                    // Create the MessageChannel
-                                    // and send the 'init' message to the ServiceWorker
+                                    // Create the MessageChannel and send the 'init' message to the ServiceWorker
                                     initOrKeepAliveServiceWorker();
+                                    // We need to refresh cache status here on first activation because SW was inaccessible till now
+                                    // We also initialize the ASSETS_CACHE constant in SW here
+                                    refreshCacheStatus();
                                     setWindowOpenerUI();
                                     refreshAPIStatus();
                                 }
@@ -2201,7 +2203,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             }
                             refreshAPIStatus();
                         }).catch(function (err) {
-                            console.error('error while registering serviceWorker', err);
+                            console.error('Error while registering serviceWorker', err);
                             refreshAPIStatus();
                             var message = "The ServiceWorker could not be properly registered. Switching back to jQuery mode. Error message : " + err;
                             var protocol = window.location.protocol;
@@ -2219,7 +2221,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         });
                     }
                 } else {
-                    // We need to set this variable earlier else the ServiceWorker does not get reactivated
+                    // We need to set this variable earlier else the Service Worker does not get reactivated
                     params.contentInjectionMode = value;
                     initOrKeepAliveServiceWorker();
                 }
@@ -3977,7 +3979,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
 
         };
 
-        var messageChannel;
         var loadingArticle = '';
 
         /**
