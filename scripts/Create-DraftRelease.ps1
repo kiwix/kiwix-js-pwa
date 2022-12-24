@@ -107,6 +107,11 @@ $numeric_tag = $base_tag -creplace "([\d.]+)[EN]", '$1'
 $old_windows_support = $tag_name -cmatch '\+N'
 $plus_electron = $tag_name -cmatch '\+E'
 if ($text_tag -eq '') { $text_tag = 'Windows' }
+# Put the dash back in the tag name
+if (-not $plus_electron) {
+  $tag_name = $tag_name -replace '-?([EN])', '-$1'
+  $base_tag = $base_tag -replace '-?([EN])', '-$1'
+}
 $release_title = "Kiwix JS $text_tag $base_tag UWP"
 if ($text_tag -imatch 'Wikivoyage|WikiMed') { $release_title = "$text_tag by Kiwix UWP $base_tag" }
 $flavour = ''
@@ -268,7 +273,7 @@ if ($updatewinget) {
 if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   if (-Not $buildonly) { "The draft release details were successfully created." }
   "`nUpdating release version in package.json"
-  $json_object = $json_object -replace '("version": ")[^"]+', ("`${1}" + $base_tag -replace '([EN])(?=-|$)', '-$1')
+  $json_object = $json_object -replace '("version": ")[^"]+', ("`${1}" + $base_tag -replace '(-?[EN])(?=-|$)', '-$1')
   if ($plus_electron) {
     $json_object = $json_object -replace '("version": ")[^"]+', ("`${1}$base_tag" + "-E")
   }

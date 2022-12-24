@@ -14,6 +14,10 @@ if ($electronbuild -eq "") {
     $electronbuild = 'local'
   }
 }
+$release_name = $release_tag_name
+if ($original_release_tag_name) {
+  $release_name = $original_release_tag_name
+}
 if ($electronbuild -eq "cloud") {
   $branch_name = &{ git branch --show-current }
   "Setting the build branch to: $branch_name"
@@ -30,7 +34,7 @@ if ($electronbuild -eq "cloud") {
       'ref' = $branch_name
       'inputs' = @{ 
         'target' = 'release'
-        'version' = $original_release_tag_name
+        'version' = $release_name
       }
     } | ConvertTo-Json
     ContentType = "application/json"
