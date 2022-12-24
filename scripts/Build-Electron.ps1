@@ -133,7 +133,9 @@ if ($electronbuild -eq "local" -and (-not $portableonly)) {
     $RPMArchives = @("$RPMBasePackage.x86_64.rpm", "$RPMBasePackage.i686.rpm");
     $AppImageArchives += $RPMArchives  
   }
-    "Processing $AppImageArchives"
+  
+  "Processing $AppImageArchives"
+  $run_dist_linux = $false
   foreach ($AppImageArchive in $AppImageArchives) {
     if (-Not (Test-Path $AppImageArchive -PathType Leaf)) {
       "No packages found: building $AppImageArchive..."
@@ -145,21 +147,20 @@ if ($electronbuild -eq "local" -and (-not $portableonly)) {
       $repo_dir = ($PSScriptRoot -replace '[\\/]scripts[\\/]*$', '')
       # "Using docker command:"
       # "docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux"
-      "Using electron-builder in wsl:"
-      "wsl sh -c 'npm run dist-linux'"
-      if (-Not $dryrun) {
-        # docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux
-        cd $repo_dir
-        rm -r $base_dir/linux-unpacked
-        rm -r $base_dir/linux-ia32-unpacked
-        wsl sh -c "npm run dist-linux"
-        # Alternatively build with wsl
-        # wsl . ~/.bashrc; npm run dist-linux
-        # docker $build_command
-      }
+      "Will use electron-builder in wsl"
+      $run_dist_linux = $true
     } else {
       "Linux Electron package $AppImageArchive is available"
     }
+  }
+  if (-not $dryrun -and $run_dist_linux) {
+    # docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux
+    cd $repo_dir
+    rm -r $base_dir/linux-unpacked
+    rm -r $base_dir/linux-ia32-unpacked
+    wsl sh -c "npm run dist-linux"
+    # Alternatively build with docker
+    # docker $build_command
   }
 }
 if ($old_windows_support -and ($electronbuild -eq 'local')) {
