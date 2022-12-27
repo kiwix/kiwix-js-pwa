@@ -44,7 +44,7 @@ want to download. It's much easier than it sounds!
 ## Technical information
 
 This repository is for development of the Kiwix JS app for PWA, Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP).
-The latest code is usually on the master branch, but this is used for active development and may be several commits ahead of releases.
+The latest code is usually on the main branch, but this is used for active development and may be several commits ahead of releases.
 Installable and portable versions for Windows (XP/Vista/7/10/11) and Linux (32bit and 64bit) are available from
 [releases](https://github.com/kiwix/kiwix-js-windows/releases/). Unstable [nightly builds](https://download.kiwix.org/nightly/) of the
 Electron and NWJS apps are available together with a [development deployment](https://kiwix.github.io/kiwix-js-windows/), but code may be
@@ -75,7 +75,7 @@ English Wikipedia with images is currently around 90GB, and you should download 
 are provided in the app). For most storage types (including microSD cards) that are formatted as exFAT or NTFS, you can store even these
 very large files in the storage with no problem. However, if you plan to store your ZIM file on an SD card formatted as **FAT32**, and
 you wish to use an archive larger than 4GB, then you will need to split the ZIM: see
-[file splitting instructions](https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#download-a-zim-archive-all-platforms).
+[file splitting instructions](https://github.com/kiwix/kiwix-js-windows/tree/main/AppPackages#download-a-zim-archive-all-platforms).
 
 A lot of development for this app happens upstream in the [Kiwix JS repository](https://kiwix.github.io/kiwix-js/) to which I ontribute
 actively. Without Kiwix JS, this app would be impossible, and huge thanks goes to the original developers of first the Evopedia app and
@@ -88,15 +88,15 @@ Kantaris. I can be contacted by email: egk10 at cam ac uk.
 Please use this repository's [issue tracker](https://github.com/kiwix/kiwix-js-windows/issues) to report any bugs you have found with the software. Open a new
 issue (after checking that the issue you identified doesn't have an issue already). In all cases, please state clearly the version number you are using (see
 the About page in the app), and which browser or platform you are using. Please read the
-[Kiwix JS bug reporting guidelines](https://github.com/kiwix/kiwix-js/blob/master/REPORT_BUG.md) before opening your issue.
+[Kiwix JS bug reporting guidelines](https://github.com/kiwix/kiwix-js/blob/main/REPORT_BUG.md) before opening your issue.
 
 ## Contributing code
 
 If you have coding experience and are interested in contributing to this project, we suggest you start by contributing to the upstream [Kiwix JS repository](https://kiwix.github.io/kiwix-js/),
-as much of the code contributed there is subsequently ported to this repository. Please see [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/master/CONTRIBUTING.md) for details.
+as much of the code contributed there is subsequently ported to this repository. Please see [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) for details.
 If you wish to contribute to a specific Kiwix JS Windows/Linux feature, then please open an issue on this repository explaining the feature or other code you
 aim to contribute and how you propose this should be done. You should be comfortable creating PRs and have good knowledge of JavaScript. Follow the same
-[contributing guidelines](https://github.com/kiwix/kiwix-js/blob/master/CONTRIBUTING.md) as for Kiwix JS.
+[contributing guidelines](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) as for Kiwix JS.
 
 ## Other contributions / donations
 

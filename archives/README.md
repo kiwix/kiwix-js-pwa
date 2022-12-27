@@ -2,7 +2,7 @@
 
 Due to GitHub filesize restrictions, it is not possible to upload ZIMs that are larger than 100Mb to this directory. If you wish to build the source code yourself,
 you will need to add the appropriate packaged ZIM file to your local repository before building, or else commit a
-[split ZIM archive](https://github.com/kiwix/kiwix-js-windows/tree/master/AppPackages#download-a-zim-archive-all-platforms) in chunks ideally below 50MB each chunk.
+[split ZIM archive](https://github.com/kiwix/kiwix-js-windows/tree/main/AppPackages#download-a-zim-archive-all-platforms) in chunks ideally below 50MB each chunk.
 
 ## How to change the packaged archive
 

@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Specific version to build (overrides on-master and tag-pattern), e.g. 'v2.0.0'
+        description: Specific version to build (overrides on-main and tag-pattern), e.g. 'v2.0.0'
         required: false
         default: ''
 
