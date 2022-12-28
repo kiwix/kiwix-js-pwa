@@ -128,7 +128,7 @@ if ($file_version) {
 "File Version: $file_version"
 "Zim: $zim"
 "Date: $date"
-$branch = "master"
+$branch = "main"
 $release_tag_name = $tag_name
 if ($tag_name -cmatch 'E\+N') {
   $title_flavour = 'Electron and NWJS'
