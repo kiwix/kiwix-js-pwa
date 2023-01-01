@@ -4439,6 +4439,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 if (params.contentInjectionMode === 'jquery') htmlArticle = htmlArticle.replace(/<div\b[^>]*?>\s*<\/div>\s*/, '');
                 // Deal with incorrectly sized masonry pages
                 htmlArticle = htmlArticle.replace(/(<body\b[^<]+<div\b[^>]+?id=['"]container['"][^>]*)/i, '$1 style="height:auto;"');
+                // @TODO Remove when fixed in https://github.com/openzim/mwoffliner/issues/1662
+                // Put site.js in the correct position
+                htmlArticle = htmlArticle.replace(/(<script\b[^>]+\/site\.js["']><\/script>\s*)((?:[^<]|<(?!\/body))+)/, '$2$1');
             }
 
             if (params.contentInjectionMode == 'jquery') {
