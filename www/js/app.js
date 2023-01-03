@@ -4079,7 +4079,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             }
                             var cacheKey = appstate.selectedArchive._file.name + '/' + title;
                             cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(function (content) {
-                                console.log('SW read binary file for: ' + dirEntry.namespace + '/' + dirEntry.url);
+                                console.debug('SW read binary file for: ' + dirEntry.namespace + '/' + dirEntry.url);
                                 // Let's send the content to the ServiceWorker
                                 var buffer = content.buffer ? content.buffer : content;
                                 var message = {
