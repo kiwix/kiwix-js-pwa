@@ -73,6 +73,8 @@ foreach ($build in $builds) {
     cp $buildLocation\* $fullTarget -Recurse
     $root = $PSScriptRoot -replace 'scripts.*$', ''
     cp $root\package.json, $root\service-worker.js, $root\index.html, $root\CHANGELOG.md, $root\LICENSE, $root\www $fullTarget -Recurse
+    # Remove unwanted files
+    del $fullTarget\www\js\lib\libzim-*.dev.*
     "Copying archive..."
     md $archiveFolder
     cp "$root\archives\$PackagedArchive", "$root\archives\*.txt", "$root\archives\README.md" $archiveFolder

@@ -27,7 +27,8 @@
       "index.html",
       "CHANGELOG.md",
       "LICENCE",
-      "www/**"
+      "www/**",
+      "!**/*.dev.{js,wasm}"
     ],
     "afterPack": "./scripts/appimage-fix.js",
     "win": {
@@ -43,7 +44,8 @@
       "index.html",
       "CHANGELOG.md",
       "LICENCE",
-      "www/**"
+      "www/**",
+      "!**/*.dev.{js,wasm}"
     ],
     "win": {
       "icon": "www/img/icons/kiwix-64.ico"
@@ -59,7 +61,8 @@
       "LICENCE",
       "www/**",
       "archives/README.md",
-      "archives/wikip*.*"
+      "archives/wikip*.*",
+      "!**/*.dev.{js,wasm}"
     ],
     "win": {
       "icon": "www/img/icons/kiwix-64.ico"
