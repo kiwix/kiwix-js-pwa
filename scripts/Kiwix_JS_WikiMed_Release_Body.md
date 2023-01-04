@@ -9,23 +9,24 @@ These custom apps are packaged with the <<date>> English-language WikiMed archiv
 
 Please choose the correct version (only the Store version will self update):
 
-* **Windows**:
-  - **Store app for Windows 10/11 (UWP)**
-    + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9PHJSNP1CZ8J (it will self-update automatically) - *recommended*
-    + Or, on a PC, open a command prompt and run `winget install wikimed -s msstore` (self-updates)
-    + Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.wikimed` - this doesn't auto-update, but you can upgrade easily by running `winget upgrade` or `winget upgrade --all`
-  - **Portable (Electron) - just unzip, no install needed**
-    + Windows 7/8/10/11 - [WikiMed-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<base_tag>>-E.zip)
-  - **Installable (Electron)**
-    + Windows 7/8/10/11 - [WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe)
-    + Alternatively, run `winget install kiwix.wikimed.electron` in a Windows 10/11 Terminal
-* **Linux** (read important instructions below):
+* **Linux** (installation instructions below):
   - **Portable (Electron)**
     + AppImage 64bit (Ubuntu, Debian, Fedora, OpenSUSE) - [WikiMed-by-Kiwix-<<numeric_tag>>-E.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<numeric_tag>>-E.AppImage)
     + AppImage 32bit (Ubuntu, Debian, Fedora, OpenSUSE) - [WikiMed-by-Kiwix-<<numeric_tag>>-E-i386.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<numeric_tag>>-E-i386.AppImage)
   - **Installable (Electron)**
     + Deb package 64bit (Ubuntu, Debian) - [kiwix-js-wikimed_<<numeric_tag>>-E_amd64.deb](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/kiwix-js-wikimed_<<numeric_tag>>-E_amd64.deb)
     + Deb package 32bit (Ubuntu, Debian) - [kiwix-js-wikimed_<<numeric_tag>>-E_i386.deb](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/kiwix-js-wikimed_<<numeric_tag>>-E_i386.deb)
+
+* **Windows**:
+  - **Portable (Electron) - just unzip, no install needed**
+    + Windows 7/8/10/11 - [WikiMed-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<base_tag>>-E.zip)
+  - **Installable (Electron)**
+    + Windows 7/8/10/11 - [WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe)
+    + Alternatively, run `winget install kiwix.wikimed.electron` in a Windows 10/11 Terminal
+  - **Store app for Windows 10/11 (UWP)** (no Full-Text search)
+    + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9PHJSNP1CZ8J (it will self-update automatically) - *recommended*
+    + Or, on a PC, open a command prompt and run `winget install wikimed -s msstore` (self-updates)
+    + Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.wikimed` - this doesn't auto-update, but you can upgrade easily by running `winget upgrade` or `winget upgrade --all`
 
 ## Installation Instructions - Electron
 
@@ -41,6 +42,7 @@ Please choose the correct version (only the Store version will self update):
 
 * This app is packaged with the <<date>> English-language WikiMed archive `<<zim>>`. The packaged archive is located in the `archives` folder (only accessible in the portable Windows version). See the readme in that folder if you wish to add a different archive as the packaged ZIM;
 * You can download WikiMed in other languages from the Configuration page (see Known Issues below);
+* The Electron apps (for modern Windows or Linux) have experimental support for Full-Text searching;
 * It supports dark mode, and opening different navigable windows by right-clicking or ctrl-clicking a link (see Configuration);
 * You can print by pressing Ctrl-P or using the print icon. If local printers are not available (after clicking on More options...) then print to PDF and use another app to print;
 * You can open a new browsable window by right-clicking, middle-clicking or ctrl-clicking an article link (for UWP app, this only works in Service Worker mode);
