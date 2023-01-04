@@ -1,4 +1,5 @@
 ﻿# Updates the app version in all required places according to the custom value
+# and then rewrites UWP manifests
 
 [CmdletBinding()]
 param (
@@ -68,6 +69,7 @@ if ($VERSION -match '^v?[\d.]') {
         $BuildNWJSScript = $BuildNWJSScript -replace '\s+$', ''
         Set-Content -encoding "utf8BOM" ./scripts/Build-NWJS.ps1 $BuildNWJSScript
     }
+    . ./scripts/Rewrite-Manifests.ps1
 } else {
     "No valid INPUT_VERSION or TAG_VERSION were provided. File version numbers were unchanged.`n"
 }
