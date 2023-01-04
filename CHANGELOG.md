@@ -1,18 +1,27 @@
 # Changelog
 
-## Release 2.2.82
+## Release 2.2.9-WikiMed
 
+* UPDATE: Packaged archive updated to `mdwiki_en_all[-app]_maxi_2023-01.zim`
+* ENHANCEMENT: Run full-text and title search in parallel for faster return of results
 * BUGFIX: Fix libzim loading error in Electron app with large ZIM archives due to race condition
 * FIX: Prevent Electron app from rebooting on every load to reactivate the Service Worker
 * FIX: Add BOM to new JS files to conform to Microsoft Store requirements
+* FIX: Exception caused by site.js script included in Wikimedia archives
 
-## Release 2.2.8
+## Release 2.2.61-WikiMed
 
-* ENHANCEMENT: Experimental use of libzim WASM port to read Full-Text index (PWA and Electron only)
+* BUGFIX: Re-issue WikiMed with fix for critical startup bug which prevented opening of packaged archive
+* FIX: Bug which prevented reload of last visited page on re-launch of app
+
+## Release 2.2.6-WikiMed
+
+* UPDATE: Packaged archive updated to `mdwiki_en_all[-app]_maxi_2022-12.zim`
+* ENHANCEMENT: Experimental use of libzim WASM port to read Full Text index (Electron only for now)
 * ENHANCEMENT: Information added to API panel to show status of Full Text index
-* ENHANCEMENT: Run full-text and title search in parallel for faster return of results
+* ENHANCEMENT: Experimental option to use DarkReader plugin (SW mode only)
+* ENHANCEMENT: Added support for Open Document download types (.odt)
 * ENHANCEMENT: Building Electron app on GitHub actions now downloads the latest packaged archive before cloud-building
-* UPDATE: Sample archive changed to `wikipedia_en_100_mini_2022-11`
 * CLEANUP: Removal of several JQuery functions, replaced with native DOM methods 
 * CLEANUP: Remove some unused functions
 * FIX: A number of glitches with standard and inverted dark themes
