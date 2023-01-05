@@ -61,6 +61,10 @@ if ($alt_tag -imatch 'WikiMed|Wikivoyage') {
   $comp_electron_archive = $base_dir + "$text_tag-by-Kiwix-$base_tag.zip"
   $WinInstaller = $base_dir + "$alt_tag.by.Kiwix.Setup.$numeric_tag-E.exe"
 }
+if ($electronbuild -eq "local" -and !$dryrun) {
+  # Rewrite the archive for Electron if it is an mdwiki type
+  (Get-Content ./www/js/init.js) -replace '(mdwiki[^-]+)-app_', '$1_' | Set-Content -encoding 'utf8BOM' ./www/js/init.js
+}
 if ($electronbuild -eq "local" -and (-not $portableonly)) {
   if (-Not (Test-Path $WinInstaller -PathType Leaf)) {
     "No package found: building $WinInstaller..."
