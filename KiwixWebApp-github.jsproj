@@ -341,6 +341,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="bin\Release\Upload\" />
     <Folder Include="www\-\static\bootstrap\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).targets" />
