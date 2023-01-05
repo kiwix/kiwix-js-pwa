@@ -7,7 +7,7 @@ These custom apps are packaged with the <<date>> English-language WikiMed archiv
 **MS Store status: IN CERTIFICATION**
 **Winget status: IN CERTIFICATION**
 
-Please choose the correct version (only the Store version will self update):
+Please choose the correct version (only the UWP version will self update, others will notify you):
 
 * **Linux** (installation instructions below):
   - **Portable (Electron)**
@@ -21,10 +21,10 @@ Please choose the correct version (only the Store version will self update):
   - **Portable (Electron) - just unzip, no install needed**
     + Windows 7/8/10/11 - [WikiMed-by-Kiwix-<<base_tag>>-E.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-<<base_tag>>-E.zip)
   - **Installable (Electron)**
-    + Windows 7/8/10/11 - [WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe)
+    + Windows 7/8/10/11 - [WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/WikiMed-by-Kiwix-Setup-<<numeric_tag>>-E.exe) - *recommended*
     + Alternatively, run `winget install kiwix.wikimed.electron` in a Windows 10/11 Terminal
   - **Store app for Windows 10/11 (UWP)** (no Full-Text search)
-    + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9PHJSNP1CZ8J (it will self-update automatically) - *recommended*
+    + Install from the Microsoft Store: https://www.microsoft.com/store/apps/9PHJSNP1CZ8J (it will self-update automatically)
     + Or, on a PC, open a command prompt and run `winget install wikimed -s msstore` (self-updates)
     + Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.wikimed` - this doesn't auto-update, but you can upgrade easily by running `winget upgrade` or `winget upgrade --all`
 
