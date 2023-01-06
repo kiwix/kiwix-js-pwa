@@ -1329,6 +1329,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             params.hideActiveContentWarning = this.checked ? true : false;
             settingsStore.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
         });
+        document.getElementById('debugLibzimASMDrop').addEventListener('change', function (event) {
+            params.debugLibzimASM = event.target.value || false;
+            settingsStore.setItem('debugLibzimASM', params.debugLibzimASM, Infinity);
+        })
         $('input:checkbox[name=openExternalLinksInNewTabs]').on('change', function () {
             params.openExternalLinksInNewTabs = this.checked ? true : false;
             settingsStore.setItem('openExternalLinksInNewTabs', params.openExternalLinksInNewTabs, Infinity);
@@ -3382,6 +3386,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                                     });
                                 }
                             }
+                            if (!selectedFileSet.length) {
+                                reject('The requested archive is not in the archive folder ' + folder + '!');
+                            }
+                        } else {
+                            reject('The requested archive does not appear to be a ZIM file!');
                         }
                     } else {
                         // Folder was empty...

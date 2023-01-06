@@ -129,7 +129,7 @@ params.pagesLoaded = 0; // Page counter used to show PWA Install Prompt only aft
 params.localUWPSettings = /UWP/.test(params.appType) ? Windows.Storage.ApplicationData.current.localSettings.values : null;
 appstate['target'] = 'iframe'; // The target for article loads (this should always be 'iframe' initially, and will only be changed as a result of user action)
 params['mapsURI'] = getSetting('mapsURI') || (/UWP|Windows/.test(params.appType) ? 'bingmaps:' : 'https://www.openstreetmap.org/'); // Protocol with colon ('bingmaps:') or URL with final slash ('https://www.openstreetmap.org/')
-params['debugLibzimASM'] = null; // 'wasm|asm' Forces use of wasm or asm for libzim decoder. You can also set this as an override URL querystring e.g. ?debugLibzimASM=wasm;
+params['debugLibzimASM'] = getSetting('degugLibzimASM'); // 'wasm|asm' Forces use of wasm or asm for libzim decoder. You can also set this as an override URL querystring e.g. ?debugLibzimASM=wasm;
 
 // Apply any override parameters in querystring (done as a self-calling function to avoid creating global variables)
 (function overrideParams() {
@@ -246,6 +246,7 @@ document.getElementById('hideToolbarsCheck').indeterminate = params.hideToolbars
 document.getElementById('hideToolbarsCheck').readOnly = params.hideToolbars === "top";
 document.getElementById('hideToolbarsState').innerHTML = (params.hideToolbars === "top" ? "top" : params.hideToolbars ? "both" : "never");
 document.getElementById('openExternalLinksInNewTabsCheck').checked = params.openExternalLinksInNewTabs;
+document.getElementById('debugLibzimASMDrop').value = params.debugLibzimASM || '';
 if (params.windowOpener === null) { // Setting has never been activated, so determine a sensible default
     params.windowOpener = /UWP/.test(params.appType) && params.contentInjectionMode === 'jquery' ? false : 
     'MSBlobBuilder' in window ? 'window' : // IE11/Edge/UWP work best in window mode, not in tab mode!

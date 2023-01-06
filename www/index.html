@@ -1086,6 +1086,13 @@
                                         <span class="checkmark"></span>
                                         <b>Permanently hide active content warning</b> (for experienced users)
                                     </label>
+                                    <b>Force use of libzim W/ASM for reading full-text index:</b>
+                                    <select name="debugLibzimASM" id="debugLibzimASMDrop">
+                                        <option value="">Default</option>
+                                        <option value="wasm">WASM</option>
+                                        <option value="asm">ASM</option>
+                                    </select>
+                                    <p><i>Warning! Disables OS checks and may stop app from working!</i></p>
                                     <label id="bypassAppCacheDiv" class="checkbox" title="WARNING: Leaving this checked will prevent offline usage of the PWA. Setting will clear all existing Cache API caches, but assetsCache will be used unless also disabled above. For testing new code with the PWA.">
                                         <input type="checkbox" name="bypassAppCache" id="bypassAppCacheCheck">
                                         <span class="checkmark"></span>
