@@ -129,7 +129,7 @@ params.pagesLoaded = 0; // Page counter used to show PWA Install Prompt only aft
 params.localUWPSettings = /UWP/.test(params.appType) ? Windows.Storage.ApplicationData.current.localSettings.values : null;
 appstate['target'] = 'iframe'; // The target for article loads (this should always be 'iframe' initially, and will only be changed as a result of user action)
 params['mapsURI'] = getSetting('mapsURI') || (/UWP|Windows/.test(params.appType) ? 'bingmaps:' : 'https://www.openstreetmap.org/'); // Protocol with colon ('bingmaps:') or URL with final slash ('https://www.openstreetmap.org/')
-params['debugLibzimASM'] = getSetting('degugLibzimASM'); // 'wasm|asm' Forces use of wasm or asm for libzim decoder. You can also set this as an override URL querystring e.g. ?debugLibzimASM=wasm;
+params['debugLibzimASM'] = getSetting('debugLibzimASM'); // 'wasm|asm' Forces use of wasm or asm for libzim decoder. You can also set this as an override URL querystring e.g. ?debugLibzimASM=wasm;
 
 // Apply any override parameters in querystring (done as a self-calling function to avoid creating global variables)
 (function overrideParams() {
