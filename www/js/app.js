@@ -1331,8 +1331,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         });
         document.getElementById('debugLibzimASMDrop').addEventListener('change', function (event) {
             var that = this;
-            uiUtil.systemAlert('App will reload to apply the new setting',
-                'Attention!', true).then(function (confirm) {
+            var message = '<p>App will reload to apply the new setting.</p>'
+            if (event.target.value) message += '<p><i>Please be aware that leaving this override setting on can have anomalous effects, ' + 
+                'e.g. the app will no longer detect whether an archive has a full-text index before attempting to launch a search.</i></p>'
+            uiUtil.systemAlert(message,
+                'Developer option!', true).then(function (confirm) {
                 if (confirm) {
                     params.debugLibzimASM = event.target.value || false;
                     settingsStore.setItem('debugLibzimASM', params.debugLibzimASM, Infinity);
