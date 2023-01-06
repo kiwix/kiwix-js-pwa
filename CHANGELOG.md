@@ -1,10 +1,12 @@
 # Changelog
 
-## Release 2.2.82
+## In-progess release 2.2.83
 
 * BUGFIX: Fix libzim loading error in Electron app with large ZIM archives due to race condition
 * FIX: Prevent Electron app from rebooting on every load to reactivate the Service Worker
 * FIX: Add BOM to new JS files to conform to Microsoft Store requirements
+* FIX: Exception caused by site.js script included in Wikimedia archives
+* DEV: Added developer option to force use of libzim W/ASM decoding of full-text index
 
 ## Release 2.2.8
 
