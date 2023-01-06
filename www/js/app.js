@@ -1330,8 +1330,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             settingsStore.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
         });
         document.getElementById('debugLibzimASMDrop').addEventListener('change', function (event) {
-            params.debugLibzimASM = event.target.value || false;
-            settingsStore.setItem('debugLibzimASM', params.debugLibzimASM, Infinity);
+            var that = this;
+            uiUtil.systemAlert('App will reload to apply the new setting',
+                'Attention!', true).then(function (confirm) {
+                if (confirm) {
+                    params.debugLibzimASM = event.target.value || false;
+                    settingsStore.setItem('debugLibzimASM', params.debugLibzimASM, Infinity);
+                    window.location.reload();
+                } else {
+                    that.value = params.debugLibzimASM || '';
+                }
+            });
         })
         $('input:checkbox[name=openExternalLinksInNewTabs]').on('change', function () {
             params.openExternalLinksInNewTabs = this.checked ? true : false;
