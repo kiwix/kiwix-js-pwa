@@ -1333,7 +1333,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             var that = this;
             var message = '<p>App will reload to apply the new setting.</p>'
             if (event.target.value) message += '<p><i>Please be aware that leaving this override setting on can have anomalous effects, ' + 
-                'e.g. the app will no longer detect whether an archive has a full-text index before attempting to launch a search.</i></p>'
+                'e.g. the app will no longer check whether the OS supports full-text searching and searches may fail silently.</i></p>'
             uiUtil.systemAlert(message,
                 'Developer option!', true).then(function (confirm) {
                 if (confirm) {
