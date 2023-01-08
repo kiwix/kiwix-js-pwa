@@ -863,7 +863,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 }
             }
             // Check for upgrade of PWA
-            if (!params.upgradeNeeded && /^(?!.*Electron).*PWA/.test(params.appType) && activeBtn === 'btnConfigure') {
+            if (activeBtn === 'btnConfigure') checkPWAUpdate();
+            // Resize iframe
+            setTimeout(resizeIFrame, 100);
+        }
+
+        // Check if a PWA update is available
+        function checkPWAUpdate() {
+            if (!params.upgradeNeeded && /^(?!.*Electron).*PWA/.test(params.appType)) {
                 caches.keys().then(function (keyList) {
                     var cachePrefix = cache.APPCACHE.replace(/^([^\d]+).+/, '$1');
                     document.getElementById('alertBoxPersistent').innerHTML = '';
@@ -874,6 +881,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         // If we get here, then there is a kiwix cache key that does not match our version, i.e. a PWA-in-waiting
                         var version = key.replace(cachePrefix, '');
                         var loadOrInstall = params.PWAInstalled ? 'install' : 'load';
+                        params.upgradeNeeded = true;
                         uiUtil.showUpgradeReady(version, loadOrInstall);
                     });
                 });
@@ -881,7 +889,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 var upgradeAlert = document.getElementById('upgradeAlert');
                 if (upgradeAlert) upgradeAlert.style.display = 'block';
             }
-            setTimeout(resizeIFrame, 100);
         }
 
         // Electron callback listener if an update is found by main.js
@@ -897,11 +904,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         params.isUWPStoreApp = /UWP/.test(params.appType) && Windows.ApplicationModel && Windows.ApplicationModel.Package &&
             !/Association.Kiwix/.test(Windows.ApplicationModel.Package.current.id.publisher);
         // If Internet access is allowed, or it's a UWP Store app, or it's a PWA that is not Electron/NWJS ...
-        if (params.allowInternetAccess || params.isUWPStoreApp || /^(?!.*(Electron|UWP)).*PWA/.test(params.appType))
+        if (params.allowInternetAccess || params.isUWPStoreApp || /^(?!.*(Electron|UWP)).*PWA/.test(params.appType)) {
             updateCheck.style.display = 'none'; // ... hide the update check link
+        }
+        // Function to check for updates from GitHub
         function checkUpdateServer() {
             if (!params.allowInternetAccess) {
-                console.log("The update check was blocked because the user has not allowed Internet access.")
+                console.log('The update check was blocked because the user has not allowed Internet access.')
                 return;
             }
             // If it's a PWA that is not also an Electron/NWJS or UWP app, don't check for updates
@@ -936,8 +945,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 }
             }
         }
-        // Do check on startup
-        setTimeout(checkUpdateServer, 15000);
+
+        // Do update checks 10s after startup
+        setTimeout(function () {
+            console.log('Checking for updates to the PWA...');
+            checkPWAUpdate();
+            checkUpdateServer();
+        }, 10000);
 
         function setActiveBtn(activeBtn) {
             document.getElementById('btnHome').classList.remove("active");
@@ -1951,14 +1965,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
             if (settingsStore.getItem('appVersion') !== params.appVersion) {
                 firstRun = true;
-                
-                // If we have an update and the last selected archive is the packaged file, it is best not to preserve last read article
-                // var packagedFileStub = params.packagedFile.replace(/_[\d-]+\.zim\w?\w?$/, '');
-                // if (~params.storedFile.indexOf(packagedFileStub)) {
-                //     params.lastPageVisit = '';
-                //     params.storedFile = params.packagedFile;
-                // } // THIS IS NOW DONE IN init.js
-
                 //  Update the installed version
                 if (settingsStore.getItem('PWAInstalled')) {
                     params.PWAInstalled = params.appVersion;

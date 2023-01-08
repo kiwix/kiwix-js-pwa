@@ -683,7 +683,6 @@ define(rqDef, function(util) {
      * @param {String} url An optional download URL
      */
     function showUpgradeReady(ver, type, url) {
-        params.upgradeNeeded = true;
         document.getElementById('alertBoxPersistent').innerHTML =
             '<div id="upgradeAlert" class="alert alert-info alert-dismissible">\n' +
             '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
