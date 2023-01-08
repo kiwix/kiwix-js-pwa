@@ -909,8 +909,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         }
         // Function to check for updates from GitHub
         function checkUpdateServer() {
-            if (!params.allowInternetAccess) {
-                console.log('The update check was blocked because the user has not allowed Internet access.')
+            if (!params.allowInternetAccess || params.upgradeNeeded) {
+                console.log('The GitHub update check was blocked because ' + (params.upgradeNeeded ? 'a PWA upgrade is needed.' : 'the user has not allowed Internet access.'));
                 return;
             }
             // If it's a PWA that is not also an Electron/NWJS or UWP app, don't check for updates
