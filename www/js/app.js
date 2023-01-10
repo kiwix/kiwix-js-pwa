@@ -2431,6 +2431,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 } else if (!params.storedFile) {
                     // If there is no last selected archive, we need to use the .fs code anyway
                     params.pickedFile = params.packagedFile;
+                } else if (params.storedFilePath) {
+                    // We're in an Electron / NWJS app, and there is a stored file, but it's not the packaged archive! Probably there is more
+                    // than one archive in the archive folder, so we are forced to use .fs code
+                    console.warn("There may be more than one archive in the directory " + params.storedFilePath.replace(/[^\/]+$/, ''));
+                    params.pickedFile = params.storedFile;
                 }
             }
             if (!params.pickedFile) {
@@ -3404,7 +3409,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                                     });
                                 }
                             }
-                            if (!selectedFileSet.length) {
+                            if (!selectedFileNamesSet.length) {
                                 reject('The requested archive is not in the archive folder ' + folder + '!');
                             }
                         } else {
