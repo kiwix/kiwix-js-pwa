@@ -133,11 +133,15 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
                         <ul style="padding-left: 15px;">
+                            <li>Packaged archive updated to wikivoyage_en_all_maxi_2022-12</li>
+                            <li>Run full-text and title search in parallel for faster return of results</li>
                             <li>Fix libzim loading error in Electron app with large ZIM archives due to race condition</li>
                             <li>Prevent Electron app from rebooting on every load to reactivate the Service Worker</li>
                             <li>Add BOM to new JS files to conform to Microsoft Store requirements</li>
                             <li>Fix exception caused by site.js script included in Wikimedia archives</li>
                             <li>Added developer option to force use of libzim W/ASM decoding of full-text index</li>
+                            <li>Critical startup bug which prevented opening of some packaged archives</li>
+                            <li>When dark mode is set to auto, do not use darkReader for Wikimedia ZIMs</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/Kiwix-JS-Wikivoyage/CHANGELOG.md" target="_blank">And there's more! ...<img src="I/s/Icon_External_Link.png"></a></p>
                     </div>

@@ -1,7 +1,8 @@
 # Changelog
 
-## In-progess release 2.2.83
+## Release 2.2.90-Wikivoyage
 
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2022-12`
 * ENHANCEMENT: Run full-text and title search in parallel for faster return of results
 * BUGFIX: Fix libzim loading error in Electron app with large ZIM archives due to race condition
 * FIX: Prevent Electron app from rebooting on every load to reactivate the Service Worker
