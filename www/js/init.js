@@ -21,7 +21,6 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
-console.debug('Reboot...');
 
 // Set a global error handler to prevent app crashes
 window.onerror = function (msg, url, line, col, error) {
@@ -200,7 +199,9 @@ if (/UWP/.test(params.appType)) {
 }
 
 // Prevent app boot loop with problematic pages that cause an app crash
+console.debug('lastPageLoad: ' + getSetting('lastPageLoad'));
 if (getSetting('lastPageLoad') === 'failed') {
+    console.error('Removing params.lastPageVisit because lastPageLoad failed!');
     params.lastPageVisit = '';
 } else {
     // Cookie will signal failure until article is fully loaded

@@ -2119,7 +2119,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 } else if (keepAliveServiceWorkerHandle) {
                     console.error('The Service Worker is active but is not controlling the current page! We have to reload.');
                     // Turn off failsafe, as this is a controlled reboot
-                    settingsStore.setItem('lastPageLoad', '');
+                    settingsStore.setItem('lastPageLoad', 'rebooting', Infinity);
                     window.location.reload();
                 } else {
                     // If this is the first time we are initiating the SW, allow Promises to complete by delaying potential reload till next tick
@@ -2431,6 +2431,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 } else if (!params.storedFile) {
                     // If there is no last selected archive, we need to use the .fs code anyway
                     params.pickedFile = params.packagedFile;
+                } else if (params.storedFilePath) {
+                    // We're in an Electron / NWJS app, and there is a stored file, but it's not the packaged archive! Probably there is more
+                    // than one archive in the archive folder, so we are forced to use .fs code
+                    console.warn("There may be more than one archive in the directory " + params.storedFilePath.replace(/[^\/]+$/, ''));
+                    params.pickedFile = params.storedFile;
                 }
             }
             if (!params.pickedFile) {
@@ -3404,7 +3409,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                                     });
                                 }
                             }
-                            if (!selectedFileSet.length) {
+                            if (!selectedFileNamesSet.length) {
                                 reject('The requested archive is not in the archive folder ' + folder + '!');
                             }
                         } else {
@@ -3809,12 +3814,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 //TESTING//
                 console.log('Initiating ' + mimeType  + ' load of ' + dirEntry.namespace + '/' + dirEntry.url + "...");
                 
-                //Set startup cookie to guard against boot loop
-                //Cookie will signal failure until article is fully loaded
-                //document.cookie = 'lastPageLoad=failed;expires=Fri, 31 Dec 9999 23:59:59 GMT';
-                settingsStore.setItem('lastPageLoad', 'failed', Infinity);
-
-                //Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
+                // Set startup parameter to guard against boot loop
+                if (settingsStore.getItem('lastPageLoad') !== 'rebooting') settingsStore.setItem('lastPageLoad', 'failed', Infinity);
+                // Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
                 localSearch = {};
                 // Calculate the current article's ZIM baseUrl to use when processing relative links
                 params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
@@ -3980,7 +3982,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     if (appstate.target === 'iframe') articleContainer.style.display = 'block';
                     docBody.style.display = 'block';
                 }, 30);
-                settingsStore.removeItem('lastPageLoad');
+                // Turn off failsafe for SW mode
+                settingsStore.setItem('lastPageLoad', 'OK', Infinity);
                 uiUtil.clearSpinner();
                 // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
                 if (params.printIntercept) printIntercept();
@@ -4887,9 +4890,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     }
                     // Trap any clicks on the iframe to detect if mouse back or forward buttons have been pressed (Chromium does this natively)
                     if (/UWP/.test(params.appType)) docBody.addEventListener('pointerup', onPointerUp);
-                    // Document has loaded except for images, so we can now change the startup cookie (and delete) [see init.js]
-                    // document.cookie = 'lastPageLoad=success;expires=Thu, 21 Sep 1979 00:00:01 UTC';
-                    settingsStore.removeItem('lastPageLoad');
+                    // Document has loaded except for images, so we can now change the startup failsafe [see init.js]
+                    settingsStore.setItem('lastPageLoad', 'OK', Infinity);
 
                     // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
                     if (params.printIntercept) printIntercept();
