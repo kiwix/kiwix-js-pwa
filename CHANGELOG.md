@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progess release 2.2.83
+## In-progess release 2.2.90
 
 * BUGFIX: Fix libzim loading error in Electron app with large ZIM archives due to race condition
 * FIX: Prevent Electron app from rebooting on every load to reactivate the Service Worker
