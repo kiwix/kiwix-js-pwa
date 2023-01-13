@@ -2422,7 +2422,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         if (storages !== null && storages.length > 0 ||
             typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined' ||
             typeof window.fs !== 'undefined' || typeof window.showOpenFilePicker !== 'undefined') {
-            if (!params.pickedFile && window.fs) {
+            if (window.fs && !(params.pickedFile || params.pickedFolder)) {
                 // Below we compare the prefix of the files, i.e. the generic filename without date, so we can smoothly deal with upgrades
                 if (params.packagedFile && params.storedFile.replace(/(^[^-]+all).+/, '$1') === params.packagedFile.replace(/(^[^-]+all).+/, '$1')) {
                     // We're in Electron / NWJS and we need to load the packaged app, so we are forced to use the .fs code
@@ -2431,9 +2431,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 } else if (!params.storedFile) {
                     // If there is no last selected archive, we need to use the .fs code anyway
                     params.pickedFile = params.packagedFile;
-                } else if (params.storedFilePath) {
-                    // We're in an Electron / NWJS app, and there is a stored file, but it's not the packaged archive! Probably there is more
-                    // than one archive in the archive folder, so we are forced to use .fs code
+                } else if (/^archives\//.test(params.storedFilePath)) {
+                    // We're in an Electron / NWJS app, and there is a stored file in the archive, but it's not the packaged archive!
+                    // Probably there is more than one archive in the archive folder, so we are forced to use .fs code
                     console.warn("There may be more than one archive in the directory " + params.storedFilePath.replace(/[^\/]+$/, ''));
                     params.pickedFile = params.storedFile;
                 }
