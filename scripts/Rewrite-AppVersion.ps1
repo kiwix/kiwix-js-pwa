@@ -30,7 +30,9 @@ if ($INPUT_VERSION) {
         if ($CRON_LAUNCHED) {
             $COMMIT_ID = $(git rev-parse --short HEAD)
             $VERSION = "v$app_tag-$COMMIT_ID"
-        }   
+        }
+        # Ensure $INPUT_VERSION will be set in the Environment for the next script or shell
+        echo "INPUT_VERSION=$VERSION" | Out-File $Env:GITHUB_ENV -Encoding utf8 -Append
     } else {
         "`nCould not construct a valid nightly version number."
     }
