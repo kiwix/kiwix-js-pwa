@@ -45,19 +45,22 @@
         {
           "target": "AppImage",
           "arch": [
-            "x64"
+            "x64",
+            "ia32"
           ]
         },
         {
           "target": "deb",
           "arch": [
-            "x64"
+            "x64",
+            "ia32"
           ]
         },
         {
           "target": "rpm",
           "arch": [
-            "x64"
+            "x64",
+            "ia32"
           ]
         }
       ],
@@ -105,7 +108,7 @@
   "maintainer": "Jaifroid",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^19.0.4",
+    "electron": "18.3.15",
     "electron-builder": "^23.6.0",
     "electron-packager": "^16.0.0"
   },
