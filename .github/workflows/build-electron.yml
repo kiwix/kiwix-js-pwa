@@ -33,7 +33,7 @@ jobs:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
     - name: Install dependencies
-      run: npm install
+      run: npm install --save-dev
     - name: Rewrite app version number and file name
       run: |
         chmod +x ./scripts/rewrite_app_version_number.sh
@@ -58,9 +58,16 @@ jobs:
           echo -e "\nError! We could not obtain the requested archive $packagedFile!\n"
           exit 1
         fi
-    - name: Publish
+    - name: Build and publish 64bit
+      run: npm run publish
+    - name: Build and pulblish 32bit
       run: |
+        mv package.json package.json.64b
+        mv package.json.32b package.json
+        npm install --save-dev
         npm run publish
+    - name: Upload packages to Kiwix
+      run: |
         echo "$SSH_KEY" > ./scripts/ssh_key
         chmod 600 ./scripts/ssh_key
         chmod +x ./scripts/publish_linux_packages_to_kiwix.sh
