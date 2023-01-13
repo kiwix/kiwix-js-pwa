@@ -53,6 +53,12 @@
           "arch": [
             "ia32"
           ]
+        },
+        {
+          "target": "rpm",
+          "arch": [
+            "ia32"
+          ]
         }
       ],
       "category": "Education"
