@@ -785,7 +785,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             } else {
                 cssUIThemeGetOrSet(determinedTheme);
             }
-            if (typeof Windows !== 'undefined' || typeof window.showOpenFilePicker !== 'undefined') {
+            if (typeof Windows !== 'undefined' || typeof window.showOpenFilePicker === 'function') {
                 document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
             }
             document.getElementById('libraryArea').style.borderColor = '';
@@ -1004,8 +1004,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
                 params.pickedFolder = params.localStorage;
             }
-            if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker === 'undefined') {
-                //If not UWP, display legacy File Select
+            if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !dialog.openFile) {
+                //If not UWP, File System Access API, or Electron methods, display legacy File Select
                 document.getElementById('archiveFile').style.display = 'none';
                 document.getElementById('archiveFiles').style.display = 'none';
                 document.getElementById('UWPInstructions').style.display = 'none';
@@ -1017,7 +1017,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             }
             document.getElementById('chooseArchiveFromLocalStorage').style.display = "block";
             // If user had previously picked a file using Native FS, offer to re-open
-            if (typeof window.showOpenFilePicker !== 'undefined' && !(params.pickedFile || params.pickedFolder)) {
+            if (typeof window.showOpenFilePicker === 'function' && !(params.pickedFile || params.pickedFolder)) {
                 getNativeFSHandle();
             }
         });
@@ -1148,7 +1148,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 //UWP FilePicker
                 pickFileUWP();
-            } else if (typeof window.showOpenFilePicker !== 'undefined') {
+            } else if (typeof window.showOpenFilePicker === 'function') {
                 // Native File System API file picker
                 pickFileNativeFS();
             } else if (window.fs && window.dialog) {
@@ -1160,7 +1160,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 //UWP FolderPicker
                 pickFolderUWP();
-            } else if (typeof window.showOpenFilePicker !== 'undefined') {
+            } else if (typeof window.showOpenFilePicker === 'function') {
                 // Native File System API folder picker
                 pickFolderNativeFS();
             } else if (window.fs && window.dialog) {
@@ -1179,7 +1179,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 } else if (window.fs) {
                     scanNodeFolderforArchives(params.pickedFolder);
                 }
-            } else if (typeof window.showOpenFilePicker !== 'undefined' && !params.pickedFile) {
+            } else if (typeof window.showOpenFilePicker === 'function' && !params.pickedFile) {
                 getNativeFSHandle(function (fsHandle) {
                     if (fsHandle && fsHandle.kind === 'directory') {
                         processNativeDirHandle(fsHandle);
@@ -2421,8 +2421,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         }
         if (storages !== null && storages.length > 0 ||
             typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined' ||
-            typeof window.fs !== 'undefined' || typeof window.showOpenFilePicker !== 'undefined') {
-            if (!params.pickedFile && window.fs) {
+            typeof window.fs !== 'undefined' || typeof window.showOpenFilePicker === 'function') {
+            if (window.fs && !(params.pickedFile || params.pickedFolder)) {
                 // Below we compare the prefix of the files, i.e. the generic filename without date, so we can smoothly deal with upgrades
                 if (params.packagedFile && params.storedFile.replace(/(^[^-]+all).+/, '$1') === params.packagedFile.replace(/(^[^-]+all).+/, '$1')) {
                     // We're in Electron / NWJS and we need to load the packaged app, so we are forced to use the .fs code
@@ -2431,9 +2431,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 } else if (!params.storedFile) {
                     // If there is no last selected archive, we need to use the .fs code anyway
                     params.pickedFile = params.packagedFile;
-                } else if (params.storedFilePath) {
-                    // We're in an Electron / NWJS app, and there is a stored file, but it's not the packaged archive! Probably there is more
-                    // than one archive in the archive folder, so we are forced to use .fs code
+                } else if (/\/archives\//.test(params.storedFilePath) && ~params.storedFilePath.indexOf(params.storedFile)) {
+                    // We're in an Electron / NWJS app, and there is a stored file in the archive, but it's not the packaged archive!
+                    // Probably there is more than one archive in the archive folder, so we are forced to use .fs code
                     console.warn("There may be more than one archive in the directory " + params.storedFilePath.replace(/[^\/]+$/, ''));
                     params.pickedFile = params.storedFile;
                 }
@@ -2807,7 +2807,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                                     uiUtil.systemAlert("The previously picked archive can no longer be found!");
                                     console.error("Picked archive not found: " + err);
                                 }
-                            } else if (params.pickedFile && typeof window.showOpenFilePicker !== 'undefined') {
+                            } else if (params.pickedFile && typeof window.showOpenFilePicker === 'function') {
                                 // Native FS API for single file
                                 setLocalArchiveFromFileList([params.pickedFile]);
                                 return;
@@ -3296,6 +3296,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             // Reset params.packagedFile to its original value, in case we manipulated it previously
             params.packagedFile = params.originalPackagedFile;
             params.pickedFile = '';
+            settingsStore.removeItem('pickedFolder');
             if (params.localStorage) {
                 params.pickedFolder = params.localStorage;
                 params.storedFile = params.packagedFile || '';
@@ -3313,6 +3314,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         var fileObjects = fileset[0], fileNames = fileset[1];
                         // params.pickedFile = params.packagedFile;
                         params.pickedFolder = params.archivePath;
+                        settingsStore.setItem('pickedFolder', params.pickedFolder, Infinity);
                         params.storedFile = params.packagedFile;
                         setLocalArchiveFromFileList(fileObjects);
                         populateDropDownListOfArchives(fileNames, true);

@@ -325,7 +325,7 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
     }
 }
 
-if (!params.pickedFolder && typeof window.showOpenFilePicker === 'undefined' && !/UWP/.test(params.appType)) {
+if (!params.pickedFolder && typeof window.showOpenFilePicker !== 'function' && !/UWP/.test(params.appType)) {
     params.pickedFolder = getSetting('pickedFolder') || '';
     if (!params.pickedFolder && !params.pickedFile) {
         params.pickedFile = params.storedFilePath || '';
