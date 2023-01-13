@@ -2431,7 +2431,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 } else if (!params.storedFile) {
                     // If there is no last selected archive, we need to use the .fs code anyway
                     params.pickedFile = params.packagedFile;
-                } else if (/^archives\//.test(params.storedFilePath)) {
+                } else if (/^archives\//.test(params.storedFilePath) && ~params.storedFilePath.indexOf(params.storedFile)) {
                     // We're in an Electron / NWJS app, and there is a stored file in the archive, but it's not the packaged archive!
                     // Probably there is more than one archive in the archive folder, so we are forced to use .fs code
                     console.warn("There may be more than one archive in the directory " + params.storedFilePath.replace(/[^\/]+$/, ''));
