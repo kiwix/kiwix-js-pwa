@@ -11,7 +11,8 @@
 * FIX: Exception caused by site.js script included in Wikimedia archives
 * FIX: Failure to load last-visited article in Electron app
 * FIX: Electron file and folder picking methods
-* FIX: Build 64bit and 32bit packages separately to avoid race condition in electron-builder
+* BUILD: Build 64bit and 32bit packages separately to avoid race condition in electron-builder
+* BUILD: All Electron apps other than 32bit Linux are now built with latest Electron
 
 ## Release 2.2.8
 
