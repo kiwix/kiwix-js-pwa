@@ -59,13 +59,13 @@ jobs:
           exit 1
         fi
     - name: Build and publish 64bit
-      run: npm run publish
+      run: npx electron-builder --x64
     - name: Build and pulblish 32bit
       run: |
-        mv package.json package.json.64b
-        mv package.json.32b package.json
+        echo "Changing Electron version to latest that supports 32bit Linux (18.3.15)"
+        sed -i -E 's/("electron":\s")[^"]+/\118.3.15/' ./package.json
         npm install --save-dev
-        npm run publish
+        npx electron-builder --ia32
     - name: Upload packages to Kiwix
       run: |
         echo "$SSH_KEY" > ./scripts/ssh_key
