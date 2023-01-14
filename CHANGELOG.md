@@ -1,12 +1,17 @@
 # Changelog
 
-## In-progess release 2.2.90
+## In-progess release 2.3.0
 
-* BUGFIX: Fix libzim loading error in Electron app with large ZIM archives due to race condition
-* FIX: Prevent Electron app from rebooting on every load to reactivate the Service Worker
+* ENHANCEMENT: Check for update to PWA and notify user shortly after startup of the app
+* DEV: Added developer option to force use of libzim W/ASM decoding of full-text index
+* UPDATE: Sample archive changed to `wikipedia_en_100_mini_2022-12`
+* FIX: Libzim loading error in Electron app with large ZIM archives due to race condition
+* FIX: Prevent race condition between reactivation of Service Worker and loading of NODEFS
 * FIX: Add BOM to new JS files to conform to Microsoft Store requirements
 * FIX: Exception caused by site.js script included in Wikimedia archives
-* DEV: Added developer option to force use of libzim W/ASM decoding of full-text index
+* FIX: Failure to load last-visited article in Electron app
+* FIX: Electron file and folder picking methods
+* FIX: Build 64bit and 32bit packages separately to avoid race condition in electron-builder
 
 ## Release 2.2.8
 

@@ -123,11 +123,16 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
                         <ul style="padding-left: 15px;">
+                            <li>Check for update to PWA and notify user shortly after startup of the app</li>
+                            <li>Added developer option to force use of libzim W/ASM decoding of full-text index</li>
+                            <li>Sample archive changed to wikipedia_en_100_mini_2022-12</li>
                             <li>Fix libzim loading error in Electron app with large ZIM archives due to race condition</li>
-                            <li>Prevent Electron app from rebooting on every load to reactivate the Service Worker</li>
+                            <li>Prevent race condition between reactivation of Service Worker and loading of NODEFS</li>
                             <li>Add BOM to new JS files to conform to Microsoft Store requirements</li>
                             <li>Fix exception caused by site.js script included in Wikimedia archives</li>
-                            <li>Added developer option to force use of libzim W/ASM decoding of full-text index</li>
+                            <li>Fix failure to load last-visited article in Electron app</li>
+                            <li>Fix Electron file and folder picking methods</li>
+                            <li>Build 64bit and 32bit packages separately to avoid race condition in electron-builder</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                     </div>
