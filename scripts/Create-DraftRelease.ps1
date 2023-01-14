@@ -348,8 +348,8 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       if ($buildstorerelease) {
       "`n** App manifest is correctly associated with the MS Store..."
       } else {
-        "`n**WARNING: The app manifest is not correct for building an app for release on GitHub! Please associate the app with 'Association Kiwix' in Visual Studio and try again"
-        "or else run this script with the flag -buildstorerelease`n"
+        "`n**WARNING: The app manifest needs to be modified for release of the app on GitHub!"
+        "If you want to build for the MS Store, exit and re-run this script with the flag -buildstorerelease`n"
         $rename_check = Read-Host "Would you like to set the app for a GitHub release? [Y/N]"
         $rename_check = -Not ( $rename_check -imatch 'n' )
         if ($rename_check -and (-not $dryrun)) {
@@ -487,6 +487,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       }
     }
     if ($rename_check -and (-not $dryrun)) {
+      "Reverting changes to UWP manifests..."
       mv $PSScriptRoot/../KiwixWebApp$projstub.jsproj $PSScriptRoot/../KiwixWebApp$projstub-github.jsproj
       mv $PSScriptRoot/../package.appxmanifest $PSScriptRoot/../package-github.appxmanifest
       mv $PSScriptRoot/../KiwixWebApp$projstub-msstore.jsproj $PSScriptRoot/../KiwixWebApp$projstub.jsproj
