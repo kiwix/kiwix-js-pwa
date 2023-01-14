@@ -622,7 +622,22 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   "`nDone.`n"
   if ($original_release_tag_name) {
     "*** WARNING: The Release Tag Name was changed to enable Electron cloud building! ***"
-    "Be sure to change it back to $original_release_tag_name before publishing!`n"
+    if ($wingetprompt -imatch 'N') {
+      "Be sure to change it back to $original_release_tag_name before publishing!`n"
+    } else {
+      $revert_release_tag_check = Read-Host "Would you like to revert the draft tag to ${original_release_tag_name}?`nWARNING WAIT TILL ALL BUILDS HAVE FINISHED BEFORE ANSWERING Yes! (Y/N)"
+      $revert_release_tag_check = $revert_release_tag_check -imatch 'y'
+      if ($revert_release_tag_check) {
+        "Changing tag from $release_tag_name to $original_release_tag_name..."
+        if (-not $dryrun) {
+          & $PSScriptRoot/Rewrite-DraftReleaseTag -from $release_tag_name -to $original_release_tag_name
+        } else {
+          & $PSScriptRoot/Rewrite-DraftReleaseTag -dryrun -from $release_tag_name -to $original_release_tag_name
+        }
+      } else {
+        "We did NOT change the release tag! Be sure to do it before publishing!"
+      }
+    }
     $release_tag_name = $original_release_tag_name
   }
   # Now update winget manifest if we are not building NWJS or Electron
@@ -633,7 +648,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       $wingetcreate_check = Read-Host "Would you like to update the WinGet repository with these new builds?`nWARNING: be sure you have published the draft release (if in doubt answer N)! [Y/N]"
     }
     $wingetcreate_check = $wingetcreate_check -imatch 'y'
-    if ($original_release_tag_name -and (-not $wingetprompt)) {
+    if ($original_release_tag_name -and (-not $wingetprompt) -and (-not $revert_release_tag_check)) {
       $check = Read-Host "Did you change the Release Tag Name? (Y/N)"
       if ($check -imatch 'N') {
         "You must change the Tag name!"
