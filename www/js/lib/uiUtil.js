@@ -331,7 +331,7 @@ define(rqDef, function(util) {
     function displayActiveContentWarning(type) {
         // We have to add the alert box in code, because Bootstrap removes it completely from the DOM when the user dismisses it
         var alertHTML = '';
-        if (params.contentInjectionModeMode === 'jquery' && type === 'open') {
+        if (params.contentInjectionMode === 'jquery' && type === 'open') {
             alertHTML = '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
                 '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
             '<strong>Unable to display active content:</strong> To use <b>Archive Index</b> type a <b><i>space</i></b>, or for <b>URL Index</b> type ' +
