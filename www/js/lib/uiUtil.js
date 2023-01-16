@@ -326,22 +326,30 @@ define(rqDef, function(util) {
 
     /**
      * Displays a Bootstrap warning alert with information about how to access content in a ZIM with unsupported active UI
-     * @param {String} type The ZIM archive type ('open' or 'zimit')
+     * @param {String} type The ZIM archive type ('open', 'zimit', or 'legacy')
      */
     function displayActiveContentWarning(type) {
         // We have to add the alert box in code, because Bootstrap removes it completely from the DOM when the user dismisses it
-        var alertHTML =
-            '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
+        var alertHTML = '';
+        if (params.contentInjectionModeMode === 'jquery' && type === 'open') {
+            alertHTML = '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
                 '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
             '<strong>Unable to display active content:</strong> To use <b>Archive Index</b> type a <b><i>space</i></b>, or for <b>URL Index</b> type ' +
                 '<b><i>space / </i></b>, or else <a id="swModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to Service Worker mode</a> ' +
                 'if your platform supports it. &nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
-        if (params.contentInjectionMode === 'serviceworker' && (params.manipulateImages || params.displayHiddenBlockElements || params.allowHTMLExtraction)) {
+        } else if (params.contentInjectionMode === 'serviceworker' && type === 'legacy') {
+            alertHTML = '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
+                '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
+            '<strong>Legacy ZIM type!</strong> To display content correctly from this historical ZIM, ' +
+                'please <a id="jqModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to the legacy JQuery mode</a>. ' +
+                'You may need to increase font size with zoom buttons at bottom of screen.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
+            '</div>';
+        } else if (params.contentInjectionMode === 'serviceworker' && (params.manipulateImages || params.displayHiddenBlockElements || params.allowHTMLExtraction)) {
             alertHTML =
             '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
                 '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
-                '<strong>Active content may be disrupted:</strong> Please ' + (params.displayHiddenBlockElements ? 
+                '<strong>Active content may not work correctly:</strong> Please ' + (params.displayHiddenBlockElements ? 
                 '<a id="hbeModeLink" href="#displayHiddenBlockElementsDiv" class="alert-link">disable Display hidden block elements</a> ' :
                 params.manipulateImages ? '<a id="imModeLink" href="#imageManipulationDiv" class="alert-link">disable Image manipulation</a> ' : '') + 
                 (params.allowHTMLExtraction ? (params.displayHiddenBlockElements || params.manipulateImages ? 'and ' : '') + 
@@ -365,13 +373,14 @@ define(rqDef, function(util) {
         var alertBoxHeader = document.getElementById('alertBoxHeader');
         alertBoxHeader.innerHTML = alertHTML;
         alertBoxHeader.style.display = 'block';
-        ['swModeLink', 'imModeLink', 'hbeModeLink', 'stop'].forEach(function(id) {
+        ['swModeLink', 'jqModeLink', 'imModeLink', 'hbeModeLink', 'stop'].forEach(function(id) {
             // Define event listeners for both hyperlinks in alert box: these take the user to the Config tab and highlight
             // the options that the user needs to select
             var modeLink = document.getElementById(id);
             if (modeLink) modeLink.addEventListener('click', function () {
                 var elementID = id === 'stop' ? 'hideActiveContentWarningCheck' : 
                     id === 'swModeLink' ? 'serviceworkerModeRadio' : 
+                    id === 'jqModeLink' ? 'jQueryModeRadio' :
                     id === 'imModeLink' ? 'manipulateImagesCheck' : 'displayHiddenBlockElementsCheck';
                 var thisLabel = document.getElementById(elementID).parentNode;
                 thisLabel.style.borderColor = 'red';

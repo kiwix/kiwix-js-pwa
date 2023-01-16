@@ -4289,7 +4289,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 articleDocument.innerHTML = htmlArticle;
                 return;
             }
-
+            // If we find a stylesheet beginning with a root-relative link ('/something.css'), then we're in a very old legacy ZIM
+            params.isLegacyZIM = false;
+            if (params.zimType === 'open') {
+                params.isLegacyZIM = /<link\b[^>]+href\s*=\s*["']\/[^."']+\.css["']/i.test(htmlArticle);
+            }
             params.isLandingPage = appstate.selectedArchive.landingPageUrl === dirEntry.namespace + '/' + dirEntry.url ?
                 true : params.isLandingPage;
             // Due to fast article retrieval algorithm, we need to embed a reference to the landing page in the html
@@ -4298,11 +4302,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             }
 
             // Display Bootstrap warning alert if the landing page contains active content
-            if (!params.hideActiveContentWarning && params.isLandingPage && (params.contentInjectionMode === 'jquery' || params.manipulateImages || params.allowHTMLExtraction)) {
-                if (regexpActiveContent.test(htmlArticle)) {
+            if (!params.hideActiveContentWarning && params.isLandingPage && (params.contentInjectionMode === 'jquery'
+                || params.manipulateImages || params.allowHTMLExtraction || params.zimType === 'zimit')) {
+                if (params.isLegacyZIM || regexpActiveContent.test(htmlArticle)) {
                     // Exempted scripts: active content warning will not be displayed if any listed script is in the html [kiwix-js #889]
-                    if (!/<script\b[^'"]+['"][^'"]*?mooc\.js/i.test(htmlArticle)) {
-                        uiUtil.displayActiveContentWarning();
+                    if (params.isLegacyZIM || !/<script\b[^'"]+['"][^'"]*?mooc\.js/i.test(htmlArticle)) {
+                        uiUtil.displayActiveContentWarning(params.isLegacyZIM ? 'legacy' : params.zimType);
                     }
                 }
             }
@@ -4333,18 +4338,18 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 var wikiLang = appstate.selectedArchive._file.name.replace(/(?:wikipedia|wikivoyage|wiktionary|mdwiki)_([^_]+).+/i, '$1');
                 var wikimediaZimFlavour = appstate.selectedArchive._file.name.replace(/_.+/, '');
             }
-            if (params.isLandingPage && params.zimType === 'zimit') {
-                // Display Bootstrap alert regarding limited support
-                if (!params.hideActiveContentWarning) {
-                    setTimeout(function () {
-                        uiUtil.displayActiveContentWarning('zimit');
-                    }, 1000);
-                }
-            }
+            // if (params.isLandingPage && params.zimType === 'zimit') {
+            //     // Display Bootstrap alert regarding limited support
+            //     if (!params.hideActiveContentWarning) {
+            //         setTimeout(function () {
+            //             uiUtil.displayActiveContentWarning('zimit');
+            //         }, 1000);
+            //     }
+            // }
             var newBlock;
             var assetZIMUrlEnc;
+            var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
             if (params.contentInjectionMode == 'jquery') {
-                var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
                 htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
                     newBlock = match;
                     if (params.zimType === 'zimit' && !(relAssetUrl).indexOf(indexRoot)) {
@@ -4951,8 +4956,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 if (params.displayHiddenBlockElements) setTimeout(function () {
                     displayHiddenBlockElements(articleWindow, articleDocument);
                 }, 1800);
-                // if (params.displayHiddenBlockElements) displayHiddenBlockElements();
-
+                
                 // Calculate the current article's encoded ZIM baseUrl to use when processing relative links (also needed for SW mode when params.windowOpener is set)
                 params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
                     // URI-encode anything that is not a '/'
