@@ -3,6 +3,7 @@
 ## In-progess release 2.3.0
 
 * ENHANCEMENT: Check for update to PWA and notify user shortly after startup of the app
+* ENHANCEMENT: Detect historical ZIM types and add advice on using jQuery mode to read them
 * DEV: Added developer option to force use of libzim W/ASM decoding of full-text index
 * UPDATE: Sample archive changed to `wikipedia_en_100_mini_2022-12`
 * FIX: Libzim loading error in Electron app with large ZIM archives due to race condition
