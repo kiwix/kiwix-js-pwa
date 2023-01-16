@@ -1800,12 +1800,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             if (this.readOnly) this.checked = this.readOnly = false;
             else if (!this.checked) this.readOnly = this.indeterminate = true;
             params.removePageMaxWidth = this.indeterminate ? "auto" : this.checked;
-            document.getElementById('pageMaxWidthState').innerHTML = (params.removePageMaxWidth == "auto" ? "auto" : params.removePageMaxWidth ? "always" : "never");
+            document.getElementById('pageMaxWidthState').textContent = (params.removePageMaxWidth == "auto" ? "auto" : params.removePageMaxWidth ? "always" : "never");
             settingsStore.setItem('removePageMaxWidth', params.removePageMaxWidth, Infinity);
             removePageMaxWidth();
         });
         document.getElementById('displayHiddenBlockElementsCheck').addEventListener('click', function () {
-            params.displayHiddenBlockElements = this.checked;
+            if (this.readOnly) this.checked = this.readOnly = false;
+            else if (!this.checked) this.readOnly = this.indeterminate = true;
+            params.displayHiddenBlockElements = this.indeterminate ? "auto" : this.checked;
+            document.getElementById('displayHiddenElementsState').textContent = (params.displayHiddenBlockElements == "auto" ? "auto" : params.displayHiddenBlockElements ? "always" : "never");
             settingsStore.setItem('displayHiddenBlockElements', params.displayHiddenBlockElements, Infinity);
             if (params.contentInjectionMode === 'serviceworker') {
                 var message = '';
