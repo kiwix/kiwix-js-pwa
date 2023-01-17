@@ -264,7 +264,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
         search.rgxPrefix = null;
         var prefix = search.prefix;
         // Launch a full-text search if possible
-        if (LZ) that.findDirEntriesFromFullTextSearch(search, dirEntries).then(function (fullTextDirEntries) {
+        if (LZ && !search.searchUrlIndex) that.findDirEntriesFromFullTextSearch(search, dirEntries).then(function (fullTextDirEntries) {
             dirEntries = fullTextDirEntries;
             search.status = 'complete';
             callback(dirEntries, search);
@@ -323,9 +323,18 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
         function searchNextVariant() {
             // If user has initiated a new search, cancel this one
             if (search.status === 'cancelled') return callback([], search);
-            if (prefixVariants.length === 0 || dirEntries.length >= search.size) {
+            var remaining = search.size - dirEntries.length;
+            if (prefixVariants.length === 0 || remaining < 1) {
                 // We have found all the title-search entries we are going to get, so indicate search type if we're still searching
-                if (LZ && search.status !== 'complete') search.type = 'fulltext';
+                if (LZ && !search.searchUrlIndex && search.status !== 'complete') search.type = 'fulltext';
+                else if (LZ && search.searchUrlIndex && remaining > 0) {
+                    search.type = 'fulltext';
+                    that.findDirEntriesFromFullTextSearch(search, dirEntries, remaining).then(function (fullTextDirEntries) {
+                        dirEntries = fullTextDirEntries;
+                        search.status = 'complete';
+                        callback(dirEntries, search);
+                    });
+                }
                 else search.status = 'complete';
                 return callback(dirEntries, search);
             }
@@ -460,14 +469,15 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
      * 
      * @param {Object} search The appstate.search object
      * @param {Array} dirEntries The array of already found Directory Entries
+     * @param {Integer} number Optional positive number of search results requested (otherwise params.maxSearchResults will be used)
      * @returns {Promise<callbackDirEntry>} The augmented array of Directory Entries with titles that correspond to search 
      */
-    ZIMArchive.prototype.findDirEntriesFromFullTextSearch = function (search, dirEntries) {
+    ZIMArchive.prototype.findDirEntriesFromFullTextSearch = function (search, dirEntries, number) {
         var cns = this.getContentNamespace();
         var that = this;
         // We give ourselves an overhead in caclulating the results needed, because full-text search will return some results already found
         // var resultsNeeded = Math.floor(params.maxSearchResultsSize - dirEntries.length / 2);
-        var resultsNeeded = params.maxSearchResultsSize;
+        var resultsNeeded = number || params.maxSearchResultsSize;
         return this.callLibzimWorker({action: "search", text: search.prefix, numResults: resultsNeeded}).then(function (results) {
             if (results) {
                 var dirEntryPaths = [];
