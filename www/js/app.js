@@ -505,7 +505,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         }
 
         //Establish some variables with global scope
-        var firstRun = false;
         var localSearch = {};
 
 
@@ -1964,7 +1963,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             }
             //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
             if (settingsStore.getItem('appVersion') !== params.appVersion) {
-                firstRun = true;
                 //  Update the installed version
                 if (settingsStore.getItem('PWAInstalled')) {
                     params.PWAInstalled = params.appVersion;
@@ -1978,6 +1976,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // On some platforms, bootstrap's jQuery functions have not been injected yet, so we have to run in a timeout
                 setTimeout(function () {
                     $('#myModal').on('hide.bs.modal', function () {
+                        // We need to delay any attempt to launch the UWP Service Worker till after the bootstrap modal is displayed
+                        // or else app is left in an anomalous situation whereby it's not possible to exit the modal in some cases
+                        if (appstate.launchUWPServiceWorker) {
+                            launchUWPServiceWorker();
+                            return;
+                        }
                         if (params.isUWPStoreApp) return; // It's a UWP app installed from the Store, so it will self update
                         if (!params.allowInternetAccess) {
                             var updateServer = params.updateServer.url.replace(/^([^:]+:\/\/[^/]+).*/, '$1');
@@ -1994,6 +1998,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     });
                     settingsStore.setItem('appVersion', params.appVersion, Infinity);
                 }, 1000);
+            } else if (appstate.launchUWPServiceWorker) {
+                launchUWPServiceWorker();
             }
         });
 
@@ -2230,7 +2236,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             var message = "The ServiceWorker could not be properly registered. Switching back to jQuery mode. Error message : " + err;
                             var protocol = window.location.protocol;
                             if (protocol === 'ms-appx-web:') {
-                                launchUWPServiceWorker();
+                                // We can't launch straight away in case the bootstrap big modal is showing
+                                appstate.launchUWPServiceWorker = true;
                                 message = "";
                             } else if (protocol === 'moz-extension:') {
                                 message += "\n\nYou seem to be using kiwix-js through a Firefox extension : ServiceWorkers are disabled by Mozilla in extensions.";
@@ -2300,6 +2307,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         }
 
         function launchUWPServiceWorker () {
+            delete appstate.launchUWPServiceWorker;
             var message = '<p>To enable the Service Worker, we need one-time access to our secure server ' +
                 'so that the app can re-launch as a Progressive Web App (PWA).</p>' +
                 '<p>The PWA will be able to run offline, but will auto-update periodically when online ' +
