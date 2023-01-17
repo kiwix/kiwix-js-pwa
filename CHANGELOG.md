@@ -12,6 +12,8 @@
 * FIX: Exception caused by site.js script included in Wikimedia archives
 * FIX: Failure to load last-visited article in Electron app
 * FIX: Electron file and folder picking methods
+* FIX: In UWP app, request to launch PWA is now shown after upgrade splash screen
+* FIX: Allow URL-based search to complete before launching full-text search
 * BUILD: Build 64bit and 32bit packages separately to avoid race condition in electron-builder
 * BUILD: All Electron apps other than 32bit Linux are now built with latest Electron
 
