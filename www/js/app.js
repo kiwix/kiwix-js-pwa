@@ -1216,15 +1216,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 );
             }
             if (this.value === 'serviceworker') {
-                var wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
+                appstate.wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
                 if (params.displayHiddenBlockElements || params.manipulateImages || params.allowHTMLExtraction) {
-                    if (!wikimediaZimLoaded) uiUtil.systemAlert(
+                    if (!appstate.wikimediaZimLoaded) uiUtil.systemAlert(
                         'Please note that we are disabling Image manipulation, Breakout link and/or Display hidden block elements, as these options can interfere with ZIMs that have active content. You may turn them back on, but be aware that they are only recommended for use with Wikimedia ZIMs.'
                     );
                 }
-                if (!wikimediaZimLoaded) {
+                if (!appstate.wikimediaZimLoaded) {
                     if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
-                    if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
+                    // if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
                     if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
                 }
             }
@@ -2850,10 +2850,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     // (this only affects jQuery mode)
                     appstate.target = 'iframe';
                     if (params.contentInjectionMode === 'serviceworker') {
-                        var wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
-                        if (!wikimediaZimLoaded) {
+                        appstate.wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
+                        if (!appstate.wikimediaZimLoaded) {
                             if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
-                            if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
+                            if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = false;
                             if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
                             // Set defaults that allow for greatest compabitibility with Zimit ZIM types
                             if (params.zimType === 'zimit') {
@@ -2869,6 +2869,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         } else {
                             params.noWarning = true;
                             if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
+                            if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = 'auto';
                             params.noWarning = false;
                             params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
                             if (params.cssTheme === 'auto') {
@@ -3230,8 +3231,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // (this only affects jQuery mode)
                 appstate.target = 'iframe';
                 if (params.contentInjectionMode === 'serviceworker') {
-                    var wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
-                    if (!wikimediaZimLoaded) {
+                    appstate.wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
+                    if (!appstate.wikimediaZimLoaded) {
                         if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
                         if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = false;
                         if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
@@ -4966,7 +4967,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
 
                 // Display any hidden block elements, with a timeout, so as not to interfere with image loading
                 if (params.displayHiddenBlockElements) setTimeout(function () {
-                    if (params.zimType === 'open' || params.displayHiddenBlockElements === true) {
+                    if (appstate.wikimediaZimLoaded || params.displayHiddenBlockElements === true) {
                         displayHiddenBlockElements(articleWindow, articleDocument);
                     }
                 }, 1200);
