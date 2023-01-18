@@ -5276,15 +5276,29 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             Array.prototype.slice.call(doc.querySelectorAll('table, div')).forEach(function (element) {
                 if (win.getComputedStyle(element).display === 'none') {
                     element.style.setProperty('display', 'block', 'important');
-                    if (!params.noHiddenElementsWarning && params.cssSource !== 'desktop') {
+                    if (!params.noHiddenElementsWarning) {
                         params.noHiddenElementsWarning = true;
-                        uiUtil.systemAlert('<p>There is a new <b>auto</b> setting in Configuration to display hidden tables (series info, navigaiton boxes) ' +
-                        'by default in Wikimedia ZIMs. If you do not want to see these elements, set the option to <b>never</b>.</p>' +
-                        '<p>Please note that these elements are always displayed in Desktop style by design, so consider switching the display style ' +
-                        '(see Configuration) for better layout of such elements.</p>' +
-                        '<p><i>This message will not be displayed again, unless you reset the app.</i></p>', 'One-time message!').then(function () {
-                            settingsStore.setItem('noHiddenElementsWarning', true, Infinity);
-                        });
+                        var message;
+                        if (!appstate.wikimediaZimLoaded) {
+                            message = '<p>The way the <i>Display hidden block elements setting</i> works has changed! Because it is currently set ' +
+                            'to <b>always</b>, it will now apply to <i>any</i> ZIM type. This can have unexpected effects in non-Wikipedia ZIMs.</p>' +
+                            '<p>We strongly recommend that you change this setting to <b>auto</b> in Configuration. The new auto setting allows the ' +
+                            'app to decide when to apply the setting. If you never want to see hidden elements, even in Wikimedia ZIMs, change the ' +
+                            'setting to <b>never</b>.</p>';
+                        } else if (params.displayHiddenBlockElements === 'auto') {  
+                            message =  '<p>There is a new <b>auto</b> setting in Configuration to display hidden tables (series info, navigaiton boxes) ' +
+                            'by default in Wikimedia ZIMs. This is now on by default. If you do not want to see these elements, change the setting to <b>never</b>.</p>';
+                            if (params.cssSource !== 'desktop') {
+                                message += '<p>Please note that these elements are always displayed in Desktop style by design' + (params.cssSource !== 'desktop' ? 
+                                ', so consider switching the display style (see Configuration) if you are not on a larger-screen device' : '') + '.</p>';
+                            }
+                        }
+                        if (message) {
+                            message += '<p><i>This message will not be displayed again, unless you reset the app.</i></p>';
+                            uiUtil.systemAlert(message, 'One-time message!').then(function () {
+                                settingsStore.setItem('noHiddenElementsWarning', true, Infinity);
+                            });
+                        }
                     }
                 }
             });
