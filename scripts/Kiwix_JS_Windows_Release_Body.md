@@ -1,4 +1,4 @@
-## Portable and installable builds for UWP, PWA, Electron and NWJS with experimental Zimit support
+## Portable and installable builds for UWP, PWA, Electron and NWJS
 
 ![Kiwix-Zimit-montage](https://user-images.githubusercontent.com/4304337/173221055-08fd27ba-5990-4e13-9286-c11e4595d43a.png)
 
@@ -59,6 +59,7 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
 * The app natively supports dark mode for Wikimedia, Gutenberg and Stack Exchange ZIMs (see Configuration). For Zimit archives in particular, we recommend you try the new DarkReader plugin (you can enable this from Configuration in ServiceWorker mode only).
 * You can print by pressing Ctrl-P or using the print icon. If local printers are not available (after clicking on More options...) then print to PDF and use another app to print.
 * You can open a new browsable window by right-clicking, middle-clicking or ctrl-clicking an article link (not available in every mode, see option in Configuration).
+* Electron versions of the app (and the PWA) now support Full-Text searching.
 * You can open the ZIM's article index by typing a space in the search box. Sometimes you may need to search the URL index instead: to open this, type **_space /_** (a space followed by a forward slash) in the search box. In older ZIMs, you will find articles under the `A/` namespace and images under the `I/` namespace, but in newer ZIMs almost all content is under the `C/` namesapce.
 * In title search, you can use wildcards `.*` or `.+` (this works best if you start the search with a normal alphanumeric string). You can include a more complex regular expression by enclosing it within `(?:my_regular_expression)`. See Configuration -> About for more details and limitations.
 * You can search for any file in a ZIM by prefixing the namespace, e.g. `C/isaac.*newton.*webp` in recent ZIMs where all content is in the `C` namespace, or `I/isaac.*newton` in older ZIMs where images are in the `I` namespace and articles in the `A` namespace.
