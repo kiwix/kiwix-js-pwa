@@ -4976,11 +4976,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 }
 
                 // Display any hidden block elements, with a timeout, so as not to interfere with image loading
-                if (params.displayHiddenBlockElements) setTimeout(function () {
-                    if (appstate.wikimediaZimLoaded || params.displayHiddenBlockElements === true) {
-                        displayHiddenBlockElements(articleWindow, articleDocument);
-                    }
-                }, 1200);
+                if (params.displayHiddenBlockElements && settingsStore.getItem('appVersion') === params.appVersion) {
+                    setTimeout(function () {
+                        if (appstate.wikimediaZimLoaded || params.displayHiddenBlockElements === true) {
+                            displayHiddenBlockElements(articleWindow, articleDocument);
+                        }
+                    }, 1200);
+                }
                 
                 // Calculate the current article's encoded ZIM baseUrl to use when processing relative links (also needed for SW mode when params.windowOpener is set)
                 params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
