@@ -5,6 +5,7 @@
 * ENHANCEMENT: Check for update to PWA and notify user shortly after startup of the app
 * ENHANCEMENT: New "auto" setting for display of hidden navboxes and tables in Wikimedia ZIMs  
 * ENHANCEMENT: Detect historical ZIM types and add advice on using jQuery mode to read them
+* ENHANCEMENT: Refresh and Reset buttons provided near the top of Configuration in case of app freeze
 * DEV: Added developer option to force use of libzim W/ASM decoding of full-text index
 * UPDATE: Sample archive changed to `wikipedia_en_100_mini_2022-12`
 * FIX: Libzim loading error in Electron app with large ZIM archives due to race condition
