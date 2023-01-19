@@ -1216,15 +1216,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 );
             }
             if (this.value === 'serviceworker') {
-                var wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
+                appstate.wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
                 if (params.displayHiddenBlockElements || params.manipulateImages || params.allowHTMLExtraction) {
-                    if (!wikimediaZimLoaded) uiUtil.systemAlert(
+                    if (!appstate.wikimediaZimLoaded) uiUtil.systemAlert(
                         'Please note that we are disabling Image manipulation, Breakout link and/or Display hidden block elements, as these options can interfere with ZIMs that have active content. You may turn them back on, but be aware that they are only recommended for use with Wikimedia ZIMs.'
                     );
                 }
-                if (!wikimediaZimLoaded) {
+                if (!appstate.wikimediaZimLoaded) {
                     if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
-                    if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
+                    // if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
                     if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
                 }
             }
@@ -1800,12 +1800,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             if (this.readOnly) this.checked = this.readOnly = false;
             else if (!this.checked) this.readOnly = this.indeterminate = true;
             params.removePageMaxWidth = this.indeterminate ? "auto" : this.checked;
-            document.getElementById('pageMaxWidthState').innerHTML = (params.removePageMaxWidth == "auto" ? "auto" : params.removePageMaxWidth ? "always" : "never");
+            document.getElementById('pageMaxWidthState').textContent = (params.removePageMaxWidth == "auto" ? "auto" : params.removePageMaxWidth ? "always" : "never");
             settingsStore.setItem('removePageMaxWidth', params.removePageMaxWidth, Infinity);
             removePageMaxWidth();
         });
         document.getElementById('displayHiddenBlockElementsCheck').addEventListener('click', function () {
-            params.displayHiddenBlockElements = this.checked;
+            if (this.readOnly) this.checked = this.readOnly = false;
+            else if (!this.checked) this.readOnly = this.indeterminate = true;
+            params.displayHiddenBlockElements = this.indeterminate ? "auto" : this.checked;
+            document.getElementById('displayHiddenElementsState').textContent = (params.displayHiddenBlockElements == "auto" ? "auto" : params.displayHiddenBlockElements ? "always" : "never");
             settingsStore.setItem('displayHiddenBlockElements', params.displayHiddenBlockElements, Infinity);
             if (params.contentInjectionMode === 'serviceworker') {
                 var message = '';
@@ -1819,7 +1822,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     if (message) message += '\n\n';
                     message += 'Please note that hidden elements will not be displayed in any NEW windows or tabs that you open in this UWP app. If you want to see hidden elements in new windows in *Wikimedia* ZIMs, please switch to Desktop style (above), where they are shown by default.';
                 }
-                if (!this.checked && params.manipulateImages) {
+                if (!params.displayHiddenBlockElements && params.manipulateImages) {
                     message += 'We are turning off the image manipulation option because it is no longer needed to display hidden elements. You may turn it back on if you need it for another reason.';
                     document.getElementById('manipulateImagesCheck').click();
                 }
@@ -2847,10 +2850,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     // (this only affects jQuery mode)
                     appstate.target = 'iframe';
                     if (params.contentInjectionMode === 'serviceworker') {
-                        var wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
-                        if (!wikimediaZimLoaded) {
+                        appstate.wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
+                        if (!appstate.wikimediaZimLoaded) {
                             if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
-                            if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
+                            if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = false;
                             if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
                             // Set defaults that allow for greatest compabitibility with Zimit ZIM types
                             if (params.zimType === 'zimit') {
@@ -2866,6 +2869,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         } else {
                             params.noWarning = true;
                             if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
+                            if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = 'auto';
                             params.noWarning = false;
                             params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
                             if (params.cssTheme === 'auto') {
@@ -3227,10 +3231,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // (this only affects jQuery mode)
                 appstate.target = 'iframe';
                 if (params.contentInjectionMode === 'serviceworker') {
-                    var wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
-                    if (!wikimediaZimLoaded) {
+                    appstate.wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
+                    if (!appstate.wikimediaZimLoaded) {
                         if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
-                        if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
+                        if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = false;
                         if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
                         // Set defaults that allow for greatest compabitibility with Zimit ZIM types
                         if (params.zimType === 'zimit') {
@@ -3246,6 +3250,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     } else {
                         params.noWarning = true;
                         if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
+                        if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = 'auto';
                         params.noWarning = false;
                         params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
                         if (params.cssTheme === 'auto') {
@@ -4962,8 +4967,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
 
                 // Display any hidden block elements, with a timeout, so as not to interfere with image loading
                 if (params.displayHiddenBlockElements) setTimeout(function () {
-                    displayHiddenBlockElements(articleWindow, articleDocument);
-                }, 1800);
+                    if (appstate.wikimediaZimLoaded || params.displayHiddenBlockElements === true) {
+                        displayHiddenBlockElements(articleWindow, articleDocument);
+                    }
+                }, 1200);
                 
                 // Calculate the current article's encoded ZIM baseUrl to use when processing relative links (also needed for SW mode when params.windowOpener is set)
                 params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
@@ -5265,9 +5272,34 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
          * elements that users want optionally to be able to access
          */
         function displayHiddenBlockElements(win, doc) {
+            console.debug('Searching for hidden block elements to display...');
             Array.prototype.slice.call(doc.querySelectorAll('table, div')).forEach(function (element) {
                 if (win.getComputedStyle(element).display === 'none') {
                     element.style.setProperty('display', 'block', 'important');
+                    if (!params.noHiddenElementsWarning) {
+                        params.noHiddenElementsWarning = true;
+                        var message;
+                        if (!appstate.wikimediaZimLoaded) {
+                            message = '<p>The way the <i>Display hidden block elements setting</i> works has changed! Because it is currently set ' +
+                            'to <b>always</b>, it will now apply to <i>any</i> ZIM type. This can have unexpected effects in non-Wikipedia ZIMs.</p>' +
+                            '<p>We strongly recommend that you change this setting to <b>auto</b> in Configuration. The new auto setting allows the ' +
+                            'app to decide when to apply the setting. If you never want to see hidden elements, even in Wikimedia ZIMs, change the ' +
+                            'setting to <b>never</b>.</p>';
+                        } else if (params.displayHiddenBlockElements === 'auto') {  
+                            message =  '<p>There is a new <b>auto</b> setting in Configuration to display hidden tables (series info, navigaiton boxes) ' +
+                            'by default in Wikimedia ZIMs. This is now on by default. If you do not want to see these elements, change the setting to <b>never</b>.</p>';
+                            if (params.cssSource !== 'desktop') {
+                                message += '<p>Please note that these elements are always displayed in Desktop style by design' + (params.cssSource !== 'desktop' ? 
+                                ', so consider switching the display style (see Configuration) if you are not on a larger-screen device' : '') + '.</p>';
+                            }
+                        }
+                        if (message) {
+                            message += '<p><i>This message will not be displayed again, unless you reset the app.</i></p>';
+                            uiUtil.systemAlert(message, 'One-time message!').then(function () {
+                                settingsStore.setItem('noHiddenElementsWarning', true, Infinity);
+                            });
+                        }
+                    }
                 }
             });
             // Ensure images are picked up by lazy loading
