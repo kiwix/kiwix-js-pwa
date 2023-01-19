@@ -681,8 +681,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             }
             var buttons = document.getElementsByClassName('btn');
             for (i = 0; i < buttons.length; i++) {
-                // The two buttons with id ending ...Archive need to be smaller
-                buttons[i].style.fontSize = /Archive/.test(buttons[i].id) ? ~~(value * 10 / 100) + "px" : ~~(value * 14 / 100) + "px";
+                // Some specific buttons need to be smaller
+                buttons[i].style.fontSize = /Archive|RefreshApp|Reset2/.test(buttons[i].id) ? ~~(value * 10 / 100) + "px" : ~~(value * 14 / 100) + "px";
             }
             var heads = document.querySelectorAll("h1, h2, h3, h4");
             for (i = 0; i < heads.length; i++) {
@@ -1322,9 +1322,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             }
             params.themeChanged = true;
         });
-        document.getElementById('btnReset').addEventListener('click', function () {
-            settingsStore.reset();
+        ['btnReset', 'btnReset2'].forEach(function (id) {
+            document.getElementById(id).addEventListener('click', function () {
+                settingsStore.reset();
+            });
         });
+        document.getElementById('btnRefreshApp').addEventListener('click', function () {
+            window.location.reload();
+        });
+        
         document.getElementById('bypassAppCacheCheck').addEventListener('change', function () {
             if (params.contentInjectionMode !== 'serviceworker') {
                 uiUtil.systemAlert('This setting can only be used in Service Worker mode!');
@@ -2316,7 +2322,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 'as per the Service Worker spec.</p>' +
                 '<p>You can switch back any time by toggling <i>Allow Internet access?</i> off.</p>' +
                 '<p><b>WARNING:</b> This will attempt to access the following server: <i>' + params.PWAServer + '</i></p>' +
-                '<p><b>*** Screen will flash between black and white several times. ***</b></p>' +
+                '<p><b>*** Screen may flash between black and white. ***</b></p>' +
                 '<p>Note: If the app crashes, simply relaunch it.</p>';
             var launchPWA = function () {
                 settingsStore.setItem('contentInjectionMode', 'serviceworker', Infinity);
