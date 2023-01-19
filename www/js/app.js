@@ -1216,16 +1216,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 );
             }
             if (this.value === 'serviceworker') {
-                appstate.wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
-                if (params.displayHiddenBlockElements || params.manipulateImages || params.allowHTMLExtraction) {
-                    if (!appstate.wikimediaZimLoaded) uiUtil.systemAlert(
-                        'Please note that we are disabling Image manipulation, Breakout link and/or Display hidden block elements, as these options can interfere with ZIMs that have active content. You may turn them back on, but be aware that they are only recommended for use with Wikimedia ZIMs.'
-                    );
-                }
-                if (!appstate.wikimediaZimLoaded) {
-                    if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
-                    // if (params.displayHiddenBlockElements) document.getElementById('displayHiddenBlockElementsCheck').click();
-                    if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
+                if (params.manipulateImages || params.allowHTMLExtraction) {
+                    if (!appstate.wikimediaZimLoaded) {
+                        var message = 'Please note that we are disabling Image manipulation and/or Breakout link, as these options ' +
+                        'can interfere with ZIMs that have active content. You may turn them back on, but be aware that they are only ' + 
+                        'recommended for use with Wikimedia ZIMs.';
+                        uiUtil.systemAlert(message);
+                        if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
+                        if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
+                    }
                 }
             }
             params.themeChanged = true; // This will reload the page
@@ -2849,8 +2848,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
                     // (this only affects jQuery mode)
                     appstate.target = 'iframe';
+                    appstate.wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
                     if (params.contentInjectionMode === 'serviceworker') {
-                        appstate.wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
                         if (!appstate.wikimediaZimLoaded) {
                             if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
                             if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = false;
@@ -3230,8 +3229,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
                 // (this only affects jQuery mode)
                 appstate.target = 'iframe';
+                appstate.wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
                 if (params.contentInjectionMode === 'serviceworker') {
-                    appstate.wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
                     if (!appstate.wikimediaZimLoaded) {
                         if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
                         if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = false;
@@ -5286,11 +5285,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             'app to decide when to apply the setting. If you never want to see hidden elements, even in Wikimedia ZIMs, change the ' +
                             'setting to <b>never</b>.</p>';
                         } else if (params.displayHiddenBlockElements === 'auto') {  
-                            message =  '<p>There is a new <b>auto</b> setting in Configuration to display hidden tables (series info, navigaiton boxes) ' +
+                            message =  '<p>There is a new <b>auto</b> setting in Configuration to display hidden tables (series info, navigation boxes) ' +
                             'by default in Wikimedia ZIMs. This is now on by default. If you do not want to see these elements, change the setting to <b>never</b>.</p>';
                             if (params.cssSource !== 'desktop') {
-                                message += '<p>Please note that these elements are always displayed in Desktop style by design' + (params.cssSource !== 'desktop' ? 
-                                ', so consider switching the display style (see Configuration) if you are not on a larger-screen device' : '') + '.</p>';
+                                message += '<p>Please note that these elements are <i>always</i> displayed in Desktop style (regardless of the setting)' + (params.cssSource !== 'desktop' ? 
+                                ', so consider switching the display style (see Configuration) if you are on a larger-screen device' : '') + '.</p>';
                             }
                         }
                         if (message) {
