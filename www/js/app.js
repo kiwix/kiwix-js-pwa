@@ -2244,8 +2244,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             var message = "The ServiceWorker could not be properly registered. Switching back to jQuery mode. Error message : " + err;
                             var protocol = window.location.protocol;
                             if (protocol === 'ms-appx-web:') {
-                                // We can't launch straight away in case the bootstrap big modal is showing
-                                appstate.launchUWPServiceWorker = true;
+                                // We can't launch straight away if the app is stargin, because the large modal could be showing
+                                var myModal = document.getElementById('myModal');
+                                if (params.appIsLaunching) {
+                                    appstate.launchUWPServiceWorker = true;
+                                } else {
+                                    launchUWPServiceWorker();
+                                }
                                 message = "";
                             } else if (protocol === 'moz-extension:') {
                                 message += "\n\nYou seem to be using kiwix-js through a Firefox extension : ServiceWorkers are disabled by Mozilla in extensions.";
