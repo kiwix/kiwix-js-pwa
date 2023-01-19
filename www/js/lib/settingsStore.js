@@ -163,7 +163,7 @@ define([], function () {
     // If no specific object was specified, we are doing a general reset, so ask user for confirmation
     if (object) performReset();
     else {
-      uiUtil.systemAlert('<b>WARNING:</b> This will reset the app to a freshly installed state, deleting all app caches and settings!',
+      uiUtil.systemAlert('<b>WARNING:</b> This will reset the app to a freshly installed state, deleting all app caches and settings! <b>Make sure you have an Internet connection</b> if this is an offline PWA, because it will be erased and reloaded.',
       'Warning!', true).then(function (confirm) {
         if (confirm) performReset();
         else console.debug('User cancelled');
