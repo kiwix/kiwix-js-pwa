@@ -5023,7 +5023,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         else setTimeout(function () {
                             // The Service Worker needs more time to load
                             articleWindow.location.href = newLocation;
-                        }, 0);
+                        }, 500);
                     }
                     return;
                 }
