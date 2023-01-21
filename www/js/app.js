@@ -5289,6 +5289,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
          * elements that users want optionally to be able to access
          */
         function displayHiddenBlockElements(win, doc) {
+            if (!doc) return;
             console.debug('Searching for hidden block elements to display...');
             Array.prototype.slice.call(doc.querySelectorAll('table, div')).forEach(function (element) {
                 if (win.getComputedStyle(element).display === 'none') {
