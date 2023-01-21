@@ -5018,7 +5018,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     // If the request was not initiated by an existing controlled window, we instantiate the request here
                     if (!appstate.messageChannelWaiting) {
                         // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
-                        articleWindow.location.href = "../" + appstate.selectedArchive._file.name + "/" + dirEntry.namespace + "/" + encodedUrl;
+                        var newLocation = "../" + appstate.selectedArchive._file.name + "/" + dirEntry.namespace + "/" + encodedUrl;
+                        articleWindow.location.href = newLocation;
                     }
                     return;
                 }
