@@ -4991,7 +4991,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         return encodeURIComponent(m);
                 });
 
-                if (params.contentInjectionMode === 'serviceworker') {
+                if (params.contentInjectionMode === 'serviceworker' && navigator.serviceWorker.controller) {
                     // Remove page max width restriction if required
                     if (params.removePageMaxWidth) htmlArticle = removePageMaxWidth(htmlArticle);
                     // For UWP apps, we need to add the Zoom level to the HTML if we are opening in external window
