@@ -4991,7 +4991,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         return encodeURIComponent(m);
                 });
 
-                if (params.contentInjectionMode === 'serviceworker' && navigator.serviceWorker.controller) {
+                if (params.contentInjectionMode === 'serviceworker') {
                     // Remove page max width restriction if required
                     if (params.removePageMaxWidth) htmlArticle = removePageMaxWidth(htmlArticle);
                     // For UWP apps, we need to add the Zoom level to the HTML if we are opening in external window
@@ -5019,7 +5019,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     if (!appstate.messageChannelWaiting) {
                         // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
                         var newLocation = "../" + appstate.selectedArchive._file.name + "/" + dirEntry.namespace + "/" + encodedUrl;
-                        articleWindow.location.href = newLocation;
+                        if (navigator.serviceWorker.controller) articleWindow.location.href = newLocation;
+                        else setTimeout(function () {
+                            // The Service Worker needs more time to load
+                            articleWindow.location.href = newLocation;
+                        }, 0);
                     }
                     return;
                 }
