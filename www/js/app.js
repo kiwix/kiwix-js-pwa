@@ -5307,7 +5307,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             'setting to <b>never</b>.</p>';
                         } else if (params.displayHiddenBlockElements === 'auto') {  
                             message =  '<p>There is a new <b>auto</b> setting in Configuration to display hidden tables (series info, navigation boxes) ' +
-                            'in Wikimedia ZIMs. This is now on by default. If you do not want to see these elements, change the "Display hidden block elements" setting to <b>never</b>.</p>';
+                            'in Wikimedia ZIMs. This is now on by default. If you do not want to see these elements, change the "Display hidden block elements"' + 
+                            'setting to <b>never</b> (under "Display style").</p>';
                             if (params.cssSource !== 'desktop') {
                                 message += '<p>Please note that these elements are <i>always</i> displayed in Desktop style (regardless of the setting)' + (params.cssSource !== 'desktop' ? 
                                 ', so consider switching the display style (see Configuration) if you are on a larger-screen device' : '') + '.</p>';
