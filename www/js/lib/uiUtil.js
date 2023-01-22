@@ -943,13 +943,17 @@ define(rqDef, function(util) {
             if (!params.appCache && /Troubleshooting/.test(headingText)) panelHeading.click();
         });
         // Programme the button to open all settings
-        document.getElementById('btnOpenSettings').addEventListener('mousedown', function (e) {
+        document.getElementById('btnToggleSettings').addEventListener('mousedown', function (e) {
             e.preventDefault();
+            var open = /Open/.test(e.target.innerHTML);
             Array.prototype.slice.call(configHeadings).forEach(function (panelHeading) {
+                if (!open && /API\sStatus/.test(panelHeading.innerHTML)) return;
                 var panelBody = panelHeading.nextElementSibling;
-                panelHeading.innerHTML = panelHeading.innerHTML.replace(/▶/, '▼');
-                panelBody.style.display = 'block';
+                panelHeading.innerHTML = open ? panelHeading.innerHTML.replace(/▶/, '▼') : panelHeading.innerHTML.replace(/▼/, '▶');
+                panelBody.style.display = open ? 'block' : 'none';
             });
+            if (open) e.target.innerHTML = e.target.innerHTML.replace(/▶\sOpen/, '▼ Close');
+            else e.target.innerHTML = e.target.innerHTML.replace(/▼\sClose/, '▶ Open');
         });
     }
 
