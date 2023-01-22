@@ -77,6 +77,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             // Reset app to jQuery mode because it cannot run in SW mode in Windows XP
             if (nw.process.versions.nw === '0.14.7') setContentInjectionMode('jquery');
         }
+        // Make Configuration headings collapsible 
+        uiUtil.setupConfigurationToggles();
     
         /**
          * Resize the IFrame height, so that it fills the whole available height in the window

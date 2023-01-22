@@ -385,6 +385,13 @@ define(rqDef, function(util) {
                 var thisLabel = document.getElementById(elementID).parentNode;
                 thisLabel.style.borderColor = 'red';
                 thisLabel.style.borderStyle = 'solid';
+                // Make sure the container is visible
+                var container = thisLabel.parentNode;
+                if (!/panel-body/.test(container.className)) {
+                    container = container.parentNode;
+                }
+                container.style.display = 'block';
+                container.previousElementSibling.innerHTML = container.previousElementSibling.innerHTML.replace(/▶/, '▼');
                 var btnHome = document.getElementById('btnHome');
                 [thisLabel, btnHome].forEach(function (ele) {
                     // Define event listeners to cancel the highlighting both on the highlighted element and on the Home tab
@@ -904,6 +911,45 @@ define(rqDef, function(util) {
     }
 
     /**
+     * Set up toggles to make Configuration headings collapsible
+     */
+    function setupConfigurationToggles() {
+        var configHeadings = document.querySelectorAll('.panel-heading');
+        Array.prototype.slice.call(configHeadings).forEach(function (panelHeading) {
+            var headingText = panelHeading.textContent;
+            panelHeading.innerHTML = '&#9654; ' + headingText;
+            var panelBody = panelHeading.nextElementSibling;
+            panelBody.style.display = 'none';
+            panelHeading.addEventListener('click', function () {
+                if (/▶/.test(panelHeading.innerHTML)) {
+                    panelHeading.innerHTML = '&#9660; ' + headingText;
+                    panelBody.style.display = 'block';
+                    // Close all other panels
+                    Array.prototype.slice.call(configHeadings).forEach(function (head) {
+                        var text = head.innerHTML;
+                        if (panelHeading === head || /API\sStatus/.test(text + headingText)) return;
+                        if (/▼/.test(text)) head.click();
+                    });
+                } else {
+                    panelHeading.innerHTML = '&#9654; ' + headingText;
+                    panelBody.style.display = 'none';
+                }
+            });
+            // Keep some panels open
+            if (/Display\ssize|API\sStatus/.test(headingText)) panelHeading.click();
+        });
+        // Programme the button to open all settings
+        document.getElementById('btnOpenSettings').addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            Array.prototype.slice.call(configHeadings).forEach(function (panelHeading) {
+                var panelBody = panelHeading.nextElementSibling;
+                panelHeading.innerHTML = panelHeading.innerHTML.replace(/▶/, '▼');
+                panelBody.style.display = 'block';
+            });
+        });
+    }
+
+    /**
      * Finds the closest <a> or <area> enclosing tag of an element.
      * Returns undefined if there isn't any.
      * 
@@ -961,6 +1007,7 @@ define(rqDef, function(util) {
         reportAssemblerErrorToAPIStatusPanel: reportAssemblerErrorToAPIStatusPanel,
         reportSearchProviderToAPIStatusPanel: reportSearchProviderToAPIStatusPanel,
         warnAndOpenExternalLinkInNewTab: warnAndOpenExternalLinkInNewTab,
+        setupConfigurationToggles: setupConfigurationToggles,
         closestAnchorEnclosingElement: closestAnchorEnclosingElement
     };
 });

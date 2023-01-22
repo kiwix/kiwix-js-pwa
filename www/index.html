@@ -761,10 +761,14 @@
 
                     <div>
                         <div class="row">
+                            <button style="float: right; border-color: gray;" title="Open all the setting panels."
+                                id="btnOpenSettings" class="btn btn-xs btn-inline" type="button">
+                                Open all
+                            </button>
                             <h3>Display settings</h3>
                             <div class="column">
                                 <div id="displaySettingsDiv" class="panel panel-info" style="clear: left;">
-                                    <div class="panel-heading">Display size and theme:</div>
+                                    <div class="panel-heading">Display size and theme</div>
                                     <div class="panel-body">
                                         <div class="row">
                                             <div class="col-sm-12">
@@ -817,7 +821,7 @@
                                     </div>
                                 </div>
                                 <div class="panel panel-info" id="cssSettingsDiv">
-                                    <div class="panel-heading">Display style:</div>
+                                    <div class="panel-heading">Display style</div>
                                     <div class="panel-body">
                                         <label class="radio" title="The uses the style that is the default for the ZIM file you load. For Wikimedia ZIMs, this is now usually a 'mobile' display style. Note that 'mobile' hides certain elements, like some navigation boxes. If you want to see these in Wikimedia ZIMs, switch to 'desktop' style below.">
                                             <input name="cssInjectionMode" id="cssModeAutoRadio" type="radio" value="auto">
@@ -854,7 +858,7 @@
                                     </div>
                                 </div>
                                 <div class="panel panel-info" id="imageSettingsDiv">
-                                    <div class="panel-heading">Image and map settings:</div>
+                                    <div class="panel-heading">Image and map settings</div>
                                     <div class="panel-body">
                                         <div class="row">
                                             <div class="col-sm-6">
@@ -885,7 +889,7 @@
                                     </div>
                                 </div>
                                 <div class="panel panel-info" id="otherSettingsDiv">
-                                    <div class="panel-heading">Other settings:</div>
+                                    <div class="panel-heading">Other display settings</div>
                                     <div class="panel-body">
                                         <label class="checkbox" title="Tap three times for both | top | never">
                                             <input type="checkbox" name="hideToolbars" id="hideToolbarsCheck">
@@ -986,7 +990,7 @@
                             <h3 id="privacy">Privacy settings</h3>
                             <div class="column">
                                 <div class="panel panel-warning" style="min-width:16em;" id="dataPersistence">
-                                    <div class="panel-heading">Persistence of data:</div>
+                                    <div class="panel-heading">Persistence of data</div>
                                     <div class="panel-body">
                                         <label class="checkbox">
                                             <input type="checkbox" name="rememberLastPage" id="rememberLastPageCheck">
@@ -1037,7 +1041,7 @@
                                 </div>
                             </div>
                             <div class="panel panel-warning" style="min-width:16em;" id="mathsProcessingMode">
-                                <div class="panel-heading">Mathematical and chemical equations and symbols:</div>
+                                <div class="panel-heading">Mathematical and chemical equations and symbols</div>
                                 <div class="panel-body">
                                     <label class="radio">
                                         <input type="radio" name="useMathJax" id="useMathJaxRadioTrue" value="true">
@@ -1075,7 +1079,7 @@
                             </div>
                         </div>
                         <div class="panel panel-warning" style="min-width:16em; display: none;" id="packagedAppFileSelectors">
-                            <div class="panel-heading">Display hidden ZIM archive selectors:</div>
+                            <div class="panel-heading">Display hidden ZIM archive selectors</div>
                             <div class="panel-body">
                                 <label class="checkbox">
                                     <input type="checkbox" name="displayFileSelectors" id="displayFileSelectorsCheck">
