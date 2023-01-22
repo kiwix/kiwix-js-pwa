@@ -2082,6 +2082,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             // Set visibility of UI elements according to mode
             document.getElementById('bypassAppCacheDiv').style.display = params.contentInjectionMode === 'serviceworker' ? 'block' : 'none';
 
+            // Set colour of contentInjectionMode div
+            var contentInjectionDiv = document.getElementById('contentInjectionModeDiv');
+            contentInjectionDiv.classList.remove('parnel-warning');
+            contentInjectionDiv.classList.remove('panel-danger');
+            if (params.contentInjectionMode === 'serviceworker') contentInjectionDiv.classList.add('panel-warning');
+            else contentInjectionDiv.classList.add('panel-danger');
+
             refreshCacheStatus();
         }
 
