@@ -385,6 +385,13 @@ define(rqDef, function(util) {
                 var thisLabel = document.getElementById(elementID).parentNode;
                 thisLabel.style.borderColor = 'red';
                 thisLabel.style.borderStyle = 'solid';
+                // Make sure the container is visible
+                var container = thisLabel.parentNode;
+                if (!/panel-body/.test(container.className)) {
+                    container = container.parentNode;
+                }
+                container.style.display = 'block';
+                container.previousElementSibling.innerHTML = container.previousElementSibling.innerHTML.replace(/▶/, '▼');
                 var btnHome = document.getElementById('btnHome');
                 [thisLabel, btnHome].forEach(function (ele) {
                     // Define event listeners to cancel the highlighting both on the highlighted element and on the Home tab
@@ -904,6 +911,53 @@ define(rqDef, function(util) {
     }
 
     /**
+     * Set up toggles to make Configuration headings collapsible
+     */
+    function setupConfigurationToggles() {
+        var configHeadings = document.querySelectorAll('.panel-heading');
+        Array.prototype.slice.call(configHeadings).forEach(function (panelHeading) {
+            var headingText = panelHeading.textContent;
+            panelHeading.innerHTML = '&#9654; ' + headingText;
+            var panelBody = panelHeading.nextElementSibling;
+            panelBody.style.display = 'none';
+            panelHeading.addEventListener('click', function () {
+                if (/▶/.test(panelHeading.innerHTML)) {
+                    panelHeading.innerHTML = '&#9660; ' + headingText;
+                    panelBody.style.display = 'block';
+                    // Close all other panels
+                    Array.prototype.slice.call(configHeadings).forEach(function (head) {
+                        var text = head.innerHTML;
+                        // Don't close panel for certain cases
+                        if (panelHeading === head || /API\sStatus/.test(text + headingText)
+                            ||!params.appCache && /Troubleshooting/.test(text)) return;
+                        if (/▼/.test(text)) head.click();
+                    });
+                } else {
+                    panelHeading.innerHTML = '&#9654; ' + headingText;
+                    panelBody.style.display = 'none';
+                }
+            });
+            // Keep some panels open
+            if (/Display\ssize|API\sStatus/.test(headingText)) panelHeading.click();
+            // If dev has the bypass appCache setting selected, keep this panel open
+            if (!params.appCache && /Troubleshooting/.test(headingText)) panelHeading.click();
+        });
+        // Programme the button to open all settings
+        document.getElementById('btnToggleSettings').addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            var open = /Open/.test(e.target.innerHTML);
+            Array.prototype.slice.call(configHeadings).forEach(function (panelHeading) {
+                if (!open && /API\sStatus/.test(panelHeading.innerHTML)) return;
+                var panelBody = panelHeading.nextElementSibling;
+                panelHeading.innerHTML = open ? panelHeading.innerHTML.replace(/▶/, '▼') : panelHeading.innerHTML.replace(/▼/, '▶');
+                panelBody.style.display = open ? 'block' : 'none';
+            });
+            if (open) e.target.innerHTML = e.target.innerHTML.replace(/▶\sOpen/, '▼ Close');
+            else e.target.innerHTML = e.target.innerHTML.replace(/▼\sClose/, '▶ Open');
+        });
+    }
+
+    /**
      * Finds the closest <a> or <area> enclosing tag of an element.
      * Returns undefined if there isn't any.
      * 
@@ -961,6 +1015,7 @@ define(rqDef, function(util) {
         reportAssemblerErrorToAPIStatusPanel: reportAssemblerErrorToAPIStatusPanel,
         reportSearchProviderToAPIStatusPanel: reportSearchProviderToAPIStatusPanel,
         warnAndOpenExternalLinkInNewTab: warnAndOpenExternalLinkInNewTab,
+        setupConfigurationToggles: setupConfigurationToggles,
         closestAnchorEnclosingElement: closestAnchorEnclosingElement
     };
 });

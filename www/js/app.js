@@ -77,6 +77,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             // Reset app to jQuery mode because it cannot run in SW mode in Windows XP
             if (nw.process.versions.nw === '0.14.7') setContentInjectionMode('jquery');
         }
+        // Make Configuration headings collapsible 
+        uiUtil.setupConfigurationToggles();
     
         /**
          * Resize the IFrame height, so that it fills the whole available height in the window
@@ -1346,6 +1348,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         $('input:checkbox[name=hideActiveContentWarning]').on('change', function () {
             params.hideActiveContentWarning = this.checked ? true : false;
             settingsStore.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
+            refreshCacheStatus();
         });
         document.getElementById('debugLibzimASMDrop').addEventListener('change', function (event) {
             var that = this;
@@ -2079,6 +2082,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             // Set visibility of UI elements according to mode
             document.getElementById('bypassAppCacheDiv').style.display = params.contentInjectionMode === 'serviceworker' ? 'block' : 'none';
 
+            // Set colour of contentInjectionMode div
+            var contentInjectionDiv = document.getElementById('contentInjectionModeDiv');
+            contentInjectionDiv.classList.remove('parnel-warning');
+            contentInjectionDiv.classList.remove('panel-danger');
+            if (params.contentInjectionMode === 'serviceworker') contentInjectionDiv.classList.add('panel-warning');
+            else contentInjectionDiv.classList.add('panel-danger');
+
             refreshCacheStatus();
         }
 
@@ -2096,10 +2106,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 var cacheStatusPanel = document.getElementById('cacheStatusPanel');
                 [cacheSettings, cacheStatusPanel].forEach(function (card) {
                     // IE11 cannot remove more than one class from a list at a time
-                    card.classList.remove('panel-success');
                     card.classList.remove('panel-warning');
-                    if (params.assetsCache) card.classList.add('panel-success');
-                    else card.classList.add('panel-warning');
+                    card.classList.remove('panel-danger');
+                    if (params.assetsCache) card.classList.add('panel-warning');
+                    else card.classList.add('panel-danger');
                 });
             });
             var scrollbox = document.getElementById('scrollbox');
@@ -2107,6 +2117,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 scrollbox.style.removeProperty('background');
             } else {
                 scrollbox.style.background = cssUIThemeGetOrSet(params.cssUITheme, true) === 'dark' ? 'maroon' : 'mistyrose';
+            }
+            var expertSettings = document.getElementById('expertSettingsDiv');
+            expertSettings.classList.remove('panel-warning');
+            expertSettings.classList.remove('panel-danger');
+            if (!params.appCache || params.hideActiveContentWarning || params.debugLibzimASM) {
+                expertSettings.classList.add('panel-danger');
+            } else {
+                expertSettings.classList.add('panel-warning');
             }
         }
 
@@ -5305,7 +5323,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             'setting to <b>never</b>.</p>';
                         } else if (params.displayHiddenBlockElements === 'auto') {  
                             message =  '<p>There is a new <b>auto</b> setting in Configuration to display hidden tables (series info, navigation boxes) ' +
-                            'in Wikimedia ZIMs. This is now on by default. If you do not want to see these elements, change the "Display hidden block elements" setting to <b>never</b>.</p>';
+                            'in Wikimedia ZIMs. This is now on by default. If you do not want to see these elements, change the "Display hidden block elements"' + 
+                            'setting to <b>never</b> (under "Display style").</p>';
                             if (params.cssSource !== 'desktop') {
                                 message += '<p>Please note that these elements are <i>always</i> displayed in Desktop style (regardless of the setting)' + (params.cssSource !== 'desktop' ? 
                                 ', so consider switching the display style (see Configuration) if you are on a larger-screen device' : '') + '.</p>';

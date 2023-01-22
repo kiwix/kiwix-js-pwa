@@ -74,6 +74,10 @@ body {
     background-color: whitesmoke !important;
 }
 
+.panel-heading {
+    font-weight: 600;
+}
+
 div:not(.panel-success, .alert-message) {
     -ms-user-select: none;
     -moz-user-select: none;
