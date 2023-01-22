@@ -927,7 +927,9 @@ define(rqDef, function(util) {
                     // Close all other panels
                     Array.prototype.slice.call(configHeadings).forEach(function (head) {
                         var text = head.innerHTML;
-                        if (panelHeading === head || /API\sStatus/.test(text + headingText)) return;
+                        // Don't close panel for certain cases
+                        if (panelHeading === head || /API\sStatus/.test(text + headingText)
+                            ||!params.appCache && /Troubleshooting/.test(text)) return;
                         if (/▼/.test(text)) head.click();
                     });
                 } else {

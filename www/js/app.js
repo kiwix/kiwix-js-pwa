@@ -1348,6 +1348,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         $('input:checkbox[name=hideActiveContentWarning]').on('change', function () {
             params.hideActiveContentWarning = this.checked ? true : false;
             settingsStore.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
+            refreshCacheStatus();
         });
         document.getElementById('debugLibzimASMDrop').addEventListener('change', function (event) {
             var that = this;
@@ -2098,10 +2099,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 var cacheStatusPanel = document.getElementById('cacheStatusPanel');
                 [cacheSettings, cacheStatusPanel].forEach(function (card) {
                     // IE11 cannot remove more than one class from a list at a time
-                    card.classList.remove('panel-success');
                     card.classList.remove('panel-warning');
-                    if (params.assetsCache) card.classList.add('panel-success');
-                    else card.classList.add('panel-warning');
+                    card.classList.remove('panel-danger');
+                    if (params.assetsCache) card.classList.add('panel-warning');
+                    else card.classList.add('panel-danger');
                 });
             });
             var scrollbox = document.getElementById('scrollbox');
@@ -2109,6 +2110,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 scrollbox.style.removeProperty('background');
             } else {
                 scrollbox.style.background = cssUIThemeGetOrSet(params.cssUITheme, true) === 'dark' ? 'maroon' : 'mistyrose';
+            }
+            var expertSettings = document.getElementById('expertSettingsDiv');
+            expertSettings.classList.remove('panel-warning');
+            expertSettings.classList.remove('panel-danger');
+            if (!params.appCache || params.hideActiveContentWarning || params.debugLibzimASM) {
+                expertSettings.classList.add('panel-danger');
+            } else {
+                expertSettings.classList.add('panel-warning');
             }
         }
 
