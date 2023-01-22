@@ -937,6 +937,8 @@ define(rqDef, function(util) {
             });
             // Keep some panels open
             if (/Display\ssize|API\sStatus/.test(headingText)) panelHeading.click();
+            // If dev has the bypass appCache setting selected, keep this panel open
+            if (!params.appCache && /Troubleshooting/.test(headingText)) panelHeading.click();
         });
         // Programme the button to open all settings
         document.getElementById('btnOpenSettings').addEventListener('mousedown', function (e) {
