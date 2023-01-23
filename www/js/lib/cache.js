@@ -69,7 +69,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
             }
             console.log('Setting storage type to ' + assetsCache.capability.match(/^[^|]+/)[0]);
             if (/localStorage/.test(assetsCache.capability)) {
-                console.log("DEV: 'UnknownError' may be produced as part of localStorage capability detection");
+                console.debug("DEV: 'UnknownError' may be produced as part of localStorage capability detection");
             }
             callback(result);
         });
@@ -484,7 +484,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                             selectedArchive.readUtf8File : selectedArchive.readBinaryFile;
                         readFile(resolvedDirEntry, function (fileDirEntry, content) {
                             if (regexpMimeTypes.test(mimetype)) {
-                                console.log('Cache retrieved ' + title + ' from ZIM');
+                                console.debug('Cache retrieved ' + title + ' from ZIM');
                                 // Process any pre-cache transforms
                                 content = transform(content, title.replace(/^.*\.([^.]+)$/, '$1'));
                             }
@@ -701,7 +701,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                 console.error('Permission for ' + fileHandle.name + ' was not granted: ' + permission);
                 return false;
             }).catch(function(error) {
-                console.error('There was an error reading previously picked file ' + fileHandle.name, error);
+                console.warn('Cannot use previously picked file handle ' + fileHandle.name, error);
             });
         }); 
     };

@@ -346,7 +346,7 @@ var btnInstall2 = document.getElementById('btnInstall2');
 var btnLater = document.getElementById('btnLater');
 
 window.addEventListener('beforeinstallprompt', function(e) {
-    console.log('beforeinstallprompt fired');
+    console.debug('beforeinstallprompt fired');
     // Prevent Chrome 76 and earlier from automatically showing a prompt
     e.preventDefault();
     // Stash the event so it can be triggered later.

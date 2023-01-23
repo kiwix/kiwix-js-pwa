@@ -3106,7 +3106,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         function processNativeDirHandle(dirHandle, callback) {
             // Serialize dirHandle to indexedDB
             cache.idxDB('pickedFSHandle', dirHandle, function (val) {
-                console.log('IndexedDB responded with ' + val);
+                console.debug('IndexedDB responded with ' + val);
             });
             params.pickedFolder = dirHandle;
             params.pickedFile = '';
@@ -5278,7 +5278,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     a.newcontainer = true;
                     onDetectedClick(e);
                 } else {
-                    console.log('suppressed mousedown');
+                    console.debug('suppressed mousedown');
                 }
             });
             // This detects the middle-click event that opens a new tab in recent Firefox and Chrome

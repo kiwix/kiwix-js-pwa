@@ -86,13 +86,13 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 zl = /\/content\.parsoid\.css/.test(zl) ? "-/s/css_modules/content.parsoid.css" : zl;
                 // Replace bootstrap with own: DEV: when upgrading to Bootstrap 4, stop doing this!
                 zl = zl.replace(/.+(bootstrap[^\/]*?\.css)/i, "css/$1");
-                console.log("Matched #" + i + " [" + zl + "] from local filesystem");
+                console.debug("Matched #" + i + " [" + zl + "] from local filesystem");
                 //Make link absolute
                 zl = zl.replace(/^[/.]*/, prefix);
                 //injectCSS();
             } else if (params.contentInjectionMode == 'jquery') { //Try to get the stylesheet from the ZIM file unless it's the wrong ZIM type
                 zl = zl.replace(/^[./]+/, ""); //Remove the directory path
-                console.log("Attempting to resolve CSS link #" + i + " [" + zl + "] from ZIM file..." +
+                console.debug("Attempting to resolve CSS link #" + i + " [" + zl + "] from ZIM file..." +
                     (cc ? "\n(Consider adding file #" + i + " to the local filesystem)" : ""));
                 rtnFunction = "resolveCSS";
             }

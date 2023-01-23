@@ -200,7 +200,7 @@ define(['uiUtil'], function (uiUtil) {
                 docImgs[i].queued = true;
                 if (extractorBusy < maxImageBatch) {
                     batchCount++;
-                    console.log('Extracting image #' + i);
+                    console.debug('Extracting image #' + i);
                     extractImages([docImgs[i]], function () {
                         batchCount--;
                         if (callback && !batchCount) callback();
