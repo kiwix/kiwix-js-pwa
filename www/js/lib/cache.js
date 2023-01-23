@@ -701,7 +701,7 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                 console.error('Permission for ' + fileHandle.name + ' was not granted: ' + permission);
                 return false;
             }).catch(function(error) {
-                console.warn('Cannot use previously picked file handle ' + fileHandle.name, error);
+                console.warn('Cannot use previously picked file handle programmatically (this is normal) ' + fileHandle.name, error);
             });
         }); 
     };
