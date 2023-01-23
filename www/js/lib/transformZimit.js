@@ -35,7 +35,7 @@ define(['uiUtil'], function (uiUtil) {
         if (dirEntry.namespace === 'H' || dirEntry.namespace === 'C' && /^H\//.test(dirEntry.url) 
             || params.isLandingPage && /^(A\/)?index\.html(?:[?#]|$)/.test(dirEntry.url))
             dirEntry.inspect = true;
-        if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|update\.googleapis|survey\.js|yuiloader\.js|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url))
+        if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|update\.googleapis|play\.google.*(?:stats|logs)|youtube\.com.*\/stats|google\.internal|syndication|survey\.js|yuiloader\.js|doubleclick|play\.google\.|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url))
             dirEntry.nullify = true;
         return dirEntry;
     }
@@ -86,10 +86,10 @@ define(['uiUtil'], function (uiUtil) {
      * Establish some Regular Expressions used by the transformReplayUrls function
      */
     var regexpZimitHtmlLinks = /(<(?:a|img|script|link|track|meta|iframe)\b[^>]*?[\s;])(?:src\b|href|url)\s*(=\s*(["']))(?=[./]+|https?)((?:[^>](?!\3|\?|#))+[^>])([^>]*>)/ig;
-    var regexpZimitJavascriptLinks = /['"(]((?:https?:)?\/\/[^'"?#)]*)['"?#)]/ig;
+    var regexpZimitJavascriptLinks = /['"(]((?=[^'"?#)]+\.(?:com?\b|net\b|org\b))|(?:(?:https?:)?\/\/)[^'"?#)]*)['"?#)]/ig;
     var regexpZimitCssLinks = /\burl\s*\(['"\s]*([^)'"\s]+)['"\s]*\)/ig;
     var regexpGetZimitPrefix = /link\s+rel=["']canonical["']\s+href="https?:\/\/([^/"]+)/i;
-    var regexpRemoveAnalytics1 = /<script\b([^<]|<(?!\/script>))+?(?:google.*?analytics|adsbygoogle|goggleads|doubleclick)([^<]|<(?!\/script>))+<\/script>\s*/ig;
+    var regexpRemoveAnalytics1 = /<script\b([^<]|<(?!\/script>))+?(?:google.*?analytics|adsbygoogle|googleads|doubleclick|pubads|syndication)([^<]|<(?!\/script>))+<\/script>\s*/ig;
     var regexpRemoveAnalytics2 = /<ins\b(?:[^<]|<(?!\/ins>))+?adsbygoogle(?:[^<]|<(?!\/ins>))+<\/ins>\s*/ig;
     var regexpInlineScriptsNotMaths = /<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?:[^<]|<(?!\/script>))+<\/script)>/ig;
 
@@ -129,7 +129,7 @@ define(['uiUtil'], function (uiUtil) {
                     // DEBUG:
                     console.log('Asset URL: ' + assetUrl);
                 // Remove google analytics and other analytics files that cause stall
-                if (/analytics|typepad.*stats|googleads|doubleclick/i.test(assetUrl)) return '';
+                if (/analytics|typepad.*stats|googleads|doubleclick|syndication/i.test(assetUrl)) return '';
                 // For root-relative links, we need to add the zimitPrefix
                 assetUrl = assetUrl.replace(/^\/(?!\/)/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
                 // For Zimit assets that begin with https: or // the zimitPrefix is derived from the URL
@@ -234,7 +234,7 @@ define(['uiUtil'], function (uiUtil) {
                 assetUrl = assetUrl.replace(/^\/\//, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
                 assetUrl = assetUrl.replace(/^https?:\/\//i, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : '')); 
                 // Remove analytics
-                assetUrl = /analytics|typepad.*stats/i.test(assetUrl) ? '' : assetUrl; 
+                assetUrl = /analytics|(typepad|api).*stats|googleads|doubleclick|syndication|jnn-pa\.googleapis|play\.google\.com/i.test(assetUrl) ? '' : assetUrl; 
                 // Relative assets
                 newBlock = newBlock.replace(url, '@kiwixtransformed@' + assetUrl);
                 // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
