@@ -380,6 +380,12 @@ pre {
     font-weight: bold;
 }
 
+.panel-group-heading {
+    margin-top: 1em;
+    margin-bottom: 0.8em;
+    font-weight: 600;
+}
+
 .dark .modal-title {
     color: lightgray !important;
 }
