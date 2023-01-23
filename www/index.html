@@ -961,11 +961,6 @@
                                                 </div>
                                             </label>
                                         </div>
-                                        <label class="checkbox" title="Opens external links outside the app (avoids some side-effects affecting the UI).">
-                                            <input type="checkbox" name="openExternalLinksInNewTabs" id="openExternalLinksInNewTabsCheck" checked>
-                                            <span class="checkmark"></span>
-                                            <strong>Warn before opening external links</strong> (<i>recommended</i>)
-                                        </label>
                                         <label class="checkbox" id="openInNewTab" title="Opens articles and external links in a new tab. In ServiceWorker mode (see 'Compatibility settings' below), this also causes links to be parsed, which (in the UWP app) makes it possible to download EPUBs and PDFs from Gutenberg ZIMs, and to open external links without them being blocked by the CSP. N.B. This setting may interfere with some other ZIM types containing active content.">
                                             <input type="checkbox" name="tabOpener" id="tabOpenerCheck">
                                             <span class="checkmark"></span>
@@ -1009,13 +1004,19 @@
                             <h3 id="privacy">Privacy settings</h3>
                             <div class="column">
                                 <div class="panel panel-warning" style="min-width:16em;" id="dataPersistence">
-                                    <div class="panel-heading">Persistence of data</div>
+                                    <div class="panel-heading">Control of browsing data</div>
                                     <div class="panel-body">
-                                        <label class="checkbox">
+                                        <label class="checkbox" title="Turn this off if you are researching sensitive topics that you do not want to be revealed when you next launch the app.">
                                             <input type="checkbox" name="rememberLastPage" id="rememberLastPageCheck">
                                             <span class="checkmark"></span>
-                                            <b>Reopen last-visited page</b> on next app launch
+                                            <b>Reopen last-visited page</b> on next app launch (<i>turn off if researching sensitive topics</i>)
                                         </label>
+                                        <label class="checkbox" title="Prevents accidental navigation to external sites (and avoids some side-effects that can compromise the UI).">
+                                            <input type="checkbox" name="openExternalLinksInNewTabs" id="openExternalLinksInNewTabsCheck" checked>
+                                            <span class="checkmark"></span>
+                                            <strong>Warn before opening external links</strong> (<i>recommended</i>)
+                                        </label>
+                                        <p><i>To clear all data from the app, consider a full app reset after your browsing session</i> (see under <a href="#expertSettingsDiv"><b>Expert settings</b></a>)</p>
                                     </div>
                                 </div>
                             </div>
