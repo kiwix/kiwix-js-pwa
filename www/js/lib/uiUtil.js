@@ -960,6 +960,7 @@ define(rqDef, function(util) {
             var marginBottom = 0;
             marginBottom = /▼/.test(panelHeading.innerHTML) ? null : marginBottom;
             if (panelNext) panelParent.style.marginBottom = /▼/.test(panelNextHeading.innerHTML) ? null : marginBottom;
+            else panelParent.style.marginBottom = 0;
         });
         // Programme the button to toggle all settings
         document.getElementById('btnToggleSettings').addEventListener('mousedown', function (e) {
