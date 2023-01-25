@@ -3144,6 +3144,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             }
                         }
                     }
+                }).catch(function (err) {
+                    uiUtil.systemAlert('<p>We could not find your archive! Is the location or file still available? Try picking the file or folder again.</p>' + 
+                        '<p>[System error message: ' + err.message + ']</p>', 'Error!');
                 });
             })();
             var archiveDisplay = document.getElementById('chooseArchiveFromLocalStorage');
