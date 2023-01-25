@@ -916,41 +916,66 @@ define(rqDef, function(util) {
     function setupConfigurationToggles() {
         var configHeadings = document.querySelectorAll('.panel-heading');
         Array.prototype.slice.call(configHeadings).forEach(function (panelHeading) {
-            var headingText = panelHeading.textContent;
-            panelHeading.innerHTML = '&#9654; ' + headingText;
+            var headingText = panelHeading.innerHTML;
             var panelBody = panelHeading.nextElementSibling;
-            panelBody.style.display = 'none';
+            var panelParent = panelHeading.parentElement;
+            var panelPrevious = panelParent ? panelParent.previousElementSibling : null;
+            if (panelPrevious && !/panel\s/.test(panelPrevious.className)) panelPrevious = null;
+            var panelPreviousHeading = panelPrevious ? panelPrevious.querySelector('.panel-heading') : null;
+            var panelNext = panelParent ? panelParent.nextElementSibling : null;
+            if (panelNext && !/panel\s/.test(panelNext.className)) panelPrevious = null;
+            var panelNextHeading = panelNext ? panelNext.querySelector('.panel-heading') : null;
             panelHeading.addEventListener('click', function () {
                 if (/▶/.test(panelHeading.innerHTML)) {
-                    panelHeading.innerHTML = '&#9660; ' + headingText;
+                    panelHeading.innerHTML = panelHeading.innerHTML.replace(/([▼▶]\s)?/, '▼ ');
                     panelBody.style.display = 'block';
+                    // We're opening, so separate from previous and next
+                    if (panelPrevious) panelPrevious.style.marginBottom = null;
+                    if (panelParent) panelParent.style.marginBottom = panelNext ? null : 0;
                     // Close all other panels
                     Array.prototype.slice.call(configHeadings).forEach(function (head) {
                         var text = head.innerHTML;
+                        if (/▶/.test(text)) return;
                         // Don't close panel for certain cases
                         if (panelHeading === head || /API\sStatus/.test(text + headingText)
                             ||!params.appCache && /Troubleshooting/.test(text)) return;
-                        if (/▼/.test(text)) head.click();
+                        head.click();
                     });
                 } else {
-                    panelHeading.innerHTML = '&#9654; ' + headingText;
+                    panelHeading.innerHTML = panelHeading.innerHTML.replace(/([▼▶]\s)?/, '▶ ');
                     panelBody.style.display = 'none';
+                    if (panelPrevious) panelPrevious.style.marginBottom = panelPreviousHeading && /▼/.test(panelPreviousHeading.innerHTML) ? null: 0;
+                    if (panelNext) panelParent.style.marginBottom = panelNextHeading && /▼/.test(panelNextHeading.innerHTML) ? null : 0;
                 }
             });
-            // Keep some panels open
-            if (/Display\ssize|API\sStatus/.test(headingText)) panelHeading.click();
-            // If dev has the bypass appCache setting selected, keep this panel open
-            if (!params.appCache && /Troubleshooting/.test(headingText)) panelHeading.click();
+
+            // Close each heading to begin with, except the first and specials
+            var exceptionTest = function (testStr) {
+                return /Display\ssize|API\sStatus/i.test(testStr) || /Troubleshooting/i.test(testStr) && !params.appCache;
+            }
+            if (panelNext) panelNextHeading.innerHTML = (exceptionTest(panelNextHeading.innerHTML) ? '&#9660; ' : '&#9654; ') + panelNextHeading.innerHTML;
+            var icon = exceptionTest(headingText) ? '▼ ' : '▶ ';
+            panelHeading.innerHTML = panelHeading.innerHTML.replace(/([▼▶]\s)?/, icon);
+            if (panelBody && !exceptionTest(headingText)) panelBody.style.display = 'none';
+            var marginBottom = 0;
+            marginBottom = /▼/.test(panelHeading.innerHTML) ? null : marginBottom;
+            if (panelNext) panelParent.style.marginBottom = /▼/.test(panelNextHeading.innerHTML) ? null : marginBottom;
         });
-        // Programme the button to open all settings
+        // Programme the button to toggle all settings
         document.getElementById('btnToggleSettings').addEventListener('mousedown', function (e) {
             e.preventDefault();
             var open = /Open/.test(e.target.innerHTML);
             Array.prototype.slice.call(configHeadings).forEach(function (panelHeading) {
                 if (!open && /API\sStatus/.test(panelHeading.innerHTML)) return;
+                if (!open && /▼\sTroubleshooting/.test(panelHeading.innerHTML)) {
+                    panelHeading.click();
+                    return;
+                }
                 var panelBody = panelHeading.nextElementSibling;
                 panelHeading.innerHTML = open ? panelHeading.innerHTML.replace(/▶/, '▼') : panelHeading.innerHTML.replace(/▼/, '▶');
                 panelBody.style.display = open ? 'block' : 'none';
+                var panelParent = panelHeading.parentElement;
+                if (panelParent) panelParent.style.marginBottom = open ? null: 0;
             });
             if (open) e.target.innerHTML = e.target.innerHTML.replace(/▶\sOpen/, '▼ Close');
             else e.target.innerHTML = e.target.innerHTML.replace(/▼\sClose/, '▶ Open');
