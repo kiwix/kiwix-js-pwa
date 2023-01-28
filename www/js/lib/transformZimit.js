@@ -35,8 +35,10 @@ define(['uiUtil'], function (uiUtil) {
         if (dirEntry.namespace === 'H' || dirEntry.namespace === 'C' && /^H\//.test(dirEntry.url) 
             || params.isLandingPage && /^(A\/)?index\.html(?:[?#]|$)/.test(dirEntry.url))
             dirEntry.inspect = true;
-        if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|update\.googleapis|play\.google.*(?:stats|logs)|youtube\.com.*\/stats|google\.internal|syndication|survey\.js|yuiloader\.js|doubleclick|play\.google\.|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url))
+        if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|update\.googleapis|play\.google.*(?:stats|logs)|youtube\.com.*\/stats|google\.internal|syndication|survey\.js|yuiloader\.js|doubleclick|play\.google\.|browse\.js\.xhtml|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url)) {
             dirEntry.nullify = true;
+            console.debug('Zimit filter removed ' + dirEntry.url);
+        }
         return dirEntry;
     }
 
@@ -127,7 +129,7 @@ define(['uiUtil'], function (uiUtil) {
                 var newBlock = match;
                 var assetUrl = relAssetUrl;
                     // DEBUG:
-                    console.log('Asset URL: ' + assetUrl);
+                    // console.log('Asset URL: ' + assetUrl);
                 // Remove google analytics and other analytics files that cause stall
                 if (/analytics|typepad.*stats|googleads|doubleclick|syndication/i.test(assetUrl)) return '';
                 // For root-relative links, we need to add the zimitPrefix
@@ -140,7 +142,7 @@ define(['uiUtil'], function (uiUtil) {
                 if (/^<a\s/i.test(newBlock)) newBlock = newBlock.replace(relAssetUrl, '@kiwixtrans@' + assetUrl);
                 // But for non-anchor URLs, We have to mark potential assets that are not easily identified as assets, due to so many html mimetypes being returned for them
                 else newBlock = newBlock.replace(relAssetUrl, '@kiwixtransformed@' + assetUrl + (params.contentInjectionMode === 'serviceworker' ? '?isKiwixAsset' : ''));
-                // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+            console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
 
@@ -217,7 +219,7 @@ define(['uiUtil'], function (uiUtil) {
                 // Relative assets
                 newBlock = assetUrl === url ? newBlock :
                     newBlock.replace(url, '@kiwixtransformed@' + assetUrl + (params.contentInjectionMode === 'serviceworker' ? '?isKiwixAsset' : ''));
-                // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+            console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
         } // End of css transformations
@@ -237,7 +239,7 @@ define(['uiUtil'], function (uiUtil) {
                 assetUrl = /analytics|(typepad|api).*stats|googleads|doubleclick|syndication|jnn-pa\.googleapis|play\.google\.com/i.test(assetUrl) ? '' : assetUrl; 
                 // Relative assets
                 newBlock = newBlock.replace(url, '@kiwixtransformed@' + assetUrl);
-                // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
+            console.debug('Transform: \n' + match + '\n -> ' + newBlock);
                 return newBlock;
             });
             data = data.replace(/(['"])(?:\/?)((?:static|api)\/)/ig, '$1' + window.location.origin + indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/$2');
