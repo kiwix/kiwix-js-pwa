@@ -3,7 +3,8 @@
 ## Release 2.3.0
 
 * ENHANCEMENT: Check for update to PWA and notify user shortly after startup of the app
-* ENHANCEMENT: New "auto" setting for display of hidden navboxes and tables in Wikimedia ZIMs  
+* ENHANCEMENT: New "auto" setting for display of hidden navboxes and tables in Wikimedia ZIMs 
+* ENHANCEMENT: Tidier Configuration layout with collapsible options 
 * ENHANCEMENT: Detect historical ZIM types and add advice on using jQuery mode to read them
 * ENHANCEMENT: Refresh and Reset buttons provided near the top of Configuration in case of app freeze
 * DEV: Added developer option to force use of libzim W/ASM decoding of full-text index
@@ -17,6 +18,7 @@
 * FIX: In UWP app, request to launch PWA is now shown after upgrade splash screen
 * FIX: Allow URL-based search to complete before launching full-text search
 * FIX: Critical bug preventing display of legacy file picker
+* FIX: Block a wider range of analytics in Zimit archives
 * BUILD: Build 64bit and 32bit packages separately to avoid race condition in electron-builder
 * BUILD: All Electron apps other than 32bit Linux are now built with latest Electron
 
