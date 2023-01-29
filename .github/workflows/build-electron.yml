@@ -94,8 +94,8 @@ jobs:
         if ($packagedFile -and ! (Test-Path "archives\$packagedFile" -PathType Leaf)) {
           # File not in archives, so generalize the name and download it
           $packagedFileGeneric = $packagedFile -replace '_[0-9-]+(\.zim)', '$1'
-          Write-Host "`nDownloading https://download.kiwix.org/zim/$packagedFileGeneric"
-          Invoke-WebRequest "https://download.kiwix.org/zim/$packagedFileGeneric" -OutFile "archives\$packagedFile"
+          Write-Host "`nDownloading http://download.kiwix.org/zim/$packagedFileGeneric"
+          Invoke-WebRequest "http://download.kiwix.org/zim/$packagedFileGeneric" -OutFile "archives\$packagedFile"
         }
         ls archives
         if ($packagedFile -and (Test-Path "archives\$packagedFile" -PathType Leaf)) {
@@ -156,8 +156,8 @@ jobs:
         if ($packagedFile -and ! (Test-Path "archives\$packagedFile" -PathType Leaf)) {
           # File not in archives, so generalize the name and download it
           $packagedFileGeneric = $packagedFile -replace '_[0-9-]+(\.zim)', '$1'
-          Write-Host "`nDownloading https://download.kiwix.org/zim/$packagedFileGeneric"
-          Invoke-WebRequest "https://download.kiwix.org/zim/$packagedFileGeneric" -OutFile "archives\$packagedFile"
+          Write-Host "`nDownloading http://download.kiwix.org/zim/$packagedFileGeneric"
+          Invoke-WebRequest "http://download.kiwix.org/zim/$packagedFileGeneric" -OutFile "archives\$packagedFile"
         }
         ls archives
         if ($packagedFile -and (Test-Path "archives\$packagedFile" -PathType Leaf)) {
