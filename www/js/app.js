@@ -4382,19 +4382,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 var wikiLang = appstate.selectedArchive._file.name.replace(/(?:wikipedia|wikivoyage|wiktionary|mdwiki)_([^_]+).+/i, '$1');
                 var wikimediaZimFlavour = appstate.selectedArchive._file.name.replace(/_.+/, '');
             }
-            // if (params.isLandingPage && params.zimType === 'zimit') {
-            //     // Display Bootstrap alert regarding limited support
-            //     if (!params.hideActiveContentWarning) {
-            //         setTimeout(function () {
-            //             uiUtil.displayActiveContentWarning('zimit');
-            //         }, 1000);
-            //     }
-            // }
             var newBlock;
             var assetZIMUrlEnc;
             var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
             if (params.contentInjectionMode == 'jquery') {
                 htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
+                    // Don't process data URIs (yet)
+                    if (/data:image/i.test(relAssetUrl)) return match;
                     newBlock = match;
                     if (params.zimType === 'zimit' && !(relAssetUrl).indexOf(indexRoot)) {
                         assetZIMUrlEnc = relAssetUrl.replace(indexRoot, '');
@@ -4421,6 +4415,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 });
             } else if (wikiLang || params.manipulateImages) {
                 htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
+                    // Don't process data URIs (yet)
+                    if (/data:image/i.test(relAssetUrl)) return match;
                     newBlock = match;
                     // Add the kiwix-display directive so that the SW sends a dummy image instead
                     if (params.manipulateImages && params.imageDisplay !== 'all' && /^<img/i.test(blockStart))
