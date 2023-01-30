@@ -253,7 +253,8 @@ define(['uiUtil'], function (uiUtil) {
             // Remove unneeded proprietary lazyload
             documentImages[i].removeAttribute('loading');
             // We exempt images that are from the file system
-            if (!~documentImages[i].getAttribute('src').indexOf(window.location.protocol)) {
+            var src = documentImages[i].getAttribute('src');
+            if (!~src.indexOf(window.location.protocol) && !/data:image/i.test(src)) {
                 documentImages[i].dataset.kiwixurl = documentImages[i].getAttribute('src');
                 if (params.imageDisplayMode === 'progressive') {
                     documentImages[i].style.opacity = '0';
