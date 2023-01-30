@@ -311,7 +311,7 @@ define(['uiUtil'], function (uiUtil) {
     function prepareImagesJQuery (win, forPrinting) {
         container = win;
         var doc = container.document;
-        var documentImages = doc.querySelectorAll('img[data-kiwixurl], video, audio');
+        var documentImages = doc.querySelectorAll('img[data-kiwixurl]:not([src^="data:"]), video, audio');
         var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
         indexRoot = indexRoot.replace(/^\//, '');
         // Zimit ZIMs work better if all images are extracted
