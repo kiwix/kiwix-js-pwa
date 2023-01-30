@@ -2,13 +2,13 @@
 
 ## Release 2.3.2-Wikivoyage
 
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2023-01`
 * ENHANCEMENT: Check for update to PWA and notify user shortly after startup of the app
 * ENHANCEMENT: New "auto" setting for display of hidden navboxes and tables in Wikimedia ZIMs 
 * ENHANCEMENT: Tidier Configuration layout with collapsible options 
 * ENHANCEMENT: Detect historical ZIM types and add advice on using jQuery mode to read them
 * ENHANCEMENT: Refresh and Reset buttons provided near the top of Configuration in case of app freeze
 * DEV: Added developer option to force use of libzim W/ASM decoding of full-text index
-* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2023-01`
 * FIX: Libzim loading error in Electron app with large ZIM archives due to race condition
 * FIX: Prevent race condition between reactivation of Service Worker and loading of NODEFS
 * FIX: Failure to load last-visited article in Electron app
@@ -17,6 +17,7 @@
 * FIX: Allow URL-based search to complete before launching full-text search
 * FIX: Critical bug preventing display of legacy file picker
 * FIX: Block a wider range of analytics in Zimit archives
+* FIX: Display of some images on Wikivoyage landing page
 * BUILD: Build 64bit and 32bit packages separately to avoid race condition in electron-builder
 * BUILD: All Electron apps other than 32bit Linux are now built with latest Electron
 
