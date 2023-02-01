@@ -575,6 +575,7 @@ define([], function () {
             }
             // Add in some directories from hidden
             if (/wikipedia\//.test(doc)) {
+                doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>\s\s)([^<]+)/m, '<a href="#">archive/</a>    $3$1$2$3');
                 doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>\s\s)([^<]+)/m, '<a href="#">custom_apps/</a>$3$1$2$3');
                 doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>\s\s)([^<]+)/m, '<a href="#">dev/</a>        $3$1$2$3');
                 doc = doc.replace(/^(<a\b.+gutenberg\/)(<\/a>)([^<]+)/m, '<a href="#">endless/$2  $3$1$2$3');
@@ -808,6 +809,7 @@ define([], function () {
                     var subjID = subjSel ? subjSel.value : '';
                     var replaceURL = URL + this.dataset.kiwixDl;
                     replaceURL = /(custom_apps|endless|dev)\//.test(this.text) ? params.kiwixHiddenDownloadLink + '.hidden/' + this.text : replaceURL;
+                    replaceURL = /(archive)\//.test(this.text) ? params.kiwixDownloadLink.replace(/\/zim\//, '/archive/zim/') : replaceURL;
                     //Allow both zim and zip format
                     if (/\.zi[mp]$/i.test(this.dataset.kiwixDl)) {
                         replaceURL = replaceURL + ".meta4";
@@ -815,6 +817,7 @@ define([], function () {
                         replaceURL = URL.replace(/\/[^\/]*\/$/i, '\/');
                         replaceURL = replaceURL.replace(params.kiwixHiddenDownloadLink, params.kiwixDownloadLink);
                         replaceURL = replaceURL.replace(/\.hidden\//, '');
+                        replaceURL = replaceURL.replace(/\/archive\//, '/zim/');
                     } else if (/Name|Size|Last\smodified|Description/.test(this.text)) {
                         replaceURL = this.getAttribute('href').replace(/;/g, '&');
                         replaceURL = URL + replaceURL;
