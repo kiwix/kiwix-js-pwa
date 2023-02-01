@@ -4,6 +4,7 @@
 
 * ENHANCEMENT: Tidier Configuration layout with collapsible options 
 * FIX: Block a wider range of analytics in Zimit archives
+* FIX: Processing of data-srcset blocks in Zimit archives
 
 ## Release 2.3.0
 
