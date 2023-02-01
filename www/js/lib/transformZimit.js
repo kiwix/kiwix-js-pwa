@@ -145,7 +145,7 @@ define(['uiUtil'], function (uiUtil) {
             });
 
             // Deal with image srcsets
-            data = data.replace(/<img\b[^>]+\ssrcset=["']([^"']+)/ig, function (match, srcset) {
+            data = data.replace(/<img\b[^>]+srcset=["']([^"']+)/ig, function (match, srcset) {
                 var srcsetArr = srcset.split(',');
                 for (var i=0; i < srcsetArr.length; i++) {
                     // For root-relative links, we need to add the zimitPrefix
