@@ -817,7 +817,7 @@ define([], function () {
                         replaceURL = URL.replace(/\/[^\/]*\/$/i, '\/');
                         replaceURL = replaceURL.replace(params.kiwixHiddenDownloadLink, params.kiwixDownloadLink);
                         replaceURL = replaceURL.replace(/\.hidden\//, '');
-                        replaceURL = replaceURL.replace(/\/archive\//, '/zim/');
+                        replaceURL = replaceURL.replace(/\/archive\/$/, '/zim/');
                     } else if (/Name|Size|Last\smodified|Description/.test(this.text)) {
                         replaceURL = this.getAttribute('href').replace(/;/g, '&');
                         replaceURL = URL + replaceURL;
