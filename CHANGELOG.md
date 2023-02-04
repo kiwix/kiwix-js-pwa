@@ -1,7 +1,8 @@
 # Changelog
 
-## In-progress release 2.3.4-WikiMed
+## Release 2.3.4-WikiMed
 
+* UPDATE: Packaged archive updated to `mdwiki_en_all[-app]_maxi_2023-02.zim`
 * ENHANCEMENT: Check for update to PWA and notify user shortly after startup of the app
 * ENHANCEMENT: New "auto" setting for display of hidden navboxes and tables in Wikimedia ZIMs 
 * ENHANCEMENT: Tidier Configuration layout with collapsible options 
@@ -15,6 +16,7 @@
 * FIX: Allow URL-based search to complete before launching full-text search
 * FIX: Critical bug preventing display of legacy file picker
 * FIX: Block a wider range of analytics in Zimit archives
+* FIX: Processing of data-srcset blocks in Zimit archives
 * BUILD: Build 64bit and 32bit packages separately to avoid race condition in electron-builder
 * BUILD: All Electron apps other than 32bit Linux are now built with latest Electron
 
