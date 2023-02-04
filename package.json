@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-electron",
   "productName": "Kiwix JS Electron",
-  "version": "2.3.2-E",
+  "version": "2.3.4-E",
   "description": "Kiwix JS packaged for the Electron framework",
   "main": "main.js",
   "build": {
@@ -115,5 +115,3 @@
     "electron-updater": "^5.3.0"
   }
 }
-
-
