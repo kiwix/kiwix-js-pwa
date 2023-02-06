@@ -282,6 +282,7 @@ function getAppType() {
     if (/Windows/i.test(navigator.userAgent)) type += '|Windows';
     else if (/Android/i.test(navigator.userAgent)) type += '|Android';
     else if (/Linux/i.test(navigator.userAgent)) type += '|Linux';
+    else if (/iphone|ipad|ipod/i.test(navigator.userAgent) || navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) type += '|iOS';
     return type;
 }
 
