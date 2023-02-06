@@ -1383,8 +1383,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     '<p>If your system does not support SW mode, then use the more basic "breakout link" feature below.</p>');
                 paams.windowOpener = false;
             } else if (params.windowOpener && /iOS|UWP$/.test(params.appType)) {
-                uiUtil.systemAlert('This option is not currently supported ' + (/iOS/.test(params.appType) ? 'on iOS devices' : 'in UWP apps that cannot use Service Worker mode') + 
-                    '.<br>Please switch to the more basic "breakout link" feature below instead.');
+                uiUtil.systemAlert('This option is not currently supported ' + (/iOS/.test(params.appType) ? 'on iOS devices because tabs and windows are isolated.' :
+                    'in UWP apps that cannot use Service Worker mode.<br>Please switch to the more basic "breakout link" feature below instead.'));
                 params.windowOpener = false;
             } else {
                 settingsStore.setItem('windowOpener', params.windowOpener, Infinity);
@@ -1444,6 +1444,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         }
         document.getElementById('allowHTMLExtractionCheck').addEventListener('change', function (e) {
             params.allowHTMLExtraction = e.target.checked;
+            if (/iOS/.test(params.appType)) {
+                uiUtil.systemAlert('Unfortunately, this option does not currently work on iOS devices due to tab and window isolation.');
+                params.allowHTMLExtraction = false;
+            }
             var alertMessage = '';
             if (params.windowOpener && params.allowHTMLExtraction) alertMessage = 'Enabling this option disables the more advanced tab/window opening option above. ';
             if (params.allowHTMLExtraction) {
