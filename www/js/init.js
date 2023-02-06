@@ -254,7 +254,8 @@ document.getElementById('openExternalLinksInNewTabsCheck').checked = params.open
 document.getElementById('debugLibzimASMDrop').value = params.debugLibzimASM || '';
 if (params.windowOpener === null) { // Setting has never been activated, so determine a sensible default
     params.windowOpener = /UWP/.test(params.appType) && params.contentInjectionMode === 'jquery' ? false : 
-    'MSBlobBuilder' in window ? 'window' : // IE11/Edge/UWP work best in window mode, not in tab mode!
+    /iOS/.test(params.appType) ? false :
+    ('MSBlobBuilder' in window || params.PWAInstalled) ? 'window' : // IE11/Edge Legacy/UWP work best in window mode, not in tab mode, as does installed PWA!
     /PWA/.test(params.appType) ? 'tab' : false; 
 }
 if (params.windowOpener) params.allowHTMLExtraction = false;

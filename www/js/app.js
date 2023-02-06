@@ -1381,17 +1381,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 uiUtil.systemAlert('<p>In this UWP app, opening a new browsable window only works in Service Worker mode.</p>' + 
                     '<p>Your system appears to support SW mode, so please try switching to it in Expert Settings below.</p>' +
                     '<p>If your system does not support SW mode, then use the more basic "breakout link" feature below.</p>');
+                paams.windowOpener = false;
+            } else if (params.windowOpener && /iOS|UWP$/.test(params.appType)) {
+                uiUtil.systemAlert('This option is not currently supported ' + (/iOS/.test(params.appType) ? 'on iOS devices' : 'in UWP apps that cannot use Service Worker mode') + 
+                    '.<br>Please switch to the more basic "breakout link" feature below instead.');
+                params.windowOpener = false;
+            } else {
+                settingsStore.setItem('windowOpener', params.windowOpener, Infinity);
             }
             if (params.windowOpener && params.allowHTMLExtraction) {
                 uiUtil.systemAlert('Enabling this option disables the more basic breakout link option below.');
                 document.getElementById('allowHTMLExtractionCheck').click();
-            }
-            if (params.windowOpener && /UWP$/.test(params.appType)) {
-                uiUtil.systemAlert('This option is not currently supported in UWP apps that cannot use Service Worker mode.<br>' +
-                'Please switch to the more basic "breakout link" feature below instead.');
-                params.windowOpener = false;
-            } else {
-                settingsStore.setItem('windowOpener', params.windowOpener, Infinity);
             }
             setWindowOpenerUI();
             params.themeChanged = true;
