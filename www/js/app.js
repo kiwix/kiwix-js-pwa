@@ -1442,15 +1442,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             //         'is handled natively with right-click or ctrl-click. Turn settings off to hide this message.';
             // } // NB this is not true for the kiwix-js-windows app
         }
-        document.getElementById('allowHTMLExtractionCheck').addEventListener('change', function (e) {
+        document.getElementById('allowHTMLExtractionCheck').addEventListener('click', function (e) {
             params.allowHTMLExtraction = e.target.checked;
             if (/iOS/.test(params.appType)) {
                 uiUtil.systemAlert('Unfortunately, this option does not currently work on iOS devices due to tab and window isolation.');
-                params.allowHTMLExtraction = false;
+                params.allowHTMLExtraction = e.target.checked = false;
             }
             var alertMessage = '';
-            if (params.windowOpener && params.allowHTMLExtraction) alertMessage = 'Enabling this option disables the more advanced tab/window opening option above. ';
             if (params.allowHTMLExtraction) {
+                if (params.windowOpener) alertMessage = 'Enabling this option disables the more advanced tab/window opening option above. ';
                 if (params.contentInjectionMode === 'serviceworker') {
                     alertMessage = 'Please be aware that the Breakout link functionality can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). ' + 
                     'If you cannot access the articles in such a ZIM, please turn this setting off. ' + alertMessage;
