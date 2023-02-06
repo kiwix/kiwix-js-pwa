@@ -1384,7 +1384,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 paams.windowOpener = false;
             } else if (params.windowOpener && /iOS|UWP$/.test(params.appType)) {
                 uiUtil.systemAlert('This option is not currently supported ' + (/iOS/.test(params.appType) ? 'on iOS devices because tabs and windows are isolated.' :
-                    'in UWP apps that cannot use Service Worker mode.<br>Please switch to the more basic "breakout link" feature below instead.'));
+                    'in UWP apps that cannot use Service Worker mode.') + '<br>Please switch to the more basic "breakout link" feature below instead.');
                 params.windowOpener = false;
             } else {
                 settingsStore.setItem('windowOpener', params.windowOpener, Infinity);
@@ -1444,13 +1444,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         }
         document.getElementById('allowHTMLExtractionCheck').addEventListener('click', function (e) {
             params.allowHTMLExtraction = e.target.checked;
-            if (/iOS/.test(params.appType)) {
-                uiUtil.systemAlert('Unfortunately, this option does not currently work on iOS devices due to tab and window isolation.');
-                params.allowHTMLExtraction = e.target.checked = false;
-            }
             var alertMessage = '';
             if (params.allowHTMLExtraction) {
                 if (params.windowOpener) alertMessage = 'Enabling this option disables the more advanced tab/window opening option above. ';
+                if (/iOS/.test(params.appType)) {
+                    alertMessage = '<b>This will only work if you turn off popup blocking in your iOS browser settings.</b> ';
+                }
                 if (params.contentInjectionMode === 'serviceworker') {
                     alertMessage = 'Please be aware that the Breakout link functionality can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). ' + 
                     'If you cannot access the articles in such a ZIM, please turn this setting off. ' + alertMessage;
