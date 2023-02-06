@@ -676,7 +676,7 @@
                     <div id="divInstall2" style="display:none; float:right;">
                         <button id="btnInstall2" class="btn btn-xs btn-primary btn-inline">Install PWA</button>
                     </div>
-                    <div class="row" style="padding-bottom:1em;">
+                    <div class="row">
                         <h2 style="margin-top:0;">Configuration</h2>
                         <div id="alertBoxPersistent"></div>
                         <p style="margin: 1em auto 1em;">
@@ -735,20 +735,14 @@
                                         <p>For multiple or split archives</p>
                                     </div>
                                 </div>
-                                <div id="instructions" class="row" style="display:none;">
+                                <div class="row" style="padding-bottom: 0.5em;">
+                                    <input type="file" class="btn btn-primary btn-inline" value="Select folder with ZIM files" id="archiveFilesLegacy" multiple />
+                                </div>
+                                <div id="instructions" class="row">
                                     <p>
-                                        Please choose the location of your ZIM archive or drag-and-drop the file(s) here.<br />
+                                        Please choose the location of your ZIM archive <b>or drag-and-drop the file(s) here</b>.<br />
                                         For a split archive (.zimaa, .zimab, etc.) you must select <b>all</b> the split parts.
                                     </p>
-                                </div>
-                                <div class="row">
-                                    <input style="display:none;" type="file" class="btn btn-primary btn-inline" value="Select folder with ZIM files" id="archiveFilesLegacy" multiple 
-                                        accept="application/x-zim,.zim,.txt,.zimaa,.zimab,.zimac,.zimad,.zimae,.zimaf,.zimag,.zimah,.zimai,.zimaj,.zimak,.zimal,.zimam,.ziman,.zimao,.zimap,.zimaq,.zimar,.zimas,.zimat,.zimau,.zimav,.zimaw,.zimax,.zimay,.zimaz, .zimba, .zimbb, .zimbc, .zimbd, .zimbe, .zimbf, .zimbg, .zimbh, .zimbi, .zimbj, .zimbk, .zimbl, .zimbm, .zimbn, .zimbo, .zimbp, .zimbq, .zimbr, .zimbs, .zimbt, .zimbu, .zimbv, .zimbw, .zimbx, .zimby, .zimbz" />
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-12">
-                                        <p style="padding-top:0.5em;"><strong>Only Wikimedia contents (wiki*.zim* files)</strong> have been tested well with this app.</p>
-                                    </div>
                                 </div>
                             </div>
                             <div id="rescanStorage" style="display:none;" class="row">
