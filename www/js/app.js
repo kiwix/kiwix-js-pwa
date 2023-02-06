@@ -1446,15 +1446,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             params.allowHTMLExtraction = e.target.checked;
             var alertMessage = '';
             if (params.allowHTMLExtraction) {
-                if (params.windowOpener) alertMessage = 'Enabling this option disables the more advanced tab/window opening option above. ';
+                if (params.windowOpener) alertMessage = '<p>Enabling this option disables the more advanced tab/window opening option above.</p>';
                 if (/iOS/.test(params.appType)) {
-                    alertMessage = '<b>This will only work if you turn off popup blocking in your iOS browser settings.</b> ';
+                    alertMessage = '<p><b>This option will only work if you turn off popup blocking in your iOS browser settings.</b><p>';
                 }
                 if (params.contentInjectionMode === 'serviceworker') {
-                    alertMessage = 'Please be aware that the Breakout link functionality can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). ' + 
-                    'If you cannot access the articles in such a ZIM, please turn this setting off. ' + alertMessage;
+                    alertMessage = '<p>Please be aware that the Breakout link functionality can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). ' + 
+                    'If you cannot access the articles in such a ZIM, please turn this setting off.</p>' + alertMessage;
                 } else if (/PWA/.test(params.appType)) {
-                    alertMessage += 'Be aware that this option may interfere with active content if you switch to Service Worker mode.';
+                    alertMessage += '<p>Be aware that this option may interfere with active content if you switch to Service Worker mode.</p>';
                 }
                 uiUtil.systemAlert(alertMessage);
                 params.windowOpener = false;
