@@ -616,6 +616,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             } else {
                 displayFileSelect();
             }
+            document.getElementById('rescanStorage').style.display = 'none';
         });
         // Bottom bar :
         // @TODO Since bottom bar now hidden in Settings and About the returntoArticle code cannot be accessed;
@@ -1011,10 +1012,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 document.getElementById('archiveFiles').style.display = 'none';
                 document.getElementById('UWPInstructions').style.display = 'none';
                 document.getElementById('archivesFound').style.display = 'none';
-                document.getElementById('instructions').style.display = 'block';
+                if (!appstate.selectedArchive) document.getElementById('instructions').style.display = 'block';
                 document.getElementById('archiveFilesLegacy').style.display = 'block';
-                document.getElementById('archiveFilesLegacy').addEventListener('change', setLocalArchiveFromFileSelect);
                 document.getElementById('btnRefresh').style.display = 'none';
+            } else {
+                document.getElementById('archiveFilesLegacy').style.display = 'none';
             }
             document.getElementById('chooseArchiveFromLocalStorage').style.display = "block";
             // If user had previously picked a file using Native FS, offer to re-open
@@ -1145,12 +1147,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             }, 0);
         }
 
+        // Legacy file picker is used as a fallback when all other pickers are unavailable
+        document.getElementById('archiveFilesLegacy').addEventListener('change', setLocalArchiveFromFileSelect);
+        // But in preference, use UWP, File System Access API        
         document.getElementById('archiveFile').addEventListener('click', function () {
             if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                 //UWP FilePicker
                 pickFileUWP();
             } else if (typeof window.showOpenFilePicker === 'function') {
-                // Native File System API file picker
+                // File System Access API file picker
                 pickFileNativeFS();
             } else if (window.fs && window.dialog) {
                 // Electron file picker if showOpenFilePicker is not available
@@ -3315,7 +3320,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         params.rescan = false;
                     }, 100);
                 } else {
-                    document.getElementById('openLocalFiles').style.display = 'none';
+                    if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog) {
+                        document.getElementById('instructions').style.display = 'none';
+                    } else {
+                        document.getElementById('openLocalFiles').style.display = 'none';
+                    }
                     document.getElementById('usage').style.display = 'none';
                     if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile.replace(/\.zim(\w\w)?$/, ''))) {
                         var lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, "");
