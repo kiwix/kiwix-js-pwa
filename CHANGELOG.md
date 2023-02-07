@@ -2,7 +2,11 @@
 
 ## In-progress release 2.3.6
 
-* ENHANCEMENT: Tidier Configuration layout with collapsible options 
+* ENHANCEMENT: Tidier Configuration layout with collapsible options
+* ENHANCEMENT: Streamline access to legacy file picker when File System Access API unavailable
+* ENHANCEMENT: The PWA now works on iOS devices (iPhone/iPad) in Safari and can be added to home screen
+* FIX: Logic for checking GitHub update server 
+* FIX: Legacy file picker is now able to pick ZIM archives on iOS devices 
 * FIX: Block a wider range of analytics in Zimit archives
 * FIX: Processing of data-srcset blocks in Zimit archives
 
