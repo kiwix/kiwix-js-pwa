@@ -872,7 +872,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
 
         // Check if a PWA update is available
         function checkPWAUpdate() {
-            if (!params.upgradeNeeded && /^(?!.*Electron).*PWA/.test(params.appType)) {
+            if (!params.upgradeNeeded && /^(?:HTML5|UWP).*PWA/.test(params.appType)) {
                 caches.keys().then(function (keyList) {
                     var cachePrefix = cache.APPCACHE.replace(/^([^\d]+).+/, '$1');
                     document.getElementById('alertBoxPersistent').innerHTML = '';
@@ -905,8 +905,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         var updateCheck = document.getElementById('updateCheck');
         params.isUWPStoreApp = /UWP/.test(params.appType) && Windows.ApplicationModel && Windows.ApplicationModel.Package &&
             !/Association.Kiwix/.test(Windows.ApplicationModel.Package.current.id.publisher);
-        // If Internet access is allowed, or it's a UWP Store app, or it's a PWA that is not Electron/NWJS ...
-        if (params.allowInternetAccess || params.isUWPStoreApp || /^(?!.*(Electron|UWP)).*PWA/.test(params.appType)) {
+        // If Internet access is allowed, or it's a UWP Store app, or it's HTML5 (i.e., not Electron/NWJS or UWP) ...
+        if (params.allowInternetAccess || params.isUWPStoreApp || /HTML5/.test(params.appType)) {
             updateCheck.style.display = 'none'; // ... hide the update check link
         }
         // Function to check for updates from GitHub
@@ -915,8 +915,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 console.log('The GitHub update check was blocked because ' + (params.upgradeNeeded ? 'a PWA upgrade is needed.' : 'the user has not allowed Internet access.'));
                 return;
             }
-            // If it's a PWA that is not also an Electron/NWJS or UWP app, don't check for updates
-            if (/^(?!.*(Electron|UWP)).*PWA/.test(params.appType)) return;
+            // If it's plain HTML5 (not Electron/NWJS or UWP), don't check for updates
+            if (/HTML5/.test(params.appType)) return;
             if (params.isUWPStoreApp) return; // It's a UWP app installed from the Store, so it will self update
             // GitHub updates
             console.log('Checking for updates from Releases...');
@@ -950,8 +950,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
 
         // Do update checks 10s after startup
         setTimeout(function () {
-            console.log('Checking for updates to the PWA...');
-            checkPWAUpdate();
+            if (/^(?:HTML5|UWP).*PWA/.test(params.appType)) {
+                console.log('Checking for updates to the PWA...');
+                checkPWAUpdate();
+            }
             checkUpdateServer();
         }, 10000);
 
