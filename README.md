@@ -24,8 +24,10 @@ as does the installable [Windows Electron package](http://kiwix.github.io/kiwix-
 
 ## Universal Progressive Web App
 
-*Don't like stores or packages? We've got you covered! Launch this app instantly by opening the installable, offline-capable PWA
-(Progressive Web App) in your browser right now at **[pwa.kiwix.org](https://pwa.kiwix.org/)**. This works in any browser that supports Service Workers: modern Chrome, Edge, Firefox and Safari (note that on iOS devices, you must use Safari).
+*Don't like stores or packages?* We've got you covered! Launch this app instantly by opening the installable, offline-capable PWA
+(Progressive Web App) in your browser right now at **[pwa.kiwix.org](https://pwa.kiwix.org/)**. This works in any browser that
+supports Service Workers: modern Chrome, Edge, Firefox and Safari (note that on iOS devices, you must use Safari because Apple
+bans the use of Service Workers in any other browser on i-devices).
 
 Get a free ZIM archive to use with the PWA from the [Configuration page](https://pwa.kiwix.org/www/index.html#downloads) of the app,
 or you can preview a ZIM at [library.kiwix.org](https://library.kiwix.org) before you download one.
