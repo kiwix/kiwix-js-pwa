@@ -2,13 +2,14 @@
 
 ![WikiMed montage](https://user-images.githubusercontent.com/4304337/182706203-eca53649-8dea-44b9-ac4a-b08cc05c4252.png)
 
-**Kiwix is an offline reader for multilingual content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, etc. It
-makes knowledge available to people with limited or no Internet access. The software and the content are free for anyone to use.
+**Kiwix is an offline browser for multilingual content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, and many other resources.
+It makes knowledge available to people with limited or no Internet access. The software and the content are free for anyone to use.
 Get the app and download your choice of offline content (a ZIM archive, which can be downloaded in the app). There are hundreds of free
 archives to choose from, on many different topics and subjects. Build a whole digital library of offline knowledge!** 
 
-See **[Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html)** for the latest release for different
-operating systems. We also have packaged apps of **[WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html)** (a
+The app is available either as an offline-capable, [installable Web App](#universal-progressive-web-app) (PWA), for almost all modern browsers and devices, or else as app packages for various Windows and Linux operating systems: see **[Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html)**. For **Mac and iOS**, use the offline web app ([more info below](#universal-progressive-web-app)).
+
+We also have packaged apps of **[WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html)** (a
 complete medical encyclopaedia), and **[Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html)** (a complete
 travel guide) in English -- no extra download needed!
 
@@ -21,10 +22,14 @@ available. If you are using **Linux**, then the
 as does the installable [Windows Electron package](http://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html). All other apps can
 (optionally) notify you when a new version is available, and give you a download link.
 
+## Universal Progressive Web App
+
 *Don't like stores or packages? We've got you covered! Launch this app instantly by opening the installable, offline-capable PWA
-(Progressive Web App) in your browser right now at **[pwa.kiwix.org](https://pwa.kiwix.org/)**. Get a free ZIM archive to use with it
-from the [Configuration page](https://pwa.kiwix.org/www/index.html#downloads) of the app, or you can preview a ZIM at
-[library.kiwix.org](https://library.kiwix.org) before you download one. Once installed or bookmarked, the PWA works fully offline!*
+(Progressive Web App) in your browser right now at **[pwa.kiwix.org](https://pwa.kiwix.org/)**. This works in any browser that supports Service Workers: modern Chrome, Edge, Firefox and Safari (note that on iOS devices, you must use Safari).
+
+Get a free ZIM archive to use with the PWA from the [Configuration page](https://pwa.kiwix.org/www/index.html#downloads) of the app,
+or you can preview a ZIM at [library.kiwix.org](https://library.kiwix.org) before you download one.
+Once installed, bookmarked or added to your home screen, the PWA works fully offline!*
 **[Take a look at our demo](screenshots/Install-PWA.md) that shows how quick and easy it is to install the PWA.**
 
 ## How do I get all of Wikipedia offline?
