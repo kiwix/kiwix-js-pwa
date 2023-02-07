@@ -363,12 +363,12 @@
                         <a href="https://download.kiwix.org/zim" target="_blank">https://download.kiwix.org/zim/</a> or
                         <a href="https://library.kiwix.org" target="_blank">https://library.kiwix.org</a> using a regular computer. To use all the features of ZIM archives
                         that have dynamic content (e.g. PhET), the needs to be running in PWA/ServiceWorker mode (see Performance/compatibility settings in
-                        configuration, but this mode is only available in modern browsers).
+                        configuration), which is available in modern browsers (on iOS devices it is only available in Safari).
                     </p>
                     <h4>Step 2: Copy the content onto your device</h4>
                     <p>
                         If you have enough space, you can put several archives on your device storage. If you download the content
-                        directly in the app, note the location of the saved file when you get the notification that it has
+                        directly in the app, ensure you save the file to the device and note the location of the file once the download has
                         completed. For PC users: if you see that the ZIM archive has a Kiwix icon, you may be able to open it by double-clicking it.
                         For Mobile users: if you downloaded via a PC, you will generally need to use a USB cable to copy the ZIM
                         archive(s) to an accessible location on your device, such as the SD card or the main storage area if
@@ -380,9 +380,9 @@
                         split ZIM archive consisting of several 2GB files, then you will need to pick the <b>folder</b> that contains these files
                         or else (in older browsers) you will need to select all the split parts. If you have just one unsplit ZIM archive, you
                         can instead pick the <b>file</b> directly, using the respective buttons on the
-                        <a href="#" onclick="document.getElementById('btnConfigure').click();">Configuration</a> page (note that these buttons
-                        only appear after you tap "Select Storage"). In most modern contexts the archive will be remembered on next launch
-                        (Firefox and IE11 are exceptions). If in the future you add more files to a folder you have selected, then you can use the rescan
+                        <a href="#" onclick="document.getElementById('btnConfigure').click();">Configuration</a> page (you may need to tap
+                        "Select Storage" first). In most modern contexts the archive will be remembered on next launch (Firefox, Safari and IE11
+                        are exceptions). If in the future you add more files to a folder you have selected, then you can use the rescan
                         button <span class="glyphicon glyphicon-refresh"></span> to refresh the list of archives in the folder.
                     </p>
                     <p>
@@ -402,14 +402,15 @@
                     </p>
                     <p>
                         If you access this app from a secure web server (e.g. the PWA server), it will only work offline if your browser is
-                        capable of installing a Service Worker. If you install or bookmark the PWA version, then it will work offline, but
-                        note that <b>by design</b> any PWA will periodically check the PWA server (in this case, https://pwa.kiwix.org/), if it
+                        capable of installing a Service Worker (note that on iOS devices, ServiceWorker mode only works in Safari). If you
+                        install, bookmark or add the PWA version to your home screen, then it will work offline (if ServiceWorker Mode is available),
+                        but note that <b>by design</b> any PWA will periodically check the PWA server (in this case, https://pwa.kiwix.org/), if it
                         is available, to check for an updated Service Worker.
                     </p>
                     <p>
-                        Electron versions of the app may access GitHub on each start of the app to check for an update. This applies to the installer
-                        (setup) version for Windows, and to the AppImage version for Linux. Other versions for Electron or NWJS do not auto-upaate
-                        (and do not access the server).
+                        Electron and NWJS versions of the app may access GitHub on each start of the app to check for an update. The installer
+                        (setup) version for Windows, and the AppImage version for Linux, will also self-update. You can block the update check
+                        in these apps by unchecking the Allow Internet Access checkbox.
                     </p>
                     <p>
                         By default, this application will remember your last-visited page for each ZIM between sessions using local storage
