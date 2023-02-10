@@ -712,7 +712,7 @@
                             <div id="noZIMFound" style="display: none;">
                                 <p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
                             </div>
-                            <div id="openLocalFiles" style="display: block;">
+                            <div id="openLocalFiles">
                                 <div class="row">
                                     <div class="col-xs-6">
                                         <input type="button" class="btn btn-primary btn-inline" value="Select file" id="archiveFile" />
@@ -721,13 +721,19 @@
                                         <input type="button" class="btn btn-primary btn-inline" value="Select folder" id="archiveFiles" />
                                     </div>
                                 </div>
-                                <div id="UWPInstructions" class="row">
+                                <div class="row">
                                     <div class="col-xs-6">
                                         <p>For a single unsplit archive</p>
                                     </div>
                                     <div class="col-xs-6">
                                         <p>For multiple or split archives</p>
                                     </div>
+                                </div>
+                                <div id="UWPInstructions" class="row">
+                                    <p>
+                                        Choose <b>File</b> for one archive, or <b>Folder</b> for multiple or split archive files in a single directory.<br />
+                                        Alternatively, <b>drag-and-drop your file(s) into the app.</b>
+                                    </p>
                                 </div>
                                 <div class="row" style="padding-bottom: 0.5em;">
                                     <input type="file" class="btn btn-primary btn-inline" value="Select folder with ZIM files" id="archiveFilesLegacy" multiple />
@@ -739,7 +745,7 @@
                                     </p>
                                 </div>
                             </div>
-                            <div id="rescanStorage" style="display:none;" class="row">
+                            <div id="rescanStorage" class="row">
                                 <div class="col-xs-11">
                                     <input style="float:left; margin-right:1em;" type="button" class="btn btn-primary btn-inline" value="Select storage" id="btnRescanDeviceStorage" />
                                     Tap to select app's local storage or to select a file or folder. <b>You can also drag and drop a ZIM file into the app.</b>

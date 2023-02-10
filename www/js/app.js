@@ -787,9 +787,21 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             } else {
                 cssUIThemeGetOrSet(determinedTheme);
             }
-            if (typeof Windows !== 'undefined' || typeof window.showOpenFilePicker === 'function') {
-                document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
+            if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog) {
+                //If not UWP, File System Access API, or Electron methods, display legacy File Select
+                document.getElementById('archiveFile').style.display = 'none';
+                document.getElementById('UWPInstructions').style.display = 'none';
+                document.getElementById('archivesFound').style.display = 'none';
+                document.getElementById('instructions').style.display = appstate.selectedArchive ? 'none' : 'block';
+                document.getElementById('archiveFilesLegacy').style.display = 'block';
+                document.getElementById('btnRefresh').style.display = 'none';
+            } else {
+                document.getElementById('archiveFilesLegacy').style.display = 'none';
+                document.getElementById('instructions').style.display = 'none';
+                // Remove instructions if user has already loaded an archive, and it isn't the packaged archive
+                document.getElementById('UWPInstructions').style.display = appstate.selectedArchive && ~params.packagedFile.indexOf(appstate.selectedArchive._file.name) ? 'none' : 'block';
             }
+            document.getElementById('chooseArchiveFromLocalStorage').style.display = "block";
             document.getElementById('libraryArea').style.borderColor = '';
             document.getElementById('libraryArea').style.borderStyle = '';
             if (params.packagedFile && params.storedFile && params.storedFile !== params.packagedFile) {
@@ -1000,27 +1012,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             //Re-enable top-level scrolling
             document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
             document.getElementById('search-article').style.overflowY = "auto";
-            if (document.getElementById('openLocalFiles').style.display == "none") {
-                document.getElementById('rescanStorage').style.display = "block";
-            }
-
             //If user hadn't previously picked a folder or a file, resort to the local storage folder (UWP functionality)
             if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
                 params.pickedFolder = params.localStorage;
             }
-            if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog) {
-                //If not UWP, File System Access API, or Electron methods, display legacy File Select
-                document.getElementById('archiveFile').style.display = 'none';
-                document.getElementById('archiveFiles').style.display = 'none';
-                document.getElementById('UWPInstructions').style.display = 'none';
-                document.getElementById('archivesFound').style.display = 'none';
-                if (!appstate.selectedArchive) document.getElementById('instructions').style.display = 'block';
-                document.getElementById('archiveFilesLegacy').style.display = 'block';
-                document.getElementById('btnRefresh').style.display = 'none';
-            } else {
-                document.getElementById('archiveFilesLegacy').style.display = 'none';
-            }
-            document.getElementById('chooseArchiveFromLocalStorage').style.display = "block";
             // If user had previously picked a file using Native FS, offer to re-open
             if (typeof window.showOpenFilePicker === 'function' && !(params.pickedFile || params.pickedFolder)) {
                 getNativeFSHandle();
@@ -1122,6 +1117,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         uiUtil.systemAlert('We could not get a handle to the previously picked file or folder!<br>' +
                             'This is probably because the contents of the folder have changed. Please try picking it again.');
                         document.getElementById('openLocalFiles').style.display = 'block';
+                        document.getElementById('rescanStorage').style.display = 'none';
                         return;
                     }
                     if (handle.kind === 'directory') {
@@ -1136,6 +1132,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             console.error('Unable to read previously picked file!', err);
                             uiUtil.systemAlert('We could not retrieve the previously picked file or folder!<br>Please try picking it again.');
                             document.getElementById('openLocalFiles').style.display = 'block';
+                            document.getElementById('rescanStorage').style.display = 'none';
                         });
                     }
                 });
@@ -1144,6 +1141,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             }
             setTimeout(function () {
                 document.getElementById('openLocalFiles').style.display = 'none';
+                document.getElementById('rescanStorage').style.display = 'block';
                 document.getElementById('usage').style.display = 'none';
                 selectFired = false;
             }, 0);
@@ -2608,8 +2606,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         function populateDropDownListOfArchives(archiveDirectories, displayOnly) {
             document.getElementById('scanningForArchives').style.display = 'none';
             document.getElementById('chooseArchiveFromLocalStorage').style.display = '';
-            document.getElementById('rescanStorage').style.display = params.rescan ? "none" : "block";
+            document.getElementById('rescanStorage').style.display = params.rescan ? 'none' : 'block';
             document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
+            // Hide instructions now user has selected a folder, unless the packaged archive is still loaded
+            if (appstate.selectedArchive && !~params.packagedFile.indexOf(appstate.selectedArchive._file.name)) {
+                document.getElementById('UWPInstructions').style.display = 'none';
+            }
             var plural = 's';
             plural = archiveDirectories.length === 1 ? '' : plural;
             document.getElementById('archiveNumber').innerHTML = '<b>' + archiveDirectories.length + '</b> Archive' + plural + ' found in selected location (tap "Select storage" to change)';
@@ -2921,6 +2923,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         params.rescan = false;
                     } else {
                         document.getElementById('openLocalFiles').style.display = 'none';
+                        document.getElementById('rescanStorage').style.display = 'block';
                         document.getElementById('usage').style.display = 'none';
                         document.getElementById('btnHome').click();
                     }
@@ -2947,6 +2950,14 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
          */
         function displayFileSelect() {
             document.getElementById('openLocalFiles').style.display = 'block';
+            // Remove instructions if user has already loaded an archive, and it isn't the packaged archive
+            var UWPInstructions = document.getElementById('UWPInstructions');
+            if (appstate.selectedArchive) {
+                UWPInstructions.style.display = ~params.packagedFile.indexOf(appstate.selectedArchive._file.name) ? 'block' : 'none';
+            } else {
+                UWPInstructions.style.display = 'block';
+            }
+            document.getElementById('rescanStorage').style.display = 'none';
             // This handles use of the file picker
             document.getElementById('archiveFiles').addEventListener('change', setLocalArchiveFromFileSelect);
         }
@@ -2986,6 +2997,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             } else {
                 var files = packet.dataTransfer.files;
                 document.getElementById('openLocalFiles').style.display = 'none';
+                document.getElementById('rescanStorage').style.display = 'block';
                 document.getElementById('usage').style.display = 'none';
                 params.rescan = false;
                 setLocalArchiveFromFileList(files);
@@ -3329,6 +3341,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         document.getElementById('instructions').style.display = 'none';
                     } else {
                         document.getElementById('openLocalFiles').style.display = 'none';
+                        document.getElementById('rescanStorage').style.display = 'block';
                     }
                     document.getElementById('usage').style.display = 'none';
                     if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile.replace(/\.zim(\w\w)?$/, ''))) {
