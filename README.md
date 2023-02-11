@@ -1,13 +1,16 @@
 # Kiwix JS for PWA, Windows and Linux (Electron, NWJS, UWP)
 
-![WikiMed montage](https://user-images.githubusercontent.com/4304337/182706203-eca53649-8dea-44b9-ac4a-b08cc05c4252.png)
+![Kiwix JS Seven Wonders Montage trans](https://user-images.githubusercontent.com/4304337/218268736-2820050c-289f-4d4b-aef9-7e9f4f33c658.png)
 
 **Kiwix is an offline browser for multilingual content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, and many other resources.
 It makes knowledge available to people with limited or no Internet access. The software and the content are free for anyone to use.
 Get the app and download your choice of offline content (a ZIM archive, which can be downloaded in the app). There are hundreds of free
 archives to choose from, on many different topics and subjects. Build a whole digital library of offline knowledge!** 
 
-The app is available either as an offline-capable, [installable Web App](#universal-progressive-web-app) (PWA), for almost all modern browsers and devices, or else as app packages for various Windows and Linux operating systems: see **[Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html)**. For **Mac and iOS**, use the offline web app ([more info below](#universal-progressive-web-app)).
+The app is available either as an offline-capable, [installable Web App](#universal-progressive-web-app) (PWA), for almost all modern browsers and devices,
+or else as app packages for various Windows and Linux operating systems: see
+**[Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html)**. For **Mac and iOS**, use the offline web app
+([more info below](#universal-progressive-web-app)).
 
 We also have packaged apps of **[WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html)** (a
 complete medical encyclopaedia), and **[Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html)** (a complete
@@ -46,7 +49,7 @@ select a large archive for download in the app, it will provide you with a torre
 download and open the torrent file. This small file will open in qBittorrent and you'll be asked where you want to save the archive you
 want to download. It's much easier than it sounds!
 
-![ContactSheet-Kiwix-5x6_sphere@0 5x_masked](https://user-images.githubusercontent.com/4304337/204076458-d95cf440-294a-4655-bc59-2529b123708c.png)
+![WikiMed montage dark mode trans](https://user-images.githubusercontent.com/4304337/218268858-7baddf4c-6b8d-4ee9-b369-ef2598eca194.png)
 
 ## Technical information
 
@@ -111,7 +114,9 @@ If you like this project and would like to contribute financially towards keepin
 [Support page](https://www.kiwix.org/en/support/). Donations help pay for servers, coding certificates, maintenance, etc. If you would like to contribute
 time and expertise rather than money, and you have good knowledge of a foreign language, you can help with [translations of Kiwix projects](https://translatewiki.net/wiki/Special:SearchTranslations?query=kiwix&language=en).
 Alternatively, you can help improve Wikimedia projects by [making edits or corrections](https://en.wikipedia.org/wiki/Wikipedia:Contributing_to_Wikipedia)
-to Wikipedia or Wikivoyage articles. 
+to Wikipedia or Wikivoyage articles.
+
+![ContactSheet-Kiwix-5x6_sphere@0 5x_masked](https://user-images.githubusercontent.com/4304337/204076458-d95cf440-294a-4655-bc59-2529b123708c.png)
 
 ## Privacy Policy
 
