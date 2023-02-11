@@ -2609,7 +2609,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             document.getElementById('rescanStorage').style.display = params.rescan ? 'none' : 'block';
             document.getElementById('openLocalFiles').style.display = params.rescan ? "block" : "none";
             // Hide instructions now user has selected a folder, unless the packaged archive is still loaded
-            if (appstate.selectedArchive && !~params.packagedFile.indexOf(appstate.selectedArchive._file.name)) {
+            if (appstate.selectedArchive && appstate.selectedArchive._file && !~params.packagedFile.indexOf(appstate.selectedArchive._file.name)) {
                 document.getElementById('UWPInstructions').style.display = 'none';
             }
             var plural = 's';
