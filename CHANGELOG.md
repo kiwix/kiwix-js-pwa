@@ -7,6 +7,7 @@
 * ENHANCEMENT: The PWA now works on iOS devices (iPhone/iPad) in Safari and can be added to home screen
 * ENHANCEMENT: App now intelligently sets the initial window opening mode (tab or window)
 * UPDATE: Neater display of file picking instructions, hiding them when no longer needed
+* UPDATE: Sample archive changed to `wikipedia_en_100_mini_2023-01`
 * FIX: Several issues affecting printing (Zimit archives in Chromium, failure to detect selected options in Safari, etc.)
 * FIX: Logic for checking GitHub update server 
 * FIX: Legacy file picker is now able to pick ZIM archives on iOS devices 
