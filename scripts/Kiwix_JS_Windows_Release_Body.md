@@ -66,7 +66,7 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
 
 ### Known Issues
 
-* **Printing**: In jQuery mode, all sections are opened before printing (if the user had closed any), whereas in ServiceWorker mode, closed sections are not opened before printing, if they were closed. UWP, Firefox and Safari have difficulties printing articles from Zimit archives. In Safari, make sure all images are loaded (scroll to bottom) before attempting to print.
+* **Printing**: In jQuery mode, all sections are opened before printing (if the user had closed any), whereas in ServiceWorker mode, closed sections are not opened before printing, if they were closed. UWP, Firefox and Safari have difficulties printing articles from Zimit archives. In Safari, lazy-loaded images are not retireved before printing.
 * On the **XP build** with some recent ZIMs __there is a CSS error in rendering image-heavy landing pages__, due to the age of the Chromium build included in the runtime package. However, you can access all articles by __pressing a space in the search box__.
 * In the **Electron and NWJS** apps, if you download an archive from within the app (from Configuration), you will be able to pick a download directory, and the download will start, but then there will be no further indication that a download is in progress. You will need to check the chosen download directory to see if the download has completed.
 * The **NWJS app** for Windows 7/8/10/11 will occasionally crash and exit when running in ServiceWorker mode. For now, it is recommended to use this app only in JQuery mode until this issue is resolved.
