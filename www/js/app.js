@@ -334,13 +334,15 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         }, true);
 
         //Set up listeners for print dialogues
-        $("#printModal").off('hide.bs.modal');
+        document.getElementById('confirm-print-continue').addEventListener('click', function () {
+            appstate.print = 'continue';
+        });
         $("#printModal").on('hide.bs.modal', function () {
             //Restore temporarily changed values
             params.cssSource = settingsStore.getItem('cssSource') || "auto";
             params.cssTheme = settingsStore.getItem('cssTheme') || "light";
             //params.contentInjectionMode = settingsStore.getItem('contentInjectionMode');
-            if (document.activeElement.id != "confirm-print-continue") { //User cancelled
+            if (appstate.print !== "continue") { //User cancelled
                 if (params.printInterception) {
                     printCleanup();
                     return;
@@ -425,6 +427,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         //End of listeners for print dialogues
 
         function printIntercept() {
+            appstate.print = null;
             params.printInterception = params.printIntercept;
             params.printIntercept = false;
             document.getElementById('btnAbout').classList.add('active');
