@@ -5,6 +5,9 @@
 * ENHANCEMENT: Tidier Configuration layout with collapsible options
 * ENHANCEMENT: Streamline access to legacy file picker when File System Access API unavailable
 * ENHANCEMENT: The PWA now works on iOS devices (iPhone/iPad) in Safari and can be added to home screen
+* ENHANCEMENT: App now intelligently sets the initial window opening mode (tab or window)
+* UPDATE: Neater display of file picking instructions, hiding them when no longer needed
+* FIX: Several issues affecting printing (Zimit archives in Chromium, failure to detect selected options in Safari, etc.)
 * FIX: Logic for checking GitHub update server 
 * FIX: Legacy file picker is now able to pick ZIM archives on iOS devices 
 * FIX: Block a wider range of analytics in Zimit archives
