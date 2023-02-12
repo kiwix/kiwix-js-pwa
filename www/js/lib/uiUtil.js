@@ -204,54 +204,64 @@ define(rqDef, function(util) {
     function printCustomElements() {
         //var innerDocument = window.frames[0].frameElement.contentDocument;
         var innerDocument = document.getElementById('articleContent').contentDocument;
-        //Add any missing classes
-        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(class\s*=\s*["'][^"']*vcard\b[^>]+>\s*<span)>/ig, '$1 class="map-pin">');
-        // Remove encapsulated External Links
-        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<details\b(?![^>]"externalLinks"))((?:[^<]|<(?!\/details>))+?['"]external_links['"])/i, '$1 class="externalLinks" $2');
-        // This is the best we can do for removing External Links if its not encapsulated
-        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<(?:h2|span)\b[^<]+external_links(?:[^<]|<(?!\/div>|\/details>))+?<ul\s*(?!class="externalLinks"))/i, '$1 class="externalLinks" ');
-        // Further Reading
-        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<details\b(?![^>]"furtherReading"))((?:[^<]|<(?!\/details>))+?['"]further_reading['"])/i, '$1 class="furtherReading" $2');
-        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<(?:h2|span)\b[^<]+further_reading(?:[^<]|<(?!\/div>|\/details>))+?<ul\s*(?!class="furtherReading"))/i, '$1 class="furtherReading" ');
-        // See Also
-        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<details\b(?![^>]"seeAlso"))((?:[^<]|<(?!\/details>))+?['"]see_also['"])/i, '$1 class="seeAlso" $2');
-        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<(?:h2|span)\b[^<]+see_also(?:[^<]|<(?!\/div>|\/details>))+?<ul\s*(?!class="seeAlso"))/i, '$1 class="seeAlso" ');
-        // References (this is for details-summary ZIMs only: it gets rid of the title)
-        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<details\b(?![^>]"zimReferences"))((?:[^<]|<(?!\/details>))+?['"]references['"])/i, '$1 class="zimReferences" $2');
-        // Sources (this is for details-summary ZIMs only: it gets rid of the title)
-        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<details\b(?![^>]"zimSources"))((?:[^<]|<(?!\/details>))+?['"]sources['"])/i, '$1 class="zimSources" $2');
-        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<div\s+)([^>]+>\s+This article is issued from)/i, '$1class="copyLeft" $2');
-        // Remove openInTab div (we can't do this using DOM methods because it aborts code spawned from onclick event)
-        innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<div\s(?=[^<]+?openInTab)(?:[^<]|<(?!\/div>))+<\/div>\s*/, '');
-
-        // Using @media print on images doesn't get rid of them all, so use brute force
-        if (!document.getElementById("printImageCheck").checked)
-            innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<img\b[^>]*>\s*/ig, '');
-        var printOptions = innerDocument.getElementById("printOptions");
-        //If there is no printOptions style block in the iframe, create it
-        if (!printOptions) {
-            var printStyle = innerDocument.createElement("style");
-            printStyle.id = "printOptions";
-            innerDocument.head.appendChild(printStyle);
-            printOptions = innerDocument.getElementById("printOptions");
+        // For now, adding a printing stylesheet to a zimit ZIM appears to diasble printing of any images!
+        if (params.zimType === 'open') {
+            //Add any missing classes
+            innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(class\s*=\s*["'][^"']*vcard\b[^>]+>\s*<span)>/ig, '$1 class="map-pin">');
+            // Remove encapsulated External Links
+            innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<details\b(?![^>]"externalLinks"))((?:[^<]|<(?!\/details>))+?['"]external_links['"])/i, '$1 class="externalLinks" $2');
+            // This is the best we can do for removing External Links if its not encapsulated
+            innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<(?:h2|span)\b[^<]+external_links(?:[^<]|<(?!\/div>|\/details>))+?<ul\s*(?!class="externalLinks"))/i, '$1 class="externalLinks" ');
+            // Further Reading
+            innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<details\b(?![^>]"furtherReading"))((?:[^<]|<(?!\/details>))+?['"]further_reading['"])/i, '$1 class="furtherReading" $2');
+            innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<(?:h2|span)\b[^<]+further_reading(?:[^<]|<(?!\/div>|\/details>))+?<ul\s*(?!class="furtherReading"))/i, '$1 class="furtherReading" ');
+            // See Also
+            innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<details\b(?![^>]"seeAlso"))((?:[^<]|<(?!\/details>))+?['"]see_also['"])/i, '$1 class="seeAlso" $2');
+            innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<(?:h2|span)\b[^<]+see_also(?:[^<]|<(?!\/div>|\/details>))+?<ul\s*(?!class="seeAlso"))/i, '$1 class="seeAlso" ');
+            // References (this is for details-summary ZIMs only: it gets rid of the title)
+            innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<details\b(?![^>]"zimReferences"))((?:[^<]|<(?!\/details>))+?['"]references['"])/i, '$1 class="zimReferences" $2');
+            // Sources (this is for details-summary ZIMs only: it gets rid of the title)
+            innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<details\b(?![^>]"zimSources"))((?:[^<]|<(?!\/details>))+?['"]sources['"])/i, '$1 class="zimSources" $2');
+            innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<div\s+)([^>]+>\s+This article is issued from)/i, '$1class="copyLeft" $2');
+            // Remove openInTab div (we can't do this using DOM methods because it aborts code spawned from onclick event)
+            innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<div\s(?=[^<]+?openInTab)(?:[^<]|<(?!\/div>))+<\/div>\s*/, '');
+            // Add an @media print conditional stylesheet
+            var printOptions = innerDocument.getElementById("printOptions");
+            //If there is no printOptions style block in the iframe, create it
+            if (!printOptions) {
+                var printStyle = innerDocument.createElement("style");
+                printStyle.id = "printOptions";
+                innerDocument.head.appendChild(printStyle);
+                printOptions = innerDocument.getElementById("printOptions");
+            }
+            var printStyleInnerHTML = "@media print { ";
+            printStyleInnerHTML += document.getElementById("printNavBoxCheck").checked ? "" : ".navbox, .vertical-navbox { display: none; } ";
+            printStyleInnerHTML += document.getElementById("printEndNoteCheck").checked ? "" : ".reflist, div[class*=references], .zimReferences, .zimSources { display: none; } ";
+            printStyleInnerHTML += document.getElementById("externalLinkCheck").checked ? "" : ".externalLinks, .furtherReading { display: none; } ";
+            printStyleInnerHTML += document.getElementById("seeAlsoLinkCheck").checked ? "" : ".seeAlso { display: none; } ";
+            printStyleInnerHTML += document.getElementById("printInfoboxCheck").checked ? "" : ".mw-stack, .infobox, .infobox_v2, .infobox_v3, .qbRight, .qbRightDiv, .wv-quickbar, .wikitable { display: none; } ";
+            // printStyleInnerHTML += document.getElementById("printImageCheck").checked ? "" : "img, .gallery { display: none; } ";
+            printStyleInnerHTML += ".copyLeft { display: none } ";
+            printStyleInnerHTML += ".map-pin { display: none } ";
+            printStyleInnerHTML += ".external { padding-right: 0 !important } ";
         }
-        var printStyleInnerHTML = "@media print { ";
-        printStyleInnerHTML += document.getElementById("printNavBoxCheck").checked ? "" : ".navbox, .vertical-navbox { display: none; } ";
-        printStyleInnerHTML += document.getElementById("printEndNoteCheck").checked ? "" : ".reflist, div[class*=references], .zimReferences, .zimSources { display: none; } ";
-        printStyleInnerHTML += document.getElementById("externalLinkCheck").checked ? "" : ".externalLinks, .furtherReading { display: none; } ";
-        printStyleInnerHTML += document.getElementById("seeAlsoLinkCheck").checked ? "" : ".seeAlso { display: none; } ";
-        printStyleInnerHTML += document.getElementById("printInfoboxCheck").checked ? "" : ".mw-stack, .infobox, .infobox_v2, .infobox_v3, .qbRight, .qbRightDiv, .wv-quickbar, .wikitable { display: none; } ";
-        // printStyleInnerHTML += document.getElementById("printImageCheck").checked ? "" : "img, .gallery { display: none; } ";
-        printStyleInnerHTML += ".copyLeft { display: none } ";
-        printStyleInnerHTML += ".map-pin { display: none } ";
-        printStyleInnerHTML += ".external { padding-right: 0 !important } ";
+        // Using @media print on images doesn't get rid of them all, so use brute force
+        if (!document.getElementById('printImageCheck').checked) {
+            innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<img\b[^>]*>\s*/ig, '');
+        } else {
+            // Remove any breakout link
+            innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<img\b[^>]+id="breakoutLink"[^>]*>\s*/, '');
+        }
         var sliderVal = document.getElementById("documentZoomSlider").value;
         sliderVal = ~~sliderVal;
         sliderVal = Math.floor(sliderVal * (Math.max(window.screen.width, window.screen.height) / 1440));
-        printStyleInnerHTML += "body { font-size: " + sliderVal + "% !important; } ";
-        printStyleInnerHTML += "}";
-        printOptions.innerHTML = printStyleInnerHTML;
-
+        if (params.zimType === 'open') {
+            printStyleInnerHTML += "body { font-size: " + sliderVal + "% !important; } ";
+            printStyleInnerHTML += "}";
+            printOptions.innerHTML = printStyleInnerHTML;
+        } else {
+            innerDocument.body.style.setProperty('font-size', sliderVal + '%', 'important');
+        }
     }
 
     function downloadBlobUWP(blob, filename, message) {

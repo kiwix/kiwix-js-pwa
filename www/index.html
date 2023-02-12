@@ -194,6 +194,16 @@
                     </h3>                
                 </div>
                 <div class="modal-body">
+                    <label oninput="document.getElementById('zoomSliderVal').innerHTML = documentZoomSlider.value + '%';" style="width: 90%;">
+                        <b>Resize document for printing:</b>
+                        <input type="range" name="documentZoom" id="documentZoomSlider" min="10" max="200" step="1" value="75">
+                        Current value: <b><span id="zoomSliderVal">75%</span></b>
+                    </label>
+                    <label id="printImages" class="checkbox">
+                        <input type="checkbox" name="printImage" id="printImageCheck" checked>
+                        <b>Print images</b> (<i>default: yes</i>)
+                    </label>
+                    <p style="color:red;font-weight:bold;">Options below ONLY apply to Wikimedia ZIMs</p>
                     <label id="printDesktopStyle" class="checkbox">
                         <input type="checkbox" name="printDesktop" id="printDesktopCheck" checked>
                         <b>Print the desktop (not mobile) style</b> (<i>default: yes</i>)
@@ -217,15 +227,6 @@
                     <label id="printInfoboxes" class="checkbox">
                         <input type="checkbox" name="printInfobox" id="printInfoboxCheck" checked>
                         <b>Print infoboxes</b> (<i>default: yes</i>)
-                    </label>
-                    <label id="printImages" class="checkbox">
-                        <input type="checkbox" name="printImage" id="printImageCheck" checked>
-                        <b>Print images</b> (<i>default: yes</i>)
-                    </label>
-                    <label oninput="document.getElementById('zoomSliderVal').innerHTML = documentZoomSlider.value + '%';" style="width: 90%;">
-                        <b>Resize document for printing:</b>
-                        <input type="range" name="documentZoom" id="documentZoomSlider" min="10" max="200" step="1" value="75">
-                        Current value: <b><span id="zoomSliderVal">75%</span></b>
                     </label>
                 </div>
                 <div class="modal-footer">
