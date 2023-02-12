@@ -790,6 +790,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog) {
                 //If not UWP, File System Access API, or Electron methods, display legacy File Select
                 document.getElementById('archiveFile').style.display = 'none';
+                document.getElementById('archiveFiles').style.display = 'none';
                 document.getElementById('UWPInstructions').style.display = 'none';
                 document.getElementById('archivesFound').style.display = 'none';
                 document.getElementById('instructions').style.display = appstate.selectedArchive ? 'none' : 'block';
