@@ -789,16 +789,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             }
             if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog) {
                 //If not UWP, File System Access API, or Electron methods, display legacy File Select
-                document.getElementById('archiveFile').style.display = 'none';
-                document.getElementById('archiveFiles').style.display = 'none';
-                document.getElementById('UWPInstructions').style.display = 'none';
+                document.getElementById('archiveFilesDiv').style.display = 'none';
                 document.getElementById('archivesFound').style.display = 'none';
                 document.getElementById('instructions').style.display = appstate.selectedArchive ? 'none' : 'block';
-                document.getElementById('archiveFilesLegacy').style.display = 'block';
+                document.getElementById('archiveFilesLegacyDiv').style.display = 'block';
                 document.getElementById('btnRefresh').style.display = 'none';
             } else {
-                document.getElementById('archiveFilesLegacy').style.display = 'none';
-                document.getElementById('instructions').style.display = 'none';
+                document.getElementById('archiveFilesLegacyDiv').style.display = 'none';
                 // Remove instructions if user has already loaded an archive, and it isn't the packaged archive
                 document.getElementById('UWPInstructions').style.display = appstate.selectedArchive && ~params.packagedFile.indexOf(appstate.selectedArchive._file.name) ? 'none' : 'block';
             }
