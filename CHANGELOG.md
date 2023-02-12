@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 2.3.6
+## Release 2.3.6
 
 * ENHANCEMENT: Tidier Configuration layout with collapsible options
 * ENHANCEMENT: Streamline access to legacy file picker when File System Access API unavailable
