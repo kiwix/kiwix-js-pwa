@@ -7,30 +7,30 @@ app.commandLine.appendSwitch("enable-experimental-web-platform-features");
 
 const contextMenu = require('electron-context-menu');
 contextMenu({
-	labels: {
-		cut: 'Cut',
-		copy: 'Copy',
-		paste: 'Paste',
-		save: 'Save Image',
-		saveImageAs: 'Save Image As…',
-		copyLink: 'Copy Link',
-		saveLinkAs: 'Save Link As…',
-		inspect: 'Inspect Element'
-	},
-	prepend: () => { },
-	append: () => { },
-	showCopyImageAddress: true,
-	showSaveImageAs: true,
-	showInspectElement: true,
-	showSaveLinkAs: true,
-	cut: true,
-	copy: true,
-	paste: true,
-	save: true,
-	saveImageAs: true,
-	copyLink: true,
-	saveLinkAs: true,
-	inspect: true
+    labels: {
+        cut: 'Cut',
+        copy: 'Copy',
+        paste: 'Paste',
+        save: 'Save Image',
+        saveImageAs: 'Save Image As…',
+        copyLink: 'Copy Link',
+        saveLinkAs: 'Save Link As…',
+        inspect: 'Inspect Element'
+    },
+    prepend: () => { },
+    append: () => { },
+    showCopyImageAddress: true,
+    showSaveImageAs: true,
+    showInspectElement: true,
+    showSaveLinkAs: true,
+    cut: true,
+    copy: true,
+    paste: true,
+    save: true,
+    saveImageAs: true,
+    copyLink: true,
+    saveLinkAs: true,
+    inspect: true
 });
 
 // This is used to set capabilities of the app: protocol in onready event below
@@ -62,10 +62,10 @@ function createWindow() {
             nodeIntegrationInWorker: true
         }
     });
-    
+
     // DEV: Uncomment this to open dev tools early in load process
     // mainWindow.webContents.openDevTools();
-    
+
     mainWindow.loadFile('www/index.html');
 }
 
@@ -74,7 +74,7 @@ function registerListeners() {
         dialog.showOpenDialog(mainWindow, {
             filters: [
                 { name: 'ZIM Archives', extensions: ['zim', 'zimaa'] }
-              ],
+            ],
             properties: ['openFile']
         }).then(function ({ filePaths }) {
             if (filePaths.length) {
@@ -94,6 +94,36 @@ function registerListeners() {
     ipcMain.on('check-updates', function (event) {
         console.log('Auto-update check request received...\n');
         autoUpdater.checkForUpdates();
+    });
+    // Registers listener for download events
+    mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
+        // Set the save path, making Electron not to prompt a save dialog.
+        // item.setSavePath('/tmp/save.pdf')
+        let receivedBytes = 0;
+        item.on('updated', (event, state) => {
+            if (state === 'interrupted') {
+                console.log('Download is interrupted but can be resumed');
+                mainWindow.webContents.send('dl-received', state);
+            } else if (state === 'progressing') {
+                if (item.isPaused()) {
+                    console.log('Download is paused');
+                    mainWindow.webContents.send('dl-received', 'paused');
+                } else {
+                    let newReceivedBytes = item.getReceivedBytes();
+                    if (newReceivedBytes - receivedBytes < 250000) return;
+                    receivedBytes = newReceivedBytes;
+                    mainWindow.webContents.send('dl-received', receivedBytes);
+                }
+            }
+        });
+        item.once('done', (event, state) => {
+            if (state === 'completed') {
+                console.log('Download successful');
+            } else {
+                console.log(`Download failed: ${state}`);
+            }
+            mainWindow.webContents.send('dl-received', state);
+        });
     });
 }
 
@@ -122,11 +152,11 @@ app.whenReady().then(() => {
     // Create the new window
     createWindow();
     registerListeners();
-    
+
 
     var appName = app.getName();
     console.log('App name: ' + appName);
-        
+
     // setTimeout(function () {
     //     // Don't auto update if the app is a packaged app
     //     if (/wikimed|wikivoyage/i.test(appName)) {
@@ -141,13 +171,13 @@ app.whenReady().then(() => {
     autoUpdater.on('update-downloaded', function (info) {
         mainWindow.webContents.send('update-available', info);
     });
-    
+
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
-    
+
 });
 
 // Quit when all windows are closed.
