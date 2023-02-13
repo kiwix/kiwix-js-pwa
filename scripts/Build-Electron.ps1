@@ -166,7 +166,7 @@ if ($electronbuild -eq "local" -and (-not $portableonly)) {
     cd $repo_dir
     rm -r $base_dir/linux-unpacked
     rm -r $base_dir/linux-ia32-unpacked
-    wsl sh -c "npm run dist-linux"
+    wsl bash -ic "npm run dist-linux"
     # Alternatively build with docker
     # docker $build_command
   }
