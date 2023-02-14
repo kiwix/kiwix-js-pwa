@@ -340,6 +340,9 @@ define([], function () {
 
     var downloadLinks = document.getElementById('downloadLinks');
     var serverResponse = document.getElementById('serverResponse');
+
+    // Used to decide the target for download links
+    var target = /Electron/.test(params.appType) ? '' : ' target="_blank"';
     
     // DEV: If you support more packaged files, add to this list
     var regexpFilter = /_medicine|mdwiki_/.test(params.packagedFile) ? /^(?!.+(_medicine_|mdwiki_))[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$\s+/mig : null;
@@ -432,12 +435,12 @@ define([], function () {
                 var body = document.getElementById('dl-panel-body');
                 var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^\/]*\.meta4$/i, "\/") + '">&lt;&lt; Back to list of files</a></p>\r\n';
                 bodyDoc += '<p><b>Directly download ZIM archive:</b></p>' + 
-                '<p><a href="' + requestedURL + '" target="_blank">' + requestedURL + '</a></p>' +
+                '<p><a href="' + requestedURL + '"' + target + '>' + requestedURL + '</a></p>' +
                 (altURL ? '<p><b>Possible mirror:</b></p>' + 
-                '<p><a href="' + altURL + '" target="_blank">' + altURL + '</a></p>' : '') +
+                '<p><a href="' + altURL + '"' + target + '>' + altURL + '</a></p>' : '') +
                 (~URL.indexOf(params.kiwixHiddenDownloadLink) ? '' :
                     '<p><b>Download with bittorrent:</b></p>' + 
-                    '<p><a href="' + torrentURL + '" target="_blank">' + torrentURL + '</a></p>');
+                    '<p><a href="' + torrentURL + '"' + target + '>' + torrentURL + '</a></p>');
                 body.outerHTML = body.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + bodyDoc + '</div>');
                 downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, "File in");
                 downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, "panel-warning");
@@ -456,7 +459,7 @@ define([], function () {
                 downloadLinks.innerHTML = '<span style="font-weight:bold;font-family:consolas,monospace;">' +
                     '<p style="color:salmon;">Unable to access the server. Please see message below for reason.</p>' +
                     '<p>You can either try again or else open this link in a new browser window:<br />' +
-                    '<a href="' + params.kiwixDownloadLink + '" target="_blank">' + params.kiwixDownloadLink + '</a></p><br /></span>';
+                    '<a href="' + params.kiwixDownloadLink + '"' + target + '>' + params.kiwixDownloadLink + '</a></p><br /></span>';
             }
             downloadLinks.style.display = "block";
         }
@@ -473,7 +476,7 @@ define([], function () {
             var megabytes$ = megabytes.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
             doc = "";
             for (var i = 1; i < linkArray.length; i++) { //NB we'ere intentionally discarding first link to kiwix.org (not to zim)
-            doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li><a href="$1" target="_blank">$1</a></li>\r\n');
+            doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li><a href="$1"' + target + '>$1</a></li>\r\n');
             }
             var headerDoc = 'We found the following links to your file:';
             var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^\/]*\.meta4$/i, "\/") + '">&lt;&lt; Back to list of files</a></p>\r\n';
@@ -484,9 +487,9 @@ define([], function () {
             bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unknown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
             bodyDoc += '<p><b>New! <i><a id="preview" target="_blank">Preview this archive</a></i></b> in your browser before downloading it</p>';
             if (megabytes > 200) bodyDoc += '<p><b>Consider using BitTorrent to download file:</b></p>\r\n<ul>' + 
-                '<li><b>BitTorrent file</b>: <a href="' + URL.replace(/\.meta4$/, ".torrent") + '" target="_blank">' +
+                '<li><b>BitTorrent file</b>: <a href="' + URL.replace(/\.meta4$/, ".torrent") + '"' + target + '>' +
                     URL.replace(/\.meta4$/, ".torrent") + '</a></li>\r\n' + 
-                 '<li><b>Magnet link</b>: <a id="magnet" href="' + URL.replace(/\.meta4$/, ".magnet") + '" target="_blank">' +
+                 '<li><b>Magnet link</b>: <a id="magnet" href="' + URL.replace(/\.meta4$/, ".magnet") + '"' + target + '>' +
                     URL.replace(/\.meta4$/, ".magnet") + '</a> (if torrent app doesn\'t launch, <a id="magnetAlt" href="#" target="_blank">tap here</a> and copy/paste link into your app)<br /></li></ul>\r\n';
             if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
                 bodyDoc += '<p style="color:red;">If you plan to store this archive on a drive/microSD formatted as <b>FAT32</b> (most are not), then you will need to download the file on a PC and split it into chunks less than 4GB: see <a href="https://github.com/kiwix/kiwix-js-windows/tree/main/AppPackages#download-a-zim-archive-all-platforms" target="_blank">Download a ZIM archive</a>.</p>\r\n';
