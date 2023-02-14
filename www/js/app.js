@@ -921,7 +921,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 serverResponse.innerHTML = 'Download progress: ' + data;
                 if (data === 'completed') setTimeout(function () {
                     serverResponse.style.removeProperty('color');
-                    serverResponse.style.display = 'none';
+                    if (document.getElementById('downloadLinks').style.display === 'none') {
+                        serverResponse.style.display = 'none';
+                    }
                 }, 10000);
             });
         }
