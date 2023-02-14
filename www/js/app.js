@@ -912,6 +912,20 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 console.log('Upgrade is available:' + data);
                 uiUtil.showUpgradeReady(data.version, 'install');
             });
+            var serverResponse = document.getElementById('serverResponse');
+            electronAPI.on('dl-received', function (data) {
+                // console.warn('Download in progress: ' + data);
+                serverResponse.style.display = 'inline';
+                var colour = data === 'completed' ? 'green' : isNaN(data) ? 'red' : 'goldenrod';
+                serverResponse.style.setProperty('color', colour, 'important'); 
+                serverResponse.innerHTML = 'Download progress: ' + data;
+                if (data === 'completed') setTimeout(function () {
+                    serverResponse.style.removeProperty('color');
+                    if (document.getElementById('downloadLinks').style.display === 'none') {
+                        serverResponse.style.display = 'none';
+                    }
+                }, 10000);
+            });
         }
 
         // Check for GitHub and Electron updates
