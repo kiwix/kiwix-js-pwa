@@ -205,7 +205,7 @@ define(rqDef, function(util) {
         //var innerDocument = window.frames[0].frameElement.contentDocument;
         var innerDocument = document.getElementById('articleContent').contentDocument;
         // For now, adding a printing stylesheet to a zimit ZIM appears to diasble printing of any images!
-        if (params.zimType === 'open') {
+        if (appstate.wikimediaZimLoaded) {
             //Add any missing classes
             innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(class\s*=\s*["'][^"']*vcard\b[^>]+>\s*<span)>/ig, '$1 class="map-pin">');
             // Remove encapsulated External Links
@@ -255,7 +255,7 @@ define(rqDef, function(util) {
         var sliderVal = document.getElementById("documentZoomSlider").value;
         sliderVal = ~~sliderVal;
         sliderVal = Math.floor(sliderVal * (Math.max(window.screen.width, window.screen.height) / 1440));
-        if (params.zimType === 'open') {
+        if (appstate.wikimediaZimLoaded) {
             printStyleInnerHTML += "body { font-size: " + sliderVal + "% !important; } ";
             printStyleInnerHTML += "}";
             printOptions.innerHTML = printStyleInnerHTML;
