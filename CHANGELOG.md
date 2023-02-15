@@ -1,5 +1,10 @@
 # Changelog
 
+## In-progress release 2.3.7
+
+* ENHANCEMENT: Provide indication of archive download progress in Electron app
+* ENHANCEMENT: Avoid opening blank window when downloading archive in Electron/NWJS
+
 ## Release 2.3.6
 
 * ENHANCEMENT: Tidier Configuration layout with collapsible options
