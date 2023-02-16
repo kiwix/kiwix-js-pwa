@@ -9,7 +9,6 @@
   "short_name": "Kiwix PWA",
   "theme_color": "black",
   "description": "Offline Wikipedia reader",
-  "orientation": "any",
   "background_color": "black",
   "related_applications": [
     {
