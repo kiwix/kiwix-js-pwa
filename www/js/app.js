@@ -4117,7 +4117,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     // If it's an asset, we have to mark the dirEntry so that we don't load it if it has an html MIME type
                     var titleIsAsset = /\??isKiwixAsset/.test(title) || /\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(title);
                     title = title.replace(/\??isKiwixAsset/, '');
-                    if (appstate.selectedArchive.landingPageUrl === title) params.isLandingPage = true;
+                    if (appstate.selectedArchive && appstate.selectedArchive.landingPageUrl === title) params.isLandingPage = true;
                     var messagePort = event.ports[0];
                     if (!anchorParameter && event.data.anchorTarget) anchorParameter = event.data.anchorTarget;
                     // Intercept landing page if already transformed (because this might have a fake dirEntry)
