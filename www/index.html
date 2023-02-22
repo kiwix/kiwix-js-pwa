@@ -65,23 +65,6 @@
             window.fs = requireNode('fs');
             nwjsVersion = nw.process.versions.nw;
         } 
-        // if ('serviceWorker' in navigator && !/^ms-appx-web/i.test(window.location.protocol) && nwjsVersion !== '0.14.7') {
-        //     console.log('Trying to activate Service Worker...');
-        //     if (navigator.serviceWorker.controller) {
-        //         console.log('Service Worker is already active');
-        //     } else {
-        //         // Register the service worker
-        //         navigator.serviceWorker.register("../service-worker.js", {
-        //             scope: "../"
-        //         }).then(function (reg) {
-        //             console.log("Service Worker has been registered for scope: " + reg.scope);
-        //         }).catch(function (err) {
-        //             console.error('Service Worker could not be registered', err);
-        //         });
-        //     }
-        // } else {
-        //     console.log('Service Worker not (re-)registered in this context...');
-        // }
     </script>
 </head>
 <body role="application" class="dark">
