@@ -457,6 +457,19 @@ function getBestAvailableStorageAPI() {
     return type;
 }
 
+// Polyfill Atomics for single-threaded libzim execution in Worker for browsers that do not support Atomic operations
+if (typeof Atomics === 'undefined') {
+    var Atomics = {};
+    Atomics.add = function (arr, idx, num) {
+        var old = arr[idx];
+        arr[idx] = old + num;
+        return old;
+    }
+    Atomics.load = function (arr, idx) {
+        return arr[idx];
+    }
+} 
+
 
 require.config({
     //enforceDefine: true, //This is for debugging IE errors
