@@ -169,6 +169,10 @@
     <Content Include="www\js\katex\contrib\render-a11y-string.min.js" />
     <Content Include="www\js\lib\arrayFromPolyfill.js" />
     <Content Include="www\js\lib\darkreader.min.js" />
+    <Content Include="www\js\lib\libzim-asm.js" />
+    <Content Include="www\js\lib\libzim-wasm.js" />
+    <Content Include="www\js\lib\libzim-wasm.wasm" />
+    <Content Include="www\js\lib\libzim_wrapper.js" />
     <Content Include="www\js\lib\promisePolyfill.js" />
     <Content Include="www\js\lib\transformZimit.js" />
     <Content Include="www\js\lib\updater.js" />
