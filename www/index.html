@@ -1113,6 +1113,11 @@
                                         <option value="asm.dev">ASM debug</option>
                                     </select>
                                     <p><i>Warning! Disables OS/ZIM checks and may make title search unresponsive!</i></p>
+                                    <label class="checkbox" title="In some browsers on some platforms, drag-and-drop may malfunction and make it difficult to select text, and other operations. Disable it here if it is causing issues." >
+                                        <input type="checkbox" name="disableDragAndDrop" id="disableDragAndDropCheck">
+                                        <span class="checkmark"></span>
+                                        <b>Disable drag-and-drop</b> (in case it is causing anomalies)
+                                    </label>
                                     <label id="bypassAppCacheDiv" class="checkbox" title="WARNING: Leaving this checked will prevent offline usage of the PWA. Setting will clear all existing Cache API caches, but assetsCache will be used unless also disabled above. For testing new code with the PWA.">
                                         <input type="checkbox" name="bypassAppCache" id="bypassAppCacheCheck">
                                         <span class="checkmark"></span>

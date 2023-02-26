@@ -82,10 +82,10 @@ params['openAllSections'] = getSetting('openAllSections') != null ? getSetting('
 params['cssCache'] = getSetting('cssCache') != null ? getSetting('cssCache') : true; //Set default to true to use cached CSS, false to use Zim only
 params['cssTheme'] = getSetting('cssTheme') || 'light'; //Set default to 'auto', 'light', 'dark' or 'invert' to use respective themes for articles
 params['cssUITheme'] = getSetting('cssUITheme') || 'light'; //Set default to 'auto', 'light' or 'dark' to use respective themes for UI'
-params['resetDisplayOnResize'] = getSetting('resetDisplayOnResize') != null ? getSetting('resetDisplayOnResize') : false; // Default for the display reset feature that fixes bugs with secondary displays
+params['resetDisplayOnResize'] = getSetting('resetDisplayOnResize') == true; // Default for the display reset feature that fixes bugs with secondary displays
 params['imageDisplay'] = getSetting('imageDisplay') != null ? getSetting('imageDisplay') : true; //Set default to display images from Zim
 params['manipulateImages'] = getSetting('manipulateImages') != null ? getSetting('manipulateImages') : true; //Makes dataURIs by default instead of BLOB URIs for images
-params['linkToWikimediaImageFile'] = getSetting('linkToWikimediaImageFile') != null ? getSetting('linkToWikimediaImageFile') : false; //Links images to Wikimedia online version if ZIM archive is a Wikipedia archive
+params['linkToWikimediaImageFile'] = getSetting('linkToWikimediaImageFile') == true; //Links images to Wikimedia online version if ZIM archive is a Wikipedia archive
 params['hideToolbars'] = getSetting('hideToolbars') != null ? getSetting('hideToolbars') : true; //Set default to true (hides both), 'top' (hides top only), or false (no hiding)
 params['rememberLastPage'] = getSetting('rememberLastPage') != null ? getSetting('rememberLastPage') : true; //Set default option to remember the last visited page between sessions
 params['assetsCache'] = getSetting('assetsCache') != null ? getSetting('assetsCache') : true; // Whether to use cache by default or not
@@ -100,6 +100,7 @@ params['omegaChar'] = getSetting('omegaChar') || 'Z'; //Set default end of alpha
 params['contentInjectionMode'] = getSetting('contentInjectionMode') || ((navigator.serviceWorker && !window.nw) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
 params['allowInternetAccess'] = getSetting('allowInternetAccess'); // Access disabled unless user specifically asked for it: NB allow this value to be null as we use it later
 params['openExternalLinksInNewTabs'] = getSetting('openExternalLinksInNewTabs') !== null ? getSetting('openExternalLinksInNewTabs') : true; // Parameter to turn on/off opening external links in new tab
+params['disableDragAndDrop'] = getSetting('disableDragAndDrop') == true; // A parameter to disable drag-and-drop
 params['windowOpener'] = getSetting('windowOpener'); // 'tab|window|false' A setting that determines whether right-click/long-press of a ZIM link opens a new window/tab
 params['rightClickType'] = getSetting('rightClickType'); // 'single|double|false' A setting that determines whether a single or double right-click is used to open a new window/tab
 params['navButtonsPos'] = getSetting('navButtonsPos') || 'bottom'; // 'top|bottom' A setting that determines where the back-forward nav buttons appear
@@ -251,6 +252,7 @@ document.getElementById('hideToolbarsCheck').indeterminate = params.hideToolbars
 document.getElementById('hideToolbarsCheck').readOnly = params.hideToolbars === "top";
 document.getElementById('hideToolbarsState').innerHTML = (params.hideToolbars === "top" ? "top" : params.hideToolbars ? "both" : "never");
 document.getElementById('openExternalLinksInNewTabsCheck').checked = params.openExternalLinksInNewTabs;
+document.getElementById('disableDragAndDropCheck').checked = params.disableDragAndDrop;
 document.getElementById('debugLibzimASMDrop').value = params.debugLibzimASM || '';
 if (params.windowOpener === null) { // Setting has never been activated, so determine a sensible default
     params.windowOpener = /UWP/.test(params.appType) && params.contentInjectionMode === 'jquery' ? false : 

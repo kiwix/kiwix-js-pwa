@@ -1365,6 +1365,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             // This will also send any new values to Service Worker
             refreshCacheStatus();
         });
+        document.getElementById('disableDragAndDropCheck').addEventListener('change', function () {
+            params.disableDragAndDrop = this.checked ? true : false;
+            settingsStore.setItem('disableDragAndDrop', params.disableDragAndDrop, Infinity);
+            uiUtil.systemAlert('<p>We will now attempt to reload the app to apply the new setting.</p>' + 
+                '<p>(If you cancel, then the setting will only be applied when you next start the app.)</p>', 'Reload app', true).then(function (result) {
+                if (result) {
+                    window.location.reload();
+                }
+            });
+        });
         $('input:checkbox[name=hideActiveContentWarning]').on('change', function () {
             params.hideActiveContentWarning = this.checked ? true : false;
             settingsStore.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
@@ -2948,17 +2958,19 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 });
             }
         }
+        
+        if (!params.disableDragAndDrop) {
+            // Define globalDropZone (universal drop area) and configDropZone (highlighting area on Config page)
+            var globalDropZone = document.getElementById('search-article');
+            var configDropZone = document.getElementById('configuration');
 
-        // Define globalDropZone (universal drop area) and configDropZone (highlighting area on Config page)
-        var globalDropZone = document.getElementById('search-article');
-        var configDropZone = document.getElementById('configuration');
-
-        // Set the main drop zone
-        globalDropZone.addEventListener('dragover', handleGlobalDragover);
-        globalDropZone.addEventListener('drop', handleFileDrop);
-        configDropZone.addEventListener('dragleave', function (e) {
-            configDropZone.style.border = '';
-        });
+            // Set the main drop zone
+            globalDropZone.addEventListener('dragover', handleGlobalDragover);
+            globalDropZone.addEventListener('drop', handleFileDrop);
+            configDropZone.addEventListener('dragleave', function (e) {
+                configDropZone.style.border = '';
+            });
+        }
         
         /**
          * Displays the zone to select files from the archive
@@ -4023,7 +4035,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             var docBody = doc.body;
             if (docBody) {
                 // Deflect drag-and-drop of ZIM file on the iframe to Config
-                if (appstate.target === 'iframe') {
+                if (!params.disableDragAndDrop && appstate.target === 'iframe') {
                     docBody.addEventListener('dragover', handleIframeDragover);
                     docBody.addEventListener('drop', handleIframeDrop);
                     setupTableOfContents();
@@ -4904,9 +4916,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         if (htmlCSS) htmlCSS.forEach(function (cl) {
                             docBody.classList.add(cl);
                         });
-                        // Deflect drag-and-drop of ZIM file on the iframe to Config
-                        docBody.addEventListener('dragover', handleIframeDragover);
-                        docBody.addEventListener('drop', handleIframeDrop);
+                        if (!params.disableDragAndDrop) {
+                            // Deflect drag-and-drop of ZIM file on the iframe to Config
+                            docBody.addEventListener('dragover', handleIframeDragover);
+                            docBody.addEventListener('drop', handleIframeDrop);
+                        }
                         listenForSearchKeys();
                         setupTableOfContents();
                         var makeLink = uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
