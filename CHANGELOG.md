@@ -4,6 +4,9 @@
 
 * ENHANCEMENT: Provide indication of archive download progress in Electron app
 * ENHANCEMENT: Avoid opening blank window when downloading archive in Electron/NWJS
+* ENHANCEMENT: Provide troubleshooting option to disable drag-and-drop
+* FIX: Removed orientation key that prevented proper setting of orientation in some contexts
+* FIX: Improved detection of Wikimedia ZIMs for seleciton of printing stylesheet
 
 ## Release 2.3.6
 
