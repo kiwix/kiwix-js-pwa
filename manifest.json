@@ -10,6 +10,7 @@
   "theme_color": "black",
   "description": "Offline Wikipedia reader",
   "background_color": "black",
+  "orientation": "natural",
   "related_applications": [
     {
       "platform": "windows",
