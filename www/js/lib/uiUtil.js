@@ -1001,6 +1001,11 @@ define(rqDef, function(util) {
     function lockDisplayOrientation(val) {
         if (screen && screen.orientation && screen.orientation.lock) {
             if (val) {
+                var de = document.documentElement;
+                if (de.requestFullscreen) { de.requestFullscreen(); }
+                else if (de.mozRequestFullScreen) { de.mozRequestFullScreen(); }
+                else if (de.webkitRequestFullscreen) { de.webkitRequestFullscreen(); }
+                else if (de.msRequestFullscreen) { de.msRequestFullscreen(); }
                 return screen.orientation.lock(val).then(function () {
                     console.log(val ? ('Display orientation locked to ' + val) : 'Display orientation unlocked.');
                 }).catch(function (error) {
@@ -1008,6 +1013,10 @@ define(rqDef, function(util) {
                 });
             } else {
                 screen.orientation.unlock();
+                if (document.exitFullscreen) { document.exitFullscreen(); }
+                else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
+                else if (document.mozCancelFullScreen) { document.mozCancelFullScreen(); }
+                else if (document.msExitFullscreen) { document.msExitFullscreen(); }
                 return Promise.resolve();
             }
         } else {
