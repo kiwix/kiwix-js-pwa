@@ -994,6 +994,30 @@ define(rqDef, function(util) {
     }
 
     /**
+     * Attempts to lock the display orientation using the Screen Orientation Lock API
+     * @param {string} val A valid value in the API, e.g. '', 'natural', 'portrait', 'landscape' 
+     * @returns 
+     */
+    function lockDisplayOrientation(val) {
+        if (screen && screen.orientation && screen.orientation.lock) {
+            if (val) {
+                return screen.orientation.lock(val).then(function () {
+                    console.log(val ? ('Display orientation locked to ' + val) : 'Display orientation unlocked.');
+                }).catch(function (error) {
+                    console.warn('Error locking display orientation (but in some contexts, it may have worked anyway)', error);
+                });
+            } else {
+                screen.orientation.unlock();
+                return Promise.resolve();
+            }
+        } else {
+            console.warn('The screen.orientation.lock API is not supported on this device!');
+            return Promise.resolve('unsupported');
+        }
+    }
+    
+
+    /**
      * Finds the closest <a> or <area> enclosing tag of an element.
      * Returns undefined if there isn't any.
      * 
@@ -1048,6 +1072,7 @@ define(rqDef, function(util) {
         extractHTML: extractHTML,
         checkServerIsAccessible: checkServerIsAccessible,
         initTouchZoom: initTouchZoom,
+        lockDisplayOrientation: lockDisplayOrientation,
         reportAssemblerErrorToAPIStatusPanel: reportAssemblerErrorToAPIStatusPanel,
         reportSearchProviderToAPIStatusPanel: reportSearchProviderToAPIStatusPanel,
         warnAndOpenExternalLinkInNewTab: warnAndOpenExternalLinkInNewTab,

@@ -1380,6 +1380,37 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             settingsStore.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
             refreshCacheStatus();
         });
+        // Run lockDisplayOrientation on startup
+        if (params.lockDisplayOrientation) {
+            uiUtil.lockDisplayOrientation(params.lockDisplayOrientation);
+            document.getElementById('lockDisplayOrientationDrop').value = params.lockDisplayOrientation;
+        }
+        document.getElementById('lockDisplayOrientationDrop').addEventListener('change', function (event) {
+            var that = this;
+            var message = event.target.value ? ('<p>Attempting to set the orientation lock to: ' + event.target.value + '</p>') : '<p>Attempting to clear the orientation lock.</p>';
+            if (event.target.value) message += '<p><i>Please be aware that this setting may only work in mobile contexts where the app is installed or in standalone mode.</i></p>'
+                return uiUtil.lockDisplayOrientation(event.target.value).then(function (rtn) {
+                    if (rtn === 'unsupported') {
+                        uiUtil.systemAlert('It appears that the Screen Orientation Lock API is not supported on this device!');
+                    } else {
+                        params.lockDisplayOrientation = event.target.value || '';
+                        settingsStore.setItem('lockDisplayOrientation', params.lockDisplayOrientation, Infinity);
+                        that.value = params.lockDisplayOrientation || '';
+                    }
+                }).catch(function (err) {
+                    // Note that in desktop contexts, the API might reject, but could still work
+                    if (err.name === 'NotSupportedError') {
+                        params.lockDisplayOrientation = event.target.value || '';
+                        settingsStore.setItem('lockDisplayOrientation', params.lockDisplayOrientation, Infinity);
+                        that.value = params.lockDisplayOrientation || '';
+                        if (params.lockDisplayOrientation) uiUtil.systemAlert('<p>The Screen Orientation Lock API returned the following error, but this is expected on Desktop devices.</p>' + 
+                            "<p>If the app is installed, and it doesn't work, please reset this manually to 'Unlocked' or try a different setting.</p>");
+                    } else {
+                        uiUtil.systemAlert('There was an error setting the requested orientation: ' + err.toString());
+                        that.value = params.lockDisplayOrientation;
+                    }
+                });
+        })
         document.getElementById('debugLibzimASMDrop').addEventListener('change', function (event) {
             var that = this;
             var message = '<p>App will reload to apply the new setting.</p>'
@@ -1395,7 +1426,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     that.value = params.debugLibzimASM || '';
                 }
             });
-        })
+        });
         $('input:checkbox[name=openExternalLinksInNewTabs]').on('change', function () {
             params.openExternalLinksInNewTabs = this.checked ? true : false;
             settingsStore.setItem('openExternalLinksInNewTabs', params.openExternalLinksInNewTabs, Infinity);

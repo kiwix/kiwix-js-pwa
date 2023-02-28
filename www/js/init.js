@@ -130,6 +130,7 @@ params.localUWPSettings = /UWP/.test(params.appType) ? Windows.Storage.Applicati
 appstate['target'] = 'iframe'; // The target for article loads (this should always be 'iframe' initially, and will only be changed as a result of user action)
 params['mapsURI'] = getSetting('mapsURI') || (/UWP|Windows/.test(params.appType) ? 'bingmaps:' : 'https://www.openstreetmap.org/'); // Protocol with colon ('bingmaps:') or URL with final slash ('https://www.openstreetmap.org/')
 params['debugLibzimASM'] = getSetting('debugLibzimASM'); // 'wasm|asm' Forces use of wasm or asm for libzim decoder. You can also set this as an override URL querystring e.g. ?debugLibzimASM=wasm;
+params['lockDisplayOrientation'] = getSetting('lockDisplayOrientation'); // 'portrait|landscape' (or empty for no lock)
 params['noHiddenElementsWarning'] = getSetting('noHiddenElementsWarning') !== null ? getSetting('noHiddenElementsWarning') : false; // A one-time warning about Hidden elements display
 
 // Apply any override parameters in querystring (done as a self-calling function to avoid creating global variables)
