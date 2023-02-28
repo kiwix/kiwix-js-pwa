@@ -1002,10 +1002,10 @@ define(rqDef, function(util) {
         if (val) {
             // Request setting the app to full-screen mode
             var de = document.documentElement;
-            if (de.requestFullscreen) { de.requestFullscreen(); }
-            else if (de.mozRequestFullScreen) { de.mozRequestFullScreen(); }
-            else if (de.webkitRequestFullscreen) { de.webkitRequestFullscreen(); }
-            else if (de.msRequestFullscreen) { de.msRequestFullscreen(); }
+            if (de.fullscreenEnabled && de.requestFullscreen) { de.requestFullscreen(); }
+            else if (de.mozFullScreenEnabled && de.mozRequestFullScreen) { de.mozRequestFullScreen(); }
+            else if (de.webkitFullscreenEnabled && de.webkitRequestFullscreen) { de.webkitRequestFullscreen(); }
+            else if (de.msFullscreenEnabled && de.msRequestFullscreen) { de.msRequestFullscreen(); }
         } else {
             if (document.exitFullscreen) { document.exitFullscreen(); }
             else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }

@@ -2988,6 +2988,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     uiUtil.systemAlert(message, label);
                 });
             }
+            // Because full-screen can be lost after file picking, we need to re-enable it
+            if (params.lockDisplayOrientation) uiUtil.lockDisplayOrientation(params.lockDisplayOrientation);
         }
         
         if (!params.disableDragAndDrop) {
@@ -3417,6 +3419,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // callbackError which is called in case of an error
                 uiUtil.systemAlert(message, label);
             });
+            // Because full-screen can be lost after file picking, we need to re-enable it
+            if (params.lockDisplayOrientation) uiUtil.lockDisplayOrientation(params.lockDisplayOrientation);
         }
 
         function loadPackagedArchive() {
