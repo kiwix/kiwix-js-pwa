@@ -2988,8 +2988,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     uiUtil.systemAlert(message, label);
                 });
             }
-            // Because full-screen can be lost after file picking, we need to re-enable it
-            if (params.lockDisplayOrientation) uiUtil.lockDisplayOrientation(params.lockDisplayOrientation);
+            // Because full-screen can be lost after file picking, we need to re-enable it with required user gesture
+            if (params.lockDisplayOrientation) {
+                var refreshFullScreen = function () {
+                    uiUtil.lockDisplayOrientation(params.lockDisplayOrientation);
+                    window.removeEventListener('click', refreshFullScreen, true);
+                    articleDocument.removeEventListener('click', refreshFullScreen, true);
+                };
+                window.addEventListener('click', refreshFullScreen, true);
+                articleDocument.addEventListener('click', refreshFullScreen, true);
+            }
         }
         
         if (!params.disableDragAndDrop) {
@@ -3419,8 +3427,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // callbackError which is called in case of an error
                 uiUtil.systemAlert(message, label);
             });
-            // Because full-screen can be lost after file picking, we need to re-enable it
-            if (params.lockDisplayOrientation) uiUtil.lockDisplayOrientation(params.lockDisplayOrientation);
+            // Because full-screen can be lost after file picking, we need to re-enable it with required user gesture
+            if (params.lockDisplayOrientation) {
+                var refreshFullScreen = function () {
+                    uiUtil.lockDisplayOrientation(params.lockDisplayOrientation);
+                    window.removeEventListener('click', refreshFullScreen, true);
+                    articleDocument.removeEventListener('click', refreshFullScreen, true);
+                };
+                window.addEventListener('click', refreshFullScreen, true);
+                articleDocument.addEventListener('click', refreshFullScreen, true);
+            }
         }
 
         function loadPackagedArchive() {
