@@ -1382,12 +1382,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         });
         // Run lockDisplayOrientation on startup
         document.getElementById('lockDisplayOrientationDrop').value = params.lockDisplayOrientation;
-        var headerArea = document.getElementById('top');
-        var processHeaderEvent = function (e) {
+        var headerArea = document.getElementById('scrollbox');
+        var refreshFullScreen = function (e) {
             if (params.lockDisplayOrientation) uiUtil.lockDisplayOrientation(params.lockDisplayOrientation);
-            // headerArea.removeEventListener('mouseup', refreshFullScreen, true);
         };
-        headerArea.addEventListener('mouseup', processHeaderEvent, true);
+        headerArea.addEventListener('mouseup', refreshFullScreen, true);
         document.getElementById('lockDisplayOrientationDrop').addEventListener('change', function (event) {
             var that = this;
             var message = event.target.value ? ('<p>Attempting to set the orientation lock to: ' + event.target.value + '</p>') : '<p>Attempting to clear the orientation lock.</p>';
@@ -2991,15 +2990,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     uiUtil.systemAlert(message, label);
                 });
             }
-            // Because full-screen can be lost after file picking, we need to re-enable it with required user gesture
-            if (params.lockDisplayOrientation) {
-                var appArea = document.getElementById('search-article');
-                var refreshFullScreen = function () {
-                    uiUtil.lockDisplayOrientation(params.lockDisplayOrientation);
-                    appArea.removeEventListener('click', refreshFullScreen, true);
-                };
-                appArea.addEventListener('click', refreshFullScreen, true);
-            }
         }
         
         if (!params.disableDragAndDrop) {
@@ -3429,15 +3419,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 // callbackError which is called in case of an error
                 uiUtil.systemAlert(message, label);
             });
-            // Because full-screen can be lost after file picking, we need to re-enable it with required user gesture
-            if (params.lockDisplayOrientation) {
-                var appArea = document.getElementById('search-article');
-                var refreshFullScreen = function () {
-                    uiUtil.lockDisplayOrientation(params.lockDisplayOrientation);
-                    appArea.removeEventListener('click', refreshFullScreen, true);
-                };
-                appArea.addEventListener('click', refreshFullScreen, true);
-            }
         }
 
         function loadPackagedArchive() {
@@ -4086,6 +4067,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             var doc = articleWindow.document;
             var docBody = doc.body;
             if (docBody) {
+                // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
+                articleWindow.kiwixType = appstate.target;
                 // Deflect drag-and-drop of ZIM file on the iframe to Config
                 if (!params.disableDragAndDrop && appstate.target === 'iframe') {
                     docBody.addEventListener('dragover', handleIframeDragover);
@@ -4127,6 +4110,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 }
                 // Trap any clicks on the iframe to detect if mouse back or forward buttons have been pressed (Chromium does this natively)
                 if (/UWP/.test(params.appType)) docBody.addEventListener('pointerup', onPointerUp);
+                // Trap clicks in the iframe to restore Fullscreen mode
+                if (params.lockDisplayOrientation && articleWindow.kiwixType === 'iframe') articleWindow.addEventListener('mousedown', refreshFullScreen, true);
                 // The content is ready : we can hide the spinner
                 setTab();
                 setTimeout(function() {
@@ -4974,6 +4959,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             docBody.addEventListener('drop', handleIframeDrop);
                         }
                         listenForSearchKeys();
+                        // Trap clicks in the iframe to restore Fullscreen mode
+                        if (params.lockDisplayOrientation) articleWindow.addEventListener('mousedown', refreshFullScreen, true);
                         setupTableOfContents();
                         var makeLink = uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
                         var linkListener = eval(makeLink);
