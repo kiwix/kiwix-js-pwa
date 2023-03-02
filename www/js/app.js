@@ -1381,10 +1381,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             refreshCacheStatus();
         });
         // Run lockDisplayOrientation on startup
-        if (params.lockDisplayOrientation) {
-            uiUtil.lockDisplayOrientation(params.lockDisplayOrientation);
-            document.getElementById('lockDisplayOrientationDrop').value = params.lockDisplayOrientation;
-        }
+        document.getElementById('lockDisplayOrientationDrop').value = params.lockDisplayOrientation;
+        var headerArea = document.getElementById('top');
+        var processHeaderEvent = function (e) {
+            if (params.lockDisplayOrientation) uiUtil.lockDisplayOrientation(params.lockDisplayOrientation);
+            // headerArea.removeEventListener('mouseup', refreshFullScreen, true);
+        };
+        headerArea.addEventListener('mouseup', processHeaderEvent, true);
         document.getElementById('lockDisplayOrientationDrop').addEventListener('change', function (event) {
             var that = this;
             var message = event.target.value ? ('<p>Attempting to set the orientation lock to: ' + event.target.value + '</p>') : '<p>Attempting to clear the orientation lock.</p>';
@@ -2990,13 +2993,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             }
             // Because full-screen can be lost after file picking, we need to re-enable it with required user gesture
             if (params.lockDisplayOrientation) {
+                var appArea = document.getElementById('search-article');
                 var refreshFullScreen = function () {
                     uiUtil.lockDisplayOrientation(params.lockDisplayOrientation);
-                    window.removeEventListener('click', refreshFullScreen, true);
-                    articleDocument.removeEventListener('click', refreshFullScreen, true);
+                    appArea.removeEventListener('click', refreshFullScreen, true);
                 };
-                window.addEventListener('click', refreshFullScreen, true);
-                articleDocument.addEventListener('click', refreshFullScreen, true);
+                appArea.addEventListener('click', refreshFullScreen, true);
             }
         }
         
@@ -3429,13 +3431,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             });
             // Because full-screen can be lost after file picking, we need to re-enable it with required user gesture
             if (params.lockDisplayOrientation) {
+                var appArea = document.getElementById('search-article');
                 var refreshFullScreen = function () {
                     uiUtil.lockDisplayOrientation(params.lockDisplayOrientation);
-                    window.removeEventListener('click', refreshFullScreen, true);
-                    articleDocument.removeEventListener('click', refreshFullScreen, true);
+                    appArea.removeEventListener('click', refreshFullScreen, true);
                 };
-                window.addEventListener('click', refreshFullScreen, true);
-                articleDocument.addEventListener('click', refreshFullScreen, true);
+                appArea.addEventListener('click', refreshFullScreen, true);
             }
         }
 
