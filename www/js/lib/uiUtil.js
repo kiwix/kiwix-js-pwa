@@ -994,6 +994,30 @@ define(rqDef, function(util) {
     }
 
     /**
+     * Puts the requested element into full-screen mode, or cancels full-screen mode if no element is provided
+     * @param {Element} el The element to put into full-screen mode. If not provided, the function will cancel any full-screen mode.
+     * @returns {Boolean} True if the element was requested to be put into full-screen mode, false otherwise
+     */
+    function requestOrCancelFullScreen(el) {
+        var appIsFullScreen = function () {
+            return !!(document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+        }
+        // Don't do anything if already in full-screen mode, and user has not requested to exit full-screen mode
+        if (el && appIsFullScreen()) {
+            console.log('Display is already full screen');
+            return true;
+        }
+        // Choose the correct method to request or cancel full-screen mode
+        var rq = el ? (el.requestFullScreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullScreen) : 
+            (document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen);
+        if (rq) {
+            rq.call(el || document);
+            console.log((el ? 'Requested' : 'Exited') + ' full-screen mode');
+        }
+        return el && rq ? true : false;
+    }
+    
+    /**
      * Attempts to put the app into full-screen mode and (if requested) lock the display orientation using the Screen Orientation Lock API
      * @param {string} val A valid value in the API, e.g. '', 'natural', 'portrait', 'landscape' 
      * @returns 
@@ -1001,19 +1025,12 @@ define(rqDef, function(util) {
     function lockDisplayOrientation(val) {
         if (val) {
             // Request setting the app to full-screen mode
-            var de = document.documentElement;
-            if (de.requestFullscreen) { de.requestFullscreen(); }
-            else if (de.mozRequestFullScreen) { de.mozRequestFullScreen(); }
-            else if (de.webkitRequestFullscreen) { de.webkitRequestFullscreen(); }
-            else if (de.msRequestFullscreen) { de.msRequestFullscreen(); }
+            // var articleArea = document.getElementById('search-article');
+            requestOrCancelFullScreen(document.documentElement);
         } else {
-            if (document.exitFullscreen) { document.exitFullscreen(); }
-            else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
-            else if (document.mozCancelFullScreen) { document.mozCancelFullScreen(); }
-            else if (document.msExitFullscreen) { document.msExitFullscreen(); }
+            requestOrCancelFullScreen();
         }
         if (val === 'fullscreen') {
-            console.log('Display set to full screen');
             return Promise.resolve();
         } else {
             if (screen && screen.orientation && screen.orientation.lock) {
@@ -1030,7 +1047,7 @@ define(rqDef, function(util) {
             } else {
                 console.warn('The screen.orientation.lock API is not supported on this device!');
                 var rtn = val ? 'unsupported' : '';
-                return Promise.resolve(val);
+                return Promise.resolve(rtn);
             }
         }
     }
