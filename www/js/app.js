@@ -764,14 +764,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         function setTab(activeBtn) {
             // Highlight the selected section in the navbar
             setActiveBtn(activeBtn);
-            var btnAbout = document.getElementById('btnAbout');
-            if (!activeBtn || activeBtn == "btnHome" || activeBtn == "findText") {
-                btnAbout.innerHTML = '<span class="glyphicon glyphicon-print"></span>';
-                btnAbout.title = 'Ctrl-P: Print';
-            } else {
-                btnAbout.innerHTML = '<span class="glyphicon glyphicon-info-sign"></span>';
-                btnAbout.title = 'About';
-            }
+            setDynamicIcons(activeBtn);
             clearFindInArticle();
             //Re-enable bottom toolbar display
             document.getElementById('footer').style.display = "block";
@@ -881,6 +874,28 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             if (activeBtn === 'btnConfigure') checkPWAUpdate();
             // Resize iframe
             setTimeout(resizeIFrame, 100);
+        }
+
+        // Set the dynamic icons in the navbar
+        function setDynamicIcons(btn) {
+            var btnAbout = document.getElementById('btnAbout');
+            if (params.lockDisplayOrientation) {
+                if (uiUtil.appIsFullScreen()) {
+                    btnAbout.innerHTML = '<span class="glyphicon glyphicon-resize-small"></span>';
+                    btnAbout.title = 'Exit fullscreen';
+                } else {
+                    btnAbout.innerHTML = '<span class="glyphicon glyphicon-fullscreen"></span>';
+                    btnAbout.title = 'Return to fullscreen';
+                }
+            } else {
+                if (!btn || btn == "btnHome" || btn == "findText") {
+                    btnAbout.innerHTML = '<span class="glyphicon glyphicon-print"></span>';
+                    btnAbout.title = 'Ctrl-P: Print';
+                } else {
+                    btnAbout.innerHTML = '<span class="glyphicon glyphicon-info-sign"></span>';
+                    btnAbout.title = 'About';
+                }
+            }
         }
 
         // Check if a PWA update is available
@@ -1081,6 +1096,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 printIntercept();
                 return;
             }
+            if (/glyphicon-(fullscreen|resize-small)/.test(btnAboutElement.innerHTML)) return;
             //Check if we're 'unclicking' the button
             var searchDiv = document.getElementById('about');
             if (searchDiv.style.display != 'none') {
@@ -1383,8 +1399,32 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         // Run lockDisplayOrientation on startup
         document.getElementById('lockDisplayOrientationDrop').value = params.lockDisplayOrientation || '';
         var topArea = document.getElementById('search-article');
-        var refreshFullScreen = function () {
-            if (params.lockDisplayOrientation) uiUtil.lockDisplayOrientation(params.lockDisplayOrientation);
+        var refreshFullScreen = function (evt) {
+            if (evt.target.id === 'lockDisplayOrientationDrop') return;
+            if (params.lockDisplayOrientation && (evt.target.id === 'btnAbout' || /glyphicon-(resize-small|fullscreen)/.test(evt.target.className))) {
+                evt.preventDefault();
+                evt.stopPropagation();
+                if (uiUtil.appIsFullScreen()) {
+                    // Cancel fullscreen mode
+                    uiUtil.lockDisplayOrientation().then(function () {
+                        setDynamicIcons();
+                    });
+                    params.lockDisplayOrientation = '';
+                    settingsStore.setItem('lockDisplayOrientation', '', Infinity);
+                    document.getElementById('lockDisplayOrientationDrop').value = '';
+                } else {
+                    // Enter fullscreen mode
+                    uiUtil.lockDisplayOrientation(params.lockDisplayOrientation).then(function () {
+                        setDynamicIcons();
+                    }).catch(function () {
+                        setDynamicIcons();
+                    });
+                }
+            } else {
+                if (params.lockDisplayOrientation) uiUtil.lockDisplayOrientation(params.lockDisplayOrientation).catch(function () {
+                    return;
+                });
+            }
         };
         topArea.addEventListener('mouseup', refreshFullScreen);
         document.getElementById('lockDisplayOrientationDrop').addEventListener('change', function (event) {
@@ -1393,24 +1433,27 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             if (event.target.value) message += '<p><i>Please be aware that this setting may only work in mobile contexts where the app is installed or in standalone mode.</i></p>'
                 return uiUtil.lockDisplayOrientation(event.target.value).then(function (rtn) {
                     if (rtn === 'unsupported') {
-                        uiUtil.systemAlert('It appears that the Screen Orientation Lock API is not supported on this device!');
+                        uiUtil.systemAlert('The Screen Orientation Lock API is not supported on this device!');
+                        that.value = params.lockDisplayOrientation || '';
                     } else {
                         params.lockDisplayOrientation = event.target.value || '';
                         settingsStore.setItem('lockDisplayOrientation', params.lockDisplayOrientation, Infinity);
-                        that.value = params.lockDisplayOrientation || '';
                     }
+                    setDynamicIcons();
                 }).catch(function (err) {
                     // Note that in desktop contexts, the API might reject, but could still work
                     if (err.name === 'NotSupportedError') {
                         params.lockDisplayOrientation = event.target.value || '';
                         settingsStore.setItem('lockDisplayOrientation', params.lockDisplayOrientation, Infinity);
                         that.value = params.lockDisplayOrientation || '';
-                        if (params.lockDisplayOrientation) uiUtil.systemAlert('<p>The Screen Orientation Lock API returned the following error, but this is expected on Desktop devices.</p>' + 
-                            "<p>If the app is installed, and it doesn't work, please reset this manually to 'Unlocked' or try a different setting.</p>");
+                        if (params.lockDisplayOrientation) uiUtil.systemAlert('<p>The following error was received (this is expected on Desktop devices):</p>' + 
+                            '<blockquote><code>' + err.toString() + '</code></blockquote>' +
+                            "<p>If screen lock doesn't work, please change setting back to 'Normal' or try a different option.</p>");
                     } else {
                         uiUtil.systemAlert('There was an error setting the requested orientation: ' + err.toString());
                         that.value = params.lockDisplayOrientation;
                     }
+                    setDynamicIcons();
                 });
         })
         document.getElementById('debugLibzimASMDrop').addEventListener('change', function (event) {
