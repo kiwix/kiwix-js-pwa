@@ -1014,7 +1014,7 @@ define(rqDef, function(util) {
         }
         // Choose the correct method to request or cancel full-screen mode
         var rq = function (sel) { 
-            return el ? 
+            return sel ? 
                 // Request full-screen mode
                 sel.requestFullscreen ? sel.requestFullscreen() :
                 sel.webkitRequestFullscreen ? sel.webkitRequestFullscreen() :
@@ -1026,7 +1026,7 @@ define(rqDef, function(util) {
                 document.mozCancelFullScreen ? document.mozCancelFullScreen() :
                 document.msExitFullscreen ? document.msExitFullscreen() : Promise.reject('No full-screen mode API available');
         };
-        return rq(el || document).then(function () {
+        return rq(el).then(function () {
             console.log(el ? 'Full-screen mode enabled' : 'Full-screen mode disabled'); 
             return el ? true : false; 
         }).catch(function (err) {

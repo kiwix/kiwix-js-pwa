@@ -1419,8 +1419,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     // Enter fullscreen mode
                     uiUtil.lockDisplayOrientation(params.lockDisplayOrientation).then(function () {
                         setDynamicIcons();
+                        resizeIFrame();
                     }).catch(function () {
                         setDynamicIcons();
+                        resizeIFrame();
                     });
                 }
             } else {
