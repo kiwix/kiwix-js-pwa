@@ -106,11 +106,14 @@
                     <div id="update" class="update">
                         <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
                         <ul style="padding-left: 15px;">
+                            <li>Full-Screen and rotation-lock support (primarily intended for mobile)</li>
+                            <li>Significant speed-up of access to Wikimedia archives by ignoring unneeded JS files</li>
                             <li>Provide indication of archive download progress in Electron app</li>
                             <li>Avoid opening blank window when downloading archive in Electron/NWJS</li>
                             <li>Provide troubleshooting option to disable drag-and-drop</li>
                             <li>Removed orientation key that prevented proper setting of orientation in some contexts</li>
                             <li>Improved detection of Wikimedia ZIMs for seleciton of printing stylesheet</li>
+                            <li>Removed rogue JS in Wiktionary archives that breaks the iframe</li>
                         </ul>
                         <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                     </div>
