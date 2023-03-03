@@ -156,6 +156,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         });
         $(window).resize(function () {
             resizeIFrame(true);
+            // Check whether fullscreen icon needs to be updated
+            setDynamicIcons();
             // We need to load any images exposed by the resize
             var scrollFunc = document.getElementById('articleContent').contentWindow;
             scrollFunc = scrollFunc ? scrollFunc.onscroll : null;
@@ -764,7 +766,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         function setTab(activeBtn) {
             // Highlight the selected section in the navbar
             setActiveBtn(activeBtn);
-            setDynamicIcons(activeBtn);
             clearFindInArticle();
             //Re-enable bottom toolbar display
             document.getElementById('footer').style.display = "block";
@@ -848,6 +849,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     }
                 }, 50);
             }
+            setDynamicIcons(activeBtn);
             let articleList = document.getElementById('articleList');
             let articleListHeaderMessage =  document.getElementById('articleListHeaderMessage');
             while (articleList.firstChild) articleList.removeChild(articleList.firstChild);
@@ -888,7 +890,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     btnAbout.title = 'Return to fullscreen';
                 }
             } else {
-                if (!btn || btn == "btnHome" || btn == "findText") {
+                // When the scrollbox height is 0, we are not in Configuration or About
+                if (!btn && document.getElementById('scrollbox').offsetHeight === 0 || btn == "btnHome" || btn == "findText") {
                     btnAbout.innerHTML = '<span class="glyphicon glyphicon-print"></span>';
                     btnAbout.title = 'Ctrl-P: Print';
                 } else {

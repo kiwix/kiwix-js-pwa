@@ -1003,8 +1003,8 @@ define(rqDef, function(util) {
 
     /**
      * Puts the requested element into full-screen mode, or cancels full-screen mode if no element is provided
-     * @param {Element} el The element to put into full-screen mode. If not provided, the function will cancel any full-screen mode.
-     * @returns {Promise<Boolean>} A Promise that resolves to true if the element was entered full-screen mode, false if full-screen mode cancelled
+     * @param {Element} el The element to put into full-screen mode. If not provided, the function will cancel any full-screen mode
+     * @returns {Promise<Boolean>} A Promise that resolves to true if the element entered full-screen mode, false if full-screen mode cancelled
      */
     function requestOrCancelFullScreen(el) {
         // Don't do anything if already in full-screen mode, and user has not requested to exit full-screen mode
