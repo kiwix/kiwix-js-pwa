@@ -1381,12 +1381,12 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             refreshCacheStatus();
         });
         // Run lockDisplayOrientation on startup
-        document.getElementById('lockDisplayOrientationDrop').value = params.lockDisplayOrientation;
-        var headerArea = document.getElementById('scrollbox');
-        var refreshFullScreen = function (e) {
+        document.getElementById('lockDisplayOrientationDrop').value = params.lockDisplayOrientation || '';
+        var topArea = document.getElementById('search-article');
+        var refreshFullScreen = function () {
             if (params.lockDisplayOrientation) uiUtil.lockDisplayOrientation(params.lockDisplayOrientation);
         };
-        headerArea.addEventListener('mouseup', refreshFullScreen, true);
+        topArea.addEventListener('mouseup', refreshFullScreen);
         document.getElementById('lockDisplayOrientationDrop').addEventListener('change', function (event) {
             var that = this;
             var message = event.target.value ? ('<p>Attempting to set the orientation lock to: ' + event.target.value + '</p>') : '<p>Attempting to clear the orientation lock.</p>';
