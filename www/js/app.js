@@ -1404,9 +1404,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         var topArea = document.getElementById('search-article');
         var refreshFullScreen = function (evt) {
             if (evt.target.id === 'lockDisplayOrientationDrop') return;
+            // Don't lock orientation if user is selecting an archive and the File System Access API is available (because entering fullscreen blocks the permissions prompt)
+            if (evt.target.parentElement && evt.target.parentElement.id === 'archiveList' && window.showDirectoryPicker) return;
             if (params.lockDisplayOrientation && (evt.target.id === 'btnAbout' || /glyphicon-(resize-small|fullscreen)/.test(evt.target.className))) {
-                evt.preventDefault();
-                evt.stopPropagation();
                 if (uiUtil.appIsFullScreen()) {
                     // Cancel fullscreen mode
                     uiUtil.lockDisplayOrientation().then(function () {
