@@ -5308,49 +5308,158 @@ nav ul {
     border: solid 1px #eaecf0
 }
 
-    .client-js .toc-mobile .toc-button {
-        float: left;
-        display: block;
-        font-size: 0.8em
-    }
+.client-js .toc-mobile .toc-button {
+    float: left;
+    display: block;
+    font-size: 0.8em
+}
 
-    .client-js .toc-mobile .collapsible-heading {
-        visibility: visible;
-        background-position: right center
-    }
+.client-js .toc-mobile .collapsible-heading {
+    visibility: visible;
+    background-position: right center
+}
 
-        .client-js .toc-mobile .collapsible-heading .indicator {
-            margin: 0.2em 0.4em 0 0;
-            float: right;
-            font-size: 0.6em
-        }
+.client-js .toc-mobile .collapsible-heading .indicator {
+    margin: 0.2em 0.4em 0 0;
+    float: right;
+    font-size: 0.6em
+}
 
-    .client-js .toc-mobile .collapsible-block {
-        border-bottom: 0;
-        margin-left: 52px;
-        margin-right: 24px;
-        font-size: 0.7em;
-        width: auto
-    }
+.client-js .toc-mobile .collapsible-block {
+    border-bottom: 0;
+    margin-left: 52px;
+    margin-right: 24px;
+    font-size: 0.7em;
+    width: auto
+}
 
-        .client-js .toc-mobile .collapsible-block > ul {
-            padding-bottom: 1.3em
-        }
+.client-js .toc-mobile .collapsible-block > ul {
+    padding-bottom: 1.3em
+}
 
-        .client-js .toc-mobile .collapsible-block ul {
-            list-style: none;
-            margin-bottom: 1px
-        }
+.client-js .toc-mobile .collapsible-block ul {
+    list-style: none;
+    margin-bottom: 1px
+}
 
-            .client-js .toc-mobile .collapsible-block ul li {
-                padding-top: 0.8em;
-                line-height: 1.2
-            }
+.client-js .toc-mobile .collapsible-block ul li {
+    padding-top: 0.8em;
+    line-height: 1.2
+}
 
-                .client-js .toc-mobile .collapsible-block ul li a {
-                    white-space: pre-wrap;
-                    word-break: break-word
-                }
+.client-js .toc-mobile .collapsible-block ul li a {
+    white-space: pre-wrap;
+    word-break: break-word
+}
+
+/* NavFrames */
+div.Boxmerge,
+div.NavFrame,
+details.NavFrame {
+	margin: 0px 0px -1px 0px;
+	padding: 2px;
+	border: 1px solid #aaaaaa;
+	text-align: center;
+	border-collapse: collapse;
+	font-size: 95%;
+	overflow: auto;
+	width: auto;
+}
+
+div.Boxmerge div.NavFrame {
+	border-style: none;
+	border-style: hidden;
+}
+
+div.NavPic {
+	background-color: #ffffff;
+	margin: 0px;
+	padding: 2px;
+	float: left;
+}
+
+div.NavFrame div.NavHead,
+details.NavFrame summary.NavHead {
+	min-height: 1.6em;
+	font-weight: bold;
+	font-size: 100%;
+	text-align: left;
+	background-color: #efefef;
+	padding-left: 10px;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#EFEFEF), to(#DFDFDF), color-stop(0.6, #E3E3E3));
+	background-image: -moz-linear-gradient(top, #EFEFEF, #E3E3E3 60%, #DFDFDF);
+	background-image: -o-linear-gradient(top, #EFEFEF, #E3E3E3 60%, #DFDFDF);
+}
+
+div.NavFrame div.NavHead:hover,
+details.NavFrame summary.NavHead:hover {
+	background-color: #F6F6F6;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#EFEFEF), to(#F3F3F3), color-stop(0.6, #EAEAEA));
+	background-image: -moz-linear-gradient(top, #EFEFEF, #EAEAEA 60%, #F3F3F3);
+	background-image: -o-linear-gradient(top, #EFEFEF, #EAEAEA 60%, #F3F3F3);
+}
+
+div.NavFrame div.NavHead:active,
+details.NavFrame summary.NavHead:active {
+	background-color: #E3E3E3;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#E3E3E3), to(#DFDFDF), color-stop(0.6, #D3D3D3));
+	background-image: -moz-linear-gradient(top, #E3E3E3, #D3D3D3 60%, #DFDFDF);
+	background-image: -o-linear-gradient(top, #E3E3E3, #D3D3D3 60%, #DFDFDF);
+}
+
+div.pseudo div.NavHead:hover { background-color: #EFEFEF; }
+
+div.pseudo div.NavHeadpseudo:active { background-color: #EFEFEF; }
+
+div.NavFrame p {
+	font-size: 100%;
+}
+
+div.NavFrame div.NavContent,
+details.NavFrame div.NavContent {
+	font-size: 100%;
+}
+
+div.NavFrame div.NavContent p,
+details.NavFrame div.NavContent p {
+	font-size: 100%;
+}
+
+div.NavEnd {
+	margin: 0px;
+	padding: 0px;
+	line-height: 1px;
+	clear: both;
+}
+
+span.NavToggle {
+	cursor: pointer;
+	float: right;
+	font-weight: normal;
+	font-size: smaller;
+}
+
+.list-switcher-element {
+	text-align: center;
+}
+
+.list-switcher-element .NavToggle {
+	float: none;
+}
+
+.term-list-header {
+	font-style: italic;
+	font-weight: inherit;
+}
+
+.term-list-header:before {
+	content: "(";
+}
+
+.term-list-header:after {
+	content: "):";
+}
+
 
 /*GK Added styles for other languages*/
 h3 .mw-headline {
