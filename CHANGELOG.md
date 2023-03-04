@@ -2,14 +2,14 @@
 
 ## In-progress release 2.3.8
 
-* FEATURE: Full-Screen and rotation-lock support (primarily intended for mobile)
-* FEATURE: Significant speed-up of access to Wikimedia archives by ignoring unneeded JS files 
+* FEATURE: Support Full Screen (all browsers) and rotation lock (primarily intended for mobile)
+* FEATURE: Significant speed-up of access to Wikimedia archives with option to ignore unneeded JS files 
 * ENHANCEMENT: Provide indication of archive download progress in Electron app
 * ENHANCEMENT: Avoid opening blank window when downloading archive in Electron/NWJS
 * ENHANCEMENT: Provide troubleshooting option to disable drag-and-drop
 * FIX: Removed orientation key that prevented proper setting of orientation in some contexts
 * FIX: Improved detection of Wikimedia ZIMs for seleciton of printing stylesheet
-* FIX: Removed rogue JS in Wiktionary archives that breaks the iframe 
+* FIX: Fix for rogue JS in Wiktionary archives (if default option to use locally cached styles is on) 
 
 ## Release 2.3.6
 
