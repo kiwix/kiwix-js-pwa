@@ -1399,12 +1399,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             settingsStore.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
             refreshCacheStatus();
         });
-        // Check lockDisplayOrientation on startup
-        document.getElementById('lockDisplayOrientationDrop').value = params.lockDisplayOrientation || '';
-        var topArea = document.getElementById('search-article');
+
+        // Function to restore the fullscreen/orientation lock state on user click in-app
+        // This is necessary because the browser will not restore the state without a user gesture
         var refreshFullScreen = function (evt) {
-            if (evt.target.id === 'lockDisplayOrientationDrop') return;
-            // Don't lock orientation if user is selecting an archive and the File System Access API is available (because entering fullscreen blocks the permissions prompt)
+            // Don't react if user is selecting an archive or setting the lock orientation
+            if (/archiveFilesLegacy|lockDisplayOrientationDrop/.test(evt.target.id)) return;
+            // Don't react when picking archive or directory with the File System Access API (because entering fullscreen blocks the permissions prompt)
             if (evt.target.parentElement && evt.target.parentElement.id === 'archiveList' && window.showDirectoryPicker) return;
             if (params.lockDisplayOrientation && (evt.target.id === 'btnAbout' || /glyphicon-(resize-small|fullscreen)/.test(evt.target.className))) {
                 if (uiUtil.appIsFullScreen()) {
@@ -1431,7 +1432,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 });
             }
         };
-        topArea.addEventListener('mouseup', refreshFullScreen);
+        // Add event listener to the app UI
+        document.getElementById('search-article').addEventListener('mouseup', refreshFullScreen);
+        // Set the UI for the current fullscreen/orientation lock state
+        document.getElementById('lockDisplayOrientationDrop').value = params.lockDisplayOrientation || '';
+        
         document.getElementById('lockDisplayOrientationDrop').addEventListener('change', function (event) {
             var that = this;
             if (event.target.value) {
