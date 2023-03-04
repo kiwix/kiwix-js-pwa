@@ -1025,7 +1025,7 @@ define(rqDef, function(util) {
                 document.webkitExitFullscreen ? document.webkitExitFullscreen() :
                 document.mozCancelFullScreen ? document.mozCancelFullScreen() :
                 document.msExitFullscreen ? document.msExitFullscreen() : Promise.reject('No full-screen mode API available');
-            return typeof fn === 'Promise' ? fn : Promise.resolve(fn); 
+            return Promise.resolve(fn); 
         };
         return rq(el).then(function () {
             console.log(el ? 'Full-screen mode enabled' : 'Full-screen mode disabled'); 
@@ -1039,7 +1039,7 @@ define(rqDef, function(util) {
     /**
      * Attempts to put the app into full-screen mode and (if requested) lock the display orientation using the Screen Orientation Lock API
      * @param {string} val A valid value in the API, e.g. '', 'natural', 'portrait', 'landscape' 
-     * @returns 
+     * @returns {Promise<String>} A Promise that resolves to a string informing the result (which may be '')  
      */
     function lockDisplayOrientation(val) {
         if (val) {

@@ -1095,11 +1095,13 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
     
         document.getElementById('btnAbout').addEventListener('click', function () {
             var btnAboutElement = document.getElementById('btnAbout');
+            // Don't allow this button to be clicked if button is being used as exit fullscreen button
+            if (/glyphicon-(fullscreen|resize-small)/.test(btnAboutElement.innerHTML)) return;
+            // Deal with use of button for printing
             if (/glyphicon-print/.test(btnAboutElement.innerHTML)) {
                 printIntercept();
                 return;
             }
-            if (/glyphicon-(fullscreen|resize-small)/.test(btnAboutElement.innerHTML)) return;
             //Check if we're 'unclicking' the button
             var searchDiv = document.getElementById('about');
             if (searchDiv.style.display != 'none') {
