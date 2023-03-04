@@ -1323,8 +1323,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             library.style.borderColor = '';
             library.style.borderStyle = '';
         });
-        $('input:checkbox[name=cssCacheMode]').on('change', function (e) {
-            params.cssCache = this.checked ? true : false;
+        document.getElementById('cssCacheModeCheck').addEventListener('change', function () {
+            params.cssCache = this.checked;
             settingsStore.setItem('cssCache', params.cssCache, Infinity);
             params.themeChanged = true;
         });
@@ -4579,20 +4579,33 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 htmlArticle = htmlArticle.replace(/(<\/body>)/i, "\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n$1");
                 htmlArticle = htmlArticle.replace(/(dditional\s+terms\s+may\s+apply\s+for\s+the\s+media\s+files[^<]+<\/div>\s*)/i, "$1\r\n<h1></h1><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n");
 
-                // Reduce weight of unused JS archives for mediawiki ZIMs. This patch also removes mediawiki.page.ready.js which breakds the iframe kiwix-js #972
-                if (appstate.wikimediaZimLoaded) {
+                // Dirty patches that improve performance or layout with Wikimedia ZIMs. DEV: review regularly and remove when no longer needed.
+                if (appstate.wikimediaZimLoaded && params.cssCache) {
+                    // Reduce weight of unused JS archives for mediawiki ZIMs. This patch also removes mediawiki.page.ready.js which breakds the iframe kiwix-js #972
                     htmlArticle = htmlArticle.replace(/<script\b[^<]+src=["'][^"']*(mediawiki|jquery|configvars|startup|visibilitytoggles|site|enhancements|scribunto|ext\.math|\.player)[^"']*\.js\b[^<]+<\/script>/gi, '');
-
                     //@TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
                     htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, "<a href=\"$1.html\">$2</a>");
                     htmlArticle = htmlArticle.replace(/&lt;(\/?)(i|b|em|strong)&gt;/ig, "<$1$2>");
-
                     //@TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
                     htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, "$1");
+                    //@TODO - remove when fixed in MDwiki ZIM: dirty patch for removing erroneously hard-coded style
+                    if (/^mdwiki/.test(appstate.selectedArchive._file.name)) htmlArticle = htmlArticle.replace(/(class=['"]thumbinner[^>]+style=['"]width\s*:\s*)\d+px/ig, "$1320px");
+                    // Remove landing page scripts that don't work in SW mode
+                    htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/[^>]*((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, '');
+                    // Set max-width for infoboxes (now set in -/s/styles.css)
+                    // htmlArticle = htmlArticle.replace(/(<table\s+)(class=["'][^"']*infobox\b)/gi, '$1style="max-width:25%;" $2');
+                    // Remove override sidebar styles recently hard-coded into some Wikipedia ZIMs - reverted due to error with Wikivoyage and now dealt with in styles.css
+                    // htmlArticle = htmlArticle.replace(/<style\s+data-mw-deduplicate[^<]+<\/style>\s*/gi, '');
+                    // Edit sidebar style to make it an infobox
+                    htmlArticle = htmlArticle.replace(/(<table\s+class=["'][^"']*)sidebar\s/gi, '$1infobox ');
+                    // Remove the script.js that closes top-level sections if user requested this
+                    if (params.openAllSections) htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/(j\/js_modules\/)?script\.js"[^<]*<\/script>/i, "");
+                    // Deal with incorrectly sized masonry pages
+                    htmlArticle = htmlArticle.replace(/(<body\b[^<]+<div\b[^>]+?id=['"]container['"][^>]*)/i, '$1 style="height:auto;"');
+                    // @TODO Remove when fixed in https://github.com/openzim/mwoffliner/issues/1662
+                    // Put site.js in the correct position
+                    htmlArticle = htmlArticle.replace(/(<script\b[^>]+\/site\.js["']><\/script>\s*)((?:[^<]|<(?!\/body))+)/, '$2$1');
                 }
-
-                //@TODO - remove when fixed in MDwiki ZIM: dirty patch for removing erroneously hard-coded style
-                if (/^mdwiki/.test(appstate.selectedArchive._file.name)) htmlArticle = htmlArticle.replace(/(class=['"]thumbinner[^>]+style=['"]width\s*:\s*)\d+px/ig, "$1320px");
 
                 // Gutenberg ZIMs try to initialize before all assets are fully loaded. Affect UWP app.
                 htmlArticle = htmlArticle.replace(/(<body\s[^<]*onload=(['"]))([^'"]*init\([^'"]+showBooks\([^'"]+)\2/i, '$1setTimeout(function () {$3}, 300);$2');
@@ -4643,26 +4656,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 //Remove article.js on youtube ZIMs as it erroneously hides description
                 htmlArticle = /<video\b/i.test(htmlArticle) ? htmlArticle.replace(/<script\b[^<]+assets\/article\.js[^<]+<\/script>\s*/i, '') : htmlArticle;
                 
-                // Remove the script.js that closes top-level sections if user requested this
-                if (params.openAllSections) htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/(j\/js_modules\/)?script\.js"[^<]*<\/script>/i, "");
-                if (params.cssCache) {
-                    // Remove landing page scripts that don't work in SW mode
-                    htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/[^>]*((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, '');
-                    // Set max-width for infoboxes (now set in -/s/styles.css)
-                    // htmlArticle = htmlArticle.replace(/(<table\s+)(class=["'][^"']*infobox\b)/gi, '$1style="max-width:25%;" $2');
-                    // Remove override sidebar styles recently hard-coded into some Wikipedia ZIMs - reverted due to error with Wikivoyage and now dealt with in styles.css
-                    // htmlArticle = htmlArticle.replace(/<style\s+data-mw-deduplicate[^<]+<\/style>\s*/gi, '');
-                    // Edit sidebar style to make it an infobox
-                    htmlArticle = htmlArticle.replace(/(<table\s+class=["'][^"']*)sidebar\s/gi, '$1infobox ');
-                }
-
                 //Remove empty div that causes layout issues in desktop style (but don't remove in SW mode, as they are dynamically filled)
                 if (params.contentInjectionMode === 'jquery') htmlArticle = htmlArticle.replace(/<div\b[^>]*?>\s*<\/div>\s*/, '');
-                // Deal with incorrectly sized masonry pages
-                htmlArticle = htmlArticle.replace(/(<body\b[^<]+<div\b[^>]+?id=['"]container['"][^>]*)/i, '$1 style="height:auto;"');
-                // @TODO Remove when fixed in https://github.com/openzim/mwoffliner/issues/1662
-                // Put site.js in the correct position
-                htmlArticle = htmlArticle.replace(/(<script\b[^>]+\/site\.js["']><\/script>\s*)((?:[^<]|<(?!\/body))+)/, '$2$1');
             }
 
             if (params.contentInjectionMode == 'jquery') {
