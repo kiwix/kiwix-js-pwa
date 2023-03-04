@@ -1399,7 +1399,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             settingsStore.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
             refreshCacheStatus();
         });
-        // Run lockDisplayOrientation on startup
+        // Check lockDisplayOrientation on startup
         document.getElementById('lockDisplayOrientationDrop').value = params.lockDisplayOrientation || '';
         var topArea = document.getElementById('search-article');
         var refreshFullScreen = function (evt) {
@@ -1434,8 +1434,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         topArea.addEventListener('mouseup', refreshFullScreen);
         document.getElementById('lockDisplayOrientationDrop').addEventListener('change', function (event) {
             var that = this;
-            var message = event.target.value ? ('<p>Attempting to set the orientation lock to: ' + event.target.value + '</p>') : '<p>Attempting to clear the orientation lock.</p>';
-            if (event.target.value) message += '<p><i>Please be aware that this setting may only work in mobile contexts where the app is installed or in standalone mode.</i></p>'
+            if (event.target.value) {
                 return uiUtil.lockDisplayOrientation(event.target.value).then(function (rtn) {
                     if (rtn === 'unsupported') {
                         uiUtil.systemAlert('The Screen Orientation Lock API is not supported on this device!');
@@ -1443,6 +1442,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     } else {
                         params.lockDisplayOrientation = event.target.value || '';
                         settingsStore.setItem('lockDisplayOrientation', params.lockDisplayOrientation, Infinity);
+                        if (rtn === 'click') {
+                            uiUtil.systemAlert('<p>Please click the &nbsp;<span class="glyphicon glyphicon-fullscreen"></span>&nbsp; button top-right to enter full-screen mode.</p>' + (params.PWAInstalled && 
+                                /iOS/.test(params.appType) ?'<p>In Safari on iOS, consider adding this app to your homescreen (Share --&gt Add to Home), which will give a better experience than full-screen mode.</p>' : '')
+                            );
+                        }
                     }
                     setDynamicIcons();
                 }).catch(function (err) {
@@ -1460,7 +1464,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     }
                     setDynamicIcons();
                 });
-        })
+            } else {
+                params.lockDisplayOrientation = '';
+                settingsStore.setItem('lockDisplayOrientation', '', Infinity);
+                uiUtil.lockDisplayOrientation().then(function () {
+                    setDynamicIcons();
+                }).catch(function () {
+                    return;
+                });
+            }
+        });
         document.getElementById('debugLibzimASMDrop').addEventListener('change', function (event) {
             var that = this;
             var message = '<p>App will reload to apply the new setting.</p>'

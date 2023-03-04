@@ -1009,7 +1009,7 @@ define(rqDef, function(util) {
     function requestOrCancelFullScreen(el) {
         // Don't do anything if already in full-screen mode, and user has not requested to exit full-screen mode
         if (el && appIsFullScreen()) {
-            console.log('Display is already full screen');
+            console.debug('Display is already full screen');
             return Promise.resolve(true);
         }
         // Choose the correct method to request or cancel full-screen mode
@@ -1065,12 +1065,20 @@ define(rqDef, function(util) {
                         return rtn;
                         // return Promise.resolve(rtn);
                     }
+                } else {
+                    if (document.documentElement.webkitRequestFullscreen || document.documentElement.msRequestFullscreen) {
+                        // We are in a Safari browser or IE11, and a click is required to enter full-screen mode
+                        return 'click';
+                    }
                 }
             });
         } else {
+            // User wants to cancel full-screen mode and unlock the display orientation
+            if (screen && screen.orientation && screen.orientation.unlock) {
+                screen.orientation.unlock(); // NB This doesn't return a Promise
+            }
             return requestOrCancelFullScreen();
         }
-        
     }
     
 
