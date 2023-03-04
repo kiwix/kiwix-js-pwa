@@ -1066,7 +1066,7 @@ define(rqDef, function(util) {
                         // return Promise.resolve(rtn);
                     }
                 } else {
-                    if (document.documentElement.webkitRequestFullscreen || document.documentElement.msRequestFullscreen) {
+                    if (!document.documentElement.requestFullscreen && (document.documentElement.webkitRequestFullscreen || document.documentElement.msRequestFullscreen)) {
                         // We are in a Safari browser or IE11, and a click is required to enter full-screen mode
                         return 'click';
                     }
