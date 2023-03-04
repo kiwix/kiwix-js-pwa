@@ -1450,7 +1450,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         params.lockDisplayOrientation = event.target.value || '';
                         settingsStore.setItem('lockDisplayOrientation', params.lockDisplayOrientation, Infinity);
                         if (rtn === 'click') {
-                            uiUtil.systemAlert('<p>Please click the &nbsp;<span class="glyphicon glyphicon-fullscreen"></span>&nbsp; button top-right to enter full-screen mode.</p>' + (params.PWAInstalled && 
+                            uiUtil.systemAlert('<p>Please click the &nbsp;<span class="glyphicon glyphicon-fullscreen"></span>&nbsp; button top-right to enter full-screen mode.</p>' + (!params.PWAInstalled && 
                                 /iOS/.test(params.appType) ?'<p>In Safari on iOS, consider adding this app to your homescreen (Share --&gt Add to Home), which will give a better experience than full-screen mode.</p>' : '')
                             );
                         }
