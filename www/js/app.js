@@ -1987,6 +1987,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             if (params.zimType === 'zimit' && params.removePageMaxWidth === "auto") return html;
             var zimType;
             var cssSource;
+            // If no HTML is passed, we operate using DOM methods
             if (!html) {
                 var contentElement;
                 var docStyle;
@@ -5174,7 +5175,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
 
                 if (params.contentInjectionMode === 'serviceworker') {
                     // Remove page max width restriction if required
-                    if (params.removePageMaxWidth) htmlArticle = removePageMaxWidth(htmlArticle);
+                    // if (params.removePageMaxWidth) htmlArticle = removePageMaxWidth(htmlArticle); // Broken
                     // For UWP apps, we need to add the Zoom level to the HTML if we are opening in external window
                     if (/UWP/.test(params.appType) && appstate.target === 'window') {
                         htmlArticle = htmlArticle.replace(/(<html\b[^>]+?style=['"])/i, '$1zoom:' + params.relativeFontSize + '%; ');
