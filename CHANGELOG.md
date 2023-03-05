@@ -7,6 +7,9 @@
 * ENHANCEMENT: Provide indication of archive download progress in Electron app
 * ENHANCEMENT: Avoid opening blank window when downloading archive in Electron/NWJS
 * ENHANCEMENT: Provide troubleshooting option to disable drag-and-drop
+* ENHANCEMENT: Use screen width more efficiently in SW mode (with Remove max page width option)
+* UPDATE: Mobile styles for Wiktionary archives
+* FIX: Return to article links were missing in ServiceWorker mode
 * FIX: Removed orientation key that prevented proper setting of orientation in some contexts
 * FIX: Improved detection of Wikimedia ZIMs for seleciton of printing stylesheet
 * FIX: Fix for rogue JS in Wiktionary archives (if default option to use locally cached styles is on) 
