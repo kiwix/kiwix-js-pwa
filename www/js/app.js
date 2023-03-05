@@ -1976,66 +1976,46 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         });
 
         /**
-         * Removes the WikiMedia max-page-width restrictions either by operating on an HTML string, or by using
-         * DOM methods on the articleWindow. If the parameters are empty, DOM methods are used.
-         * 
-         * @param {String} html An optional HTML string on which to operate
-         * @param {Function} callback A function to call with the transformed string
-         * @returns {String} A string containing the transformed HTML
+         * Removes the WikiMedia max-page-width restrictions using DOM methods on the articleWindow
          */
-        function removePageMaxWidth(html) {
-            if (params.zimType === 'zimit' && params.removePageMaxWidth === "auto") return html;
+        function removePageMaxWidth() {
+            if (!appstate.wikimediaZimLoaded) return;
             var zimType;
             var cssSource;
-            // If no HTML is passed, we operate using DOM methods
-            if (!html) {
-                var contentElement;
-                var docStyle;
-                var updatedCssText;
-                var doc = articleWindow.document;
-                if (!doc || !doc.head) return;
-                zimType = /<link\b[^>]+(?:minerva|mobile)/i.test(doc.head.innerHTML) ? "mobile" : "desktop";
-                cssSource = params.cssSource === "auto" ? zimType : params.cssSource;
-                var idArray = ["content", "bodyContent"];
-                for (var i = 0; i < idArray.length; i++) {
-                    contentElement = doc.getElementById(idArray[i]);
-                    if (!contentElement) continue;
-                    docStyle = contentElement.style;
-                    if (!docStyle) continue;
-                    if (contentElement.className === "mw-body") {
-                        docStyle.padding = "1em";
-                        docStyle.border = "1px solid #a7d7f9";
-                    }
-                    if (params.removePageMaxWidth === "auto") {
-                        updatedCssText = cssSource === 'desktop' ? '100%' : window.innerWidth > 1024 ? '90%' :
-                            /android/i.test(params.appType) ? '98%' : '55.8em';
-                        docStyle.maxWidth = updatedCssText;
-                        docStyle.cssText = docStyle.cssText.replace(/max-width:[^;]+/i, 'max-width: ' + updatedCssText + ' !important');
-                        docStyle.border = "0";
-                    } else {
-                        updatedCssText = params.removePageMaxWidth ? "100%" : "55.8em";
-                        docStyle.maxWidth = updatedCssText;
-                        docStyle.cssText = docStyle.cssText.replace(/max-width:[^;]+/i, 'max-width: ' + updatedCssText + ' !important');
-                        if (params.removePageMaxWidth || zimType == "mobile") docStyle.border = "0";
-                    }
-                    docStyle.margin = "0 auto";
+            var contentElement;
+            var docStyle;
+            var updatedCssText;
+            var doc = articleWindow.document;
+            if (!doc || !doc.head) return;
+            zimType = /<link\b[^>]+(?:minerva|mobile)/i.test(doc.head.innerHTML) ? "mobile" : "desktop";
+            cssSource = params.cssSource === "auto" ? zimType : params.cssSource;
+            var idArray = ["content", "bodyContent"];
+            for (var i = 0; i < idArray.length; i++) {
+                contentElement = doc.getElementById(idArray[i]);
+                if (!contentElement) continue;
+                docStyle = contentElement.style;
+                if (!docStyle) continue;
+                if (contentElement.className === "mw-body") {
+                    docStyle.padding = "0.5em";
+                    docStyle.border = "1px solid #a7d7f9";
                 }
-                if (doc.body && doc.body.classList.contains('article-list-home')) {
-                    doc.body.style.padding = '2em';
-                } 
-            } else {
-                // We shall transform the raw HTML
-                zimType = /<link\b[^>]+(?:minerva|mobile)/i.test(html) ? "mobile" : "desktop";
-                cssSource = params.cssSource === "auto" ? zimType : params.cssSource;
-                html = html.replace(/(id=["'](?:content|bodyContent)["'](?=[^>]*?mw-)[^>]*)/ig, 
-                    '$1 style="padding:1em; border:0; max-width:' +
-                    ((cssSource === 'desktop' || params.removePageMaxWidth === true) ? '100%' : 
-                        params.removePageMaxWidth && window.innerWidth > 1024 ? '90%' :
-                        params.removePageMaxWidth && /android/i.test(params.appType) ? '98%' : '55.8em') + 
-                    ' !important; margin: 0 auto;"');
-                html = html.replace(/(<body\b[^>]+?article-list-home[^>]+)/i, '$1 style="padding:2em;"');
-                return html;
+                if (params.removePageMaxWidth === "auto") {
+                    updatedCssText = cssSource === 'desktop' ? '100%' : window.innerWidth > 1024 ? '92%' :
+                        /android/i.test(params.appType) ? '99%' : '55.8em';
+                    docStyle.maxWidth = updatedCssText;
+                    docStyle.cssText = docStyle.cssText.replace(/max-width:[^;]+/i, 'max-width: ' + updatedCssText + ' !important');
+                    docStyle.border = "0";
+                } else {
+                    updatedCssText = params.removePageMaxWidth ? "100%" : "55.8em";
+                    docStyle.maxWidth = updatedCssText;
+                    docStyle.cssText = docStyle.cssText.replace(/max-width:[^;]+/i, 'max-width: ' + updatedCssText + ' !important');
+                    if (params.removePageMaxWidth || zimType == "mobile") docStyle.border = "0";
+                }
+                docStyle.margin = "0 auto";
             }
+            if (doc.body && doc.body.classList.contains('article-list-home')) {
+                doc.body.style.padding = '2em';
+            } 
         }
 
         document.getElementById('openAllSectionsCheck').addEventListener('click', function (e) {
@@ -5174,8 +5154,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 });
 
                 if (params.contentInjectionMode === 'serviceworker') {
-                    // Remove page max width restriction if required
-                    // if (params.removePageMaxWidth) htmlArticle = removePageMaxWidth(htmlArticle); // Broken
                     // For UWP apps, we need to add the Zoom level to the HTML if we are opening in external window
                     if (/UWP/.test(params.appType) && appstate.target === 'window') {
                         htmlArticle = htmlArticle.replace(/(<html\b[^>]+?style=['"])/i, '$1zoom:' + params.relativeFontSize + '%; ');
