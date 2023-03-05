@@ -300,7 +300,7 @@
                         <li><a href="#changelog">Changelog and Features</a></li>
                         <li><a href="#searchSyntax">Title search syntax and alphabetical ZIM Archive Index</a></li>
                         <li><a href="#fullTextSearch">Full-text search</a></li>
-                        <li><a href="#linkHandling">Link handling, image download</a></li>
+                        <li><a href="#linkHandling">Link handling, dynamic content and image download</a></li>
                         <li><a href="#windows">Window and tab management</a></li>
                         <li><a href="#modes">Technical Information</a></li>
                         <li><a href="#privacy">Privacy Policy</a></li>
@@ -502,17 +502,16 @@
                         but don't be surprised if you have to wait 60-90 seconds just for full-text search to become available. With large ZIMs, you could have to wait several minutes, if it loads at all.
                         Returning full-text search results can also be very slow on Android.
                     </p>
-                    <h3 id="linkHandling">Link handling, image download, tabs and windows</h3>
+                    <h3 id="linkHandling">Link handling, dynamic content and image download</h3>
                     <p>
                         This app does its best to handle links to <b>special ZIM content</b>, like active (dynamic) content, embedded videos, downladable content (EPUBs, PDFs) and images, but not everything
                         works smoothly with every option.
                     </p>
                     <p>The app can usually operate in two modes: "JQuery" (which manipulates the content of the article) and "ServiceWorker" (which tries to get out of the way and let the ZIM do its
-                        thing - see below under <a href="#modes">Technical information</a> for a fuller explanation). Some contexts, like mobile or old browsers, only support JQuery mode. Desktop systems
-                        and modern browsers support both modes. <b><i>JQuery mode doesn't support active or dynamic content.</i></b> You will usually get an <b>Active Content Warning</b> popping up at the 
-                        top of the landing page (Home) if you open a ZIM that requires you to switch to ServiceWorker mode. If you can't switch, you can often still access content in these archives
-                        by using title search or typing a space in title search to show the <a href="#zimIndex">ZIM Archive Index</a> (see above), but some things, especially any proprietary User Interface,
-                        won't work.
+                        thing - see below under <a href="#modes">Technical information</a> for a fuller explanation). <b><i>JQuery mode doesn't support active or dynamic content.</i></b> You will usually
+                        get an <b>Active Content Warning</b> popping up at the top of the landing page (Home) if you open a ZIM that requires you to switch to ServiceWorker mode. If you can't switch, you
+                        can often still access content in these archives by using title search or typing a space in title search to show the <a href="#zimIndex">ZIM Archive Index</a> (see above), but some
+                        things, especially any proprietary User Interface, won't work.
                     </p>
                     <p>
                         You can <b>download images</b> (as long as they haven't been inserted dynamically) by turning on the option <b>Allow image manipulation</b> in Configuration. Then you will be
