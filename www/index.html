@@ -300,7 +300,8 @@
                         <li><a href="#changelog">Changelog and Features</a></li>
                         <li><a href="#searchSyntax">Title search syntax and alphabetical ZIM Archive Index</a></li>
                         <li><a href="#fullTextSearch">Full-text search</a></li>
-                        <li><a href="#linkHandling">Link handling, image download, tabs and windows</a></li>
+                        <li><a href="#linkHandling">Link handling, image download</a></li>
+                        <li><a href="#windows">Window and tab management</a></li>
                         <li><a href="#modes">Technical Information</a></li>
                         <li><a href="#privacy">Privacy Policy</a></li>
                         <li><a href="#feedback">Feedback and Support</a></li>
@@ -527,6 +528,12 @@
                         doesn't support the WebP video format (e.g. the mobile UWP app).
                     </p>
                     <p>
+                        <b>PhET ZIMs:</b> These science and maths simulations only work in ServiceWorker mode. There is currently a bug which causes the experiment/ simulation to be shifted by several pixels, making
+                        it hard to click on the experiment's controls. WORKAROUND: Please switch the <b>Hide toolbars while scrolling</b> option to <b>never</b>. This eliminates the pixel shift. You may also have to use the title
+                        search or <a href="#zimIndex">ZIM Archive Index</a> (press a space in title seaarch) to find the experiments, as there is an unresolved issue with displaying the ZIM's User Interface.
+                    </p>
+                    <h3 id="windows">Window and tab management</h3>
+                    <p>
                         You can <b>open ZIM links in a new browsable tab (or window)</b> by setting the options in Configuration. Right-click (or double right-click if you set that option), ctrl-click, middle click
                         and long press should all work. Somne contexts (e.g. mobile) don't support this option, or it works badly or very slowly. For those contexts, use the <b>Insert breakout link</b> feature
                         instead. With the Breakout link feature, the tab is non-browsable, but you can save the page to PDF or print it, etc., from that tab.
@@ -538,12 +545,9 @@
                         (if you trust Kiwix), and then reload the app. 
                     </p>
                     <p>
-                        <b>PhET ZIMs:</b> These science and maths simulations only work in ServiceWorker mode. There is currently a bug which causes the experiment/ simulation to be shifted by several pixels, making
-                        it hard to click on the experiment's controls. WORKAROUND: Please switch the <b>Hide toolbars while scrolling</b> option to <b>never</b>. This eliminates the pixel shift. You may also have to use the title
-                        search or <a href="#zimIndex">ZIM Archive Index</a> (press a space in title seaarch) to find the experiments, as there is an unresolved issue with displaying the ZIM's User Interface.
-                    </p>
-                    <p>
-                        
+                        In most browsers and frameworks you can set the app to <b>full-screen mode</b> using the option in Configuration, and in Chromium and Firefox browsers you can also <b>lock the orientation</b> of
+                        the app while it is in full-screen mode. Because the browser may throw you out of full-screen mode, for example, when you select an archive or when opening a new window, you may need to click in
+                        the app to re-activate full-screen mode. Full-screen mode needs to be activated by a user gesture: it is not possible to activate it automatically.
                     </p>
                     <h3 id="modes">Technical information</h3>
                     <p>
