@@ -1996,7 +1996,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 docStyle = contentElement.style;
                 if (!docStyle) continue;
                 if (contentElement.className === "mw-body") {
-                    docStyle.padding = "0.5em";
+                    docStyle.padding = "1em";
                     docStyle.border = "1px solid #a7d7f9";
                 }
                 if (params.removePageMaxWidth === "auto") {
