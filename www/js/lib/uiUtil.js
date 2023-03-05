@@ -1022,7 +1022,7 @@ define(rqDef, function(util) {
             return el ? true : false; 
         }).catch(function (err) {
             console.log('Error enabling full-screen mode', err);
-            // throw err;
+            throw err;
         });
     }
     
@@ -1061,6 +1061,8 @@ define(rqDef, function(util) {
                         return 'click';
                     }
                 }
+            }).catch(function (error) {
+                throw error;
             });
         } else {
             // User wants to cancel full-screen mode and unlock the display orientation

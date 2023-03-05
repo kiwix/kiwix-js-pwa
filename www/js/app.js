@@ -1467,7 +1467,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             '<blockquote><code>' + err.toString() + '</code></blockquote>' +
                             "<p>If screen lock doesn't work, please change setting back to 'Normal' or try a different option.</p>");
                     } else {
-                        uiUtil.systemAlert('There was an error setting the requested orientation: ' + err.toString());
+                        uiUtil.systemAlert((!params.PWAInstalled && /iOS/.test(params.appType) ?
+                        '<p>In Safari on iOS, consider adding this app to your homescreen (Share --&gt Add to Home) isntead.</p>' : '')
+                         + '<p>There was an error setting the requested screen state:</p><blockquote><code>' + err.toString() +  '</code></blockquote>');
                         that.value = params.lockDisplayOrientation;
                     }
                     setDynamicIcons();
