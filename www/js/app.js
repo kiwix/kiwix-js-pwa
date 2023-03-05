@@ -3608,6 +3608,23 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             });
         }
 
+        // Set up the event listener for return to article links
+        var linkListener = function () {
+            setTab();
+            if (params.themeChanged) {
+                params.themeChanged = false;
+                if (history.state !== null) {
+                    var thisURL = decodeURIComponent(history.state.title);
+                    goToArticle(thisURL);
+                }
+            }
+        };
+        var returnDivs = document.getElementsByClassName("returntoArticle");
+        for (var i = 0; i < returnDivs.length; i++) {
+            returnDivs[i].addEventListener('click', linkListener);
+        }
+
+
         /**
          * Reads a remote archive with given URL, and returns the response in a Promise.
          * This function is used by setRemoteArchives below, for UI tests
@@ -4737,6 +4754,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 htmlArticle = htmlArticle.replace(/(<head\b[^>]*>)\s*/, '$1\n    <meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: blob: bingmaps: about: \'unsafe-inline\' \'unsafe-eval\';"></meta>\n    ');
             }
 
+            // Maker return links
+            uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
+            
             if (params.zimType === 'open') {
                 //Adapt German Wikivoyage POI data format
                 var regexpGeoLocationDE = /<span\s+class="[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<bdi\s[^>]+?listing-name[^>]+>(?:<a\b\s+href[^>]+>)?([^<]+))/ig;
@@ -5013,14 +5033,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         // Trap clicks in the iframe to restore Fullscreen mode
                         if (params.lockDisplayOrientation) articleWindow.addEventListener('mousedown', refreshFullScreen, true);
                         setupTableOfContents();
-                        var makeLink = uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
-                        var linkListener = eval(makeLink);
-                        //Prevent multiple listeners being attached on each browse
-                        var returnDivs = document.getElementsByClassName("returntoArticle");
-                        for (var i = 0; i < returnDivs.length; i++) {
-                            returnDivs[i].removeEventListener('click', linkListener);
-                            returnDivs[i].addEventListener('click', linkListener);
-                        }
                     }
                     //Set relative font size + Stackexchange-family multiplier
                     var docElStyle = articleDocument.style;

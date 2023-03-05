@@ -166,20 +166,10 @@ define(rqDef, function(util) {
         var shortTitle = title.substring(0, 25);
         shortTitle = shortTitle == title ? shortTitle : shortTitle + "..."; 
         var link = '<h4 style="font-size:' + ~~(params.relativeUIFontSize * 1.4 * 0.14) + 'px;"><a href="#">&lt;&lt; Return to ' + shortTitle + '</a></h4>';
-        var rtnFunction = "(function () { setTab(); \
-            if (params.themeChanged) { \
-                params.themeChanged = false; \
-                if (history.state !== null) {  \
-                    var thisURL = decodeURIComponent(history.state.title); \
-                    goToArticle(thisURL); \
-                } \
-            } \
-        })";
         var returnDivs = document.getElementsByClassName("returntoArticle");
         for (var i = 0; i < returnDivs.length; i++) {
             returnDivs[i].innerHTML = link;
         }
-        return rtnFunction;
     }
 
     function pollSpinner(msg) {
