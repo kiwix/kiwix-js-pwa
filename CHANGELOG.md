@@ -1,9 +1,10 @@
 # Changelog
 
-## In-progress release 2.3.8
+## Release 2.4.0
 
 * FEATURE: Support Full Screen (all browsers) and rotation lock (primarily intended for mobile)
-* FEATURE: Significant speed-up of access to Wikimedia archives with option to ignore unneeded JS files 
+* FEATURE: Significant speed-up of access to Wikimedia archives with option to ignore unneeded JS files
+* SECURITY: Added sandbox attribute to iframe to block top-level navigation and attempts by scripts to "phone home" 
 * ENHANCEMENT: Provide indication of archive download progress in Electron app
 * ENHANCEMENT: Avoid opening blank window when downloading archive in Electron/NWJS
 * ENHANCEMENT: Provide troubleshooting option to disable drag-and-drop
