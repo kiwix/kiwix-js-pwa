@@ -2000,8 +2000,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     docStyle.border = "1px solid #a7d7f9";
                 }
                 if (params.removePageMaxWidth === "auto") {
-                    updatedCssText = cssSource === 'desktop' ? '100%' : window.innerWidth > 1024 ? '92%' :
-                        /android/i.test(params.appType) ? '99%' : '55.8em';
+                    updatedCssText = cssSource === 'desktop' ? '100%' : window.innerWidth > 1440 ? '92%' :
+                        // /android/i.test(params.appType) ? '98%' : 
+                        '55.8em';
                     docStyle.maxWidth = updatedCssText;
                     docStyle.cssText = docStyle.cssText.replace(/max-width:[^;]+/i, 'max-width: ' + updatedCssText + ' !important');
                     docStyle.border = "0";
