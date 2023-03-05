@@ -5,11 +5,12 @@
 * FEATURE: Support Full Screen (all browsers) and rotation lock (primarily intended for mobile)
 * FEATURE: Significant speed-up of access to Wikimedia archives with option to ignore unneeded JS files
 * SECURITY: Added sandbox attribute to iframe to block top-level navigation and attempts by scripts to "phone home" 
+* UPDATE: Sample archive changed to `wikipedia_en_100_mini_2023-03`
+* UPDATE: Mobile styles for Wiktionary archives
 * ENHANCEMENT: Provide indication of archive download progress in Electron app
 * ENHANCEMENT: Avoid opening blank window when downloading archive in Electron/NWJS
 * ENHANCEMENT: Provide troubleshooting option to disable drag-and-drop
 * ENHANCEMENT: Use screen width more efficiently in SW mode (with Remove max page width option)
-* UPDATE: Mobile styles for Wiktionary archives
 * FIX: Return to article links were missing in ServiceWorker mode
 * FIX: Removed orientation key that prevented proper setting of orientation in some contexts
 * FIX: Improved detection of Wikimedia ZIMs for seleciton of printing stylesheet
