@@ -1175,7 +1175,7 @@
             <!-- Bootstrap alert box -->
             <div id="alertBoxHeader" style="text-align: center; position: relative; z-index: 1; display: none;"></div>
             <!-- Attribute nwdisable prevents scripts in iframe accessing the nwjs node APIs -->
-            <iframe id="articleContent" class="articleIFrame" nwdisable></iframe>
+            <iframe id="articleContent" class="articleIFrame" sandbox="allow-same-origin allow-scripts allow-modals allow-forms allow-popups" nwdisable></iframe>
         </article>
         <footer id="footer">
             <!-- Bootstrap alert box -->
