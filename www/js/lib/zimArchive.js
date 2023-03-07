@@ -290,7 +290,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
             var rgxSplitPrefix = /^[-ABCHIJMUVWX]\//;
             if (that._file.zimType === 'zimit' && cns === 'C') {
                 // We have to account for the Zimit prefix in Type 1 ZIMs
-                rgxSplitPrefix = /^[CMWX]\/(?:[AH]\/)?/;
+                rgxSplitPrefix = /^(?:[CMWX]\/)?(?:[AH]\/)?/;
             }
             var splitPrefix = prefix.match(rgxSplitPrefix);
             prefixNameSpaces = splitPrefix ? splitPrefix[0] : '';
@@ -352,8 +352,9 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                     search.countReport = countReport;
                     if (search.status === 'cancelled') return callback([], search);
                     if (!noInterim && countReport === true) return callback(dirEntries, search);
-                    if (interim) {// Only push interim results (else results will be pushed again at end of variant loop)                    
-                        [].push.apply(dirEntries, newDirEntries);
+                    // Only push interim results to the dirEntries array (otherwise we get a duplicated array when the final results are reported to this function)
+                    if (interim) {
+                        [].push.apply(dirEntries, newDirEntries); // New dirEntries are pushed to the end of the global array
                         search.found = dirEntries.length;
                         if (!noInterim && newDirEntries.length) return callback(dirEntries, search);
                     } else return searchNextVariant();
