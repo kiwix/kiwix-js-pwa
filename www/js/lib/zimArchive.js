@@ -305,10 +305,6 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
         startArray.push(prefix.replace(/^./, function (m) {
             return m.toLocaleUpperCase();
         }));
-        // Add pure lowercase string (rarer)
-        startArray.push(prefix);
-        // Add a case-insensitive search for the string (pseudo-regex notation)
-        startArray.push('/' + prefix + '/i');
         // Get the full array of combinations to check number of combinations
         var fullCombos = util.removeDuplicateStringsInSmallArray(util.allCaseFirstLetters(prefix, 'full'));
         // Put cap on exponential number of combinations (five words = 3^5 = 243 combinations)
@@ -347,14 +343,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
             if (!noInterim) callback(dirEntries, search);
             search.found = dirEntries.length;
             var prefix = prefixNameSpaces + prefixVariants[0];
-            search.lc = false;
-            // If it's pseudo-regex with a case-insensitive flag like '/my search/i', do an enhanced case-insensitive search
-            if (/^\/.+\/i$/.test(prefixVariants[0])) {
-                search.lc = true;
-                prefix = prefixNameSpaces + prefixVariants[0].replace(/^\/(.+)\/i/, '$1').toLocaleLowerCase();
-                console.debug('Searching case-insensitively for: "' + prefix + '"');
-            }
-            // Remove in-progress search variant from array
+            // console.debug('Searching for: ' + prefixVariants[0]);
             prefixVariants = prefixVariants.slice(1);
             // Search window sets an upper limit on how many matching dirEntries will be scanned in a full index search
             search.window = search.rgxPrefix ? 10000 * search.size : search.size;
@@ -464,11 +453,6 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                     var title = dirEntry.getTitleOrUrl();
                     // If we are searching by URL, display namespace also
                     if (search.searchUrlIndex) title = dirEntry.namespace + '/' + dirEntry.url;
-                    // If we are doing case-insensitive lowercase search, convert part of title to lowercase
-                    if (search.lc) {
-                        var pseudoNS = title.replace(/^((?:[AH]\/)?).*/, '$1');
-                        title = pseudoNS + title.replace(pseudoNS, '').toLocaleLowerCase();
-                    }
                     // Only return dirEntries with titles that actually begin with prefix
                     if (saveStartIndex === null || (search.searchUrlIndex || dirEntry.namespace === cns) && title.indexOf(prefix) === 0) {
                         if (!search.rgxPrefix || search.rgxPrefix && search.rgxPrefix.test(title.replace(prefix, ''))) { 
