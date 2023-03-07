@@ -65,7 +65,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         // Test caching capability
         cache.test(function(){});
         // Unique identifier of the article expected to be displayed
-        var expectedArticleURLToBeDisplayed = "";
+        appstate.expectedArticleURLToBeDisplayed = '';
         // Check if we have managed to switch to PWA mode (if running UWP app)
         // DEV: we do this in init.js, but sometimes it doesn't seem to register, so we do it again once the app has fully launched
         if (/UWP\|PWA/.test(params.appType) && /^http/i.test(window.location.protocol)) {
@@ -3992,9 +3992,9 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
          */
         function isDirEntryExpectedToBeDisplayed(dirEntry) {
             var curArticleURL = dirEntry.namespace + "/" + dirEntry.url;
-            if (expectedArticleURLToBeDisplayed !== curArticleURL) {
+            if (appstate.expectedArticleURLToBeDisplayed !== curArticleURL) {
                 console.debug("url of current article :" + curArticleURL + ", does not match the expected url :" + 
-                expectedArticleURLToBeDisplayed);
+                    appstate.expectedArticleURLToBeDisplayed);
                 return false;
             }
             return true;
@@ -4008,7 +4008,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             // Reset search prefix to allow users to search the same string again if they want to
             appstate.search.prefix = '';
             // Only update for expectedArticleURLToBeDisplayed.
-            expectedArticleURLToBeDisplayed = dirEntry.namespace + "/" + dirEntry.url;
+            appstate.expectedArticleURLToBeDisplayed = dirEntry.namespace + '/' + dirEntry.url;
             params.pagesLoaded++;
             if (dirEntry.isRedirect()) {
                 appstate.selectedArchive.resolveRedirect(dirEntry, readArticle);
@@ -5704,6 +5704,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
          * @param {String} pathEnc The fully encoded version of the path for use with some Zimit archives
          */
         function goToArticle(path, download, contentType, pathEnc) {
+            appstate.expectedArticleURLToBeDisplayed = path;
             //This removes any search highlighting
             clearFindInArticle();
             var shortTitle = path.replace(/[^/]+\//g, '').substring(0, 18);

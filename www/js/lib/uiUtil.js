@@ -172,7 +172,7 @@ define(rqDef, function(util) {
         }
     }
 
-    function pollSpinner(msg) {
+    function pollSpinner(msg, noTimeout) {
         msg = msg || '';
         document.getElementById('searchingArticles').style.display = 'block';
         var cachingAssets = document.getElementById('cachingAssets');
@@ -181,7 +181,7 @@ define(rqDef, function(util) {
         else cachingAssets.style.display = 'none';
         // Never allow spinner to run for more than 3s
         clearTimeout(clearSpinner);
-        setTimeout(clearSpinner, 3000);
+        if (!noTimeout) setTimeout(clearSpinner, 3000);
     }
 
     function clearSpinner() {
