@@ -431,6 +431,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                         ns = ns + ti.replace(/^([AH])(\/).*/, '$2$1');
                         ti = ti.replace(/^[AH]\//, '').toLocaleLowerCase();
                     }
+                    if (search.rgxPrefix && search.rgxPrefix.test(ti)) return -1;
                     return prefix <= (ns + '/' + ti) ? -1 : 1;
                 }
             });
