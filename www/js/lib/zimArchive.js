@@ -620,6 +620,9 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                 } 
                 callback(dirEntry, data);
             }
+        }).catch(function (e) {
+            console.error('Error reading directory entry', e);
+            callback(dirEntry, '');
         });
     };
 
@@ -691,8 +694,9 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                     path = path.replace(/^A\//, 'H/').replace(/^(C\/)A\//, '$1H/');
                     console.debug('DirEntry ' + oldPath + ' not found, looking up header: ' + path);
                     return that.getDirEntryByPath(path, true, oldPath);
-                } else if (zimitResolving && appstate.originalPath && appstate.originalPath === appstate.expectedArticleURLToBeDisplayed) {
-                    // We couldn't find the Header, so try a fuzzy search only if the user is loading an article
+                // } else if (zimitResolving && appstate.originalPath && appstate.originalPath === appstate.expectedArticleURLToBeDisplayed) {
+                } else if (zimitResolving) {
+                    // We couldn't find the Header, so try a fuzzy search // only if the user is loading an article
                     path = appstate.originalPath;
                     var ns = path.replace(/^((?:C\/)?A\/).*/, '$1'); // If Zimit pseudo-namespaces are changed, will need to edit this
                     path = path.replace(ns, '');
@@ -733,9 +737,9 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
             console.log('Initiating fuzzy search for ' + path + '...');
             uiUtil.pollSpinner('Fuzzy search for ' + path + '...', true);
             var searchResolved = false;
-            setTimeout(function () {
-                if (!searchResolved) uiUtil.pollSpinner('Fuzzy search for ' + path + '...', true);
-            }, 5000);
+            // setTimeout(function () {
+            //     if (!searchResolved) uiUtil.pollSpinner('Fuzzy search for ' + path + '...', true);
+            // }, 5000);
             appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(path, search, function (dirEntry) {
                 if (!search.found && dirEntry && dirEntry[0] && dirEntry[0].url) {
                     search.found++;
