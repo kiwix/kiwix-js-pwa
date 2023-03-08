@@ -305,6 +305,10 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
         startArray.push(prefix.replace(/^./, function (m) {
             return m.toLocaleUpperCase();
         }));
+        // Add pure lowercase string (rarer)
+        startArray.push(prefix);
+        // Add a case-insensitive search for the string (pseudo-regex notation)
+        startArray.push('/' + prefix + '/i');
         // Get the full array of combinations to check number of combinations
         var fullCombos = util.removeDuplicateStringsInSmallArray(util.allCaseFirstLetters(prefix, 'full'));
         // Put cap on exponential number of combinations (five words = 3^5 = 243 combinations)
@@ -343,7 +347,14 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
             if (!noInterim) callback(dirEntries, search);
             search.found = dirEntries.length;
             var prefix = prefixNameSpaces + prefixVariants[0];
-            // console.debug('Searching for: ' + prefixVariants[0]);
+            search.lc = false;
+            // If it's pseudo-regex with a case-insensitive flag like '/my search/i', do an enhanced case-insensitive search
+            if (/^\/.+\/i$/.test(prefixVariants[0])) {
+                search.lc = true;
+                prefix = prefixNameSpaces + prefixVariants[0].replace(/^\/(.+)\/i/, '$1').toLocaleLowerCase();
+                console.debug('Searching case-insensitively for: "' + prefix + '"');
+            }
+            // Remove in-progress search variant from array
             prefixVariants = prefixVariants.slice(1);
             // Search window sets an upper limit on how many matching dirEntries will be scanned in a full index search
             search.window = search.rgxPrefix ? 10000 * search.size : search.size;
@@ -354,7 +365,16 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                     if (!noInterim && countReport === true) return callback(dirEntries, search);
                     // Only push interim results to the dirEntries array (otherwise we get a duplicated array when the final results are reported to this function)
                     if (interim) {
-                        [].push.apply(dirEntries, newDirEntries); // New dirEntries are pushed to the end of the global array
+                        // Collect all the found paths for the dirEntries so far
+                        var dirEntryPaths = [];
+                        for (var i = 0; i < dirEntries.length; i++) {
+                            dirEntryPaths.push(dirEntries[i].url);
+                        }
+                        // Push new directory entries to the end of the global array so long as they are not duplicates
+                        for (var j = 0; j < newDirEntries.length; j++) {
+                            if (~dirEntryPaths.indexOf(newDirEntries[j].url)) continue;
+                            dirEntries.push(newDirEntries[j]);
+                        }
                         search.found = dirEntries.length;
                         if (!noInterim && newDirEntries.length) return callback(dirEntries, search);
                     } else return searchNextVariant();
@@ -428,10 +448,10 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                     return prefix <= ti ? -1 : 1;
                 } else {
                     if (search.lc) { // Search comparator should be lowercase (for case-insensitive search)
-                        ns = ns + ti.replace(/^([AH])(\/).*/, '$2$1');
+                        ns = ns + '/' + ti.replace(/^((?:[AH])?)\/?.*/, '$1');
                         ti = ti.replace(/^[AH]\//, '').toLocaleLowerCase();
                     }
-                    if (search.rgxPrefix && search.rgxPrefix.test(ti)) return -1;
+                    // if (search.rgxPrefix && search.rgxPrefix.test(ti)) return -1;
                     return prefix <= (ns + '/' + ti) ? -1 : 1;
                 }
             });
@@ -455,6 +475,10 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                     var title = dirEntry.getTitleOrUrl();
                     // If we are searching by URL, display namespace also
                     if (search.searchUrlIndex) title = dirEntry.namespace + '/' + dirEntry.url;
+                    if (search.lc && !search.rgxPrefix) { // Search comparator should be lowercase if not using regex (for case-insensitive search)
+                        var ns = title.replace(/^((?:C\/)?(?:[AH]\/)?).*/, '$1');
+                        title = ns + title.replace(ns, '').toLocaleLowerCase();
+                    }
                     // Only return dirEntries with titles that actually begin with prefix
                     if (saveStartIndex === null || (search.searchUrlIndex || dirEntry.namespace === cns) && title.indexOf(prefix) === 0) {
                         if (!search.rgxPrefix || search.rgxPrefix && search.rgxPrefix.test(title)) { // Regex test case-insensitive if i flag set
