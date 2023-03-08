@@ -3,6 +3,10 @@
 ## In-progress release 2.4.1
 
 * ENHANCEMENT: Provide fuzzy search for case-insensitive links in Zimit archives
+* ENHANCEMENT: Include broader pseudo-case-insensitive search in title search
+* SECURITY: Add iframe referrer policy 'same-origin'
+* FIX: Stack Exchange ZIM detection
+* FIX: Display of external icons in Stack Exchange articles
 
 ## Release 2.4.0
 
