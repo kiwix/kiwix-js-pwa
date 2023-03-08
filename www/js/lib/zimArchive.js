@@ -290,7 +290,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
             var rgxSplitPrefix = /^[-ABCHIJMUVWX]\//;
             if (that._file.zimType === 'zimit' && cns === 'C') {
                 // We have to account for the Zimit prefix in Type 1 ZIMs
-                rgxSplitPrefix = /^[CMWX]\/(?:[AH]\/)?/;
+                rgxSplitPrefix = /^(?:[CMWX]\/)?(?:[AH]\/)?/;
             }
             var splitPrefix = prefix.match(rgxSplitPrefix);
             prefixNameSpaces = splitPrefix ? splitPrefix[0] : '';
@@ -305,6 +305,10 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
         startArray.push(prefix.replace(/^./, function (m) {
             return m.toLocaleUpperCase();
         }));
+        // Add pure lowercase string (rarer)
+        startArray.push(prefix);
+        // Add a case-insensitive search for the string (pseudo-regex notation)
+        startArray.push('/' + prefix + '/i');
         // Get the full array of combinations to check number of combinations
         var fullCombos = util.removeDuplicateStringsInSmallArray(util.allCaseFirstLetters(prefix, 'full'));
         // Put cap on exponential number of combinations (five words = 3^5 = 243 combinations)
@@ -343,7 +347,14 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
             if (!noInterim) callback(dirEntries, search);
             search.found = dirEntries.length;
             var prefix = prefixNameSpaces + prefixVariants[0];
-            // console.debug('Searching for: ' + prefixVariants[0]);
+            search.lc = false;
+            // If it's pseudo-regex with a case-insensitive flag like '/my search/i', do an enhanced case-insensitive search
+            if (/^\/.+\/i$/.test(prefixVariants[0])) {
+                search.lc = true;
+                prefix = prefixNameSpaces + prefixVariants[0].replace(/^\/(.+)\/i/, '$1').toLocaleLowerCase();
+                console.debug('Searching case-insensitively for: "' + prefix + '"');
+            }
+            // Remove in-progress search variant from array
             prefixVariants = prefixVariants.slice(1);
             // Search window sets an upper limit on how many matching dirEntries will be scanned in a full index search
             search.window = search.rgxPrefix ? 10000 * search.size : search.size;
@@ -352,8 +363,18 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                     search.countReport = countReport;
                     if (search.status === 'cancelled') return callback([], search);
                     if (!noInterim && countReport === true) return callback(dirEntries, search);
-                    if (interim) {// Only push interim results (else results will be pushed again at end of variant loop)                    
-                        [].push.apply(dirEntries, newDirEntries);
+                    // Only push interim results to the dirEntries array (otherwise we get a duplicated array when the final results are reported to this function)
+                    if (interim) {
+                        // Collect all the found paths for the dirEntries so far
+                        var dirEntryPaths = [];
+                        for (var i = 0; i < dirEntries.length; i++) {
+                            dirEntryPaths.push(dirEntries[i].url);
+                        }
+                        // Push new directory entries to the end of the global array so long as they are not duplicates
+                        for (var j = 0; j < newDirEntries.length; j++) {
+                            if (~dirEntryPaths.indexOf(newDirEntries[j].url)) continue;
+                            dirEntries.push(newDirEntries[j]);
+                        }
                         search.found = dirEntries.length;
                         if (!noInterim && newDirEntries.length) return callback(dirEntries, search);
                     } else return searchNextVariant();
@@ -420,9 +441,18 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                     if (ns < cns) return 1;
                     if (ns > cns) return -1;
                     // We should now be in namespace A (old format ZIM) or C (new format ZIM)
-                    return prefix <= dirEntry.getTitleOrUrl() ? -1 : 1;
+                    if (search.lc) { // Search comparator should be lowercase (for case-insensitive search)
+                        ti = ti.toLocaleLowerCase();
+                        prefix = prefix.toLocaleLowerCase();
+                    }
+                    return prefix <= ti ? -1 : 1;
                 } else {
-                    return prefix <= ns + '/' + ti ? -1 : 1;
+                    if (search.lc) { // Search comparator should be lowercase (for case-insensitive search)
+                        ns = ns + '/' + ti.replace(/^((?:[AH])?)\/?.*/, '$1');
+                        ti = ti.replace(/^[AH]\//, '').toLocaleLowerCase();
+                    }
+                    // if (search.rgxPrefix && search.rgxPrefix.test(ti)) return -1;
+                    return prefix <= (ns + '/' + ti) ? -1 : 1;
                 }
             });
         }, true).then(function(firstIndex) {
@@ -445,9 +475,13 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                     var title = dirEntry.getTitleOrUrl();
                     // If we are searching by URL, display namespace also
                     if (search.searchUrlIndex) title = dirEntry.namespace + '/' + dirEntry.url;
+                    if (search.lc && !search.rgxPrefix) { // Search comparator should be lowercase if not using regex (for case-insensitive search)
+                        var ns = title.replace(/^((?:C\/)?(?:[AH]\/)?).*/, '$1');
+                        title = ns + title.replace(ns, '').toLocaleLowerCase();
+                    }
                     // Only return dirEntries with titles that actually begin with prefix
                     if (saveStartIndex === null || (search.searchUrlIndex || dirEntry.namespace === cns) && title.indexOf(prefix) === 0) {
-                        if (!search.rgxPrefix || search.rgxPrefix && search.rgxPrefix.test(title.replace(prefix, ''))) { 
+                        if (!search.rgxPrefix || search.rgxPrefix && search.rgxPrefix.test(title)) { // Regex test case-insensitive if i flag set
                             vDirEntries.push(dirEntry);
                             // Report interim result
                             if (typeof saveStartIndex === 'undefined') callback([dirEntry], false, true);
@@ -610,6 +644,9 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                 } 
                 callback(dirEntry, data);
             }
+        }).catch(function (e) {
+            console.error('Error reading directory entry', e);
+            callback(dirEntry, '');
         });
     };
 
@@ -681,11 +718,30 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                     path = path.replace(/^A\//, 'H/').replace(/^(C\/)A\//, '$1H/');
                     console.debug('DirEntry ' + oldPath + ' not found, looking up header: ' + path);
                     return that.getDirEntryByPath(path, true, oldPath);
+                // } else if (zimitResolving) {
+                } else if (zimitResolving && appstate.originalPath && appstate.originalPath === appstate.expectedArticleURLToBeDisplayed) {
+                    // We couldn't find the Header, so try a fuzzy search only if the user is loading an article
+                    path = appstate.originalPath;
+                    var ns = path.replace(/^((?:C\/)?A\/).*/, '$1'); // If Zimit pseudo-namespaces are changed, will need to edit this
+                    path = path.replace(ns, '');
+                    path = path.toLocaleLowerCase(); // We are going to combine case-insensitive string comparison with regex matching
+                    var rgxPath = path.replace(/([-/?.$^|*+()[{])/g, '\\$1'); // Make sure we escape regex characters
+                    path = ns + path; // Add namespace back to path for full matching
+                    // path = ns;
+                    var search = {
+                        rgxPrefix: new RegExp('.*' + rgxPath, 'i'),
+                        searchUrlIndex: true,
+                        lc: true, // Make the comparator (e.g. dirEntry.url) lowercase 
+                        size: 1,
+                        found: 0
+                    }
+                    return fuzzySearch(path, search);
+                } else {
+                    var newpath = path.replace(/^((?:A|C\/A)\/)[^/]+\/(.+)$/, '$1$2');
+                    if (newpath === path) return null; // No further paths to explore!
+                    console.log("Article " + path + " not available, but moving up one directory to compensate for ZIM coding error...");
+                    return that.getDirEntryByPath(newpath);
                 }
-                var newpath = path.replace(/^((?:A|C\/A)\/)[^/]+\/(.+)$/, '$1$2');
-                if (newpath === path) return null; // No further paths to explore!
-                console.log("Article " + path + " not available, but moving up one directory to compensate for ZIM coding error...");
-                return that.getDirEntryByPath(newpath);
             } else {
                 // DEBUG: List found Directory Entry
                 // if (dirEntry) console.debug('Found ' + path);
@@ -693,6 +749,37 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
             }
         });
     };
+
+    /**
+     * Initiate a fuzzy search for dirEntries matching the search object
+     * @param {String} path Human-readable path to search for
+     * @param {Object} search The search object 
+     * @returns {Promise<DirEntry>} A Promise that resolves to a Directory Entry, or null if not found
+     */
+    function fuzzySearch(path, search) {
+        return new Promise(function (resolve, reject) {
+            console.log('Initiating fuzzy search for ' + path + '...');
+            uiUtil.pollSpinner('Fuzzy search for ' + path + '...', true);
+            var searchResolved = false;
+            // setTimeout(function () {
+            //     if (!searchResolved) uiUtil.pollSpinner('Fuzzy search for ' + path + '...', true);
+            // }, 5000);
+            appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(path, search, function (dirEntry) {
+                if (!search.found && dirEntry && dirEntry[0] && dirEntry[0].url) {
+                    search.found++;
+                    dirEntry = dirEntry[0];
+                    dirEntry = transformZimit.filterReplayFiles(dirEntry);
+                    if (dirEntry) console.debug('Found ' + dirEntry.url + ' in fuzzy search');
+                    searchResolved = true;
+                    resolve(dirEntry);
+                } else {
+                    console.debug('No fuzzy search results found');
+                    searchResolved = true;
+                    resolve(null);
+                }
+            }, null);
+        });
+    }
 
     /**
      * 
