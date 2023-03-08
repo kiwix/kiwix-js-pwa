@@ -73,6 +73,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                     /-\/static\/bootstrap\/css\/bootstrap.min.css/i.test(zl) ||
                     /-\/static\/bootstrap\/css\/bootstrap-theme.min.css/i.test(zl) ||
                     /-\/static\/main.css/i.test(zl) ||
+                    /\/static\/css\/sotoki.css/i.test(zl) ||
                     /\/mobile.css/i.test(zl) ||
                     /\/style-mobile.css/i.test(zl) ||
                     /\/skins.minerva.base.reset\|skins.minerva.content.styles\|ext.cite.style\|mediawiki.page.gallery.styles\|mobile.app.pagestyles.android\|mediawiki.skinning.content.parsoid.css/i.test(zl)
@@ -84,6 +85,7 @@ define(['util', 'uiUtil'], function (util, uiUtil) {
                 // Rename this required mobile style so that we don't trigger reading ZIM as mobile in print intercept
                 zl = /\/mobile_main_page\.css/.test(zl) ? "-/mw/newstyle_main_page.css" : zl;
                 zl = /\/content\.parsoid\.css/.test(zl) ? "-/s/css_modules/content.parsoid.css" : zl;
+                zl = /\/sotoki\.css/.test(zl) ? "C/static/css/sotoki.css" : zl;
                 // Replace bootstrap with own: DEV: when upgrading to Bootstrap 4, stop doing this!
                 zl = zl.replace(/.+(bootstrap[^\/]*?\.css)/i, "css/$1");
                 console.debug("Matched #" + i + " [" + zl + "] from local filesystem");

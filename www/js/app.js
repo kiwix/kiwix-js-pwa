@@ -646,7 +646,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             // IE11 and Firefox need to use fontSize on the body style
             var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
             docElStyle = zoomProp === 'fontSize' ? doc.body.style : docElStyle; 
-            docElStyle[zoomProp] = /-\/static\/main\.css/.test(doc.head.innerHTML) && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
+            docElStyle[zoomProp] = /-\/static\/main\.css|statc\/css\/sotoki.css/.test(doc.head.innerHTML) && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
             var lblZoom = document.getElementById('lblZoom');
             lblZoom.innerHTML = params.relativeFontSize + "%";
             lblZoom.style.cssText = "position:absolute;right:" + window.innerWidth / 5 + "px;bottom:50px;z-index:50;";
@@ -662,7 +662,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             var docElStyle = doc.documentElement.style;
             var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
             docElStyle = zoomProp === 'fontSize' ? doc.body.style : docElStyle; 
-            docElStyle[zoomProp] = /-\/static\/main\.css/.test(doc.head.innerHTML) && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
+            docElStyle[zoomProp] = /-\/static\/main\.css|statc\/css\/sotoki.css/.test(doc.head.innerHTML) && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
             var lblZoom = document.getElementById('lblZoom');
             lblZoom.innerHTML = params.relativeFontSize + "%";
             lblZoom.style.cssText = "position:absolute;right:" + window.innerWidth / 4 + "px;bottom:50px;z-index:50;";
@@ -4149,7 +4149,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 switchCSSTheme();
                 //Set relative font size + Stackexchange-family multiplier
                 var zimType = /-\/s\/style\.css/i.test(doc.head.innerHTML) ? "desktop" : "mobile";
-                zimType = /-\/static\/main\.css/i.test(doc.head.innerHTML) ? "desktop-stx" : zimType; //Support stackexchange
+                zimType = /-\/static\/main\.css|statc\/css\/sotoki.css/i.test(doc.head.innerHTML) ? "desktop-stx" : zimType; //Support stackexchange
                 zimType = /minerva|mobile[^"']*\.css/i.test(doc.head.innerHTML) ? "mobile" : zimType;
                 var docElStyle = articleDocument.style;
                 var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
@@ -4859,7 +4859,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             function getBLOB(arr) {
                 var testCSS = arr.join();
                 zimType = /-\/s\/style\.css/i.test(testCSS) ? "desktop" : zimType;
-                zimType = /-\/static\/main\.css/i.test(testCSS) ? "desktop-stx" : zimType; //Support stackexchange
+                zimType = /-\/static\/main\.css|statc\/css\/sotoki.css/i.test(testCSS) ? "desktop-stx" : zimType; //Support stackexchange
                 zimType = /gutenberg\.css/i.test(testCSS) ? "desktop-gtb" : zimType; //Support Gutenberg
                 zimType = /minerva|mobile/i.test(testCSS) ? "mobile" : zimType;
                 cssSource = cssSource == "auto" ? zimType : cssSource; //Default to in-built zimType if user has selected automatic detection of styles
