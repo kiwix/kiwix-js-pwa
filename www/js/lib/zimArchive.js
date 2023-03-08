@@ -457,7 +457,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                     if (search.searchUrlIndex) title = dirEntry.namespace + '/' + dirEntry.url;
                     // Only return dirEntries with titles that actually begin with prefix
                     if (saveStartIndex === null || (search.searchUrlIndex || dirEntry.namespace === cns) && title.indexOf(prefix) === 0) {
-                        if (!search.rgxPrefix || search.rgxPrefix && search.rgxPrefix.test(title.replace(prefix, ''))) { 
+                        if (!search.rgxPrefix || search.rgxPrefix && search.rgxPrefix.test(title)) { // Regex test case-insensitive if i flag set
                             vDirEntries.push(dirEntry);
                             // Report interim result
                             if (typeof saveStartIndex === 'undefined') callback([dirEntry], false, true);
