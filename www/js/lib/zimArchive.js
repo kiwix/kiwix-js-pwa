@@ -694,9 +694,9 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                     path = path.replace(/^A\//, 'H/').replace(/^(C\/)A\//, '$1H/');
                     console.debug('DirEntry ' + oldPath + ' not found, looking up header: ' + path);
                     return that.getDirEntryByPath(path, true, oldPath);
-                // } else if (zimitResolving && appstate.originalPath && appstate.originalPath === appstate.expectedArticleURLToBeDisplayed) {
-                } else if (zimitResolving) {
-                    // We couldn't find the Header, so try a fuzzy search // only if the user is loading an article
+                // } else if (zimitResolving) {
+                } else if (zimitResolving && appstate.originalPath && appstate.originalPath === appstate.expectedArticleURLToBeDisplayed) {
+                    // We couldn't find the Header, so try a fuzzy search only if the user is loading an article
                     path = appstate.originalPath;
                     var ns = path.replace(/^((?:C\/)?A\/).*/, '$1'); // If Zimit pseudo-namespaces are changed, will need to edit this
                     path = path.replace(ns, '');
