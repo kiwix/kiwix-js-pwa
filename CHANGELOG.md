@@ -1,5 +1,9 @@
 # Changelog
 
+## In-progress release 2.4.1
+
+* ENHANCEMENT: Provide fuzzy search for case-insensitive links in Zimit archives
+
 ## Release 2.4.0
 
 * FEATURE: Support Full Screen (all browsers) and rotation lock (primarily intended for mobile)
