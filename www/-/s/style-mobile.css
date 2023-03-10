@@ -47,7 +47,7 @@ body {
     font-family: 'Helvetica Neue','Helvetica','Nimbus Sans L','Arial','Liberation Sans',sans-serif;
     line-height: 1.4;
     color: #222222;
-    background: #fff
+    background: #fff;
 }
 
 .content {
@@ -2722,7 +2722,7 @@ body {
     font-family: 'Helvetica Neue','Helvetica','Nimbus Sans L','Arial','Liberation Sans',sans-serif;
     line-height: 1.4;
     color: #222222;
-    background: #fff
+    background: #fff;
 }
 
 .pre-content, .content, .post-content {
