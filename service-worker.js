@@ -425,15 +425,17 @@ function fetchUrlFromZIM(urlObject, range) {
         messageChannel.port1.onmessage = function (msgPortEvent) {
             if (msgPortEvent.data.action === 'giveContent') {
                 // Content received from app.js
-                var contentLength = msgPortEvent.data.content ? msgPortEvent.data.content.byteLength : null;
+                var contentLength = msgPortEvent.data.content ? (msgPortEvent.data.content.byteLength || msgPortEvent.data.content.length) : null;
                 var contentType = msgPortEvent.data.mimetype;
                 // Set the imageDisplay variable if it has been sent in the event data
                 imageDisplay = typeof msgPortEvent.data.imageDisplay !== 'undefined' ?
-                  msgPortEvent.data.imageDisplay : imageDisplay;
+                    msgPortEvent.data.imageDisplay : imageDisplay;
                 var headers = new Headers();
                 if (contentLength) headers.set('Content-Length', contentLength);
-                // Prevent CORS issues in PWAs
-                if (contentLength) headers.set('Access-Control-Allow-Origin', '*');
+                // Prevent CORS issues in PWAs - not needed and insecure!
+                // headers.set('Access-Control-Allow-Origin', '*');
+                // Set Content-Security-Policy to sandbox the content (prevent XSS attacks from malicious ZIMs)
+                headers.set('Content-Security-Policy', 'sandbox allow-scripts allow-same-origin allow-modals allow-popups allow-forms');
                 if (contentType) headers.set('Content-Type', contentType);
                 
                 // Test if the content is a video or audio file. In this case, Chrome & Edge need us to support ranges.
