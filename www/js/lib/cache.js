@@ -290,7 +290,8 @@ define(['settingsStore', 'uiUtil'], function(settingsStore, uiUtil) {
                 var headers = new Headers();
                 if (contentLength) headers.set('Content-Length', contentLength);
                 // Prevent CORS issues in PWAs
-                if (contentLength) headers.set('Access-Control-Allow-Origin', '*');
+                // if (contentLength) headers.set('Access-Control-Allow-Origin', '*');
+                headers.set('Content-Security-Policy', 'sandbox allow-scripts allow-same-origin allow-modals allow-popups allow-forms');
                 if (mimetype) headers.set('Content-Type', mimetype);
                 var responseInit = {
                     status: 200,
