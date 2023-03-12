@@ -9,6 +9,7 @@
 * ENHANCEMENT: App now intelligently sets the initial window opening mode (tab or window)
 * SECURITY: Added sandbox attribute to iframe to block top-level navigation and attempts by scripts to 'phone home' 
 * SECURITY: Add iframe referrer policy 'same-origin'
+* SECURITY: Strengthen Content Security Policy via response headers and meta http-equiv
 * ENHANCEMENT: Provide indication of archive download progress in Electron app
 * ENHANCEMENT: Avoid opening blank window when downloading archive in Electron/NWJS
 * ENHANCEMENT: Provide troubleshooting option to disable drag-and-drop
