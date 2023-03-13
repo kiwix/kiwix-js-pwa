@@ -265,6 +265,10 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
         var prefix = search.prefix;
         // Launch a full-text search if possible
         if (LZ && !search.searchUrlIndex) that.findDirEntriesFromFullTextSearch(search, dirEntries).then(function (fullTextDirEntries) {
+            // If user initiated a new search, cancel this one
+            // In particular, do not set the search status back to 'complete'
+            // as that would cause outdated results to unexpectedly pop up
+            if (search.status === 'cancelled') return callback([], search);
             dirEntries = fullTextDirEntries;
             search.status = 'complete';
             callback(dirEntries, search);
@@ -334,6 +338,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                 else if (LZ && search.searchUrlIndex && remaining > 0) {
                     search.type = 'fulltext';
                     that.findDirEntriesFromFullTextSearch(search, dirEntries, remaining).then(function (fullTextDirEntries) {
+                        if (search.status === 'cancelled') return callback([], search);
                         dirEntries = fullTextDirEntries;
                         search.status = 'complete';
                         callback(dirEntries, search);
