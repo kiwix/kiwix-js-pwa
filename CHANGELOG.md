@@ -18,6 +18,7 @@
 * FIX: Removed orientation key that prevented proper setting of orientation in some contexts
 * FIX: Improved detection of Wikimedia ZIMs for seleciton of printing stylesheet
 * FIX: Logic for checking GitHub update server 
+* FIX: Missing full-text search cancellation which caused race condition in search
 
 ## Release 2.3.4-WikiMed
 
