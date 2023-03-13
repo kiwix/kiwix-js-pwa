@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 2.4.1
+## In-progress release 2.4.2
 
 * ENHANCEMENT: Provide fuzzy search for case-insensitive links in Zimit archives
 * ENHANCEMENT: Include broader pseudo-case-insensitive search in title search
@@ -9,6 +9,7 @@
 * FIX: Stack Exchange ZIM detection
 * FIX: Display of external icons in Stack Exchange articles
 * FIX: Dark mode style tweaks for Wiktionary
+* FIX: Missing full-text search cancellation which caused race condition in search 
 
 ## Release 2.4.0
 
