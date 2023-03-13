@@ -4,7 +4,7 @@
 
 * ENHANCEMENT: Provide fuzzy search for case-insensitive links in Zimit archives
 * ENHANCEMENT: Include broader pseudo-case-insensitive search in title search
-* SECURITY: Add iframe referrer policy 'same-origin'
+* SECURITY: Add iframe referrer policy 'none'
 * SECURITY: Strengthen Content Security Policy via response headers and meta http-equiv
 * FIX: Stack Exchange ZIM detection
 * FIX: Display of external icons in Stack Exchange articles
