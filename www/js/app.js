@@ -810,26 +810,6 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 document.getElementById('downloadLinksText').style.display = 'block';
                 currentArchive.style.display = 'none';
             }
-            // Populate version info
-            var versionSpans = document.getElementsByClassName('version');
-            for (var i = 0; i < versionSpans.length; i++) {
-                versionSpans[i].innerHTML = i ? params.appVersion : params.appVersion.replace(/\s+.*$/, "");
-            }
-            if (params.fileVersion && /UWP|Electron/.test(params.appType)) {
-                var packagedInfoParas = document.getElementsByClassName('packagedInfo');
-                var fileVersionDivs = document.getElementsByClassName('fileVersion');
-                for (i = 0; i < fileVersionDivs.length; i++) {
-                    packagedInfoParas[i].style.display = 'block';
-                    fileVersionDivs[i].innerHTML = i ? params.fileVersion.replace(/\s+.+$/, '') : params.fileVersion;
-                }
-            }
-            var appType = document.getElementById('appType');
-            appType.innerHTML = /^(?=.*PWA).*UWP/.test(params.appType) &&
-                /^https:/i.test(location.protocol) ? 'UWP (PWA) ' :
-                /UWP/.test(params.appType) ? 'UWP ' : 
-                window.nw ? 'NWJS ' : 
-                /Electron/.test(params.appType) ? 'Electron ' : 
-                /PWA/.test(params.appType) ? 'PWA ' : '';
             var update = document.getElementById('update');
             if (update) document.getElementById('logUpdate').innerHTML = update.innerHTML.match(/<ul[^>]*>[\s\S]+/i);
             var features = document.getElementById('features');
@@ -2091,6 +2071,26 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     document.getElementById('downloadLinksText').style.display = "inline";
                 }
             }
+            // Populate version info
+            var versionSpans = document.getElementsByClassName('version');
+            for (var i = 0; i < versionSpans.length; i++) {
+                versionSpans[i].innerHTML = i ? params.appVersion : params.appVersion.replace(/\s+.*$/, "");
+            }
+            if (params.fileVersion && /UWP|Electron/.test(params.appType)) {
+                var packagedInfoParas = document.getElementsByClassName('packagedInfo');
+                var fileVersionDivs = document.getElementsByClassName('fileVersion');
+                for (i = 0; i < fileVersionDivs.length; i++) {
+                    packagedInfoParas[i].style.display = 'block';
+                    fileVersionDivs[i].innerHTML = i ? params.fileVersion.replace(/\s+.+$/, '') : params.fileVersion;
+                }
+            }
+            var appType = document.getElementById('appType');
+            appType.innerHTML = /^(?=.*PWA).*UWP/.test(params.appType) &&
+                /^https:/i.test(location.protocol) ? 'UWP (PWA) ' :
+                /UWP/.test(params.appType) ? 'UWP ' : 
+                window.nw ? 'NWJS ' : 
+                /Electron/.test(params.appType) ? 'Electron ' : 
+                /PWA/.test(params.appType) ? 'PWA ' : '';
             //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
             if (settingsStore.getItem('appVersion') !== params.appVersion) {
                 //  Update the installed version
@@ -2128,6 +2128,20 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     });
                     settingsStore.setItem('appVersion', params.appVersion, Infinity);
                 }, 1000);
+                // Show or hide sampleZIM spans
+                var sampleZIM = document.getElementById('sampleZIM');
+                var noSampleZIM = document.getElementById('noSampleZIM');
+                if (params.packagedFile && /Electron|UWP/.test(params.appType)) {
+                    if (/mdwiki|wikivoyage|medicine/i.test(params.packagedFile)) {
+                        sampleZIM.innerHTML = 'This app is packaged with the following ZIM archive: <b>' + params.packagedFile + '</b>. Versions in many different languages are available for download.';
+                        noSampleZIM.style.display = 'none';
+                    }
+                    sampleZIM.style.display = 'inline';
+                } else {
+                    sampleZIM.style.display = 'none';
+                    noSampleZIM.innerHTML = 'To use this app,' + noSampleZIM.innerHTML;
+                    noSampleZIM.style.display = 'inline';
+                }
             } else if (appstate.launchUWPServiceWorker) {
                 launchUWPServiceWorker();
             }
@@ -2381,8 +2395,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                             var message = "The ServiceWorker could not be properly registered. Switching back to jQuery mode. Error message : " + err;
                             var protocol = window.location.protocol;
                             if (protocol === 'ms-appx-web:') {
-                                // We can't launch straight away if the app is stargin, because the large modal could be showing
-                                var myModal = document.getElementById('myModal');
+                                // We can't launch straight away if the app is starting, because the large modal could be showing
                                 if (params.appIsLaunching) {
                                     appstate.launchUWPServiceWorker = true;
                                 } else {
