@@ -147,14 +147,16 @@ if ($electronbuild -eq "local" -and (-not $portableonly)) {
   foreach ($AppImageArchive in $AppImageArchives) {
     if (-Not (Test-Path $AppImageArchive -PathType Leaf)) {
       "No packages found: building $AppImageArchive..."
-      # To get docker to start, you might need to run below commands as admin
-      # net stop com.docker.service
-      # taskkill /IM "Docker Desktop.exe" /F
-      # net start com.docker.service
-      # runas /noprofile /user:Administrator "net stop com.docker.service; taskkill /IM 'Docker Desktop.exe' /F; net start com.docker.service"
       $repo_dir = ($PSScriptRoot -replace '[\\/]scripts[\\/]*$', '')
-      # "Using docker command:"
-      # "docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux"
+      # Although you can build with an electron builder docker image, on Windows it is easier to build with Windows Subsystem for Linux
+      # Below are commands for using docker, for info
+          # Ensure docker is running, or, to start it programmatically, you might need to run below commands as admin:
+          # net stop com.docker.service
+          # taskkill /IM "Docker Desktop.exe" /F
+          # net start com.docker.service
+          # runas /noprofile /user:Administrator "net stop com.docker.service; taskkill /IM 'Docker Desktop.exe' /F; net start com.docker.service"
+          # "Using docker command:"
+          # "docker run -v $repo_dir\:/project -w /project electronuserland/builder npm run dist-linux"
       "Will use electron-builder in wsl"
       $run_dist_linux = $true
     } else {
