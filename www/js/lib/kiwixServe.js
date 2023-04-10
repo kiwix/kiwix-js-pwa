@@ -25,12 +25,14 @@ define([], function () {
         ace: 'Acèh (Achinese)',
         af: 'Afrikaans (Afrikaans)',
         ak: 'Akana (Akan)',
+        ale: 'Aleut (Aleut)',
         als: 'Alemannisch (Alemannic)',
         am: 'አማርኛ (Amharic)',
         an: 'Aragonés (Aragonese)',
         ang: 'Englisc (Anglo-Saxon / Old English)',
         ar: 'العربية (Arabic)',
         arc: 'ܣܘܪܬ (Aramaic)',
+        arp: 'Arapaho (Arapaho)',
         as: 'অসমীয়া (Assamese)',
         ast: 'Asturianu (Asturian)',
         av: 'Авар (Avar)',
@@ -46,6 +48,7 @@ define([], function () {
         beXOld: 'Беларуская (тарашкевіца) (Belarusian (Taraškievica))',
         beTarask: 'Беларуская (тарашкевіца) (Belarusian (Taraškievica))',
         bg: 'Български (Bulgarian)',
+        bgs: 'Tagabawa (Tagabawa (Manobo))',
         bh: 'भोजपुरी (Bihari)',
         bi: 'Bislama (Bislama)',
         bm: 'Bamanankan (Bambara)',
@@ -53,6 +56,7 @@ define([], function () {
         bo: 'བོད་ཡིག / Bod skad (Tibetan)',
         bpy: 'ইমার ঠার/বিষ্ণুপ্রিয়া মণিপুরী (Bishnupriya Manipuri)',
         br: 'Brezhoneg (Breton)',
+        brx: 'बड़ो (Bodo)',
         bs: 'Bosanski (Bosnian)',
         bug: 'ᨅᨔ ᨕᨘᨁᨗ / Basa Ugi (Buginese)',
         bxr: 'Буряад хэлэн (Buriat (Russia))',
@@ -84,13 +88,16 @@ define([], function () {
         ee: 'Ɛʋɛ (Ewe)',
         far: 'فارسی (Farsi)',
         el: 'Ελληνικά (Greek)',
+        eml: 'Emiliàn e rumagnòl (Emiliano-Romagnolo)',
         en: 'English (English)',
         eng: 'English (English)',
+        enm: 'Middle English',
         eo: 'Esperanto (Esperanto)',
         es: 'Español (Spanish)',
         et: 'Eesti (Estonian)',
         eu: 'Euskara (Basque)',
         ext: 'Estremeñu (Extremaduran)',
+        fa: 'فارسی (Farsi (Persian))',
         ff: 'Fulfulde (Peul)',
         fi: 'Suomi (Finnish)',
         fiuVro: 'Võro (Võro)',
@@ -107,9 +114,11 @@ define([], function () {
         gd: 'Gàidhlig (Scottish Gaelic)',
         gil: 'Taetae ni kiribati (Gilbertese)',
         gl: 'Galego (Galician)',
+        gla: 'Gàidhlig (Scottish Gaelic)',
         gn: 'Avañe’ẽ (Guarani)',
         gor: 'Bahasa Hulontalo (Gorontalo)',
         got: 'gutisk (Gothic)',
+        grc: 'Ἑλληνικὴ ἀρχαία (Ancient Greek)',
         gu: 'ગુજરાતી (Gujarati)',
         guw: 'Gungbe (Gun)',
         gv: 'Gaelg (Manx)',
@@ -141,10 +150,12 @@ define([], function () {
         jv: 'Basa Jawa (Javanese)',
         ka: 'ქართული (Georgian)',
         kg: 'KiKongo (Kongo)',
+        kha: 'Ka Ktien Khasi (Khasi)',
         ki: 'Gĩkũyũ (Kikuyu)',
         kj: 'Kuanyama (Kuanyama)',
         kk: 'Қазақша (Kazakh)',
         kl: 'Kalaallisut (Greenlandic)',
+        kld: 'Gamilaraay / Kamilaroi (Gamilaraay)',
         km: 'ភាសាខ្មែរ (Cambodian)',
         kn: 'ಕನ್ನಡ (Kannada)',
         khw: 'کھوار (Khowar)',
@@ -183,12 +194,16 @@ define([], function () {
         mr: 'मराठी (Marathi)',
         ms: 'Bahasa Melayu (Malay)',
         mt: 'bil-Malti (Maltese)',
+        mul: 'Multiple Languages',
         mus: 'Mvskoke (Creek / Muskogee)',
         mwl: 'Mirandés (Mirandese)',
         my: 'Myanmasa (Burmese)',
+        myn: 'Maya (Mayan Languages)',
         na: 'Dorerin Naoero (Nauruan)',
         nah: 'Nahuatl (Nahuatl)',
+        nai: 'North American Indian (North American Indian Languages)',
         nap: 'Nnapulitano (Neapolitan)',
+        nav: 'Diné bizaad (Navajo)',
         nd: 'Sindebele (North Ndebele)',
         nds: 'Plattdüütsch (Low German / Low Saxon)',
         ndsNl: 'Nedersaksisch (Dutch Low Saxon)',
@@ -205,6 +220,7 @@ define([], function () {
         ny: 'Chi-Chewa (Chichewa)',
         oc: 'Occitan (Occitan)',
         oj: 'ᐊᓂᔑᓈᐯᒧᐎᓐ / Anishinaabemowin (Ojibwa)',
+        oji: 'ᐊᓂᔑᓈᐯᒧᐎᓐ / Anishinaabemowin (Ojibwa)',
         om: 'Oromoo (Oromo)',
         or: 'ଓଡ଼ିଆ (Oriya)',
         os: 'Иронау (Ossetian / Ossetic)',
@@ -223,6 +239,7 @@ define([], function () {
         ptbr: 'Português brasileiro (Brazilian Portuguese)',
         qu: 'Runa Simi (Quechua)',
         rm: 'Rumantsch (Raeto Romance)',
+        rmr: 'Caló (Caló (Romani))',
         rmy: 'Romani / रोमानी (Romani)',
         rn: 'Kirundi (Kirundi)',
         ro: 'Română (Romanian)',
@@ -313,8 +330,6 @@ define([], function () {
         ckb: 'Central Kurdish',
         din: 'Dinka',
         dty: 'Dotyali',
-        eml: 'Emilian-Romagnol',
-        fa: 'Persian (Farsi)',
         frr: 'Northern Frisian',
         gag: 'Gagauz',
         glk: 'Gilaki',
@@ -637,7 +652,7 @@ define([], function () {
                 // Add language, subject and date spans to doc
                 if (/\/(mooc|phet|zimit|videos|other|dev)\b/i.test(URL)) {
                     // doc = doc.replace(/^([^_\n\r]+_([^_\n\r\d]*)_?.*?(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2" data-kiwixdate="$3">$1<br /></span>');
-                    doc = doc.replace(/^(.+_(?!all_)([a-z]{2,6}|zhClassical)_.*?(\d[\d-]+)\.zi[mp].+|.+(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2" data-kiwixdate="$3">$1<br /></span>');
+                    doc = doc.replace(/^(.+_(?!all_)([a-z]{2,6}|nds-nl|be-tarask|map-bms|roa-tara|zh-classical)_.*?(\d[\d-]+)\.zi[mp].+|.+(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$2" data-kiwixdate="$3">$1<br /></span>');
                 } else if (/\/stack_exchange\b/i.test(URL)) {
                     doc = doc.replace(/^([^>\n\r]+>(?:.+(stackoverflow)|([^.\n\r]+))\.([^_\n\r]+)_([^_\n\r]+)_.*?(\d[\d-]+)\.zi[mp].+)$[\n\r]*/img, '<span class="wikiLang" lang="$5" data-kiwixsubject="$2$3" data-kiwixdate="$6">$1<br /></span>');
                 } else {
@@ -872,7 +887,7 @@ define([], function () {
                 // var langList = fromDoc.replace(/^[^_]+_([a-z]{2})_.+[\r\n]*/mg, '@$1\n');
                 var langList = fromDoc.replace(/^.*_([a-z]{2})_.+[\r\n]*/mg, '@$1\n');
                 // Now deal with longer language codes
-                langList = langList.replace(/^(?!@).*?_(?!(?:all|maxi|mini|nopic)_)([a-z]{2,6}|nds-nl|be-tarask|map-bms|roa-tara|zhClassical)_.+[\r\n]*/mg, '@$1\n');
+                langList = langList.replace(/^(?!@).*?_(?!(?:all|maxi|mini|nopic)_)([a-z]{2,6}|nds-nl|be-tarask|map-bms|roa-tara|zh-classical)_.+[\r\n]*/mg, '@$1\n');
                 // Normalize codes with hyphen
                 langList = langList.replace(/^(@[a-z]+)-([a-z])/mg, function (p0, p1, p2) {
                     return p1 + p2.toUpperCase();
