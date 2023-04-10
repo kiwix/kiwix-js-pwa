@@ -44,6 +44,7 @@ define([], function () {
         bcl: 'Bikol Central (Bikol)',
         be: 'Беларуская (Belarusian)',
         beXOld: 'Беларуская (тарашкевіца) (Belarusian (Taraškievica))',
+        beTarask: 'Беларуская (тарашкевіца) (Belarusian (Taraškievica))',
         bg: 'Български (Bulgarian)',
         bh: 'भोजपुरी (Bihari)',
         bi: 'Bislama (Bislama)',
@@ -226,6 +227,7 @@ define([], function () {
         rn: 'Kirundi (Kirundi)',
         ro: 'Română (Romanian)',
         roaRup: 'Armâneashti (Aromanian)',
+        roaTara: 'Tarandíne (Tarantino)',
         rup: 'Armâneashti (Aromanian)',
         ru: 'Русский (Russian)',
         rue: 'Русиньскый (Rusyn)',
@@ -670,14 +672,16 @@ define([], function () {
                     var dateID = dateSel ? dateSel.options[dateSel.selectedIndex].value : '';
                     var subjID = subjSel ? subjSel.options[subjSel.selectedIndex].value : '';
                     var langID = langSel ? langSel.options[langSel.selectedIndex].value : '';
+                    // Make langID into case-insensitive regex
+                    var rgxlangID = new RegExp(langID, 'i');
                     //Reset any hidden entries
                     //langPanel.innerHTML = langPanel.innerHTML.replace(/(display:\s*)none\b/mig, 'inline');
                     var langEntries = langPanel.querySelectorAll(".wikiLang");
                     //Hide all entries except specified language
                     if (langID) {
                         for (var i = 0; i < langEntries.length; i++) {
-                            if (langEntries[i].lang == langID || langID == "All") langEntries[i].style.display = "inline";
-                            if (langEntries[i].lang != langID && langID != "All") langEntries[i].style.display = "none";
+                            if (rgxlangID.test(langEntries[i].lang) || langID == "All") langEntries[i].style.display = "inline";
+                            if (!rgxlangID.test(langEntries[i].lang) && langID != "All") langEntries[i].style.display = "none";
                             if (subjID && langEntries[i].dataset.kiwixsubject !== subjID && subjID !== "All") langEntries[i].style.display = "none";
                             if (dateID && langEntries[i].dataset.kiwixdate !== dateID && dateID !== "All") langEntries[i].style.display = "none";
                         }
@@ -867,7 +871,11 @@ define([], function () {
                 // var langList = fromDoc.replace(/^[^_]+_([a-z]{2})_.+[\r\n]*/mg, '@$1\n');
                 var langList = fromDoc.replace(/^.*_([a-z]{2})_.+[\r\n]*/mg, '@$1\n');
                 // Now deal with longer language codes
-                langList = langList.replace(/^(?!@).*?_(?!all_)([a-z]{2,6}|zhClassical)_.+[\r\n]*/mg, '$1\n');
+                langList = langList.replace(/^(?!@).*?_(?!(?:all|maxi|mini|nopic)_)([a-z]{2,6}|nds-nl|be-tarask|map-bms|roa-tara|zhClassical)_.+[\r\n]*/mg, '@$1\n');
+                // Normalize codes with hyphen
+                langList = langList.replace(/^(@[a-z]+)-([a-z])/mg, function (p0, p1, p2) {
+                    return p1 + p2.toUpperCase();
+                });
                 // Remove placeholder
                 langList = langList.replace(/^@/mg, '');
                 // Delete recurrences
