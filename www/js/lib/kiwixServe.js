@@ -655,10 +655,11 @@ define([], function () {
             var dateSel = document.getElementById('dates');
             var langPanel = document.getElementById('dl-panel-body');    
             if (lang || subj || kiwixDate) {
+                var rgxLang = lang ? new RegExp(lang, 'i') : null;
                 var selectEntries = document.querySelectorAll('.wikiLang');
                 //Hide all entries except specified language, subject, or date
                 for (var i = 0; i < selectEntries.length; i++) {
-                    if (lang && lang !== 'All' && selectEntries[i].lang !== lang) selectEntries[i].style.display = 'none';
+                    if (lang && lang !== 'All' && !rgxLang.test(selectEntries[i].lang)) selectEntries[i].style.display = 'none';
                     if (subj && subj !== 'All' && selectEntries[i].dataset.kiwixsubject !== subj) selectEntries[i].style.display = 'none';
                     if (kiwixDate && kiwixDate !== 'All' && selectEntries[i].dataset.kiwixdate !== kiwixDate) selectEntries[i].style.display = 'none';
                 }
