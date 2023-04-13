@@ -1,11 +1,12 @@
 # Changelog
 
-## In-progress release 2.4.4
+## Release 2.4.4
 
 * ENHANCEMENT: Provide fuzzy search for case-insensitive links in Zimit archives
 * ENHANCEMENT: Include broader pseudo-case-insensitive search in title search
-* SECURITY: Add iframe referrer policy 'none'
+* SECURITY: Add iframe referrer policy 'no-referrer'
 * SECURITY: Strengthen Content Security Policy via response headers and meta http-equiv
+* UPDATE: Sample archive changed to `wikipedia_en_100_mini_2023-04`
 * UPDATE: Streamline the splashscreen display and make it dynamic
 * UPDATE: Add more complete language support to the Download Library languages dropdown
 * FIX: Stack Exchange ZIM detection
