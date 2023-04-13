@@ -10,7 +10,7 @@ To use this app, download your choice of free content in-app from the Download L
 Please choose the correct version (those marked [**AUTO**] will self-update automatically when there is a new version):
 
 * **Any modern OS (PWA)**
-  + Try out our new **installable PWA** (Progressive Web App) simply by visiting https://pwa.kiwix.org/ [**AUTO**]. Incredibly light, no store or download required, no heavy framework! It works offline once the app has cached its code, and in Chrome/Edge/Chromium, you can install it right from within the app (in Firefox you can bookmark it). On iOS (Safari), you can add it to your home screen - NB on iOS only you must use Safari because Apple bans Service Workers in other browsers. No sample archive is included. 
+  + Try out our **installable PWA** (Progressive Web App) simply by visiting https://pwa.kiwix.org/ [**AUTO**]. Incredibly light, no store or download required, no heavy framework! It works offline once the app has cached its code, and in Chrome/Edge/Chromium, you can install it right from within the app (in Firefox you can bookmark it). On iOS (Safari), you can add it to your home screen - NB on iOS only you must use Safari because Apple bans Service Workers in other browsers. No sample archive is included. 
 
 * **Linux** (see installation instructions below screenshot):
   - **Portable (Electron)** - *recommended*
