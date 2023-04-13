@@ -10,6 +10,8 @@
 * SECURITY: Add iframe referrer policy 'none'
 * SECURITY: Strengthen Content Security Policy via response headers and meta http-equiv
 * FIX: Return to article links were missing in ServiceWorker mode
+* UPDATE: Streamline the splashscreen display and make it dynamic
+* UPDATE: Add more complete language support to the Download Library languages dropdown
 * FIX: Missing full-text search cancellation which caused race condition in search 
 
 ## Release 2.3.7-Wikivoyage
