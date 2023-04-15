@@ -7,7 +7,7 @@
 * ENHANCEMENT: Include broader pseudo-case-insensitive search in title search
 * ENHANCEMENT: Use screen width more efficiently in SW mode (with Remove max page width option)
 * SECURITY: Added sandbox attribute to iframe to block top-level navigation and attempts by scripts to "phone home" 
-* SECURITY: Add iframe referrer policy 'none'
+* SECURITY: Add iframe referrer policy 'no-referrer'
 * SECURITY: Strengthen Content Security Policy via response headers and meta http-equiv
 * FIX: Return to article links were missing in ServiceWorker mode
 * UPDATE: Streamline the splashscreen display and make it dynamic
