@@ -908,6 +908,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         if (window.electronAPI) {
             electronAPI.on('update-available', function (data) {
                 console.log('Upgrade is available:' + data);
+                params.upgradeNeeded = true;
                 uiUtil.showUpgradeReady(data.version, 'install');
             });
             var serverResponse = document.getElementById('serverResponse');
@@ -957,6 +958,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 }
                 console.log('We found this update: [' + tag + '] ' + url, releases);
                 updateSpan.innerHTML = '[ <b><i><a href="#alertBoxPersistent">New update!</a></i></b> ]';
+                params.upgradeNeeded = true;
                 uiUtil.showUpgradeReady(tag.replace(/^v/, ''), 'download', url);
             });
             // Electron updates
