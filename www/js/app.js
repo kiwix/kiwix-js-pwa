@@ -1624,6 +1624,11 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
         var oldScrollY;
         var newScrollY;
         var throttle = 0;
+        header.style.transition = "transform 500ms";
+        iframe.style.transition = "transform 500ms";
+        iframe.style.zIndex = 0;
+        footer.style.transition = "transform 500ms";
+            
         var scrollFunction = function () {
             if (throttle) return;
             throttle = 1;
@@ -1637,6 +1642,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     setTimeout(function() {
                         if (newScrollY > navbarDim.height) {
                             header.style.transform = 'translateY(-' + (navbarDim.height - 2) + 'px)';
+                            iframe.style.transform = 'translateY(-' + (navbarDim.height - 2) + 'px)';
                             if (params.hideToolbars === true) // Only hide footer if requested
                                 footer.style.transform = 'translateY(' + (footerDim.height - 2) + 'px)';
                         }
@@ -1646,6 +1652,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             } else if (newScrollY - oldScrollY < 0) {
                 header.style.zIndex = 1;
                 header.style.transform = 'translateY(0)';
+                iframe.style.transform = 'translateY(0)';
                 footer.style.transform = 'translateY(0)';
             }
             oldScrollY = newScrollY;
@@ -1662,20 +1669,16 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             navbarDim = document.getElementById('navbar').getBoundingClientRect();
             footerDim = footer.getBoundingClientRect();
             var doc = iframe.contentDocument ? iframe.contentDocument.documentElement : null;
-            header.style.transition = "transform 500ms";
-            // iframe.style.transition = "transform 500ms";
             if (doc) doc.style.transition = "transform 500ms";
-            footer.style.transition = "transform 500ms";
-            iframe.style.zIndex = 0;
 
             iframe.contentDocument.removeEventListener('scroll', scrollFunction);
             if (params.hideToolbars) {
                 // Shift the iframe up and the document down, and increase height of iframe
                 iframe.style.height = window.innerHeight + navbarDim +
                     (params.hideToolbars === true ? footerDim.height : 0) + 'px';
-                iframe.style.transform = 'translateY(-' + navbarDim.height + 'px)';
+                // iframe.style.transform = 'translateY(-' + navbarDim.height + 'px)';
                 if (doc) {
-                    doc.style.transform = 'translateY(' + navbarDim.height + 'px)'; 
+                    // doc.style.transform = 'translateY(' + navbarDim.height + 'px)'; 
                     iframe.contentDocument.addEventListener('scroll', scrollFunction);
                 }
                 scrollFunction();
@@ -1687,7 +1690,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     footer.style.transform = 'translateY(0)';
                     // DEV: Moving the iframe up by 1 pixel bizarrely solves the bug with the toolbar disappearing benath the iframe
                     iframe.style.transform = 'translateY(-1px)';
-                    if (doc) doc.style.transform = 'translateY(0)';
+                    if (doc) doc.style.removeProperty('transform');
                     iframe.style.height = window.innerHeight + 'px';
                 }, 500);
             }
@@ -5749,7 +5752,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     } else {
                         uiUtil.systemAlert('<p>Sorry, but we couldn\'t find the article:</p><p><i>' + path + '</i></p><p>in this archive!</p>');
                     }
-                } else if (download || /\/(epub|pdf|zip|.*opendocument|.*officedocument|png|jpeg|webp|svg|gif|tiff|mp4|webm|mpeg|mp3|octet-stream)/i.test(mimetype)) {
+                } else if (download || /\/(epub|pdf|zip|.*opendocument|.*officedocument|tiff|mp4|webm|mpeg|octet-stream)\b/i.test(mimetype)) {
                     download = true;
                     appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
                         uiUtil.displayFileDownloadAlert(path, download, mimetype, content);
