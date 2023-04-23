@@ -1482,6 +1482,10 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 }
             });
         });
+        document.getElementById('useLibzimReaderCheck').addEventListener('click', function () {
+            params.useLibzimReader = this.checked ? true : false;
+            settingsStore.setItem('useLibzimReader', params.useLibzimReader, Infinity);
+        });
         $('input:checkbox[name=openExternalLinksInNewTabs]').on('change', function () {
             params.openExternalLinksInNewTabs = this.checked ? true : false;
             settingsStore.setItem('openExternalLinksInNewTabs', params.openExternalLinksInNewTabs, Infinity);
@@ -4266,7 +4270,24 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         postTransformedHTML(message, messagePort, params.transDirEntry);
                         return;
                     }
-                    var readFile = function (dirEntry) {
+                    var readFile;
+                    if (params.zimReaderAPI) var readFile = function (dirEntry) {
+                        if (dirEntry === null) {
+                            console.error("Title " + title + " not found in archive.");
+                            messagePort.postMessage({ 'action': 'giveContent', 'title': title, 'content': '' });
+                        } else if (dirEntry.isRedirect) {
+                            var redirectPath = dirEntry.redirectPath;
+                            // Ask the ServiceWorker to send an HTTP redirect to the browser.
+                            // We could send the final content directly, but it is necessary to let the browser know in which directory it ends up.
+                            // Else, if the redirect URL is in a different directory than the original URL,
+                            // the relative links in the HTML content would fail. See #312
+                            messagePort.postMessage({ 'action': 'sendRedirect', 'title': title, 'redirectUrl': redirectPath });
+                        } else {
+                            var message = {'action': 'giveContent', 'title': title, 'content': dirEntry.content, 'mimetype': dirEntry.mimetype};
+                            messagePort.postMessage(message);
+                        }
+                    };
+                    else readFile = function (dirEntry) {
                         if (dirEntry === null) {
                             console.error("Title " + title + " not found in archive.");
                             messagePort.postMessage({
@@ -4371,17 +4392,26 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                         });
                         return;
                     }
-                    appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
-                        if (dirEntry) dirEntry.isAsset = titleIsAsset;
-                        return readFile(dirEntry);
-                    }).catch(function (err) {
+                    var errFunction = function (err) {
                         console.error('Failed to read ' + title, err);
                         messagePort.postMessage({
                             'action': 'giveContent',
                             'title': title,
                             'content': new Uint8Array
                         });
-                    });
+                    };
+                    if (params.useLibzimReader && params.zimReaderAPI) {
+                        appstate.selectedArchive.callLibzimWorker({
+                            'action': 'getEntryByPath',
+                            'path': title,
+                            'follow': false
+                        }).then(readFile).catch(errFunction);
+                    } else {
+                        appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
+                            if (dirEntry) dirEntry.isAsset = titleIsAsset;
+                            return readFile(dirEntry);
+                        }).catch(errFunction);
+                    }
                 } else {
                     console.error("Invalid message received", event.data);
                 }

@@ -58,11 +58,12 @@ define(rqDefLZ, function(uiUtil) {
 
     LZ().then(function (instance) {
         params.zimReaderAPI.assemblerMachineType = LZMachineType;
+        if (params.useLibzimReader) params.decompressorAPI.assemblerMachineType = LZMachineType;
         libzim = instance;
     }).catch(function (err) {
         if (LZMachineType === 'ASM') {
             // There is no fallback, because we were attempting to load the ASM machine, so report error immediately
-            // uiUtil.reportAssemblerErrorToAPIStatusPanel('XZ', err, LZMachineType);
+            uiUtil.reportAssemblerErrorToAPIStatusPanel('LZ', err, LZMachineType);
         } else {
             console.warn('WASM failed to load, falling back to ASM...', err);
             // Fall back to ASM
@@ -71,9 +72,10 @@ define(rqDefLZ, function(uiUtil) {
             require(['libzim-asm'], function () {
                 LZ().then(function (instance) {
                     params.zimReaderAPI.assemblerMachineType = LZMachineType;
+                    if (params.useLibzimReader) params.decompressorAPI.assemblerMachineType = LZMachineType;
                     libzim = instance;
                 }).catch(function (err) {
-                    // uiUtil.reportAssemblerErrorToAPIStatusPanel('LZ', err, LZMachineType);
+                    uiUtil.reportAssemblerErrorToAPIStatusPanel('LZ', err, LZMachineType);
                 });
             });
         }

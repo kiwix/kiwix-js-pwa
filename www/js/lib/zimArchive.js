@@ -104,6 +104,7 @@ define(['zimfile', 'zimDirEntry', 'transformZimit', 'util', 'uiUtil', 'utf8'],
                             params.searchProvider = 'fulltext: ' + libzimReaderType;
                             // Update the API panel
                             uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider);
+                            if (params.useLibzimReader) params.zimReaderAPI = libzimReaderType;
                         }).catch(function (err) {
                             uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider + ': ERROR');
                             console.error('The libzim worker could not be instantiated!', err);
