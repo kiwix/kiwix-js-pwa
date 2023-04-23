@@ -474,6 +474,7 @@ define(rqDef, function(util) {
         a.href = window.URL.createObjectURL(blob);
         a.target = '_blank';
         a.type = contentType;
+        a.download = filename;
         a.classList.add('alert-link');
         a.innerHTML = filename;
         var alertMessage = document.getElementById('alertMessage');
