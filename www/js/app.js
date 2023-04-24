@@ -1652,7 +1652,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             } else if (newScrollY - oldScrollY < 0) {
                 header.style.zIndex = 1;
                 header.style.transform = 'translateY(0)';
-                iframe.style.transform = 'translateY(0)';
+                // Needed for Windows Mobile to prevent header disappearing beneath iframe
+                iframe.style.transform = 'translateY(-1px)';
                 footer.style.transform = 'translateY(0)';
             }
             oldScrollY = newScrollY;
