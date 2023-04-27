@@ -13,6 +13,7 @@
 * FIX: Return to article links were missing in ServiceWorker mode
 * FIX: Make upgrade notification persistent in Electron app
 * FIX: Several UI issues with toolbars and downloads
+* FIX: Bug which prevented UWP / Edge Legacy app from reading articles with certain options deselected
 * UPDATE: Streamline the splashscreen display and make it dynamic
 * UPDATE: Add more complete language support to the Download Library languages dropdown
 * UPDATE: JavaWScript Libzim reader updated to v0.2
