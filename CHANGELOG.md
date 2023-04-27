@@ -1,7 +1,8 @@
 # Changelog
 
-## In-progress release 2.4.4-Wikivoyage
+## Release 2.4.6-Wikivoyage
 
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2023-04`
 * FEATURE: Support Full Screen (all browsers) and rotation lock (primarily intended for mobile)
 * FEATURE: Significant speed-up of access to Wikimedia archives with option to ignore unneeded JS files
 * ENHANCEMENT: Include broader pseudo-case-insensitive search in title search
@@ -10,8 +11,11 @@
 * SECURITY: Add iframe referrer policy 'no-referrer'
 * SECURITY: Strengthen Content Security Policy via response headers and meta http-equiv
 * FIX: Return to article links were missing in ServiceWorker mode
+* FIX: Make upgrade notification persistent in Electron app
+* FIX: Several UI issues with toolbars and downloads
 * UPDATE: Streamline the splashscreen display and make it dynamic
 * UPDATE: Add more complete language support to the Download Library languages dropdown
+* UPDATE: JavaWScript Libzim reader updated to v0.2
 * FIX: Missing full-text search cancellation which caused race condition in search 
 
 ## Release 2.3.7-Wikivoyage
