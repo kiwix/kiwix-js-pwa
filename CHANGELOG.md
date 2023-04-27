@@ -12,6 +12,7 @@
 * SECURITY: Add iframe referrer policy 'no-referrer'
 * SECURITY: Strengthen Content Security Policy via response headers and meta http-equiv
 * UPDATE: Sample archive changed to `wikipedia_en_100_mini_2023-04`
+* FIX: Bug which prevented UWP / Edge Legacy app from reading articles with certain options deselected
 * UPDATE: Streamline the splashscreen display and make it dynamic
 * UPDATE: Add more complete language support to the Download Library languages dropdown
 * FIX: Stack Exchange ZIM detection
