@@ -1,5 +1,10 @@
 # Changelog
 
+## In-progress release 2.4.6
+
+* FIX: Make upgrade notification persistent in Electron app
+* FIX: Several UI issues with toolbars and downloads
+
 ## Release 2.4.4
 
 * ENHANCEMENT: Provide fuzzy search for case-insensitive links in Zimit archives
