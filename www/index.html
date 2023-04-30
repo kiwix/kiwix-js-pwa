@@ -73,7 +73,7 @@
         <div class="modal-dialog modal-full">
             <div id="modalTheme" class="modal-content dark">
                 <div id="largeModal" class="modal-body">
-                    <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
+                    <button id="mymodalCloseBtn" class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
                     <img style="float:left; padding-right:1em;" alt="Kiwix icon" src="img/icons/kiwix-midnightblue-90.png">
 
                     <h2 style="font-size:32px;margin-top:10px;">
@@ -141,13 +141,13 @@
                 </div>
                 <div class="modal-footer">
                     <div id="extraModalFooterContent"></div>
-                    <button class="btn btn-primary" type="button" data-dismiss="modal">Close</button>
+                    <button id="mycloseMessage" class="btn btn-primary" type="button" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
     <!--Bootstrap modal for alert and confirmation pop up-->
-    <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1207,9 +1207,7 @@
          js files. This loads "init.js", which in turn can load other
          files, all handled by require.js:
          https://requirejs.org/docs/api.html#jsfiles -->
-    <script type="text/javascript"
-            data-main="js/init.js"
-            src="js/lib/require.js">
-        </script>
+    <script type="text/javascript" src="js/init.js"></script>
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>

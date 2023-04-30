@@ -461,37 +461,37 @@ function getBestAvailableStorageAPI() {
 }
 
 
-require.config({
-    //enforceDefine: true, //This is for debugging IE errors
-    baseUrl: 'js/lib',
-    // config: { '../app': { params: params } },
-    paths: {
-        'jquery': 'jquery-3.2.1.slim',
-        'cache' : 'cache',
-        //'jquery': 'jquery-3.2.1',
-        //'bootstrap': 'bootstrap'
-        'bootstrap': 'bootstrap.min',
-        'webpHeroBundle': 'webpHeroBundle_0.0.0-dev.27'
-    },
-    shim: {
-        'jquery': {
-            exports: '$'
-        },
-        'bootstrap': {
-            deps: ['jquery']
-        }
-    }
-});
+// require.config({
+//     //enforceDefine: true, //This is for debugging IE errors
+//     baseUrl: 'js/lib',
+//     // config: { '../app': { params: params } },
+//     paths: {
+//         'jquery': 'jquery-3.2.1.slim',
+//         'cache' : 'cache',
+//         //'jquery': 'jquery-3.2.1',
+//         //'bootstrap': 'bootstrap'
+//         'bootstrap': 'bootstrap.min',
+//         'webpHeroBundle': 'webpHeroBundle_0.0.0-dev.27'
+//     },
+//     shim: {
+//         'jquery': {
+//             exports: '$'
+//         },
+//         'bootstrap': {
+//             deps: ['jquery']
+//         }
+//     }
+// });
 
-var req = ['bootstrap']; // Baseline Require array
+// var req = ['bootstrap']; // Baseline Require array
 
-// Add polyfills to the Require array only if needed
-if (!('Promise' in self)) req.push('promisePolyfill');
-if (!('from' in Array)) req.push('arrayFromPolyfill');
+// // Add polyfills to the Require array only if needed
+// if (!('Promise' in self)) req.push('promisePolyfill');
+// if (!('from' in Array)) req.push('arrayFromPolyfill');
 
-requirejs(req, function () {
-    requirejs(['../app']);
-});
+// requirejs(req, function () {
+//     requirejs(['../app']);
+// });
 
 // Test if WebP is natively supported, and if not, set webpMachine to true. The value of webpMachine
 // will determine whether the WebP Polyfills will be loaded (currently only used in uiUtil.js)

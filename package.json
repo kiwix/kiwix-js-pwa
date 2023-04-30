@@ -4,6 +4,7 @@
   "version": "2.4.6-E",
   "description": "Kiwix JS packaged for the Electron framework",
   "main": "main.js",
+  "type": "module",
   "build": {
     "appId": "kiwix.js.electron",
     "productName": "Kiwix JS Electron",
@@ -113,6 +114,7 @@
   },
   "dependencies": {
     "@types/fs-extra": "^9.0.11",
+    "5to6-codemod": "^1.8.0",
     "electron-context-menu": "^3.1.1",
     "electron-updater": "^6.1.0"
   }

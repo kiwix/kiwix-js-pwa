@@ -180,6 +180,7 @@ let precacheFiles = [
   "www/js/lib/darkreader.min.js",
   "www/js/lib/filecache.js",
   "www/js/lib/images.js",
+  "www/js/lib/jquery.module.js",
   "www/js/lib/jquery-3.2.1.slim.js",
   "www/js/lib/kiwixServe.js",
   "www/js/lib/promisePolyfill.js",
