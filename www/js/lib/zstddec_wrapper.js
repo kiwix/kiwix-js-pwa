@@ -31,17 +31,6 @@ import uiUtil from "./uiUtil.js";
 // Variable specific to this decompressor (will be used to populate global variable)
 var ZSTDMachineType = null;
 
-// Select asm or wasm conditionally
-if ('WebAssembly' in self) {
-    console.debug('Instantiating WASM zstandard decoder');
-    ZSTDMachineType = 'WASM';
-    importDef = './zstddec-wasm.js';
-} else {
-    console.debug('Instantiating ASM zstandard decoder');
-    ZSTDMachineType = 'ASM';
-    importDef = './zstddec-asm.js';
-}
-
 // DEV: zstddec.js has been compiled with `-s EXPORT_NAME="ZD" -s MODULARIZE=1` to avoid a clash with xzdec.js
 // Note that we include zstddec-wasm or zstddec-asm above in requireJS definition, but we cannot change the name in the function list
 // For explanation of loading method below to avoid conflicts, see https://github.com/emscripten-core/emscripten/blob/master/src/settings.js
@@ -105,7 +94,18 @@ var instantiateDecoder = function (instance) {
     zd._outBuffer.dst = mallocOrDie(zd._outBuffer.size);
 };
 
-import(importDef).then(function (inst) {
+// Select asm or wasm conditionally
+if ('WebAssembly' in self) {
+    console.debug('Instantiating WASM zstandard decoder');
+    ZSTDMachineType = 'WASM';
+    importDef = 'wasm';
+} else {
+    console.debug('Instantiating ASM zstandard decoder');
+    ZSTDMachineType = 'ASM';
+    importDef = 'asm';
+}
+
+import(`./zstddec-${importDef}.js`).then(function (inst) {
     inst.default().then(function (ZD) {
         params.decompressorAPI.assemblerMachineType = ZSTDMachineType;
         instantiateDecoder(ZD);
@@ -118,7 +118,8 @@ import(importDef).then(function (inst) {
         console.warn('WASM failed to load, falling back to ASM...', err);
         // Fall back to ASM
         ZSTDMachineType = 'ASM';
-        import('./zstddec-asm.js').then(function (inst) {
+        importDef = 'asm';
+        import(`./zstddec-${importDef}.js`).then(function (inst) {
             inst.default().then(function (ZD) { 
                 params.decompressorAPI.assemblerMachineType = ZSTDMachineType;
                 instantiateDecoder(ZD);

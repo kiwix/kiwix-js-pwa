@@ -36,11 +36,11 @@ var XZMachineType = null;
 if ('WebAssembly' in self) {
     console.debug('Instantiating WASM xz decoder');
     XZMachineType = 'WASM';
-    importDef = './xzdec-wasm.js';
+    importDef = 'wasm';
 } else {
     console.debug('Instantiating ASM xz decoder');
     XZMachineType = 'ASM';
-    importDef = './xzdec-asm.js';
+    importDef = 'asm.';
 }
 
 // DEV: xzdec.js has been compiled with `-s EXPORT_NAME="XZ" -s MODULARIZE=1` to avoid a clash with zstddec.js
@@ -58,7 +58,7 @@ if ('WebAssembly' in self) {
  */
 var xzdec;
 
-import(importDef).then(function (instance) {
+import(`./xzdec-${importDef}.js`).then(function (instance) {
     instance.default().then(function (XZ) {
         params.decompressorAPI.assemblerMachineType = XZMachineType;
         xzdec = XZ;
@@ -71,7 +71,8 @@ import(importDef).then(function (instance) {
         console.warn('WASM failed to load, falling back to ASM...', err);
         // Fall back to ASM
         XZMachineType = 'ASM';
-        import('./xzdec-asm.js').then(function (instance) {
+        importDef = 'asm';
+        import(`./xzdec-${importDef}.js`).then(function (instance) {
             instance.default().then(function (XZ) {
                 params.decompressorAPI.assemblerMachineType = XZMachineType;
                 xzdec = XZ;
