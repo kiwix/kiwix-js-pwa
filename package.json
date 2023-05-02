@@ -81,6 +81,7 @@
     ]
   },
   "scripts": {
+    "build": "node esbuild.js",
     "start": "electron .",
     "dist-win": "electron-builder build --win",
     "dist-win-nsis": "electron-builder build --win NSIS:x64 NSIS:ia32",
@@ -108,6 +109,7 @@
   "maintainer": "Jaifroid",
   "license": "CC0-1.0",
   "devDependencies": {
+    "@chialab/esbuild-plugin-html": "^0.17.2",
     "electron": "22.3.7",
     "electron-builder": "^24.3.0",
     "electron-packager": "^16.0.0"
@@ -116,6 +118,7 @@
     "@types/fs-extra": "^9.0.11",
     "5to6-codemod": "^1.8.0",
     "electron-context-menu": "^3.1.1",
-    "electron-updater": "^6.1.0"
+    "electron-updater": "^6.1.0",
+    "esbuild": "0.17.18"
   }
 }
