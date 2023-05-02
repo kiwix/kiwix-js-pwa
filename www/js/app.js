@@ -5851,3 +5851,5 @@ function goToMainArticle() {
         }
     });
 }
+
+export default {};

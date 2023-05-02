@@ -25,6 +25,7 @@
 // We need to do it this way in order to load WebP polyfills conditionally. The WebP polyfills are only needed by a few old browsers, so loading them
 // only if needed saves approximately 1MB of memory.
 import util from './util.js';
+import './webpHeroBundle_0.0.0-dev.27.js';
 
 // Add WebP polyfill only if webpHero was loaded in init.js
 // if (webpMachine) {

@@ -81,6 +81,8 @@
     ]
   },
   "scripts": {
+    "rollup": "rollup -c",
+    "babel": "babel www --out-dir lib --copy-files",
     "start": "electron .",
     "dist-win": "electron-builder build --win",
     "dist-win-nsis": "electron-builder build --win NSIS:x64 NSIS:ia32",
@@ -108,13 +110,22 @@
   "maintainer": "Jaifroid",
   "license": "CC0-1.0",
   "devDependencies": {
+    "@babel/cli": "^7.21.5",
+    "@babel/core": "^7.21.5",
+    "@babel/preset-env": "^7.21.5",
+    "@rollup/plugin-babel": "^6.0.3",
+    "@rollup/plugin-commonjs": "^24.1.0",
+    "@rollup/plugin-node-resolve": "^15.0.2",
+    "@rollup/plugin-replace": "^5.0.2",
+    "babel-plugin-polyfill-corejs3": "^0.7.1",
     "electron": "22.3.7",
     "electron-builder": "^24.3.0",
-    "electron-packager": "^16.0.0"
+    "electron-packager": "^16.0.0",
+    "rollup": "^3.21.3"
   },
   "dependencies": {
     "@types/fs-extra": "^9.0.11",
-    "5to6-codemod": "^1.8.0",
+    "core-js": "^3.30.1",
     "electron-context-menu": "^3.1.1",
     "electron-updater": "^6.1.0"
   }

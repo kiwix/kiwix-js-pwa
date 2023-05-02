@@ -21,12 +21,9 @@
  */
 'use strict';
 
-// DEV: Put your RequireJS definition in the rqDefZD array below, and any function exports in the function parenthesis of the define statement
-// We need to do it this way in order to load the wasm or asm versions of zstddec conditionally. Older browsers can only use the asm version
-// because they cannot interpret WebAssembly.
-var importDef;
-
-import uiUtil from "./uiUtil.js";
+import uiUtil from './uiUtil.js';
+import ZDASM from './zstddec-asm.js';
+import ZDWASM from './zstddec-wasm.js';
 
 // Variable specific to this decompressor (will be used to populate global variable)
 var ZSTDMachineType = null;
@@ -98,37 +95,27 @@ var instantiateDecoder = function (instance) {
 if ('WebAssembly' in self) {
     console.debug('Instantiating WASM zstandard decoder');
     ZSTDMachineType = 'WASM';
-    importDef = 'wasm';
 } else {
     console.debug('Instantiating ASM zstandard decoder');
     ZSTDMachineType = 'ASM';
-    importDef = 'asm';
 }
 
-import(`./zstddec-${importDef}.js`).then(function (inst) {
-    inst.default().then(function (ZD) {
+if (ZSTDMachineType === 'WASM') {
+    ZDWASM().then(function (inst) {
         params.decompressorAPI.assemblerMachineType = ZSTDMachineType;
-        instantiateDecoder(ZD);
-    });
-}).catch(function (err) {
-    if (ZSTDMachineType === 'ASM') {
-        // There is no fallback, because we were attempting to load the ASM machine, so report error immediately
+        instantiateDecoder(inst);
+    }).catch(function (err) {
         uiUtil.reportAssemblerErrorToAPIStatusPanel('ZSTD', err, ZSTDMachineType);
-    } else {
-        console.warn('WASM failed to load, falling back to ASM...', err);
-        // Fall back to ASM
-        ZSTDMachineType = 'ASM';
-        importDef = 'asm';
-        import(`./zstddec-${importDef}.js`).then(function (inst) {
-            inst.default().then(function (ZD) { 
-                params.decompressorAPI.assemblerMachineType = ZSTDMachineType;
-                instantiateDecoder(ZD);
-            });
-        }).catch(function (err) {
-            uiUtil.reportAssemblerErrorToAPIStatusPanel('ZSTD', err, ZSTDMachineType);
-        });
-    }
-});
+    });
+} else {
+    // Fall back to ASM
+    ZDASM().then(function (inst) {
+        params.decompressorAPI.assemblerMachineType = ZSTDMachineType;
+        instantiateDecoder(inst);
+    }).catch(function (err) {
+        uiUtil.reportAssemblerErrorToAPIStatusPanel('ZSTD', err, ZSTDMachineType);
+    });
+}
 
 /**
  * Number of milliseconds to wait for the decompressor to be available for another chunk

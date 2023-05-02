@@ -21,13 +21,9 @@
  */
 'use strict';
 
-// DEV: Put your RequireJS definition in the rqDefXZ array below, and any function exports in the function parenthesis of the define statement
-// We need to do it this way in order to load the wasm or asm versions of xzdec conditionally. Older browsers can only use the asm version
-// because they cannot interpret WebAssembly.
-
-var importDef;
-
-import uiUtil from "./uiUtil.js";
+import uiUtil from './uiUtil.js';
+import XZASM from './xzdec-asm.js';
+import XZWASM from './xzdec-wasm.js';
 
 // Variable specific to this decompressor (will be used to populate global variable)
 var XZMachineType = null;
@@ -36,11 +32,9 @@ var XZMachineType = null;
 if ('WebAssembly' in self) {
     console.debug('Instantiating WASM xz decoder');
     XZMachineType = 'WASM';
-    importDef = 'wasm';
 } else {
     console.debug('Instantiating ASM xz decoder');
     XZMachineType = 'ASM';
-    importDef = 'asm.';
 }
 
 // DEV: xzdec.js has been compiled with `-s EXPORT_NAME="XZ" -s MODULARIZE=1` to avoid a clash with zstddec.js
@@ -58,30 +52,21 @@ if ('WebAssembly' in self) {
  */
 var xzdec;
 
-import(`./xzdec-${importDef}.js`).then(function (instance) {
-    instance.default().then(function (XZ) {
+if (XZMachineType === 'WASM') {
+    XZWASM().then(function (instance) {
         params.decompressorAPI.assemblerMachineType = XZMachineType;
-        xzdec = XZ;
-    });
-}).catch(function (err) {
-    if (XZMachineType === 'ASM') {
-        // There is no fallback, because we were attempting to load the ASM machine, so report error immediately
+        xzdec = instance;
+    }).catch(function (err) {
         uiUtil.reportAssemblerErrorToAPIStatusPanel('XZ', err, XZMachineType);
-    } else {
-        console.warn('WASM failed to load, falling back to ASM...', err);
-        // Fall back to ASM
-        XZMachineType = 'ASM';
-        importDef = 'asm';
-        import(`./xzdec-${importDef}.js`).then(function (instance) {
-            instance.default().then(function (XZ) {
-                params.decompressorAPI.assemblerMachineType = XZMachineType;
-                xzdec = XZ;
-            });
-        }).catch(function (err) {
-            uiUtil.reportAssemblerErrorToAPIStatusPanel('XZ', err, XZMachineType);
-        });
-    }
-});
+    }); 
+} else {
+    XZASM().then(function (instance) {
+        params.decompressorAPI.assemblerMachineType = XZMachineType;
+        xzdec = instance;
+    }).catch(function (err) {
+        uiUtil.reportAssemblerErrorToAPIStatusPanel('XZ', err, XZMachineType);
+    });
+};
     
 /**
  * Number of milliseconds to wait for the decompressor to be available for another chunk
