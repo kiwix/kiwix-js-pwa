@@ -6,6 +6,7 @@ import replace from '@rollup/plugin-replace';
 import copy from 'rollup-plugin-copy';
 
 const config = {
+    // The entry point for the bundler
     input: 'www/js/app.js',
     output: {
         file: 'dist/www/js/bundle.js',
@@ -17,20 +18,35 @@ const config = {
             exclude: 'node_modules/**',
             babelHelpers: 'bundled' 
         }),
+        // Resolves references to node_modules packages
         resolve({
             browser: true
         }),
+        // Needed to get rid of residual "requires" left in the code by Babel...
         commonjs(),
         replace({
-            // This is needed to prevent a fatal error in IE11 (bug with the URL constructor polyfill)
+            // Prevent a fatal error in IE11 (bug with the URL constructor polyfill)
             'document.baseURI' : "document.location.href.replace(/[^/]*$/, '')",
-            // Necessary to redirect the libzim Worker loader to the new location
+            // Redirect the libzim Worker loader to the new location
             'js/lib/libzim' : 'js/libzim'
         }),
+        // Copy static files and binary (WASM/ASM) files that need to be loaded relative to the bundle
         copy({
             targets: [
               { src: ['www/**', '!www/js/app.js', '!www/js/lib'], dest: 'dist/www', expandDirectories: true, onlyFiles: true },
-              { src: ['service-worker.js', 'index.html', 'manifest.json'], dest: 'dist' },
+              { src: 'service-worker.js', dest: 'dist', 
+                    // Modify the Service Worker precache files
+                    transform: (contents, filename) => contents.toString()
+                        // Replace the entry point with the bundle
+                        .replace(/(www\/js\/)app.js/, '$1bundle.js')
+                        // Remove all the lib files that will be included in the bundle
+                        .replace(/"www\/js\/lib[\s\S]+zimfile.js",\s*/, '')
+                        // Alter remaining lib references
+                        .replace(/\/js\/lib/g, '/js')
+                        // Remove unneeded ASM/WASM binaries
+                        .replace(/"www\/js\/(?!.*libzim).*js",\s*/g, '')
+              },
+              { src: ['index.html', 'manifest.json'], dest: 'dist' },
             ],
             flatten: false
         }),
