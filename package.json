@@ -81,7 +81,9 @@
     ]
   },
   "scripts": {
-    "rollup": "rollup -c",
+    "build": "npm run build-unmin && npm run build-min",
+    "build-min": "rollup --config --file dist/www/js/bundle.min.js --environment BUILD:production",
+    "build-unmin": "rollup --config --file dist/www/js/bundle.js",
     "babel": "babel www --out-dir lib --copy-files",
     "start": "electron .",
     "dist-win": "electron-builder build --win",
