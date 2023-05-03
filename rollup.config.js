@@ -23,7 +23,9 @@ const config = {
         commonjs(),
         replace({
             // This is needed to prevent a fatal error in IE11 (bug with the URL constructor polyfill)
-            'document.baseURI' : "document.location.href.replace(/[^/]*$/, '')"
+            'document.baseURI' : "document.location.href.replace(/[^/]*$/, '')",
+            // Necessary to redirect the libzim Worker loader to the new location
+            'js/lib/libzim' : 'js/libzim'
         }),
         copy({
             targets: [
@@ -34,7 +36,7 @@ const config = {
         }),
         copy({
             targets: [
-              { src: 'www/js/lib/*dec-wasm.wasm', dest: 'dist/www/js' }
+              { src: ['www/js/lib/*dec-wasm.wasm', 'www/js/lib/libzim-asm.js', 'www/js/lib/libzim-wasm.*', '!www/js/lib/libzim-wasm.dev*'], dest: 'dist/www/js' }
             ],
             flatten: true
         })
