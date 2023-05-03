@@ -4,6 +4,7 @@ import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 import copy from 'rollup-plugin-copy';
+import terser from '@rollup/plugin-terser';
 
 const config = {
     // The entry point for the bundler
@@ -30,10 +31,12 @@ const config = {
             // Redirect the libzim Worker loader to the new location
             'js/lib/libzim' : 'js/libzim'
         }),
+        // Minify
+        terser(),
         // Copy static files and binary (WASM/ASM) files that need to be loaded relative to the bundle
         copy({
             targets: [
-              { src: ['www/**', '!www/js/app.js', '!www/js/lib'], dest: 'dist/www', expandDirectories: true, onlyFiles: true },
+              { src: ['www/**', '!www/js/app.js', '!www/js/lib', '!www/index.html'], dest: 'dist/www', expandDirectories: true, onlyFiles: true },
               { src: 'service-worker.js', dest: 'dist', 
                     // Modify the Service Worker precache files
                     transform: (contents, filename) => contents.toString()
@@ -45,6 +48,14 @@ const config = {
                         .replace(/\/js\/lib/g, '/js')
                         // Remove unneeded ASM/WASM binaries
                         .replace(/"www\/js\/(?!.*libzim).*js",\s*/g, '')
+              },
+              { src: 'www/index.html', dest: 'dist/www', 
+                    // Link the html to the new bundle entry point
+                    transform: (contents, filename) => contents.toString()
+                        // Uncomment the bundle link
+                        .replace(/<!--\s(<script type="text\/javascript.*bundle.js.*)\s-->/, "$1")
+                        // Comment out the old app.js link
+                        .replace(/(<script type="module.*app.js.*)/, "<!-- $1 -->")
               },
               { src: ['index.html', 'manifest.json'], dest: 'dist' },
             ],

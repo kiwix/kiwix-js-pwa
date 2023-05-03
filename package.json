@@ -117,6 +117,7 @@
     "@rollup/plugin-commonjs": "^24.1.0",
     "@rollup/plugin-node-resolve": "^15.0.2",
     "@rollup/plugin-replace": "^5.0.2",
+    "@rollup/plugin-terser": "^0.4.1",
     "babel-plugin-polyfill-corejs3": "^0.7.1",
     "electron": "22.3.7",
     "electron-builder": "^24.3.0",
