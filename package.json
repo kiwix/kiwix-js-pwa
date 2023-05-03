@@ -121,7 +121,8 @@
     "electron": "22.3.7",
     "electron-builder": "^24.3.0",
     "electron-packager": "^16.0.0",
-    "rollup": "^3.21.3"
+    "rollup": "^3.21.3",
+    "rollup-plugin-copy": "^3.4.0"
   },
   "dependencies": {
     "@types/fs-extra": "^9.0.11",
