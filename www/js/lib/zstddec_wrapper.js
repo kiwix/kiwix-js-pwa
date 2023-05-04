@@ -29,7 +29,6 @@ import ZDWASM from './zstddec-wasm.js';
 var ZSTDMachineType = null;
 
 // DEV: zstddec.js has been compiled with `-s EXPORT_NAME="ZD" -s MODULARIZE=1` to avoid a clash with xzdec.js
-// Note that we include zstddec-wasm or zstddec-asm above in requireJS definition, but we cannot change the name in the function list
 // For explanation of loading method below to avoid conflicts, see https://github.com/emscripten-core/emscripten/blob/master/src/settings.js
 
 /**

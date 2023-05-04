@@ -38,8 +38,6 @@ if ('WebAssembly' in self) {
 }
 
 // DEV: xzdec.js has been compiled with `-s EXPORT_NAME="XZ" -s MODULARIZE=1` to avoid a clash with zstddec.js
-// Note that we include xzdec-asm or xzdec-wasm above in requireJS definition, but we cannot change the name in the function list
-// There is no longer any need to load it in index.html
 // For explanation of loading method below to avoid conflicts, see https://github.com/emscripten-core/emscripten/blob/master/src/settings.js
 
 /**

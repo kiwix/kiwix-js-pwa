@@ -322,7 +322,6 @@
     <Content Include="www\js\lib\images.js" />
     <Content Include="www\js\lib\jquery-3.2.1.slim.js" />
     <Content Include="www\js\lib\kiwixServe.js" />
-    <Content Include="www\js\lib\require.js" />
     <Content Include="www\js\lib\transformStyles.js" />
     <Content Include="www\js\lib\uiUtil.js" />
     <Content Include="www\js\lib\utf8.js" />

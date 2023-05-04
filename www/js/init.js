@@ -1,8 +1,8 @@
 ﻿/**
- * init.js : Configuration for the library require.js
+ * init.js : Configuration for the app
  * This file handles the dependencies between javascript libraries
  * 
- * Copyright 2013-2021 Mossroy, Jaifroid and contributors
+ * Copyright 2013-2023 Mossroy, Jaifroid and contributors
  * License GPL v3:
  * 
  * This file is part of Kiwix.
@@ -437,8 +437,8 @@ function deleteSetting(name) {
 }
 
 // Tests for available Storage APIs (document.cookie or localStorage) and returns the best available of these
-// DEV: This function is replicated from settingsStore.js because RequireJS has not yet loaded it,
-// except that it returns 'cookie' if the always-present contentInjectionMode is still in cookie, which
+// DEV: This function is replicated from settingsStore.js because it's not available from init
+// It returns 'cookie' if the always-present contentInjectionMode is still in cookie, which
 // means the store previously used cookies and hasn't upgraded yet: this won't be done till app.js is loaded
 function getBestAvailableStorageAPI() {
     var type = 'none';
@@ -459,39 +459,6 @@ function getBestAvailableStorageAPI() {
     if (localStorageTest && !/contentInjectionMode=(?:jquery|serviceworker)/.test(document.cookie)) type = 'local_storage';
     return type;
 }
-
-
-// require.config({
-//     //enforceDefine: true, //This is for debugging IE errors
-//     baseUrl: 'js/lib',
-//     // config: { '../app': { params: params } },
-//     paths: {
-//         'jquery': 'jquery-3.2.1.slim',
-//         'cache' : 'cache',
-//         //'jquery': 'jquery-3.2.1',
-//         //'bootstrap': 'bootstrap'
-//         'bootstrap': 'bootstrap.min',
-//         'webpHeroBundle': 'webpHeroBundle_0.0.0-dev.27'
-//     },
-//     shim: {
-//         'jquery': {
-//             exports: '$'
-//         },
-//         'bootstrap': {
-//             deps: ['jquery']
-//         }
-//     }
-// });
-
-// var req = ['bootstrap']; // Baseline Require array
-
-// // Add polyfills to the Require array only if needed
-// if (!('Promise' in self)) req.push('promisePolyfill');
-// if (!('from' in Array)) req.push('arrayFromPolyfill');
-
-// requirejs(req, function () {
-//     requirejs(['../app']);
-// });
 
 // Test if WebP is natively supported, and if not, set webpMachine to true. The value of webpMachine
 // will determine whether the WebP Polyfills will be loaded (currently only used in uiUtil.js)
