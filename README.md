@@ -107,7 +107,8 @@ If you have coding experience and are interested in contributing to this project
 as much of the code contributed there is subsequently ported to this repository. Please see [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) for details.
 If you wish to contribute to a specific Kiwix JS Windows/Linux feature, then please open an issue on this repository explaining the feature or other code you
 aim to contribute and how you propose this should be done. You should be comfortable creating PRs and have good knowledge of JavaScript. Follow the same
-[contributing guidelines](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) as for Kiwix JS.
+[contributing guidelines](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) as for Kiwix JS. We are transitioning this app to ES6 code, which is
+transpiled by [rollup.js](https://rollupjs.org/) and [Babel](https://babeljs.io/) to code that is compatible with older browsers.
 
 ## Other contributions / donations
 
