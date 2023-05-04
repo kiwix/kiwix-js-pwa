@@ -1,6 +1,6 @@
-import child_process from 'child_process';
-import fs from 'fs';
-import path from 'path';
+const child_process = require('child_process'),
+    fs = require('fs'),
+    path = require('path');
     
 const appName = "kiwix-js-wikimed";    
 
@@ -24,4 +24,4 @@ async function afterPack ({targets, appOutDir}) {
     });
 }
 
-export default { afterPack };
+module.exports = afterPack;

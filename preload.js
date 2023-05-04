@@ -4,8 +4,8 @@
 'use strict';
 
 // DEV: TO SUPPORT ELECTRON ^12 YOU WILL NEED THIS
-import { ipcRenderer, contextBridge } from 'electron';
-import { open, read, close, stat, readdir } from 'fs';
+const { ipcRenderer, contextBridge } = require('electron');
+const { open, read, close, stat, readdir } = require('fs');
 
 console.log("Inserting required Electron functions into DOM...");
 
@@ -53,4 +53,3 @@ contextBridge.exposeInMainWorld('dialog', {
 //     console.log(cookies);
 // });
 
-export default {}
