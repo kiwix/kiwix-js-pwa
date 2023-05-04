@@ -1,11 +1,11 @@
 // Modules to control application life and create native browser window
-const { app, dialog, ipcMain, BrowserWindow } = require('electron');
-const path = require('path');
-const { autoUpdater } = require("electron-updater");
+import { app, dialog, ipcMain, BrowserWindow } from 'electron';
+import 'path';
+import autoUpdater from 'electron-updater';
+import contextMenu from 'electron-context-menu';
 
 app.commandLine.appendSwitch("enable-experimental-web-platform-features");
 
-const contextMenu = require('electron-context-menu');
 contextMenu({
     labels: {
         cut: 'Cut',
@@ -186,3 +186,5 @@ app.on('window-all-closed', function () {
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin') app.quit();
 });
+
+export default {};
