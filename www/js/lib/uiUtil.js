@@ -655,40 +655,42 @@ define(rqDef, function(util) {
         approveConfirmLabel = approveConfirmLabel || "Confirm";
         closeMessageLabel = closeMessageLabel || "OK";
         label = label || (isConfirm ? "Confirmation" : "Message");
-        return new Promise(function (resolve, reject) {
-            if (!message) reject("Missing body message");
-            // Set the text to the modal and it's buttons
-            document.getElementById("approveConfirm").textContent = approveConfirmLabel;
-            document.getElementById("declineConfirm").textContent = declineConfirmLabel;
-            document.getElementById("closeMessage").textContent = closeMessageLabel;
-            document.getElementById("modalLabel").textContent = label;
-            document.getElementById("modalText").innerHTML = message;
-            // Display buttons acc to the type of alert
-            document.getElementById("approveConfirm").style.display = isConfirm ? "inline" : "none";
-            document.getElementById("declineConfirm").style.display = isConfirm ? "inline" : "none";
-            document.getElementById("closeMessage").style.display = isConfirm ? "none" : "inline";
-            // Display the modal
-            $("#alertModal").modal("show");
-            // When hide model is called, resolve promise with true if hidden using approve button, false otherwise
-            $("#alertModal").on("hide.bs.modal", function () {
-                const closeSource = document.activeElement;
-                if (closeSource.id === "approveConfirm") {
-                    resolve(true);
-                } else {
-                    resolve(false);
-                }
-            });
-            document.getElementById('alertModal').addEventListener('keyup', function (e) {
-                if (/Enter/.test(e.key)) {
-                    // We need to focus before clicking the button, because the handler above is based on document.activeElement
-                    if (isConfirm) {
-                        document.getElementById('approveConfirm').focus();
-                        document.getElementById('approveConfirm').click();
+        return util.PromiseQueue.enqueue(function () {
+            return new Promise(function (resolve, reject) {
+                if (!message) reject("Missing body message");
+                // Set the text to the modal and it's buttons
+                document.getElementById("approveConfirm").textContent = approveConfirmLabel;
+                document.getElementById("declineConfirm").textContent = declineConfirmLabel;
+                document.getElementById("closeMessage").textContent = closeMessageLabel;
+                document.getElementById("modalLabel").textContent = label;
+                document.getElementById("modalText").innerHTML = message;
+                // Display buttons acc to the type of alert
+                document.getElementById("approveConfirm").style.display = isConfirm ? "inline" : "none";
+                document.getElementById("declineConfirm").style.display = isConfirm ? "inline" : "none";
+                document.getElementById("closeMessage").style.display = isConfirm ? "none" : "inline";
+                // Display the modal
+                $("#alertModal").modal("show");
+                // When hide model is called, resolve promise with true if hidden using approve button, false otherwise
+                $("#alertModal").on("hide.bs.modal", function () {
+                    const closeSource = document.activeElement;
+                    if (closeSource.id === "approveConfirm") {
+                        resolve(true);
                     } else {
-                        document.getElementById('closeMessage').focus();
-                        document.getElementById('closeMessage').click();
+                        resolve(false);
                     }
-                }
+                });
+                document.getElementById('alertModal').addEventListener('keyup', function (e) {
+                    if (/Enter/.test(e.key)) {
+                        // We need to focus before clicking the button, because the handler above is based on document.activeElement
+                        if (isConfirm) {
+                            document.getElementById('approveConfirm').focus();
+                            document.getElementById('approveConfirm').click();
+                        } else {
+                            document.getElementById('closeMessage').focus();
+                            document.getElementById('closeMessage').click();
+                        }
+                    }
+                });
             });
         });
     }
