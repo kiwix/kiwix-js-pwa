@@ -2141,7 +2141,7 @@ $(document).ready(function (e) {
         });
         // On some platforms, bootstrap's jQuery functions have not been injected yet, so we have to run in a timeout
         setTimeout(function () {
-            uiUtil.systemAlert(' ', '', false, null, null, null, 'myModal').then(function (response) {
+            uiUtil.systemAlert(' ', '', false, null, null, null, 'myModal').then(function () {
                 // We need to delay any attempt to launch the UWP Service Worker till after the bootstrap modal is displayed
                 // or else app is left in an anomalous situation whereby it's not possible to exit the modal in some cases
                 if (appstate.launchUWPServiceWorker) {
@@ -2707,8 +2707,10 @@ if (storages !== null && storages.length > 0 ||
                 params.showFileSelectors = true;
                 document.getElementById('hideFileSelectors').style.display = 'inline';
                 document.getElementById('btnConfigure').click();
+                var message = params.packagedFile ? ('The packaged file cannot be found!\nPlease check that it is in the "' + params.archivePath + 
+                    '" folder\nor pick a new ZIM file.') : 'The previously picked file cannot be found!\nPlease pick a new ZIM file.'
                 setTimeout(function () {
-                    uiUtil.systemAlert('The previously picked file cannot be found!\nPlease pick a new ZIM file.');
+                    uiUtil.systemAlert(message);
                 }, 10);
             }
 

@@ -84,8 +84,6 @@ if ($electronbuild -eq "local" -and (-not $portableonly)) {
 if (-Not (($electronbuild -eq 'cloud') -or $old_windows_support -or (Test-Path $comp_electron_archive -PathType Leaf))) {
   # Package portable electron app for Windows
   "Building portable Electron app for Windows"
-  # Line below uses electron-packager, but not necessary if we run the setup version first above
-  # if (-Not $dryrun) { npm run package-win }
   "Compressing release package for Electron..."
   $foldername = "kiwix-js-windows-win32-ia32"
   $compressed_assets_dir = $base_dir + $foldername
