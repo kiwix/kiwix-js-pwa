@@ -4772,7 +4772,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
 
             // Add CSP to prevent external scripts and content - note that any existing CSP can only be hardened, not loosened
             // if (!/<meta\b[^>]+Content-Security-Policy/i.test(htmlArticle)) {
-                htmlArticle = htmlArticle.replace(/(<head\b[^>]*>)\s*/, '$1\n    <meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: blob: bingmaps: about: \'unsafe-inline\' \'unsafe-eval\';"></meta>\n    ');
+            htmlArticle = htmlArticle.replace(/(<head\b[^>]*>)\s*/, '$1\n    <meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: file: blob: bingmaps: about: \'unsafe-inline\' \'unsafe-eval\';"></meta>\n    ');
             // }
 
             // Maker return links
