@@ -1243,7 +1243,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             if (this.value === 'serviceworker') {
                 if (params.manipulateImages || params.allowHTMLExtraction) {
                     if (!appstate.wikimediaZimLoaded) {
-                    var message = 'Please note that we are disabling "Image manipulation" and/or "Download or open current article" features, as these options ' +
+                        var message = 'Please note that we are disabling "Image manipulation" and/or "Download or open current article" features, as these options ' +
                         'can interfere with ZIMs that have active content. You may turn them back on, but be aware that they are only ' + 
                         'recommended for use with Wikimedia ZIMs.';
                         uiUtil.systemAlert(message);
@@ -1495,7 +1495,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 paams.windowOpener = false;
             } else if (params.windowOpener && /iOS|UWP$/.test(params.appType)) {
                 uiUtil.systemAlert('This option is not currently supported ' + (/iOS/.test(params.appType) ? 'on iOS devices because tabs and windows are isolated.' :
-                'in UWP apps that cannot use Service Worker mode.') + '<br>Please switch to the more basic "Download or open current article" feature below instead.');
+                    'in UWP apps that cannot use Service Worker mode.') + '<br>Please switch to the more basic "Download or open current article" feature below instead.');
                 params.windowOpener = false;
             } else {
                 settingsStore.setItem('windowOpener', params.windowOpener, Infinity);
@@ -1562,8 +1562,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     alertMessage = '<p><b>This option will only work if you turn off popup blocking in your iOS browser settings.</b><p>';
                 }
                 if (params.contentInjectionMode === 'serviceworker') {
-                alertMessage = '<p>Please be aware that the "Download or open current article" functionality can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). ' + 
-                    'If you cannot access the articles in such a ZIM, please turn this setting off.</p>' + alertMessage;
+                    alertMessage = '<p>Please be aware that the "Download or open current article" functionality can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). ' + 
+                        'If you cannot access the articles in such a ZIM, please turn this setting off.</p>' + alertMessage;
                 } else if (/PWA/.test(params.appType)) {
                     alertMessage += '<p>Be aware that this option may interfere with active content if you switch to Service Worker mode.</p>';
                 }
