@@ -1593,7 +1593,7 @@ document.getElementById('allowHTMLExtractionCheck').addEventListener('click', fu
         }
         if (params.contentInjectionMode === 'serviceworker') {
                     alertMessage = '<p>Please be aware that the "Download or open current article" functionality can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). ' + 
-                        'If you cannot access the articles in such a ZIM, please turn this setting off.</p>' + alertMessage;
+            'If you cannot access the articles in such a ZIM, please turn this setting off.</p>' + alertMessage;
         } else if (/PWA/.test(params.appType)) {
             alertMessage += '<p>Be aware that this option may interfere with active content if you switch to Service Worker mode.</p>';
         }

@@ -472,7 +472,7 @@ function displayFileDownloadAlert(title, download, contentType, content, autoDis
     alertMessage.innerHTML = '<strong>Download</strong> If the download does not start, please tap the following link: ';
     // We have to add the anchor to a UI element for Firefox to be able to click it programmatically: see https://stackoverflow.com/a/27280611/9727685
     alertMessage.appendChild(a);
-        var downloadAlert = document.getElementById('downloadAlert');
+    var downloadAlert = document.getElementById('downloadAlert');
     // For IE11 we need to force use of the saveBlob method with the onclick event 
     if (window.navigator && window.navigator.msSaveBlob) {
         a.addEventListener('click', function (e) {
@@ -483,7 +483,7 @@ function displayFileDownloadAlert(title, download, contentType, content, autoDis
     try {
         a.click();
         // Following line should run only if there was no error, leaving the alert showing in case of error
-            if (autoDismiss && downloadAlert) downloadAlert.style.display = 'none';
+        if (autoDismiss && downloadAlert) downloadAlert.style.display = 'none';
         return;
     }
     catch (err) {
@@ -493,13 +493,13 @@ function displayFileDownloadAlert(title, download, contentType, content, autoDis
     try {
         a.click();
         // Following line should run only if there was no error, leaving the alert showing in case of error
-            if (autoDismiss && downloadAlert) downloadAlert.style.display = 'none';
+        if (autoDismiss && downloadAlert) downloadAlert.style.display = 'none';
     }
     catch (err) {
         // And try to launch through UWP download
-            if (typeof Windows !== 'undefined' && Windows.Storage) {
+        if (typeof Windows !== 'undefined' && Windows.Storage) {
             downloadBlobUWP(blob, filename, alertMessage);
-                if (autoDismiss && downloadAlert) downloadAlert.style.display = 'none';
+            if (autoDismiss && downloadAlert) downloadAlert.style.display = 'none';
         } else {
             // Last gasp attempt to open automatically
             window.open(a.href);
