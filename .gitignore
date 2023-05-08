@@ -5,6 +5,7 @@
 _pkginfo.txt
 /bld/
 /bin/
+/dist/
 /BundleArtifacts/
 /archives/*.zim*
 /archives/*wikivoyage*.zim
@@ -23,3 +24,4 @@ null
 /scripts/*rsa
 /scripts/github_token
 *.ppk
+.hintrc
