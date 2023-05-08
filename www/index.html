@@ -153,10 +153,8 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" id="modalCloseBtn" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h5 class="panel-group-heading" id="modalLabel">Modal title goes here</h5>
+                    <button type="button" id="modalCloseBtn" class="close modal-title" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h5 class="panel-group-heading modal-title" id="modalLabel">Modal title goes here</h5>
                 </div>
                 <div class="modal-body">
                     <p id="modalText">Modal text goes here</p>
@@ -173,7 +171,7 @@
         <div class="modal-dialog">
             <div id="print-modal-content" class="modal-content">
                 <div class="modal-header">
-                    <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
+                    <button id="printmodalCloseBtn" class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
                     <h3 style="margin-top:10px;">
                         Please choose print options
                     </h3>                
@@ -215,34 +213,18 @@
                     </label>
                 </div>
                 <div class="modal-footer">
-                    <button name="confirm-print" id="confirm-print-cancel" class="btn btn-warning" style="float:right; margin-left: 1em;" type="button" data-dismiss="modal">Cancel</button>
-                    <button name="confirm-print" id="confirm-print-continue" class="btn btn-primary" style="float:right; margin-left: 1em;" type="button" data-dismiss="modal">Continue</button>
+                    <button name="confirm-print" id="printdeclineConfirm" class="btn btn-warning" style="float:right; margin-left: 1em;" type="button" data-dismiss="modal">Cancel</button>
+                    <button name="confirm-print" id="printapproveConfirm" class="btn btn-primary" style="float:right; margin-left: 1em;" type="button" data-dismiss="modal">Continue</button>
                     <p style="text-align:left"><b>Important:</b> This app has limited control over the printer. If there is no option to limit pages, we recommend you choose a PDF or XPS printer, and then print the file with another app.</p>
                 </div>
             </div>
         </div>
     </div>
-    <div id="alertModalSmall" class="modal" role="dialog">
-        <div id="alert-modal" class="modal-dialog modal-sm">
-            <div id="alert-modal-content" class="modal-content">
-                <div class="modal-header">
-                    <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
-                    <h4>Information</h4>
-                </div>
-                <div class="modal-body">
-                    <p id="alert-content"></p>
-                </div>
-                <div class="modal-footer" style="padding:10px;">
-                    <button id="alert-modal-button" class="btn btn-primary" type="button" data-dismiss="modal">OK</button>
-                </div>
-            </div>
-        </div>
+    <!-- Status indicators -->
+    <div id="searchingArticles" style="display: none;" class="status">
+        <div class="loader"></div>
+        <div id="cachingAssets" style="display: none;" class="message"></div>
     </div>
-        <!-- Status indicators -->
-        <div id="searchingArticles" style="display: none;" class="status">
-            <div class="loader"></div>
-            <div id="cachingAssets" style="display: none;" class="message"></div>
-        </div>
     <section id="search-article" role="region">
         <header id="top" style="width:100%; transition: top 0.3s;">
             <nav id="navbar" class="navbar navbar-inverse" role="navigation">

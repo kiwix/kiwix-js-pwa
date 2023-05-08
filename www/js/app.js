@@ -366,34 +366,10 @@ window.addEventListener('keydown', function (e) {
 }, true);
 
 //Set up listeners for print dialogues
-document.getElementById('confirm-print-continue').addEventListener('click', function () {
-    appstate.print = 'continue';
-});
-$("#printModal").on('hide.bs.modal', function () {
-    //Restore temporarily changed values
-    params.cssSource = settingsStore.getItem('cssSource') || "auto";
-    params.cssTheme = settingsStore.getItem('cssTheme') || "light";
-    //params.contentInjectionMode = settingsStore.getItem('contentInjectionMode');
-    if (appstate.print !== "continue") { //User cancelled
-        if (params.printInterception) {
-            printCleanup();
-            return;
-        }
-        //We don't need a radical cleanup because there was no printIntercept
-        removePageMaxWidth();
-        setTab();
-        switchCSSTheme();
-        return;
-    }
+function printArticle() {    
     uiUtil.printCustomElements();
-    document.getElementById("alert-content").innerHTML = "<b>Document will now reload to restore the DOM after printing...</b>";
-    $("#alertModalSmall").off('hide.bs.modal');
-    $("#alertModalSmall").on('hide.bs.modal', function () {
+    uiUtil.systemAlert('<b>Document will now reload to restore the DOM after printing...</b>').then(function () {
         printCleanup();
-    });
-    $("#alertModalSmall").modal({
-        backdrop: "static",
-        keyboard: true
     });
     //innerDocument.execCommand("print", false, null);
     // if (typeof window.nw !== 'undefined' || typeof window.fs === 'undefined') {
@@ -412,14 +388,14 @@ $("#printModal").on('hide.bs.modal', function () {
     //     //html = html.replace(/(<\/head>\s*)/i, '<script type="text/javascript">window.onload=window.print();<\/script>\n$1');
     //     uiUtil.extractHTML();
     // }
-});
+};
 document.getElementById('printDesktopCheck').addEventListener('click', function (e) {
     //Reload article if user wants to print a different style
     params.cssSource = e.target.checked ? "desktop" : "mobile";
     params.printIntercept = true;
     params.printInterception = false;
-    var btnContinue = document.getElementById('confirm-print-continue');
-    var btnCancel = document.getElementById('confirm-print-cancel');
+    var btnContinue = document.getElementById('printapproveConfirm');
+    var btnCancel = document.getElementById('printdeclineConfirm');
     btnCancel.disabled = true;
     btnContinue.disabled = true;
     btnContinue.innerHTML = "Please wait";
@@ -431,8 +407,8 @@ document.getElementById('printImageCheck').addEventListener('click', function (e
         params.printIntercept = true;
         params.printInterception = false;
         params.allowHTMLExtraction = true;
-        var btnContinue = document.getElementById('confirm-print-continue');
-        var btnCancel = document.getElementById('confirm-print-cancel');
+        var btnContinue = document.getElementById('printapproveConfirm');
+        var btnCancel = document.getElementById('printdeclineConfirm');
         btnCancel.disabled = true;
         btnContinue.disabled = true;
         btnContinue.innerHTML = "Please wait";
@@ -441,6 +417,13 @@ document.getElementById('printImageCheck').addEventListener('click', function (e
 });
 
 function printCleanup() {
+    if (!params.printInterception) {
+        //We don't need a radical cleanup because there was no printIntercept
+        removePageMaxWidth();
+        setTab();
+        switchCSSTheme();
+        return;
+    }
     params.printIntercept = false;
     params.printInterception = false;
     // Immediately restore temporarily changed values
@@ -459,12 +442,11 @@ function printCleanup() {
 //End of listeners for print dialogues
 
 function printIntercept() {
-    appstate.print = null;
     params.printInterception = params.printIntercept;
     params.printIntercept = false;
     document.getElementById('btnAbout').classList.add('active');
-    var btnContinue = document.getElementById('confirm-print-continue');
-    var btnCancel = document.getElementById('confirm-print-cancel');
+    var btnContinue = document.getElementById('printapproveConfirm');
+    var btnCancel = document.getElementById('printdeclineConfirm');
     btnCancel.disabled = false;
     btnContinue.disabled = false;
     btnContinue.innerHTML = "Continue";
@@ -494,10 +476,8 @@ function printIntercept() {
         btnCancel.disabled = true;
         btnContinue.disabled = true;
         btnContinue.innerHTML = "Please wait";
-        $("#printModal").modal({
-            backdrop: "static",
-            keyboard: true
-        });
+        // Show the modal so the user knows that printing is being prepared
+        document.getElementById('printModal').style.display = 'block';
         goToArticle(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
         return;
     }
@@ -535,9 +515,12 @@ function printIntercept() {
     //Put doc into light mode
     params.cssTheme = 'light';
     switchCSSTheme();
-    $("#printModal").modal({
-        backdrop: "static",
-        keyboard: true
+    uiUtil.systemAlert(' ', '', true, null, 'Continue', null, 'printModal').then(function (result) {
+        //Restore temporarily changed values
+        params.cssSource = settingsStore.getItem('cssSource') || "auto";
+        params.cssTheme = settingsStore.getItem('cssTheme') || "light";
+        if (result) printArticle();
+        else printCleanup();
     });
 }
 
@@ -2825,16 +2808,11 @@ function populateDropDownListOfArchives(archiveDirectories, displayOnly) {
                     var message = '<p>We could not find the archive <b>' + lastSelectedArchive + '</b>!</p><p>Please select its location...</p>';
                     if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined')
                         message += '<p><i>Note:</i> If you drag-drop an archive into this UWP app, then it will have to be dragged again each time you launch the app. Try double-clicking on the archive instead, or select it using the controls on this page.</p>';
-                    if (document.getElementById('configuration').style.display == 'none')
+                    if (document.getElementById('configuration').style.display == 'none') {
                         document.getElementById('btnConfigure').click();
-                    document.getElementById('alert-content').innerHTML = message;
-                    $('#alertModalSmall').off('hide.bs.modal');
-                    $('#alertModalSmall').on('hide.bs.modal', function () {
+                    }
+                    uiUtil.systemAlert(message).then(function () {
                         displayFileSelect();
-                    });
-                    $('#alertModalSmall').modal({
-                        backdrop: 'static',
-                        keyboard: true
                     });
                 }
             }
@@ -3425,17 +3403,14 @@ function setLocalArchiveFromFileList(files) {
     }
     // Check that user hasn't picked just part of split ZIM
     if (files.length == 1 && /\.zim\w\w/i.test(files[0].name)) {
-        document.getElementById('alert-content').innerHTML = '<p>You have picked only part of a split archive!</p><p>Please select its folder in Config, or drag and drop <b>all</b> of its parts into Config.</p>';
-        $('#alertModalSmall').off('hide.bs.modal');
-        $('#alertModalSmall').on('hide.bs.modal', function () {
-            if (document.getElementById('configuration').style.display == 'none')
-                document.getElementById('btnConfigure').click();
-            displayFileSelect();
-        });
-        $('#alertModalSmall').modal({
-            backdrop: 'static',
-            keyboard: true
-        });
+        uiUtil.systemAlert('<p>You have picked only part of a split archive!</p><p>Please select its folder in Config, ' + 
+            'or drag and drop <b>all</b> of its parts into Config.</p>').then(function () {
+                if (document.getElementById('configuration').style.display === 'none') {
+                    document.getElementById('btnConfigure').click();
+                }
+                displayFileSelect();
+            }
+        );
     }
     // If the file name is already in the archive list, try to select it in the list
     var listOfArchives = document.getElementById('archiveList');

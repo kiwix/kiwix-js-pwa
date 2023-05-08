@@ -638,12 +638,12 @@ function extractHTML() {
  * @param {String} declineConfirmLabel The text to display on the decline confirmation button (optional, Default = "Cancel") 
  * @param {String} approveConfirmLabel  The text to display on the approve confirmation button (optional, Default = "Confirm")
  * @param {String} closeMessageLabel  The text to display on the close alert message button (optional, Default = "Okay")
- * @param {Sting} alertModal The modal to display (optional)
+ * @param {String} alertModal The modal to display (optional)
  * @returns {Promise<Boolean>} A promise which resolves to true if the user clicked Confirm, false if the user clicked Cancel/Okay, backdrop or the cross(x) button
  */
 function systemAlert(message, label, isConfirm, declineConfirmLabel, approveConfirmLabel, closeMessageLabel, alertModal) {
     alertModal = alertModal || 'alertModal';
-    var my = alertModal === 'myModal' ? 'my' : '';
+    var prfx = alertModal === 'myModal' ? 'my' : alertModal === 'printModal' ? 'print' : '';
     declineConfirmLabel = declineConfirmLabel || 'Cancel';
     approveConfirmLabel = approveConfirmLabel || 'Confirm';
     closeMessageLabel = closeMessageLabel || 'Okay';
@@ -680,6 +680,12 @@ function systemAlert(message, label, isConfirm, declineConfirmLabel, approveConf
             modal.setAttribute('aria-modal', 'true');
             modal.setAttribute('role', 'dialog');
 
+            // Get elements to which we will attach event listeners
+            var modalCloseBtn = document.getElementById(prfx + 'modalCloseBtn')
+            var declineConfirm = document.getElementById(prfx + 'declineConfirm');
+            var closeMessage = document.getElementById(prfx + 'closeMessage');
+            var approveConfirm = document.getElementById(prfx + 'approveConfirm');
+
             // Hide modal handlers
             var closeModalHandler = function () {
                 document.body.classList.remove('modal-open');
@@ -690,19 +696,22 @@ function systemAlert(message, label, isConfirm, declineConfirmLabel, approveConf
                     document.body.removeChild(backdrop);
                 }
                 //remove event listeners
-                document.getElementById(my + 'modalCloseBtn').removeEventListener('click', close);
-                document.getElementById('declineConfirm').removeEventListener('click', close);
-                document.getElementById(my + 'closeMessage').removeEventListener('click', close);
-                document.getElementById('approveConfirm').removeEventListener('click', closeConfirm);
+                if (modalCloseBtn) modalCloseBtn.removeEventListener('click', close);
+                if (declineConfirm) declineConfirm.removeEventListener('click', close);
+                if (closeMessage) closeMessage.removeEventListener('click', close);
+                if (approveConfirm) approveConfirm.removeEventListener('click', closeConfirm);
                 modal.removeEventListener('click', close);
                 document.getElementsByClassName('modal-dialog')[0].removeEventListener('click', stopOutsideModalClick);
                 modal.removeEventListener('keyup', keyHandler);
             };
 
             // function to call when modal is closed
-            var close = function () {
-                closeModalHandler();
-                resolve(false);
+            var close = function (e) {
+                // If user clicked on the backdrop, close the modal
+                if (e.target.id === alertModal || /close|decline/i.test(e.target.id)) {
+                    closeModalHandler();
+                    resolve(false);
+                }
             };
             var closeConfirm = function () {
                 closeModalHandler();
@@ -715,27 +724,25 @@ function systemAlert(message, label, isConfirm, declineConfirmLabel, approveConf
                 if (/Enter/.test(e.key)) {
                     // We need to focus before clicking the button, because the handler above is based on document.activeElement
                     if (isConfirm) {
-                        document.getElementById('approveConfirm').focus();
-                        document.getElementById('approveConfirm').click();
+                        approveConfirm.focus();
+                        approveConfirm.click();
                     } else {
-                        document.getElementById(my + 'closeMessage').focus();
-                        document.getElementById(my + 'closeMessage').click();
+                        closeMessage.focus();
+                        closeMessage.click();
                     }
                 } else if (/Esc/.test(e.key)) {
-                    document.getElementById(my + 'modalCloseBtn').focus();
-                    document.getElementById(my + 'modalCloseBtn').click();
+                    modalCloseBtn.focus();
+                    modalCloseBtn.click();
                 }
             };
 
             // When hide modal is called, resolve promise with true if hidden using approve button, false otherwise
-            document.getElementById(my + 'modalCloseBtn').addEventListener('click', close);
-            document.getElementById('declineConfirm').addEventListener('click', close);
-            document.getElementById(my + 'closeMessage').addEventListener('click', close);
-            document.getElementById('approveConfirm').addEventListener('click', closeConfirm);
-
+            if (modalCloseBtn) modalCloseBtn.addEventListener('click', close);
+            if (declineConfirm) declineConfirm.addEventListener('click', close);
+            if (closeMessage) closeMessage.addEventListener('click', close);
+            if (approveConfirm) approveConfirm.addEventListener('click', closeConfirm);
             modal.addEventListener('click', close);
             document.getElementsByClassName('modal-dialog')[0].addEventListener('click', stopOutsideModalClick);
-
             modal.addEventListener('keyup', keyHandler);
             // Set focus to the first focusable element inside the modal
             modal.focus();
