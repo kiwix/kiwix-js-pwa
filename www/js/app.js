@@ -1243,7 +1243,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             if (this.value === 'serviceworker') {
                 if (params.manipulateImages || params.allowHTMLExtraction) {
                     if (!appstate.wikimediaZimLoaded) {
-                        var message = 'Please note that we are disabling Image manipulation and/or Breakout link, as these options ' +
+                    var message = 'Please note that we are disabling "Image manipulation" and/or "Download or open current article" features, as these options ' +
                         'can interfere with ZIMs that have active content. You may turn them back on, but be aware that they are only ' + 
                         'recommended for use with Wikimedia ZIMs.';
                         uiUtil.systemAlert(message);
@@ -1334,7 +1334,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             if (this.checked && !params.displayHiddenBlockElements && !params.noWarning) {
                 if (/UWP/.test(params.appType)) {
                     uiUtil.systemAlert('<p><b>WORKAROUND FOR UWP APP:</b> To save an image to disk, please select the ' +
-                        '"Add breakout link ..." option below, load the article you require, and export it to a browser window by clicking the breakout link.</p>' +
+                    '"Download or open current article" option below, load the article you require, and export it to a browser window by clicking the breakout icon.</p>' +
                         '<p>You will then be able to right-click or long-press images in the exported page and save them.</p>');
                 } else if (window.nw) {
                     uiUtil.systemAlert('Unfortunately there is currently no way to save an image to disk in the NWJS version of this app.<br>You can do this in the PWA version: please visit https://pwa.kiwix.org.');
@@ -1491,17 +1491,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             if (params.windowOpener && /UWP\|PWA/.test(params.appType) && params.contentInjectionMode === 'jquery') {
                 uiUtil.systemAlert('<p>In this UWP app, opening a new browsable window only works in Service Worker mode.</p>' + 
                     '<p>Your system appears to support SW mode, so please try switching to it in Expert Settings below.</p>' +
-                    '<p>If your system does not support SW mode, then use the more basic "breakout link" feature below.</p>');
+                '<p>If your system does not support SW mode, then use the more basic "Download or open current article" feature below.</p>');
                 paams.windowOpener = false;
             } else if (params.windowOpener && /iOS|UWP$/.test(params.appType)) {
                 uiUtil.systemAlert('This option is not currently supported ' + (/iOS/.test(params.appType) ? 'on iOS devices because tabs and windows are isolated.' :
-                    'in UWP apps that cannot use Service Worker mode.') + '<br>Please switch to the more basic "breakout link" feature below instead.');
+                'in UWP apps that cannot use Service Worker mode.') + '<br>Please switch to the more basic "Download or open current article" feature below instead.');
                 params.windowOpener = false;
             } else {
                 settingsStore.setItem('windowOpener', params.windowOpener, Infinity);
             }
             if (params.windowOpener && params.allowHTMLExtraction) {
-                uiUtil.systemAlert('Enabling this option disables the more basic breakout link option below.');
+            uiUtil.systemAlert('Enabling this option disables the more basic "Download or open current article" option below.');
                 document.getElementById('allowHTMLExtractionCheck').click();
             }
             setWindowOpenerUI();
@@ -1562,7 +1562,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                     alertMessage = '<p><b>This option will only work if you turn off popup blocking in your iOS browser settings.</b><p>';
                 }
                 if (params.contentInjectionMode === 'serviceworker') {
-                    alertMessage = '<p>Please be aware that the Breakout link functionality can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). ' + 
+                alertMessage = '<p>Please be aware that the "Download or open current article" functionality can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). ' + 
                     'If you cannot access the articles in such a ZIM, please turn this setting off.</p>' + alertMessage;
                 } else if (/PWA/.test(params.appType)) {
                     alertMessage += '<p>Be aware that this option may interfere with active content if you switch to Service Worker mode.</p>';
