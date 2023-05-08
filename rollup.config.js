@@ -56,7 +56,7 @@ if (process.env.BUILD === 'production') {
                         // Alter remaining lib references
                         .replace(/\/js\/lib/g, '/js')
                         // Remove unneeded ASM/WASM binaries
-                        .replace(/"www\/js\/(?!.*libzim).*js",\s*/g, '')
+                        .replace(/"www\/js\/.*dec.*js",\s*/g, '')
             },
             { src: 'www/index.html', dest: 'dist/www', 
                     // Link the html to the new bundle entry point
@@ -89,7 +89,7 @@ if (process.env.BUILD === 'production') {
                         // Alter remaining lib references
                         .replace(/\/js\/lib/g, '/js')
                         // Remove unneeded ASM/WASM binaries
-                        .replace(/"www\/js\/(?!.*libzim).*js",\s*/g, '')
+                        .replace(/"www\/js\/.*dec.*js",\s*/g, '')
             },
             { src: 'www/index.html', dest: 'dist/www', 
                     // Link the html to the new bundle entry point
