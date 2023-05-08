@@ -353,7 +353,7 @@ define(rqDef, function(util) {
                 '<a id="hbeModeLink" href="#displayHiddenBlockElementsDiv" class="alert-link">disable Display hidden block elements</a> ' :
                 params.manipulateImages ? '<a id="imModeLink" href="#imageManipulationDiv" class="alert-link">disable Image manipulation</a> ' : '') + 
                 (params.allowHTMLExtraction ? (params.displayHiddenBlockElements || params.manipulateImages ? 'and ' : '') + 
-                'disable Breakout link ' : '') + 'for this content to work properly. To use Archive Index type a <b><i>space</i></b> ' +
+                'disable Breakout icon ' : '') + 'for this content to work properly. To use Archive Index type a <b><i>space</i></b> ' +
                 'in the box above, or <b><i>space / </i></b> for URL Index.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
             '</div>';
         }
@@ -481,6 +481,7 @@ define(rqDef, function(util) {
         alertMessage.innerHTML = '<strong>Download</strong> If the download does not start, please tap the following link: ';
         // We have to add the anchor to a UI element for Firefox to be able to click it programmatically: see https://stackoverflow.com/a/27280611/9727685
         alertMessage.appendChild(a);
+        var downloadAlert = document.getElementById('downloadAlert');
         // For IE11 we need to force use of the saveBlob method with the onclick event 
         if (window.navigator && window.navigator.msSaveBlob) {
             a.addEventListener('click', function (e) {
@@ -491,7 +492,7 @@ define(rqDef, function(util) {
         try {
             a.click();
             // Following line should run only if there was no error, leaving the alert showing in case of error
-            if (autoDismiss) $('#downloadAlert').alert('close');
+            if (autoDismiss && downloadAlert) downloadAlert.style.display = 'none';
             return;
         }
         catch (err) {
@@ -501,13 +502,13 @@ define(rqDef, function(util) {
         try {
             a.click();
             // Following line should run only if there was no error, leaving the alert showing in case of error
-            if (autoDismiss) $('#downloadAlert').alert('close');
+            if (autoDismiss && downloadAlert) downloadAlert.style.display = 'none';
         }
         catch (err) {
             // And try to launch through UWP download
-            if (Windows && Windows.Storage) {
+            if (typeof Windows !== 'undefined' && Windows.Storage) {
                 downloadBlobUWP(blob, filename, alertMessage);
-                if (autoDismiss) $('#downloadAlert').alert('close');
+                if (autoDismiss && downloadAlert) downloadAlert.style.display = 'none';
             } else {
                 // Last gasp attempt to open automatically
                 window.open(a.href);
@@ -563,12 +564,11 @@ define(rqDef, function(util) {
         div.innerHTML = '<a href="#"><img id="breakoutLink" src="' + prefix + '/img/icons/' + (mode == 'light' ? 'new_window.svg' : 'new_window_lb.svg') + '" width="30" height="30" alt="' + desc + '" title="' + desc + '"></a>';
         iframe.body.insertBefore(div, iframe.body.firstChild);
         var openInTab = iframe.getElementById('openInTab');
-        // Have to use jQuery here becasue e.preventDefault is not working properly in some browsers
-        $(openInTab).on('click', function() {
+        openInTab.addEventListener('click', function(e) {
+            e.preventDefault();
             itemsCount = false;
             params.preloadingAllImages = false;
             extractHTML();
-            return false;
         });
     }
     
