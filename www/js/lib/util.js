@@ -826,12 +826,12 @@ var PromiseQueue = {
     },
     _dequeue: function () {
         this._working = true;
-        var that = this;
         var deferred = this._queue.shift();
         if (!deferred) {
             this._working = false;
             return false;
         }
+        var that = this;
         return deferred.promise().then(function (val) {
             deferred.resolve(val);
         }).catch(function (err) {
