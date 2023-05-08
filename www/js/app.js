@@ -1334,7 +1334,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             if (this.checked && !params.displayHiddenBlockElements && !params.noWarning) {
                 if (/UWP/.test(params.appType)) {
                     uiUtil.systemAlert('<p><b>WORKAROUND FOR UWP APP:</b> To save an image to disk, please select the ' +
-                    '"Download or open current article" option below, load the article you require, and export it to a browser window by clicking the breakout icon.</p>' +
+                        '"Download or open current article" option below, load the article you require, and export it to a browser window by clicking the breakout icon.</p>' +
                         '<p>You will then be able to right-click or long-press images in the exported page and save them.</p>');
                 } else if (window.nw) {
                     uiUtil.systemAlert('Unfortunately there is currently no way to save an image to disk in the NWJS version of this app.<br>You can do this in the PWA version: please visit https://pwa.kiwix.org.');
@@ -1491,7 +1491,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             if (params.windowOpener && /UWP\|PWA/.test(params.appType) && params.contentInjectionMode === 'jquery') {
                 uiUtil.systemAlert('<p>In this UWP app, opening a new browsable window only works in Service Worker mode.</p>' + 
                     '<p>Your system appears to support SW mode, so please try switching to it in Expert Settings below.</p>' +
-                '<p>If your system does not support SW mode, then use the more basic "Download or open current article" feature below.</p>');
+                    '<p>If your system does not support SW mode, then use the more basic "Download or open current article" feature below.</p>');
                 paams.windowOpener = false;
             } else if (params.windowOpener && /iOS|UWP$/.test(params.appType)) {
                 uiUtil.systemAlert('This option is not currently supported ' + (/iOS/.test(params.appType) ? 'on iOS devices because tabs and windows are isolated.' :
@@ -1501,7 +1501,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
                 settingsStore.setItem('windowOpener', params.windowOpener, Infinity);
             }
             if (params.windowOpener && params.allowHTMLExtraction) {
-            uiUtil.systemAlert('Enabling this option disables the more basic "Download or open current article" option below.');
+                uiUtil.systemAlert('Enabling this option disables the more basic "Download or open current article" option below.');
                 document.getElementById('allowHTMLExtractionCheck').click();
             }
             setWindowOpenerUI();
@@ -4761,19 +4761,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'util', 'utf8', 'cache', 'images
             params.containsMathTex = params.useMathJax ? /<(script|span)\s+(type|class)\s*=\s*['"]\s*(math\/tex|latex)\s*['"]/i.test(htmlArticle) : false;
             params.containsMathSVG = params.useMathJax ? /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=\s*['"][^'"]+[^>]+>/i.test(htmlArticle) : false;
 
-            // if (params.useMathJax && params.containsMathTex) {
-            //     // Proofwiki blocks
-            //     htmlArticle = htmlArticle.replace(/(<(?:dd|td|span)\b[^>]*>)((?:\$|\\)(?:[^<]|<(?!\/(?:dd|td|span)))+)(<\/(?:dd|td|span)>)/ig, function (m0, left, math, right) {
-            //         // math = math.replace(/\\ds\s/g, '\\displaystyle ');
-            //         math = math.replace(/\\map\s/g, '\\mapsto ');
-            //         return left + math + right;
-            //     });
-            // }
-
             // Add CSP to prevent external scripts and content - note that any existing CSP can only be hardened, not loosened
-            // if (!/<meta\b[^>]+Content-Security-Policy/i.test(htmlArticle)) {
             htmlArticle = htmlArticle.replace(/(<head\b[^>]*>)\s*/, '$1\n    <meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: file: blob: bingmaps: about: \'unsafe-inline\' \'unsafe-eval\';"></meta>\n    ');
-            // }
 
             // Maker return links
             uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
