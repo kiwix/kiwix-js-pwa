@@ -555,8 +555,8 @@ function insertBreakoutLink(mode) {
     div.innerHTML = '<a href="#"><img id="breakoutLink" src="' + prefix + '/img/icons/' + (mode == 'light' ? 'new_window.svg' : 'new_window_lb.svg') + '" width="30" height="30" alt="' + desc + '" title="' + desc + '"></a>';
     iframe.body.insertBefore(div, iframe.body.firstChild);
     var openInTab = iframe.getElementById('openInTab');
-        openInTab.addEventListener('click', function(e) {
-            e.preventDefault();
+    openInTab.addEventListener('click', function(e) {
+        e.preventDefault();
         itemsCount = false;
         params.preloadingAllImages = false;
         extractHTML();
