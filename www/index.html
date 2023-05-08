@@ -74,69 +74,71 @@
             <div id="modalTheme" class="modal-content dark">
                 <div id="largeModal" class="modal-body">
                     <button id="mymodalCloseBtn" class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
-                    <img style="float:left; padding-right:1em;" alt="Kiwix icon" src="img/icons/kiwix-midnightblue-90.png">
+                    <div id="mymodalVariableContent">
+                        <img style="float:left; padding-right:1em;" alt="Kiwix icon" src="img/icons/kiwix-midnightblue-90.png">
 
-                    <h2 style="font-size:32px;margin-top:10px;">
-                        Welcome to Kiwix&nbsp;JS <span class="identity">for Windows</span>
-                    </h2>
-                    <h4>Version <span class="version">2.0</span> (<a href="#update">changes</a>)</h4>
-                    <h3>Please read this important information</h3>
-                    <div class="disclaimer">
-                        <p>
-                            <b>DISCLAIMER:</b> Please be aware that Kiwix works with offline archives. To get updated info, you will need to
-                            download a new archive periodically. Information in official archives is free, open source and provided by volunteers.
-                            <strong>Kiwix gives no guarantee as to the accuracy of information in the archives you access with this app.</strong>
+                        <h2 style="font-size:32px;margin-top:10px;">
+                            Welcome to Kiwix&nbsp;JS <span class="identity">for Windows</span>
+                        </h2>
+                        <h4>Version <span class="version">2.0</span> (<a href="#update">changes</a>)</h4>
+                        <h3>Please read this important information</h3>
+                        <div class="disclaimer">
+                            <p>
+                                <b>DISCLAIMER:</b> Please be aware that Kiwix works with offline archives. To get updated info, you will need to
+                                download a new archive periodically. Information in official archives is free, open source and provided by volunteers.
+                                <strong>Kiwix gives no guarantee as to the accuracy of information in the archives you access with this app.</strong>
+                            </p>
+                        </div>
+                        <p style="padding-top:10px;">
+                            <span id="sampleZIM">This application is packaged with a basic sample ZIM archive of the top 100 Wikipedia articles. To keep the app size small
+                                <i>the archive does not contain images</i>, and each article contains only the article summary (the introductory section). For the full experience,</span>
+                            <span id="noSampleZIM"> you <strong>must download an offline ZIM archive</strong> and store it on your device!</span> You can do this from the <b>Configuration page&nbsp;
+                            <span class="glyphicon glyphicon-wrench"></span></b>, or else see the <b>About page&nbsp;<span class="glyphicon glyphicon-info-sign"></span></b> for more information.
                         </p>
-                    </div>
-                    <p style="padding-top:10px;">
-                        <span id="sampleZIM">This application is packaged with a basic sample ZIM archive of the top 100 Wikipedia articles. To keep the app size small
-                            <i>the archive does not contain images</i>, and each article contains only the article summary (the introductory section). For the full experience,</span>
-                        <span id="noSampleZIM"> you <strong>must download an offline ZIM archive</strong> and store it on your device!</span> You can do this from the <b>Configuration page&nbsp;
-                        <span class="glyphicon glyphicon-wrench"></span></b>, or else see the <b>About page&nbsp;<span class="glyphicon glyphicon-info-sign"></span></b> for more information.
-                    </p>
-                    <p>
-                        Kiwix JS is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
-                        improving the app are very welcome: see About section.
-                    </p>
-                    <div id="update" class="update">
-                        <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
-                        <ul style="padding-left: 15px;">
-                            <li>Provide fuzzy search for case-insensitive links in Zimit archives</li>
-                            <li>Include broader pseudo-case-insensitive search in title search</li>
-                            <li>Strengthen Content Security Policy via response headers and meta http-equiv</li>
-                            <li>Add iframe referrer policy 'no-referrer'</li>
-                            <li>Sample archive changed to wikipedia_en_100_mini_2023-04</li>
-                            <li>Fix several UI issues with toolbars and downloads</li>
-                            <li>Streamline the splashscreen display and make it dynamic</li>
-                            <li>Add more complete language support to the Download Library languages dropdown</li>
-                            <li>Fix Stack Exchange ZIM detection</li>
-                            <li>Display of external icons in Stack Exchange articles</li>
-                            <li>Dark mode style tweaks for Wiktionary</li>
-                            <li>Fix missing full-text search cancellation which caused race condition in search</li>
-                        </ul>
-                        <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
-                    </div>
-                    <div id="features">
-                        <h3>Features in Version 2.x</h3>
-                        <ul style="padding-left:15px;">
-                            <li>Download ZIM archives in-app from Download Library</li>
-                            <li>Read Zimit archives you create yourself with <a href="https://youzim.it" target="_blank" rel="noopener">youzim.it</a>
-                            <li>Light and dark themes available</li>
-                            <li>Open a new browsable tab or window with long-press or Ctrl-click</li>
-                            <li>In-page searching and highlighting (Ctrl-Shift-F, Alt-F, Ctrl-F)</li>
-                            <li>Title search with wildcards .* or regexes</li>
-                            <li>Show alphabetical index of all articles in archive (type space in search field)</li>
-                            <li>Search for all assets in ZIM archive by prefixing namespace (or type space + / in search)</li>
-                            <li>User-selectable font scaling</li>
-                            <li>Printing articles (with optional filtering for Wikipedia articles)</li>
-                            <li>Fast equation typesetting with KaTeX</li>
-                            <li>Transform Wikipedia layout from mobile to desktop style and vice versa</li>
-                            <li>Disable image display and load one-by-one if your device is slow</li>
-                            <li>Export article to self-contained HTML page to view in browser</li>
-                            <li>Export images, PDFs, EPUBs, videos</li>
-                            <li>PWA mode to support archives with dynamic content on supported systems</li>
-                            <li>Support full-screen mode in most browsers and frameworks</li>
-                        </ul>
+                        <p>
+                            Kiwix JS is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
+                            improving the app are very welcome: see About section.
+                        </p>
+                        <div id="update" class="update">
+                            <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
+                            <ul style="padding-left: 15px;">
+                                <li>Provide fuzzy search for case-insensitive links in Zimit archives</li>
+                                <li>Include broader pseudo-case-insensitive search in title search</li>
+                                <li>Strengthen Content Security Policy via response headers and meta http-equiv</li>
+                                <li>Add iframe referrer policy 'no-referrer'</li>
+                                <li>Sample archive changed to wikipedia_en_100_mini_2023-04</li>
+                                <li>Fix several UI issues with toolbars and downloads</li>
+                                <li>Streamline the splashscreen display and make it dynamic</li>
+                                <li>Add more complete language support to the Download Library languages dropdown</li>
+                                <li>Fix Stack Exchange ZIM detection</li>
+                                <li>Display of external icons in Stack Exchange articles</li>
+                                <li>Dark mode style tweaks for Wiktionary</li>
+                                <li>Fix missing full-text search cancellation which caused race condition in search</li>
+                            </ul>
+                            <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
+                        </div>
+                        <div id="features">
+                            <h3>Features in Version 2.x</h3>
+                            <ul style="padding-left:15px;">
+                                <li>Download ZIM archives in-app from Download Library</li>
+                                <li>Read Zimit archives you create yourself with <a href="https://youzim.it" target="_blank" rel="noopener">youzim.it</a>
+                                <li>Light and dark themes available</li>
+                                <li>Open a new browsable tab or window with long-press or Ctrl-click</li>
+                                <li>In-page searching and highlighting (Ctrl-Shift-F, Alt-F, Ctrl-F)</li>
+                                <li>Title search with wildcards .* or regexes</li>
+                                <li>Show alphabetical index of all articles in archive (type space in search field)</li>
+                                <li>Search for all assets in ZIM archive by prefixing namespace (or type space + / in search)</li>
+                                <li>User-selectable font scaling</li>
+                                <li>Printing articles (with optional filtering for Wikipedia articles)</li>
+                                <li>Fast equation typesetting with KaTeX</li>
+                                <li>Transform Wikipedia layout from mobile to desktop style and vice versa</li>
+                                <li>Disable image display and load one-by-one if your device is slow</li>
+                                <li>Export article to self-contained HTML page to view in browser</li>
+                                <li>Export images, PDFs, EPUBs, videos</li>
+                                <li>PWA mode to support archives with dynamic content on supported systems</li>
+                                <li>Support full-screen mode in most browsers and frameworks</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

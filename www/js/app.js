@@ -3833,7 +3833,7 @@ function showZIMIndex(start, prefix) {
     appstate.search = {'prefix': prefix, 'state': '', 'searchUrlIndex': searchUrlIndex, 'size': params.maxSearchResultsSize, 'window': params.maxSearchResultsSize};
     if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
         appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, appstate.search, function (dirEntryArray, nextStart) {
-            var docBody = document.getElementById('largeModal');
+            var docBody = document.getElementById('mymodalVariableContent');
             var newHtml = "";
             for (var i = 0; i < dirEntryArray.length; i++) {
                 var dirEntry = dirEntryArray[i];
@@ -3847,62 +3847,100 @@ function showZIMIndex(start, prefix) {
             var next = dirEntryArray.length === params.maxSearchResultsSize ? '<a href="#" data-start="' + nextStart +
                 '" class="continueAnchor">Next ' + params.maxSearchResultsSize + ' &gt;&gt;</a>' : '';
             var backNext = back ? next ? back + ' | ' + next : back : next;
-            backNext = '<div style="float:right;">' + backNext + '</div>\n';
-            var alphaSelector = [];
-            // Set up the alphabetic selector
-            var lower = params.alphaChar.charCodeAt();
-            var upper = params.omegaChar.charCodeAt();
-            if (appstate.search.searchUrlIndex) {
-                lower = '-'.charCodeAt(); upper = 'X'.charCodeAt();
-            }
-            if (upper <= lower) {
-                alphaSelector.push('<a href="#" class="alphaSelector" data-sel="A">PLEASE SELECT VALID START AND END ALPHABET CHARACTERS IN CONFIGURATION</a>');
-            } else {
-                for (i = lower; i <= upper; i++) {
-                    var char = String.fromCharCode(i);
-                    if (appstate.search.searchUrlIndex) {
-                        // In URL search mode, we only show namespaces in alphabet
-                        if (!/^[-ABCHIJMUVWX]/.test(char)) continue;
-                        char = char + '/'; 
+            // Only construct the ZIM Index if it is not already displayed
+            if (document.getElementById('myModal').style.display !== 'block') {
+                backNext = '<div class="backNext" style="float:right;">' + backNext + '</div>\n';
+                var alphaSelector = [];
+                // Set up the alphabetic selector
+                var lower = params.alphaChar.charCodeAt();
+                var upper = params.omegaChar.charCodeAt();
+                if (appstate.search.searchUrlIndex) {
+                    lower = '-'.charCodeAt(); upper = 'X'.charCodeAt();
+                }
+                if (upper <= lower) {
+                    alphaSelector.push('<a href="#" class="alphaSelector" data-sel="A">PLEASE SELECT VALID START AND END ALPHABET CHARACTERS IN CONFIGURATION</a>');
+                } else {
+                    for (i = lower; i <= upper; i++) {
+                        var char = String.fromCharCode(i);
+                        if (appstate.search.searchUrlIndex) {
+                            // In URL search mode, we only show namespaces in alphabet
+                            if (!/^[-ABCHIJMUVWX]/.test(char)) continue;
+                            char = char + '/'; 
+                        }
+                        alphaSelector.push('<a href="#" class="alphaSelector" data-sel="' + char + '">' + char + '</a>');
                     }
-                    alphaSelector.push('<a href="#" class="alphaSelector" data-sel="' + char + '">' + char + '</a>');
                 }
-            }
-            // Add selectors for diacritics, etc. for Roman alphabet
-            if (String.fromCharCode(lower) === 'A' && String.fromCharCode(upper) == 'Z') {
-                alphaSelector.push('<a href="#" class="alphaSelector" data-sel="¡">¡¿ÀÑ</a>');
-                alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="!">!#123</a>');
-                // Add way of selecting a non-Roman alphabet
-                var switchAlphaButton = document.getElementById('extraModalFooterContent');
-                // Don't re-add button and event listeners if they already exist
-                if (!/button/.test(switchAlphaButton.innerHTML)) {
-                    switchAlphaButton.innerHTML = '<button class="btn btn-primary" style="float:left;" type="button">Switch to non-Roman alphabet</button>';
-                    switchAlphaButton.addEventListener('click', function () {
-                        var alphaLabel = document.getElementById('alphaCharTxt').parentNode;
-                        alphaLabel.style.borderColor = 'red';
-                        alphaLabel.style.borderStyle = 'solid';
-                        alphaLabel.addEventListener('mousedown', function () {
-                            this.style.borderColor = '';
-                            this.style.borderStyle = '';
+                // Add selectors for diacritics, etc. for Roman alphabet
+                if (String.fromCharCode(lower) === 'A' && String.fromCharCode(upper) == 'Z') {
+                    alphaSelector.push('<a href="#" class="alphaSelector" data-sel="¡">¡¿ÀÑ</a>');
+                    alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="!">!#123</a>');
+                    // Add way of selecting a non-Roman alphabet
+                    var switchAlphaButton = document.getElementById('extraModalFooterContent');
+                    // Don't re-add button and event listeners if they already exist
+                    if (!/button/.test(switchAlphaButton.innerHTML)) {
+                        switchAlphaButton.innerHTML = '<button class="btn btn-primary" style="float:left;" type="button">Switch to non-Roman alphabet</button>';
+                        switchAlphaButton.addEventListener('click', function () {
+                            var alphaLabel = document.getElementById('alphaCharTxt').parentNode;
+                            var panelBody = util.closest(alphaLabel, '.panel-body');
+                            if (panelBody && panelBody.style.display === 'none') {
+                                var panelHeading = util.getClosestBack(panelBody, function (el) { return /panel-heading/.test(el.className) });
+                                if (panelHeading) panelHeading.click();
+                            }
+                            alphaLabel.style.borderColor = 'red';
+                            alphaLabel.style.borderStyle = 'solid';
+                            alphaLabel.addEventListener('mousedown', function () {
+                                this.style.borderColor = '';
+                                this.style.borderStyle = '';
+                            });
+                            document.getElementById('mycloseMessage').click();
+                            document.getElementById('btnConfigure').click();
+                            window.location.href = "#otherSettingsDiv";
                         });
-                        document.getElementById('mycloseMessage').click();
-                        document.getElementById('btnConfigure').click();
-                        window.location.href = "#otherSettingsDiv";
-                    });
+                    }
                 }
+                // Add diacritics for Greek alphabet
+                if (params.alphaChar === 'Α' && params.omegaChar == 'Ω') {
+                    alphaSelector.push('<a href="#" class="alphaSelector" data-sel="Ϊ">ΪΫά</a>');
+                    alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="΄">ΆΈΉ</a>');
+                }
+                var alphaString = '<div style="text-align:center">' + (appstate.search.searchUrlIndex ? 'ZIM Namespaces: ' : '') + '[ ' + alphaSelector.join(' | \n') + ' ]</div>\n';
+                docBody.innerHTML = '<div style="font-size:120%;"><br />\n' + alphaString + '<br />' + backNext + '</div>\n' +
+                    '<h2>ZIM ' + (appstate.search.searchUrlIndex ? 'URL' : 'Archive') + ' Index</h2>\n' +
+                    '<div id="zimDirEntryIndex" class="list-group">' + newHtml + '\n</div>\n' +
+                    '<div style="font-size:120%">\n' + backNext + '<br /><br />' + alphaString + '</div>\n';
+                alphaSelector = docBody.querySelectorAll('.alphaSelector');
+                Array.prototype.slice.call(alphaSelector).forEach(function (selector) {
+                    selector.addEventListener('click', function (event) {
+                        event.preventDefault();
+                        var char = selector.dataset.sel;
+                        document.getElementById('prefix').value = ' ' + char;
+                        showZIMIndex(null, char);
+                    });
+                });
+                uiUtil.clearSpinner();
+                document.getElementById('articleListWithHeader').style.display = 'none';
+                var modalTheme = document.getElementById('modalTheme');
+                modalTheme.classList.remove('dark');
+                var determinedTheme = params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme;
+                if (determinedTheme === 'dark') modalTheme.classList.add('dark');
+            } else {
+                // If the ZIM Index is already displayed, just update the list of articles
+                var zimIndex = document.getElementById('zimDirEntryIndex');
+                if (zimIndex) zimIndex.innerHTML = newHtml;
+                var backNextBlocks = document.querySelectorAll('.backNext');
+                if (backNextBlocks) Array.prototype.slice.call(backNextBlocks).forEach(function (block) {
+                    block.innerHTML = backNext;
+                });
             }
-            // Add diacritics for Greek alphabet
-            if (params.alphaChar === 'Α' && params.omegaChar == 'Ω') {
-                alphaSelector.push('<a href="#" class="alphaSelector" data-sel="Ϊ">ΪΫά</a>');
-                alphaSelector.unshift('<a href="#" class="alphaSelector" data-sel="΄">ΆΈΉ</a>');
-            }
-
-            var alphaString = '<div style="text-align:center">' + (appstate.search.searchUrlIndex ? 'ZIM Namespaces: ' : '') + '[ ' + alphaSelector.join(' | \n') + ' ]</div>\n';
-            var closeButton = '<button id="mymodalCloseBtn" class="close" aria-hidden="true" type="button" data-dismiss="modal">&nbsp;&times;&nbsp;</button>';
-            docBody.innerHTML = closeButton + '<br />\n<div style="font-size:120%;"><br />\n' + alphaString + '<br />' + backNext + '</div>\n' +
-                '<h2>ZIM ' + (appstate.search.searchUrlIndex ? 'URL' : 'Archive') + ' Index</h2>\n' +
-                '<div id="zimIndex" class="list-group">' + newHtml + '\n</div>\n' +
-                '<div style="font-size:120%">\n' + backNext + '<br /><br />' + alphaString + '</div>\n';
+            // This is content that must be changed each time the list of articles changes
+            var continueAnchors = docBody.querySelectorAll('.continueAnchor');
+            Array.prototype.slice.call(continueAnchors).forEach(function (anchor) {
+                anchor.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    var start = ~~anchor.dataset.start;
+                    showZIMIndex(start, (appstate.search.searchUrlIndex ? '/' : ''));
+                });
+            });
             var indexEntries = docBody.querySelectorAll('.list-group-item');
             Array.prototype.slice.call(indexEntries).forEach(function (index) {
                 index.addEventListener('click', function (event) {
@@ -3911,27 +3949,9 @@ function showZIMIndex(start, prefix) {
                     document.getElementById('mycloseMessage').click();
                 });
             });
-            var continueAnchors = docBody.querySelectorAll('.continueAnchor');
-            $(continueAnchors).on('click', function (e) {
-                document.getElementById('prefix').value = '';
-                var start = ~~this.dataset.start;
-                showZIMIndex(start, (appstate.search.searchUrlIndex ? '/' : ''));
-                return false;
-            });
-            alphaSelector = docBody.querySelectorAll('.alphaSelector');
-            $(alphaSelector).on('click', function (e) {
-                var char = this.dataset.sel;
-                document.getElementById('prefix').value = ' ' + char;
-                showZIMIndex(null, char);
-                return false;
-            });
-            uiUtil.clearSpinner();
-            document.getElementById('articleListWithHeader').style.display = 'none';
-            var modalTheme = document.getElementById('modalTheme');
-            modalTheme.classList.remove('dark');
-            var determinedTheme = params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme;
-            if (determinedTheme === 'dark') modalTheme.classList.add('dark');
-            uiUtil.systemAlert(' ', '', null, null, null, null, 'myModal');
+            if (document.getElementById('myModal').style.display === 'none') {
+                uiUtil.systemAlert(' ', '', null, null, null, null, 'myModal');
+            }
         }, start);
     }
 }
