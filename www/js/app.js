@@ -46,6 +46,8 @@
 
 'use strict';
 
+// import styles from '../css/app.css' assert { type: "css" };
+// import bootstrap from '../css/bootstrap.min.css' assert { type: "css" }; 
 import $ from './lib/jquery.module.js';
 import zimArchiveLoader from './lib/zimArchiveLoader.js';
 import uiUtil from './lib/uiUtil.js';
@@ -58,6 +60,9 @@ import transformStyles from './lib/transformStyles.js';
 import transformZimit from './lib/transformZimit.js';
 import kiwixServe from './lib/kiwixServe.js';
 import updater from './lib/updater.js';
+
+// Import stylesheets programmatically
+// document.adoptedStyleSheets = [styles, bootstrap];
 
 /**
  * The delay (in milliseconds) between two "keepalive" messages

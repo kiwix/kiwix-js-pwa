@@ -16,6 +16,8 @@ const config = {
         "useBuiltIns": "usage",
         // "forceAllTransforms": true,
         "corejs": "3.30.1"
+        // This is necessary for enabling CSS module support
+        // "shippedProposals": true
       }
     ]
   ],

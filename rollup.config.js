@@ -5,6 +5,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 import copy from 'rollup-plugin-copy';
 import terser from '@rollup/plugin-terser';
+// import styles from "@ironkinoko/rollup-plugin-styles";
 
 const config = {
     // The entry point for the bundler
@@ -12,27 +13,35 @@ const config = {
     output: {
         format: 'iife',
         name: 'KiwixJSBundle'
+        // assetFileNames: "[name]-[hash][extname]"
     },
+    treeshake: 'recommended',
     plugins: [
         babel({ 
             exclude: 'node_modules/**',
             babelHelpers: 'bundled' 
         }),
-        // Needed to get rid of residual "requires" left in the code by Babel...
-        commonjs(),
         // Resolves references to node_modules packages
         resolve({
             browser: true
         }),
+        // Needed to get rid of residual "requires" left in the code by Babel...
+        commonjs(),
+        // styles({
+        //     // mode: 'extract',
+        //     modules: true
+        // }),
         replace({
             // Prevent a fatal error in IE11 (bug with the URL constructor polyfill)
-            'document.baseURI' : "document.location.href.replace(/[^/]*$/, '')",
+            'document.baseURI': "document.location.href.replace(/[^/]*$/, '')",
             // Redirect the libzim Worker loader to the new location
-            'js/lib/libzim' : 'js/libzim'
+            'js/lib/libzim': 'js/libzim',
+            'js/lib/darkreader.min.js': 'js/darkreader.min.js',
+            preventAssignment: true
         }),
         copy({
             targets: [
-              { src: ['www/js/lib/*dec-wasm.wasm', 'www/js/lib/libzim-asm.js', 'www/js/lib/libzim-wasm.*', '!www/js/lib/libzim-wasm.dev*'], dest: 'dist/www/js' }
+              { src: ['www/js/lib/*dec-wasm.wasm', 'www/js/lib/libzim-asm.js', 'www/js/lib/libzim-wasm.*', 'www/js/lib/darkreader.min.js', '!www/js/lib/libzim-wasm.dev*'], dest: 'dist/www/js' }
             ],
             flatten: true
         })
