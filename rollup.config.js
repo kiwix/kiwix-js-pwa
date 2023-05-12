@@ -55,17 +55,17 @@ if (process.env.BUILD === 'production') {
         copy({
             targets: [
             { src: ['www/**', '!www/js/app.js', '!www/js/lib', '!www/index.html'], dest: 'dist/www', expandDirectories: true, onlyFiles: true },
-            { src: 'service-worker.js', dest: 'dist', 
+            { src: ['service-worker.js', 'KiwixWebApp*.jsproj'], dest: 'dist', 
                     // Modify the Service Worker precache files
                     transform: (contents, filename) => contents.toString()
                         // Replace the entry point with the bundle
-                        .replace(/(www\/js\/)app.js/, '$1bundle.min.js')
+                        .replace(/(www[\\/]js[\\/])app.js/, '$1bundle.min.js')
                         // Remove all the lib files that will be included in the bundle
-                        .replace(/"www\/js\/lib[\s\S]+zimfile.js",\s*/, '')
+                        .replace(/(?:<Content Include=)?"www[\\/]js[\\/]lib[\\/]cache[\s\S]+zimfile.js"(?:\s*\/>|,)\s*/, '')
                         // Alter remaining lib references
-                        .replace(/\/js\/lib/g, '/js')
+                        .replace(/([\\/])js[\\/]lib/g, '$1js')
                         // Remove unneeded ASM/WASM binaries
-                        .replace(/"www\/js\/.*dec.*js",\s*/g, '')
+                        .replace(/"www[\\/]js[\\/]\.*dec\.*js",\s*/g, '')
             },
             { src: 'www/index.html', dest: 'dist/www', 
                     // Link the html to the new bundle entry point
@@ -88,17 +88,17 @@ if (process.env.BUILD === 'production') {
         copy({
             targets: [
             { src: ['www/**', '!www/js/app.js', '!www/js/lib', '!www/index.html'], dest: 'dist/www', expandDirectories: true, onlyFiles: true },
-            { src: 'service-worker.js', dest: 'dist', 
+            { src: ['service-worker.js', 'KiwixWebApp*.jsproj'], dest: 'dist', 
                     // Modify the Service Worker precache files
                     transform: (contents, filename) => contents.toString()
                         // Replace the entry point with the bundle
-                        .replace(/(www\/js\/)app.js/, '$1bundle.js')
+                        .replace(/(www[\\/]js[\\/])app.js/, '$1bundle.js')
                         // Remove all the lib files that will be included in the bundle
-                        .replace(/"www\/js\/lib[\s\S]+zimfile.js",\s*/, '')
+                        .replace(/(?:<Content Include=)?"www[\\/]js[\\/]lib[\\/]cache[\s\S]+zimfile.js"(?:\s*\/>|,)\s*/, '')
                         // Alter remaining lib references
-                        .replace(/\/js\/lib/g, '/js')
+                        .replace(/([\\/])js[\\/]lib/g, '$1js')
                         // Remove unneeded ASM/WASM binaries
-                        .replace(/"www\/js\/.*dec.*js",\s*/g, '')
+                        .replace(/"www[\\/]js[\\/].*dec.*js",\s*/g, '')
             },
             { src: 'www/index.html', dest: 'dist/www', 
                     // Link the html to the new bundle entry point

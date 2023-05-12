@@ -318,7 +318,6 @@
     <Content Include="www\js\katex\katex.min.css" />
     <Content Include="www\js\katex\katex.min.js" />
     <Content Include="www\js\katex\README.md" />
-    <Content Include="www\js\lib\bootstrap.min.js" />
     <Content Include="www\js\lib\cache.js" />
     <Content Include="www\js\lib\settingsStore.js" />
     <Content Include="www\js\lib\filecache.js" />
