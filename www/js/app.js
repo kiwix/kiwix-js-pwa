@@ -2267,13 +2267,13 @@ function refreshCacheStatus() {
         });
     });
     var scrollbox = document.getElementById('scrollbox');
-            var prefix = document.getElementById('prefix');
+    var prefix = document.getElementById('prefix');
     if (params.appCache) {
         scrollbox.style.removeProperty('background');
-                prefix.style.removeProperty('background');
+        prefix.style.removeProperty('background');
     } else {
-                scrollbox.style.background = /^dark/.test(document.body.className) ? '#300000' : 'mistyrose';
-                prefix.style.setProperty('background', /^dark/.test(document.body.className) ? '#200000' : 'lavenderblush', 'important');
+        scrollbox.style.background = /^dark/.test(document.body.className) ? '#300000' : 'mistyrose';
+        prefix.style.setProperty('background', /^dark/.test(document.body.className) ? '#200000' : 'lavenderblush', 'important');
     }
     var expertSettings = document.getElementById('expertSettingsDiv');
     expertSettings.classList.remove('panel-warning');
