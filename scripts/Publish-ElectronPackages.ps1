@@ -27,9 +27,9 @@ if ($CRON_LAUNCHED) {
 }
 
 if ((Get-Content ./package.json) -match 'nwVersion') {
-    $Packages = $(ls bld/NWJS/*.*)
+    $Packages = $(ls dist/bld/NWJS/*.*)
 } else {
-    $packages = $(ls bld/Electron/*.*)
+    $packages = $(ls dist/bld/Electron/*.*)
 }
 if ($test) {
     $Packages = @($test)
