@@ -40,8 +40,11 @@ jobs:
         ./scripts/rewrite_app_version_number.sh
         # Replace -app in archive name for Electron apps
         sed -i -E 's/(mdwiki[^-]+)-app_/\1_/g' ./www/js/init.js
+    - name: Build production code
+      run: npm run build-min
     - name: Download archive if needed
       run: |
+        cd dist
         # Get archive name
         packagedFile="$(grep -m1 'params\[.packagedFile' www/js/init.js | sed -E 's/^[^"]+"([^"]+\.zim)".+/\1/')"
         # If file doesn't exist in FS
@@ -64,8 +67,8 @@ jobs:
       run: |
         echo "Changing Electron version to latest that supports 32bit Linux (18.3.15)"
         sed -i -E 's/("electron":\s")[^"]+/\118.3.15/' ./package.json
-        npm install --save-dev
-        npx electron-builder --linux AppImage:ia32 deb:ia32 rpm:ia32
+        npm install
+        npx electron-builder --linux AppImage:ia32 deb:ia32 rpm:ia32 --projectDir dist
     - name: Upload packages to Kiwix
       run: |
         echo "$SSH_KEY" > ./scripts/ssh_key
@@ -158,6 +161,7 @@ jobs:
         cp package.json dist/package.json
     - name: Download archive if needed
       run: |
+        cd dist
         $packagedFile = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1'
         if ($packagedFile -and ! (Test-Path "archives\$packagedFile" -PathType Leaf)) {
           # File not in archives, so generalize the name and download it
