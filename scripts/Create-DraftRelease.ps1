@@ -444,10 +444,10 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     if ($buildstorerelease) {
       if (-Not ($appxmanifest -match "Publisher=['`"]CN=Association\sKiwix")) {
         "Using Store release becuase buildstorerelease flag was set."
-        $UploadBundle = dir "$PSScriptRoot/../bin/Release/Upload/*_$base_tag.0/*_$base_tag*.appx*"
+        $UploadBundle = dir "$PSScriptRoot/../dist/bin/Release/Upload/*_$base_tag.0/*_$base_tag*.appx*"
         "$UploadBundle"
         if ($UploadBundle -and ($UploadBundle.count -eq 1) -and (Test-Path $UploadBundle -PathType leaf) -and ($UploadBundle -imatch '\.(?:appx|appxbundle|appxupload)$')) {
-          $ReleaseFolder = dir "$PSScriptRoot/../AppPackages/*_$base_tag*_Test"
+          $ReleaseFolder = dir "$PSScriptRoot/../dist/AppPackages/*_$base_tag*_Test"
           if ($ReleaseFolder -and (Test-Path $ReleaseFolder -PathType Container)) {
             "Copying signed archive $UploadBundle to release folder..."
             if (-Not $dryrun) { cp $UploadBundle $ReleaseFolder }
