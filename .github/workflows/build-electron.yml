@@ -64,7 +64,7 @@ jobs:
     - name: Build and publish 64bit
       run: |
         # Set the module type to one supported by Electron
-        sed -i -E 's/("type":\s+)"module"/\1"commonjs"/' ./dist/package.json
+        sed -i -E 's/("type":\s+)"module"/\1"commonjs"/' ./package.json
         npm run publish
     - name: Build and pulblish 32bit
       run: |
@@ -121,7 +121,7 @@ jobs:
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         ./scripts/Rewrite-DraftReleaseTag.ps1
         # Set the module type to one supported by Electron
-        (Get-Content ./dist/package.json) -replace '("type":\s+)"module"', '$1"commonjs"' | Set-Content ./dist/package.json
+        (Get-Content ./package.json) -replace '("type":\s+)"module"', '$1"commonjs"' | Set-Content ./package.json
         npm run publish
         ./scripts/Rewrite-DraftReleaseTag.ps1
     - name: Build portable Electron app
