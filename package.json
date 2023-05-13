@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-electron",
   "productName": "Kiwix JS Electron",
-  "version": "2.4.6-E",
+  "version": "2.4.6",
   "description": "Kiwix JS packaged for the Electron framework",
   "main": "main.cjs",
   "type": "module",
@@ -10,7 +10,7 @@
     "productName": "Kiwix JS Electron",
     "directories": {
       "output": "bld/Electron",
-      "buildResources": "electron_icons"
+      "buildResources": "../electron_icons"
     },
     "afterPack": "./scripts/appimage-fix.js",
     "win": {
@@ -75,8 +75,8 @@
       "CHANGELOG.md",
       "LICENCE",
       "www/**",
-      "preload.js",
-      "main.js",
+      "preload.cjs",
+      "main.cjs",
       "!**/*.dev.{js,wasm}"
     ]
   },
@@ -88,11 +88,11 @@
     "build-src": "rollup --config --file dist/www/js/bundle.js",
     "del-dist": "del-cli dist",
     "start": "electron .",
-    "dist-win": "electron-builder build --win",
-    "dist-win-nsis": "electron-builder build --win NSIS:x64 NSIS:ia32",
-    "dist-linux": "electron-builder build --linux",
-    "dist-linux-appimage": "electron-builder build --linux AppImage:x64",
-    "publish": "electron-builder",
+    "dist-win": "electron-builder build --win --projectDir dist",
+    "dist-win-nsis": "electron-builder build --win NSIS:x64 NSIS:ia32 --projectDir dist",
+    "dist-linux": "electron-builder build --linux --projectDir dist",
+    "dist-linux-appimage": "electron-builder build --linux AppImage:x64 --projectDir dist",
+    "publish": "electron-builder --projectDir dist",
     "postpackage-win": "(robocopy archives bld\\Electron\\kiwix-js-windows-win32-ia32\\resources\\app\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0",
     "postpackage-linux": "(robocopy archives bld\\Electron\\kiwix-js-windows-linux-x64\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0"
   },

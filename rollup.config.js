@@ -42,7 +42,7 @@ const config = {
         copy({
             targets: [
               { src: ['www/js/lib/*dec-wasm.wasm', 'www/js/lib/libzim-asm.js', 'www/js/lib/libzim-wasm.*', 'www/js/lib/darkreader.min.js', '!www/js/lib/libzim-wasm.dev*'], dest: 'dist/www/js' },
-              { src: ['archives', 'images', 'index.html', 'manifest.json', '*.appxmanifest', '*.pfx', 'Package.StoreAssociation.xml'], dest: 'dist' },
+              { src: ['archives', 'images', 'index.html', 'manifest.json', 'package.json', '*.appxmanifest', '*.pfx', '*.cjs', 'Package.StoreAssociation.xml'], dest: 'dist' },
             ],
             flatten: true
         })
@@ -98,7 +98,7 @@ if (process.env.BUILD === 'production') {
                             // Alter remaining lib references
                             .replace(/([\\/])js[\\/]lib/g, '$1js')
                             // Remove unneeded ASM/WASM binaries
-                            .replace(/"www[\\/]js[\\/].*dec.*js",\s*/g, '')
+                            .replace(/"www[\\/]js[\\/]\.*dec\.*js",\s*/g, '')
                 },
                 { src: 'www/index.html', dest: 'dist/www', 
                         // Link the html to the new bundle entry point

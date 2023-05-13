@@ -303,7 +303,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     $base_tag = $base_tag_origin
   } elseif ($flavour -eq '_N') {
     # Package NWJS app if necessary
-    $base_dir = "$PSScriptRoot/../bld/nwjs"
+    $base_dir = "$PSScriptRoot/../dist/bld/nwjs"
     $stubs = @("$base_tag-win-ia32", "$base_tag-win-x64", "XP-$base_tag-win-ia32")
     $found = $true
     $NWJSAssets = @()
@@ -321,7 +321,8 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       $script_body = Get-Content -Raw ("$PSScriptRoot/Build-NWJS.ps1")
       $script_body = $script_body -ireplace '(appBuild\s*=\s*")[^"]+', "`${1}$base_tag"
       $json_nwVersion = ''
-      if ($json_object -match '"build":\s*\{[^"]*"nwVersion":\s*"([^"]+)') {
+      $nwjson_object = Get-Content -Raw "$PSScriptRoot/../package.json.nwjs"
+      if ($nwjson_object -match '"build":\s*\{[^"]*"nwVersion":\s*"([^"]+)') {
         $json_nwVersion = $matches[1]
       }
       if ($json_nwVersion) {
@@ -335,6 +336,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       } else {
         Set-Content -encoding "utf8BOM" "$PSScriptRoot/Build-NWJS.ps1" $script_body
         "Building NWJS packages..."
+        cp "$PSScriptRoot/../package.json.nwjs" "$PSScriptRoot/../dist/package.json"
         & $PSScriptRoot/Build-NWJS.ps1
         $found = $true
       }
