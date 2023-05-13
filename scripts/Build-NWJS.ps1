@@ -19,7 +19,7 @@ $archiveExists = $false
 if ($PackagedArchive) { 
     $PackagedArchive = $matches[1]
     "`nSearching for packaged archive $PackagedArchive..."
-    $archiveExists = Test-Path "$PSScriptRoot\..\archives\$PackagedArchive" -PathType Leaf
+    $archiveExists = Test-Path "$PSScriptRoot\..\dist\archives\$PackagedArchive" -PathType Leaf
 }
 if (-Not $archiveExists) {
     "`n***** WARNING: PACKAGED ARCHIVE $PackagedArchive COULD NOT BE FOUND IN ARCHIVE FOLDER!!! *****"

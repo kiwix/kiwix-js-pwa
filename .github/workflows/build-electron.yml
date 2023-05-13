@@ -62,7 +62,10 @@ jobs:
           exit 1
         fi
     - name: Build and publish 64bit
-      run: npm run publish
+      run: |
+        # Set the module type to one supported by Electron
+        sed -i -E 's/("type":\s+)"module"/\1"commonjs"/' ./dist/package.json
+        npm run publish
     - name: Build and pulblish 32bit
       run: |
         echo "Changing Electron version to latest that supports 32bit Linux (18.3.15)"
@@ -117,6 +120,8 @@ jobs:
         $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         ./scripts/Rewrite-DraftReleaseTag.ps1
+        # Set the module type to one supported by Electron
+        (Get-Content ./dist/package.json) -replace '("type":\s+)"module"', '$1"commonjs"' | Set-Content ./dist/package.json
         npm run publish
         ./scripts/Rewrite-DraftReleaseTag.ps1
     - name: Build portable Electron app
