@@ -62,11 +62,15 @@ jobs:
           exit 1
         fi
     - name: Build and publish 64bit
+      env: 
+        USE_HARD_LINKS: false
       run: |
         # Set the module type to one supported by Electron
         sed -i -E 's/("type":\s+)"module"/\1"commonjs"/' ./package.json
         npm run publish
     - name: Build and pulblish 32bit
+      env: 
+        USE_HARD_LINKS: false
       run: |
         echo "Changing Electron version to latest that supports 32bit Linux (18.3.15)"
         sed -i -E 's/("electron":\s")[^"]+/\118.3.15/' ./package.json
