@@ -353,11 +353,11 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         $rename_check = Read-Host "Would you like to set the app for a GitHub release? [Y/N]"
         $rename_check = -Not ( $rename_check -imatch 'n' )
         if ($rename_check -and (-not $dryrun)) {
-          mv $PSScriptRoot/../KiwixWebApp$projstub.jsproj $PSScriptRoot/../KiwixWebApp$projstub-msstore.jsproj
-          mv $PSScriptRoot/../package.appxmanifest $PSScriptRoot/../package-msstore.appxmanifest
-          mv $PSScriptRoot/../KiwixWebApp$projstub-github.jsproj $PSScriptRoot/../KiwixWebApp$projstub.jsproj
-          mv $PSScriptRoot/../package-github.appxmanifest $PSScriptRoot/../package.appxmanifest
-          $appxmanifest = Get-Content -Raw $PSScriptRoot/../package.appxmanifest
+          mv $PSScriptRoot/../dist/KiwixWebApp$projstub.jsproj $PSScriptRoot/../dist/KiwixWebApp$projstub-msstore.jsproj
+          mv $PSScriptRoot/../dist/package.appxmanifest $PSScriptRoot/../dist/package-msstore.appxmanifest
+          mv $PSScriptRoot/../dist/KiwixWebApp$projstub-github.jsproj $PSScriptRoot/../dist/KiwixWebApp$projstub.jsproj
+          mv $PSScriptRoot/../dist/package-github.appxmanifest $PSScriptRoot/../dist/package.appxmanifest
+          $appxmanifest = Get-Content -Raw $PSScriptRoot/../dist/package.appxmanifest
           if (-Not ($appxmanifest -match "Publisher=['`"]CN=Association\sKiwix")) {
             "`bSomething went wrong! We were not able to associate the app with a GitHub release!"
             return
@@ -390,15 +390,15 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         "Updating..."
         $appxmanifest = $appxmanifest -replace "(\sVersion=['`"])\d+\.\d+\.\d+(\.0['`"])", "`${1}$numeric_tag`${2}"
         if (-Not $dryrun) {
-          Set-Content -encoding "utf8BOM" $PSScriptRoot/../package.appxmanifest $appxmanifest
+          Set-Content -encoding "utf8BOM" $PSScriptRoot/../dist/package.appxmanifest $appxmanifest
         } else {
           "[DRYRUN] Would have written package.appxmanifest:"
           "$appxmanifest"
         }
       }
       # Check for the existence of the requested packaged archive
-      $packagedFile = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1'
-      if ($packagedFile -and ! (Test-Path "archives\$packagedFile" -PathType Leaf)) {
+      $packagedFile = (Select-String 'packagedFile' "dist\www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1'
+      if ($packagedFile -and ! (Test-Path "dist\archives\$packagedFile" -PathType Leaf)) {
         # File not in archives
         $downloadArchiveChk = Read-Host "`nWe could not find the packaged archive, do you wish to download it? Y/N"
         $downloadArchiveChk = $downloadArchiveChk -imatch 'y'
@@ -410,13 +410,13 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         if (-not $dryrun) {
           $packagedFileGeneric = $packagedFile -replace '_[0-9-]+(\.zim)', '$1'
           Write-Host "`nDownloading https://download.kiwix.org/zim/$packagedFileGeneric"
-          Invoke-WebRequest "https://download.kiwix.org/zim/$packagedFileGeneric" -OutFile "archives\$packagedFile"
+          Invoke-WebRequest "https://download.kiwix.org/zim/$packagedFileGeneric" -OutFile "dist\archives\$packagedFile"
         } else {
           "[DRYRUN] Would have downloade $packagedFile..."
         }
       }
-      ls archives
-      if ($packagedFile -and (Test-Path "archives\$packagedFile" -PathType Leaf)) {
+      ls dist\archives
+      if ($packagedFile -and (Test-Path "dist\archives\$packagedFile" -PathType Leaf)) {
         Write-Host "`nFile $packagedFile now available in 'archives'.`n" -ForegroundColor Green
       } elseif (-not $dryrun) {
         Write-Host "`nError! We could not obtain the requested archive $packagedFile!`n" -ForegroundColor Red
@@ -429,8 +429,15 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         if ($buildstorerelease) { $buildmode = "StoreUpload" }
         # We have to rename node_modules or else msbuild won't run due to rogue dependency versions
         ren $PSScriptRoot/../node_modules node_modules_electron
-        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && msbuild.exe KiwixWebApp$projstub.jsproj /p:Configuration=Release /p:UapAppxPackageBuildMode=$buildmode"
+        cmd.exe /c " `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat`" && msbuild.exe dist/KiwixWebApp$projstub.jsproj /p:Configuration=Release /p:UapAppxPackageBuildMode=$buildmode"
         ren $PSScriptRoot/../node_modules_electron node_modules
+        if ($rename_check) {
+          "`nReverting changes to UWP manifests..."
+          mv $PSScriptRoot/../dist/KiwixWebApp$projstub.jsproj $PSScriptRoot/../dist/KiwixWebApp$projstub-github.jsproj
+          mv $PSScriptRoot/../dist/package.appxmanifest $PSScriptRoot/../dist/package-github.appxmanifest
+          mv $PSScriptRoot/../dist/KiwixWebApp$projstub-msstore.jsproj $PSScriptRoot/../dist/KiwixWebApp$projstub.jsproj
+          mv $PSScriptRoot/../dist/package-msstore.appxmanifest $PSScriptRoot/../dist/package.appxmanifest
+        }
       }
     }  
     # If we are releasing the MS Store version we have to copy it from a different location
@@ -462,7 +469,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         $forced_buildonly = $true
       }
     }
-    $ReleaseBundle = dir "$PSScriptRoot/../AppPackages/*_$base_tag*_Test/*_$base_tag*.appx*"
+    $ReleaseBundle = dir "$PSScriptRoot/../dist/AppPackages/*_$base_tag*_Test/*_$base_tag*.appx*"
     # Check the file exists and it's of the right type
     if ($ReleaseBundle -and ($ReleaseBundle.count -eq 1) -and (Test-Path $ReleaseBundle -PathType leaf) -and 
       ($ReleaseBundle -imatch '\.(?:appx|appxbundle|appxupload)$')) {
@@ -471,9 +478,9 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         "More than one file matches that tag!"
         return
     } elseif (-Not $dryrun) {
-        "No package matching that tag was found. Aborting."
-        "Tag yielded: $ReleaseBundle " + ($ReleaseBundle -or $false)
-        return
+        Write-Host "`nNo package matching that tag was found! Aborting." -ForegroundColor Red
+        Write-Host "Tag yielded: $ReleaseBundle " + ($ReleaseBundle -or $false) -ForegroundColor Yellow
+        exit 1
     }
     if ($skipsigning) {
       "`nWARNING: Signing was skipped because user specified the -skipsigning flag. Be sure the bundle is signed!"
@@ -485,13 +492,6 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       } else {
         'cmd.exe /c " "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" && SignTool sign /fd SHA256 /a /f ' + $PSScriptRoot + '\kiwix2022.pfx /p ' + $pfxpwd + ' /tr http://timestamp.digicert.com  /td SHA256 ' + $ReleaseBundle + ' "'
       }
-    }
-    if ($rename_check -and (-not $dryrun)) {
-      "Reverting changes to UWP manifests..."
-      mv $PSScriptRoot/../KiwixWebApp$projstub.jsproj $PSScriptRoot/../KiwixWebApp$projstub-github.jsproj
-      mv $PSScriptRoot/../package.appxmanifest $PSScriptRoot/../package-github.appxmanifest
-      mv $PSScriptRoot/../KiwixWebApp$projstub-msstore.jsproj $PSScriptRoot/../KiwixWebApp$projstub.jsproj
-      mv $PSScriptRoot/../package-msstore.appxmanifest $PSScriptRoot/../package.appxmanifest
     }
     # ZIP the remaining assets
     "`nCompressing remaining assets..."
