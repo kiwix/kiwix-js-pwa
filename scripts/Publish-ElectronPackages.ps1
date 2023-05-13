@@ -165,7 +165,7 @@ if (-not $githubonly) {
                     mv $file $renamed_file
                 }
                 # Replace absolute path with relative, and normalize to forward slashes
-                $renamed_file = $renamed_file -replace '^.*?([\\/]bld)', '.$1' -replace '[\\/]', '/'
+                $renamed_file = $renamed_file -replace '^.*?([\\/]bld)', './dist$1' -replace '[\\/]', '/'
                 "Copying $renamed_file to $target..."
                 & "C:\Program Files\Git\usr\bin\scp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$renamed_file", "ci@master.download.kiwix.org:$target")
             }
