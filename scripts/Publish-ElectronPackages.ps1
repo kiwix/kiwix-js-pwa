@@ -162,6 +162,7 @@ if (-not $githubonly) {
             } else {
                 # Rename the file
                 if ($file -ne $renamed_file) {
+                    "`nRenaming $file to $renamed_file..."
                     mv $file $renamed_file
                 }
                 # Replace absolute path with relative, and normalize to forward slashes
