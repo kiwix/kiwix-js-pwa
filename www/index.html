@@ -102,18 +102,21 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
                             <ul style="padding-left: 15px;">
-                                <li>Provide fuzzy search for case-insensitive links in Zimit archives</li>
-                                <li>Include broader pseudo-case-insensitive search in title search</li>
-                                <li>Strengthen Content Security Policy via response headers and meta http-equiv</li>
-                                <li>Add iframe referrer policy 'no-referrer'</li>
-                                <li>Sample archive changed to wikipedia_en_100_mini_2023-04</li>
+                                <li>PWA app is now smaller and loads faster due to minification with modern build process</li>
+                                <li>New modular system and bundler ensures smaller and more stable memory management</li>
+                                <li>Add a Promise queue to prevent overlapping alert dialogue boxes</li>
+                                <li>Rename "breakout link" feature to "Download or open current article"</li>
+                                <li>Remove RequireJS and migrated app to modern ES6 native modules</li>
+                                <li>Provide clearer colouring when appCache is disabled for development</li>
+                                <li>Use rollup.js and Babel to build compatible versions of the app for all supported browsers</li>
+                                <li>Provide minified and unminified versions of the bundled app</li>
+                                <li>Add a basic Vite.js server configuration</li>
+                                <li>Make upgrade notification persistent in Electron app</li>
                                 <li>Fix several UI issues with toolbars and downloads</li>
-                                <li>Streamline the splashscreen display and make it dynamic</li>
-                                <li>Add more complete language support to the Download Library languages dropdown</li>
-                                <li>Fix Stack Exchange ZIM detection</li>
-                                <li>Display of external icons in Stack Exchange articles</li>
-                                <li>Dark mode style tweaks for Wiktionary</li>
-                                <li>Fix missing full-text search cancellation which caused race condition in search</li>
+                                <li>Fix bug which prevented UWP / Edge Legacy app from reading articles with certain options deselected</li>
+                                <li>Restore missing commit ID in Windows nightly builds</li>
+                                <li>Fix regression with (former) breakout link feature</li>
+                                <li>Restore dialogue box animations that were removed with removal of jQuery</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>

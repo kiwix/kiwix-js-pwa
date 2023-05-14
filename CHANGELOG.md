@@ -1,10 +1,22 @@
 # Changelog
 
-## In-progress release 2.4.6
+## In-progress release 2.4.7
 
+* FEATURE: PWA app is now smaller and loads faster due to minification with modern build process
+* ENHANCEMENT: New modular system and bundler ensures smaller and more stable memory management
+* ENHANCEMENT: Add a Promise queue to prevent overlapping alert dialogue boxes
+* UPDATE: Renamed breakout link feature to "Download or open current article"
+* DEV: Removed RequireJS and migrated app to ES6 native modules
+* DEV: Provide clearer colouring when appCache is disabled for development
+* DEV: Use rollup.js and Babel to build compatible versions of the app for all supported browsers
+* DEV: Provide minified and unminified versions of the bundled app 
+* DEV: Add a basic Vite.js server configuration
 * FIX: Make upgrade notification persistent in Electron app
 * FIX: Several UI issues with toolbars and downloads
 * FIX: Bug which prevented UWP / Edge Legacy app from reading articles with certain options deselected
+* FIX: Missing commit ID in Windows nightly builds
+* REGRESSION: Fix regression with (former) breakout link feature
+* REGRESSION: Restore dialogue box animations that were removed with removal of jQuery
 
 ## Release 2.4.4
 
