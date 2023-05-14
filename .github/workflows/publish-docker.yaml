@@ -29,7 +29,11 @@ jobs:
         run: |
           chmod +x ./scripts/rewrite_app_version_number.sh
           ./scripts/rewrite_app_version_number.sh
-      - name: Build and push
+      - name: Build app with src and production bundles
+        run: |
+          npm install
+          npm run build
+      - name: Build docker image and push
         uses: openzim/docker-publish-action@v8
         with:
           image-name: kiwix/kiwix-pwa
