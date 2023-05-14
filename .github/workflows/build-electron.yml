@@ -45,6 +45,7 @@ jobs:
     - name: Download archive if needed
       run: |
         cd dist
+        echo "Now in: " && pwd
         # Get archive name
         packagedFile="$(grep -m1 'params\[.packagedFile' www/js/init.js | sed -E 's/^[^"]+"([^"]+\.zim)".+/\1/')"
         # If file doesn't exist in FS
@@ -65,15 +66,17 @@ jobs:
       env: 
         USE_HARD_LINKS: false
       run: |
-        # Set the module type to one supported by Electron
+        echo "Current directory: " && pwd
+        echo "Setting the module type to one supported by Electron in ./package.json"
         sed -i -E 's/("type":\s+)"module"/\1"commonjs"/' ./package.json
         npm run publish
     - name: Build and pulblish 32bit
       env: 
         USE_HARD_LINKS: false
       run: |
-        echo "Changing Electron version to latest that supports 32bit Linux (18.3.15)"
-        sed -i -E 's/("electron":\s")[^"]+/\118.3.15/' ./package.json
+        echo "Current directory: " && pwd
+        echo "Changing Electron version to latest that supports 32bit Linux (18.3.15) in ./dist/package.json"
+        sed -i -E 's/("electron":\s")[^"]+/\118.3.15/' ./dist/package.json
         npm install
         npx electron-builder --linux AppImage:ia32 deb:ia32 rpm:ia32 --projectDir dist
     - name: Upload packages to Kiwix
