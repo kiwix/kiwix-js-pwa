@@ -834,9 +834,9 @@ var PromiseQueue = {
         var that = this;
         return deferred.promise().then(function (val) {
             deferred.resolve(val);
+            return that._dequeue();
         }).catch(function (err) {
             deferred.reject(err);
-        }).finally(function () {
             return that._dequeue();
         });
     }
