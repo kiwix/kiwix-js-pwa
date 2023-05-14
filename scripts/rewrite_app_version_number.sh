@@ -24,7 +24,7 @@ if [[ "qq${CRON_LAUNCHED}" != "qq" ]]; then
   echo "This script was launched by the GitHub Cron job"
   echo "Adding a commit ID to version number..."
   COMMIT_ID=$(git rev-parse --short HEAD)
-  VERSION="$VERSION-abcdef"
+  VERSION="$VERSION-$COMMIT_ID"
   echo "Version set to: $VERSION"
 fi
 if [[ $VERSION =~ ^v?[0-9.]+ ]]; then
