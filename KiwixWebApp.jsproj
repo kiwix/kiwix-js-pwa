@@ -172,13 +172,11 @@
     <Content Include="www\I\IriomoteBanner1.jpg" />
     <Content Include="www\js\katex\contrib\render-a11y-string.min.js" />
     <Content Include="www\js\lib\cache.js" />
-    <Content Include="www\js\lib\arrayFromPolyfill.js" />
     <Content Include="www\js\lib\settingsStore.js" />
     <Content Include="www\js\lib\filecache.js" />
     <Content Include="www\js\lib\images.js" />
     <Content Include="www\js\lib\jquery-3.2.1.slim.js" />
     <Content Include="www\js\lib\kiwixServe.js" />
-    <Content Include="www\js\lib\promisePolyfill.js" />
     <Content Include="www\js\lib\transformZimit.js" />
     <Content Include="www\js\lib\updater.js" />
     <Content Include="www\js\lib\webpHeroBundle_0.0.0-dev.27.js" />
