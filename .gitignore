@@ -7,6 +7,7 @@ _pkginfo.txt
 /bin/
 /dist/
 /BundleArtifacts/
+/dist/
 /archives/*.zim*
 /archives/*wikivoyage*.zim
 /archives/*medicine*.zim

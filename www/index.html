@@ -73,88 +73,91 @@
         <div class="modal-dialog modal-full">
             <div id="modalTheme" class="modal-content dark">
                 <div id="largeModal" class="modal-body">
-                    <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
-                    <img style="float:left; padding-right:1em;" alt="Kiwix icon" src="img/icons/kiwix-midnightblue-90.png">
+                    <button id="mymodalCloseBtn" class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
+                    <div id="mymodalVariableContent">
+                        <img style="float:left; padding-right:1em;" alt="Kiwix icon" src="img/icons/kiwix-midnightblue-90.png">
 
-                    <h2 style="font-size:32px;margin-top:10px;">
-                        Welcome to Kiwix&nbsp;JS <span class="identity">for Windows</span>
-                    </h2>
-                    <h4>Version <span class="version">2.0</span> (<a href="#update">changes</a>)</h4>
-                    <h3>Please read this important information</h3>
-                    <div class="disclaimer">
-                        <p>
-                            <b>DISCLAIMER:</b> Please be aware that Kiwix works with offline archives. To get updated info, you will need to
-                            download a new archive periodically. Information in official archives is free, open source and provided by volunteers.
-                            <strong>Kiwix gives no guarantee as to the accuracy of information in the archives you access with this app.</strong>
+                        <h2 style="font-size:32px;margin-top:10px;">
+                            Welcome to Kiwix&nbsp;JS <span class="identity">for Windows</span>
+                        </h2>
+                        <h4>Version <span class="version">2.0</span> (<a href="#update">changes</a>)</h4>
+                        <h3>Please read this important information</h3>
+                        <div class="disclaimer">
+                            <p>
+                                <b>DISCLAIMER:</b> Please be aware that Kiwix works with offline archives. To get updated info, you will need to
+                                download a new archive periodically. Information in official archives is free, open source and provided by volunteers.
+                                <strong>Kiwix gives no guarantee as to the accuracy of information in the archives you access with this app.</strong>
+                            </p>
+                        </div>
+                        <p style="padding-top:10px;">
+                            <span id="sampleZIM">This application is packaged with a basic sample ZIM archive of the top 100 Wikipedia articles. To keep the app size small
+                                <i>the archive does not contain images</i>, and each article contains only the article summary (the introductory section). For the full experience,</span>
+                            <span id="noSampleZIM"> you <strong>must download an offline ZIM archive</strong> and store it on your device!</span> You can do this from the <b>Configuration page&nbsp;
+                            <span class="glyphicon glyphicon-wrench"></span></b>, or else see the <b>About page&nbsp;<span class="glyphicon glyphicon-info-sign"></span></b> for more information.
                         </p>
-                    </div>
-                    <p style="padding-top:10px;">
-                        <span id="sampleZIM">This application is packaged with a basic sample ZIM archive of the top 100 Wikipedia articles. To keep the app size small
-                            <i>the archive does not contain images</i>, and each article contains only the article summary (the introductory section). For the full experience,</span>
-                        <span id="noSampleZIM"> you <strong>must download an offline ZIM archive</strong> and store it on your device!</span> You can do this from the <b>Configuration page&nbsp;
-                        <span class="glyphicon glyphicon-wrench"></span></b>, or else see the <b>About page&nbsp;<span class="glyphicon glyphicon-info-sign"></span></b> for more information.
-                    </p>
-                    <p>
-                        Kiwix JS is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
-                        improving the app are very welcome: see About section.
-                    </p>
-                    <div id="update" class="update">
-                        <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
-                        <ul style="padding-left: 15px;">
-                            <li>Provide fuzzy search for case-insensitive links in Zimit archives</li>
-                            <li>Include broader pseudo-case-insensitive search in title search</li>
-                            <li>Strengthen Content Security Policy via response headers and meta http-equiv</li>
-                            <li>Add iframe referrer policy 'no-referrer'</li>
-                            <li>Sample archive changed to wikipedia_en_100_mini_2023-04</li>
-                            <li>Fix several UI issues with toolbars and downloads</li>
-                            <li>Streamline the splashscreen display and make it dynamic</li>
-                            <li>Add more complete language support to the Download Library languages dropdown</li>
-                            <li>Fix Stack Exchange ZIM detection</li>
-                            <li>Display of external icons in Stack Exchange articles</li>
-                            <li>Dark mode style tweaks for Wiktionary</li>
-                            <li>Fix missing full-text search cancellation which caused race condition in search</li>
-                        </ul>
-                        <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
-                    </div>
-                    <div id="features">
-                        <h3>Features in Version 2.x</h3>
-                        <ul style="padding-left:15px;">
-                            <li>Download ZIM archives in-app from Download Library</li>
-                            <li>Read Zimit archives you create yourself with <a href="https://youzim.it" target="_blank" rel="noopener">youzim.it</a>
-                            <li>Light and dark themes available</li>
-                            <li>Open a new browsable tab or window with long-press or Ctrl-click</li>
-                            <li>In-page searching and highlighting (Ctrl-Shift-F, Alt-F, Ctrl-F)</li>
-                            <li>Title search with wildcards .* or regexes</li>
-                            <li>Show alphabetical index of all articles in archive (type space in search field)</li>
-                            <li>Search for all assets in ZIM archive by prefixing namespace (or type space + / in search)</li>
-                            <li>User-selectable font scaling</li>
-                            <li>Printing articles (with optional filtering for Wikipedia articles)</li>
-                            <li>Fast equation typesetting with KaTeX</li>
-                            <li>Transform Wikipedia layout from mobile to desktop style and vice versa</li>
-                            <li>Disable image display and load one-by-one if your device is slow</li>
-                            <li>Export article to self-contained HTML page to view in browser</li>
-                            <li>Export images, PDFs, EPUBs, videos</li>
-                            <li>PWA mode to support archives with dynamic content on supported systems</li>
-                            <li>Support full-screen mode in most browsers and frameworks</li>
-                        </ul>
+                        <p>
+                            Kiwix JS is <b>free</b> and <b>open source</b>. If you like it, please leave a positive review. Constructive feedback and help with
+                            improving the app are very welcome: see About section.
+                        </p>
+                        <div id="update" class="update">
+                            <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
+                            <ul style="padding-left: 15px;">
+                                <li>PWA app is now smaller and loads faster due to minification with modern build process</li>
+                                <li>New modular system and bundler ensures smaller and more stable memory management</li>
+                                <li>Add a Promise queue to prevent overlapping alert dialogue boxes</li>
+                                <li>Rename "breakout link" feature to "Download or open current article"</li>
+                                <li>Remove RequireJS and migrated app to modern ES6 native modules</li>
+                                <li>Provide clearer colouring when appCache is disabled for development</li>
+                                <li>Use rollup.js and Babel to build compatible versions of the app for all supported browsers</li>
+                                <li>Provide minified and unminified versions of the bundled app</li>
+                                <li>Add a basic Vite.js server configuration</li>
+                                <li>Make upgrade notification persistent in Electron app</li>
+                                <li>Fix several UI issues with toolbars and downloads</li>
+                                <li>Fix bug which prevented UWP / Edge Legacy app from reading articles with certain options deselected</li>
+                                <li>Restore missing commit ID in Windows nightly builds</li>
+                                <li>Fix regression with (former) breakout link feature</li>
+                                <li>Restore dialogue box animations that were removed with removal of jQuery</li>
+                            </ul>
+                            <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
+                        </div>
+                        <div id="features">
+                            <h3>Features in Version 2.x</h3>
+                            <ul style="padding-left:15px;">
+                                <li>Download ZIM archives in-app from Download Library</li>
+                                <li>Read Zimit archives you create yourself with <a href="https://youzim.it" target="_blank" rel="noopener">youzim.it</a>
+                                <li>Light and dark themes available</li>
+                                <li>Open a new browsable tab or window with long-press or Ctrl-click</li>
+                                <li>In-page searching and highlighting (Ctrl-Shift-F, Alt-F, Ctrl-F)</li>
+                                <li>Title search with wildcards .* or regexes</li>
+                                <li>Show alphabetical index of all articles in archive (type space in search field)</li>
+                                <li>Search for all assets in ZIM archive by prefixing namespace (or type space + / in search)</li>
+                                <li>User-selectable font scaling</li>
+                                <li>Printing articles (with optional filtering for Wikipedia articles)</li>
+                                <li>Fast equation typesetting with KaTeX</li>
+                                <li>Transform Wikipedia layout from mobile to desktop style and vice versa</li>
+                                <li>Disable image display and load one-by-one if your device is slow</li>
+                                <li>Export article to self-contained HTML page to view in browser</li>
+                                <li>Export images, PDFs, EPUBs, videos</li>
+                                <li>PWA mode to support archives with dynamic content on supported systems</li>
+                                <li>Support full-screen mode in most browsers and frameworks</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <div id="extraModalFooterContent"></div>
-                    <button class="btn btn-primary" type="button" data-dismiss="modal">Close</button>
+                    <button id="mycloseMessage" class="btn btn-primary" type="button" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
     <!--Bootstrap modal for alert and confirmation pop up-->
-    <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" id="modalCloseBtn" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h5 class="panel-group-heading" id="modalLabel">Modal title goes here</h5>
+                    <button type="button" id="modalCloseBtn" class="close modal-title" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h5 class="panel-group-heading modal-title" id="modalLabel">Modal title goes here</h5>
                 </div>
                 <div class="modal-body">
                     <p id="modalText">Modal text goes here</p>
@@ -171,7 +174,7 @@
         <div class="modal-dialog">
             <div id="print-modal-content" class="modal-content">
                 <div class="modal-header">
-                    <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
+                    <button id="printmodalCloseBtn" class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
                     <h3 style="margin-top:10px;">
                         Please choose print options
                     </h3>                
@@ -213,34 +216,18 @@
                     </label>
                 </div>
                 <div class="modal-footer">
-                    <button name="confirm-print" id="confirm-print-cancel" class="btn btn-warning" style="float:right; margin-left: 1em;" type="button" data-dismiss="modal">Cancel</button>
-                    <button name="confirm-print" id="confirm-print-continue" class="btn btn-primary" style="float:right; margin-left: 1em;" type="button" data-dismiss="modal">Continue</button>
+                    <button name="confirm-print" id="printdeclineConfirm" class="btn btn-warning" style="float:right; margin-left: 1em;" type="button" data-dismiss="modal">Cancel</button>
+                    <button name="confirm-print" id="printapproveConfirm" class="btn btn-primary" style="float:right; margin-left: 1em;" type="button" data-dismiss="modal">Continue</button>
                     <p style="text-align:left"><b>Important:</b> This app has limited control over the printer. If there is no option to limit pages, we recommend you choose a PDF or XPS printer, and then print the file with another app.</p>
                 </div>
             </div>
         </div>
     </div>
-    <div id="alertModalSmall" class="modal" role="dialog">
-        <div id="alert-modal" class="modal-dialog modal-sm">
-            <div id="alert-modal-content" class="modal-content">
-                <div class="modal-header">
-                    <button class="close" aria-hidden="true" type="button" data-dismiss="modal">&times;</button>
-                    <h4>Information</h4>
-                </div>
-                <div class="modal-body">
-                    <p id="alert-content"></p>
-                </div>
-                <div class="modal-footer" style="padding:10px;">
-                    <button id="alert-modal-button" class="btn btn-primary" type="button" data-dismiss="modal">OK</button>
-                </div>
-            </div>
-        </div>
+    <!-- Status indicators -->
+    <div id="searchingArticles" style="display: none;" class="status">
+        <div class="loader"></div>
+        <div id="cachingAssets" style="display: none;" class="message"></div>
     </div>
-        <!-- Status indicators -->
-        <div id="searchingArticles" style="display: none;" class="status">
-            <div class="loader"></div>
-            <div id="cachingAssets" style="display: none;" class="message"></div>
-        </div>
     <section id="search-article" role="region">
         <header id="top" style="width:100%; transition: top 0.3s;">
             <nav id="navbar" class="navbar navbar-inverse" role="navigation">
@@ -298,6 +285,7 @@
                         <li><a href="#fullTextSearch">Full-text search</a></li>
                         <li><a href="#linkHandling">Link handling, dynamic content and image download</a></li>
                         <li><a href="#windows">Window and tab management</a></li>
+                        <li><a href="browsers">Browser support</a></li>
                         <li><a href="#modes">Technical Information</a></li>
                         <li><a href="#privacy">Privacy Policy</a></li>
                         <li><a href="#feedback">Feedback and Support</a></li>
@@ -544,6 +532,38 @@
                         the app while it is in full-screen mode. Because the browser may throw you out of full-screen mode, for example, when you select an archive or when opening a new window, you may need to click in
                         the app to re-activate full-screen mode. Full-screen mode needs to be activated by a user gesture: it is not possible to activate it automatically.
                     </p>
+                    <h3 id="browsers">Browser support</h3>
+                    <p>
+                        We test the app frequently on older browsers and operating systems. The app will usually detect which features don't work on a given browser, and disable them or work around them. However,
+                        in some cases (e.g. Firefox &lt;= 59), the app will set itself to Service Worker mode, but this mode will silently fail. If affected, please try switching the app to JQuery mode (see below).
+                    </p>
+                    <p>
+                        We have a version of this app using the NWJS framework that runs on Windows XP/Vista, and there are Electron apps for 32bit and 64bit Linux and Windows 7/8/10/11 as well as a UWP (Store) app.
+                    </p>
+                    <p>
+                        The PWA is fully supported for offline use in modern browsers on Android, iOS, macOS, Linux and Windows. On Android, Linux and Windows, using Chrome/Chromium browsers (including Edge and
+                        Samsung Internet), you can install the PWA using a button in Configuration for a near-native experience. On iOS in Safari, you can add the PWA to your Home screen, which has the same effect.
+                    </p>
+                    <h4>Officially supported:</h4>
+                    <ul>
+                        <li>Firefox &gt;= 60 on all operating systems <i>except</i> Android*</li>
+                        <li>Edge Chromium &gt;= 79</li>
+                        <li>Chrome/Chromium &gt;= 59 (and many browsers based on Chromium, e.g. Opera, Samsung Internet)</li>
+                        <li>Edge Legacy 18, including UWP</li>
+                        <li>Safari on iOS</li>
+                    </ul>
+                    <p>
+                        * Although Firefox on Android appears to work, there is a bug whereby the app attempts to load the entire ZIM archive into memory or internal storage before accessing it. This fails with
+                        archives larger than 1GB on most phones.
+                    </p>
+                    <h4>Deprecated</h4>
+                    <p>Although deprecated, we will keep support for as long as is practical:</p>
+                    <ul>
+                        <li>Internet Explorer 11 (JQuery mode only, no offline use of PWA)</li>
+                        <li>Edge Legacy &lt;= 17 (JQuery mode only, no offline use of PWA)</li>
+                        <li>Firefox 45-59 (some versions require you to switch manually to JQuery mode)</li>
+                        <li>Chromium 49-58 (some versions only run in JQuery mode)</li>
+                    </ul>
                     <h3 id="modes">Technical information</h3>
                     <p>
                         Depending on your browser or framework, this app may be capable of running in two different modes, which we call
@@ -634,11 +654,11 @@
                     <ul>
                         <li><a href="https://jquery.com/" target="_blank">jQuery</a> 3, released under the <a href="https://jquery.org/license" target="_blank">MIT Licence</a></li>
                         <li><a href="https://getbootstrap.com/" target="_blank">Bootstrap</a> 3, released under the <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache Licence 2.0</a>, which includes icons from <a href="https://glyphicons.com/">Glyphicons</a></li>
-                        <li><a href="https://requirejs.org/" target="_blank">RequireJS</a> 2, released under the <a href="https://github.com/jrburke/requirejs/blob/master/LICENSE" target="_blank">MIT licence or new BSD Licence</a></li>
-                        <li><a href="https://qunitjs.com/" target="_blank">QUnit</a> 2, released under the <a href="https://jquery.org/license" target="_blank">MIT Licence</a></li>
-                        <li>Kiwix logo from <a href="https://www.kiwix.org/" target="_blank">kiwix.org</a>, released under the <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution Share Alike Licence</a></li>
+                        <li><a href="https://rollupjs.org/" target="_blank">rollup.js</a> 3 for bundling this app, released under an <a href="https://github.com/rollup/rollup/blob/master/LICENSE.md" target="_blank">MIT licence</a></li>
+                        <li><a href="https://qunitjs.com/" target="_blank">QUnit</a> 2, released under an <a href="https://jquery.org/license" target="_blank">MIT Licence</a></li>
+                        <li>Kiwix logo from <a href="https://www.kiwix.org/" target="_blank">kiwix.org</a>, released under a <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution Share Alike Licence</a></li>
                         <li>OpenZIM specifications from <a href="https://wiki.openzim.org/wiki/OpenZIM" target="_blank">www.openzim.org</a>, released under the <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution Share Alike Licence</a></li>
-                        <li>Emscripten to generate a XZ decompressor in javascript : <a href="https://github.com/kripken/emscripten" target="_blank">https://github.com/kripken/emscripten</a>, released under the <a href="https://github.com/kripken/emscripten" target="_blank">MIT Licence</a></li>
+                        <li>Emscripten to generate XZ, ZSTD and libzim decompressors in JavaScript: <a href="https://github.com/kripken/emscripten" target="_blank">https://github.com/kripken/emscripten</a>, released under the <a href="https://github.com/kripken/emscripten" target="_blank">MIT Licence</a></li>
                         <li><a href="https://tukaani.org/xz/embedded.html" target="_blank">XZ Embedded</a> (the XZ library converted to Javascript with Emscripten), in public domain</li>
                         <li>The <a href="https://github.com/facebook/zstd" target="_blank">Zstandard library</a>, released under a <a href="https://github.com/facebook/zstd/blob/dev/LICENSE" target="_blank">BSD Licence</a> and a <a href="https://github.com/facebook/zstd/blob/dev/COPYING" target="_blank">GPLv2 Copying Licence</a></li>
                         <li><a href="https://katex.org/" target="_blank">KaTeX</a> for typesetting mathematical and chemical equations, released under the <a href="https://github.com/KaTeX/KaTeX/blob/master/LICENSE" target="_blank">MIT licence</a></li>
@@ -1202,14 +1222,8 @@
             </div>
         </footer>
     </section>
-
-    <!-- Using require.js, a module system for javascript, include the
-         js files. This loads "init.js", which in turn can load other
-         files, all handled by require.js:
-         https://requirejs.org/docs/api.html#jsfiles -->
-    <script type="text/javascript"
-            data-main="js/init.js"
-            src="js/lib/require.js">
-        </script>
+    <script type="text/javascript" src="js/init.js"></script>
+    <script type="module" defer src="js/app.js"></script>
+    <!-- <script type="text/javascript" defer src="js/bundle.js"></script> -->
 </body>
 </html>

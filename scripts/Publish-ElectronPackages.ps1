@@ -27,9 +27,9 @@ if ($CRON_LAUNCHED) {
 }
 
 if ((Get-Content ./package.json) -match 'nwVersion') {
-    $Packages = $(ls bld/NWJS/*.*)
+    $Packages = $(ls dist/bld/NWJS/*.*)
 } else {
-    $packages = $(ls bld/Electron/*.*)
+    $packages = $(ls dist/bld/Electron/*.*)
 }
 if ($test) {
     $Packages = @($test)
@@ -162,10 +162,11 @@ if (-not $githubonly) {
             } else {
                 # Rename the file
                 if ($file -ne $renamed_file) {
+                    "`nRenaming $file to $renamed_file..."
                     mv $file $renamed_file
                 }
                 # Replace absolute path with relative, and normalize to forward slashes
-                $renamed_file = $renamed_file -replace '^.*?([\\/]bld)', '.$1' -replace '[\\/]', '/'
+                $renamed_file = $renamed_file -replace '^.*?([\\/]bld)', './dist$1' -replace '[\\/]', '/'
                 "Copying $renamed_file to $target..."
                 & "C:\Program Files\Git\usr\bin\scp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$renamed_file", "ci@master.download.kiwix.org:$target")
             }

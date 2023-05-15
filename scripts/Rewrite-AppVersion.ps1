@@ -26,17 +26,20 @@ if ($INPUT_VERSION) {
     if ($app_params -match 'params\[[''"]appVersion[''"]]\s*=\s*[''"]([^''"]+)') {
         $app_tag = $matches[1]
         $VERSION = "v$app_tag"
-        # Add a commit SHA if launched by CRON
-        if ($CRON_LAUNCHED) {
-            $COMMIT_ID = $(git rev-parse --short HEAD)
-            $VERSION = "v$app_tag-$COMMIT_ID"
-        }
-        # Ensure $INPUT_VERSION will be set in the Environment for the next script or shell
-        echo "INPUT_VERSION=$VERSION" | Out-File $Env:GITHUB_ENV -Encoding utf8 -Append
     } else {
         "`nCould not construct a valid nightly version number."
     }
 }
+# Add a commit SHA if launched by CRON
+if ($VERSION -and $CRON_LAUNCHED) {
+    $COMMIT_ID = $(git rev-parse --short HEAD)
+    $VERSION = "$VERSION-$COMMIT_ID"
+}
+# Ensure $INPUT_VERSION will be set in the Environment for the next script or shell
+if ($VERSION) {
+    echo "INPUT_VERSION=$VERSION" | Out-File $Env:GITHUB_ENV -Encoding utf8 -Append
+}
+
 if ($VERSION -match '^v?[\d.]') {
     $VERSION = $VERSION -replace '^v', ''
     "`nSetting App Version to $VERSION in service-worker.js and init.js ..."

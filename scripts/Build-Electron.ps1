@@ -1,6 +1,6 @@
 # This script is intended to be run by Create-DraftRelease, and must be dot-sourced (run with `. ./Build-Electron.ps1` or `. /path/to/Build-Electron.ps1`)
 # because it modifies variables needed in Create-DraftRelease
-$base_dir = "$PSScriptRoot/../bld/electron/"
+$base_dir = "$PSScriptRoot/../dist//bld/electron/"
 "`nSelected base_tag: $base_tag"
 if ($electronbuild -eq "") {
   ""
@@ -63,7 +63,9 @@ if ($alt_tag -imatch 'WikiMed|Wikivoyage') {
 }
 if ($electronbuild -eq "local" -and !$dryrun) {
   # Rewrite the archive for Electron if it is an mdwiki type
-  (Get-Content ./www/js/init.js) -replace '(mdwiki[^-]+)-app_', '$1_' | Set-Content -encoding 'utf8BOM' ./www/js/init.js
+  (Get-Content ./dist/www/js/init.js) -replace '(mdwiki[^-]+)-app_', '$1_' | Set-Content -encoding 'utf8BOM' ./dist/www/js/init.js
+  # Set the module type to one supported by Electron
+  (Get-Content ./dist/package.json) -replace '("type":\s+)"module"', '$1"commonjs"' | Set-Content ./dist/package.json
 }
 if ($electronbuild -eq "local" -and (-not $portableonly)) {
   if (-Not (Test-Path $WinInstaller -PathType Leaf)) {
@@ -84,8 +86,6 @@ if ($electronbuild -eq "local" -and (-not $portableonly)) {
 if (-Not (($electronbuild -eq 'cloud') -or $old_windows_support -or (Test-Path $comp_electron_archive -PathType Leaf))) {
   # Package portable electron app for Windows
   "Building portable Electron app for Windows"
-  # Line below uses electron-packager, but not necessary if we run the setup version first above
-  # if (-Not $dryrun) { npm run package-win }
   "Compressing release package for Electron..."
   $foldername = "kiwix-js-windows-win32-ia32"
   $compressed_assets_dir = $base_dir + $foldername
@@ -173,10 +173,14 @@ if ($electronbuild -eq "local" -and (-not $portableonly)) {
     # docker $build_command
   }
 }
+# if ($electronbuild -eq "local" -and !$dryrun) {
+#   # Set the module type back to native modules
+#   (Get-Content ./dist/package.json) -replace '("type":\s+)"commonjs"', '$1"module"' | Set-Content ./dist/package.json
+# }
 if ($old_windows_support -and ($electronbuild -eq 'local')) {
   "`nSupport for XP and Vista was requested."
   "Searching for archives..."
-  $nwjs_base = $PSScriptRoot -ireplace 'kiwix-js-windows.scripts.*$', 'kiwix-js-windows-nwjs'
+  $nwjs_base = "$PSScriptRoot/../dist"
   "NWJS base directory: " + $nwjs_base
   $nwjs_archives_path = "$nwjs_base/bld/nwjs/kiwix_js_windows*$numeric_tag" + "N-win-ia32.zip"
   "NWJS archives path: " + $nwjs_archives_path
@@ -184,8 +188,10 @@ if ($old_windows_support -and ($electronbuild -eq 'local')) {
   if (-Not ($nwjs_archives.count -eq 2)) {
     "`nBuilding portable 32bit NWJS archives to add to Electron release for XP and Vista..."
     "Updating Build-NWJS script with required tags..."
+    del "$PSScriptRoot/../dist/package.json"
+    cp "$PSScriptRoot/../package.json.nwjs" "$nwjs_base/package.json"
     $nw_json = Get-Content -Raw "$nwjs_base/package.json"
-    $script_body = Get-Content -Raw ("$nwjs_base/scripts/Build-NWJS.ps1")
+    $script_body = Get-Content -Raw ("$PSScriptRoot/Build-NWJS.ps1")
     $json_nwVersion = ''
     if ($nw_json -match '"build":\s*\{[^"]*"nwVersion":\s*"([^"]+)') {
       $json_nwVersion = $matches[1]
@@ -200,13 +206,13 @@ if ($old_windows_support -and ($electronbuild -eq 'local')) {
       "[DRYRUN] would have written:`n"
       $script_body
     } else {
-      Set-Content "$nwjs_base/scripts/Build-NWJS.ps1" $script_body
+      Set-Content "$PSScriptRoot/Build-NWJS.ps1" $script_body
     }
     if (-Not $dryrun) {
-      "Building..."
-      & $nwjs_base/scripts/Build-NWJS.ps1 -only32bit
+      "`nBuilding..."
+      & $PSScriptRoot/Build-NWJS.ps1 -only32bit
     } else {
-      "Build command: $nwjs_base/scripts/Build-NWJS.ps1 -only32bit"
+      "Build command: $PSScriptRoot/Build-NWJS.ps1 -only32bit"
     }
     "Verifying build..."
     $nwjs_archives = dir $nwjs_archives_path

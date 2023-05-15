@@ -11,7 +11,7 @@ if [[ "qq${CRON_LAUNCHED}" != "qq" ]]; then
 fi
 echo "Uploading packages to https://download.kiwix.org$target/"
 echo "mkdir ${target}" | sftp -P 30022 -o StrictHostKeyChecking=no -i ./scripts/ssh_key ci@master.download.kiwix.org
-for file in ./bld/Electron/* ; do
+for file in ./dist/bld/Electron/* ; do
     if [[ "$file" =~ \.(AppImage|deb|rpm)$ ]]; then
         directory=$(sed -E 's/[^\/]+$//' <<<"$file")
         filename=$(sed -E 's/[^/]+\///g' <<<"$file")

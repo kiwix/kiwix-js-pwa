@@ -493,6 +493,19 @@ pre {
     margin-bottom: 15% !important;
 }
 
+.modal-dialog {
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.1s;
+    animation-name: animatetop;
+    animation-duration: 0.1s;
+}
+
+/* Add Animation */
+@keyframes animatetop {
+    from {top: -300px; opacity: 0}
+    to {top: 0px; opacity: 1}
+}
+
 #dl-panel-body::before, #dl-panel-body::after {
     content: '' !important;
 }

@@ -16,18 +16,20 @@ if [[ ${INPUT_TARGET} = "nightly" ]]; then
     CRON_LAUNCHED="1"
 fi
 if [[ "rr$VERSION" = "rr" ]]; then
-  # There was no version, so get version from init.js
+  echo "No input version was provided, so getting current version from init.js"
   VERSION="$(grep 'params\[.appVersion' www/js/init.js | sed -E "s/[^[:digit:]]+([^\"']+).*/\1/")"
 fi
 # If the script was launched by Cron, then version needs commit SHA
 if [[ "qq${CRON_LAUNCHED}" != "qq" ]]; then
   echo "This script was launched by the GitHub Cron job"
+  echo "Adding a commit ID to version number..."
   COMMIT_ID=$(git rev-parse --short HEAD)
-  VERSION="v$VERSION-$COMMIT_ID"
+  VERSION="$VERSION-$COMMIT_ID"
+  echo "Version set to: $VERSION"
 fi
 if [[ $VERSION =~ ^v?[0-9.]+ ]]; then
   VERSION=$(sed 's/^v//' <<<"$VERSION") # Remove any leading v
-  echo "Using the valid override input and setting version to $VERSION"
+  echo "Using a valid input or file version and normalizing version to $VERSION"
 else
   # If no valid override input was entered, then try to use the release tag
   VERSION=${TAG_VERSION}

@@ -1,8 +1,8 @@
 ﻿/**
- * init.js : Configuration for the library require.js
+ * init.js : Configuration for the app
  * This file handles the dependencies between javascript libraries
  * 
- * Copyright 2013-2021 Mossroy, Jaifroid and contributors
+ * Copyright 2013-2023 Mossroy, Jaifroid and contributors
  * License GPL v3:
  * 
  * This file is part of Kiwix.
@@ -49,7 +49,7 @@ var params = {};
  */
 var appstate = {};
 /******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******/
-params['appVersion'] = "2.4.6"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
+params['appVersion'] = "2.4.72"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
 /******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************/
 params['packagedFile'] = getSetting('packagedFile') || "wikipedia_en_100_mini_2023-04.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
@@ -58,7 +58,7 @@ params['fileVersion'] = getSetting('fileVersion') || "wikipedia_en_100_mini_2023
 params['cachedStartPages'] = {
     'wikipedia_en_medicine-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
     'wikipedia_en_medicine_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
-    // 'mdwiki_en_all-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
+    // 'mdwiki_en_all_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
     'wikivoyage_en_all_maxi': 'A/Main_Page'
 };
 params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
@@ -66,8 +66,6 @@ params['kiwixHiddenDownloadLink'] = "https://master.download.kiwix.org/zim/";
 /******* DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
 params['PWAServer'] = "https://pwa.kiwix.org/"; // Production server
 // params['PWAServer'] = "https://kiwix.github.io/kiwix-js-windows/"; // Test server
-params['PWAMode'] = getSetting('PWAMode'); // Set to true if the app should always operate in PWA mode 
-
 params['storeType'] = getBestAvailableStorageAPI();
 params['appType'] = getAppType();
 params['keyPrefix'] = 'kiwixjs-'; // Prefix to use for localStorage keys
@@ -437,8 +435,8 @@ function deleteSetting(name) {
 }
 
 // Tests for available Storage APIs (document.cookie or localStorage) and returns the best available of these
-// DEV: This function is replicated from settingsStore.js because RequireJS has not yet loaded it,
-// except that it returns 'cookie' if the always-present contentInjectionMode is still in cookie, which
+// DEV: This function is replicated from settingsStore.js because it's not available from init
+// It returns 'cookie' if the always-present contentInjectionMode is still in cookie, which
 // means the store previously used cookies and hasn't upgraded yet: this won't be done till app.js is loaded
 function getBestAvailableStorageAPI() {
     var type = 'none';
@@ -460,41 +458,7 @@ function getBestAvailableStorageAPI() {
     return type;
 }
 
-
-require.config({
-    //enforceDefine: true, //This is for debugging IE errors
-    baseUrl: 'js/lib',
-    // config: { '../app': { params: params } },
-    paths: {
-        'jquery': 'jquery-3.2.1.slim',
-        'cache' : 'cache',
-        //'jquery': 'jquery-3.2.1',
-        //'bootstrap': 'bootstrap'
-        'bootstrap': 'bootstrap.min',
-        'webpHeroBundle': 'webpHeroBundle_0.0.0-dev.27'
-    },
-    shim: {
-        'jquery': {
-            exports: '$'
-        },
-        'bootstrap': {
-            deps: ['jquery']
-        }
-    }
-});
-
-var req = ['bootstrap']; // Baseline Require array
-
-// Add polyfills to the Require array only if needed
-if (!('Promise' in self)) req.push('promisePolyfill');
-if (!('from' in Array)) req.push('arrayFromPolyfill');
-
-requirejs(req, function () {
-    requirejs(['../app']);
-});
-
-// Test if WebP is natively supported, and if not, set webpMachine to true. The value of webpMachine
-// will determine whether the WebP Polyfills will be loaded (currently only used in uiUtil.js)
+// Test if WebP is natively supported, and if not, load a webpMachine instance. This is used in uiUtils.js.
 var webpMachine = false;
 
 // We use a self-invoking function here to avoid defining unnecessary global functions and variables
@@ -507,6 +471,12 @@ var webpMachine = false;
     webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
 })(function (support) {
     if (!support) {
-        webpMachine = true;
+        // Note we set the location of this to be the directory where scripts reside after bundling
+        var webpScript = document.createElement('script');
+        webpScript.onload = function () {
+            webpMachine = new webpHero.WebpMachine();
+        }
+        webpScript.src = 'js/webpHeroBundle_0.0.0-dev.27.js';
+        document.head.appendChild(webpScript);
     }
 });

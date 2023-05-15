@@ -1,15 +1,16 @@
 {
   "name": "kiwix-js-electron",
   "productName": "Kiwix JS Electron",
-  "version": "2.4.6-E",
+  "version": "2.4.72",
   "description": "Kiwix JS packaged for the Electron framework",
-  "main": "main.js",
+  "main": "main.cjs",
+  "type": "module",
   "build": {
     "appId": "kiwix.js.electron",
     "productName": "Kiwix JS Electron",
     "directories": {
       "output": "bld/Electron",
-      "buildResources": "electron_icons"
+      "buildResources": "../electron_icons"
     },
     "afterPack": "./scripts/appimage-fix.js",
     "win": {
@@ -74,22 +75,25 @@
       "CHANGELOG.md",
       "LICENCE",
       "www/**",
-      "preload.js",
-      "main.js",
+      "preload.cjs",
+      "main.cjs",
       "!**/*.dev.{js,wasm}"
     ]
   },
   "scripts": {
+    "serve": "vite",
+    "preview": "del-cli dist && npm run build-src && vite preview",
+    "build": "del-cli dist && npm run build-src && npm run build-min",
+    "build-min": "rollup --config --file dist/www/js/bundle.min.js --environment BUILD:production",
+    "build-src": "rollup --config --file dist/www/js/bundle.js",
+    "del-dist": "del-cli dist",
     "start": "electron .",
-    "dist-win": "electron-builder build --win",
-    "dist-win-nsis": "electron-builder build --win NSIS:x64 NSIS:ia32",
-    "dist-linux": "electron-builder build --linux",
-    "dist-linux-appimage": "electron-builder build --linux AppImage:x64",
-    "publish": "electron-builder",
-    "package-mac": "electron-packager . kiwix-js-windows --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
-    "package-win": "electron-packager . kiwix-js-windows --overwrite --electron-version='18.3.14' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=electron_icons$ --ignore=manifests$ --ignore=screenshots$ --ignore=scripts$  --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --platform=win32 --arch=ia32 --icon=www/img/icons/kiwix-64.ico --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Kiwix JS Windows Electron Edition'",
+    "dist-win": "electron-builder build --win --projectDir dist",
+    "dist-win-nsis": "electron-builder build --win NSIS:x64 NSIS:ia32 --projectDir dist",
+    "dist-linux": "electron-builder build --linux --projectDir dist",
+    "dist-linux-appimage": "electron-builder build --linux AppImage:x64 --projectDir dist",
+    "publish": "electron-builder --projectDir dist",
     "postpackage-win": "(robocopy archives bld\\Electron\\kiwix-js-windows-win32-ia32\\resources\\app\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0",
-    "package-linux": "electron-packager . kiwix-js-windows --overwrite --platform=linux --icon=www/img/icons/kiwix-64.png --electron-version='18.3.14' --ignore=archives --ignore=AppPackages --ignore=BundleArtifacts --ignore=images$ --ignore=bin$ --ignore=bld$ --ignore=KiwixWebApp.* --ignore=[pP]ackage.[aSl] --ignore=[.]git[hi][ug][bn] --ignore=[.]vs$ --ignore=vscode --arch=x64 --prune=true --out=bld/electron --version-string.CompanyName=Kiwix --version-string.FileDescription='Kiwix JS ZIM File Reader' --version-string.ProductName='Kiwix JS Linux Electron Edition'",
     "postpackage-linux": "(robocopy archives bld\\Electron\\kiwix-js-windows-linux-x64\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0"
   },
   "repository": "https://github.com/kiwix/kiwix-js-windows",
@@ -107,13 +111,29 @@
   "maintainer": "Jaifroid",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "22.3.7",
+    "@babel/cli": "^7.21.5",
+    "@babel/core": "^7.21.5",
+    "@babel/preset-env": "^7.21.5",
+    "@rollup/plugin-babel": "^6.0.3",
+    "@rollup/plugin-commonjs": "^24.1.0",
+    "@rollup/plugin-node-resolve": "^15.0.2",
+    "@rollup/plugin-replace": "^5.0.2",
+    "@rollup/plugin-terser": "^0.4.1",
+    "@vitejs/plugin-legacy": "^4.0.3",
+    "babel-plugin-polyfill-corejs3": "^0.7.1",
+    "del-cli": "^5.0.0",
+    "electron": "22.3.8",
     "electron-builder": "^24.3.0",
-    "electron-packager": "^16.0.0"
+    "rollup": "^3.21.3",
+    "rollup-plugin-copy": "^3.4.0",
+    "vite": "^4.3.4"
   },
   "dependencies": {
     "@types/fs-extra": "^9.0.11",
+    "core-js": "^3.30.1",
     "electron-context-menu": "^3.1.1",
     "electron-updater": "^6.1.0"
   }
 }
+
+

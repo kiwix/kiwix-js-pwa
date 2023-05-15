@@ -11,15 +11,15 @@ if (-Not $only32bit) {
 }
 $version10 = "0.72.0" # <<< value updated automatically from package.json if launched from Create-DraftRelease
 $versionXP = "0.14.7"
-$appBuild = "2.4.6-N" # <<< value updated auotmatically from package.json if launched from Create-DraftRelease
+$appBuild = "2.4.72-N" # <<< value updated auotmatically from package.json if launched from Create-DraftRelease
 # Check that the dev has included the correct archive in this branch
-$init_params = Get-Content -Raw "$PSScriptRoot\..\www\js\init.js"
+$init_params = Get-Content -Raw "$PSScriptRoot\..\dist\www\js\init.js"
 $PackagedArchive = $init_params -imatch 'params\[.packagedFile.][^;]+?[''"]([^\s]+?\.zim)[''"];'
 $archiveExists = $false
 if ($PackagedArchive) { 
     $PackagedArchive = $matches[1]
     "`nSearching for packaged archive $PackagedArchive..."
-    $archiveExists = Test-Path "$PSScriptRoot\..\archives\$PackagedArchive" -PathType Leaf
+    $archiveExists = Test-Path "$PSScriptRoot\..\dist\archives\$PackagedArchive" -PathType Leaf
 }
 if (-Not $archiveExists) {
     "`n***** WARNING: PACKAGED ARCHIVE $PackagedArchive COULD NOT BE FOUND IN ARCHIVE FOLDER!!! *****"
@@ -38,10 +38,10 @@ foreach ($build in $builds) {
         $sep = '-XP-'
     }
     "`nBuilding $build $version..."
-    $folderTarget = "$PSScriptRoot\..\bld\nwjs\$build-$version"
+    $folderTarget = "$PSScriptRoot\..\dist\bld\nwjs\$build-$version"
     $target = "$folderTarget\kiwix_js_windows$sep$appBuild"
     $fullTarget = "$target-$build"
-    $ZipFolder = "$PSScriptRoot\..\node_modules\nwjs-builder-phoenix\caches\"
+    $ZipFolder = "$PSScriptRoot\..\dist\node_modules\nwjs-builder-phoenix\caches\"
     $ZipLocation = $ZipFolder + "nwjs-v$version-$build.zip"
     $UnzipLocation = "$ZipLocation-extracted\"
     $buildLocation = "$ZipLocation-extracted\nwjs-v$version-$build\"
@@ -72,14 +72,14 @@ foreach ($build in $builds) {
     # Copy latest binary x64
     cp $buildLocation\* $fullTarget -Recurse
     $root = $PSScriptRoot -replace 'scripts.*$', ''
-    cp $root\package.json, $root\service-worker.js, $root\index.html, $root\CHANGELOG.md, $root\LICENSE, $root\www $fullTarget -Recurse
+    cp $root\dist\package.json, $root\dist\service-worker.js, $root\dist\index.html, $root\CHANGELOG.md, $root\LICENSE, $root\dist\www $fullTarget -Recurse
     # Remove unwanted files
-    del $fullTarget\www\js\lib\libzim-*.dev.*
+    # del $fullTarget\www\js\lib\libzim-*.dev.*
     "Copying archive..."
     md $archiveFolder
-    cp "$root\archives\$PackagedArchive", "$root\archives\*.txt", "$root\archives\README.md" $archiveFolder
+    cp "$root\dist\archives\$PackagedArchive", "$root\dist\archives\*.txt", "$root\dist\archives\README.md" $archiveFolder
     "Creating launchers..."
-    $launcherStub = $PSScriptRoot -replace 'scripts.*$', "bld\nwjs\$build-$version\Start Kiwix JS Windows"
+    $launcherStub = $PSScriptRoot -replace 'scripts.*$', "dist\bld\nwjs\$build-$version\Start Kiwix JS Windows"
     $foldername = "kiwix_js_windows$sep$appBuild-$build"
     # Batch file
     $batch = '@cd "' + $foldername + '"' + "`r`n" + '@start "Kiwix JS Windows" "nw.exe"' + "`r`n"
@@ -98,6 +98,6 @@ foreach ($build in $builds) {
         del $ZipBuild
     }
     "Compressing folder..."
-    Compress-Archive "$PSScriptRoot\..\bld\nwjs\$build-$version\*" "$PSScriptRoot\..\bld\nwjs\$foldername.zip" -Force
+    Compress-Archive "$PSScriptRoot\..\dist\bld\nwjs\$build-$version\*" "$PSScriptRoot\..\dist\bld\nwjs\$foldername.zip" -Force
     "Build $OBuild finished.`n"
 }

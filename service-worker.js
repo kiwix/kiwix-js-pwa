@@ -29,7 +29,7 @@
  * download and install a new copy; we have to hard code this here because it is needed before any other file
  * is cached in APP_CACHE
  */
-const appVersion = '2.4.6';
+const appVersion = '2.4.72';
 
 /**
  * The name of the Cache API cache in which assets defined in regexpCachedContentTypes will be stored
@@ -110,7 +110,7 @@ const regexpByteRangeHeader = /^\s*bytes=(\d+)-/;
  * The list of files that the app needs in order to run entirely from offline code
  */
 let precacheFiles = [
-    ".", // This caches the redirect to www/index.html, in case a user launches the app from its root directory
+  ".", // This caches the redirect to www/index.html, in case a user launches the app from its root directory
   "manifest.json",
   "service-worker.js",
   "www/favicon.ico",
@@ -173,17 +173,12 @@ let precacheFiles = [
   "www/article.html",
   "www/js/app.js",
   "www/js/init.js",
-  "www/js/lib/arrayFromPolyfill.js",
-  // "www/js/lib/bootstrap.js",
-  "www/js/lib/bootstrap.min.js",
   "www/js/lib/cache.js",
-  "www/js/lib/darkreader.min.js",
   "www/js/lib/filecache.js",
   "www/js/lib/images.js",
+  "www/js/lib/jquery.module.js",
   "www/js/lib/jquery-3.2.1.slim.js",
   "www/js/lib/kiwixServe.js",
-  "www/js/lib/promisePolyfill.js",
-  "www/js/lib/require.js",
   "www/js/lib/settingsStore.js",
   "www/js/lib/transformStyles.js",
   "www/js/lib/transformZimit.js",
@@ -191,13 +186,14 @@ let precacheFiles = [
   "www/js/lib/updater.js",
   "www/js/lib/utf8.js",
   "www/js/lib/util.js",
-  //"www/js/lib/webpHeroBundle_0.0.0-dev.27.js",
   "www/js/lib/xzdec_wrapper.js",
   "www/js/lib/zstddec_wrapper.js",
   "www/js/lib/zimArchive.js",
   "www/js/lib/zimArchiveLoader.js",
   "www/js/lib/zimDirEntry.js",
   "www/js/lib/zimfile.js",
+  "www/js/lib/darkreader.min.js", // Don't move this or below to prevent them being deleted by the build process
+  "www/js/lib/webpHeroBundle_0.0.0-dev.27.js",
   "www/js/katex/katex.min.js",
   "www/js/katex/katex.min.css",
   "www/js/katex/contrib/auto-render.min.js",

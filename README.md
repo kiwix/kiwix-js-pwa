@@ -52,11 +52,39 @@ want to download. It's much easier than it sounds!
 
 ![WikiMed montage dark mode trans](https://user-images.githubusercontent.com/4304337/218268858-7baddf4c-6b8d-4ee9-b369-ef2598eca194.png)
 
+## Browser support
+
+We pride ourselves in maintaining support for old browsers and platforms, given that an important target audience for this app consists of
+users in the developing world who may only have access to old devices with outdated software. We test the app frequently on older browsers
+and operating systems. The app will usually detect which features don't work on a given browser, and disable them or work around them. However,
+in some cases (e.g. Firefox <= 59), the app will set itself to Service Worker mode, but this mode will silently fail. If affected, please
+try switching the app to JQuery mode (see Content injection mode in Configuration).
+
+### Officially supported
+
+* Firefox >= 60 (except on Android)`*`
+* Edge Chromium >= 79
+* Chromium >= 59 (and many browsers based on Chromium, e.g. Opera, Samsung Internet)
+* Edge Legacy 18
+* Safari on iOS
+
+`*` There is a bug with Firefox in Android whereby the browser attempts to read the entire ZIM archive into memory or internal storage, which fails
+with archives >1GB approximately.
+
+### Deprecated
+
+Although deprecated, we will keep support for as long as is practical:
+
+* Internet Explorer 11 (JQuery mode only, no offline use of PWA)
+* Edge Legacy <= 17 (JQuery mode only, no offline use of PWA)
+* Firefox 45-59 (some versions require the user to switch manually to JQuery mode)
+* Chromium 49-58 (some versions only run in JQuery mode)
+
 ## Technical information
 
 This repository is for development of the Kiwix JS app for PWA, Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP).
 The latest code is usually on the main branch, but this is used for active development and may be several commits ahead of releases.
-Installable and portable versions for Windows (XP/Vista/7/10/11) and Linux (32bit and 64bit) are available from
+Installable and portable versions for Windows (XP/Vista/7/8/10/11) and Linux (32bit and 64bit) are available from
 [releases](https://github.com/kiwix/kiwix-js-windows/releases/). Unstable [nightly builds](https://download.kiwix.org/nightly/) of the
 Electron and NWJS apps are available together with a [development deployment](https://kiwix.github.io/kiwix-js-windows/), but code may be
 buggy and change rapidly.
@@ -107,7 +135,19 @@ If you have coding experience and are interested in contributing to this project
 as much of the code contributed there is subsequently ported to this repository. Please see [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) for details.
 If you wish to contribute to a specific Kiwix JS Windows/Linux feature, then please open an issue on this repository explaining the feature or other code you
 aim to contribute and how you propose this should be done. You should be comfortable creating PRs and have good knowledge of JavaScript. Follow the same
-[contributing guidelines](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) as for Kiwix JS.
+[contributing guidelines](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) as for Kiwix JS. We have now transitioned this app to ES6 code, which is
+transpiled by [rollup.js](https://rollupjs.org/) and [Babel](https://babeljs.io/) to code that is compatible with older browsers. Brief instructions:
+
+* Clone this repo and run `npm install` to get the Node dependencies;
+* To serve the app with [Vite.js](https://vitejs.dev/), which includes Hot Module Replacement, run `npm run serve`;
+* You MUST turn on the option to Bypass the app cache in Configuration under Troubleshooting and development. If the app loads in a disordered way,
+you should still be able to access this setting so long as the app is in ServiceWorker mode (if it isn't turn it on under Content injection mode). Refresh the app with Ctrl-R;
+* Vite will watch for changes and will refresh the app when you make any and save them;
+* To preview the bundled version of the app, run `npm run preview`, and Vite will build the app and open a browser window to view the bundled version;
+* To fully build the app, run `npm run build`. The built app will be saved to a directory called `dist` in your cloned repo; 
+* To run the app in the Electron framework, you can use `npm start`. This will run the unbundled app in the Electron version specified in `package.json`. See various
+scripts to build the bundled version of the app for Electron in `package.json` (you can only build it for the OS you are currently on, though the Linux app can be built
+on Windows with WSL).
 
 ## Other contributions / donations
 
