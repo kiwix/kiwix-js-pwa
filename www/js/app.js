@@ -4375,18 +4375,15 @@ function handleMessageChannelMessage(event) {
                             'imageDisplay': imageDisplayMode,
                             'content': buffer
                         };
-                        // Prevent running of replay system in Zimit files (it causes blocking exceptions, and we don't use it)
-                        // if (params.zimType === 'zimit' && /javascript/i.test(message.mimetype) && 
-                        //     /(?:chunk\.js|\bload\.js|\bsw\.js)(?:[?#]|$)/.test(message.title)) message.content = '';
                         if (dirEntry.nullify) message.content = '';
                         // if (content.buffer) {
                         //     // In Edge Legacy, we have to transfer the buffer inside an array, whereas in Chromium, this produces an error
                         //     // due to type not being transferrable... (and already detached, which may be to do with storing in IndexedDB in Electron)
                         //     // if ('MSBlobBuilder' in window) buffer = [buffer];
                         //     messagePort.postMessage(message, [buffer]);
-                        // } else {
-                            messagePort.postMessage(message);
                         // }
+                        // It appears doing it simply like this works in all browsers...
+                        messagePort.postMessage(message);
                     });
                 }
             };
