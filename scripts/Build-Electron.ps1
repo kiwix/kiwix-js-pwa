@@ -65,7 +65,7 @@ if ($electronbuild -eq "local" -and !$dryrun) {
   # Rewrite the archive for Electron if it is an mdwiki type
   (Get-Content ./dist/www/js/init.js) -replace '(mdwiki[^-]+)-app_', '$1_' | Set-Content -encoding 'utf8BOM' ./dist/www/js/init.js
   # Set the module type to one supported by Electron
-  (Get-Content ./dist/package.json) -replace '("type":\s+)"module"', '$1"commonjs"' | Set-Content ./dist/package.json
+  (Get-Content ./package.json) -replace '("type":\s+)"module"', '$1"commonjs"' | Set-Content ./package.json
 }
 if ($electronbuild -eq "local" -and (-not $portableonly)) {
   if (-Not (Test-Path $WinInstaller -PathType Leaf)) {
@@ -173,10 +173,10 @@ if ($electronbuild -eq "local" -and (-not $portableonly)) {
     # docker $build_command
   }
 }
-# if ($electronbuild -eq "local" -and !$dryrun) {
-#   # Set the module type back to native modules
-#   (Get-Content ./dist/package.json) -replace '("type":\s+)"commonjs"', '$1"module"' | Set-Content ./dist/package.json
-# }
+if ($electronbuild -eq "local" -and !$dryrun) {
+  # Set the module type back to native modules
+  (Get-Content ./package.json) -replace '("type":\s+)"commonjs"', '$1"module"' | Set-Content ./package.json
+}
 if ($old_windows_support -and ($electronbuild -eq 'local')) {
   "`nSupport for XP and Vista was requested."
   "Searching for archives..."
