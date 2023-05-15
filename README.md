@@ -135,8 +135,16 @@ If you have coding experience and are interested in contributing to this project
 as much of the code contributed there is subsequently ported to this repository. Please see [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) for details.
 If you wish to contribute to a specific Kiwix JS Windows/Linux feature, then please open an issue on this repository explaining the feature or other code you
 aim to contribute and how you propose this should be done. You should be comfortable creating PRs and have good knowledge of JavaScript. Follow the same
-[contributing guidelines](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) as for Kiwix JS. We are transitioning this app to ES6 code, which is
-transpiled by [rollup.js](https://rollupjs.org/) and [Babel](https://babeljs.io/) to code that is compatible with older browsers.
+[contributing guidelines](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) as for Kiwix JS. We have now transitioned this app to ES6 code, which is
+transpiled by [rollup.js](https://rollupjs.org/) and [Babel](https://babeljs.io/) to code that is compatible with older browsers. Briedf instructions:
+
+* Clone this repo and run `npm install` to get the Node dependencies;
+* To serve the app with Vite.js, which includes Hot Module Replacement, run `npm run serve`;
+* You MUST turn on the option to Bypass the app cache in Configuration under Troubleshooting and development. If the app loads in a disordered way,
+you should still be able to access this setting so long as the app is in ServiceWorker mode (if it isn't turn it on under Content injection mode). Refresh the app with Ctrl-R;
+* Vite will watch for changes and will refresh the app when you make any and save them;
+* To preview the bundled version of the app, run `npm run preview`, and Vite will build the app and open a browser window to view the bundled version;
+* To fully build the app, run `npm run build`. The built app will be saved to a directory called `dist` in your cloned repo. 
 
 ## Other contributions / donations
 
