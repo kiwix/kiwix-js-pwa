@@ -66,8 +66,6 @@ params['kiwixHiddenDownloadLink'] = "https://master.download.kiwix.org/zim/";
 /******* DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
 params['PWAServer'] = "https://pwa.kiwix.org/"; // Production server
 // params['PWAServer'] = "https://kiwix.github.io/kiwix-js-windows/"; // Test server
-params['PWAMode'] = getSetting('PWAMode'); // Set to true if the app should always operate in PWA mode 
-
 params['storeType'] = getBestAvailableStorageAPI();
 params['appType'] = getAppType();
 params['keyPrefix'] = 'kiwixjs-'; // Prefix to use for localStorage keys
