@@ -52,6 +52,34 @@ want to download. It's much easier than it sounds!
 
 ![WikiMed montage dark mode trans](https://user-images.githubusercontent.com/4304337/218268858-7baddf4c-6b8d-4ee9-b369-ef2598eca194.png)
 
+## Browser support
+
+We pride ourselves in maintaining support for old browsers and platforms, given that an important target audience for this app consists of
+users in the developing world who may only have access to old devices with outdated software. We test the app frequently on older browsers
+and operating systems. The app will usually detect which features don't work on a given browser, and disable them or work around them. However,
+in some cases (e.g. Firefox <= 59), the app will set itself to Service Worker mode, but this mode will silently fail. If affected, please
+try switching the app to JQuery mode (see Content injection mode in Configuration).
+
+### Officially supported
+
+* Firefox >= 60 (except on Android)`*`
+* Edge Chromium >= 79
+* Chromium >= 59 (and many browsers based on Chromium, e.g. Opera, Samsung Internet)
+* Edge Legacy 18
+* Safari on iOS
+
+`*` There is a bug with Firefox in Android whereby the browser attempts to read the entire ZIM archive into memory or internal storage, which fails
+with archives >1GB approximately.
+
+### Deprecated
+
+Although deprecated, we will keep support for as long as is practical:
+
+* Internet Explorer 11 (JQuery mode only, no offline use of PWA)
+* Edge Legacy <= 17 (JQuery mode only, no offline use of PWA)
+* Firefox 45-59 (some versions require the user to switch manually to JQuery mode)
+* Chromium 49-58 (some versions only run in JQuery mode)
+
 ## Technical information
 
 This repository is for development of the Kiwix JS app for PWA, Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP).

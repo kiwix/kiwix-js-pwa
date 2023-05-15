@@ -285,6 +285,7 @@
                         <li><a href="#fullTextSearch">Full-text search</a></li>
                         <li><a href="#linkHandling">Link handling, dynamic content and image download</a></li>
                         <li><a href="#windows">Window and tab management</a></li>
+                        <li><a href="browsers">Browser support</a></li>
                         <li><a href="#modes">Technical Information</a></li>
                         <li><a href="#privacy">Privacy Policy</a></li>
                         <li><a href="#feedback">Feedback and Support</a></li>
@@ -531,6 +532,38 @@
                         the app while it is in full-screen mode. Because the browser may throw you out of full-screen mode, for example, when you select an archive or when opening a new window, you may need to click in
                         the app to re-activate full-screen mode. Full-screen mode needs to be activated by a user gesture: it is not possible to activate it automatically.
                     </p>
+                    <h3 id="browsers">Browser support</h3>
+                    <p>
+                        We test the app frequently on older browsers and operating systems. The app will usually detect which features don't work on a given browser, and disable them or work around them. However,
+                        in some cases (e.g. Firefox &lt;= 59), the app will set itself to Service Worker mode, but this mode will silently fail. If affected, please try switching the app to JQuery mode (see below).
+                    </p>
+                    <p>
+                        We have a version of this app using the NWJS framework that runs on Windows XP/Vista, and there are Electron apps for 32bit and 64bit Linux and Windows 7/8/10/11 as well as a UWP (Store) app.
+                    </p>
+                    <p>
+                        The PWA is fully supported for offline use in modern browsers on Android, iOS, macOS, Linux and Windows. On Android, Linux and Windows, using Chrome/Chromium browsers (including Edge and
+                        Samsung Internet), you can install the PWA using a button in Configuration for a near-native experience. On iOS in Safari, you can add the PWA to your Home screen, which has the same effect.
+                    </p>
+                    <h4>Officially supported:</h4>
+                    <ul>
+                        <li>Firefox &gt;= 60 on all operating systems <i>except</i> Android*</li>
+                        <li>Edge Chromium &gt;= 79</li>
+                        <li>Chrome/Chromium &gt;= 59 (and many browsers based on Chromium, e.g. Opera, Samsung Internet)</li>
+                        <li>Edge Legacy 18, including UWP</li>
+                        <li>Safari on iOS</li>
+                    </ul>
+                    <p>
+                        * Although Firefox on Android appears to work, there is a bug whereby the app attempts to load the entire ZIM archive into memory or internal storage before accessing it. This fails with
+                        archives larger than 1GB on most phones.
+                    </p>
+                    <h4>Deprecated</h4>
+                    <p>Although deprecated, we will keep support for as long as is practical:</p>
+                    <ul>
+                        <li>Internet Explorer 11 (JQuery mode only, no offline use of PWA)</li>
+                        <li>Edge Legacy &lt;= 17 (JQuery mode only, no offline use of PWA)</li>
+                        <li>Firefox 45-59 (some versions require you to switch manually to JQuery mode)</li>
+                        <li>Chromium 49-58 (some versions only run in JQuery mode)</li>
+                    </ul>
                     <h3 id="modes">Technical information</h3>
                     <p>
                         Depending on your browser or framework, this app may be capable of running in two different modes, which we call
