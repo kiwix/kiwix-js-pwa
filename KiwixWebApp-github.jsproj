@@ -178,7 +178,6 @@
     <Content Include="www\js\lib\kiwixServe.js" />
     <Content Include="www\js\lib\transformZimit.js" />
     <Content Include="www\js\lib\updater.js" />
-    <Content Include="www\js\lib\webpHeroBundle_0.0.0-dev.27.js" />
     <Content Include="www\js\lib\transformStyles.js" />
     <Content Include="www\js\lib\uiUtil.js" />
     <Content Include="www\js\lib\utf8.js" />
@@ -195,6 +194,7 @@
     <Content Include="www\js\lib\zimfile.js" />
     <Content Include="www\js\lib\xzdec-wasm.wasm" />
     <Content Include="www\js\lib\zstddec-wasm.wasm" />
+    <Content Include="www\js\lib\webpHeroBundle_0.0.0-dev.27.js" />
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="manifest.json" />
     <Content Include="service-worker.js" />

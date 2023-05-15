@@ -458,8 +458,7 @@ function getBestAvailableStorageAPI() {
     return type;
 }
 
-// Test if WebP is natively supported, and if not, set webpMachine to true. The value of webpMachine
-// will determine whether the WebP Polyfills will be loaded (currently only used in uiUtil.js)
+// Test if WebP is natively supported, and if not, load a webpMachine instance. This is used in uiUtils.js.
 var webpMachine = false;
 
 // We use a self-invoking function here to avoid defining unnecessary global functions and variables
@@ -472,6 +471,12 @@ var webpMachine = false;
     webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
 })(function (support) {
     if (!support) {
-        webpMachine = true;
+        // Note we set the location of this to be the directory where scripts reside after bundling
+        var webpScript = document.createElement('script');
+        webpScript.onload = function () {
+            webpMachine = new webpHero.WebpMachine();
+        }
+        webpScript.src = 'js/webpHeroBundle_0.0.0-dev.27.js';
+        document.head.appendChild(webpScript);
     }
 });

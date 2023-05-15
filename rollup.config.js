@@ -41,7 +41,7 @@ const config = {
         }),
         copy({
             targets: [
-              { src: ['www/js/lib/*dec-wasm.wasm', 'www/js/lib/libzim-asm.js', 'www/js/lib/libzim-wasm.*', 'www/js/lib/darkreader.min.js', '!www/js/lib/libzim-wasm.dev*'], dest: 'dist/www/js' },
+              { src: ['www/js/lib/*dec-wasm.wasm', 'www/js/lib/libzim-asm.js', 'www/js/lib/libzim-wasm.*', 'www/js/lib/darkreader.min.js', 'www/js/lib/webpHeroBundle*', '!www/js/lib/libzim-wasm.dev*'], dest: 'dist/www/js' },
               { src: ['archives', 'images', 'index.html', 'manifest.json', 'package.json', 'LICENSE', 'CHANGELOG.md', '*.appxmanifest', '*.pfx', '*.cjs', 'Package.StoreAssociation.xml'], dest: 'dist' },
             ],
             flatten: true

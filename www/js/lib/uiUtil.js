@@ -22,7 +22,6 @@
 'use strict';
 
 import util from './util.js';
-import './webpHeroBundle_0.0.0-dev.27.js';
 
 /**
  * Global variables
@@ -1159,9 +1158,6 @@ function closestAnchorEnclosingElement(element) {
         return currentElement;
     }
 }
-
-// If global variable webpMachine is true (set in init.js), then we need to initialize the WebP Polyfill
-if (webpMachine) webpMachine = new webpHero.WebpMachine();
 
 /**
  * Functions and classes exposed by this module
