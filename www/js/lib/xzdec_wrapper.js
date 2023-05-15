@@ -50,20 +50,25 @@ if ('WebAssembly' in self) {
  */
 var xzdec;
 
-if (XZMachineType === 'WASM') {
-    XZWASM().then(function (instance) {
-        params.decompressorAPI.assemblerMachineType = XZMachineType;
-        xzdec = instance;
-    }).catch(function (err) {
-        uiUtil.reportAssemblerErrorToAPIStatusPanel('XZ', err, XZMachineType);
-    }); 
-} else {
+var loadASM = function () {
     XZASM().then(function (instance) {
         params.decompressorAPI.assemblerMachineType = XZMachineType;
         xzdec = instance;
     }).catch(function (err) {
         uiUtil.reportAssemblerErrorToAPIStatusPanel('XZ', err, XZMachineType);
     });
+};
+
+if (XZMachineType === 'WASM') {
+    XZWASM().then(function (instance) {
+        params.decompressorAPI.assemblerMachineType = XZMachineType;
+        xzdec = instance;
+    }).catch(function (err) {
+        XZMachineType = 'ASM';
+        loadASM();
+    }); 
+} else {
+    loadASM();
 };
     
 /**

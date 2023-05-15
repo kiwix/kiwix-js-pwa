@@ -99,21 +99,25 @@ if ('WebAssembly' in self) {
     ZSTDMachineType = 'ASM';
 }
 
-if (ZSTDMachineType === 'WASM') {
-    ZDWASM().then(function (inst) {
-        params.decompressorAPI.assemblerMachineType = ZSTDMachineType;
-        instantiateDecoder(inst);
-    }).catch(function (err) {
-        uiUtil.reportAssemblerErrorToAPIStatusPanel('ZSTD', err, ZSTDMachineType);
-    });
-} else {
-    // Fall back to ASM
+var loadASM = function () {
     ZDASM().then(function (inst) {
         params.decompressorAPI.assemblerMachineType = ZSTDMachineType;
         instantiateDecoder(inst);
     }).catch(function (err) {
         uiUtil.reportAssemblerErrorToAPIStatusPanel('ZSTD', err, ZSTDMachineType);
     });
+};
+
+if (ZSTDMachineType === 'WASM') {
+    ZDWASM().then(function (inst) {
+        params.decompressorAPI.assemblerMachineType = ZSTDMachineType;
+        instantiateDecoder(inst);
+    }).catch(function (err) {
+        ZSTDMachineType = 'ASM';
+        loadASM();
+    });
+} else {
+    loadASM();
 }
 
 /**
