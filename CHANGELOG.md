@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 2.4.7
+## In-progress release 2.4.8
 
 * FEATURE: PWA app is now smaller and loads faster due to minification with modern build process
 * ENHANCEMENT: New modular system and bundler ensures smaller and more stable memory management
