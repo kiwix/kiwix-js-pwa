@@ -75,7 +75,7 @@ jobs:
       run: |
         echo "Changing Electron version to latest that supports 32bit Linux (18.3.15) in ./dist/package.json"
         sed -i -E 's/("electron":\s")[^"]+/\118.3.15/' ./dist/package.json
-        npx electron-builder --linux AppImage:ia32 deb:ia32 rpm:ia32 --projectDir dist
+        npx electron-builder --linux AppImage:ia32 deb:ia32 --projectDir dist
     # - name: Upload packages to Kiwix
       # run: |
       #   echo "$SSH_KEY" > ./scripts/ssh_key
