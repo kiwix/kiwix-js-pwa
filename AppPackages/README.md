@@ -47,15 +47,19 @@ Enable Developer mode on your device (Settings / Updates and security / For deve
 
 You will need a ZIM file to work with this app. For testing, it comes packaged either with the Ray Charles ZIM or the Top 100 Wikipedia (English) articles ZIM. You can download other ZIM archives from the setup page in the app (the download completes in the browser). Place the file in an accessible location on your device, and use the Rescan Storage button in the app to display buttons that let you pick the file or the file's folder.
 
-Alternatively, you can download files from http://wiki.kiwix.org/wiki/Content_in_all_languages on a regular PC. Some ZIM files are very large (full English Wikipedia with images is over 90GB) -- we suggest you use BitTorrent to download these files: the app will provide you with a BitTorrent link for large files - just open the download Library in Configuration, browse for your ZIM and click on it: an information page with links will be shown.
+Alternatively, you can download files from https://library.kiwix.org on a regular PC. Some ZIM files are very large (full English Wikipedia with images is over 90GB) -- we suggest you
+use BitTorrent to download these files: the app will provide you with a BitTorrent file or a Magnet link for large files - just open the download Library in Configuration, browse for
+your ZIM and click on it: an information page with links will be shown. Generally the BitTorrent file is a bit more efficient than the Magnet link, especially for files that are not
+frequently downloaded via BitTorrent.
 
 ### Splitting your ZIM archive (for FAT32 storage)
 
 **NB If your SD card or hard drive is formatted as exFAT or NTFS, you *do not need to do this procedure!***
 
-If you plan to store a large ZIM file > 4GB on an SD card or other drive formatted as **FAT32** (most are not), then you may need to use a programme like
-[File Splitter and Joiner](http://www.fastfilejoiner.com/) to split the file into 4GiB-1 chunks: chunks must be exactly 4,294,967,295 bytes **or any number less than this**. You will need to give a file extension to each chunk in the right order following this pattern: `*.zimaa`, `*.zimab`, `*.zimac`, `...`, etc.).
+If you plan to store a large ZIM file > 4GB on an SD card or other drive formatted as **FAT32** (most are not), then you may need to use a programme like (on Windows)
+[File Splitter and Joiner](http://www.fastfilejoiner.com/), or (on Linux) `split` (see below), to split the file into 4GiB-1 chunks. Chunks must be exactly 4,294,967,295 bytes
+**or any number less than this**. You will need to give a file extension to each chunk in the right order following this pattern: `*.zimaa`, `*.zimab`, `*.zimac`, `...`, etc.).
 
-Alternatively, you can split a file with Linux or WSL (Windows Subsystem for Linux). In this case, open a Terminal and type
+On both Linux and Windows 11 WSL (Windows Subsystem for Linux), you can use the `split` command in a Terminal. Open a Terminal / launch WSL, and type
 `split --bytes=4000M wikipedia_en_all_maxi_2021-12.zim wikipedia_en_all_maxi_2021-12.zim` (adapt the name of the ZIM archive accordingly),
 and the file will be split into the correct parts (if you have sufficient disk space).
