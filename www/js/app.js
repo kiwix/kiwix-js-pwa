@@ -152,21 +152,10 @@ function resizeIFrame(reload) {
     if (window.outerWidth <= 470) {
         document.getElementById('dropup').classList.remove('col-xs-4');
         document.getElementById('dropup').classList.add('col-xs-3');
-        //var colXS2 = document.querySelectorAll('.col-xs-2');
-        //if (colXS2.length && window.outerWidth <= 360) {
-        //    for (var i = 0; i < colXS2.length; i++) {
-        //        colXS2[i].classList.remove('col-xs-2');
-        //        colXS2[i].classList.add('col-xs-1');
-        //    }
         if (window.outerWidth <= 360) {
-            //document.getElementById('btnHomeBottom').classList.remove('col-xs-2');
-            //document.getElementById('btnHomeBottom').classList.add('col-xs-1');
             document.getElementById('btnTop').classList.remove('col-xs-2');
             document.getElementById('btnTop').classList.add('col-xs-1');
-            //} else if (window.outerWidth > 360 && !colXS2.length) {
         } else {
-            //document.getElementById('btnHomeBottom').classList.remove('col-xs-1');
-            //document.getElementById('btnHomeBottom').classList.add('col-xs-2');
             document.getElementById('btnTop').classList.remove('col-xs-1');
             document.getElementById('btnTop').classList.add('col-xs-2');
         }
@@ -5536,30 +5525,35 @@ function displayHiddenBlockElements(win, doc) {
     win.scrollBy(0, -5);
 }
 
+var dropup = document.getElementById('dropup');
+dropup.addEventListener('click', function () {
+    var ToCList = document.getElementById('ToCList');
+    ToCList.style.display = ToCList.style.display === 'block' ? 'none' : 'block';
+});
+
 function setupTableOfContents() {
-    //var iframe = window.frames[0].frameElement;
     var iframe = document.getElementById('articleContent');
     var innerDoc = iframe.contentDocument;
     var tableOfContents = new uiUtil.toc(innerDoc);
     var headings = tableOfContents.getHeadingObjects();
     
-    document.getElementById('dropup').style.fontSize = ~~(params.relativeUIFontSize * 0.14) + "px";
-    var dropup = "";
+    dropup.style.fontSize = ~~(params.relativeUIFontSize * 0.14) + "px";
+    var dropupHtml = "";
     headings.forEach(function (heading) {
         if (/^h1$/i.test(heading.tagName))
-            dropup += '<li style="font-size:' + params.relativeFontSize + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+            dropupHtml += '<li style="font-size:' + params.relativeFontSize + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
         else if (/^h2$/i.test(heading.tagName))
-            dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.9) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+            dropupHtml += '<li style="font-size:' + ~~(params.relativeFontSize * 0.9) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
         else if (/^h3$/i.test(heading.tagName))
-            dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.8) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+            dropupHtml += '<li style="font-size:' + ~~(params.relativeFontSize * 0.8) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
         else if (/^h4$/i.test(heading.tagName))
-            dropup += '<li style="font-size:' + ~~(params.relativeFontSize * 0.7) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+            dropupHtml += '<li style="font-size:' + ~~(params.relativeFontSize * 0.7) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
         //Skip smaller headings (if there are any) to avoid making list too long
     });
     var ToCList = document.getElementById('ToCList');
     ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
     ToCList.style.marginLeft = ~~(window.innerWidth / 2) - ~~(window.innerWidth * 0.16) + 'px';
-    ToCList.innerHTML = dropup;
+    ToCList.innerHTML = dropupHtml;
     Array.prototype.slice.call(ToCList.getElementsByTagName('a')).forEach(function (listElement) {
         listElement.addEventListener('click', function () {
             var sectionEle = innerDoc.getElementById(this.dataset.headingId);
@@ -5567,21 +5561,6 @@ function setupTableOfContents() {
             var csec = util.closest(sectionEle, 'details, section');
             csec = csec && /DETAILS|SECTION/.test(csec.parentElement.tagName) ? csec.parentElement : csec;
             openAllSections(true, csec);
-            // if (csec) {
-            //     if (/DETAILS/i.test(csec.parentElement.tagName)) csec = csec.parentElement; 
-            //     csec.open = true;
-            //     var closedEles = csec.querySelectorAll('details:not([open])');
-            //     for (i = closedEles.length; i--;) {
-            //         closedEles[i].open = true;
-            //     }
-            // }
-            // csec = closest(sectionEle, '[style*=display]');
-            // if (csec && csec.style.display === 'none') {
-            //     var hiddenEles = csec.parentElement.querySelectorAll('[style*=display]');
-            //     for (i = hiddenEles.length; i--;) {
-            //         if (hiddenEles[i].style.display === 'none') hiddenEles[i].style.display = '';
-            //     }
-            // }
             // Scroll to element
             sectionEle.scrollIntoView();
             // Scrolling up then down ensures that the toolbars show according to user settings
@@ -5590,9 +5569,9 @@ function setupTableOfContents() {
                 iframe.contentWindow.scrollBy(0, 5);
                 iframe.contentWindow.focus();
             }, 250);
+            ToCList.style.display = 'none';
         });
     });
-
 }
 
 /**
