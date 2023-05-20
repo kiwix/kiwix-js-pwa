@@ -99,7 +99,7 @@ function extractImages(images, callback) {
         var title = decodeURIComponent(imageUrl);
         extractorBusy++;
         if (/^data:image\/webp/i.test(imageUrl)) {
-            image.style.transition = 'opacity 0.5s ease-in';
+            image.style.transition = 'opacity 0.3s ease-in';
             image.style.opacity = '1';
             uiUtil.feedNodeWithBlob(image, 'src', imageUrl, 'image/webp', params.manipulateImages || params.allowHTMLExtraction, function () {
                 checkBatch();
@@ -108,7 +108,7 @@ function extractImages(images, callback) {
         }
         if (params.contentInjectionMode === 'serviceworker' && !(params.manipulateImages || params.allowHTMLExtraction)) {
             var transition = function () {
-                image.style.transition = 'opacity 0.5s ease-in';
+                image.style.transition = 'opacity 0.3s ease-in';
                 image.style.opacity = '1';
                 removeEventListener('load', transition);
             }
@@ -132,7 +132,7 @@ function extractImages(images, callback) {
                 uiUtil.feedNodeWithBlob(image, 'src', content, mimetype, params.manipulateImages || params.allowHTMLExtraction, function () {
                     checkBatch();
                 });
-                image.style.transition = 'opacity 0.5s ease-in';
+                image.style.transition = 'opacity 0.3s ease-in';
                 image.style.opacity = '1';
             });
         }).catch(function (e) {
