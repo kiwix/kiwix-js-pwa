@@ -21,15 +21,6 @@ const config = {
       }
     ]
   ],
-  // "plugins": [
-  //     [ "polyfill-corejs3", 
-  //         {
-  //             "method": "usage-global",
-  //             "version": "3.20",
-  //             // "exclude": [ ]
-  //         }
-  //     ]
-  // ],
   "exclude": [ "node_modules/**" ]
 
 };
