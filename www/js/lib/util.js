@@ -604,8 +604,16 @@ function Hilitor(node, tag) {
             }
             var nodeText = subNodes.join(" ");
             if (testInput.test(nodeText)) {
-                //hilitedNodes[start].scrollIntoView(true);
-                $("#articleContent").contents().scrollTop($(hilitedNodes[start]).offset().top - window.innerHeight / 3);
+                var iframeWindow = document.getElementById('articleContent').contentWindow;
+                var scrollOffset = hilitedNodes[start].offsetTop - window.innerHeight / 4;
+                if ('scrollBehavior' in document.documentElement.style) {
+                    iframeWindow.scrollTo({
+                        top: scrollOffset,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    iframeWindow.scrollTo(0, scrollOffset);
+                }
                 break;
             } else {
                 if (f == hilitedNodes.length && scrollFrom > 0) {
