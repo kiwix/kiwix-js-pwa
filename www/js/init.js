@@ -1,6 +1,6 @@
-﻿/**
+﻿/*!
  * init.js : Configuration for the app
- * This file handles the dependencies between javascript libraries
+ * This file sets the app's main parameters and variables
  * 
  * Copyright 2013-2023 Mossroy, Jaifroid and contributors
  * License GPL v3:
