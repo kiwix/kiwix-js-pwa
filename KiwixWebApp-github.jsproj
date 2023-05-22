@@ -174,7 +174,7 @@
     <Content Include="www\js\lib\settingsStore.js" />
     <Content Include="www\js\lib\filecache.js" />
     <Content Include="www\js\lib\images.js" />
-    <Content Include="www\js\lib\jquery-3.2.1.slim.js" />
+    <Content Include="www\js\lib\jquery-3.7.0.slim.js" />
     <Content Include="www\js\lib\kiwixServe.js" />
     <Content Include="www\js\lib\transformZimit.js" />
     <Content Include="www\js\lib\updater.js" />
