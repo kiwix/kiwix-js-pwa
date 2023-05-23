@@ -409,11 +409,11 @@ function displayActiveContentWarning(type) {
  */
 function displayFileDownloadAlert(title, download, contentType, content, autoDismiss) {
     // We have to create the alert box in code, because Bootstrap removes it completely from the DOM when the user dismisses it
-        document.getElementById('alertBoxFooter').innerHTML =
-            '<div id="downloadAlert" class="alert alert-info alert-dismissible">' +
-            '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
-            '    <span id="alertMessage"></span>' +
-            '</div>';
+    document.getElementById('alertBoxFooter').innerHTML =
+        '<div id="downloadAlert" class="alert alert-info alert-dismissible">' +
+        '    <a href="#" id="downloaAlertClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
+        '    <span id="alertMessage"></span>' +
+        '</div>';
     // Download code adapted from https://stackoverflow.com/a/19230668/9727685 
     if (!contentType || /application.download/i.test(contentType)) {
         // DEV: Add more contentTypes here for downloadable files
@@ -478,7 +478,10 @@ function displayFileDownloadAlert(title, download, contentType, content, autoDis
             window.navigator.msSaveBlob(blob, filename);
             e.preventDefault();
         });
-    } 
+    }
+    document.getElementById('downloaAlertClose').addEventListener('click', function () {
+        downloadAlert.style.display = 'none';
+    });
     try {
         a.click();
         // Following line should run only if there was no error, leaving the alert showing in case of error
