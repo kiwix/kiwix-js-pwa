@@ -723,6 +723,10 @@ ZIMArchive.prototype.getDirEntryByPath = function(path, zimitResolving, original
     var that = this;
     if (originalPath) appstate.originalPath = originalPath;
     path = path.replace(/\?kiwix-display/, '');
+    // Correct obvious errors
+    // if (that._file.zimType === 'zimit' && !zimitResolving) {
+    //     path = that._file.minorVersion === 1 ? path.replace(/^.*(C\/A\/.*)$/, '$1') : path.replace(/^.*(A\/.*)$/, '$1');
+    // };
     return util.binarySearch(0, this._file.entryCount, function(i) {
         return that._file.dirEntryByUrlIndex(i).then(function(dirEntry) {
             var url = dirEntry.namespace + "/" + dirEntry.url;
