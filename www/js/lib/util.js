@@ -828,7 +828,9 @@ var PromiseQueue = {
     enqueue: function (promiseFactory) {
         var that = this;
         return new Promise(function (resolve, reject) {
-            that._queue.push({promise: promiseFactory, resolve: resolve, reject: reject});
+            // Don't allow more than four dialogues to queue up
+            if (that._queue.length >= 4) reject('PromiseQueue: queue length exceeded');
+            else that._queue.push({promise: promiseFactory, resolve: resolve, reject: reject});
             if (!that._working) that._dequeue();
         });
     },

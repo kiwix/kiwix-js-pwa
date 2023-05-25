@@ -749,6 +749,8 @@ function systemAlert(message, label, isConfirm, declineConfirmLabel, approveConf
             // Set focus to the first focusable element inside the modal
             modal.focus();
         });
+    }).catch(function (err) {
+        console.warn(err);
     });
 }
 
