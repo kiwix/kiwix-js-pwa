@@ -130,6 +130,7 @@ let precacheFiles = [
   "www/-/mw/mw.MediaWikiPlayer.loader.css",
   "www/-/mw/mw.PopUpMediaTransform.css",
   "www/-/mw/mw.TMHGalleryHook.js.css",
+  "www/-/mw/newstyle_main_page.css",
   "www/-/mw/style.css",
   "www/-/s/css_modules/content.parsoid.css",
   "www/-/s/css_modules/ext.cite.a11y.css",
@@ -343,11 +344,11 @@ self.addEventListener('fetch', function (event) {
             } else {
                 // It's not an asset, or it doesn't match a ZIM URL pattern, so we should fetch it with Fetch API
                 return fetch(event.request).then(function (response) {
-                    // DEV: CACHE updating is now done in app.js
                     // If request was successful, add or update it in the cache, but be careful not to cache the ZIM archive itself!
-                    // if (!regexpExcludedURLSchema.test(event.request.url) && !/\.zim\w{0,2}$/i.test(strippedUrl)) {
-                    //     event.waitUntil(updateCache(APP_CACHE, rqUrl, response.clone()));
-                    // }
+                    if (!regexpExcludedURLSchema.test(event.request.url) && !/\.zim\w{0,2}$/i.test(strippedUrl)) {
+                        event.waitUntil(updateCache(APP_CACHE, rqUrl, response.clone()));
+                        console.debug('DEV: *** Consider adding this URL to the list of precached files in the service worker ***');
+                    }
                     return response;
                 }).catch(function (error) {
                     console.debug("[SW] Network request failed and no cache.", error);
