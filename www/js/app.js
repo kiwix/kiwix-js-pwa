@@ -5333,9 +5333,10 @@ function addListenersToLink(a, href, baseUrl) {
         appstate.target = kiwixTarget;
         articleWindow = thisWindow;
         articleContainer = thisContainer;
-        if (a.tagName === 'H1' || a.dataset.popup) {
+        var isNautilusPopup = a.dataset.popup && !/0|false/i.test(a.dataset.popup);
+        if (a.tagName === 'H1' || isNautilusPopup) {
             // We have registered a click on the header or on a dynamic link (e.g. in Nautilus archives)
-            if (a.dataset.popup) {
+            if (isNautilusPopup) {
                 // Pop-up window sometimes opens out of view, so we have to scroll into view
                 iframe.contentWindow.scrollTo({
                     top: '0',
