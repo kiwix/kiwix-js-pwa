@@ -158,9 +158,9 @@ function transformReplayUrls(dirEntry, data, mimetype, callback) {
             // For fully relative links, we have to remove any '..' if we are in root directory
             if (rootDirectory) assetUrl = assetUrl.replace(/^(\.\.\/?)+/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/'); 
             // Add placeholder to prevent further transformations
-            if (/^<a\s/i.test(newBlock)) newBlock = newBlock.replace(relAssetUrl, '@kiwixtrans@' + assetUrl);
+            if (/^<a\s/i.test(newBlock)) newBlock = newBlock.replace(relAssetUrl, '@kiwixtrans@' + assetUrl + (params.contentInjectionMode === 'serviceworker' ? '?isKiwixHref' : ''));
             // But for non-anchor URLs, We have to mark potential assets that are not easily identified as assets, due to so many html mimetypes being returned for them
-            else newBlock = newBlock.replace(relAssetUrl, '@kiwixtransformed@' + assetUrl + (params.contentInjectionMode === 'serviceworker' ? '?isKiwixAsset' : ''));
+            else newBlock = newBlock.replace(relAssetUrl, '@kiwixtransformed@' + assetUrl);
             // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
             return newBlock;
         });
@@ -203,7 +203,7 @@ function transformReplayUrls(dirEntry, data, mimetype, callback) {
             var videoId = data.match(/originalUrl['":]+[^'"]+?youtube.com\/embed\/([^'"]+)/);
             if (videoId && videoId[1]) {
                 var rgxYouTubeKey = new RegExp(youTubeKey[1].replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), 'g');
-                data = data.replace(rgxYouTubeKey, videoId[1] + '?iskiwixasset');
+                data = data.replace(rgxYouTubeKey, videoId[1]);
             }
         }
 
@@ -237,7 +237,7 @@ function transformReplayUrls(dirEntry, data, mimetype, callback) {
             if (rootDirectory) assetUrl = assetUrl.replace(/^(\.\.\/?)+/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/'); 
             // Relative assets
             newBlock = assetUrl === url ? newBlock :
-                newBlock.replace(url, '@kiwixtransformed@' + assetUrl + (params.contentInjectionMode === 'serviceworker' ? '?isKiwixAsset' : ''));
+                newBlock.replace(url, '@kiwixtransformed@' + assetUrl);
             // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
             return newBlock;
         });
