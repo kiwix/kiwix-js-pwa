@@ -724,9 +724,16 @@ ZIMArchive.prototype.getDirEntryByPath = function(path, zimitResolving, original
     if (originalPath) appstate.originalPath = originalPath;
     path = path.replace(/\?kiwix-display/, '');
     // Correct obvious errors
-    // if (that._file.zimType === 'zimit' && !zimitResolving) {
-    //     path = that._file.minorVersion === 1 ? path.replace(/^.*(C\/A\/.*)$/, '$1') : path.replace(/^.*(A\/.*)$/, '$1');
-    // };
+    if (!originalPath) {
+        var revisedPath = path.replace(/.*?((?:C\/A|A)\/(?!.*(?:C\/A|A)).+)$/, '$1');
+        if (revisedPath !== path) {
+            console.warn('*** Revised path from ' + path + '\nto: ' + revisedPath + ' ***');
+            if (appstate.selectedArchive._file.zimType === 'zimit') {
+                console.debug('*** DEV: Consider correcting this error in tranformZimit.js ***');
+            }
+            path = revisedPath;
+        }
+    }
     return util.binarySearch(0, this._file.entryCount, function(i) {
         return that._file.dirEntryByUrlIndex(i).then(function(dirEntry) {
             var url = dirEntry.namespace + "/" + dirEntry.url;
