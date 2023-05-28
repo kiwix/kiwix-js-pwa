@@ -323,14 +323,14 @@ function displayActiveContentWarning(type) {
     var alertHTML = '';
     if (params.contentInjectionMode === 'jquery' && type === 'open') {
         alertHTML = '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
-            '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
+            '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
         '<strong>Unable to display active content:</strong> To use <b>Archive Index</b> type a <b><i>space</i></b>, or for <b>URL Index</b> type ' +
             '<b><i>space / </i></b>, or else <a id="swModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to Service Worker mode</a> ' +
             'if your platform supports it. &nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';
     } else if (params.contentInjectionMode === 'serviceworker' && type === 'legacy') {
         alertHTML = '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
-            '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
+            '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
         '<strong>Legacy ZIM type!</strong> To display content correctly from this historical ZIM, ' +
             'please <a id="jqModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to the legacy JQuery mode</a>. ' +
             'You may need to increase font size with zoom buttons at bottom of screen.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
@@ -338,7 +338,7 @@ function displayActiveContentWarning(type) {
     } else if (params.contentInjectionMode === 'serviceworker' && (params.manipulateImages || params.displayHiddenBlockElements || params.allowHTMLExtraction)) {
         alertHTML =
         '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
-            '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
+            '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
             '<strong>Active content may not work correctly:</strong> Please ' + (params.displayHiddenBlockElements ? 
             '<a id="hbeModeLink" href="#displayHiddenBlockElementsDiv" class="alert-link">disable Display hidden block elements</a> ' :
             params.manipulateImages ? '<a id="imModeLink" href="#imageManipulationDiv" class="alert-link">disable Image manipulation</a> ' : '') + 
@@ -350,7 +350,7 @@ function displayActiveContentWarning(type) {
     if (type === 'zimit') {
         alertHTML =
         '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
-            '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
+            '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
             // '<strong>' + (params.contentInjectionMode === 'jquery' ? 'Limited Zimit' : 'Experimental') + ' support:</strong> ' + 
             (params.contentInjectionMode === 'jquery' ? '<b>Limited Zimit support!</b> Please <a id="swModeLink" href="#contentInjectionModeDiv" ' + 
             'class="alert-link">switch to Service Worker mode</a> if your platform supports it. ' : 
@@ -363,6 +363,10 @@ function displayActiveContentWarning(type) {
     var alertBoxHeader = document.getElementById('alertBoxHeader');
     alertBoxHeader.innerHTML = alertHTML;
     alertBoxHeader.style.display = 'block';
+    document.getElementById('activeContentClose').addEventListener('click', function () {
+        // Hide the alert box
+        alertBoxHeader.style.display = 'none';
+    });
     ['swModeLink', 'jqModeLink', 'imModeLink', 'hbeModeLink', 'stop'].forEach(function(id) {
         // Define event listeners for both hyperlinks in alert box: these take the user to the Config tab and highlight
         // the options that the user needs to select
