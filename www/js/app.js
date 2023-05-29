@@ -74,6 +74,10 @@ appstate['search'] = {
 // because params.storeType is also set in a preliminary way in init.js)
 params['storeType'] = null;
 params['storeType'] = settingsStore.getBestAvailableStorageAPI();
+
+// Placeholder for the alert box header element, so it can be displayed and hidden easily
+const alertBoxHeader = document.getElementById('alertBoxHeader');
+
 // Test caching capability
 cache.test(function(){});
 // Unique identifier of the article expected to be displayed
@@ -152,10 +156,10 @@ function resizeIFrame(reload) {
     removePageMaxWidth();
     checkToolbar();
 }
-$(document).ready(function() {
-    resizeIFrame();
-});
-$(window).resize(function () {
+
+document.onDOMContentLoaded = resizeIFrame;
+
+window.onresize = function () {
     resizeIFrame(true);
     // Check whether fullscreen icon needs to be updated
     setDynamicIcons();
@@ -163,7 +167,7 @@ $(window).resize(function () {
     var scrollFunc = document.getElementById('articleContent').contentWindow;
     scrollFunc = scrollFunc ? scrollFunc.onscroll : null;
     if (scrollFunc) scrollFunc();
-});
+};
 
 // Define behavior of HTML elements
 
@@ -1532,10 +1536,6 @@ function setWindowOpenerUI() {
         woHelp.style.display = 'none';
         newWin.style.display = 'none';
     }
-    // if (params.contentInjectionMode === 'serviceworker') {
-    //     woHelp.innerHTML = 'These settings have no effect in ServiceWorker mode because opening new tabs or windows ' +
-    //         'is handled natively with right-click or ctrl-click. Turn settings off to hide this message.';
-    // } // NB this is not true for the kiwix-js-windows app
 }
 document.getElementById('allowHTMLExtractionCheck').addEventListener('click', function (e) {
     params.allowHTMLExtraction = e.target.checked;
@@ -3741,8 +3741,7 @@ function searchDirEntriesFromPrefix(prefix) {
         appstate.search.status = 'cancelled';
         // Initiate a new search object and point appstate.search to it (the zimAcrhive search object will continue to point to the old object)
         appstate.search = {'prefix': prefix, 'status': 'init', 'type': '', 'size': params.maxSearchResultsSize};
-        var activeContent = document.getElementById('activeContent');
-        if (activeContent) activeContent.style.display = 'none';
+        alertBoxHeader.style.display = 'none';
         if (!prefix || /^\s/.test(prefix)) {
             var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
             if (sel.length) {
@@ -4031,17 +4030,17 @@ function readArticle(dirEntry) {
         var mimeType = dirEntry.getMimetype();
         //TESTING//
         console.log('Initiating ' + mimeType  + ' load of ' + dirEntry.namespace + '/' + dirEntry.url + "...");
-        
+        alertBoxHeader.style.display = 'none';
         // Set startup parameter to guard against boot loop
         if (settingsStore.getItem('lastPageLoad') !== 'rebooting') settingsStore.setItem('lastPageLoad', 'failed', Infinity);
         // Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
         localSearch = {};
         // Calculate the current article's ZIM baseUrl to use when processing relative links
-        params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
+        params.baseURL = encodeURI(dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''));
         // URI-encode anything that is not a '/'
-        .replace(/[^/]+/g, function(m) {
-            return encodeURIComponent(m);
-        });
+        // .replace(/[^/]+/g, function(m) {
+        //     return encodeURIComponent(m);
+        // });
         if (!/\bx?html\b/i.test(mimeType)) {
             // If the selected article isn't HTML, e.g. it might be a PDF, we can either download it if we recognize the type, or ask the SW to deal with it
             if ((params.zimType === 'zimit' || appstate.search.searchUrlIndex) && 
@@ -4072,7 +4071,9 @@ function readArticle(dirEntry) {
         var zimName = appstate.selectedArchive._file.name.replace(/\.[^.]+$/, '').replace(/_\d+-\d+$/, '');
         if (params.isLandingPage && params.cachedStartPages[zimName]) {
             htmlContent = -1;
-            var encURL = encodeURIComponent(encodeURIComponent(params.cachedStartPages[zimName]).replace(/%2F/g, '/')).replace(/%2F/g, '/');
+            // @TODO: Why are we double-encoding here????? Clearly we double-decode somewhere...
+            // var encURL = encodeURIComponent(encodeURIComponent(params.cachedStartPages[zimName]).replace(/%2F/g, '/')).replace(/%2F/g, '/');
+            var encURL = encodeURI(encodeURI(params.cachedStartPages[zimName]));
             uiUtil.XHR(encURL, 'text', function (responseTxt, status) {
                 htmlContent = /<html[^>]*>/.test(responseTxt) ? responseTxt : 0;
                 if (htmlContent) {
@@ -4179,7 +4180,7 @@ var articleLoadedSW = function (dirEntry) {
         listenForNavigationKeys();
         // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
         // We need to set a timeout so that dynamically generated URLs are parsed as well (e.g. in Gutenberg ZIMs)
-        if (params.windowOpener) setTimeout(function () {
+        if (params.windowOpener && params.zimType === 'open') setTimeout(function () {
             parseAnchorsJQuery(dirEntry);
         }, 1500);
         if ((params.zimType === 'open' || params.manipulateImages) && /manual|progressive/.test(params.imageDisplayMode)) {
@@ -4197,6 +4198,26 @@ var articleLoadedSW = function (dirEntry) {
         if (/UWP/.test(params.appType)) docBody.addEventListener('pointerup', onPointerUp);
         // Trap clicks in the iframe to restore Fullscreen mode
         if (params.lockDisplayOrientation && articleWindow.kiwixType === 'iframe') articleWindow.addEventListener('mousedown', refreshFullScreen, true);
+        // Add event listener to iframe window to check for links to external resources
+        if (params.openExternalLinksInNewTabs && params.zimType === 'open' && appstate.target === 'iframe') {
+            var filterClickEvent = function (event) {
+                // Find the closest enclosing A tag (if any)
+                var clickedAnchor = uiUtil.closestAnchorEnclosingElement(event.target);
+                if (clickedAnchor) {
+                    var href = clickedAnchor.getAttribute('href');
+                    // We assume that, if an absolute http(s) link is hardcoded inside an HTML string, it means it's a link to an external website.
+                    // We also do it for ftp even if it's not supported any more by recent browsers...
+                    if (/^(?:http|ftp)/i.test(href)) {
+                        uiUtil.warnAndOpenExternalLinkInNewTab(event, clickedAnchor);
+                    } else if (regexpDownloadLinks.test(href)) {
+                        // Due to the iframe sandbox, we have to prevent the PDF viewer from opening in the iframe and instead open it in a new tab
+                        event.preventDefault();
+                        window.open(clickedAnchor.href, '_blank');
+                    }
+                }
+            };
+            articleWindow.addEventListener('click', filterClickEvent, true);
+        }
         // The content is ready : we can hide the spinner
         setTab();
         setTimeout(function() {
@@ -4227,6 +4248,9 @@ var articleLoadedSW = function (dirEntry) {
         if (articleWindow.kiwixType === 'iframe') {
             uiUtil.pollSpinner();
         }
+        if (filterClickEvent) {
+            articleWindow.removeEventListener('click', filterClickEvent, true);
+        }
     };
 
 };
@@ -4247,10 +4271,10 @@ function handleMessageChannelMessage(event) {
         // We received a message from the ServiceWorker
         if (event.data.action === "askForContent") {
             // Zimit archives store URLs encoded, and also need the URI component (search parameter) if any
-            var title = params.zimType === 'zimit' ? encodeURIComponent(event.data.title).replace(/\%2F/g, '/') + event.data.search : event.data.title;
+            var title = params.zimType === 'zimit' ? encodeURI(event.data.title) + event.data.search : event.data.title;
             // If it's an asset, we have to mark the dirEntry so that we don't load it if it has an html MIME type
-            var titleIsAsset = /\??isKiwixAsset/.test(title) || /\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(title);
-            title = title.replace(/\??isKiwixAsset/, '');
+            var titleIsAsset = !/\??isKiwixHref/.test(title) || /\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(title);
+            title = title.replace(/\??isKiwixHref/, '');
             if (appstate.selectedArchive && appstate.selectedArchive.landingPageUrl === title) params.isLandingPage = true;
             var messagePort = event.ports[0];
             if (!anchorParameter && event.data.anchorTarget) anchorParameter = event.data.anchorTarget;
@@ -4276,7 +4300,7 @@ function handleMessageChannelMessage(event) {
                     });
                     if (!titleIsAsset && params.zimType === 'zimit') {
                         // Use special routine to handle not-found titles for Zimit
-                        goToArticle(decodeURIComponent(title));
+                        goToArticle(decodeURI(title));
                     } else {
                         if (title === loadingArticle) goToMainArticle();
                     }
@@ -4461,7 +4485,7 @@ var regexpActiveContent = /<script\b(?:(?![^>]+src\b)|(?=[^>]+src\b=["'][^"']*?\
 // DEV: The regex below matches ZIM links (anchor hrefs) that should have the html5 "donwnload" attribute added to 
 // the link. This is currently the case for epub and pdf files in Project Gutenberg ZIMs -- add any further types you need
 // to support to this regex. The "zip" has been added here as an example of how to support further filetypes
-var regexpDownloadLinks = /^.*?\.epub($|\?)|^.*?\.pdf($|\?)|^.*?\.odt($|\?)|^.*?\.zip($|\?)/i;
+var regexpDownloadLinks = /^.*?\.epub([?#]|$)|^.*?\.pdf([?#]|$)|^.*?\.odt([?#]|$)|^.*?\.zip([?#]|$)/i;
 
 // This matches the data-kiwixurl of all <link> tags containing rel="stylesheet" or "...icon" in raw HTML unless commented out
 var regexpSheetHref = /(<link\s+(?=[^>]*rel\s*=\s*["'](?:stylesheet|[^"']*icon))[^>]*(?:href|data-kiwixurl)\s*=\s*["'])([^"']+)(["'][^>]*>)(?!\s*--\s*>)/ig;
@@ -4535,11 +4559,11 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
     
     // Calculate the current article's ZIM baseUrl to use when processing relative links
     // (duplicated because we sometimes bypass readArticle above)
-    params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
+    params.baseURL = encodeURI(dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
         // URI-encode anything that is not a '/'
-        .replace(/[^/]+/g, function(m) {
-            return encodeURIComponent(m);
-    });
+        // .replace(/[^/]+/g, function(m) {
+        //     return encodeURIComponent(m);
+        // });
 
     //Since page has been successfully loaded, store it in the browser history
     if (params.contentInjectionMode === 'jquery') pushBrowserHistoryState(dirEntry.namespace + '/' + dirEntry.url);
@@ -5163,11 +5187,11 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
         }
         
         // Calculate the current article's encoded ZIM baseUrl to use when processing relative links (also needed for SW mode when params.windowOpener is set)
-        params.baseURL = (dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
+        params.baseURL = encodeURI(dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''));
             // URI-encode anything that is not a '/'
-            .replace(/[^/]+/g, function(m) {
-                return encodeURIComponent(m);
-        });
+        //     .replace(/[^/]+/g, function(m) {
+        //         return encodeURIComponent(m);
+        // });
 
         if (params.contentInjectionMode === 'serviceworker') {
             // For UWP apps, we need to add the Zoom level to the HTML if we are opening in external window
@@ -5188,18 +5212,26 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
             params.transDirEntry = dirEntry;
             // We will need the encoded URL on article load so that we can set the iframe's src correctly,
             // but we must not encode the '/' character or else relative links may fail [kiwix-js #498]
-            var encodedUrl = params.zimType === 'zimit' ? dirEntry.url : dirEntry.url.replace(/[^/]+/g, function (matchedSubstring) {
-                return encodeURIComponent(matchedSubstring);
-            });
+            var encodedUrl = params.zimType === 'zimit' ? dirEntry.url : encodeURI(dirEntry.url);
+            // .replace(/[^/]+/g, function (matchedSubstring) {
+            //     return encodeURIComponent(matchedSubstring);
+            // });
             // If the request was not initiated by an existing controlled window, we instantiate the request here
             if (!appstate.messageChannelWaiting) {
                 // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
                 var newLocation = "../" + appstate.selectedArchive._file.name + "/" + dirEntry.namespace + "/" + encodedUrl;
-                if (navigator.serviceWorker.controller) articleWindow.location.href = newLocation;
-                else setTimeout(function () {
-                    // The Service Worker needs more time to load
+                // if (navigator.serviceWorker.controller) articleWindow.location.href = newLocation;
+                // else
+                setTimeout(function () {
+                    // We give the Service Worker some time to load
                     articleWindow.location.href = newLocation;
+                    articleWindow.onload = function () {
+                        articleLoadedSW(dirEntry);
+                    };
                 }, 500);
+                // articleWindow.onload = function () {
+                //     articleLoadedSW(params.transDirEntry);
+                // };
             }
             return;
         }
@@ -5696,6 +5728,7 @@ function pushBrowserHistoryState(title, titleSearch) {
  * @param {String} pathEnc The fully encoded version of the path for use with some Zimit archives
  */
 function goToArticle(path, download, contentType, pathEnc) {
+    path = path.replace(/\??isKiwixHref/, '');
     appstate.expectedArticleURLToBeDisplayed = path;
     //This removes any search highlighting
     clearFindInArticle();
@@ -5759,8 +5792,7 @@ function goToRandomArticle() {
                 if (appstate.selectedArchive._file.minorVersion === 1 || /text\/html\b/i.test(dirEntry.getMimetype()) || 
                     params.zimType !== 'zimit' && dirEntry.namespace === 'A') {
                     params.isLandingPage = false;
-                    var activeContent = document.getElementById('activeContent');
-                    if (activeContent) activeContent.style.display = 'none';
+                    alertBoxHeader.style.display = 'none';
                     readArticle(dirEntry);
                 } else {
                     // If the random title search did not end up on an article,
