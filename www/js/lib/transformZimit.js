@@ -183,7 +183,7 @@ function transformReplayUrls(dirEntry, data, mimetype, callback) {
         // Deal with regex-style urls embedded in page
         data = data.replace(/https?:\\\/\\\/[^"']+/gi, function (assetUrl) {
             assetUrl = assetUrl.replace(/^https?:\\\/\\\//i, '\\/' + dirEntry.namespace + '\\/' + (dirEntry.namespace === 'C' ? 'A\\/' : ''));
-            assetUrl = (window.location.origin + indexRoot).replace(/\\/g, '\\\\').replace(/\//g, '\\/') + assetUrl;
+            assetUrl = (indexRoot).replace(/\\/g, '\\\\').replace(/\//g, '\\/') + assetUrl;
             return assetUrl;
         });
 
@@ -261,11 +261,11 @@ function transformReplayUrls(dirEntry, data, mimetype, callback) {
             // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
             return newBlock;
         });
-        data = data.replace(/(['"])(?:\/?)((?:static|api)\/)/ig, '$1' + window.location.origin + indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/$2');
+        data = data.replace(/(['"])(?:\/?)((?:static|api)\/)/ig, '$1' + indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/$2');
     } // End of JavaScript transformations
 
     // Remove the placeholders used to prevent further matching
-    data = data.replace(/@kiwixtransformed@(?!\.)/g, params.contentInjectionMode === 'serviceworker' ? window.location.origin : '');
+    data = data.replace(/@kiwixtransformed@(?!\.)/g, '');
     data = data.replace(/@kiwixtrans(?:formed)?@/g, '');
 
     return data;    
