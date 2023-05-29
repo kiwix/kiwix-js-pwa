@@ -347,7 +347,6 @@ self.addEventListener('fetch', function (event) {
                     // If request was successful, add or update it in the cache, but be careful not to cache the ZIM archive itself!
                     if (!regexpExcludedURLSchema.test(event.request.url) && !/\.zim\w{0,2}$/i.test(strippedUrl)) {
                         event.waitUntil(updateCache(APP_CACHE, rqUrl, response.clone()));
-                        console.debug('DEV: *** Consider adding this URL to the list of precached files in the service worker ***');
                     }
                     return response;
                 }).catch(function (error) {
