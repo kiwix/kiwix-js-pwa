@@ -4145,13 +4145,45 @@ function readArticle(dirEntry) {
     }
 }
 
+// Add event listener to iframe window to check for links to external resources
+var filterClickEvent = function (event) {
+    console.debug('filetClickEvent fired');
+    if (params.contentInjectionMode === 'jquery') return;
+    // Trap clicks in the iframe to restore Fullscreen mode
+    if (params.lockDisplayOrientation) refreshFullScreen();
+    // Find the closest enclosing A tag (if any)
+    var clickedAnchor = uiUtil.closestAnchorEnclosingElement(event.target);
+    if (clickedAnchor) {
+        var href = clickedAnchor.getAttribute('href');
+        // We assume that, if an absolute http(s) link is hardcoded inside an HTML string, it means it's a link to an external website.
+        // We also do it for ftp even if it's not supported any more by recent browsers...
+        if (/^(?:http|ftp)/i.test(href)) {
+            uiUtil.warnAndOpenExternalLinkInNewTab(event, clickedAnchor);
+        } else if (/\.pdf([?#]|$)/i.test(href)) {
+            // Due to the iframe sandbox, we have to prevent the PDF viewer from opening in the iframe and instead open it in a new tab
+            event.preventDefault();
+            event.stopPropagation();
+            console.debug('filterClickEvent opening new window for PDF');
+            window.open(clickedAnchor.href, '_blank');
+            // Make sure that the last saved page is not a PDF, or else we'll have a CSP exception on restarting the app
+            
+        }
+    }
+};
+
+// articleWindow.addEventListener('mousedown', filterClickEvent, true);
+
 var loaded = false;
 var articleLoadedSW = function (dirEntry) {
     if (loaded) return;
     loaded = true;
+    params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive._file.name;
     articleDocument = articleWindow.document.documentElement;
     var doc = articleWindow.document;
     var docBody = doc.body;
+    // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
+    articleWindow.removeEventListener('mousedown', filterClickEvent, true);
+    articleWindow.addEventListener('mousedown', filterClickEvent, true);
     if (docBody) {
         // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
         articleWindow.kiwixType = appstate.target;
@@ -4196,30 +4228,6 @@ var articleLoadedSW = function (dirEntry) {
         }
         // Trap any clicks on the iframe to detect if mouse back or forward buttons have been pressed (Chromium does this natively)
         if (/UWP/.test(params.appType)) docBody.addEventListener('pointerup', onPointerUp);
-        // Add event listener to iframe window to check for links to external resources
-        if (appstate.target === 'iframe') {
-            var filterClickEvent = function (event) {
-                // Trap clicks in the iframe to restore Fullscreen mode
-                if (params.lockDisplayOrientation) refreshFullScreen();
-                // Find the closest enclosing A tag (if any)
-                var clickedAnchor = uiUtil.closestAnchorEnclosingElement(event.target);
-                if (clickedAnchor) {
-                    var href = clickedAnchor.getAttribute('href');
-                    // We assume that, if an absolute http(s) link is hardcoded inside an HTML string, it means it's a link to an external website.
-                    // We also do it for ftp even if it's not supported any more by recent browsers...
-                    if (/^(?:http|ftp)/i.test(href)) {
-                        uiUtil.warnAndOpenExternalLinkInNewTab(event, clickedAnchor);
-                    } else if (/\.pdf([?#]|$)/i.test(href)) {
-                        // Due to the iframe sandbox, we have to prevent the PDF viewer from opening in the iframe and instead open it in a new tab
-                        event.preventDefault();
-                        event.stopPropagation();
-                        window.open(clickedAnchor.href, '_blank');
-                    }
-                }
-                articleWindow.removeEventListener('mousedown', filterClickEvent, true);
-            };
-            articleWindow.addEventListener('mousedown', filterClickEvent, true);
-        }
         // The content is ready : we can hide the spinner
         setTab();
         setTimeout(function() {
@@ -4229,6 +4237,8 @@ var articleLoadedSW = function (dirEntry) {
         }, 30);
         // Turn off failsafe for SW mode
         settingsStore.setItem('lastPageLoad', 'OK', Infinity);
+        // Because this is loading within docBody, it should only get set for HTML documents
+        if (params.rememberLastPage) settingsStore.setItem('lastPageVisit', params.lastPageVisit, Infinity);
         uiUtil.clearSpinner();
         // If we reloaded the page to print the desktop style, we need to return to the printIntercept dialogue
         if (params.printIntercept) printIntercept();
@@ -4250,9 +4260,9 @@ var articleLoadedSW = function (dirEntry) {
         if (articleWindow.kiwixType === 'iframe') {
             uiUtil.pollSpinner();
         }
-        if (filterClickEvent) {
-            articleWindow.removeEventListener('mousedown', filterClickEvent, true);
-        }
+        // if (filterClickEvent) {
+        //     articleWindow.removeEventListener('mousedown', filterClickEvent, true);
+        // }
     };
 
 };
@@ -4571,6 +4581,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
     if (params.contentInjectionMode === 'jquery') pushBrowserHistoryState(dirEntry.namespace + '/' + dirEntry.url);
     // Store for fast retrieval
     params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive._file.name;
+    if (params.rememberLastPage) settingsStore.setItem('lastPageVisit', params.lastPageVisit, Infinity);
     cache.setArticle(appstate.selectedArchive._file.name, dirEntry.namespace + '/' + dirEntry.url, htmlArticle, function(){});
     params.htmlArticle = htmlArticle;
 
@@ -5349,7 +5360,7 @@ function addListenersToLink(a, href, baseUrl) {
         contentType = a.getAttribute('type');
     }
     // DEV: We need to use the '#' location trick here for cross-browser compatibility with opening a new tab/window
-    if (params.windowOpener && a.tagName !== 'IFRAME') a.setAttribute('href', '#' + href);
+    // if (params.windowOpener && a.tagName !== 'IFRAME') a.setAttribute('href', '#' + href);
     // Store the current values, as they may be changed if user switches to another tab before returning to this one
     var kiwixTarget = appstate.target;
     var thisWindow = articleWindow;
