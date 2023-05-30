@@ -1,9 +1,15 @@
-# Workflow to update docker image for pwa.kiwix.org (since docker autobuild has been disabled)
+# Conditionally publishes the current branch to GitHub Pages, and/or
+# updates docker image for pwa.kiwix.org
+# This workflow uses openzim/docker-publish-action@v6
+# Documentation: https://github.com/openzim/docker-publish-action#readme
 
-name: Docker
+name: Publish app implementation
 
 # Controls when the action will run. 
 on:
+  # Triggers the workflow on push to main
+  push:
+    branches: [ main ]
   # Triggers the workflow when a release is publsihed or updated
   release:
     types: [ published ]
@@ -16,10 +22,14 @@ on:
         description: Specific version to build (overrides on-main and tag-pattern), e.g. 'v2.0.0'
         required: false
         default: ''
+      target:
+        description: 'Set the target to update: "ghpages" or "docker" (will update GitHub Pages by default)'
+        required: false
+        default: ghpages  
 
 jobs:
   build-and-push:
-    name: Deploy Docker Image
+    name: Deploy app to Docker and/or gh-pages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -29,11 +39,19 @@ jobs:
         run: |
           chmod +x ./scripts/rewrite_app_version_number.sh
           ./scripts/rewrite_app_version_number.sh
-      - name: Build app with src and production bundles
+      - name: Build app with src bundle
+        if: github.event.inputs.target == 'ghpages' || github.event_name == 'push'
+        run: |
+          npm install
+          npm run build-src
+      - name: Build app with src and production bundles (production will run)
+        if: github.event.inputs.target == 'docker' || github.event_name == 'release'
         run: |
           npm install
           npm run build
+          echo "After deployment the production app will be available at https://pwa.kiwix.org"
       - name: Build docker image and push
+        if: github.event.inputs.target == 'docker' || github.event_name == 'release'
         uses: openzim/docker-publish-action@v8
         with:
           image-name: kiwix/kiwix-pwa
@@ -47,8 +65,25 @@ jobs:
           registries: ghcr.io
           manual-tag: ${{ github.event.inputs.version }}
       - name: Restart live webapp
+        if: github.event.inputs.target == 'docker' || github.event_name == 'release'
         uses: actions-hub/kubectl@master
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
         with:
           args: rollout restart deployments pwa-deployment -n pwa
+      # Publish to GitHub Pages if explicitly requested, or if releasing, or if pushing to main
+      - name: Publish to GitHub Pages
+        if: github.event.inputs.target == 'ghpages' || github.event_name == 'release' || github.event_name == 'push'
+        run: |
+          # Set up username and email
+          echo "Publishing to GitHub pages..."
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          if [ ! -z "$(git status --porcelain)" ]; then
+            git add .
+            git commit -m "Set GitHub Pages release version"
+          fi
+          # Set gh-pages branch on origin to the currently checked-out branch
+          git push origin HEAD:gh-pages --force
+          echo "After deployment, the app will be available at https://kiwix.github.io/kiwix-js-windows/"
+          echo "The production deployment will be available at https://kiwix.github.io/kiwix-js-windows/dist/"
