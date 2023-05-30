@@ -79,6 +79,8 @@ jobs:
           echo "Publishing to GitHub pages..."
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
+          # Delete gitignore entry for the dist folder
+          sed -i "/^\/dist\/$/d" .gitignore
           if [ ! -z "$(git status --porcelain)" ]; then
             git add .
             git commit -m "Set GitHub Pages release version"
