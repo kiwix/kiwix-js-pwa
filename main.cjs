@@ -55,7 +55,7 @@ function createWindow() {
         minWidth: 640,
         minHeight: 480,
         autoHideMenuBar: true,
-        icon: path.join(__dirname, 'www/img/icons/kiwix-64.png'),
+        icon: path.join(__dirname, 'www/img/icons/wikivoyage-90-white.png'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.cjs'),
             nativeWindowOpen: true,
