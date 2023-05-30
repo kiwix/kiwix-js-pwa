@@ -1,12 +1,15 @@
 # Changelog
 
-## In-progress release 2.4.81
+## In-progress release 2.4.9
 
 * FEATURE: PWA app is now smaller and loads faster due to minification with modern build process
 * ENHANCEMENT: New modular system and bundler ensures smaller and more stable memory management
 * ENHANCEMENT: Add a Promise queue to prevent overlapping alert dialogue boxes
+* ENHANCEMENT: Major enhancement to the fidelity of rendering Zimit-based ZIM archives
 * UPDATE: Renamed breakout link feature to "Download or open current article"
 * UPDATE: Reduce image fade-in transition time
+* UPDATE: Add a limit to the number of dialogue boxes that can be queued up
+* UPDATE: Make one-time hidden content warning less intrusive
 * DEV: Removed RequireJS and migrated app to ES6 native modules
 * DEV: Provide clearer colouring when appCache is disabled for development
 * DEV: Use rollup.js and Babel to build compatible versions of the app for all supported browsers
@@ -16,9 +19,18 @@
 * FIX: Several UI issues with toolbars and downloads
 * FIX: Bug which prevented UWP / Edge Legacy app from reading articles with certain options deselected
 * FIX: Missing commit ID in Windows nightly builds
+* FIX: Downloading of PDFs in Nautilus-based ZIMs and elsewhere
+* FIX: Add secondary URL corrector to increase fidelity of Zimit rendering
+* FIX: Add a better algorithm for Kiwix asset detection
+* FIX: Make all Zimit links relative
+* FIX: Add workarounds for sandboxed iframe: load all https: and pdf content in a new window or tab
+* FIX: More robust click and download handling for Zimit ZIMs
+* DEPENDENCY: Update jQuery to 3.7.0, while removing its use in a number of places
 * REGRESSION: Fix regression with (former) breakout link feature
 * REGRESSION: Restore dialogue box animations that were removed with removal of jQuery
 * REGRESSION: Restore Table of Contents functionality disabled with removal of jQuery
+* REGRESSION: Restore ability to close several in-page alerts after removal of jQuery
+* REGRESSION: Restore automatic updating of appCache
 
 ## Release 2.4.4
 

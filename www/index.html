@@ -104,20 +104,21 @@
                             <ul style="padding-left: 15px;">
                                 <li>PWA app is now smaller and loads faster due to minification with modern build process</li>
                                 <li>New modular system and bundler ensures smaller and more stable memory management</li>
+                                <li>Major enhancement to the fidelity of rendering Zimit-based ZIM archives</li>
                                 <li>Add a Promise queue to prevent overlapping alert dialogue boxes</li>
                                 <li>Rename "breakout link" feature to "Download or open current article"</li>
                                 <li>Reduce image fade-in transition time</li>
-                                <li>Remove RequireJS and migrated app to modern ES6 native modules</li>
                                 <li>Provide clearer colouring when appCache is disabled for development</li>
-                                <li>Use rollup.js and Babel to build compatible versions of the app for all supported browsers</li>
                                 <li>Provide minified and unminified versions of the bundled app</li>
-                                <li>Add a basic Vite.js server configuration</li>
                                 <li>Make upgrade notification persistent in Electron app</li>
                                 <li>Fix several UI issues with toolbars and downloads</li>
+                                <li>More robust click and download handling for Zimit ZIMs</li>
                                 <li>Fix bug which prevented UWP / Edge Legacy app from reading articles with certain options deselected</li>
+                                <li>Downloading of PDFs in Nautilus-based ZIMs and elsewhere</li>
+                                <li>Load all https: and pdf content in a new window or tab to avoid CSP error</li>
                                 <li>Restore missing commit ID in Windows nightly builds</li>
                                 <li>Fix regression with (former) breakout link feature</li>
-                                <li>Restore dialogue box animations that were removed with removal of jQuery</li>
+                                <li>Restore dialogue box animations and close buttons that were removed with jQuery</li>
                                 <li>Restore Table of Contents functionality disabled with removal of jQuery</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
