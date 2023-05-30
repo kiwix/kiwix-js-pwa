@@ -5506,7 +5506,6 @@ function displayHiddenBlockElements(win, doc) {
         if (win.getComputedStyle(element).display === 'none') {
             element.style.setProperty('display', 'block', 'important');
             if (!params.noHiddenElementsWarning) {
-                params.noHiddenElementsWarning = true;
                 var message;
                 if (!appstate.wikimediaZimLoaded) {
                     message = '<p>The way the <i>Display hidden block elements setting</i> works has changed! Because it is currently set ' +
@@ -5514,17 +5513,19 @@ function displayHiddenBlockElements(win, doc) {
                     '<p>We strongly recommend that you change this setting to <b>auto</b> in Configuration. The new auto setting allows the ' +
                     'app to decide when to apply the setting. If you never want to see hidden elements, even in Wikimedia ZIMs, change the ' +
                     'setting to <b>never</b>.</p>';
-                } else if (params.displayHiddenBlockElements === 'auto') {  
-                    message =  '<p>There is a new <b>auto</b> setting in Configuration to display hidden elements (navigation boxes, series tables) ' +
-                    "in Wikimedia ZIMs. This is now on by default. If you don't want to see these elements, change the 'Display hidden block elements' " + 
-                    "setting to <b>never</b> (under 'Display style').</p>";
-                    if (params.cssSource !== 'desktop') {
-                        message += '<p>Please note that hidden elements are <i>always</i> displayed in Desktop style (regardless of the setting)' + 
-                        (params.cssSource !== 'desktop' ? '. You can switch the display style to Desktop in Configuration' : '') + '.</p>';
-                    }
                 }
+                // else if (params.displayHiddenBlockElements === 'auto') {  
+                //     message =  '<p>There is a new <b>auto</b> setting in Configuration to display hidden elements (navigation boxes, series tables) ' +
+                //     "in Wikimedia ZIMs. This is now on by default. If you don't want to see these elements, change the 'Display hidden block elements' " + 
+                //     "setting to <b>never</b> (under 'Display style').</p>";
+                //     if (params.cssSource !== 'desktop') {
+                //         message += '<p>Please note that hidden elements are <i>always</i> displayed in Desktop style (regardless of the setting)' + 
+                //         (params.cssSource !== 'desktop' ? '. You can switch the display style to Desktop in Configuration' : '') + '.</p>';
+                //     }
+                // }
                 if (message) {
                     message += '<p><i>This message will not be displayed again, unless you reset the app.</i></p>';
+                    params.noHiddenElementsWarning = true;
                     uiUtil.systemAlert(message, 'One-time message!').then(function () {
                         settingsStore.setItem('noHiddenElementsWarning', true, Infinity);
                     });
