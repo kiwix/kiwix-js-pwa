@@ -936,14 +936,20 @@ function reportSearchProviderToAPIStatusPanel(provider) {
 /**
  * Warn the user that he/she clicked on an external link, and open it in a new tab
  * 
- * @param {Event} event The click event (on an anchor) to handle
+ * @param {Event} event The click event (on an anchor) to handle (optional, but if not provided, clickedAnchor must be provided)
  * @param {Element} clickedAnchor The DOM anchor that has been clicked (optional, defaults to event.target)
+ * @param {String} message The message to display to the user (optional, defaults to a generic message)
  */
 function warnAndOpenExternalLinkInNewTab(event, clickedAnchor, message) {
     if (event) {
+        // We have to prevent any blank target from firing on the original event
+        event.target.removeAttribute('target');
         event.preventDefault();
         event.stopPropagation();
     }
+    // if (clickedAnchor) {
+    //     clickedAnchor.removeAttribute('target');
+    // }
     if (!clickedAnchor) clickedAnchor = event.target;
     var target = clickedAnchor.target;
     var href = clickedAnchor.protocol ? clickedAnchor.href : 'http://' + clickedAnchor.href;

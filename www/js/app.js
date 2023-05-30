@@ -4180,7 +4180,7 @@ var articleLoadedSW = function (dirEntry) {
         listenForNavigationKeys();
         // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
         // We need to set a timeout so that dynamically generated URLs are parsed as well (e.g. in Gutenberg ZIMs)
-        if (params.windowOpener && params.zimType === 'open') setTimeout(function () {
+        if (params.windowOpener) setTimeout(function () {
             parseAnchorsJQuery(dirEntry);
         }, 1500);
         if ((params.zimType === 'open' || params.manipulateImages) && /manual|progressive/.test(params.imageDisplayMode)) {
@@ -4196,11 +4196,11 @@ var articleLoadedSW = function (dirEntry) {
         }
         // Trap any clicks on the iframe to detect if mouse back or forward buttons have been pressed (Chromium does this natively)
         if (/UWP/.test(params.appType)) docBody.addEventListener('pointerup', onPointerUp);
-        // Trap clicks in the iframe to restore Fullscreen mode
-        if (params.lockDisplayOrientation && articleWindow.kiwixType === 'iframe') articleWindow.addEventListener('mousedown', refreshFullScreen, true);
         // Add event listener to iframe window to check for links to external resources
-        if (params.openExternalLinksInNewTabs && params.zimType === 'open' && appstate.target === 'iframe') {
+        if (appstate.target === 'iframe') {
             var filterClickEvent = function (event) {
+                // Trap clicks in the iframe to restore Fullscreen mode
+                if (params.lockDisplayOrientation) refreshFullScreen();
                 // Find the closest enclosing A tag (if any)
                 var clickedAnchor = uiUtil.closestAnchorEnclosingElement(event.target);
                 if (clickedAnchor) {
@@ -4209,14 +4209,16 @@ var articleLoadedSW = function (dirEntry) {
                     // We also do it for ftp even if it's not supported any more by recent browsers...
                     if (/^(?:http|ftp)/i.test(href)) {
                         uiUtil.warnAndOpenExternalLinkInNewTab(event, clickedAnchor);
-                    } else if (regexpDownloadLinks.test(href)) {
+                    } else if (/\.pdf([?#]|$)/i.test(href)) {
                         // Due to the iframe sandbox, we have to prevent the PDF viewer from opening in the iframe and instead open it in a new tab
                         event.preventDefault();
+                        event.stopPropagation();
                         window.open(clickedAnchor.href, '_blank');
                     }
                 }
+                articleWindow.removeEventListener('mousedown', filterClickEvent, true);
             };
-            articleWindow.addEventListener('click', filterClickEvent, true);
+            articleWindow.addEventListener('mousedown', filterClickEvent, true);
         }
         // The content is ready : we can hide the spinner
         setTab();
@@ -4249,7 +4251,7 @@ var articleLoadedSW = function (dirEntry) {
             uiUtil.pollSpinner();
         }
         if (filterClickEvent) {
-            articleWindow.removeEventListener('click', filterClickEvent, true);
+            articleWindow.removeEventListener('mousedown', filterClickEvent, true);
         }
     };
 
