@@ -4158,6 +4158,7 @@ var filterClickEvent = function (event) {
         // We assume that, if an absolute http(s) link is hardcoded inside an HTML string, it means it's a link to an external website.
         // We also do it for ftp even if it's not supported any more by recent browsers...
         if (/^(?:http|ftp)/i.test(href)) {
+            console.debug('filterClickEvent opening external link in new tab');
             uiUtil.warnAndOpenExternalLinkInNewTab(event, clickedAnchor);
         } else if (/\.pdf([?#]|$)/i.test(href)) {
             // Due to the iframe sandbox, we have to prevent the PDF viewer from opening in the iframe and instead open it in a new tab
