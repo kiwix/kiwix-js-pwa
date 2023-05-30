@@ -1,4 +1,4 @@
-# This is a utility script which helps developers choose sensible values for updating the online Docker-based implementation
+# This is a utility script which helps developers choose sensible values for updating the online implementations
 # of this app while testing and developing code in a specific branch. It checks app.js and service-worker.js for consistency,
 # and checks that that the underlying branch of a PR has been checked out (rather than the PR itself). It then calls the
 # GitHub REST API for dispatching the workflow using the provided values.
@@ -13,6 +13,7 @@
 [CmdletBinding()]
 param (
     [string]$machine_name = "",
+    [string]$target = "",
     [string]$branch_name = "",
     [switch]$dryrun = $false
 )
@@ -62,6 +63,10 @@ if ($machine_name -eq "") {
       "[DRYRUN]: Initiating dry run..."
     }
   }
+  ""
+  if ($target -eq "") {
+    $target = Read-Host "Which implementation (ghpages or docker) do you wish to update? Enter to accept suggested [ghpages]"
+  }
   $machine_name = Read-Host "`nGive the name to use for the docker build, or Enter to accept suggested name [$suggested_build]"
   ""
   if (-Not $machine_name) { 
@@ -72,6 +77,10 @@ if ($machine_name -eq "") {
       "and will be visible to users. If this is NOT want you want, press Ctrl-C to abort this script, and re-run with the suggested build number." 
   }
   if ($warning_message) { Write-Warning $warning_message }
+}
+
+if (-Not $target) {
+  $target = "ghpages"
 }
 
 if ($branch_name -eq "") {
@@ -86,6 +95,7 @@ if ($branch_name -eq "") {
 }
 
 "`nMachine name set to: $machine_name"
+"Target set to: $target"
 "Branch name set to: $branch_name"
 
 if (-Not $dryrun -and -Not $github_token) {
@@ -103,7 +113,10 @@ $dispatch_params = @{
     }
     Body = @{
       'ref' = $branch_name
-      'inputs' = @{ 'version' = $machine_name }
+      'inputs' = @{ 
+        'version' = $machine_name
+        'target' = $target
+      }
     } | ConvertTo-Json
     ContentType = "application/json"
 }
