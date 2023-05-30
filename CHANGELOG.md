@@ -14,6 +14,7 @@
 * DEV: Provide clearer colouring when appCache is disabled for development
 * DEV: Use rollup.js and Babel to build compatible versions of the app for all supported browsers
 * DEV: Provide minified and unminified versions of the bundled app 
+* DEV: Added ability to publish a distribution of the app to GitHub Pages for development
 * DEV: Add a basic Vite.js server configuration
 * FIX: Make upgrade notification persistent in Electron app
 * FIX: Several UI issues with toolbars and downloads
