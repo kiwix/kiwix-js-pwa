@@ -424,14 +424,19 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         Write-Host "`nError! We could not obtain the requested archive $packagedFile!`n" -ForegroundColor Red
         exit 1
       }
-      if (-not $dryrun) {
-        # Adding BOM to procution bundle
-        $bundleFile = "$PSScriptRoot/../dist/www/js/bundle.min.js"
-        $bundle = Get-Content -encoding "UTF8" $bundleFile
-        if ($bundle -match "^(?!\xEF\xBB\xBF)") { 
-            Write-Host "Adding missing BOM to production bundle!`n" -ForegroundColor Yellow
+      # Adding BOM to procution bundle
+      $bundleFile = "$PSScriptRoot/../dist/www/js/bundle.min.js"
+      $bundle = Get-Content -encoding "UTF8" $bundleFile
+      if ($bundle -match "^(?!\xEF\xBB\xBF)") { 
+          Write-Host "Adding missing BOM to production bundle!`n" -ForegroundColor Yellow
+          if (-not $dryrun) {
             $bundle | Set-Content -encoding "utf8BOM" $bundleFile 
-        }
+          } else {
+            "[DRYRUN] Would have added BOM to $bundleFile"
+          }
+      }
+      
+      if (-not $dryrun) {
         $projstub = $text_tag
         if ($text_tag -eq "Windows") { $projstub = "" }
         $buildmode = "SideloadOnly"
