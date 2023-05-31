@@ -245,6 +245,7 @@ if ($updatewinget) {
   }
   "`nThe package URLS are: $package_urls"
   foreach ($package_url in $package_urls) {
+    $UrlsWithOverride = ""
     if ($text_tag -notmatch 'Windows') {
       $package_id = 'Kiwix.' + $text_tag
     } else {
@@ -252,16 +253,18 @@ if ($updatewinget) {
     }
     if ($package_url -match '\.appxbundle') { 
       $winget_version = $numeric_tag + '.0'
+      $UrlsWithOverride = $package_url
     }
     if ($package_url -match '\.exe') {
       $package_id = $package_id + '.Electron'
       $winget_version = $numeric_tag + '-E'
+      $UrlsWithOverride = '"' + "$package_url|x86|machine" + '" "' + "$package_url|x86|user" + '"'
     }
     if (-Not $dryrun) {
       "`nSubmitting to winget-pkg repository..."
-      & wingetcreate.exe update $package_id -v "$winget_version" -u $package_url -s -t $github_token
+      & wingetcreate.exe update $package_id --version "$winget_version" --urls $UrlsWithOverride -s -t $github_token
     } else {
-      "`n[DRYRUN:] & wingetcreate.exe update $package_id -v $winget_version -u $package_url -s -t $github_token"
+      "`n[DRYRUN:] & wingetcreate.exe update $package_id -v $winget_version -u $UrlsWithOverride -s -t $github_token"
     }
 }
   
