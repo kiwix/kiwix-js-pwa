@@ -373,7 +373,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       "To create a valid appxupload, please associate the app with the Store in Visual Studio.`n"
     } 
     # Let's check if we have the assets
-    $ReleaseBundle = dir "$PSScriptRoot/../AppPackages/*_$base_tag*_Test/*_$base_tag*.appx*"
+    $ReleaseBundle = dir "$PSScriptRoot/../dist/AppPackages/*_$base_tag*_Test/*_$base_tag*.appx*"
     # Check the file exists and it's of the right type
     if ($ReleaseBundle -and ($ReleaseBundle.count -eq 1) -and (Test-Path $ReleaseBundle -PathType leaf) -and 
       ($ReleaseBundle -imatch '\.(?:appx|appxbundle|appxupload)$')) {
@@ -425,6 +425,13 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         exit 1
       }
       if (-not $dryrun) {
+        # Adding BOM to procution bundle
+        $bundleFile = "$PSScriptRoot/../dist/www/js/bundle.min.js"
+        $bundle = Get-Content -encoding "UTF8" $bundleFile
+        if ($bundle -match "^(?!\xEF\xBB\xBF)") { 
+            Write-Host "Adding missing BOM to production bundle!`n" -ForegroundColor Yellow
+            $bundle | Set-Content -encoding "utf8BOM" $bundleFile 
+        }
         $projstub = $text_tag
         if ($text_tag -eq "Windows") { $projstub = "" }
         $buildmode = "SideloadOnly"
