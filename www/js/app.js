@@ -1476,21 +1476,19 @@ $('input:checkbox[name=openExternalLinksInNewTabs]').on('change', function () {
 });
 document.getElementById('tabOpenerCheck').addEventListener('click', function () {
     params.windowOpener = this.checked ? 'tab' : false;
-    if (!params.noWarning) {
-        if (!params.windowOpener) {
-            uiUtil.systemAlert('Please note that due to the Content Secuirty Policy, external links and PDFs always open in a new tab or window, regardless of this setting.');
-        }
-        if (params.windowOpener && /UWP\|PWA/.test(params.appType) && params.contentInjectionMode === 'jquery') {
-            uiUtil.systemAlert('<p>In this UWP app, opening a new browsable window only works in Service Worker mode.</p>' + 
-                '<p>Your system appears to support SW mode, so please try switching to it in Expert Settings below.</p>' +
-                '<p>If your system does not support SW mode, then use the more basic "Download or open current article" feature below.</p>');
-            paams.windowOpener = false;
-        } else if (params.windowOpener && /iOS|UWP$/.test(params.appType)) {
-            uiUtil.systemAlert('<p>This option is not currently supported ' + (/iOS/.test(params.appType) ?
-                'on iOS devices because programmatic opening of windows is forbidden. However, the native long-press feature may work.</p>' :
-                'in UWP apps that cannot use Service Worker mode.</p><p>Please try the more basic "Download or open current article" feature below instead.</p>'));
-            params.windowOpener = false;
-        }
+    if (!params.windowOpener && !params.noWarning) {
+        uiUtil.systemAlert('Please note that due to the Content Secuirty Policy, external links and PDFs always open in a new tab or window, regardless of this setting.');
+    }
+    if (params.windowOpener && /UWP\|PWA/.test(params.appType) && params.contentInjectionMode === 'jquery') {
+        if (!params.noWarning) uiUtil.systemAlert('<p>In this UWP app, opening a new browsable window only works in Service Worker mode.</p>' + 
+            '<p>Your system appears to support SW mode, so please try switching to it in Expert Settings below.</p>' +
+            '<p>If your system does not support SW mode, then use the more basic "Download or open current article" feature below.</p>');
+        paams.windowOpener = false;
+    } else if (params.windowOpener && /iOS|UWP$/.test(params.appType)) {
+        if (!paams.noWarning) uiUtil.systemAlert('<p>This option is not currently supported ' + (/iOS/.test(params.appType) ?
+            'on iOS devices because programmatic opening of windows is forbidden. However, the native long-press feature may work.</p>' :
+            'in UWP apps that cannot use Service Worker mode.</p><p>Please try the more basic "Download or open current article" feature below instead.</p>'));
+        params.windowOpener = false;
     }
     settingsStore.setItem('windowOpener', params.windowOpener, Infinity);
     if (params.windowOpener && params.allowHTMLExtraction) {
