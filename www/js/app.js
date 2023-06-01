@@ -4191,8 +4191,8 @@ var articleLoadedSW = function (dirEntry) {
     var doc = articleWindow.document;
     var docBody = doc.body;
     // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
-    articleWindow.removeEventListener('mousedown', filterClickEvent, true);
-    articleWindow.addEventListener('mousedown', filterClickEvent, true);
+    articleWindow.removeEventListener('click', filterClickEvent, true);
+    articleWindow.addEventListener('click', filterClickEvent, true);
     if (docBody) {
         // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
         articleWindow.kiwixType = appstate.target;
