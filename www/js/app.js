@@ -5406,8 +5406,11 @@ function addListenersToLink(a, href, baseUrl) {
                 articleContainer = window.open('article.html', params.windowOpener === 'tab' ? '_blank' : a.title,
                     params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
                 appstate.target = 'window';
-                articleContainer.kiwixType = appstate.target;
-                articleWindow = articleContainer;
+                // We have to make this conditional, because sometimes this action is blocked by the browser
+                if (articleContainer) {
+                    articleContainer.kiwixType = appstate.target;
+                    articleWindow = articleContainer;
+                }
             }
         }
         e.preventDefault();
