@@ -4297,7 +4297,10 @@ function handleMessageChannelMessage(event) {
             // Zimit archives store URLs encoded, and also need the URI component (search parameter) if any
             var title = params.zimType === 'zimit' ? encodeURI(event.data.title) + event.data.search : event.data.title;
             // If it's an asset, we have to mark the dirEntry so that we don't load it if it has an html MIME type
-            var titleIsAsset = !/\??isKiwixHref/.test(title) || /\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(title);
+            var titleIsAsset = /\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(title);
+            if (params.zimType === 'zimit') {
+                titleIsAsset = titleIsAsset || !/\??isKiwixHref/.test(title);
+            }
             title = title.replace(/\??isKiwixHref/, '');
             if (appstate.selectedArchive && appstate.selectedArchive.landingPageUrl === title) params.isLandingPage = true;
             var messagePort = event.ports[0];
