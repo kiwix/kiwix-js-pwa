@@ -4293,6 +4293,7 @@ function handleMessageChannelMessage(event) {
     } else {
         // We received a message from the ServiceWorker
         if (event.data.action === "askForContent") {
+            loaded = false;
             // Zimit archives store URLs encoded, and also need the URI component (search parameter) if any
             var title = params.zimType === 'zimit' ? encodeURI(event.data.title) + event.data.search : event.data.title;
             // If it's an asset, we have to mark the dirEntry so that we don't load it if it has an html MIME type
@@ -5244,18 +5245,10 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
             if (!appstate.messageChannelWaiting) {
                 // We put the ZIM filename as a prefix in the URL, so that browser caches are separate for each ZIM file
                 var newLocation = "../" + appstate.selectedArchive._file.name + "/" + dirEntry.namespace + "/" + encodedUrl;
-                // if (navigator.serviceWorker.controller) articleWindow.location.href = newLocation;
-                // else
-                setTimeout(function () {
-                    // We give the Service Worker some time to load
+                if (navigator.serviceWorker.controller) {
+                    loaded = false;
                     articleWindow.location.href = newLocation;
-                    articleWindow.onload = function () {
-                        articleLoadedSW(dirEntry);
-                    };
-                }, 500);
-                // articleWindow.onload = function () {
-                //     articleLoadedSW(params.transDirEntry);
-                // };
+                }
             }
             return;
         }
