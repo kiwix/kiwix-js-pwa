@@ -16,6 +16,7 @@
 * DEV: Provide minified and unminified versions of the bundled app 
 * DEV: Added ability to publish a distribution of the app to GitHub Pages for development
 * DEV: Add a basic Vite.js server configuration
+* DEV: Re-enable use of wingetcreate with v2.6.0 when publishing to winget repository
 * FIX: Make upgrade notification persistent in Electron app
 * FIX: Several UI issues with toolbars and downloads
 * FIX: Bug which prevented UWP / Edge Legacy app from reading articles with certain options deselected
@@ -26,6 +27,10 @@
 * FIX: Make all Zimit links relative
 * FIX: Add workarounds for sandboxed iframe: load all https: and pdf content in a new window or tab
 * FIX: More robust click and download handling for Zimit ZIMs
+* FIX: Add BOM to production bundle when building UWP app (store requirement)
+* FIX: Better support for handling external links in iOS
+* FIX: Bug that showed irrelevant dialogue box when opening Zimit archives on iOS
+* FIX: Bug that loaded a blank screen when asking user whether to open external links
 * DEPENDENCY: Update jQuery to 3.7.0, while removing its use in a number of places
 * REGRESSION: Fix regression with (former) breakout link feature
 * REGRESSION: Restore dialogue box animations that were removed with removal of jQuery
