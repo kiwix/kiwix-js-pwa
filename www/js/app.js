@@ -1486,9 +1486,10 @@ document.getElementById('tabOpenerCheck').addEventListener('click', function () 
                 '<p>If your system does not support SW mode, then use the more basic "Download or open current article" feature below.</p>');
             paams.windowOpener = false;
         } else if (params.windowOpener && /iOS|UWP$/.test(params.appType)) {
-            uiUtil.systemAlert('<p>This option is not currently supported ' + (/iOS/.test(params.appType) ? 'on iOS devices because tabs and windows are isolated.' :
-                'in UWP apps that cannot use Service Worker mode.') + '</p><p>Please try the more basic "Download or open current article" feature below instead.</p>');
-            if (/UWP$/.test(params.appType)) params.windowOpener = false;
+            uiUtil.systemAlert('<p>This option is not currently supported ' + (/iOS/.test(params.appType) ?
+                'on iOS devices because programmatic opening of windows is forbidden. However, the native long-press feature may work.</p>' :
+                'in UWP apps that cannot use Service Worker mode.</p><p>Please try the more basic "Download or open current article" feature below instead.</p>'));
+            params.windowOpener = false;
         }
     }
     settingsStore.setItem('windowOpener', params.windowOpener, Infinity);
