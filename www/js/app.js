@@ -4159,20 +4159,21 @@ var filterClickEvent = function (event) {
         // We also do it for ftp even if it's not supported any more by recent browsers...
         if (/^(?:http|ftp)/i.test(href)) {
             console.debug('filterClickEvent opening external link in new tab');
+            clickedAnchor.newcontainer = true;
             uiUtil.warnAndOpenExternalLinkInNewTab(event, clickedAnchor);
         } else if (/\.pdf([?#]|$)/i.test(href)) {
             // Due to the iframe sandbox, we have to prevent the PDF viewer from opening in the iframe and instead open it in a new tab
             event.preventDefault();
             event.stopPropagation();
             console.debug('filterClickEvent opening new window for PDF');
-            window.open(clickedAnchor.href, '_blank');
+            clickedAnchor.newcontainer = true;
+            window.open(clickedAnchor.href,  params.windowOpener === 'tab' ? '_blank' : clickedAnchor.title,
+                params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
             // Make sure that the last saved page is not a PDF, or else we'll have a CSP exception on restarting the app
-            
+            // @TODO - may not be necessary because params.lastPageVisit is only set when HTML is loaded
         }
     }
 };
-
-// articleWindow.addEventListener('mousedown', filterClickEvent, true);
 
 var loaded = false;
 var articleLoadedSW = function (dirEntry) {

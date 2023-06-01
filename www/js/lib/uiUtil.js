@@ -947,38 +947,26 @@ function warnAndOpenExternalLinkInNewTab(event, clickedAnchor, message) {
         event.preventDefault();
         event.stopPropagation();
     }
-    // if (clickedAnchor) {
-    //     clickedAnchor.removeAttribute('target');
-    // }
     if (!clickedAnchor) clickedAnchor = event.target;
-    var target = clickedAnchor.target;
     var href = clickedAnchor.protocol ? clickedAnchor.href : 'http://' + clickedAnchor.href;
     clickedAnchor.type = clickedAnchor.type || (/https:\/\/www.openstreetmap.*?mlat/.test(href) ? 'map' : 'link');
-    var message = message || '<p>Click the link to open this external ' + clickedAnchor.type;
-    if (!target || target === '_blank') {
-        target = '_blank';
-        message += ' (in a new tab)';
-    }
-    var anchor = '<a id="kiwixExternalLink" href="' + href + '" target="' + target + '" style="word-break:break-all;">' + clickedAnchor.href + '</a>';
+    var message = message || '<p>Click the link to open this external ' + clickedAnchor.type + ' (in a new ' + params.windowOpener + ')';
+    var anchor = '<a id="kiwixExternalLink" href="' + href + '" style="word-break:break-all;">' + clickedAnchor.href + '</a>';
     message += ':</p>' + anchor;
-    var opener = function (response) {
-        if (response) {
-            window.open(href, target);
-        }
+    var opener = function (ev) {
+        if (ev) ev.preventDefault();
+        window.open(clickedAnchor.href,  params.windowOpener === 'tab' ? '_blank' : clickedAnchor.title,
+            params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
     };
     if (params.openExternalLinksInNewTabs) {
         systemAlert(message, 'Opening external ' + clickedAnchor.type, false, null, null, 'Close');
         // Close dialog box if user clicks the link
         document.getElementById('kiwixExternalLink').addEventListener('click', function (e) {
-            if (/https:\/\/www.openstreetmap.*?mlat/.test(href)) {
-                e.preventDefault();
-                e.stopPropagation();
-                window.open(href, target);
-            }
+            opener(e);
             document.getElementById('closeMessage').click();
         });
     } else {
-        opener(true);
+        opener();
     }
 }
 
