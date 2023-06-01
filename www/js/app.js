@@ -1483,9 +1483,9 @@ document.getElementById('tabOpenerCheck').addEventListener('click', function () 
         if (!params.noWarning) uiUtil.systemAlert('<p>In this UWP app, opening a new browsable window only works in Service Worker mode.</p>' + 
             '<p>Your system appears to support SW mode, so please try switching to it in Expert Settings below.</p>' +
             '<p>If your system does not support SW mode, then use the more basic "Download or open current article" feature below.</p>');
-        paams.windowOpener = false;
+        params.windowOpener = false;
     } else if (params.windowOpener && /iOS|UWP$/.test(params.appType)) {
-        if (!paams.noWarning) uiUtil.systemAlert('<p>This option is not currently supported ' + (/iOS/.test(params.appType) ?
+        if (!params.noWarning) uiUtil.systemAlert('<p>This option is not currently supported ' + (/iOS/.test(params.appType) ?
             'on iOS devices because programmatic opening of windows is forbidden. However, the native long-press feature may work.</p>' :
             'in UWP apps that cannot use Service Worker mode.</p><p>Please try the more basic "Download or open current article" feature below instead.</p>'));
         params.windowOpener = false;
