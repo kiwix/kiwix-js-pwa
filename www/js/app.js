@@ -1489,7 +1489,7 @@ document.getElementById('tabOpenerCheck').addEventListener('click', function () 
             uiUtil.systemAlert('<p>This option is not currently supported ' + (/iOS/.test(params.appType) ?
                 'on iOS devices because programmatic opening of windows is forbidden. However, the native long-press feature may work.</p>' :
                 'in UWP apps that cannot use Service Worker mode.</p><p>Please try the more basic "Download or open current article" feature below instead.</p>'));
-            params.windowOpener = false;
+            if (/UWP$/.test(params.appType)) params.windowOpener = false;
         }
     }
     settingsStore.setItem('windowOpener', params.windowOpener, Infinity);
