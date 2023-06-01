@@ -4318,16 +4318,17 @@ function handleMessageChannelMessage(event) {
             var readFile = function (dirEntry) {
                 if (dirEntry === null) {
                     console.error("Title " + title + " not found in archive.");
-                    messagePort.postMessage({
-                        'action': 'giveContent',
-                        'title': title,
-                        'content': ''
-                    });
                     if (!titleIsAsset && params.zimType === 'zimit') {
                         // Use special routine to handle not-found titles for Zimit
                         goToArticle(decodeURI(title));
+                    } else if (title === loadingArticle) {
+                        goToMainArticle();
                     } else {
-                        if (title === loadingArticle) goToMainArticle();
+                        messagePort.postMessage({
+                            'action': 'giveContent',
+                            'title': title,
+                            'content': ''
+                        });
                     }
                     return;
                 } else if (dirEntry.isRedirect()) {
