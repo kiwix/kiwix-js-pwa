@@ -5456,6 +5456,8 @@ function addListenersToLink(a, href, baseUrl) {
         } else {
             zimUrl = uiUtil.deriveZimUrlFromRelativeUrl(uriComponent, baseUrl);
         }
+        // @TODO: We are getting double activations of the click event. This needs debugging. For now, we use a flag to prevent this.
+        a.newContainer = true; // Prevents double activation
         goToArticle(zimUrl, downloadAttrValue, contentType, zimUrlFullEncoding);
         setTimeout(reset, 1400);
     };
