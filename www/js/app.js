@@ -4298,7 +4298,7 @@ function handleMessageChannelMessage(event) {
             // If it's an asset, we have to mark the dirEntry so that we don't load it if it has an html MIME type
             var titleIsAsset = /\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(title);
             if (params.zimType === 'zimit') {
-                titleIsAsset = titleIsAsset || !/\??isKiwixHref/.test(title);
+                titleIsAsset = !/\??isKiwixHref/.test(title);
             }
             title = title.replace(/\??isKiwixHref/, '');
             if (appstate.selectedArchive && appstate.selectedArchive.landingPageUrl === title) params.isLandingPage = true;
@@ -4383,6 +4383,11 @@ function handleMessageChannelMessage(event) {
                     var cacheKey = appstate.selectedArchive._file.name + '/' + title;
                     cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(function (content) {
                         console.debug('SW read binary file for: ' + dirEntry.namespace + '/' + dirEntry.url);
+                        if (params.zimType === 'zimit' && loadingArticle) {
+                            // We need to work around the redirection script in all Zimit HTML files in case we're loading the HTML in a new window
+                            // The script doesn't fire in the iframe, but it does in the new window, so we need to edit it
+                            content = content.replace(/!(window._WBWombat)/, '$1');
+                        }
                         // Let's send the content to the ServiceWorker
                         var buffer = content.buffer ? content.buffer : content;
                         var message = {
@@ -4395,11 +4400,11 @@ function handleMessageChannelMessage(event) {
                         if (dirEntry.nullify) {
                             message.content = '';
                         } else if (!params.windowOpener && /\/pdf\b/.test(mimetype)) {
-                            // This is a last-gasp attempt to avoid a CSP violation with PDFs. If windowOpener is set, then they should open
+                            // This is a last gasp attempt to avoid a CSP violation with PDFs. If windowOpener is set, then they should open
                             // in a new window, but if user has turned that off, we need to offer PDFs as a download
                             uiUtil.displayFileDownloadAlert(title, true, mimetype, content);
                             uiUtil.clearSpinner();
-                            return;
+                            message.content = '';
                         }
                         // if (content.buffer) {
                         //     // In Edge Legacy, we have to transfer the buffer inside an array, whereas in Chromium, this produces an error
@@ -5242,6 +5247,8 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
                     document.location.pathname.replace(/index\.html/i, 'js/lib/darkreader.min.js') + '"></script>\r\n' + 
                     '<script>DarkReader.setFetchMethod(window.fetch);\r\nDarkReader.enable();</script>\r\n$1');
             }
+            // Prevent the script that detects whether wombat is loaded from running
+            if (params.zimType === 'zimit') htmlArticle = htmlArticle.replace(/!(window._WBWombat)/, '$1');
             // Add doctype if missing so that scripts run in standards mode
             // (quirks mode prevents katex from running, and is incompatible with jQuery)
             params.transformedHTML = !/^\s*(?:<!DOCTYPE|<\?xml)\s+/i.test(htmlArticle) ? '<!DOCTYPE html>\n' + htmlArticle : htmlArticle;
@@ -5760,6 +5767,7 @@ function pushBrowserHistoryState(title, titleSearch) {
  * @param {String} pathEnc The fully encoded version of the path for use with some Zimit archives
  */
 function goToArticle(path, download, contentType, pathEnc) {
+    var pathForServiceWorker = path;
     path = path.replace(/\??isKiwixHref/, '');
     appstate.expectedArticleURLToBeDisplayed = path;
     //This removes any search highlighting
@@ -5794,7 +5802,7 @@ function goToArticle(path, download, contentType, pathEnc) {
         } else if (download || /\/(epub|pdf|zip|.*opendocument|.*officedocument|tiff|mp4|webm|mpeg|octet-stream)\b/i.test(mimetype)) {
             // PDFs can be treated as a special case, as they can be displayed directly in a browser window or tab
             if (params.contentInjectionMode === 'serviceworker' && (/\/pdf\b/.test(mimetype) || /\.pdf([?#]|$)/i.test(dirEntry.url))) {
-                window.open(document.location.pathname.replace(/[^/]+$/, '') + appstate.selectedArchive._file.name + '/' + dirEntry.namespace + '/' + dirEntry.url,
+                window.open(document.location.pathname.replace(/[^/]+$/, '') + appstate.selectedArchive._file.name + '/' + pathForServiceWorker,
                     params.windowOpener === 'tab' ? '_blank' : 'Download PDF',
                     params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
             } else {
