@@ -4379,6 +4379,8 @@ function handleMessageChannelMessage(event) {
                             postTransformedHTML(message, messagePort, dirEntry);
                         }
                         return;
+                    } else {
+                        loadingArticle = '';
                     }
                     var cacheKey = appstate.selectedArchive._file.name + '/' + title;
                     cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey, dirEntry).then(function (content) {
@@ -4404,7 +4406,7 @@ function handleMessageChannelMessage(event) {
                             // in a new window, but if user has turned that off, we need to offer PDFs as a download
                             uiUtil.displayFileDownloadAlert(title, true, mimetype, content);
                             uiUtil.clearSpinner();
-                            message.content = '';
+                            return;
                         }
                         // if (content.buffer) {
                         //     // In Edge Legacy, we have to transfer the buffer inside an array, whereas in Chromium, this produces an error
@@ -5215,7 +5217,9 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
         if (!(/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting))) {
             htmlArticle = htmlArticle.replace(/(<html\b[^>]*)>/i, '$1 bgcolor="' + 
                 (cssUIThemeGetOrSet(params.cssTheme, true) !== 'light' ? 'grey' : 'whitesmoke') + '">');
-            if (!('MSBlobBuilder' in window)) htmlArticle = htmlArticle.replace(/(<body\b[^>]*)/i, '$1 style="display: none;"');
+            // NB Don't hide the document body if we don't have any window management, because native loading of documents in a new tab is slow, and we can't
+            // guarantee to unhide the document in time
+            if (!('MSBlobBuilder' in window) && params.windowOpener) htmlArticle = htmlArticle.replace(/(<body\b[^>]*)/i, '$1 style="display: none;"');
         }
 
         // Display any hidden block elements, with a timeout, so as not to interfere with image loading
