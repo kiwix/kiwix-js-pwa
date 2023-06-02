@@ -954,9 +954,15 @@ function warnAndOpenExternalLinkInNewTab(event, clickedAnchor, message) {
     var anchor = '<a id="kiwixExternalLink" href="' + href + '" style="word-break:break-all;">' + clickedAnchor.href + '</a>';
     message += ':</p>' + anchor;
     var opener = function (ev) {
-        if (ev) ev.preventDefault();
-        window.open(clickedAnchor.href,  params.windowOpener === 'tab' ? '_blank' : clickedAnchor.title,
-            params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
+       try {
+            window.open(href,  params.windowOpener === 'tab' ? '_blank' : (ev ? ev.target.title : 'Download'),
+                params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
+            if (ev) ev.preventDefault();
+        }
+        catch (e) {
+            if (!ev) systemAlert('We could not open this link programmatically! Please turn on "Warn before opening external links" in Configuration (under "Control of browsing data") and try again.');
+            else ev.target.target = '_blank';
+        }
     };
     if (params.openExternalLinksInNewTabs) {
         systemAlert(message, 'Opening external ' + clickedAnchor.type, false, null, null, 'Close');

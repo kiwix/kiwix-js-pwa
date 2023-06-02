@@ -1473,6 +1473,7 @@ document.getElementById('debugLibzimASMDrop').addEventListener('change', functio
 $('input:checkbox[name=openExternalLinksInNewTabs]').on('change', function () {
     params.openExternalLinksInNewTabs = this.checked ? true : false;
     settingsStore.setItem('openExternalLinksInNewTabs', params.openExternalLinksInNewTabs, Infinity);
+    params.themeChanged = true;
 });
 document.getElementById('tabOpenerCheck').addEventListener('click', function () {
     params.windowOpener = this.checked ? 'tab' : false;
@@ -4168,7 +4169,7 @@ var filterClickEvent = function (event) {
             console.debug('filterClickEvent opening external link in new tab');
             clickedAnchor.newcontainer = true;
             uiUtil.warnAndOpenExternalLinkInNewTab(event, clickedAnchor);
-        } else if (/\.pdf([?#]|$)/i.test(href)) {
+        } else if (params.zimType !== 'zimit' && /\.pdf([?#]|$)/i.test(href)) {
             // Due to the iframe sandbox, we have to prevent the PDF viewer from opening in the iframe and instead open it in a new tab
             event.preventDefault();
             event.stopPropagation();
@@ -4391,7 +4392,15 @@ function handleMessageChannelMessage(event) {
                             'imageDisplay': imageDisplayMode,
                             'content': buffer
                         };
-                        if (dirEntry.nullify) message.content = '';
+                        if (dirEntry.nullify) {
+                            message.content = '';
+                        } else if (!params.windowOpener && /\/pdf\b/.test(mimetype)) {
+                            // This is a last-gasp attempt to avoid a CSP violation with PDFs. If windowOpener is set, then they should open
+                            // in a new window, but if user has turned that off, we need to offer PDFs as a download
+                            uiUtil.displayFileDownloadAlert(title, true, mimetype, content);
+                            uiUtil.clearSpinner();
+                            return;
+                        }
                         // if (content.buffer) {
                         //     // In Edge Legacy, we have to transfer the buffer inside an array, whereas in Chromium, this produces an error
                         //     // due to type not being transferrable... (and already detached, which may be to do with storing in IndexedDB in Electron)
@@ -5783,11 +5792,18 @@ function goToArticle(path, download, contentType, pathEnc) {
                 uiUtil.systemAlert('<p>Sorry, but we couldn\'t find the article:</p><p><i>' + path + '</i></p><p>in this archive!</p>');
             }
         } else if (download || /\/(epub|pdf|zip|.*opendocument|.*officedocument|tiff|mp4|webm|mpeg|octet-stream)\b/i.test(mimetype)) {
-            download = true;
-            appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
-                uiUtil.displayFileDownloadAlert(path, download, mimetype, content);
-                uiUtil.clearSpinner();
-            });
+            // PDFs can be treated as a special case, as they can be displayed directly in a browser window or tab
+            if (params.contentInjectionMode === 'serviceworker' && (/\/pdf\b/.test(mimetype) || /\.pdf([?#]|$)/i.test(dirEntry.url))) {
+                window.open(document.location.pathname.replace(/[^/]+$/, '') + appstate.selectedArchive._file.name + '/' + dirEntry.namespace + '/' + dirEntry.url,
+                    params.windowOpener === 'tab' ? '_blank' : 'Download PDF',
+                    params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
+            } else {
+                download = true;
+                appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
+                    uiUtil.displayFileDownloadAlert(path, download, mimetype, content);
+                    uiUtil.clearSpinner();
+                });
+            }
         } else {
             // params.isLandingPage = false;
             $('.alert').hide();
