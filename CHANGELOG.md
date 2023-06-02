@@ -17,6 +17,7 @@
 * DEV: Added ability to publish a distribution of the app to GitHub Pages for development
 * DEV: Add a basic Vite.js server configuration
 * DEV: Re-enable use of wingetcreate with v2.6.0 when publishing to winget repository
+* WORKAROUND: Prevent hackish Zimit script from causing reload loop in new tabs or windows   
 * FIX: Make upgrade notification persistent in Electron app
 * FIX: Several UI issues with toolbars and downloads
 * FIX: Bug which prevented UWP / Edge Legacy app from reading articles with certain options deselected
