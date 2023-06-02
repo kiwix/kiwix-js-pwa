@@ -148,7 +148,7 @@ function transformReplayUrls(dirEntry, data, mimetype, callback) {
             var newBlock = match;
             var assetUrl = relAssetUrl;
                 // DEBUG:
-                console.log('Asset URL: ' + assetUrl);
+                // console.log('Asset URL: ' + assetUrl);
             // Remove google analytics and other analytics files that cause stall
             if (/analytics|typepad.*stats|googleads|doubleclick|syndication/i.test(assetUrl)) return '';
             // For root-relative links, we need to add the zimitPrefix

@@ -4169,7 +4169,7 @@ var filterClickEvent = function (event) {
             console.debug('filterClickEvent opening external link in new tab');
             clickedAnchor.newcontainer = true;
             uiUtil.warnAndOpenExternalLinkInNewTab(event, clickedAnchor);
-        } else if (params.zimType !== 'zimit' && /\.pdf([?#]|$)/i.test(href)) {
+        } else if (/\.pdf([?#]|$)/i.test(href) && params.zimType !== 'zimit' && !/UWP/.test(params.appType)) { // Not currently supported in UWP app
             // Due to the iframe sandbox, we have to prevent the PDF viewer from opening in the iframe and instead open it in a new tab
             event.preventDefault();
             event.stopPropagation();
@@ -5804,8 +5804,8 @@ function goToArticle(path, download, contentType, pathEnc) {
                 uiUtil.systemAlert('<p>Sorry, but we couldn\'t find the article:</p><p><i>' + path + '</i></p><p>in this archive!</p>');
             }
         } else if (download || /\/(epub|pdf|zip|.*opendocument|.*officedocument|tiff|mp4|webm|mpeg|octet-stream)\b/i.test(mimetype)) {
-            // PDFs can be treated as a special case, as they can be displayed directly in a browser window or tab
-            if (params.contentInjectionMode === 'serviceworker' && (/\/pdf\b/.test(mimetype) || /\.pdf([?#]|$)/i.test(dirEntry.url))) {
+            // PDFs can be treated as a special case, as they can be displayed directly in a browser window or tab in most browsers (but not UWP)
+            if (!/UWP/.test(params.appType) && params.contentInjectionMode === 'serviceworker' && (/\/pdf\b/.test(mimetype) || /\.pdf([?#]|$)/i.test(dirEntry.url))) {
                 window.open(document.location.pathname.replace(/[^/]+$/, '') + appstate.selectedArchive._file.name + '/' + pathForServiceWorker,
                     params.windowOpener === 'tab' ? '_blank' : 'Download PDF',
                     params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
