@@ -6,6 +6,7 @@
 * ENHANCEMENT: New modular system and bundler ensures smaller and more stable memory management
 * ENHANCEMENT: Add a Promise queue to prevent overlapping alert dialogue boxes
 * ENHANCEMENT: Major enhancement to the fidelity of rendering Zimit-based ZIM archives
+* ENHANCEMENT: Ability to open new browsable windows and tabs in Zimit ZIMs
 * UPDATE: Renamed breakout link feature to "Download or open current article"
 * UPDATE: Reduce image fade-in transition time
 * UPDATE: Add a limit to the number of dialogue boxes that can be queued up
