@@ -10,7 +10,7 @@
     "productName": "Kiwix JS Electron",
     "directories": {
       "output": "bld/Electron",
-      "buildResources": "../electron_icons"
+      "buildResources": "electron_icons"
     },
     "afterPack": "./scripts/appimage-fix.js",
     "win": {
@@ -30,6 +30,9 @@
         {
           "target": "portable",
           "arch": "ia32"
+        },
+        {
+          "target": "appx"
         }
       ]
     },
@@ -68,6 +71,15 @@
       "oneClick": "false",
       "allowElevation": "true",
       "runAfterFinish": "true"
+    },
+    "appx": {
+      "backgroundColor": "transparent",
+      "displayName": "Kiwix JS Electron",
+      "identityName": "Kiwix.KiwixJS.Electron",
+      "publisher": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, C=CH",
+      "publisherDisplayName": "Association Kiwix",
+      "languages": "en-GB",
+      "showNameOnTiles": "true"
     },
     "files": [
       "service-worker.js",
