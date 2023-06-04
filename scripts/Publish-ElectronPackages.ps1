@@ -127,7 +127,7 @@ if (-not $githubonly) {
 
     $Packages | % {
         $file = $_
-        if ($file -match '\.(exe|zip|msix)$') {
+        if ($file -match '\.(exe|zip|msix|appx)$') {
             $directory = $file -replace '^(.+[\\/])[^\\/]+$', '$1'
             $filename = $file -replace '^.+[\\/]([^\\/]+)$', '$1'
             # Convert all spaces and hyphens to underscore
