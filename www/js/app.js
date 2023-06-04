@@ -1976,7 +1976,7 @@ function removePageMaxWidth() {
             docStyle.border = "1px solid #a7d7f9";
         }
         if (params.removePageMaxWidth === "auto") {
-            updatedCssText = cssSource === 'desktop' ? '100%' : window.innerWidth > 1440 ? '92%' :
+            updatedCssText = cssSource === 'desktop' ? '100%' : window.innerWidth > 1012 ? '94%' :
                 // /android/i.test(params.appType) ? '98%' : 
                 '55.8em';
             docStyle.maxWidth = updatedCssText;
