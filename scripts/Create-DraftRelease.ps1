@@ -6,6 +6,7 @@ param (
     [switch]$skipsigning = $false,
     [switch]$draftonly = $false,
     [switch]$buildonly = $false,
+    [switch]$winonly = $false, # Only builds Windows apps (primarily for testing, because building Linux apps is slow with WSL)
     [string]$electronbuild = "", # 'local' or 'cloud'
     [switch]$portableonly = $false, # If set, only the portable electron build will be built. Implies local electron build.
     [switch]$updatewinget = $false,
