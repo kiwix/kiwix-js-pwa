@@ -80,7 +80,7 @@
       "displayName": "Kiwix JS Electron",
       "identityName": "Kiwix.KiwixJS.Electron",
       "publisher": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, C=CH",
-      "publisherDisplayName": "Association Kiwix",
+      "publisherDisplayName": "Kiwix",
       "languages": "en-GB",
       "showNameOnTiles": "true"
     },
