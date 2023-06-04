@@ -10,7 +10,7 @@
     "productName": "WikiMed by Kiwix",
     "directories": {
       "output": "bld/Electron",
-      "buildResources": "electron_icons"
+      "buildResources": "../electron_icons"
     },
     "afterPack": "./scripts/appimage-fix.js",
     "win": {
@@ -146,3 +146,5 @@
     "electron-updater": "^6.1.0"
   }
 }
+
+
