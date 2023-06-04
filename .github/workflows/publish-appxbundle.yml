@@ -1,6 +1,6 @@
 # This is a draft workflow to publish released assets on download.kiwix.org
 
-name: CI
+name: Publish appxbundle to Kiwix server
 
 # Controls when the action will run. 
 on:
@@ -10,7 +10,12 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
+    inputs:
+      version:
+        description: Give the tag name of the version you wish to publish (e.g. v2.5.0)
+        required: false
+        default: ''
+        
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "upload"
@@ -39,13 +44,13 @@ jobs:
       - name: Run upload script
         env:
           TAG_NAME: ${{ github.event.release.tag_name }}
+          INPUT_TAGNAME: ${{ github.event.inputs.version }}
         shell: pwsh
         run: |
           $TAG_NAME = $Env:TAG_NAME
           # Provide a dummy tag if the tag is not defined
-          if ("x$TAG_NAME" -eq "x") {
-            echo "Setting dummy tag because tag name is empty..."
-            $TAG_NAME = "1.1.3"
+          if (-Not $TAG_NAME) {
+            $TAG_NAME = $Env:INPUT_TAGNAME
           }
           echo "Using tag: $TAG_NAME for version upload"
           .\scripts\Push-KiwixRelease.ps1 "$TAG_NAME" -tag -yes

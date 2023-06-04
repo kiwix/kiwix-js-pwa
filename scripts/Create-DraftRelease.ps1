@@ -582,7 +582,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
       Method = 'POST'
       Headers = @{
         'Authorization' = "token $github_token"
-        'Accept' = 'application/vnd.github.everest-preview+json'
+        'Accept' = 'application/vnd.github.v3+json'
       }
       # Body = [System.IO.File]::ReadAllBytes($upload_file)
       InFile = $asset
