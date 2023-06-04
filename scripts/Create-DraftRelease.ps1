@@ -3,7 +3,7 @@ param (
     [string]$tag_name = "",
     [switch]$dryrun = $false,
     [switch]$buildstorerelease = $false,
-    [switch]$skipsigning = $false,
+    [switch]$skipsigning = $false, # Does not sign either the UWP appxbundle or the Electron Windows apps
     [switch]$draftonly = $false,
     [switch]$buildonly = $false,
     [switch]$winonly = $false, # Only builds Windows apps (primarily for testing, because building Linux apps is slow with WSL)

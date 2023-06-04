@@ -1,16 +1,22 @@
 # This script is intended to be run by Create-DraftRelease, and must be dot-sourced (run with `. ./Build-Electron.ps1` or `. /path/to/Build-Electron.ps1`)
 # because it modifies variables needed in Create-DraftRelease
 $base_dir = "$PSScriptRoot/../dist//bld/electron/"
-# Ensure the correct $Env variables are set for code signing - DEV update these as necessary
-if (!$Env:CSC_LINK) {
-  $Env:CSC_LINK = "$PSScriptRoot\kiwix2022.pfx"
-}
-if (!$Env:CSC_KEY_PASSWORD) {
-  $Env:CSC_KEY_PASSWORD = Get-Content -Raw "$PSScriptRoot/secret_kiwix.p12.pass"
-}
-if (!$Env:SIGNTOOL_PATH) {
-  # We need to use a newer version of singtool than that provided in electron-builder
-  $Env:SIGNTOOL_PATH = "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe"
+if (!$skipsigning) {
+  # Ensure the correct $Env variables are set for code signing - DEV update these as necessary
+  if (!$Env:CSC_LINK) {
+    $Env:CSC_LINK = "$PSScriptRoot\kiwix2022.pfx"
+  }
+  if (!$Env:CSC_KEY_PASSWORD) {
+    $Env:CSC_KEY_PASSWORD = Get-Content -Raw "$PSScriptRoot/secret_kiwix.p12.pass"
+  }
+  if (!$Env:SIGNTOOL_PATH) {
+    # We need to use a newer version of singtool than that provided in electron-builder
+    $Env:SIGNTOOL_PATH = "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe"
+  }
+} else {
+  $Env:CSC_LINK = ""
+  $Env:CSC_KEY_PASSWORD = ""
+  $Env:SIGNTOOL_PATH = ""
 }
 "`nSelected base_tag: $base_tag"
 if ($electronbuild -eq "") {
@@ -76,7 +82,19 @@ if ($electronbuild -eq "local" -and !$dryrun) {
   # Rewrite the archive for Electron if it is an mdwiki type
   (Get-Content ./dist/www/js/init.js) -replace '(mdwiki[^-]+)-app_', '$1_' | Set-Content -encoding 'utf8BOM' ./dist/www/js/init.js
   # Set the module type to one supported by Electron
-  (Get-Content ./package.json) -replace '("type":\s+)"module"', '$1"commonjs"' | Set-Content ./package.json
+  $package_json = Get-Content ./package.json
+  # $package_json -replace '("type":\s+)"module"', '$1"commonjs"'
+  $package_json_obj = $package_json | ConvertFrom-Json
+  $package_json_obj.type = "commonjs"
+  # If we're not signing, we must be building for the Store, so we need to change publisher ID
+  if ($skipsigning) {
+    $PublisherIDs = (Get-Content ./PublisherIDs.json) | ConvertFrom-Json
+    $package_json_obj.build.appx.displayName = $PublisherIDs.Publishers.Microsoft.publisherDisplayName
+    $package_json_obj.build.appx.identityName = $PublisherIDs.Publishers.Microsoft.identityName
+    $package_json_obj.build.appx.publisher = $PublisherIDs.Publishers.Microsoft.publisher
+  }
+  $package_json = $package_json_obj | ConvertTo-Json -Depth 100
+  $package_json | Set-Content ./dist/package.json
 }
 if ($electronbuild -eq "local" -and (-not $portableonly)) {
   if (-Not (Test-Path $WinInstaller -PathType Leaf)) {
