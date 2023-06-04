@@ -2,6 +2,7 @@
 
 ## Release 2.5.0-WikiMed
 
+* UPDATE: Packaged archive updated to `mdwiki_en_all[-app]_maxi_2023-06.zim`
 * ENHANCEMENT: Provide more gradual screen width transition with max page width auto setting
 * UPDATE: Reduce image fade-in transition time
 * UPDATE: Add a limit to the number of dialogue boxes that can be queued up
