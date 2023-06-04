@@ -1,6 +1,17 @@
 # This script is intended to be run by Create-DraftRelease, and must be dot-sourced (run with `. ./Build-Electron.ps1` or `. /path/to/Build-Electron.ps1`)
 # because it modifies variables needed in Create-DraftRelease
 $base_dir = "$PSScriptRoot/../dist//bld/electron/"
+# Ensure the correct $Env variables are set for code signing - DEV update these as necessary
+if (!$Env:CSC_LINK) {
+  $Env:CSC_LINK = "$PSScriptRoot\kiwix2022.pfx"
+}
+if (!$Env:CSC_KEY_PASSWORD) {
+  $Env:CSC_KEY_PASSWORD = Get-Content -Raw "$PSScriptRoot/secret_kiwix.p12.pass"
+}
+if (!$Env:SIGNTOOL_PATH) {
+  # We need to use a newer version of singtool than that provided in electron-builder
+  $Env:SIGNTOOL_PATH = "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe"
+}
 "`nSelected base_tag: $base_tag"
 if ($electronbuild -eq "") {
   ""
@@ -126,7 +137,7 @@ if (-Not (($electronbuild -eq 'cloud') -or $old_windows_support -or (Test-Path $
   "Compressing: $AddAppPackage, $compressed_assets_dir to $comp_electron_archive"
   if (-Not $dryrun) { "$AddAppPackage", "$compressed_assets_dir" | Compress-Archive -DestinationPath $comp_electron_archive -Force }
 }
-if ($electronbuild -eq "local" -and (-not $portableonly)) {
+if ($electronbuild -eq "local" -and (-not $portableonly) -and (-not $winonly)) {
   # Package Electron app for Linux
   "`nChecking for Electron packages for Linux..."
   $LinuxBasePackage = $base_dir + "Kiwix JS $alt_tag-$numeric_tag-E"
