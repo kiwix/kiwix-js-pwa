@@ -82,16 +82,21 @@ if ($electronbuild -eq "local" -and !$dryrun) {
   # Rewrite the archive for Electron if it is an mdwiki type
   (Get-Content ./dist/www/js/init.js) -replace '(mdwiki[^-]+)-app_', '$1_' | Set-Content -encoding 'utf8BOM' ./dist/www/js/init.js
   # Set the module type to one supported by Electron
+  (Get-Content ./package.json) -replace '("type":\s+)"module"', '$1"commonjs"' | Set-Content ./package.json
   $package_json = Get-Content ./package.json
-  # $package_json -replace '("type":\s+)"module"', '$1"commonjs"'
   $package_json_obj = $package_json | ConvertFrom-Json
-  $package_json_obj.type = "commonjs"
-  # If we're not signing, we must be building for the Store, so we need to change publisher ID
-  if ($skipsigning) {
-    $PublisherIDs = (Get-Content ./PublisherIDs.json) | ConvertFrom-Json
+  # $package_json_obj = $package_json | ConvertFrom-Json
+  # $package_json_obj.type = "commonjs"
+  $PublisherIDs = (Get-Content ./PublisherIDs.json) | ConvertFrom-Json
+  # If we're not signing, we must be building for the Store, so we need to change publisher ID in the dist package.json
+  if ($skipsigning -or $buildstorerelease) {
     $package_json_obj.build.appx.displayName = $PublisherIDs.Publishers.Microsoft.publisherDisplayName
     $package_json_obj.build.appx.identityName = $PublisherIDs.Publishers.Microsoft.identityName
     $package_json_obj.build.appx.publisher = $PublisherIDs.Publishers.Microsoft.publisher
+  } else {
+    $package_json_obj.build.appx.displayName = $PublisherIDs.Publishers.Kiwix.publisherDisplayName
+    $package_json_obj.build.appx.identityName = $PublisherIDs.Publishers.Kiwix.identityName
+    $package_json_obj.build.appx.publisher = $PublisherIDs.Publishers.Kiwix.publisher
   }
   $package_json = $package_json_obj | ConvertTo-Json -Depth 100
   $package_json | Set-Content ./dist/package.json
