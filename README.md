@@ -50,7 +50,7 @@ select a large archive for download in the app, it will provide you with a torre
 download and open the torrent file. This small file will open in qBittorrent and you'll be asked where you want to save the archive you
 want to download. It's much easier than it sounds!
 
-![WikiMed montage dark mode trans](https://user-images.githubusercontent.com/4304337/218268858-7baddf4c-6b8d-4ee9-b369-ef2598eca194.png)
+![Kiwix_better_zimit_montage](https://github.com/kiwix/kiwix-js-windows/assets/4304337/9462d1ee-d7e4-45db-866d-a1839c0f6b19)
 
 ## Browser support
 
