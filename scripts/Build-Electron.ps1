@@ -90,11 +90,11 @@ if ($electronbuild -eq "local" -and !$dryrun) {
   $PublisherIDs = (Get-Content ./PublisherIDs.json) | ConvertFrom-Json
   # If we're not signing, we must be building for the Store, so we need to change publisher ID in the dist package.json
   if ($skipsigning -or $buildstorerelease) {
-    $package_json_obj.build.appx.displayName = $PublisherIDs.Publishers.Microsoft.publisherDisplayName
+    $package_json_obj.build.appx.publisherDisplayName = $PublisherIDs.Publishers.Microsoft.publisherDisplayName
     $package_json_obj.build.appx.identityName = $PublisherIDs.Publishers.Microsoft.identityName
     $package_json_obj.build.appx.publisher = $PublisherIDs.Publishers.Microsoft.publisher
   } else {
-    $package_json_obj.build.appx.displayName = $PublisherIDs.Publishers.Kiwix.publisherDisplayName
+    $package_json_obj.build.appx.publisherDisplayName = $PublisherIDs.Publishers.Kiwix.publisherDisplayName
     $package_json_obj.build.appx.identityName = $PublisherIDs.Publishers.Kiwix.identityName
     $package_json_obj.build.appx.publisher = $PublisherIDs.Publishers.Kiwix.publisher
   }
