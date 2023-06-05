@@ -1,15 +1,20 @@
 ﻿# Publish Kiwix Electron packages to a GitHub draft release and/or to Kiwix download server
 [CmdletBinding()]
 param (
-    [string]$test = "",
+    [string]$test = "", # Allows user to test a single package
     [switch]$dryrun = $false,
     [switch]$githubonly = $false,
     [switch]$portableonly = $false, # If true, will only publish the portable package to GitHub, does not affect download.kiwix.org publishing
-    [string]$tag = ""
+    [string]$tag = "",
+    [string]$overridetarget = "" # Set this to "nightly" to force publication to the nightly folder on download.kiwix.org
 )
 if ($tag) {
     # If user overrode the INPUT_VERSION, use it
     $INPUT_VERSION = $tag
+}
+if ($overridetarget) {
+    # If user overrode the INPUT_TARGET, use it
+    $INPUT_TARGET = $overridetarget
 }
 $target = "/data/download/release/kiwix-js-electron"
 $keyfile = "$PSScriptRoot\ssh_key"
@@ -66,7 +71,7 @@ if (-not $CRON_LAUNCHED) {
         }
         $upload_uri = $release.upload_url -ireplace '\{[^{}]+}', '' 
         "`nUploading assets to: $upload_uri..."
-        $filter = '\.(exe|zip|msix)$'
+        $filter = '\.(exe|zip|msix|appx)$'
         if ($portableonly) {
             $filter = '\.(zip)$'
         }
@@ -143,6 +148,8 @@ if (-not $githubonly) {
             $filename = $filename -replace 'electron(?!_setup)(.+\.exe)$', 'electron_win_portable$1'
             # Fix Windows Setup version so that it is clear it is a Windows executable
             $filename = $filename -replace 'electron_setup', 'electron_win_setup'
+            # Fix Windows appx version so that it is clear it is a Windows 64bit executable
+            $filename = $filename -replace 'electron(.+\.appx)$', 'electron_x86-64$1'
             # Change underscore to hyphen in win type and remove redundant E
             $filename = ($filename -creplace '_xp([_.])', '-xp$1') -creplace '_e([_.])', '$1'
             # Move nwjs
@@ -153,11 +160,11 @@ if (-not $githubonly) {
                 # Remove the version number
                 $filename = $filename -replace '_[0-9.]+([-_.])', '$1'
                 # Add the date
-                $filename = $filename -replace '[^_]+(\.[^.]+)$', ($current_date + '$1')
+                $filename = $filename -replace '(\.[^.]+)$', ('_' + $current_date + '$1')
             }
             # Put back together
             $renamed_file = "$directory$filename"
-            if ($test) {
+            if ($test -or $dryrun) {
                 "`n$file was renamed to $renamed_file"
             } else {
                 # Rename the file
