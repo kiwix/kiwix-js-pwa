@@ -1,7 +1,7 @@
 # This script is intended to be run by Create-DraftRelease, and must be dot-sourced (run with `. ./Build-Electron.ps1` or `. /path/to/Build-Electron.ps1`)
 # because it modifies variables needed in Create-DraftRelease
 $base_dir = "$PSScriptRoot/../dist//bld/electron/"
-if (!$skipsigning) {
+if (!$skipsigning -and !$buildstorerelease) {
   # Ensure the correct $Env variables are set for code signing - DEV update these as necessary
   if (!$Env:CSC_LINK) {
     $Env:CSC_LINK = "$PSScriptRoot\kiwix2022.pfx"
