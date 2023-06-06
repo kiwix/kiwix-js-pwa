@@ -30,7 +30,6 @@
       "www/**",
       "!**/*.dev.{js,wasm}"
     ],
-    "afterPack": "./scripts/appimage-fix.js",
     "win": {
       "icon": "www/img/icons/kiwix-64.ico"
     }
