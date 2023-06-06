@@ -89,9 +89,9 @@ jobs:
       with:
         name: kiwix-js-electron_linux
         path: |
-          *.AppImage
-          *.deb
-          *.rpm      
+          dist/bld/electron/*.AppImage
+          dist/bld/electron/*.deb
+          dist/bld/electron/*.rpm      
 
   Release_Windows:
     runs-on: windows-latest
@@ -167,9 +167,9 @@ jobs:
       with:
         name: kiwix-js-electron_windows
         path: |
-          *.exe
-          *.appx
-          *.zip     
+          dist/bld/electron/*.exe
+          dist/bld/electron/*.appx
+          dist/bld/electron/*.zip     
 
   Release_NWJS:
     runs-on: windows-latest
@@ -225,6 +225,5 @@ jobs:
       if: github.event.inputs.target == 'artefacts'
       uses: actions/upload-artifact@v3
       with:
-        name: kiwix-js-nwjs
-        path: |
-          *.zip  
+        name: kiwix-js-nwjs_windows
+        path: dist/bld/nwjs/*.zip  
