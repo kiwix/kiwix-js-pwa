@@ -83,7 +83,7 @@ jobs:
       #   chmod +x ./scripts/publish_linux_packages_to_kiwix.sh
       #   ./scripts/publish_linux_packages_to_kiwix.sh
     - name: Archive build artefacts
-      if: github.event.inputs.target == 'archive'
+      if: github.event.inputs.target == 'artefacts'
       uses: actions/upload-artifact@v3
       with:
         name: kiwix-js-electron_linux
@@ -151,7 +151,7 @@ jobs:
           ./scripts/Create-DraftRelease -buildonly -tag_name $INPUT_VERSION_E -portableonly -wingetprompt N
         }
     - name: Publish packages
-      if: github.event.inputs.target != 'archive'
+      if: github.event.inputs.target != 'artefacts'
       run: |
         $SSH_KEY = $Env:SSH_KEY
         echo "$SSH_KEY" > .\scripts\ssh_key
@@ -161,7 +161,7 @@ jobs:
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         ./scripts/Publish-ElectronPackages.ps1 -portableonly -githubonly
     - name: Archive build artefacts
-      if: github.event.inputs.target == 'archive'
+      if: github.event.inputs.target == 'artefacts'
       uses: actions/upload-artifact@v3
       with:
         name: kiwix-js-electron_windows
