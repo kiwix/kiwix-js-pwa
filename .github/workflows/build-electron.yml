@@ -13,9 +13,9 @@ on:
         required: false
         default: ''
       target:
-        description: Do you wish to build release or nightly?
+        description: Do you wish to build for "release", "nightly", or "artefacts" for testing? Artefacts will appear under the workflow run.
         required: false
-        default: 'nightly'
+        default: 'artefacts'
 env:
   INPUT_VERSION: ${{ github.event.inputs.version }}
   INPUT_TARGET: ${{ github.event.inputs.target }}
@@ -82,6 +82,15 @@ jobs:
       #   chmod 600 ./scripts/ssh_key
       #   chmod +x ./scripts/publish_linux_packages_to_kiwix.sh
       #   ./scripts/publish_linux_packages_to_kiwix.sh
+    - name: Archive build artefacts
+      if: github.event.inputs.target == 'archive'
+      uses: actions/upload-artifact@v3
+      with:
+        name: kiwix-js-electron_linux
+        path: |
+          *.AppImage
+          *.deb
+          *.rpm      
 
   Release_Windows:
     runs-on: windows-latest
@@ -142,6 +151,7 @@ jobs:
           ./scripts/Create-DraftRelease -buildonly -tag_name $INPUT_VERSION_E -portableonly -wingetprompt N
         }
     - name: Publish packages
+      if: github.event.inputs.target != 'archive'
       run: |
         $SSH_KEY = $Env:SSH_KEY
         echo "$SSH_KEY" > .\scripts\ssh_key
@@ -150,6 +160,15 @@ jobs:
         $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
         ./scripts/Publish-ElectronPackages.ps1 -portableonly -githubonly
+    - name: Archive build artefacts
+      if: github.event.inputs.target == 'archive'
+      uses: actions/upload-artifact@v3
+      with:
+        name: kiwix-js-electron_windows
+        path: |
+          *.exe
+          *.appx
+          *.zip     
 
   # Release_NWJS:
   #   runs-on: windows-latest
