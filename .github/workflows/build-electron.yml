@@ -180,7 +180,11 @@ jobs:
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
-        ./scripts/Publish-ElectronPackages.ps1 -portableonly
+        if ($Env:REF_NAME -eq "main") {
+          ./scripts/Publish-ElectronPackages.ps1 -portableonly
+        } else {
+          ./scripts/Publish-ElectronPackages.ps1 -portableonly -githubonly
+        }
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
       uses: actions/upload-artifact@v3
