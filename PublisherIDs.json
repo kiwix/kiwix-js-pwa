@@ -1,21 +1,39 @@
 {
-  "Publishers":
-    { 
-      "Microsoft":
-        {
-          "name": "Microsoft Store",
-          "type": "appx",
-          "identityName": "Kiwix.KiwixJSElectron",
-          "publisher": "CN=0A5438F5-EEA6-4300-9B77-E45BBD148885",
-          "publisherDisplayName": "Kiwix"
-        },
-      "Kiwix":
-        {
-          "name": "GitHub Releases",
-          "type": "appx",
-          "identityName": "Kiwix.KiwixJS.Electron",
-          "publisher": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, C=CH",
-          "publisherDisplayName": "Association Kiwix"
+    "kiwix-js-windows": {
+        "publishers": { 
+            "Microsoft": {
+                "name": "Microsoft Store",
+                "type": "appx",
+                "identityName": "Kiwix.KiwixJSElectron",
+                "publisher": "CN=0A5438F5-EEA6-4300-9B77-E45BBD148885",
+                "publisherDisplayName": "Kiwix"
+            },
+            "Kiwix": {
+                "name": "GitHub Releases",
+                "type": "appx",
+                "identityName": "Kiwix.KiwixJS.Electron",
+                "publisher": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, C=CH",
+                "publisherDisplayName": "Association Kiwix"
+            }
+        }
+    },
+    "kiwix-js-wikimed": {
+        "publishers": { 
+            "Microsoft": {
+                "name": "Microsoft Store",
+                "type": "appx",
+                "identityName": "Kiwix.WikiMedElectron",
+                "publisher": "CN=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
+                "publisherDisplayName": "Kiwix"
+            },
+            "Kiwix": {
+                "name": "GitHub Releases",
+                "type": "appx",
+                "identityName": "Kiwix.WikiMed.Electron",
+                "publisher": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, C=CH",
+                "publisherDisplayName": "Association Kiwix"
+            }
         }
     }
+    
 }
