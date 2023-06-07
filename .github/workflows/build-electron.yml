@@ -71,6 +71,7 @@ jobs:
         # sed -i -E 's/("type":\s+)"module"/\1"commonjs"/' ./package.json
         echo "Installing dependencies in dist"
         cd dist && npm install && cd ..
+        echo "Building 64bit packages for ref_name=$REF_NAME..."
         if [[ $REF_NAME = "main" ]]; then
           npx electron-builder --linux AppImage:x64 deb:x64 rpm:x64 --projectDir dist
         else
@@ -84,6 +85,7 @@ jobs:
         sed -i -E 's/("electron":\s")[^"]+/\118.3.15/' ./dist/package.json
         echo "Installing dependencies in dist"
         cd dist && npm install && cd ..
+        echo "Building 32bit packages for ref_name=$REF_NAME..."
         if [[ $REF_NAME = "main" ]]; then
           npx electron-builder --linux AppImage:ia32 deb:ia32 rpm:ia32 --projectDir dist
         else
@@ -154,6 +156,7 @@ jobs:
         # (Get-Content ./package.json) -replace '("type":\s+)"module"', '$1"commonjs"' | Set-Content ./package.json
         echo "Installing dependencies in dist"
         cd dist && npm install && cd ..
+        echo "Building Windows packages..."
         npm run publish
         ./scripts/Rewrite-DraftReleaseTag.ps1
     - name: Build portable Electron app
