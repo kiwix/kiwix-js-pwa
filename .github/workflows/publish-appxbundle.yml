@@ -20,7 +20,7 @@ on:
 jobs:
   # This workflow contains a single job called "upload"
   upload:
-    if: !(contains( ${{ github.ref_name }}, 'WikiMed') || contains( ${{ github.ref_name }}, 'Wikivoyage'))
+    if: ! (contains( ${{ github.ref_name }}, 'WikiMed') || contains( ${{ github.ref_name }}, 'Wikivoyage'))
     runs-on: windows-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
