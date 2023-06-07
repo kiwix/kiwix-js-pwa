@@ -103,8 +103,11 @@ if ($electronbuild -eq "local" -and !$dryrun) {
 }
 if ($electronbuild -eq "local" -and (-not $portableonly)) {
   if (-Not (Test-Path $WinInstaller -PathType Leaf)) {
-    "No package found: building $WinInstaller..."
+    "No existing package found: building $WinInstaller..."
     if (-Not $dryrun) {
+      echo "Installing dependencies in dist..."
+      cd dist && npm install && cd ..
+      echo "Building Windows packages..."
       npm run dist-win
       if (Test-Path $WinInstaller -PathType Leaf) {
         "Successfully built."
@@ -202,7 +205,7 @@ if ($electronbuild -eq "local" -and (-not $portableonly) -and (-not $winonly)) {
     cd $repo_dir
     rm -r $base_dir/linux-unpacked
     rm -r $base_dir/linux-ia32-unpacked
-    wsl bash -ic "npm run dist-linux"
+    wsl bash -ic "echo 'Installing dependencies in dist...' && cd dist && npm install && cd .. && echo 'Building Linux packages...' && npm run dist-linux"
     # Alternatively build with docker
     # docker $build_command
   }
