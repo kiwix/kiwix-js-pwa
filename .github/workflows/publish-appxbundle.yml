@@ -20,14 +20,11 @@ on:
 jobs:
   # This workflow contains a single job called "upload"
   upload:
-    # The type of runner that the job will run on
+    if: ! contains(github.ref_name, 'WikiMed') && ! contains(github.ref_name, 'Wikivoyage')
     runs-on: windows-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-
       # Set up secret files from encrypted secrets
       - name: Set up secret files
         env:
@@ -39,7 +36,6 @@ jobs:
             echo "WARNING! The SSH secret is empty!"
           }
           echo "$SSH_KEY" > .\scripts\ssh_key
-
       # Runs the upload script
       - name: Run upload script
         env:
