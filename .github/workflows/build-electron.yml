@@ -3,9 +3,9 @@
 name: Build Electron and NWJS packages
 
 on:
-  # schedule:
-  # # Nightly run at 03:39 UTC
-  #   - cron: '39 03 * * *'
+  schedule:
+  # Nightly run at 03:39 UTC
+    - cron: '39 03 * * *'
   workflow_dispatch:
     inputs:
       version:
@@ -24,6 +24,7 @@ env:
   CSC_LINK: ${{ secrets.CSC_LINK }}
   CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
   SSH_KEY: ${{ secrets.SSH_KEY }}
+  REF_NAME: ${{ github.ref_name }}
       
 jobs:
 
@@ -68,20 +69,29 @@ jobs:
       run: |
         # echo "Setting the module type to one supported by Electron in ./package.json"
         # sed -i -E 's/("type":\s+)"module"/\1"commonjs"/' ./package.json
-        npm run publish
+        if [[ $GITHUB_REFNAME = "main" ]]; then
+          npx electron-builder --linux AppImage:x64 deb:x64 rpm:x64 --projectDir dist
+        else
+          npx electron-builder --linux AppImage:x64 deb:x64 --projectDir dist
+        fi
     - name: Build and pulblish 32bit
       env: 
         USE_HARD_LINKS: false
       run: |
         echo "Changing Electron version to latest that supports 32bit Linux (18.3.15) in ./dist/package.json"
         sed -i -E 's/("electron":\s")[^"]+/\118.3.15/' ./dist/package.json
-        npx electron-builder --linux AppImage:ia32 deb:ia32 --projectDir dist
-    # - name: Upload packages to Kiwix
-      # run: |
-      #   echo "$SSH_KEY" > ./scripts/ssh_key
-      #   chmod 600 ./scripts/ssh_key
-      #   chmod +x ./scripts/publish_linux_packages_to_kiwix.sh
-      #   ./scripts/publish_linux_packages_to_kiwix.sh
+        if [[ $GITHUB_REFNAME = "main" ]]; then
+          npx electron-builder --linux AppImage:ia32 deb:ia32 rpm:ia32 --projectDir dist
+        else
+          npx electron-builder --linux AppImage:ia32 deb:ia32 --projectDir dist
+        fi
+    - name: Upload packages to Kiwix
+      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts' 
+      run: |
+        echo "$SSH_KEY" > ./scripts/ssh_key
+        chmod 600 ./scripts/ssh_key
+        chmod +x ./scripts/publish_linux_packages_to_kiwix.sh
+        ./scripts/publish_linux_packages_to_kiwix.sh
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
       uses: actions/upload-artifact@v3
@@ -159,7 +169,7 @@ jobs:
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
-        ./scripts/Publish-ElectronPackages.ps1 -portableonly -githubonly
+        ./scripts/Publish-ElectronPackages.ps1 -portableonly
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
       uses: actions/upload-artifact@v3
@@ -170,52 +180,60 @@ jobs:
           dist/bld/Electron/*.appx
           dist/bld/Electron/*.zip     
 
-  # Release_NWJS:
-  #   runs-on: windows-latest
-  #   steps:
-  #   - uses: actions/checkout@v3       
-  #   - uses: actions/setup-node@v3
-  #   - name: Install dependencies
-  #     run: npm install
-  #   - name: Build production code
-  #     run: npm run build-min
-  #   - name: Select NWJS app
-  #     run: |
-  #       ren package.json package.json.electron
-  #       ren package.json.nwjs package.json
-  #   - name: Rewrite app version number
-  #     run: |
-  #       $INPUT_VERSION = $Env:INPUT_VERSION
-  #       $INPUT_TARGET = $Env:INPUT_TARGET
-  #       $CRON_LAUNCHED = $Env:CRON_LAUNCHED
-  #       ./scripts/Rewrite-AppVersion.ps1
-  #       cp package.json dist/package.json
-  #   - name: Download archive if needed
-  #     run: |
-  #       echo "Changing to the dist directory"
-  #       cd dist && pwd
-  #       $packagedFile = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1'
-  #       if ($packagedFile -and ! (Test-Path "archives\$packagedFile" -PathType Leaf)) {
-  #         # File not in archives, so generalize the name and download it
-  #         $packagedFileGeneric = $packagedFile -replace '_[0-9-]+(\.zim)', '$1'
-  #         Write-Host "`nDownloading https://download.kiwix.org/zim/$packagedFileGeneric"
-  #         Invoke-WebRequest "https://download.kiwix.org/zim/$packagedFileGeneric" -OutFile "archives\$packagedFile"
-  #       }
-  #       ls archives
-  #       if ($packagedFile -and (Test-Path "archives\$packagedFile" -PathType Leaf)) {
-  #         Write-Host "`nFile $packagedFile now available in 'archives'.`n" -ForegroundColor Green
-  #       } else {
-  #         Write-Host "`nError! We could not obtain the requested archive $packagedFile!`n" -ForegroundColor Red
-  #         exit 1
-  #       }
-  #   - name: Build NWJS app
-  #     run: ./scripts/Build-NWJS.ps1 -only32bit
-  #   - name: Publish
-  #     run: |
-  #       $SSH_KEY = $Env:SSH_KEY
-  #       echo "$SSH_KEY" > .\scripts\ssh_key
-  #       $GITHUB_TOKEN = $Env:GITHUB_TOKEN
-  #       $INPUT_VERSION = $Env:INPUT_VERSION
-  #       $INPUT_TARGET = $Env:INPUT_TARGET
-  #       $CRON_LAUNCHED = $Env:CRON_LAUNCHED
-  #       ./scripts/Publish-ElectronPackages.ps1
+  Release_NWJS:
+    if: github.ref_name == 'main'
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3       
+    - uses: actions/setup-node@v3
+    - name: Install dependencies
+      run: npm install
+    - name: Build production code
+      run: npm run build-min
+    - name: Select NWJS app
+      run: |
+        ren package.json package.json.electron
+        ren package.json.nwjs package.json
+    - name: Rewrite app version number
+      run: |
+        $INPUT_VERSION = $Env:INPUT_VERSION
+        $INPUT_TARGET = $Env:INPUT_TARGET
+        $CRON_LAUNCHED = $Env:CRON_LAUNCHED
+        ./scripts/Rewrite-AppVersion.ps1
+        cp package.json dist/package.json
+    - name: Download archive if needed
+      run: |
+        echo "Changing to the dist directory"
+        cd dist && pwd
+        $packagedFile = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1'
+        if ($packagedFile -and ! (Test-Path "archives\$packagedFile" -PathType Leaf)) {
+          # File not in archives, so generalize the name and download it
+          $packagedFileGeneric = $packagedFile -replace '_[0-9-]+(\.zim)', '$1'
+          Write-Host "`nDownloading https://download.kiwix.org/zim/$packagedFileGeneric"
+          Invoke-WebRequest "https://download.kiwix.org/zim/$packagedFileGeneric" -OutFile "archives\$packagedFile"
+        }
+        ls archives
+        if ($packagedFile -and (Test-Path "archives\$packagedFile" -PathType Leaf)) {
+          Write-Host "`nFile $packagedFile now available in 'archives'.`n" -ForegroundColor Green
+        } else {
+          Write-Host "`nError! We could not obtain the requested archive $packagedFile!`n" -ForegroundColor Red
+          exit 1
+        }
+    - name: Build NWJS app
+      run: ./scripts/Build-NWJS.ps1 -only32bit
+    - name: Publish
+      if: github.event.inputs.target != 'artefacts'
+      run: |
+        $SSH_KEY = $Env:SSH_KEY
+        echo "$SSH_KEY" > .\scripts\ssh_key
+        $GITHUB_TOKEN = $Env:GITHUB_TOKEN
+        $INPUT_VERSION = $Env:INPUT_VERSION
+        $INPUT_TARGET = $Env:INPUT_TARGET
+        $CRON_LAUNCHED = $Env:CRON_LAUNCHED
+        ./scripts/Publish-ElectronPackages.ps1
+    - name: Archive build artefacts
+      if: github.event.inputs.target == 'artefacts'
+      uses: actions/upload-artifact@v3
+      with:
+        name: kiwix-js-nwjs_windows
+        path: dist/bld/nwjs/*.zip  
