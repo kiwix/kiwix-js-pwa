@@ -167,6 +167,8 @@ jobs:
           if ($Env:INPUT_VERSION -match '-Wiki[\w]+') {
             $INPUT_VERSION_E += $matches[0]
           }
+          # To ensure there is enough disk space, we can delete the archive that is no longer needed
+          rm -r dist/archives
           ./scripts/Create-DraftRelease -buildonly -tag_name $INPUT_VERSION_E -portableonly -wingetprompt N
         }
     - name: Publish packages
@@ -178,7 +180,11 @@ jobs:
         $INPUT_VERSION = $Env:INPUT_VERSION
         $INPUT_TARGET = $Env:INPUT_TARGET
         $CRON_LAUNCHED = $Env:CRON_LAUNCHED
-        ./scripts/Publish-ElectronPackages.ps1 -portableonly
+        if ($Env:REF_NAME -eq "main") {
+          ./scripts/Publish-ElectronPackages.ps1 -portableonly
+        } else {
+          ./scripts/Publish-ElectronPackages.ps1 -portableonly -githubonly
+        }
     - name: Archive build artefacts
       if: github.event.inputs.target == 'artefacts'
       uses: actions/upload-artifact@v3
