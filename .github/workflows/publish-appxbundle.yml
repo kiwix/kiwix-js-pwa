@@ -43,14 +43,20 @@ jobs:
       # Runs the upload script
       - name: Run upload script
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG_NAME: ${{ github.event.release.tag_name }}
           INPUT_TAGNAME: ${{ github.event.inputs.version }}
         shell: pwsh
         run: |
+          $GITHUB_TOKEN = $Env:GITHUB_TOKEN
           $TAG_NAME = $Env:TAG_NAME
           # Provide a dummy tag if the tag is not defined
           if (-Not $TAG_NAME) {
             $TAG_NAME = $Env:INPUT_TAGNAME
           }
-          echo "Using tag: $TAG_NAME for version upload"
-          .\scripts\Push-KiwixRelease.ps1 "$TAG_NAME" -tag -yes
+          if ($TAG_NAME -imatch 'wiki(med|voyage)') {
+            "Nothing to upload because we don't publish WikiMed or Wikivoyage packages to Kiwix."
+          } else {
+            echo "Using tag: $TAG_NAME for version upload"
+            .\scripts\Push-KiwixRelease.ps1 "$TAG_NAME" -tag -yes
+          }
