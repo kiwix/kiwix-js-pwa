@@ -24,6 +24,7 @@ env:
   CSC_LINK: ${{ secrets.CSC_LINK }}
   CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
   SSH_KEY: ${{ secrets.SSH_KEY }}
+  REF_NAME: ${{ github.ref_name }}
       
 jobs:
 
@@ -68,16 +69,24 @@ jobs:
       run: |
         # echo "Setting the module type to one supported by Electron in ./package.json"
         # sed -i -E 's/("type":\s+)"module"/\1"commonjs"/' ./package.json
-        npm run publish
+        if [[ $GITHUB_REFNAME = "main" ]]; then
+          npx electron-builder --linux AppImage:x64 deb:x64 rpm:x64 --projectDir dist
+        else
+          npx electron-builder --linux AppImage:x64 deb:x64 --projectDir dist
+        fi
     - name: Build and pulblish 32bit
       env: 
         USE_HARD_LINKS: false
       run: |
         echo "Changing Electron version to latest that supports 32bit Linux (18.3.15) in ./dist/package.json"
         sed -i -E 's/("electron":\s")[^"]+/\118.3.15/' ./dist/package.json
-        npx electron-builder --linux AppImage:ia32 deb:ia32 rpm:ia32 --projectDir dist
+        if [[ $GITHUB_REFNAME = "main" ]]; then
+          npx electron-builder --linux AppImage:ia32 deb:ia32 rpm:ia32 --projectDir dist
+        else
+          npx electron-builder --linux AppImage:ia32 deb:ia32 --projectDir dist
+        fi
     - name: Upload packages to Kiwix
-      if: github.event.inputs.target != 'artefacts'
+      if: github.ref_name == 'main' && github.event.inputs.target != 'artefacts' 
       run: |
         echo "$SSH_KEY" > ./scripts/ssh_key
         chmod 600 ./scripts/ssh_key
@@ -172,6 +181,7 @@ jobs:
           dist/bld/Electron/*.zip     
 
   Release_NWJS:
+    if: github.ref_name == 'main'
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3       
