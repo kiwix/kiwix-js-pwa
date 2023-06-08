@@ -74,6 +74,7 @@ $alt_tag = $text_tag -ireplace 'Windows', 'Electron'
 $comp_electron_archive = $base_dir + "Kiwix-JS-Electron-$base_tag.zip"
 $unpacked_folder = $base_dir + "win-ia32-unpacked"
 $WinInstaller = $base_dir + "Kiwix JS $alt_tag Setup $numeric_tag-E.exe"
+$winAppx = $base_dir + "Kiwix JS $alt_tag $numeric_tag-E.appx"
 if ($alt_tag -imatch 'WikiMed|Wikivoyage') {
   $comp_electron_archive = $base_dir + "$text_tag-by-Kiwix-$base_tag.zip"
   $WinInstaller = $base_dir + "$alt_tag by Kiwix Setup $numeric_tag-E.exe"
@@ -108,7 +109,7 @@ if ($electronbuild -eq "local") {
   # Set the publisher ID fields in package.json
   $package_json_obj.build.appx.publisherDisplayName = $PublisherIds_record.publisherDisplayName
   $package_json_obj.build.appx.identityName = $PublisherIds_record.identityName
-  $package_json_obj.build.appx.displayName = $PublisherIds_record.displayyName
+  $package_json_obj.build.appx.displayName = $PublisherIds_record.displayName
   $package_json_obj.build.appx.publisher = $PublisherIds_record.publisher
   # Write the modified package.json to the dist folder
   $package_json = $package_json_obj | ConvertTo-Json -Depth 100
