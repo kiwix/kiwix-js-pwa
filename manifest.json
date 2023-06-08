@@ -7,9 +7,9 @@
   "iarc_rating_id": "3596f0d9-387e-4d64-a165-5fef16a6c8e3",
   "start_url": ".",
   "short_name": "Kiwix PWA",
-  "theme_color": "#0000",
+  "theme_color": "#000",
   "description": "Offline Wikipedia reader",
-  "background_color": "#0000",
+  "background_color": "#000",
   "related_applications": [
     {
       "platform": "windows",
