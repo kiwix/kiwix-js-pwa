@@ -1,6 +1,6 @@
 # This script is intended to be run by Create-DraftRelease, and must be dot-sourced (run with `. ./Build-Electron.ps1` or `. /path/to/Build-Electron.ps1`)
 # because it modifies variables needed in Create-DraftRelease
-$base_dir = "$PSScriptRoot/../dist//bld/electron/"
+$base_dir = "$PSScriptRoot/../dist/bld/Electron/" -replace 'scripts/../', ''
 if (!$skipsigning -and !$buildstorerelease) {
   # Ensure the correct $Env variables are set for code signing - DEV update these as necessary
   if (!$Env:CSC_LINK) {
@@ -76,56 +76,93 @@ $unpacked_folder = $base_dir + "win-ia32-unpacked"
 $WinInstaller = $base_dir + "Kiwix JS $alt_tag Setup $numeric_tag-E.exe"
 if ($alt_tag -imatch 'WikiMed|Wikivoyage') {
   $comp_electron_archive = $base_dir + "$text_tag-by-Kiwix-$base_tag.zip"
-  $WinInstaller = $base_dir + "$alt_tag.by.Kiwix.Setup.$numeric_tag-E.exe"
+  $WinInstaller = $base_dir + "$alt_tag by Kiwix Setup $numeric_tag-E.exe"
+  $winAppx = $base_dir + "$alt_tag by Kiwix $numeric_tag-E.appx"
 }
-if ($electronbuild -eq "local" -and !$dryrun) {
-  # Rewrite the archive for Electron if it is an mdwiki type
-  (Get-Content ./dist/www/js/init.js) -replace '(mdwiki[^-]+)-app_', '$1_' | Set-Content -encoding 'utf8BOM' ./dist/www/js/init.js
-  # In case we are in an mdwiki app, delete the unneeded archive, so it doesn't get packaged
-  rm ./dist/archives/mdwiki*-app*.zim
+if ($electronbuild -eq "local") {
+  if (-Not $dryrun) {
+    # Rewrite the archive for Electron if it is an mdwiki type
+    (Get-Content ./dist/www/js/init.js) -replace '(mdwiki[^-]+)-app_', '$1_' | Set-Content -encoding 'utf8BOM' ./dist/www/js/init.js
+    # In case we are in an mdwiki app, delete the unneeded archive, so it doesn't get packaged
+    rm ./dist/archives/mdwiki*-app*.zim
+  } else {
+    "[DRYRUN]: Rewriting the archive for Electron if it is an mdwiki type"
+    "[DRYRUN]: In case we are in an mdwiki app, delete the unneeded archive, so it doesn't get packaged"
+  }
   # Set the module type to one supported by Electron
   # (Get-Content ./package.json) -replace '("type":\s+)"module"', '$1"commonjs"' | Set-Content ./package.json
+  "`nRewriting values in package.json for Electron appx build"
   $package_json = Get-Content ./package.json
   $package_json_obj = $package_json | ConvertFrom-Json
-  # $package_json_obj = $package_json | ConvertFrom-Json
-  # $package_json_obj.type = "commonjs"
   $PublisherIDs = (Get-Content ./PublisherIDs.json) | ConvertFrom-Json
   # If we're not signing, we must be building for the Store, so we need to change publisher ID in the dist package.json
   $package_json_name = $package_json_obj.name
+  # Get the correct publisher ID record
   if ($skipsigning -or $buildstorerelease) {
-    $package_json_obj.build.appx.publisherDisplayName = $PublisherIDs.$package_json_name.publishers.Microsoft.publisherDisplayName
-    $package_json_obj.build.appx.identityName = $PublisherIDs.$package_json_name.publishers.Microsoft.identityName
-    $package_json_obj.build.appx.publisher = $PublisherIDs.$package_json_name.publishers.Microsoft.publisher
+    "Using Microsoft publisher ID"
+    $PublisherIds_record = $PublisherIDs.$package_json_name.publishers.Microsoft
   } else {
-    $package_json_obj.build.appx.publisherDisplayName = $PublisherIDs.$package_json_name.publishers.Kiwix.publisherDisplayName
-    $package_json_obj.build.appx.identityName = $PublisherIDs.$package_json_name.publishers.Kiwix.identityName
-    $package_json_obj.build.appx.publisher = $PublisherIDs.$package_json_name.publishers.Kiwix.publisher
+    "Using Kiwix publisher ID"
+    $PublisherIds_record = $PublisherIDs.$package_json_name.publishers.Kiwix
   }
+  # Set the publisher ID fields in package.json
+  $package_json_obj.build.appx.publisherDisplayName = $PublisherIds_record.publisherDisplayName
+  $package_json_obj.build.appx.identityName = $PublisherIds_record.identityName
+  $package_json_obj.build.appx.displayName = $PublisherIds_record.displayyName
+  $package_json_obj.build.appx.publisher = $PublisherIds_record.publisher
+  # Write the modified package.json to the dist folder
   $package_json = $package_json_obj | ConvertTo-Json -Depth 100
-  $package_json | Set-Content ./dist/package.json
+  if (-Not $dryrun) {
+    $package_json | Set-Content ./dist/package.json
+  } else {
+    "[DRYRUN]: Writing the modified package.json to the dist folder"
+  }
+  
 }
 if ($electronbuild -eq "local" -and (-not $portableonly)) {
+  if ($winonly -eq "appx") {
+    $WinInstaller = $winAppx
+  }
   if (-Not (Test-Path $WinInstaller -PathType Leaf)) {
-    "No existing package found: building $WinInstaller..."
+    "`nNo existing Electron package found: building $WinInstaller..."
     if (-Not $dryrun) {
-      echo "Installing dependencies in dist..."
+      echo "`nInstalling dependencies in dist..."
       cd dist && npm install && cd ..
-      echo "Building Windows packages..."
-      npm run dist-win
-      if (Test-Path $WinInstaller -PathType Leaf) {
-        "Successfully built."
+      echo "`nBuilding Windows packages..."
+      if ($winonly -eq "appx") {
+        "[Only building the appx package because -winonly appx was specified]"
+        npx electron-builder --win appx --projectDir dist
       } else {
-        "Oh no! The Windows installer build failed!"
+        npm run dist-win
+      }
+      if (Test-Path $WinInstaller -PathType Leaf) {
+        Write-Host "Successfully built." -ForegroundColor Green
+      } else {
+        Write-Host "Oh no! The Windows Electron build failed!" -ForegroundColor Red
+        "Could not find $WinInstaller..."
       }
     }
   } else {
-    "Package found."
+    Write-Host "Existing Electron package $winInstaller found." -ForegroundColor Yellow
+  }
+}
+# Build appxbundle from appx
+if ($electronbuild -eq "local" -and (-not $portableonly) -and $winAppx -and (Test-Path $winAppx -PathType Leaf)) {
+  "`nBuilding appxbundle from appx..."
+  $winAppxBundle = $winAppx + "bundle"
+  $appxBundleDir = $base_dir + "appxbundle"
+  if (-Not $dryrun) {
+    mkdir $appxBundleDir
+    mv $winAppx $appxBundleDir
+    & "C:\Program Files (x86)\Windows Kits\10\bin\x64\makeappx.exe" bundle /d $appxBundleDir /p $winAppxbundle  
+  } else {
+    "[DRYRUN]: & 'C:\Program Files (x86)\Windows Kits\10\bin\x64\makeappx.exe' bundle /d $appxBundleDir /p $winAppxbundle"
   }
 }
 # Build portable app if not in cloud
-if (-Not (($electronbuild -eq 'cloud') -or $old_windows_support -or (Test-Path $comp_electron_archive -PathType Leaf))) {
+if (-Not (($electronbuild -eq 'cloud') -or $old_windows_support -or (Test-Path $comp_electron_archive -PathType Leaf) -or ($winonly -eq "appx"))) {
   # Package portable electron app for Windows
-  "Building portable Electron app for Windows"
+  "`nBuilding portable Electron app for Windows"
   "Compressing release package for Electron..."
   $foldername = "kiwix-js-windows-win32-ia32"
   $compressed_assets_dir = $base_dir + $foldername
