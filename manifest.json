@@ -1,14 +1,18 @@
 {
   "dir": "ltr",
-  "lang": "en",
+  "lang": "en-GB",
   "name": "Kiwix JS PWA Edition",
   "display": "standalone",
-  "display_override": ["standalone", "tabbed"],
+  "display_override": ["window-controls-overlay", "standalone", "browser"],
+  "edge_side_panel": { 
+    "preferred_width": 496 
+  },
+  "categories": ["reference", "books", "education"],
   "iarc_rating_id": "3596f0d9-387e-4d64-a165-5fef16a6c8e3",
   "start_url": ".",
   "short_name": "Kiwix PWA",
-  "theme_color": "#000",
-  "description": "Offline Wikipedia reader",
+  "theme_color": "#2F4F4F",
+  "description": "Kiwix is an offline reader for content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, and many other Web archives. It makes knowledge available to people with limited or no Internet access.",
   "background_color": "#000",
   "related_applications": [
     {
