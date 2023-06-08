@@ -6,7 +6,8 @@ param (
     [switch]$skipsigning = $false, # Does not sign either the UWP appxbundle or the Electron Windows apps
     [switch]$draftonly = $false,
     [switch]$buildonly = $false,
-    [switch]$winonly = $false, # Only builds Windows apps (primarily for testing, because building Linux apps is slow with WSL)
+    [switch]$nobundle = $false, # Setting to true would skip the bundling stage with rollup 
+    [string]$winonly = "", # Flag for the Electron build: if set to any value, will build only Windows Electron apps. Set to "appx" to build only the appx package for Electron.
     [string]$electronbuild = "", # 'local' or 'cloud'
     [switch]$portableonly = $false, # If set, only the portable electron build will be built. Implies local electron build.
     [switch]$updatewinget = $false,
@@ -50,12 +51,12 @@ $sw_tag = ''
 if ($serviceworker -match 'appVersion\s*=\s*[''"]([^''"]+)') {
   $sw_tag = 'v' + $matches[1]
   if ($sw_tag -ne $file_tag) {
-    "`n*** WARNING: The version in init.js [$file_tag] does not match the version in service-worker.js [$sw_tag]! ***"
+    Write-Host "`n*** WARNING: The version in init.js [$file_tag] does not match the version in service-worker.js [$sw_tag]! ***" -ForegroundColor Red
     "Please correct before continuing.`n"
-    exit
+    exit 1
   } else {
-    "`nVersion in init.js: $file_tag"
-    "Version in service-worker.js: $sw_tag"
+    Write-Host "`nVersion in init.js: $file_tag" -ForegroundColor Cyan
+    Write-Host "Version in service-worker.js: $sw_tag" -ForegroundColor Cyan
   }
 } else {
   "`n*** WARNING: App version is incorrectly set in service-worker.js.`nPlease correct before continuing.`n"
@@ -226,13 +227,6 @@ $release_params = @{
   ContentType = "application/json"
 }
 
-# Post to the release server
-if (-Not ($dryrun -or $buildonly -or $updatewinget)) { 
-  $release = Invoke-RestMethod @release_params 
-} elseif (-Not ($updatewinget -or $buildonly -or $updatewinget)) {
-  "[DRYRUN] Release Body:`n$release_body"
-}
-
 # We should have enough information to find the release URL
 if ($updatewinget) {
   if (-Not $flavour -and $release_body -match 'https:[^)]+?\.(?:appxbundle)') {
@@ -267,10 +261,27 @@ if ($updatewinget) {
     } else {
       "`n[DRYRUN:] & wingetcreate.exe update $package_id -v $winget_version -u $UrlsWithOverride -s -t $github_token"
     }
-}
-  
+  }
   "`nDone."
   return
+}
+
+# Post to the release server
+if (-Not ($dryrun -or $buildonly)) { 
+  $release = Invoke-RestMethod @release_params 
+} elseif (-Not $buildonly) {
+  "[DRYRUN] Release Body:`n$release_body"
+}
+
+if (-Not $nobundle) {
+  "`nBuilding production bundle with rollup..."
+  if (-Not $dryrun) {
+    & npm run build
+  } else {
+    "[DRYRUN] & npm run build"
+  }
+} else {
+  "`nSkipping production bundle build..."
 }
 
 # Check that we appear to have created a release
