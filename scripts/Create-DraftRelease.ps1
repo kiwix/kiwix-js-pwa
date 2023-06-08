@@ -276,7 +276,7 @@ if (-Not ($dryrun -or $buildonly)) {
 if (-Not $nobundle) {
   "`nBuilding production bundle with rollup..."
   if (-Not $dryrun) {
-    & npm run build
+    & npm run del-dist && npm run build-min 
   } else {
     "[DRYRUN] & npm run build"
   }
@@ -294,8 +294,8 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   }
   $json_object = $json_object -replace '\s*$', "`n"
   if ($dryrun) {
-    "[DRYRUN] would have written:`n"
-    $json_object
+    "[DRYRUN] would have written new package.json"
+    # $json_object
   } else {
     Set-Content "$PSScriptRoot/../package.json" $json_object
   }
@@ -308,7 +308,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     "Done."
     return
   }
-  "Searching for assets..."
+  "`nSearching for assets..."
   $AppImageArchives = @()
   if ($flavour -eq '_E') {
     "Building Electron packages..."
