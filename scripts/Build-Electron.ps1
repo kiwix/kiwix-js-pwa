@@ -148,7 +148,7 @@ if ($electronbuild -eq "local" -and (-not $portableonly)) {
   }
 }
 # Build appxbundle from appx
-if ($electronbuild -eq "local" -and (-not $portableonly) -and $winAppx -and (Test-Path $winAppx -PathType Leaf)) {
+if ($electronbuild -eq "local" -and (-not $portableonly) -and $winAppx -and ($skipsigning -or $buildstorerelease) -and (Test-Path $winAppx -PathType Leaf)) {
   "`nBuilding appxbundle from appx..."
   $winAppxBundle = $winAppx + "bundle"
   $appxBundleDir = $base_dir + "appxbundle"
