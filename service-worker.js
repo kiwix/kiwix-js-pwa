@@ -68,10 +68,9 @@ var useAssetsCache = true;
  */
 let imageDisplay;
 
-// Kiwix ZIM Archive Download Server in regex form
+// Kiwix ZIM Archive Download Server and release update server in regex form
 // DEV: The server URL is defined in init.js, but is not available to us in SW
-const regexpKiwixDownloadLinks = /download\.kiwix\.org/i;
-
+const regexpKiwixDownloadLinks = /download\.kiwix\.org|api\.github\.com/i;
 
 /**  
  * A regular expression that matches the Content-Types of assets that may be stored in ASSETS_CACHE
