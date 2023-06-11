@@ -918,15 +918,16 @@ if (window.electronAPI) {
 // Check for GitHub and Electron updates
 var updateCheck = document.getElementById('updateCheck');
 params.isUWPStoreApp = /UWP/.test(params.appType) && Windows.ApplicationModel && Windows.ApplicationModel.Package &&
-    !/Association.Kiwix/.test(Windows.ApplicationModel.Package.current.id.publisher);
+    !/Association.Kiwix/.test(Windows.ApplicationModel.Package.current.id.publisher) || electronAPI && electronAPI.isMicrosotStoreApp;
 // If Internet access is allowed, or it's a UWP Store app, or it's HTML5 (i.e., not Electron/NWJS or UWP) ...
 if (params.allowInternetAccess || params.isUWPStoreApp || /HTML5/.test(params.appType)) {
     updateCheck.style.display = 'none'; // ... hide the update check link
+    if (params.isUWPStoreApp) console.debug('Hiding update check link because this is a UWP Store app.');
 }
 // Function to check for updates from GitHub
 function checkUpdateServer() {
     if (!params.allowInternetAccess || params.upgradeNeeded) {
-        console.log('The GitHub update check was blocked because ' + (params.upgradeNeeded ? 'a PWA upgrade is needed.' : 'the user has not allowed Internet access.'));
+        console.warn('The GitHub update check was blocked because ' + (params.upgradeNeeded ? 'a PWA upgrade is needed.' : 'the user has not allowed Internet access.'));
         return;
     }
     // If it's plain HTML5 (not Electron/NWJS or UWP), don't check for updates

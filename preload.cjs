@@ -3,6 +3,12 @@
 
 'use strict';
 
+// A regular expression that matches the hash of the Kiwix publisher on the Microsoft Store (CN=0A5438F5-EEA6-4300-9B77-E45BBD148885)
+// If the app is installed from the Store rather than from the signed GitHub release, we need to disable update checking
+const regexpInstalledFromMicrosoftStore = /_mc3511b08yc0e/;
+console.log('[Preload] Is app installed from Microsoft Store? ' + (process.windowsStore && regexpInstalledFromMicrosoftStore.test(window.location.pathname) ? 'Yes' : 'No'));
+console.log('Window location: ' + window.location.pathname + '\nStore publisher hash: ' + regexpInstalledFromMicrosoftStore);
+
 // DEV: TO SUPPORT ELECTRON ^12 YOU WILL NEED THIS
 const { ipcRenderer, contextBridge } = require('electron');
 const { open, read, close, stat, readdir } = require('fs');
@@ -22,6 +28,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     checkForUpdates: function () {
         ipcRenderer.send('check-updates');
     },
+    isMicrosoftStoreApp: process.windowsStore && regexpInstalledFromMicrosoftStore.test(window.location.pathname),
     on: function (event, callback) {
         ipcRenderer.on(event, function (_, data) {
             callback(data);
