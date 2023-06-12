@@ -224,7 +224,7 @@ document.getElementById('searchArticles').addEventListener('click', function () 
     // Initiate the search
     searchDirEntriesFromPrefix(prefix);
     clearFindInArticle();
-    //Re-enable top-level scrolling
+    // Re-enable top-level scrolling
     document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
     // This flag is set to true in the mousedown event below
     searchArticlesFocused = false;
@@ -327,17 +327,17 @@ document.getElementById('prefix').addEventListener('blur', function () {
         }, 1);
 });
 
-//Add keyboard shortcuts
+// Add keyboard shortcuts
 window.addEventListener('keyup', function (e) {
     e = e || window.event;
-    //Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
+    // Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
     if ((e.ctrlKey || e.altKey) && e.which == 70) {
         document.getElementById('findText').click();
     }
 });
 
 window.addEventListener('keydown', function (e) {
-    //Ctrl-P to patch printing support, so iframe gets printed
+    // Ctrl-P to patch printing support, so iframe gets printed
     if (e.ctrlKey && e.which == 80) {
         e.stopPropagation();
         e.preventDefault();
@@ -345,13 +345,13 @@ window.addEventListener('keydown', function (e) {
     }
 }, true);
 
-//Set up listeners for print dialogues
+// Set up listeners for print dialogues
 function printArticle() {    
     uiUtil.printCustomElements();
     uiUtil.systemAlert('<b>Document will now reload to restore the DOM after printing...</b>').then(function () {
         printCleanup();
     });
-    //innerDocument.execCommand("print", false, null);
+    // innerDocument.execCommand("print", false, null);
     // if (typeof window.nw !== 'undefined' || typeof window.fs === 'undefined') {
         window.frames[0].frameElement.contentWindow.print();
     // } else {
@@ -370,7 +370,7 @@ function printArticle() {
     // }
 };
 document.getElementById('printDesktopCheck').addEventListener('click', function (e) {
-    //Reload article if user wants to print a different style
+    // Reload article if user wants to print a different style
     params.cssSource = e.target.checked ? "desktop" : "mobile";
     params.printIntercept = true;
     params.printInterception = false;
@@ -382,7 +382,7 @@ document.getElementById('printDesktopCheck').addEventListener('click', function 
     goToArticle(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
 });
 document.getElementById('printImageCheck').addEventListener('click', function (e) {
-    //Reload article if user wants to print images
+    // Reload article if user wants to print images
     if (e.target.checked && !params.allowHTMLExtraction) {
         params.printIntercept = true;
         params.printInterception = false;
@@ -398,7 +398,7 @@ document.getElementById('printImageCheck').addEventListener('click', function (e
 
 function printCleanup() {
     if (!params.printInterception) {
-        //We don't need a radical cleanup because there was no printIntercept
+        // We don't need a radical cleanup because there was no printIntercept
         removePageMaxWidth();
         setTab();
         switchCSSTheme();
@@ -409,7 +409,7 @@ function printCleanup() {
     // Immediately restore temporarily changed values
     params.allowHTMLExtraction = settingsStore.getItem('allowHTMLExtraction') == "true";
     goToArticle(params.lastPageVisit.replace(/@kiwixKey@.+/, ''));
-    setTimeout(function () { //Restore temporarily changed value after page has reloaded
+    setTimeout(function () { // Restore temporarily changed value after page has reloaded
         params.rememberLastPage = settingsStore.getItem('rememberLastPage') === 'true';
         if (!params.rememberLastPage) {
             settingsStore.setItem('lastPageVisit', '', Infinity);
@@ -419,7 +419,7 @@ function printCleanup() {
         }
     }, 5000);
 }
-//End of listeners for print dialogues
+// End of listeners for print dialogues
 
 function printIntercept() {
     params.printInterception = params.printIntercept;
@@ -438,18 +438,18 @@ function printIntercept() {
     if (determinedTheme != "light") {
         printModalContent.classList.add('dark');
     }
-    //If document is in wrong style, or images are one-time BLOBs, reload it
-    //var innerDoc = window.frames[0].frameElement.contentDocument;
+    // If document is in wrong style, or images are one-time BLOBs, reload it
+    // var innerDoc = window.frames[0].frameElement.contentDocument;
     var innerDoc = document.getElementById('articleContent').contentDocument;
     var printDesktopCheck = document.getElementById("printDesktopCheck").checked;
     var printImageCheck = document.getElementById("printImageCheck").checked;
     var styleIsDesktop = !/href\s*=\s*["'][^"']*?(?:minerva|mobile)/i.test(innerDoc.head.innerHTML);
-    //if (styleIsDesktop != printDesktopCheck || printImageCheck && !params.allowHTMLExtraction || params.contentInjectionMode == 'serviceworker') {
+    // if (styleIsDesktop != printDesktopCheck || printImageCheck && !params.allowHTMLExtraction || params.contentInjectionMode == 'serviceworker') {
     if (styleIsDesktop != printDesktopCheck || printImageCheck && !params.allowHTMLExtraction) {
-        //We need to reload the document because it doesn't match the requested style or images are one-time BLOBs
+        // We need to reload the document because it doesn't match the requested style or images are one-time BLOBs
         params.cssSource = printDesktopCheck ? "desktop" : "mobile";
-        params.rememberLastPage = true; //Re-enable caching to speed up reloading of page
-        //params.contentInjectionMode = 'jquery'; //Much easier to count images in jquery mode 
+        params.rememberLastPage = true; // Re-enable caching to speed up reloading of page
+        // params.contentInjectionMode = 'jquery'; //Much easier to count images in jquery mode 
         params.allowHTMLExtraction = true;
         params.printIntercept = true;
         params.printInterception = false;
@@ -461,14 +461,14 @@ function printIntercept() {
         goToArticle(params.lastPageVisit.replace(/@kiwixKey@.+/, ""));
         return;
     }
-    //Pre-load all images in case user wants to print them
+    // Pre-load all images in case user wants to print them
     if (params.imageDisplay) {
         document.getElementById("printImageCheck").disabled = false;
         if (printImageCheck) {
             btnCancel.disabled = true;
             btnContinue.disabled = true;
             btnContinue.innerHTML = "Loading images...";
-            //Callback for when all images are loaded
+            // Callback for when all images are loaded
             params.printImagesLoaded = function () {
                 // Images have finished loading, so enable buttons
                 btnCancel.disabled = false;
@@ -485,18 +485,18 @@ function printIntercept() {
         document.getElementById("printImageCheck").checked = false;
         document.getElementById("printImageCheck").disabled = true;
     }
-    //Remove max page-width restriction
+    // Remove max page-width restriction
     if (params.removePageMaxWidth !== true) {
         var tempPageMaxWidth = params.removePageMaxWidth;
         params.removePageMaxWidth = true;
         removePageMaxWidth();
         params.removePageMaxWidth = tempPageMaxWidth;
     }
-    //Put doc into light mode
+    // Put doc into light mode
     params.cssTheme = 'light';
     switchCSSTheme();
     uiUtil.systemAlert(' ', '', true, null, 'Continue', null, 'printModal').then(function (result) {
-        //Restore temporarily changed values
+        // Restore temporarily changed values
         params.cssSource = settingsStore.getItem('cssSource') || "auto";
         params.cssTheme = settingsStore.getItem('cssTheme') || "light";
         if (result) printArticle();
@@ -504,7 +504,7 @@ function printIntercept() {
     });
 }
 
-//Establish some variables with global scope
+// Establish some variables with global scope
 var localSearch = {};
 
 
@@ -540,18 +540,18 @@ document.getElementById('findText').addEventListener('click', function () {
     checkToolbar();
     findInArticle.focus();
     localSearch = new util.Hilitor(innerDocument);
-    //TODO: MatchType should be language specific
+    // TODO: MatchType should be language specific
     var timer = null;
     findInArticle.addEventListener('keyup', function (e) {
-        //If user pressed Alt-F or Ctrl-F, exit
+        // If user pressed Alt-F or Ctrl-F, exit
         if ((e.altKey || e.ctrlKey) && e.which == 70) return;
         var val = this.value;
-        //If user pressed enter / return key
+        // If user pressed enter / return key
         if (val && e.which == 13) {
             localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
             return;
         }
-        //If value hasn't changed, exit
+        // If value hasn't changed, exit
         if (val == localSearch.lastScrollValue) return;
         findInArticleKeyup(val);
     });
@@ -565,13 +565,13 @@ document.getElementById('findText').addEventListener('click', function () {
         }, 500);
     };
     var findInArticleInitiate = function (val) {
-        //Ensure nothing happens if only one or two ASCII values have been entered (search is not specific enough) 
-        //if no value has been entered (clears highlighting if user deletes all values in search field)
+        // Ensure nothing happens if only one or two ASCII values have been entered (search is not specific enough) 
+        // if no value has been entered (clears highlighting if user deletes all values in search field)
         if (!/^\s*[A-Za-z\s]{1,2}$/.test(val)) {
             localSearch.scrollFrom = 0;
             localSearch.lastScrollValue = val;
             localSearch.setMatchType('open');
-            //Change matchType to 'left' if we are dealing with an ASCII language and a space has been typed
+            // Change matchType to 'left' if we are dealing with an ASCII language and a space has been typed
             if (/\s/.test(val) && /(?:^|[\s\b])[A-Za-z]+(?:[\b\s]|$)/.test(val)) localSearch.setMatchType('left');
             localSearch.apply(val);
             if (val.length) {
@@ -583,7 +583,7 @@ document.getElementById('findText').addEventListener('click', function () {
                 document.getElementById('scrollLink').addEventListener('click', function () {
                     localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
                 });
-                //Auto-scroll: TODO - consider making this an option
+                // Auto-scroll: TODO - consider making this an option
                 localSearch.scrollFrom = localSearch.scrollToFullMatch(val, localSearch.scrollFrom);
             } else {
                 document.getElementById('matches').innerHTML = "Full: 0";
@@ -597,7 +597,7 @@ document.getElementById('btnRandomArticle').addEventListener('click', function (
     // In jQuery mode, only load random content in iframe (not tab or window)
     appstate.target = 'iframe';
     setTab('btnRandomArticle');
-    //Re-enable top-level scrolling
+    // Re-enable top-level scrolling
     goToRandomArticle();
 });
 
@@ -607,7 +607,7 @@ document.getElementById('btnRescanDeviceStorage').addEventListener("click", func
         returnDivs[i].innerHTML = "";
     }
     params.rescan = true;
-    //Reload any ZIM files in local storage (which the usar can't otherwise select with the filepicker)
+    // Reload any ZIM files in local storage (which the usar can't otherwise select with the filepicker)
     loadPackagedArchive();
     if (storages.length) {
         searchForArchivesInStorage();
@@ -693,7 +693,7 @@ function setRelativeUIFontSize(value) {
         heads[i].style.fontSize = ~~(value * 0.14 * multiplier) + "px";
     }
     document.getElementById('displaySettingsDiv').scrollIntoView();
-    //document.getElementById('prefix').style.height = ~~(value * 14 / 100) * 1.4285 + 14 + "px";
+    // document.getElementById('prefix').style.height = ~~(value * 14 / 100) * 1.4285 + 14 + "px";
     if (value != params.relativeUIFontSize) {
         params.relativeUIFontSize = value;
         settingsStore.setItem('relativeUIFontSize', value, Infinity);
@@ -760,11 +760,11 @@ function setTab(activeBtn) {
     // Highlight the selected section in the navbar
     setActiveBtn(activeBtn);
     clearFindInArticle();
-    //Re-enable bottom toolbar display
+    // Re-enable bottom toolbar display
     document.getElementById('footer').style.display = "block";
-    //Re-enable top-level scrolling
+    // Re-enable top-level scrolling
     document.getElementById('top').style.position = "relative";
-    //Use the "light" navbar if the content is "light" (otherwise it looks shite....)
+    // Use the "light" navbar if the content is "light" (otherwise it looks shite....)
     var determinedTheme = cssUIThemeGetOrSet(params.cssUITheme);
     var determinedWikiTheme = params.cssTheme == 'auto' ? determinedTheme : params.cssTheme == 'inverted' ? 'dark' : params.cssTheme;
     if (determinedWikiTheme != determinedTheme) {
@@ -778,7 +778,7 @@ function setTab(activeBtn) {
         cssUIThemeGetOrSet(determinedTheme);
     }
     if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog) {
-        //If not UWP, File System Access API, or Electron methods, display legacy File Select
+        // If not UWP, File System Access API, or Electron methods, display legacy File Select
         document.getElementById('archiveFilesDiv').style.display = 'none';
         document.getElementById('archivesFound').style.display = 'none';
         document.getElementById('instructions').style.display = appstate.selectedArchive ? 'none' : 'block';
@@ -999,17 +999,17 @@ document.getElementById('btnConfigure').addEventListener('click', function () {
             if (archiveName && ~params.lastPageVisit.indexOf(archiveName)) {
                 goToArticle(params.lastPageVisit.replace(/@kiwixKey@.+$/, ''));
             }
-            //if (history.state !== null) {
+            // if (history.state !== null) {
             //    var thisURL = decodeURIComponent(history.state.title);
             //    goToArticle(thisURL);
-            //}
+            // }
         }
         return;
     }
     $('.alert').hide();
     // Highlight the selected section in the navbar
     setTab('btnConfigure');
-    //Hide footer toolbar
+    // Hide footer toolbar
     document.getElementById('footer').style.display = "none";
     // Show the selected content in the page
     document.getElementById('configuration').style.display = '';
@@ -1018,10 +1018,10 @@ document.getElementById('btnConfigure').addEventListener('click', function () {
     document.getElementById('serverResponse').style.display = 'none';
     document.getElementById('myModal').style.display = 'none';
     refreshAPIStatus();
-    //Re-enable top-level scrolling
+    // Re-enable top-level scrolling
     document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
     document.getElementById('search-article').style.overflowY = "auto";
-    //If user hadn't previously picked a folder or a file, resort to the local storage folder (UWP functionality)
+    // If user hadn't previously picked a folder or a file, resort to the local storage folder (UWP functionality)
     if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
         params.pickedFolder = params.localStorage;
     }
@@ -1078,7 +1078,7 @@ document.getElementById('btnAbout').addEventListener('click', function () {
         printIntercept();
         return;
     }
-    //Check if we're 'unclicking' the button
+    // Check if we're 'unclicking' the button
     var searchDiv = document.getElementById('about');
     if (searchDiv.style.display != 'none') {
         setTab();
@@ -1086,13 +1086,13 @@ document.getElementById('btnAbout').addEventListener('click', function () {
     }
     // Highlight the selected section in the navbar
     setTab('btnAbout');
-    //Hide footer toolbar
+    // Hide footer toolbar
     document.getElementById('footer').style.display = "none";
     // Show the selected content in the page
     document.getElementById('about').style.display = '';
     document.getElementById('articleContent').style.display = 'none';
     $('.alert').hide();
-    //Re-enable top-level scrolling
+    // Re-enable top-level scrolling
     document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
     document.getElementById('search-article').style.overflowY = "auto";
 });
@@ -1164,7 +1164,7 @@ document.getElementById('archiveFilesLegacy').addEventListener('change', setLoca
 // But in preference, use UWP, File System Access API        
 document.getElementById('archiveFile').addEventListener('click', function () {
     if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
-        //UWP FilePicker
+        // UWP FilePicker
         pickFileUWP();
     } else if (typeof window.showOpenFilePicker === 'function') {
         // File System Access API file picker
@@ -1176,7 +1176,7 @@ document.getElementById('archiveFile').addEventListener('click', function () {
 });
 document.getElementById('archiveFiles').addEventListener('click', function () {
     if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
-        //UWP FolderPicker
+        // UWP FolderPicker
         pickFolderUWP();
     } else if (typeof window.showOpenFilePicker === 'function') {
         // Native File System API folder picker
@@ -1319,7 +1319,7 @@ $('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
     }
     params.imageDisplay = this.checked ? true : false;
     params.imageDisplayMode = this.checked ? 'progressive' : 'manual';
-    params.themeChanged = params.imageDisplay; //Only reload page if user asked for all images to be displayed
+    params.themeChanged = params.imageDisplay; // Only reload page if user asked for all images to be displayed
     settingsStore.setItem('imageDisplay', params.imageDisplay, Infinity);
 });
 document.getElementById('manipulateImagesCheck').addEventListener('click', function () {
@@ -1721,10 +1721,10 @@ function initializeUISettings() {
 if (params.cssTheme == 'auto') document.getElementById('darkInvert').style.display = cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'block';
 if (params.cssTheme == 'auto') document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'block' : 'none';
 document.getElementById('cssUIDarkThemeCheck').addEventListener('click', function () {
-    //This code implements a tri-state checkbox
+    // This code implements a tri-state checkbox
     // if (this.readOnly) this.checked = this.readOnly = false;
     // else if (!this.checked) this.readOnly = this.indeterminate = true;
-    //Code below shows how to invert the order
+    // Code below shows how to invert the order
     if (this.readOnly) { this.checked = true; this.readOnly = false; }
     else if (this.checked) this.readOnly = this.indeterminate = true;
     params.cssUITheme = this.indeterminate ? "auto" : this.checked ? 'dark' : 'light';
@@ -1732,7 +1732,7 @@ document.getElementById('cssUIDarkThemeCheck').addEventListener('click', functio
     settingsStore.setItem('cssUITheme', params.cssUITheme, Infinity);
     document.getElementById('cssUIDarkThemeState').innerHTML = params.cssUITheme;
     cssUIThemeGetOrSet(params.cssUITheme);
-    //Make subsequent check valid if params.cssTheme is "invert" rather than "dark"
+    // Make subsequent check valid if params.cssTheme is "invert" rather than "dark"
     if (params.cssUITheme != params.cssTheme) document.getElementById('cssWikiDarkThemeCheck').click();
     params.cssThemeOriginal = null;
 });
@@ -1838,13 +1838,13 @@ function cssUIThemeGetOrSet(value, getOnly) {
 function switchCSSTheme() {
     var doc = window.frames[0].frameElement.contentDocument;
     var treePath = params.lastPageVisit.replace(/[^/]+\/(?:[^/]+$)?/g, "../");
-    //If something went wrong, use the page reload method
+    // If something went wrong, use the page reload method
     if (!treePath) {
         params.themeChanged = true;
         return;
     }
     var styleSheets = doc.getElementsByTagName("link");
-    //Remove any dark theme, as we don't know whether user switched from light to dark or from inverted to dark, etc.
+    // Remove any dark theme, as we don't know whether user switched from light to dark or from inverted to dark, etc.
     for (var i = styleSheets.length - 1; i > -1; i--) {
         if (~styleSheets[i].href.search(/\/style-dark/)) {
             styleSheets[i].disabled = true;
@@ -1921,7 +1921,7 @@ $('input:radio[name=cssInjectionMode]').on('click', function (e) {
     params.themeChanged = true;
 });
 document.getElementById('removePageMaxWidthCheck').addEventListener('click', function () {
-    //This code implements a tri-state checkbox
+    // This code implements a tri-state checkbox
     if (this.readOnly) this.checked = this.readOnly = false;
     else if (!this.checked) this.readOnly = this.indeterminate = true;
     params.removePageMaxWidth = this.indeterminate ? "auto" : this.checked;
@@ -2059,13 +2059,13 @@ $('input:checkbox[name=displayFileSelectors]').on('change', function (e) {
 $(document).ready(function (e) {
     // Set initial behaviour (see also init.js)
     cssUIThemeGetOrSet(params.cssUITheme);
-    //@TODO - this is initialization code, and should be in init.js (withoug jQuery)
+    // @TODO - this is initialization code, and should be in init.js (withoug jQuery)
     $('input:radio[name=cssInjectionMode]').filter('[value="' + params.cssSource + '"]').prop('checked', true);
-    //DEV this hides file selectors if it is a packaged file -- add your own packaged file test to regex below
+    // DEV this hides file selectors if it is a packaged file -- add your own packaged file test to regex below
     if (params.packagedFile && !/wikipedia.en.100|ray.charles/i.test(params.fileVersion)) {
         document.getElementById('packagedAppFileSelectors').style.display = "block";
         document.getElementById('hideFileSelectors').style.display = "none";
-        //document.getElementById('downloadLinksText').style.display = "none";
+        // document.getElementById('downloadLinksText').style.display = "none";
         if (params.showFileSelectors) {
             document.getElementById('hideFileSelectors').style.display = "block";
             document.getElementById('downloadLinksText').style.display = "inline";
@@ -2091,7 +2091,7 @@ $(document).ready(function (e) {
         window.nw ? 'NWJS ' : 
         /Electron/.test(params.appType) ? 'Electron ' : 
         /PWA/.test(params.appType) ? 'PWA ' : '';
-    //Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
+    // Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
     if (settingsStore.getItem('appVersion') !== params.appVersion) {
         //  Update the installed version
         if (settingsStore.getItem('PWAInstalled')) {
@@ -2755,7 +2755,7 @@ function populateDropDownListOfArchives(archiveDirectories, displayOnly) {
     // Store the list of archives in a cookie, to avoid rescanning at each start
     settingsStore.setItem("listOfArchives", archiveDirectories.join('|'), Infinity);
     comboArchiveList.size = comboArchiveList.length > 15 ? 15 : comboArchiveList.length;
-    //Kiwix-Js-Windows #23 - remove dropdown caret if only one archive
+    // Kiwix-Js-Windows #23 - remove dropdown caret if only one archive
     if (comboArchiveList.length > 1) comboArchiveList.removeAttribute("multiple");
     if (comboArchiveList.length == 1) comboArchiveList.setAttribute("multiple", "1");
     if (comboArchiveList.options.length > 0) {
@@ -2834,8 +2834,8 @@ function setLocalArchiveFromArchiveList(archive) {
             // In this case, we use the first storage of the list (there should be only one)
             if (storages.length === 1) {
                 selectedStorage = storages[0];
-            } else { //IT'S NOT FREAKIN FFOS!!!!!!!!!!
-                //Patched for UWP support:
+            } else { // IT'S NOT FREAKIN FFOS!!!!!!!!!!
+                // Patched for UWP support:
                 if (!params.pickedFile && params.pickedFolder && typeof MSApp !== 'undefined') {
                     var query = params.pickedFolder.createFileQuery();
                     query.getFilesAsync().done(function (files) {
@@ -2854,12 +2854,12 @@ function setLocalArchiveFromArchiveList(archive) {
                                     var testFileName = new RegExp(genericFileName + '\\w\\w$');
                                     for (i = 0; i < files.length; i++) {
                                         if (testFileName.test(files[i].name)) {
-                                            //This converts a UWP storage file object into a standard JavaScript web file object
+                                            // This converts a UWP storage file object into a standard JavaScript web file object
                                             fileset.push(MSApp.createFileFromStorageFile(files[i]));
                                         }
                                     }
                                 } else {
-                                    //This converts a UWP storage file object into a standard JavaScript web file object
+                                    // This converts a UWP storage file object into a standard JavaScript web file object
                                     fileset.push(MSApp.createFileFromStorageFile(file));
                                 }
                             }
@@ -2904,7 +2904,7 @@ function setLocalArchiveFromArchiveList(archive) {
                                             var testFileName = new RegExp(genericFileName + '\\w\\w$');
                                             for (i = 0; i < fileHandles.length; i++) {
                                                 if (testFileName.test(fileHandles[i].name)) {
-                                                    //This gets a JS File object from a file handle
+                                                    // This gets a JS File object from a file handle
                                                     fileset.push(fileHandles[i].getFile().then(function(file) {
                                                         return file;
                                                     }));
@@ -2968,7 +2968,7 @@ function setLocalArchiveFromArchiveList(archive) {
                         }
                     }
                     return;
-                } else { //Check if user previously picked a specific file rather than a folder
+                } else { // Check if user previously picked a specific file rather than a folder
                     if (params.pickedFile && typeof MSApp !== 'undefined') {
                         try {
                             selectedStorage = MSApp.createFileFromStorageFile(params.pickedFile);
@@ -2985,10 +2985,10 @@ function setLocalArchiveFromArchiveList(archive) {
                         return;
                     }
                 }
-                //There was no picked file or folder, so we'll try setting the default localStorage
-                //if (!params.pickedFolder) {
-                //This gets called, for example, if the picked folder or picked file are in FutureAccessList but now are
-                //no longer accessible. There will be a (handled) error in cosole log, and params.pickedFolder and params.pickedFile will be blank
+                // There was no picked file or folder, so we'll try setting the default localStorage
+                // if (!params.pickedFolder) {
+                // This gets called, for example, if the picked folder or picked file are in FutureAccessList but now are
+                // no longer accessible. There will be a (handled) error in cosole log, and params.pickedFolder and params.pickedFile will be blank
                 params.rescan = true;
                 if (params.localStorage) {
                     scanUWPFolderforArchives(params.localStorage);
@@ -2997,13 +2997,13 @@ function setLocalArchiveFromArchiveList(archive) {
                     if (!btnConfigure.classList.contains('active')) btnConfigure.click();
                 }
                 return;
-                //}
+                // }
             }
         }
         // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
         if (cssBlobCache)
             cssBlobCache = new Map();
-        //if (cssDirEntryCache)
+        // if (cssDirEntryCache)
         //    cssDirEntryCache = new Map();
         appstate.selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archive, function (archive) {
             settingsStore.setItem("lastSelectedArchive", archive, Infinity);
@@ -3131,7 +3131,7 @@ function handleFileDrop(packet) {
     }
 }
 
-function pickFileUWP() { //Support UWP FilePicker [kiwix-js-windows #3]
+function pickFileUWP() { // Support UWP FilePicker [kiwix-js-windows #3]
     // Create the picker object and set options
     var filePicker = new Windows.Storage.Pickers.FileOpenPicker;
     filePicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.downloads;
@@ -3238,7 +3238,7 @@ function processPickedFileUWP(file) {
     }
 }
 
-function pickFolderUWP() { //Support UWP FilePicker [kiwix-js-windows #3]
+function pickFolderUWP() { // Support UWP FilePicker [kiwix-js-windows #3]
     var folderPicker = new Windows.Storage.Pickers.FolderPicker;
     folderPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.downloads;
     folderPicker.fileTypeFilter.replaceAll([".zim", ".dat", ".idx", ".txt", ".zimaa"]);
@@ -3452,7 +3452,7 @@ function setLocalArchiveFromFileList(files) {
                 document.getElementById("usage").style.display = "inline";
             }
         }
-        //This ensures the correct icon is set for the newly loaded archive
+        // This ensures the correct icon is set for the newly loaded archive
         cssUIThemeGetOrSet(params.cssUITheme);
         if (params.rescan) {
             document.getElementById('btnConfigure').click();
@@ -3597,7 +3597,7 @@ function readNodeDirectoryAndCreateNodeFileObjects(folder, file) {
                         }
                         if (fileFilter.test(fileNames[i])) {
                             count++;
-                            //This gets a pseudo File object from a file handle
+                            // This gets a pseudo File object from a file handle
                             createFakeFileObjectNode(fileNames[i], folder + '/' + fileNames[i], function (file) {
                                 selectedFileSet.push(file[0]);
                                 if (count === selectedFileSet.length) {
@@ -3726,15 +3726,15 @@ function listenForNavigationKeys() {
 }
 
 function listenForSearchKeys() {
-    //Listen to iframe key presses for in-page search
+    // Listen to iframe key presses for in-page search
     document.getElementById('articleContent').contentWindow.addEventListener('keyup', function (e) {
-        //Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
+        // Alt-F for search in article, also patches Ctrl-F for apps that do not have access to browser search
         if ((e.ctrlKey || e.altKey) && e.which == 70) {
             document.getElementById('findText').click();
         }
     });
     document.getElementById('articleContent').contentWindow.addEventListener('keydown', function (e) {
-        //Ctrl-P to patch printing support, so iframe gets printed
+        // Ctrl-P to patch printing support, so iframe gets printed
         if (e.ctrlKey && e.which == 80) {
             e.stopPropagation();
             e.preventDefault();
@@ -4042,7 +4042,7 @@ function readArticle(dirEntry) {
         appstate.selectedArchive.resolveRedirect(dirEntry, readArticle);
     } else {
         var mimeType = dirEntry.getMimetype();
-        //TESTING//
+        // TESTING//
         console.log('Initiating ' + mimeType  + ' load of ' + dirEntry.namespace + '/' + dirEntry.url + "...");
         alertBoxHeader.style.display = 'none';
         // Set startup parameter to guard against boot loop
@@ -4080,7 +4080,7 @@ function readArticle(dirEntry) {
                 return;
             }
         } 
-        //Load cached start page if it exists and we have loaded the packaged file
+        // Load cached start page if it exists and we have loaded the packaged file
         var htmlContent = 0;
         var zimName = appstate.selectedArchive._file.name.replace(/\.[^.]+$/, '').replace(/_\d+-\d+$/, '');
         if (params.isLandingPage && params.cachedStartPages[zimName]) {
@@ -4108,7 +4108,7 @@ function readArticle(dirEntry) {
             });
         }
 
-        //Load lastPageVisit if it is the currently requested page
+        // Load lastPageVisit if it is the currently requested page
         if (!htmlContent) {
             var lastPage = '';
             // NB code below must be able to run async, hence it is a function
@@ -4123,7 +4123,7 @@ function readArticle(dirEntry) {
                         displayArticleContentInContainer(dirEntry, html);
                     }, 0);
                 } else {
-                    //if (params.contentInjectionMode === 'jquery') {
+                    // if (params.contentInjectionMode === 'jquery') {
                     // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
                     appstate.selectedArchive.readUtf8File(dirEntry, function (fileDirEntry, data) {
                         if (fileDirEntry.zimitRedirect) goToArticle(fileDirEntry.zimitRedirect);
@@ -4132,7 +4132,7 @@ function readArticle(dirEntry) {
                     // This is needed so that the html is cached in displayArticleInForm
                     params.lastPageVisit = '';
                     params.lastPageHTML = '';
-                    //}
+                    // }
                 }
             };
             if (params.rememberLastPage && params.lastPageVisit) lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, "");
@@ -4211,9 +4211,9 @@ var articleLoadedSW = function (dirEntry) {
             listenForSearchKeys();
         }
         switchCSSTheme();
-        //Set relative font size + Stackexchange-family multiplier
+        // Set relative font size + Stackexchange-family multiplier
         var zimType = /-\/s\/style\.css/i.test(doc.head.innerHTML) ? "desktop" : "mobile";
-        zimType = /-\/static\/main\.css|statc\/css\/sotoki.css/i.test(doc.head.innerHTML) ? "desktop-stx" : zimType; //Support stackexchange
+        zimType = /-\/static\/main\.css|statc\/css\/sotoki.css/i.test(doc.head.innerHTML) ? "desktop-stx" : zimType; // Support stackexchange
         zimType = /minerva|mobile[^"']*\.css/i.test(doc.head.innerHTML) ? "mobile" : zimType;
         var docElStyle = articleDocument.style;
         var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
@@ -4221,7 +4221,7 @@ var articleLoadedSW = function (dirEntry) {
         docElStyle[zoomProp] = ~zimType.indexOf("stx") && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
         // if (appstate.target === 'iframe') uiUtil.initTouchZoom(articleDocument, docBody);
         checkToolbar();
-        //Set page width according to user preference
+        // Set page width according to user preference
         removePageMaxWidth();
         if (!params.isLandingPage) openAllSections();
         setupHeadings();
@@ -4549,7 +4549,7 @@ var treePath;
 // Stores a url to direntry mapping and is refered to/updated anytime there is a css lookup
 // When archive changes these caches should be reset. 
 // Currently happens only in setLocalArchiveFromFileList and setLocalArchiveFromArchiveList.
-//var cssDirEntryCache = new Map(); //This one is never hit!
+// var cssDirEntryCache = new Map(); //This one is never hit!
 var cssBlobCache = new Map();
 
 /**
@@ -4560,11 +4560,11 @@ var cssBlobCache = new Map();
  * @param {String} htmlArticle The decoded HTML of the article
  */
 function displayArticleContentInContainer(dirEntry, htmlArticle) {
-    //if (! isDirEntryExpectedToBeDisplayed(dirEntry)) {
+    // if (! isDirEntryExpectedToBeDisplayed(dirEntry)) {
     //    return;
-    //}		
+    // }		
 
-    //TESTING
+    // TESTING
     console.log('** HTML received for article ' + dirEntry.url + ' **');
     
     if (!/\bx?html\b/.test(dirEntry.getMimetype())) {
@@ -4613,7 +4613,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
         //     return encodeURIComponent(m);
         // });
 
-    //Since page has been successfully loaded, store it in the browser history
+    // Since page has been successfully loaded, store it in the browser history
     if (params.contentInjectionMode === 'jquery') pushBrowserHistoryState(dirEntry.namespace + '/' + dirEntry.url);
     // Store for fast retrieval
     params.lastPageVisit = dirEntry.namespace + '/' + dirEntry.url + '@kiwixKey@' + appstate.selectedArchive._file.name;
@@ -4690,12 +4690,12 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
         if (appstate.wikimediaZimLoaded && params.cssCache) {
             // Reduce weight of unused JS archives for mediawiki ZIMs. This patch also removes mediawiki.page.ready.js which breakds the iframe kiwix-js #972
             htmlArticle = htmlArticle.replace(/<script\b[^<]+src=["'][^"']*(mediawiki|jquery|configvars|startup|visibilitytoggles|site|enhancements|scribunto|ext\.math|\.player)[^"']*\.js\b[^<]+<\/script>/gi, '');
-            //@TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
+            // @TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
             htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, "<a href=\"$1.html\">$2</a>");
             htmlArticle = htmlArticle.replace(/&lt;(\/?)(i|b|em|strong)&gt;/ig, "<$1$2>");
-            //@TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
+            // @TODO - remove when fixed on mw-offliner: dirty patch for removing extraneous tags in ids
             htmlArticle = htmlArticle.replace(/(\bid\s*=\s*"[^\s}]+)\s*\}[^"]*/g, "$1");
-            //@TODO - remove when fixed in MDwiki ZIM: dirty patch for removing erroneously hard-coded style
+            // @TODO - remove when fixed in MDwiki ZIM: dirty patch for removing erroneously hard-coded style
             if (/^mdwiki/.test(appstate.selectedArchive._file.name)) htmlArticle = htmlArticle.replace(/(class=['"]thumbinner[^>]+style=['"]width\s*:\s*)\d+px/ig, "$1320px");
             // Remove landing page scripts that don't work in SW mode
             htmlArticle = htmlArticle.replace(/<script\b[^>]+-\/[^>]*((?:images_loaded|masonry)\.min|article_list_home)\.js"[^<]*<\/script>/gi, '');
@@ -4747,23 +4747,23 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
             htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, "$1" + hatnotes[i].replace(/(<div\s+)/i, '$1style="padding-top:10px;" '));
         }
 
-        //Remove white background colour (causes flashes in dark mode)
+        // Remove white background colour (causes flashes in dark mode)
         htmlArticle = htmlArticle.replace(/(<body\b[^>]+style=["'][^"']*)background-color\s*:\s*[^;]+;\s*/i, '$1');
         htmlArticle = htmlArticle.replace(/(<div\b(?=[^>]+class=\s*["'][^"']*mw-body)[^>]+style=["'][^"']*)background-color\s*:\s*[^;]+;\s*/i, '$1');
 
-        //Display IPA pronunciation info erroneously hidden in some ZIMs
+        // Display IPA pronunciation info erroneously hidden in some ZIMs
         htmlArticle = htmlArticle.replace(/(<span\b[^>]+?class\s*=\s*"[^"]+?mcs-ipa[^>]+?display:\s*)none/i, "$1inline");
 
-        //Remove any background:url statements in style blocks as they cause the system to attempt to load them
+        // Remove any background:url statements in style blocks as they cause the system to attempt to load them
         htmlArticle = htmlArticle.replace(/background:url\([^)]+\)[^;}]*/ig, '');
 
-        //Remove the details polyfill: it's poor and doesn't recognize Edgium
+        // Remove the details polyfill: it's poor and doesn't recognize Edgium
         htmlArticle = htmlArticle.replace(/<script\b[^<]+details[^"']*polyfill\.js[^<]+<\/script>\s*/i, '');
         
-        //Remove article.js on youtube ZIMs as it erroneously hides description
+        // Remove article.js on youtube ZIMs as it erroneously hides description
         htmlArticle = /<video\b/i.test(htmlArticle) ? htmlArticle.replace(/<script\b[^<]+assets\/article\.js[^<]+<\/script>\s*/i, '') : htmlArticle;
         
-        //Remove empty div that causes layout issues in desktop style (but don't remove in SW mode, as they are dynamically filled)
+        // Remove empty div that causes layout issues in desktop style (but don't remove in SW mode, as they are dynamically filled)
         if (params.contentInjectionMode === 'jquery') htmlArticle = htmlArticle.replace(/<div\b[^>]*?>\s*<\/div>\s*/, '');
     }
 
@@ -4772,11 +4772,11 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
         htmlArticle = htmlArticle.replace(/<(script\b(?![^>]+type\s*=\s*["'](?:math\/|text\/html|[^"']*?math))(?![^<]*darkreader\.)(?:[^<]|<(?!\/script>))+<\/script)>/ig, function (p0, p1) {
             return '<!-- ' + p1 + ' --!>';
         });
-        //Neutralize onload events, as they cause a crash in ZIMs with proprietary UIs
+        // Neutralize onload events, as they cause a crash in ZIMs with proprietary UIs
         htmlArticle = htmlArticle.replace(/(<[^>]+?)onload\s*=\s*["'][^"']+["']\s*/ig, '$1');
-        //Neutralize onclick events
+        // Neutralize onclick events
         htmlArticle = htmlArticle.replace(/(<[^>]+?)onclick\s*=\s*["'][^"']+["']\s*/ig, '$1');
-        //Neutralize href="javascript:" links
+        // Neutralize href="javascript:" links
         htmlArticle = htmlArticle.replace(/href\s*=\s*["']javascript:[^"']+["']/gi, 'href=""');
     // } else if (/journals\.openedition\.org/i.test(params.zimitPrefix)) {
     //     // Neutralize all inline scripts, excluding math blocks or react templates, as they cause a loop on loading article
@@ -4797,12 +4797,12 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
         /stackexchange|askubuntu|superuser|stackoverflow|mathoverflow|serverfault|stackapps|proofwiki/i.test(appstate.selectedArchive._file.name) ?
         /[^\\](\$\$?)((?:\\\$|(?!\1)[\s\S])+)\1/.test(htmlArticle) : false;
     
-    //if (params.containsMathTexRaw) {
+    // if (params.containsMathTexRaw) {
     //    //Replace undefined \size controlscript with \normalsize (found on proofwiki)
     //    htmlArticle = htmlArticle.replace(/(\\)size\b/g, '$1normalsize');
-    //}
+    // }
     
-    //Replace all TeX SVGs with MathJax scripts
+    // Replace all TeX SVGs with MathJax scripts
     if (params.useMathJax) {
         // Deal with any newer MathML blocks
         htmlArticle = htmlArticle.replace(/(<math\b[^>]+alttext=(["']))((?:[^"']|[\s\S](?!\2))+?)(\2(?:[^<]|<(?!\/math))+(?:[^<]|<(?!img))+)<img\b[^>]+?class=["'][^"']*?mwe-math-fallback-image[^>]+>/ig,
@@ -4834,7 +4834,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
     uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
     
     if (params.zimType === 'open') {
-        //Adapt German Wikivoyage POI data format
+        // Adapt German Wikivoyage POI data format
         var regexpGeoLocationDE = /<span\s+class="[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<bdi\s[^>]+?listing-name[^>]+>(?:<a\b\s+href[^>]+>)?([^<]+))/ig;
         htmlArticle = htmlArticle.replace(regexpGeoLocationDE, function (match, latitude, longitude, href, id) {
             var html;
@@ -4848,7 +4848,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
             return html;
         });
 
-        //Adapt English Wikivoyage POI data format
+        // Adapt English Wikivoyage POI data format
         var regexpGeoLocationEN = /(href\s?=\s?")geo:([^,]+),([^"]+)("[^>]+?(?:data-zoom[^"]+"([^"]+))?[^>]+>)[^<]+(<\/a>[\s\S]+?<span\b(?=[^>]+listing-name)[\s\S]+?id\s?=\s?")([^"]+)/ig;
         var mapPin30 = '<img alt="Map marker" title="Show this place on a map" src="app:///www/img/icons/map_marker-30px.png" width="18px" style="position:relative !important;top:-5px !important;" />';
         htmlArticle = htmlArticle.replace(regexpGeoLocationEN, function (match, hrefAttr, latitude, longitude, p4, p5, p6, id) {
@@ -4866,7 +4866,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
             return html;
         });
 
-        //Clean up remaining geo: links
+        // Clean up remaining geo: links
         var mapPin18 = '<img alt="Map marker" title="Show this place on a map" src="app:///www/img/icons/map_marker-18px.png" width="12px" />';
         if (/bingmaps:/.test(params.mapsURI)) {
             htmlArticle = htmlArticle.replace(/href=['"]geo:([\d.-]+),([\d.-]+)[^"']*([^>]+>)/ig, 'href="' + params.mapsURI + '?collection=point.$1_$2_' + 
@@ -4885,7 +4885,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
         // Remove erroneous caption on maps that displaces the location marker in at least German Wikivoyage
         htmlArticle = htmlArticle.replace(/(<table\b(?=[^>]+class=["']locationMap)(?:[^<]|<(?!\/table>))+?<img\b[^>]+>)<div\s+class=['"]thumbcaption(?:[^<]|<(?!\/div>))+<\/div>((?:[^<]|<(?!\/table>))+?<div\s+style=['"]position:\s*absolute)/ig, "$1$2");
 
-        //Setup endnote backlinks if the ZIM doesn't have any
+        // Setup endnote backlinks if the ZIM doesn't have any
         htmlArticle = htmlArticle.replace(/<li\b[^>]+id=["']cite[-_]note[-_]([^"']+)[^>]+>(?![^/]+?[↑^])/ig, function (match, id) {
             var fnReturnMatch = '';
             try {
@@ -4905,9 +4905,9 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
     }
 
     if (params.zimType === 'open' && !nautilus || params.contentInjectionMode === 'jquery') {
-        //Preload stylesheets [kiwix-js #149]
+        // Preload stylesheets [kiwix-js #149]
         console.log("Loading stylesheets...");
-        //Set up blobArray of promises
+        // Set up blobArray of promises
         var prefix = window.location.pathname.replace(/\/[^/]*$/, '');
         var cssArray = htmlArticle.match(regexpSheetHref);
         var blobArray = [];
@@ -4929,17 +4929,17 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
         injectHTML();
     }
 
-    //Extract CSS URLs from given array of links
+    // Extract CSS URLs from given array of links
     function getBLOB(arr) {
         var testCSS = arr.join();
         zimType = /-\/s\/style\.css/i.test(testCSS) ? "desktop" : zimType;
-        zimType = /-\/static\/main\.css|statc\/css\/sotoki.css/i.test(testCSS) ? "desktop-stx" : zimType; //Support stackexchange
-        zimType = /gutenberg\.css/i.test(testCSS) ? "desktop-gtb" : zimType; //Support Gutenberg
+        zimType = /-\/static\/main\.css|statc\/css\/sotoki.css/i.test(testCSS) ? "desktop-stx" : zimType; // Support stackexchange
+        zimType = /gutenberg\.css/i.test(testCSS) ? "desktop-gtb" : zimType; // Support Gutenberg
         zimType = /minerva|mobile/i.test(testCSS) ? "mobile" : zimType;
-        cssSource = cssSource == "auto" ? zimType : cssSource; //Default to in-built zimType if user has selected automatic detection of styles
+        cssSource = cssSource == "auto" ? zimType : cssSource; // Default to in-built zimType if user has selected automatic detection of styles
         if (/minerva|inserted.style/i.test(testCSS) && (cssCache || zimType != cssSource)) {
-            //Substitute ridiculously long style name TODO: move this code to transformStyles
-            for (var i = arr.length; i--;) { //TODO: move to transfromStyles
+            // Substitute ridiculously long style name TODO: move this code to transformStyles
+            for (var i = arr.length; i--;) { // TODO: move to transfromStyles
                 arr[i] = /minerva/i.test(arr[i]) ? '<link ' + (params.contentInjectionMode == 'jquery' ? 'data-kiwixurl' : 'href') +
                     '="-/s/style-mobile.css" rel="stylesheet" type="text/css">' : arr[i];
                 // Delete stylesheet if will be inserted via minerva anyway (avoid linking it twice)
@@ -4970,8 +4970,8 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
         } else {
             var cacheKey = appstate.selectedArchive._file.name + '/' + title;
             cache.getItemFromCacheOrZIM(appstate.selectedArchive, cacheKey).then(function (content) {
-                //DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
-                //var cssContent = util.uintToString(content);
+                // DEV: Uncomment line below and break on next to capture cssContent for local filesystem cache
+                // var cssContent = util.uintToString(content);
                 var mimetype = /\.ico$/i.test(title) ? 'image' : 'text/css';
                 var cssBlob;
                 if (content) cssBlob = new Blob([content], {
@@ -4981,7 +4981,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
                 blobArray.push(newURL);
                 if (cssBlobCache)
                     cssBlobCache.set(newURL[0], newURL[1]);
-                injectCSS(); //DO NOT move this: it must run within .then function to pass correct values
+                injectCSS(); // DO NOT move this: it must run within .then function to pass correct values
             }).catch(function (err) {
                 console.error(err);
                 var newURL = [title, ''];
@@ -4999,56 +4999,56 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
         var blobArrayLength = blobArray.filter(function () {
             return true;
         }).length;
-        if (blobArrayLength >= cssArray.length) { //If all promised values have been obtained
+        if (blobArrayLength >= cssArray.length) { // If all promised values have been obtained
             var resultsArray = [];
             var testBlob;
-            for (var i in cssArray) { //Put them back in the correct order
+            for (var i in cssArray) { // Put them back in the correct order
                 var match = 0;
-                for (var j in blobArray) { //Iterate the blobArray to find the matching entry
-                    //console.log("blobArray[j]: " + blobArray[j] + "\r\nblobArray[j][0]: " + blobArray[j][0]);
-                    testBlob = blobArray[j][0].length == 1 ? blobArray[j] : blobArray[j][0]; //What a kludge! TODO: fix this ugly mixing of arrays and strings 
+                for (var j in blobArray) { // Iterate the blobArray to find the matching entry
+                    // console.log("blobArray[j]: " + blobArray[j] + "\r\nblobArray[j][0]: " + blobArray[j][0]);
+                    testBlob = blobArray[j][0].length == 1 ? blobArray[j] : blobArray[j][0]; // What a kludge! TODO: fix this ugly mixing of arrays and strings 
                     if (~cssArray[i].indexOf(testBlob)) {
                         match = 1;
                         break;
                     }
                 }
-                testBlob = match && /blob:/i.test(blobArray[j][1]) ? blobArray[j][1] : blobArray[i]; //Whoa!!! Steady on!
+                testBlob = match && /blob:/i.test(blobArray[j][1]) ? blobArray[j][1] : blobArray[i]; // Whoa!!! Steady on!
                 resultsArray[i] = cssArray[i].replace(/(?:data-kiwixurl|href)\s*=\s*["']([^"']+)/i, 'href="' +
-                    testBlob + '" data-kiwixhref="$1'); //Store the original URL for later use
-                //DEV note: do not attempt to add onload="URL.revokeObjectURL...)": see [kiwix.js #284]
-                //DEBUG:
-                //console.log("BLOB CSS #" + i + ": " + resultsArray[i] + "\nshould correspond to: " + testBlob);
+                    testBlob + '" data-kiwixhref="$1'); // Store the original URL for later use
+                // DEV note: do not attempt to add onload="URL.revokeObjectURL...)": see [kiwix.js #284]
+                // DEBUG:
+                // console.log("BLOB CSS #" + i + ": " + resultsArray[i] + "\nshould correspond to: " + testBlob);
             }
             cssArray = resultsArray;
-            htmlArticle = htmlArticle.replace(regexpSheetHref, ""); //Void existing stylesheets
+            htmlArticle = htmlArticle.replace(regexpSheetHref, ""); // Void existing stylesheets
             var cssArray$ = "\r\n" + cssArray.join("\r\n") + "\r\n";
-            if (~cssSource.indexOf("mobile")) { //If user has selected mobile display mode...
+            if (~cssSource.indexOf("mobile")) { // If user has selected mobile display mode...
                 var mobileCSS = transformStyles.toMobileCSS(htmlArticle, zimType, cssCache, cssSource, cssArray$);
                 htmlArticle = mobileCSS.html;
                 cssArray$ = mobileCSS.css;
             }
-            if (~cssSource.indexOf("desktop")) { //If user has selected desktop display mode...
+            if (~cssSource.indexOf("desktop")) { // If user has selected desktop display mode...
                 var desktopCSS = transformStyles.toDesktopCSS(htmlArticle, zimType, cssCache, cssSource, cssArray$);
                 htmlArticle = desktopCSS.html;
                 cssArray$ = desktopCSS.css;
             }
-            //Remove any voided styles
+            // Remove any voided styles
             cssArray$ = cssArray$.replace(/<link\shref="#"[^>]+>\s*/g, '');
-            //Add dark mode CSS if required
+            // Add dark mode CSS if required
             var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
             cssArray$ += (determinedTheme === 'dark' && params.cssTheme !== 'darkReader') ? '<link href="' + prefix + '/-/s/style-dark.css" rel="stylesheet" type="text/css">\r\n' :
                 params.cssTheme == "invert" ? '<link href="' + prefix + '/-/s/style-dark-invert.css" rel="stylesheet" type="text/css">\r\n' : "";
-            //Ensure all headings are open
-            //htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
+            // Ensure all headings are open
+            // htmlArticle = htmlArticle.replace(/class\s*=\s*["']\s*client-js\s*["']\s*/i, "");
             htmlArticle = htmlArticle.replace(/\s*(<\/head>)/i, cssArray$ + "$1");
             console.log("All CSS resolved");
-            injectHTML(); //Pass the revised HTML to the image and JS subroutine...
+            injectHTML(); // Pass the revised HTML to the image and JS subroutine...
         }
     }
-    //End of preload stylesheets code
+    // End of preload stylesheets code
 
     function injectHTML() {
-        //Inject htmlArticle into iframe
+        // Inject htmlArticle into iframe
         // uiUtil.pollSpinner(); //Void progress messages
         // Extract any css classes from the html tag (they will be stripped when injected in iframe with .innerHTML)
         var htmlCSS;
@@ -5110,12 +5110,12 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
                 if (params.lockDisplayOrientation) articleWindow.addEventListener('mousedown', refreshFullScreen, true);
                 setupTableOfContents();
             }
-            //Set relative font size + Stackexchange-family multiplier
+            // Set relative font size + Stackexchange-family multiplier
             var docElStyle = articleDocument.style;
             var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
             docElStyle = zoomProp === 'fontSize' ? docBody.style : docElStyle;
             docElStyle[zoomProp] = ~zimType.indexOf("stx") && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
-            //Set page width according to user preference
+            // Set page width according to user preference
             removePageMaxWidth();
             setupHeadings();
             listenForNavigationKeys();
@@ -5149,7 +5149,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
                                     return;
                                 }
                                 refNext.classList.add("open-block");
-                                //refNext.innerHTML = refNext.innerHTML.replace(/<br\s*\/?>$/i, "");
+                                // refNext.innerHTML = refNext.innerHTML.replace(/<br\s*\/?>$/i, "");
                                 refNext = refNext.nextElementSibling;
                                 while (refNext && refNext.classList.contains("collapsible-block")) {
                                     refNext.classList.add("open-block");
@@ -5164,7 +5164,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
             
             parseAnchorsJQuery(dirEntry);
             images.prepareImagesJQuery(articleWindow);
-            //loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
+            // loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
             var determinedTheme = params.cssTheme === 'auto' ? cssUIThemeGetOrSet('auto') : params.cssTheme;
             if (params.allowHTMLExtraction && appstate.target === 'iframe') {
                 uiUtil.insertBreakoutLink(determinedTheme);
@@ -5306,7 +5306,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
         }, 6000);
     } // End of injectHtml
 
-} //End of displayArticleInForm()
+} // End of displayArticleInForm()
 
 function parseAnchorsJQuery(dirEntry) {
     var currentProtocol = articleWindow.location.protocol;
@@ -5609,7 +5609,7 @@ function setupTableOfContents() {
             dropupHtml += '<li style="font-size:' + ~~(params.relativeFontSize * 0.8) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
         else if (/^h4$/i.test(heading.tagName))
             dropupHtml += '<li style="font-size:' + ~~(params.relativeFontSize * 0.7) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
-        //Skip smaller headings (if there are any) to avoid making list too long
+        // Skip smaller headings (if there are any) to avoid making list too long
     });
     var ToCList = document.getElementById('ToCList');
     ToCList.style.maxHeight = ~~(window.innerHeight * 0.75) + 'px';
@@ -5782,7 +5782,7 @@ function goToArticle(path, download, contentType, pathEnc) {
     var pathForServiceWorker = path;
     path = path.replace(/\??isKiwixHref/, '');
     appstate.expectedArticleURLToBeDisplayed = path;
-    //This removes any search highlighting
+    // This removes any search highlighting
     clearFindInArticle();
     var shortTitle = path.replace(/[^/]+\//g, '').substring(0, 18);
     uiUtil.pollSpinner('Loading ' + shortTitle);
