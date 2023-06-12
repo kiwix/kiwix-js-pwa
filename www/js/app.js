@@ -346,7 +346,7 @@ window.addEventListener('keydown', function (e) {
 }, true);
 
 // Set up listeners for print dialogues
-function printArticle() {    
+function printArticle() {
     uiUtil.printCustomElements();
     uiUtil.systemAlert('<b>Document will now reload to restore the DOM after printing...</b>').then(function () {
         printCleanup();
@@ -449,7 +449,7 @@ function printIntercept() {
         // We need to reload the document because it doesn't match the requested style or images are one-time BLOBs
         params.cssSource = printDesktopCheck ? "desktop" : "mobile";
         params.rememberLastPage = true; // Re-enable caching to speed up reloading of page
-        // params.contentInjectionMode = 'jquery'; //Much easier to count images in jquery mode 
+        // params.contentInjectionMode = 'jquery'; //Much easier to count images in jquery mode
         params.allowHTMLExtraction = true;
         params.printIntercept = true;
         params.printInterception = false;
@@ -565,7 +565,7 @@ document.getElementById('findText').addEventListener('click', function () {
         }, 500);
     };
     var findInArticleInitiate = function (val) {
-        // Ensure nothing happens if only one or two ASCII values have been entered (search is not specific enough) 
+        // Ensure nothing happens if only one or two ASCII values have been entered (search is not specific enough)
         // if no value has been entered (clears highlighting if user deletes all values in search field)
         if (!/^\s*[A-Za-z\s]{1,2}$/.test(val)) {
             localSearch.scrollFrom = 0;
@@ -637,8 +637,8 @@ document.getElementById('btnZoomin').addEventListener('click', function () {
     var doc = document.getElementById('articleContent').contentDocument;
     var docElStyle = doc.documentElement.style;
     // IE11 and Firefox need to use fontSize on the body style
-    var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
-    docElStyle = zoomProp === 'fontSize' ? doc.body.style : docElStyle; 
+    var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize';
+    docElStyle = zoomProp === 'fontSize' ? doc.body.style : docElStyle;
     docElStyle[zoomProp] = /-\/static\/main\.css|statc\/css\/sotoki.css/.test(doc.head.innerHTML) && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
     var lblZoom = document.getElementById('lblZoom');
     lblZoom.innerHTML = params.relativeFontSize + "%";
@@ -653,8 +653,8 @@ document.getElementById('btnZoomout').addEventListener('click', function () {
     params.relativeFontSize -= 5;
     var doc = document.getElementById('articleContent').contentDocument;
     var docElStyle = doc.documentElement.style;
-    var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
-    docElStyle = zoomProp === 'fontSize' ? doc.body.style : docElStyle; 
+    var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize';
+    docElStyle = zoomProp === 'fontSize' ? doc.body.style : docElStyle;
     docElStyle[zoomProp] = /-\/static\/main\.css|statc\/css\/sotoki.css/.test(doc.head.innerHTML) && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
     var lblZoom = document.getElementById('lblZoom');
     lblZoom.innerHTML = params.relativeFontSize + "%";
@@ -909,7 +909,7 @@ if (window.electronAPI) {
         // console.warn('Download in progress: ' + data);
         serverResponse.style.display = 'inline';
         var colour = data === 'completed' ? 'green' : isNaN(data) ? 'red' : 'goldenrod';
-        serverResponse.style.setProperty('color', colour, 'important'); 
+        serverResponse.style.setProperty('color', colour, 'important');
         serverResponse.innerHTML = 'Download progress: ' + data;
         if (data === 'completed') setTimeout(function () {
             serverResponse.style.removeProperty('color');
@@ -957,9 +957,9 @@ function checkUpdateServer() {
     });
     // Electron updates
     if (window.electronAPI) {
-        var baseApp = (params.packagedFile && /wikivoyage/.test(params.packagedFile)) ? 'wikivoyage' :
-            (params.packagedFile && /wikmed|mdwiki/.test(params.packagedFile)) ? 'wikimed' :
-            'electron';
+        var baseApp = (params.packagedFile && /wikivoyage/.test(params.packagedFile)) ? 'wikivoyage'
+            : (params.packagedFile && /wikmed|mdwiki/.test(params.packagedFile)) ? 'wikimed'
+                : 'electron';
         if (baseApp === 'electron') {
             console.log('Launching Electron auto-updater...');
             electronAPI.checkForUpdates();
@@ -1161,7 +1161,7 @@ function selectArchive(list) {
 
 // Legacy file picker is used as a fallback when all other pickers are unavailable
 document.getElementById('archiveFilesLegacy').addEventListener('change', setLocalArchiveFromFileSelect);
-// But in preference, use UWP, File System Access API        
+// But in preference, use UWP, File System Access API
 document.getElementById('archiveFile').addEventListener('click', function () {
     if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
         // UWP FilePicker
@@ -1202,7 +1202,7 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
             if (fsHandle && fsHandle.kind === 'directory') {
                 processNativeDirHandle(fsHandle);
             } else {
-                uiUtil.systemAlert('You need to pick a folder in order to rescan it!');        
+                uiUtil.systemAlert('You need to pick a folder in order to rescan it!');
             }
         });
     } else {
@@ -1238,7 +1238,7 @@ $('input:radio[name=contentInjectionMode]').on('change', function () {
         if (params.manipulateImages || params.allowHTMLExtraction) {
             if (!appstate.wikimediaZimLoaded) {
                 var message = 'Please note that we are disabling "Image manipulation" and/or "Download or open current article" features, as these options ' +
-                'can interfere with ZIMs that have active content. You may turn them back on, but be aware that they are only ' + 
+                'can interfere with ZIMs that have active content. You may turn them back on, but be aware that they are only ' +
                 'recommended for use with Wikimedia ZIMs.';
                 uiUtil.systemAlert(message);
                 if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
@@ -1309,7 +1309,7 @@ document.getElementById('cssCacheModeCheck').addEventListener('change', function
 document.getElementById('navButtonsPosCheck').addEventListener('change', function(e) {
     params.navButtonsPos = e.target.checked ? 'top' : 'bottom';
     settingsStore.setItem('navButtonsPos', params.navButtonsPos, Infinity);
-    uiUtil.systemAlert('This setting will be applied on next app launch');           
+    uiUtil.systemAlert('This setting will be applied on next app launch');
 });
 $('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
     if (params.contentInjectionMode === 'serviceworker' && !this.checked) {
@@ -1317,7 +1317,7 @@ $('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
         this.checked = true;
         return;
     }
-    params.imageDisplay = this.checked ? true : false;
+    params.imageDisplay = this.checked;
     params.imageDisplayMode = this.checked ? 'progressive' : 'manual';
     params.themeChanged = params.imageDisplay; // Only reload page if user asked for all images to be displayed
     settingsStore.setItem('imageDisplay', params.imageDisplay, Infinity);
@@ -1363,9 +1363,9 @@ document.getElementById('bypassAppCacheCheck').addEventListener('change', functi
     refreshCacheStatus();
 });
 document.getElementById('disableDragAndDropCheck').addEventListener('change', function () {
-    params.disableDragAndDrop = this.checked ? true : false;
+    params.disableDragAndDrop = this.checked;
     settingsStore.setItem('disableDragAndDrop', params.disableDragAndDrop, Infinity);
-    uiUtil.systemAlert('<p>We will now attempt to reload the app to apply the new setting.</p>' + 
+    uiUtil.systemAlert('<p>We will now attempt to reload the app to apply the new setting.</p>' +
         '<p>(If you cancel, then the setting will only be applied when you next start the app.)</p>', 'Reload app', true).then(function (result) {
         if (result) {
             window.location.reload();
@@ -1373,7 +1373,7 @@ document.getElementById('disableDragAndDropCheck').addEventListener('change', fu
     });
 });
 $('input:checkbox[name=hideActiveContentWarning]').on('change', function () {
-    params.hideActiveContentWarning = this.checked ? true : false;
+    params.hideActiveContentWarning = this.checked;
     settingsStore.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
     refreshCacheStatus();
 });
@@ -1439,7 +1439,7 @@ document.getElementById('lockDisplayOrientationDrop').addEventListener('change',
                 params.lockDisplayOrientation = event.target.value || '';
                 settingsStore.setItem('lockDisplayOrientation', params.lockDisplayOrientation, Infinity);
                 that.value = params.lockDisplayOrientation || '';
-                if (params.lockDisplayOrientation) uiUtil.systemAlert('<p>The following error was received (this is expected on Desktop devices):</p>' + 
+                if (params.lockDisplayOrientation) uiUtil.systemAlert('<p>The following error was received (this is expected on Desktop devices):</p>' +
                     '<blockquote><code>' + err.toString() + '</code></blockquote>' +
                     "<p>If screen lock doesn't work, please change setting back to 'Normal' or try a different option.</p>");
             } else {
@@ -1463,7 +1463,7 @@ document.getElementById('lockDisplayOrientationDrop').addEventListener('change',
 document.getElementById('debugLibzimASMDrop').addEventListener('change', function (event) {
     var that = this;
     var message = '<p>App will reload to apply the new setting.</p>'
-    if (event.target.value) message += '<p><i>Please be aware that leaving this override setting on can have anomalous effects, ' + 
+    if (event.target.value) message += '<p><i>Please be aware that leaving this override setting on can have anomalous effects, ' +
         'e.g. the app will no longer check whether the OS supports full-text searching and searches may fail silently.</i></p>'
     uiUtil.systemAlert(message,
         'Developer option!', true).then(function (confirm) {
@@ -1487,7 +1487,7 @@ document.getElementById('tabOpenerCheck').addEventListener('click', function () 
         uiUtil.systemAlert('Please note that due to the Content Secuirty Policy, external links and PDFs always open in a new tab or window, regardless of this setting.');
     }
     if (params.windowOpener && /UWP\|PWA/.test(params.appType) && params.contentInjectionMode === 'jquery') {
-        if (!params.noWarning) uiUtil.systemAlert('<p>In this UWP app, opening a new browsable window only works in Service Worker mode.</p>' + 
+        if (!params.noWarning) uiUtil.systemAlert('<p>In this UWP app, opening a new browsable window only works in Service Worker mode.</p>' +
             '<p>Your system appears to support SW mode, so please try switching to it in Expert Settings below.</p>' +
             '<p>If your system does not support SW mode, then use the more basic "Download or open current article" feature below.</p>');
         params.windowOpener = false;
@@ -1523,7 +1523,7 @@ function setWindowOpenerUI() {
     var tabCheck = document.getElementById('tabOpenerCheck');
     var winCheck = document.getElementById('winOpenerCheck');
     var rtClickType = document.getElementById('dblRightClickCheck');
-    if (params.rightClickType === 'double') rtClickType.checked = true;    
+    if (params.rightClickType === 'double') rtClickType.checked = true;
     if (params.windowOpener === 'window') {
         newWin.style.display = 'block';
         woHelp.style.display = 'block';
@@ -1556,7 +1556,7 @@ document.getElementById('allowHTMLExtractionCheck').addEventListener('click', fu
             alertMessage = '<p><b>This option will only work if you turn off popup blocking in your iOS browser settings.</b><p>';
         }
         if (params.contentInjectionMode === 'serviceworker') {
-            alertMessage = '<p>Please be aware that the "Download or open current article" functionality can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). ' + 
+            alertMessage = '<p>Please be aware that the "Download or open current article" functionality can interfere badly with non-Wikimedia ZIMs (particularly ZIMs that have active content). ' +
             'If you cannot access the articles in such a ZIM, please turn this setting off.</p>' + alertMessage;
         } else if (/PWA/.test(params.appType)) {
             alertMessage += '<p>Be aware that this option may interfere with active content if you switch to Service Worker mode.</p>';
@@ -1628,7 +1628,7 @@ var scrollFunction = function () {
     throttle = 1;
     newScrollY = iframe.contentWindow.pageYOffset;
     // Hide the toolbars if user has scrolled and search elements are not selected
-    if (newScrollY - oldScrollY > 0 && document.activeElement !== prefix 
+    if (newScrollY - oldScrollY > 0 && document.activeElement !== prefix
         && document.activeElement !== findInArticle) {
         // If the header and/or footer have not already been hidden
         if (/\(0p?x?\)/.test(header.style.transform)) {
@@ -1673,7 +1673,7 @@ function checkToolbar() {
             (params.hideToolbars === true ? footerDim.height : 0) + 'px';
         // iframe.style.transform = 'translateY(-' + navbarDim.height + 'px)';
         if (doc) {
-            // doc.style.transform = 'translateY(' + navbarDim.height + 'px)'; 
+            // doc.style.transform = 'translateY(' + navbarDim.height + 'px)';
             iframe.contentDocument.addEventListener('scroll', scrollFunction);
         }
         scrollFunction();
@@ -1716,7 +1716,7 @@ function initializeUISettings() {
         };
     }
 }
-// Code below is needed on startup to show or hide the inverted and DarkReader theme checkboxes; 
+// Code below is needed on startup to show or hide the inverted and DarkReader theme checkboxes;
 // similar code also runs in switchCSSTheme(), but that is not evoked on startup
 if (params.cssTheme == 'auto') document.getElementById('darkInvert').style.display = cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'block';
 if (params.cssTheme == 'auto') document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' ? cssUIThemeGetOrSet('auto', true) == 'light' ? 'none' : 'block' : 'none';
@@ -1983,7 +1983,7 @@ function removePageMaxWidth() {
         }
         if (params.removePageMaxWidth === "auto") {
             updatedCssText = cssSource === 'desktop' ? '100%' : window.innerWidth > 1012 ? '94%' :
-                // /android/i.test(params.appType) ? '98%' : 
+                // /android/i.test(params.appType) ? '98%' :
                 '55.8em';
             docStyle.maxWidth = updatedCssText;
             docStyle.cssText = docStyle.cssText.replace(/max-width:[^;]+/i, 'max-width: ' + updatedCssText + ' !important');
@@ -1998,7 +1998,7 @@ function removePageMaxWidth() {
     }
     if (doc.body && doc.body.classList.contains('article-list-home')) {
         doc.body.style.padding = '2em';
-    } 
+    }
 }
 
 document.getElementById('openAllSectionsCheck').addEventListener('click', function (e) {
@@ -2087,9 +2087,9 @@ $(document).ready(function (e) {
     var appType = document.getElementById('appType');
     appType.innerHTML = /^(?=.*PWA).*UWP/.test(params.appType) &&
         /^https:/i.test(location.protocol) ? 'UWP (PWA) ' :
-        /UWP/.test(params.appType) ? 'UWP ' : 
-        window.nw ? 'NWJS ' : 
-        /Electron/.test(params.appType) ? 'Electron ' : 
+        /UWP/.test(params.appType) ? 'UWP ' :
+        window.nw ? 'NWJS ' :
+        /Electron/.test(params.appType) ? 'Electron ' :
         /PWA/.test(params.appType) ? 'PWA ' : '';
     // Code below triggers display of modal info box if app is run for the first time, or it has been upgraded to new version
     if (settingsStore.getItem('appVersion') !== params.appVersion) {
@@ -2115,7 +2115,7 @@ $(document).ready(function (e) {
                 if (params.isUWPStoreApp) return; // It's a UWP app installed from the Store, so it will self update
                 if (!params.allowInternetAccess) {
                     var updateServer = params.updateServer.url.replace(/^([^:]+:\/\/[^/]+).*/, '$1');
-                    uiUtil.systemAlert('<p>Do you want this app to check for updates on startup?<br />(this will allow access to <i>' + updateServer + '</i>)</p>' + 
+                    uiUtil.systemAlert('<p>Do you want this app to check for updates on startup?<br />(this will allow access to <i>' + updateServer + '</i>)</p>' +
                         '<p><i>If you change your mind, use the <b>"Allow Internet Access"</b> option in Configuration to turn on or off.</i></p>'
                         , 'Updates check disabled!', true)
                     .then(function (response) {
@@ -2186,7 +2186,7 @@ function refreshAPIStatus() {
     settingsStoreStatusDiv.classList.remove('apiAvailable', 'apiUnavailable');
     settingsStoreStatusDiv.classList.add(params.storeType === 'none' ? 'apiUnavailable' : 'apiAvailable');
     apiPanelClass = params.storeType === 'none' ? 'panel-warning' : apiPanelClass;
-    
+
     // Update Decompressor API section of panel
     var decompAPIStatusDiv = document.getElementById('decompressorAPIStatus');
     apiName = params.decompressorAPI.assemblerMachineType;
@@ -2222,7 +2222,7 @@ function refreshAPIStatus() {
     refreshCacheStatus();
 }
 
-/** 
+/**
  * Refreshes the UI (Configuration) with the cache attributes obtained from getCacheAttributes()
  */
 function refreshCacheStatus() {
@@ -2302,7 +2302,7 @@ function initOrKeepAliveServiceWorker() {
  * Sets the given injection mode.
  * This involves registering (or re-enabling) the Service Worker if necessary
  * It also refreshes the API status for the user afterwards.
- * 
+ *
  * @param {String} value The chosen content injection mode : 'jquery' or 'serviceworker'
  */
 function setContentInjectionMode(value) {
@@ -2528,7 +2528,7 @@ function launchUWPServiceWorker () {
 }
 
 /**
- * 
+ *
  * @type Array.<StorageFirefoxOS>
  */
 var storages = [];
@@ -2545,7 +2545,7 @@ function searchForArchivesInPreferencesOrStorage() {
         } else {
             displayFileSelect();
             if (document.getElementById('archiveFiles').files && document.getElementById('archiveFiles').files.length > 0) {
-                // Archive files are already selected, 
+                // Archive files are already selected,
                 setLocalArchiveFromFileSelect();
             } else {
                 var btnConfigure = document.getElementById('btnConfigure');
@@ -2621,7 +2621,7 @@ if (storages !== null && storages.length > 0 ||
         processPickedFileUWP(params.pickedFile);
     // } else if (launchArguments && 'launchQueue' in window) {
     //     // The app was launched with a file
-    //     processNativeFileHandle(params.pickedFile); 
+    //     processNativeFileHandle(params.pickedFile);
     } else {
         // @AUTOLOAD packaged archive in Electron and NWJS packaged apps
         // We need to read the packaged file using the node File System API (so user doesn't need to pick it on startup)
@@ -2671,7 +2671,7 @@ if (storages !== null && storages.length > 0 ||
                 params.showFileSelectors = true;
                 document.getElementById('hideFileSelectors').style.display = 'inline';
                 document.getElementById('btnConfigure').click();
-                var message = params.packagedFile ? ('The packaged file cannot be found!\nPlease check that it is in the "' + params.archivePath + 
+                var message = params.packagedFile ? ('The packaged file cannot be found!\nPlease check that it is in the "' + params.archivePath +
                     '" folder\nor pick a new ZIM file.') : 'The previously picked file cannot be found!\nPlease pick a new ZIM file.'
                 setTimeout(function () {
                     uiUtil.systemAlert(message);
@@ -2685,7 +2685,7 @@ if (storages !== null && storages.length > 0 ||
     // If DeviceStorage is not available, we display the file select components
     displayFileSelect();
     if (document.getElementById('archiveFiles').files && document.getElementById('archiveFiles').files.length > 0) {
-        // Archive files are already selected, 
+        // Archive files are already selected,
         setLocalArchiveFromFileSelect();
     } else {
         document.getElementById('btnConfigure').click();
@@ -2778,7 +2778,7 @@ function populateDropDownListOfArchives(archiveDirectories, displayOnly) {
                 // We can't find lastSelectedArchive in the archive list
                 // Let's first check if this is a Store UWP/PWA that has a different archive package from that last selected
                 // (or from that indicated in init.js)
-                if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined' && 
+                if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined' &&
                     params.packagedFile && settingsStore.getItem('lastSelectedArchive') !== params.packagedFile) {
                     // We didn't pick this file previously, so select first one in list
                     params.storedFile = archiveDirectories[0];
@@ -2960,7 +2960,7 @@ function setLocalArchiveFromArchiveList(archive) {
                                 }
                             });
                         } else {
-                            uiUtil.systemAlert('We could not find the location of the file ' + archive + 
+                            uiUtil.systemAlert('We could not find the location of the file ' + archive +
                                 '. This can happen if you dragged and dropped a file into the app. Please use the file or folder pickers instead.');
                             if (document.getElementById('configuration').style.display == 'none')
                                 document.getElementById('btnConfigure').click();
@@ -3292,7 +3292,7 @@ function processNativeDirHandle(dirHandle, callback) {
                 }
             }
         }).catch(function (err) {
-            uiUtil.systemAlert('<p>We could not find your archive! Is the location or file still available? Try picking the file or folder again.</p>' + 
+            uiUtil.systemAlert('<p>We could not find your archive! Is the location or file still available? Try picking the file or folder again.</p>' +
                 '<p>[System error message: ' + err.message + ']</p>', 'Error!');
         });
     })();
@@ -3386,7 +3386,7 @@ function setLocalArchiveFromFileList(files) {
     }
     // Check that user hasn't picked just part of split ZIM
     if (files.length == 1 && /\.zim\w\w/i.test(files[0].name)) {
-        uiUtil.systemAlert('<p>You have picked only part of a split archive!</p><p>Please select its folder in Config, ' + 
+        uiUtil.systemAlert('<p>You have picked only part of a split archive!</p><p>Please select its folder in Config, ' +
             'or drag and drop <b>all</b> of its parts into Config.</p>').then(function () {
                 if (document.getElementById('configuration').style.display === 'none') {
                     document.getElementById('btnConfigure').click();
@@ -3473,7 +3473,7 @@ function setLocalArchiveFromFileList(files) {
                 goToArticle(lastPage);
             } else {
                 // The archive has changed, so we must blank the last page in case the Home page of the new archive
-                // has the same title as the previous archive (possible if it is, for example, "index") 
+                // has the same title as the previous archive (possible if it is, for example, "index")
                 params.lastPageVisit = '';
                 params.lastPageHTML = '';
                 document.getElementById('btnHome').click();
@@ -3487,7 +3487,7 @@ function setLocalArchiveFromFileList(files) {
 
 function loadPackagedArchive() {
     // Reload any ZIM files in local storage (whcih the user can't otherwise select with the filepicker)
-    
+
     // Reset params.packagedFile to its original value, in case we manipulated it previously
     params.packagedFile = params.originalPackagedFile;
     params.pickedFile = '';
@@ -3530,7 +3530,7 @@ function setLocalArchiveFromFileSelect() {
 /**
  * Creates a fake file object from the given filename and filepath. This can only be used if the app is running
  * in the Electron framework.
- * 
+ *
  * @param {String} filename The name of the file to be represented
  * @param {String} filepath The path of the file to be represented
  * @param {Function} callback The function to call back with the constructed file
@@ -3567,7 +3567,7 @@ function createFakeFileObjectNode(filename, filepath, callback) {
 
 /**
  * Reads a directory using the Node File System API and creates a file object or objects for the requested file or split fileset
- * @param {String} folder The directory path to read  
+ * @param {String} folder The directory path to read
  * @param {String|Array} file The file or split file array to match in the folder (only file[0] will be tested if it is an array)
  * @returns {Promise<Array>} A Promise for the Array of files matching the requested file
  */
@@ -3589,7 +3589,7 @@ function readNodeDirectoryAndCreateNodeFileObjects(folder, file) {
                 if (/\.zim\w{0,2}$/i.test(fileHandle)) {
                     var genericFileName = fileHandle.replace(/(\.zim)\w\w$/i, '$1');
                     var fileFilter = new RegExp(genericFileName + '\\w\\w$');
-                    if (/\.zim$/i.test(fileHandle)) { fileFilter = new RegExp(genericFileName); } 
+                    if (/\.zim$/i.test(fileHandle)) { fileFilter = new RegExp(genericFileName); }
                     for (var i = 0; i < fileNames.length; i++) {
                         // Filter filenames so we only get zim or zimaa
                         if (/\.zim(aa)?$/i.test(fileNames[i])) {
@@ -3616,7 +3616,7 @@ function readNodeDirectoryAndCreateNodeFileObjects(folder, file) {
                 // Folder was empty...
                 // createFakeFileObjectNode(fileHandle, folder + '/' + fileHandle, setLocalArchiveFromFileList);
                 reject('No files were found in the folder!');
-            } 
+            }
          });
     });
 }
@@ -3641,7 +3641,7 @@ for (var i = 0; i < returnDivs.length; i++) {
 /**
  * Reads a remote archive with given URL, and returns the response in a Promise.
  * This function is used by setRemoteArchives below, for UI tests
- * 
+ *
  * @param {String} url The URL of the archive to read
  * @returns {Promise<Blob>} A promise for the requested file (blob)
  */
@@ -3668,7 +3668,7 @@ function readRemoteArchive(url) {
 
 /**
  * This is used in the testing interface to inject remote archives
- * @returns {Promise<Array>} A Promise for an array of archives  
+ * @returns {Promise<Array>} A Promise for an array of archives
  */
 window.setRemoteArchives = function () {
     var readRequests = [];
@@ -3824,7 +3824,7 @@ function showZIMIndex(start, prefix) {
                         if (appstate.search.searchUrlIndex) {
                             // In URL search mode, we only show namespaces in alphabet
                             if (!/^[-ABCHIJMUVWX]/.test(char)) continue;
-                            char = char + '/'; 
+                            char = char + '/';
                         }
                         alphaSelector.push('<a href="#" class="alphaSelector" data-sel="' + char + '">' + char + '</a>');
                     }
@@ -3935,7 +3935,7 @@ function populateListOfArticles(dirEntryArray, reportingSearch) {
     } else if (nbDirEntry >= params.maxSearchResultsSize) {
         message = 'First ' + params.maxSearchResultsSize + (reportingSearch.searchUrlIndex ? ' assets' : ' articles') + ' found: refine your search.';
     } else if (reportingSearch.status === 'error') {
-        message = 'Incorrect search syntax! See <a href="#searchSyntaxError" id="searchSyntaxLink">Search syntax</a> in About!'; 
+        message = 'Incorrect search syntax! See <a href="#searchSyntaxError" id="searchSyntaxLink">Search syntax</a> in About!';
     } else {
         message = 'Finished. ' + (nbDirEntry ? nbDirEntry : 'No') + ' articles found' +
         (appstate.search.type === 'basic' ? ': try fewer words for full search.' : '.');
@@ -3953,13 +3953,13 @@ function populateListOfArticles(dirEntryArray, reportingSearch) {
         // NB We use encodeURIComponent rather than encodeURI here because we know that any question marks in the title are not querystrings,
         // and should be encoded [kiwix-js #806]. DEV: be very careful if you edit the dirEntryId attribute below, because the contents must be
         // inside double quotes (in the final HTML string), given that dirEntryStringId may contain bare apostrophes
-        // Info: encodeURIComponent encodes all characters except  A-Z a-z 0-9 - _ . ! ~ * ' ( ) 
+        // Info: encodeURIComponent encodes all characters except  A-Z a-z 0-9 - _ . ! ~ * ' ( )
         var dirEntryStringId = encodeURIComponent(dirEntry.toStringId());
         articleListDivHtml += '<a href="#" dirEntryId="' + dirEntryStringId +
             '" class="list-group-item">' + (reportingSearch.searchUrlIndex ? dirEntry.namespace + '/' + dirEntry.url : '' + dirEntry.getTitleOrUrl()) + '</a>';
     }
     articleListDiv.innerHTML = articleListDivHtml;
-    // We have to use mousedown below instead of click as otherwise the prefix blur event fires first 
+    // We have to use mousedown below instead of click as otherwise the prefix blur event fires first
     // and prevents this event from firing; note that touch also triggers mousedown
     $('#articleList a').on('mousedown', function (e) {
         // Cancel search immediately
@@ -4021,7 +4021,7 @@ function findDirEntryFromDirEntryIdAndLaunchArticleRead(dirEntryId) {
 function isDirEntryExpectedToBeDisplayed(dirEntry) {
     var curArticleURL = dirEntry.namespace + "/" + dirEntry.url;
     if (appstate.expectedArticleURLToBeDisplayed !== curArticleURL) {
-        console.debug("url of current article :" + curArticleURL + ", does not match the expected url :" + 
+        console.debug("url of current article :" + curArticleURL + ", does not match the expected url :" +
             appstate.expectedArticleURLToBeDisplayed);
         return false;
     }
@@ -4057,7 +4057,7 @@ function readArticle(dirEntry) {
         // });
         if (!/\bx?html\b/i.test(mimeType)) {
             // If the selected article isn't HTML, e.g. it might be a PDF, we can either download it if we recognize the type, or ask the SW to deal with it
-            if ((params.zimType === 'zimit' || appstate.search.searchUrlIndex) && 
+            if ((params.zimType === 'zimit' || appstate.search.searchUrlIndex) &&
                 /\/(plain|.*javascript|css|csv|.*officedocument|.*opendocument|epub|pdf|zip|png|jpeg|webp|svg|gif|tiff|mp4|webm|mpeg|mp3|octet-stream|warc-headers)/i.test(mimeType)) {
                 var download = true;
                 return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, content) {
@@ -4070,7 +4070,7 @@ function readArticle(dirEntry) {
                     uiUtil.clearSpinner();
                 });
             } else if (params.contentInjectionMode === 'serviceworker') {
-                articleContainer = window.open("../" + appstate.selectedArchive._file.name + "/" + dirEntry.namespace + "/" + encodeURIComponent(dirEntry.url), 
+                articleContainer = window.open("../" + appstate.selectedArchive._file.name + "/" + dirEntry.namespace + "/" + encodeURIComponent(dirEntry.url),
                     params.windowOpener === 'tab' ? '_blank' : encodeURIComponent(dirEntry.title | mimeType),
                     params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
                 appstate.target = 'window';
@@ -4079,7 +4079,7 @@ function readArticle(dirEntry) {
                 uiUtil.clearSpinner();
                 return;
             }
-        } 
+        }
         // Load cached start page if it exists and we have loaded the packaged file
         var htmlContent = 0;
         var zimName = appstate.selectedArchive._file.name.replace(/\.[^.]+$/, '').replace(/_\d+-\d+$/, '');
@@ -4151,7 +4151,7 @@ function readArticle(dirEntry) {
                     htmlContent = params.lastPageHTML;
                     goToRetrievedContent(htmlContent);
                 }
-                
+
             } else {
                 goToRetrievedContent(htmlContent);
             }
@@ -4216,8 +4216,8 @@ var articleLoadedSW = function (dirEntry) {
         zimType = /-\/static\/main\.css|statc\/css\/sotoki.css/i.test(doc.head.innerHTML) ? "desktop-stx" : zimType; // Support stackexchange
         zimType = /minerva|mobile[^"']*\.css/i.test(doc.head.innerHTML) ? "mobile" : zimType;
         var docElStyle = articleDocument.style;
-        var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
-        docElStyle = zoomProp === 'fontSize' ? docBody.style : docElStyle; 
+        var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize';
+        docElStyle = zoomProp === 'fontSize' ? docBody.style : docElStyle;
         docElStyle[zoomProp] = ~zimType.indexOf("stx") && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
         // if (appstate.target === 'iframe') uiUtil.initTouchZoom(articleDocument, docBody);
         checkToolbar();
@@ -4265,12 +4265,12 @@ var articleLoadedSW = function (dirEntry) {
                 target.scrollIntoView();
             }, 1000);
             anchorParameter = '';
-        } 
+        }
         params.isLandingPage = false;
     } else {
         loaded = false;
     }
-    
+
     // Show spinner when the article unloads
     articleContainer.onunload = function () {
         if (articleWindow.kiwixType === 'iframe') {
@@ -4288,7 +4288,7 @@ var loadingArticle = '';
 /**
  * Function that handles a message of the messageChannel.
  * It tries to read the content in the backend, and sends it back to the ServiceWorker
- * 
+ *
  * @param {Event} event The event object of the message channel
  */
 function handleMessageChannelMessage(event) {
@@ -4377,7 +4377,7 @@ function handleMessageChannelMessage(event) {
                         if (!params.transformedHTML) {
                             // It's an unstransformed html file, so we need to do some content transforms and wait for the HTML to be available
                             if (!~params.lastPageVisit.indexOf(dirEntry.url)) params.lastPageVisit = '';
-                            // Tell the read routine that the request comes from a messageChannel 
+                            // Tell the read routine that the request comes from a messageChannel
                             appstate.messageChannelWaiting = true;
                             readArticle(dirEntry);
                             setTimeout(postTransformedHTML, 300, message, messagePort, dirEntry);
@@ -4530,7 +4530,7 @@ params.regexpTagsWithZimUrl = /(<(?:img|script|link)\b[^>]*?\s)(?:src|href)(\s*=
 // so they are excluded); 3) the script block is not of type "math" (these are MathJax markup scripts used extensively in Stackexchange
 // ZIMs). Note that the regex will match ReactJS <script type="text/html"> markup, which is common in unsupported packaged UIs, e.g. PhET ZIMs.
 var regexpActiveContent = /<script\b(?:(?![^>]+src\b)|(?=[^>]+src\b=["'][^"']*?\b(?:app|init|l1[08]9)\.js))(?![^<]+(?:importScript\(\)|toggleOpenSection|articleId\s?=\s?['"]|window.NREUM))(?![^>]+type\s*=\s*["'](?:math\/|[^"']*?math))/i;
-// DEV: The regex below matches ZIM links (anchor hrefs) that should have the html5 "donwnload" attribute added to 
+// DEV: The regex below matches ZIM links (anchor hrefs) that should have the html5 "donwnload" attribute added to
 // the link. This is currently the case for epub and pdf files in Project Gutenberg ZIMs -- add any further types you need
 // to support to this regex. The "zip" has been added here as an example of how to support further filetypes
 var regexpDownloadLinks = /^.*?\.epub([?#]|$)|^.*?\.pdf([?#]|$)|^.*?\.odt([?#]|$)|^.*?\.zip([?#]|$)/i;
@@ -4547,7 +4547,7 @@ params.containsMathSVG = false;
 var treePath;
 
 // Stores a url to direntry mapping and is refered to/updated anytime there is a css lookup
-// When archive changes these caches should be reset. 
+// When archive changes these caches should be reset.
 // Currently happens only in setLocalArchiveFromFileList and setLocalArchiveFromArchiveList.
 // var cssDirEntryCache = new Map(); //This one is never hit!
 var cssBlobCache = new Map();
@@ -4562,11 +4562,11 @@ var cssBlobCache = new Map();
 function displayArticleContentInContainer(dirEntry, htmlArticle) {
     // if (! isDirEntryExpectedToBeDisplayed(dirEntry)) {
     //    return;
-    // }		
+    // }
 
     // TESTING
     console.log('** HTML received for article ' + dirEntry.url + ' **');
-    
+
     if (!/\bx?html\b/.test(dirEntry.getMimetype())) {
         // Construct an HTML document to wrap the content
         htmlArticle = '<html><body style="color:yellow;background:darkblue;"><pre>' + htmlArticle + '</pre></body></html>';
@@ -4604,7 +4604,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
 
     // App appears to have successfully launched
     params.appIsLaunching = false;
-    
+
     // Calculate the current article's ZIM baseUrl to use when processing relative links
     // (duplicated because we sometimes bypass readArticle above)
     params.baseURL = encodeURI(dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''))
@@ -4759,10 +4759,10 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
 
         // Remove the details polyfill: it's poor and doesn't recognize Edgium
         htmlArticle = htmlArticle.replace(/<script\b[^<]+details[^"']*polyfill\.js[^<]+<\/script>\s*/i, '');
-        
+
         // Remove article.js on youtube ZIMs as it erroneously hides description
         htmlArticle = /<video\b/i.test(htmlArticle) ? htmlArticle.replace(/<script\b[^<]+assets\/article\.js[^<]+<\/script>\s*/i, '') : htmlArticle;
-        
+
         // Remove empty div that causes layout issues in desktop style (but don't remove in SW mode, as they are dynamically filled)
         if (params.contentInjectionMode === 'jquery') htmlArticle = htmlArticle.replace(/<div\b[^>]*?>\s*<\/div>\s*/, '');
     }
@@ -4788,20 +4788,20 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
     /**
      * MathML detection
      */
-    
+
     // Get out of the way if Service Worker mode and there is an existing MathJax installation
-    params.useMathJax = params.contentInjectionMode === 'serviceworker' && /<script\b[^>]+MathJax\.js/i.test(htmlArticle) ? 
+    params.useMathJax = params.contentInjectionMode === 'serviceworker' && /<script\b[^>]+MathJax\.js/i.test(htmlArticle) ?
         false : params.useMathJax;
     // Detect raw MathML on page for certain ZIMs that are expected to have it
     params.containsMathTexRaw = params.useMathJax &&
         /stackexchange|askubuntu|superuser|stackoverflow|mathoverflow|serverfault|stackapps|proofwiki/i.test(appstate.selectedArchive._file.name) ?
         /[^\\](\$\$?)((?:\\\$|(?!\1)[\s\S])+)\1/.test(htmlArticle) : false;
-    
+
     // if (params.containsMathTexRaw) {
     //    //Replace undefined \size controlscript with \normalsize (found on proofwiki)
     //    htmlArticle = htmlArticle.replace(/(\\)size\b/g, '$1normalsize');
     // }
-    
+
     // Replace all TeX SVGs with MathJax scripts
     if (params.useMathJax) {
         // Deal with any newer MathML blocks
@@ -4832,7 +4832,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
 
     // Maker return links
     uiUtil.makeReturnLink(dirEntry.getTitleOrUrl());
-    
+
     if (params.zimType === 'open') {
         // Adapt German Wikivoyage POI data format
         var regexpGeoLocationDE = /<span\s+class="[^"]+?listing-coordinates[\s\S]+?latitude">([^<]+)[\s\S]+?longitude">([^<]+)<[\s\S]+?(<bdi\s[^>]+?listing-name[^>]+>(?:<a\b\s+href[^>]+>)?([^<]+))/ig;
@@ -4859,7 +4859,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
                 (p5 ? '\&lvl=' + p5 : '') + p4.replace(/style=["']\s?background:[^"']+["']/i, '');
             }
             if (/openstreetmap/.test(params.mapsURI)) {
-                html = hrefAttr + params.mapsURI + '?mlat=' + latitude + '&mlon=' + longitude + '#map=18/' + latitude + '/' + longitude + 
+                html = hrefAttr + params.mapsURI + '?mlat=' + latitude + '&mlon=' + longitude + '#map=18/' + latitude + '/' + longitude +
                     p4.replace(/style=["']\s?background:[^"']+["']/i, '');
             }
             html += mapPin30 + p6 + id;
@@ -4869,7 +4869,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
         // Clean up remaining geo: links
         var mapPin18 = '<img alt="Map marker" title="Show this place on a map" src="app:///www/img/icons/map_marker-18px.png" width="12px" />';
         if (/bingmaps:/.test(params.mapsURI)) {
-            htmlArticle = htmlArticle.replace(/href=['"]geo:([\d.-]+),([\d.-]+)[^"']*([^>]+>)/ig, 'href="' + params.mapsURI + '?collection=point.$1_$2_' + 
+            htmlArticle = htmlArticle.replace(/href=['"]geo:([\d.-]+),([\d.-]+)[^"']*([^>]+>)/ig, 'href="' + params.mapsURI + '?collection=point.$1_$2_' +
             encodeURIComponent(dirEntry.getTitleOrUrl()) + '$3' + mapPin18 + '&nbsp;');
         }
         if (/openstreetmap/.test(params.mapsURI)) {
@@ -4899,9 +4899,9 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
         });
 
         // Exempt Nautilus and YouTube based ZIMs from stylesheet preloading
-        var nautilus = params.contentInjectionMode === 'serviceworker' ? 
+        var nautilus = params.contentInjectionMode === 'serviceworker' ?
             htmlArticle.match(/<script\b[^>]+['"][^'"]*(?:nautilus|zim_prefix)\.js[^'"]*[^>]*>[^<]*<\/script>\s*/i) : null;
-    
+
     }
 
     if (params.zimType === 'open' && !nautilus || params.contentInjectionMode === 'jquery') {
@@ -5006,7 +5006,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
                 var match = 0;
                 for (var j in blobArray) { // Iterate the blobArray to find the matching entry
                     // console.log("blobArray[j]: " + blobArray[j] + "\r\nblobArray[j][0]: " + blobArray[j][0]);
-                    testBlob = blobArray[j][0].length == 1 ? blobArray[j] : blobArray[j][0]; // What a kludge! TODO: fix this ugly mixing of arrays and strings 
+                    testBlob = blobArray[j][0].length == 1 ? blobArray[j] : blobArray[j][0]; // What a kludge! TODO: fix this ugly mixing of arrays and strings
                     if (~cssArray[i].indexOf(testBlob)) {
                         match = 1;
                         break;
@@ -5083,7 +5083,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
                 articleContainer.kiwixType = appstate.target;
                 articleWindow = articleContainer;
             }
-            
+
             // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
             articleWindow.kiwixType = appstate.target;
             // Scroll the old container to the top
@@ -5112,7 +5112,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
             }
             // Set relative font size + Stackexchange-family multiplier
             var docElStyle = articleDocument.style;
-            var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize'; 
+            var zoomProp = '-ms-zoom' in docElStyle ? 'fontSize' : 'zoom' in docElStyle ? 'zoom' : 'fontSize';
             docElStyle = zoomProp === 'fontSize' ? docBody.style : docElStyle;
             docElStyle[zoomProp] = ~zimType.indexOf("stx") && zoomProp === 'fontSize' ? params.relativeFontSize * 1.5 + "%" : params.relativeFontSize + "%";
             // Set page width according to user preference
@@ -5161,7 +5161,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
                 }
             }
             if (!params.isLandingPage) openAllSections();
-            
+
             parseAnchorsJQuery(dirEntry);
             images.prepareImagesJQuery(articleWindow);
             // loadJavascript(); //Disabled for now, since it does nothing - also, would have to load before images, ideally through controlled css loads above
@@ -5198,7 +5198,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
                     target.scrollIntoView();
                 }, 1000);
                 anchorParameter = '';
-            } 
+            }
             params.isLandingPage = false;
         };
 
@@ -5221,7 +5221,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
         // control the Window. Additionally, Edge Legacy cannot build the DOM for a completely hidden document, hence we catch
         // these browser types with 'MSBlobBuilder' (and also IE11).
         if (!(/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting))) {
-            htmlArticle = htmlArticle.replace(/(<html\b[^>]*)>/i, '$1 bgcolor="' + 
+            htmlArticle = htmlArticle.replace(/(<html\b[^>]*)>/i, '$1 bgcolor="' +
                 (cssUIThemeGetOrSet(params.cssTheme, true) !== 'light' ? 'grey' : 'whitesmoke') + '">');
             // NB Don't hide the document body if we don't have any window management, because native loading of documents in a new tab is slow, and we can't
             // guarantee to unhide the document in time
@@ -5236,7 +5236,7 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
                 }
             }, 1200);
         }
-        
+
         // Calculate the current article's encoded ZIM baseUrl to use when processing relative links (also needed for SW mode when params.windowOpener is set)
         params.baseURL = encodeURI(dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''));
             // URI-encode anything that is not a '/'
@@ -5253,8 +5253,8 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
             // Add darkreader script to article
             var determinedWikiTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
             if (determinedWikiTheme !== 'light' && params.cssTheme === 'darkReader') {
-                htmlArticle = htmlArticle.replace(/(<\/head>)/i, '<script type="text/javascript" src="' + 
-                    document.location.pathname.replace(/index\.html/i, 'js/lib/darkreader.min.js') + '"></script>\r\n' + 
+                htmlArticle = htmlArticle.replace(/(<\/head>)/i, '<script type="text/javascript" src="' +
+                    document.location.pathname.replace(/index\.html/i, 'js/lib/darkreader.min.js') + '"></script>\r\n' +
                     '<script>DarkReader.setFetchMethod(window.fetch);\r\nDarkReader.enable();</script>\r\n$1');
             }
             // Prevent the script that detects whether wombat is loaded from running
@@ -5285,14 +5285,14 @@ function displayArticleContentInContainer(dirEntry, htmlArticle) {
         // articleWindow.document.open('text/html', 'replace');
         // articleWindow.document.write(htmlArticle);
         // articleWindow.document.close();
-        
+
         if (appstate.target === 'iframe') {
             // Store the frame article's target in the top-level window, so that when we retrieve the window with
             // history manipulation, we'll know where to place the iframe contentWindow
             window.kiwixType = appstate.target;
             articleContainer.onload = articleLoaded;
             articleContainer.src = 'article.html';
-        } else { 
+        } else {
             // Attempt to establish an independent history record for windows (jQuery / window-tab mode)
             articleWindow.onpopstate = historyPop;
             // The articleWindow has already been set in the click event of the ZIM link and the dummy article was loaded there
@@ -5313,7 +5313,7 @@ function parseAnchorsJQuery(dirEntry) {
     currentProtocol === 'about:' ? currentProtocol = ':' : currentProtocol;
     var currentHost = articleWindow.location.host;
     // Percent-encode dirEntry.url and add regex escape character \ to the RegExp special characters - see https://www.regular-expressions.info/characters.html;
-    // NB dirEntry.url can also contain path separator / in some ZIMs (Stackexchange). } and ] do not need to be escaped as they have no meaning on their own. 
+    // NB dirEntry.url can also contain path separator / in some ZIMs (Stackexchange). } and ] do not need to be escaped as they have no meaning on their own.
     var escapedUrl = encodeURIComponent(dirEntry.url).replace(/([\\$^.|?*+/()[{])/g, '\\$1');
     // Pattern to match a local anchor in an href even if prefixed by escaped url; will also match # on its own
     // Note that we exclude any # with a semicolon between it and the end of the string, to avoid accidentally matching e.g. &#39;
@@ -5446,7 +5446,7 @@ function addListenersToLink(a, href, baseUrl) {
         var zimRoot = indexRoot.replace(/^.+?\/www\//, '/');
         var zimUrl;
         var zimUrlFullEncoding;
-        if (params.zimType === 'zimit') { 
+        if (params.zimType === 'zimit') {
             if (!href.indexOf(indexRoot)) { // If begins with indexRoot
                 zimUrl = href.replace(indexRoot, '').replace('#' + anchorParameter, '');
             } else if (!href.indexOf(zimRoot)) { // If begins with zimRoot
@@ -5454,9 +5454,9 @@ function addListenersToLink(a, href, baseUrl) {
             } else {
                 // Zimit ZIMs store URLs percent-encoded and with querystring and
                 // deriveZimUrlFromRelativeUrls strips any querystring and decodes
-                zimUrl = encodeURI(uiUtil.deriveZimUrlFromRelativeUrl(href, baseUrl)) + 
+                zimUrl = encodeURI(uiUtil.deriveZimUrlFromRelativeUrl(href, baseUrl)) +
                     href.replace(encodeURI(uriComponent), '').replace('#' + anchorParameter, '');
-                zimUrlFullEncoding = encodeURI(uiUtil.deriveZimUrlFromRelativeUrl(href, baseUrl) + 
+                zimUrlFullEncoding = encodeURI(uiUtil.deriveZimUrlFromRelativeUrl(href, baseUrl) +
                     href.replace(encodeURI(uriComponent), '').replace('#' + anchorParameter, ''));
             }
         } else {
@@ -5467,7 +5467,7 @@ function addListenersToLink(a, href, baseUrl) {
         goToArticle(zimUrl, downloadAttrValue, contentType, zimUrlFullEncoding);
         setTimeout(reset, 1400);
     };
-    
+
     a.addEventListener('touchstart', function (e) {
         if (!params.windowOpener || a.touched) return;
         e.stopPropagation();
@@ -5562,12 +5562,12 @@ function displayHiddenBlockElements(win, doc) {
                     'app to decide when to apply the setting. If you never want to see hidden elements, even in Wikimedia ZIMs, change the ' +
                     'setting to <b>never</b>.</p>';
                 }
-                // else if (params.displayHiddenBlockElements === 'auto') {  
+                // else if (params.displayHiddenBlockElements === 'auto') {
                 //     message =  '<p>There is a new <b>auto</b> setting in Configuration to display hidden elements (navigation boxes, series tables) ' +
-                //     "in Wikimedia ZIMs. This is now on by default. If you don't want to see these elements, change the 'Display hidden block elements' " + 
+                //     "in Wikimedia ZIMs. This is now on by default. If you don't want to see these elements, change the 'Display hidden block elements' " +
                 //     "setting to <b>never</b> (under 'Display style').</p>";
                 //     if (params.cssSource !== 'desktop') {
-                //         message += '<p>Please note that hidden elements are <i>always</i> displayed in Desktop style (regardless of the setting)' + 
+                //         message += '<p>Please note that hidden elements are <i>always</i> displayed in Desktop style (regardless of the setting)' +
                 //         (params.cssSource !== 'desktop' ? '. You can switch the display style to Desktop in Configuration' : '') + '.</p>';
                 //     }
                 // }
@@ -5597,7 +5597,7 @@ function setupTableOfContents() {
     var innerDoc = iframe.contentDocument;
     var tableOfContents = new uiUtil.toc(innerDoc);
     var headings = tableOfContents.getHeadingObjects();
-    
+
     dropup.style.fontSize = ~~(params.relativeUIFontSize * 0.14) + "px";
     var dropupHtml = "";
     headings.forEach(function (heading) {
@@ -5655,7 +5655,7 @@ function processSection(open, node) {
     if (/DETAILS|SECTION/.test(node.tagName)) {
         if (open) node.setAttribute('open', '');
         else node.removeAttribute('open');
-        if (typeof HTMLDetailsElement === 'undefined' || node.tagName === 'SECTION') {         
+        if (typeof HTMLDetailsElement === 'undefined' || node.tagName === 'SECTION') {
             var children = node.children;
             for (var y = children.length; y--;) {
                 if (/SUMMARY|H\d/.test(children[y].tagName)) continue;
@@ -5736,7 +5736,7 @@ function loadJavaScriptJQuery() {
 
 /**
  * Changes the URL of the browser page, so that the user might go back to it
- * 
+ *
  * @param {String} title The title of the article to store (if storing an article)
  * @param {String} titleSearch The title of the search (if storing a search)
  */
@@ -5771,7 +5771,7 @@ function pushBrowserHistoryState(title, titleSearch) {
 
 /**
  * Extracts the content of the given article pathname, or a downloadable file, from the ZIM
- * 
+ *
  * @param {String} path The pathname (namespace + filename) to the article or file to be extracted
  * @param {Boolean|String} download A Bolean value that will trigger download of title, or the filename that should
  *     be used to save the file in local FS (in HTML5 spec, a string value for the download attribute is optional)
@@ -5848,7 +5848,7 @@ function goToRandomArticle() {
                 // We fall back to the old A namespace to support old ZIM files without a text/html MIME type for articles
                 // DEV: If minorVersion is 1, then we are using a v1 article-only title listing. By definition,
                 // all dirEntries in an article-only listing must be articles.
-                if (appstate.selectedArchive._file.minorVersion === 1 || /text\/html\b/i.test(dirEntry.getMimetype()) || 
+                if (appstate.selectedArchive._file.minorVersion === 1 || /text\/html\b/i.test(dirEntry.getMimetype()) ||
                     params.zimType !== 'zimit' && dirEntry.namespace === 'A') {
                     params.isLandingPage = false;
                     alertBoxHeader.style.display = 'none';
@@ -5877,7 +5877,7 @@ function goToMainArticle() {
             console.error("Error finding main article.");
             uiUtil.clearSpinner();
             document.getElementById('welcomeText').style.display = '';
-            uiUtil.systemAlert('We cannot find the landing page!<br />' + 
+            uiUtil.systemAlert('We cannot find the landing page!<br />' +
                     'Please check that this ZIM archive is valid. You may be able to search for other pages in the ZIM above.',
                     'Main page not found!');
         } else {
@@ -5891,7 +5891,7 @@ function goToMainArticle() {
                 console.error("The main page of this archive does not seem to be an article");
                 uiUtil.clearSpinner();
                 document.getElementById('welcomeText').style.display = '';
-                uiUtil.systemAlert('The main page of this archive does not seem to be an article!<br />' + 
+                uiUtil.systemAlert('The main page of this archive does not seem to be an article!<br />' +
                     'Please check that this ZIM archive is valid. You may be able to search for other pages in the ZIM above.',
                     'Invalid article!');
             }
