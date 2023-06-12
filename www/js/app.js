@@ -1,22 +1,22 @@
 ﻿/*!
  * app.js : The main Kiwix User Interface implementation
  * This file handles the interaction between the Kiwix JS back end and the user
- * 
+ *
  * Copyright 2013-2023 Mossroy, Jaifroid and contributors
  * License GPL v3:
- * 
+ *
  * This file is part of Kiwix.
- * 
+ *
  * Kiwix is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Kiwix is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
@@ -24,7 +24,7 @@
 'use strict';
 
 // import styles from '../css/app.css' assert { type: "css" };
-// import bootstrap from '../css/bootstrap.min.css' assert { type: "css" }; 
+// import bootstrap from '../css/bootstrap.min.css' assert { type: "css" };
 import $ from './lib/jquery.module.js';
 import zimArchiveLoader from './lib/zimArchiveLoader.js';
 import uiUtil from './lib/uiUtil.js';
@@ -50,7 +50,12 @@ import updater from './lib/updater.js';
  */
 var DELAY_BETWEEN_KEEPALIVE_SERVICEWORKER = 30000;
 
-// Define global state:
+/**
+ * Define global state variables:
+ */
+
+// The global parameter and app state objects are defined in init.js
+/* global params, appstate, nw */
 
 // Placeholders for the article container, the article window and the article DOM
 var articleContainer = document.getElementById('articleContent');
@@ -65,9 +70,9 @@ appstate.selectedArchive = null;
 
 // An object to hold the current search and its state (allows cancellation of search across modules)
 appstate['search'] = {
-    'prefix': '', // A field to hold the original search string
-    'status': '', // The status of the search: ''|'init'|'interim'|'cancelled'|'complete'
-    'type': '' // The type of the search: 'basic'|'full' (set automatically in search algorithm)
+    prefix: '', // A field to hold the original search string
+    status: '', // The status of the search: ''|'init'|'interim'|'cancelled'|'complete'
+    type: '' // The type of the search: 'basic'|'full' (set automatically in search algorithm)
 };
 
 // A parameter to determine the Settings Store API in use (we need to nullify before testing
@@ -93,7 +98,7 @@ if (params.contentInjectionMode === 'serviceworker' && window.nw) {
     // Reset app to jQuery mode because it cannot run in SW mode in Windows XP
     if (nw.process.versions.nw === '0.14.7') setContentInjectionMode('jquery');
 }
-// Make Configuration headings collapsible 
+// Make Configuration headings collapsible
 uiUtil.setupConfigurationToggles();
 
 /**
@@ -105,7 +110,7 @@ function resizeIFrame(reload) {
     var header = document.getElementById('top');
     var iframe = document.getElementById('articleContent');
     var navbarHeight = document.getElementById('navbar').getBoundingClientRect().height;
-    
+
     // Reset any hidden headers and footers and iframe shift
     header.style.zIndex = 1;
     header.style.transform = 'translateY(0)';
@@ -119,7 +124,7 @@ function resizeIFrame(reload) {
         iframe.style.height = document.documentElement.clientHeight + 'px';
     }, 5);
 
-    //Re-enable top-level scrolling
+    // Re-enable top-level scrolling
     scrollbox.style.height = window.innerHeight - navbarHeight + 'px';
 
     if (iframe.style.display !== "none" && document.getElementById("prefix") !== document.activeElement) {
