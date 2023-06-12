@@ -918,7 +918,7 @@ if (window.electronAPI) {
 // Check for GitHub and Electron updates
 var updateCheck = document.getElementById('updateCheck');
 params.isUWPStoreApp = /UWP/.test(params.appType) && Windows.ApplicationModel && Windows.ApplicationModel.Package &&
-    !/Association.Kiwix/.test(Windows.ApplicationModel.Package.current.id.publisher) || electronAPI && electronAPI.isMicrosotStoreApp;
+    !/Association.Kiwix/.test(Windows.ApplicationModel.Package.current.id.publisher) || electronAPI && electronAPI.isMicrosoftStoreApp;
 // If Internet access is allowed, or it's a UWP Store app, or it's HTML5 (i.e., not Electron/NWJS or UWP) ...
 if (params.allowInternetAccess || params.isUWPStoreApp || /HTML5/.test(params.appType)) {
     updateCheck.style.display = 'none'; // ... hide the update check link
