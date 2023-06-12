@@ -33,6 +33,7 @@ $serviceworker = Select-String 'appVersion' "$PSScriptRoot\..\service-worker.js"
 
 $file_tag = ''
 if ($init_params -match 'params\[[''"]appVersion[''"]]\s*=\s*[''"]([^''"]+)') {
+  $file_tag_numeric = $matches[1] -replace '[A-Za-z-]+$', ''
   $file_tag = 'v' + $matches[1] 
 } else {
   "`n*** WARNING: App version is incorrectly set in init.js.`nPlease correct before continuing.`n"
@@ -174,6 +175,19 @@ if ($json_object -imatch '"name":\s"([\w]+-[^"]+)') {
 "Branch: $branch"
 "Release title: $release_title"
 "Package name: $package_name"
+# Check that the numeric part of the tag matches the version set in the app's source code
+if ($numeric_tag -ne $file_tag_numeric) {
+  Write-Host "`nError! The numeric part of the tag you entered [$numeric_tag] does not match the version set in the app's source code [$file_tag_numeric]!" -ForegroundColor Red
+  Write-Host "Please run Set-AppVersion if you wish to change the appversion, and try again.`n" -ForegroundColor Red
+  exit 1
+}
+# Check that the user is on the correct branch for the type of app they wish to build
+$actual_branch = git rev-parse --abbrev-ref HEAD
+if ($branch -ne $actual_branch) {
+  Write-Host "`nError! The branch you are on [$actual_branch] does not match the type of app you wish to build [$branch]!" -ForegroundColor Red
+  Write-Host "Please switch to the correct branch and try again.`n" -ForegroundColor Red
+  exit 1
+}
 
 # Determine type of Electron build if any
 if (($flavour -match '_E') -or $plus_electron) {
