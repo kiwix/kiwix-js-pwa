@@ -138,6 +138,11 @@
     "del-cli": "^5.0.0",
     "electron": "22.3.12",
     "electron-builder": "^24.4.0",
+    "eslint": "^8.42.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^16.0.0",
+    "eslint-plugin-promise": "^6.1.1",
     "rollup": "^3.21.3",
     "rollup-plugin-copy": "^3.4.0",
     "vite": "^4.3.4"
@@ -149,4 +154,3 @@
     "electron-updater": "^6.1.0"
   }
 }
-
