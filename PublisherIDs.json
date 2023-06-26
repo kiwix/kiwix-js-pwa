@@ -4,8 +4,8 @@
             "Microsoft": {
                 "name": "Microsoft Store",
                 "type": "appx",
-                "identityName": "Kiwix.KiwixJS",
-                "displayName": "Kiwix JS",
+                "identityName": "Kiwix.KiwixJSElectron",
+                "displayName": "Kiwix JS Electron",
                 "publisher": "CN=0A5438F5-EEA6-4300-9B77-E45BBD148885",
                 "publisherDisplayName": "Kiwix"
             },

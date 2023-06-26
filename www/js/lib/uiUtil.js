@@ -1,25 +1,29 @@
 ﻿/**
  * uiUtil.js : Utility functions for the User Interface
- * 
+ *
  * Copyright 2013-2020 Mossroy and contributors
  * License GPL v3:
- * 
+ *
  * This file is part of Kiwix.
- * 
+ *
  * Kiwix is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Kiwix is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
+
 'use strict';
+
+/* eslint-disable no-global-assign */
+/* global $, webpMachine, webpHero, params */
 
 import util from './util.js';
 
@@ -277,19 +281,20 @@ function downloadBlobUWP(blob, filename, message) {
 
 /**
  * Derives the URL.pathname from a relative or semi-relative URL using the given base ZIM URL
- * 
+ *
  * @param {String} url The (URI-encoded) URL to convert (e.g. "Einstein", "../Einstein",
  *      "../../I/im%C3%A1gen.png", "-/s/style.css", "/A/Einstein.html", "../static/bootstrap/css/bootstrap.min.css")
  * @param {String} base The base ZIM URL of the currently loaded article (e.g. "A/", "A/subdir1/subdir2/", "C/Singapore/")
  * @returns {String} The derived ZIM URL in decoded form (e.g. "A/Einstein", "I/imágen.png", "C/")
  */
-function deriveZimUrlFromRelativeUrl(url, base) {
+function deriveZimUrlFromRelativeUrl (url, base) {
     // We use a dummy domain because URL API requires a valid URI
     var dummy = 'http://d/';
     var deriveZimUrl = function (url, base) {
         if (typeof URL === 'function') return new URL(url, base);
         // IE11 lacks URL API: workaround adapted from https://stackoverflow.com/a/28183162/9727685
         var d = document.implementation.createHTMLDocument('t');
+        // innerHTML required as string contains HTML tags
         d.head.innerHTML = '<base href="' + base + '">';
         var a = d.createElement('a');
         a.href = url;
@@ -403,7 +408,7 @@ function displayActiveContentWarning(type) {
 /**
  * Displays a Bootstrap alert box at the foot of the page to enable saving the content of the given title to the device's filesystem
  * and initiates download/save process if this is supported by the OS or Browser
- * 
+ *
  * @param {String} title The path and filename to the file to be extracted
  * @param {Boolean|String} download A Bolean value that will trigger download of title, or the filename that should
  *     be used to save the file in local FS
@@ -782,7 +787,7 @@ function showUpgradeReady(ver, type, url) {
  * @param {any} onSuccess A function to call if the image can be loaded
  * @param {any} onError A function to call if the image cannot be loaded
  */
-function checkServerIsAccessible(imageSrc, onSuccess, onError) {
+function checkServerIsAccessible (imageSrc, onSuccess, onError) {
     var image = new Image();
     image.onload = onSuccess;
     image.onerror = onError;
@@ -913,7 +918,7 @@ function remove_event(ev) {
 
 // Reports an error in loading one of the ASM or WASM machines to the UI API Status Panel
 // This can't be done in app.js because the error occurs after the API panel is first displayed
-function reportAssemblerErrorToAPIStatusPanel(decoderType, error, assemblerMachineType) {
+function reportAssemblerErrorToAPIStatusPanel (decoderType, error, assemblerMachineType) {
     console.error('Could not instantiate any ' + decoderType + ' decoder!', error);
     params.decompressorAPI.assemblerMachineType = assemblerMachineType;
     params.decompressorAPI.errorStatus = 'Error loading ' + decoderType + ' decompressor!';
@@ -924,11 +929,11 @@ function reportAssemblerErrorToAPIStatusPanel(decoderType, error, assemblerMachi
 }
 
 // Reports the search provider to the API Status Panel
-function reportSearchProviderToAPIStatusPanel(provider) {
+function reportSearchProviderToAPIStatusPanel (provider) {
     var providerAPI = document.getElementById('searchProviderStatus');
     if (providerAPI) { // NB we need this so that tests don't fail
-        providerAPI.textContent = 'Search Provider: ' + (/^fulltext/.test(provider) ? 'Title + Xapian [' + provider + ']' :
-            /^title/.test(provider) ? 'Title only [' + provider + ']' : 'Not initialized');
+        providerAPI.textContent = 'Search Provider: ' + (/^fulltext/.test(provider) ? 'Title + Xapian [' + provider + ']'
+            : /^title/.test(provider) ? 'Title only [' + provider + ']' : 'Not initialized');
         providerAPI.className = /^fulltext/.test(provider) ? 'apiAvailable' : !/ERROR/.test(provider) ? 'apiUnavailable' : 'apiBroken';
     }
 }
@@ -1147,7 +1152,7 @@ function lockDisplayOrientation(val) {
  * @param {Element} element The element to test
  * @returns {Element} closest enclosing anchor tag (if any)
  */
-function closestAnchorEnclosingElement(element) {
+function closestAnchorEnclosingElement (element) {
     if (Element.prototype.closest) {
         // Recent browsers support that natively. See https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
         return element.closest('a,area');

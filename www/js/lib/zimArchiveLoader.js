@@ -19,7 +19,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
+
 'use strict';
+
 import zimArchive from './zimArchive.js';
 import jQuery from './jquery.module.js';
 
@@ -31,7 +33,7 @@ import jQuery from './jquery.module.js';
  * @param {callbackZIMArchive} callbackError
  * @returns {ZIMArchive}
  */
-function loadArchiveFromDeviceStorage(storage, path, callbackReady, callbackError) {
+function loadArchiveFromDeviceStorage (storage, path, callbackReady, callbackError) {
     return new zimArchive.ZIMArchive(storage, path, callbackReady, callbackError);
 }
 /**
@@ -41,7 +43,7 @@ function loadArchiveFromDeviceStorage(storage, path, callbackReady, callbackErro
  * @param {callbackZIMArchive} callbackError
  * @returns {ZIMArchive}
  */
-function loadArchiveFromFiles(files, callbackReady, callbackError) {
+function loadArchiveFromFiles (files, callbackReady, callbackError) {
     if (files.length >= 1) {
         return new zimArchive.ZIMArchive(files, null, callbackReady, callbackError);
     }
@@ -52,7 +54,6 @@ function loadArchiveFromFiles(files, callbackReady, callbackError) {
  * @param {Array.<String>} directoryList List of directories
  */
 
-
 /**
  *  Scans the DeviceStorage for archives
  *
@@ -60,23 +61,23 @@ function loadArchiveFromFiles(files, callbackReady, callbackError) {
  * @param {callbackPathList} callbackFunction Function to call with the list of directories where archives are found
  * @param {callbackPathList} callbackError Function to call in case of an error
  */
-function scanForArchives(storages, callbackFunction, callbackError) {
+function scanForArchives (storages, callbackFunction, callbackError) {
     var directories = [];
-    var promises = jQuery.map(storages, function(storage) {
+    var promises = jQuery.map(storages, function (storage) {
         return storage.scanForArchives()
-            .then(function(dirs) {
+            .then(function (dirs) {
                 jQuery.merge(directories, dirs);
                 return true;
             });
     });
-    jQuery.when.apply(null, promises).then(function() {
+    jQuery.when.apply(null, promises).then(function () {
         callbackFunction(directories);
     }).catch(function (error) {
-        callbackError("Error scanning your device storage : " + error
-                + ". If you're using the Firefox OS Simulator, please put the archives in "
-                + "a 'fake-sdcard' directory inside your Firefox profile "
-                + "(ex : ~/.mozilla/firefox/xxxx.default/extensions/fxos_2_x_simulator@mozilla.org/"
-        + "profile/fake-sdcard/wikipedia_en_ray_charles_2015-06.zim)", "Error reading Device Storage");
+        callbackError('Error scanning your device storage : ' + error +
+        ". If you're using the Firefox OS Simulator, please put the archives in " +
+        "a 'fake-sdcard' directory inside your Firefox profile " +
+        '(ex : ~/.mozilla/firefox/xxxx.default/extensions/fxos_2_x_simulator@mozilla.org/' +
+        'profile/fake-sdcard/wikipedia_en_ray_charles_2015-06.zim)', 'Error reading Device Storage');
     });
 }
 

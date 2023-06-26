@@ -1,5 +1,7 @@
 ﻿'use strict';
 
+/* global define, params */
+
 import cache from './cache.js';
 import uiUtil from './uiUtil.js';
 

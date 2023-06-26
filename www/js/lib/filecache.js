@@ -21,29 +21,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Kiwix JS (file LICENSE).  If not, see <http://www.gnu.org/licenses/>
  */
-/**
- * filecache.js: Generic cache for small, frequently read file slices.
- * It discards cached blocks according to a least-recently-used algorithm.
- * It is used primarily for fast Directory Entry lookup, speeding up binary search.
- *
- * Copyright 2020 Mossroy, peter-x, jaifroid and contributors
- * License GPL v3:
- *
- * This file is part of Kiwix.
- *
- * Kiwix JS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Kiwix JS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Kiwix JS (file LICENSE).  If not, see <http://www.gnu.org/licenses/>
- */
+
 'use strict';
 
 const MAX_CACHE_SIZE = 4000;
@@ -58,7 +36,7 @@ const BLOCK_SIZE = 4096;
 /**
  * A Block Cache employing a Least Recently Used caching strategy
  * @typedef {Object} BlockCache
- * @property {Number} capacity The maximum number of entries in the cache 
+ * @property {Number} capacity The maximum number of entries in the cache
  * @property {Map} cache A map to store the cache keys and data
  */
 
@@ -66,7 +44,7 @@ const BLOCK_SIZE = 4096;
  * Creates a new cache with max size limit of MAX_CACHE_SIZE blocks
  * LRUCache implemnentation with Map adapted from https://markmurray.co/blog/lru-cache/
  */
-function LRUCache() {
+function LRUCache () {
     /** CACHE TUNING **/
     // console.log('Creating cache of size ' + MAX_CACHE_SIZE + ' * ' + BLOCK_SIZE + ' bytes');
     // Initialize persistent Cache properties
@@ -78,7 +56,7 @@ function LRUCache() {
  * Tries to retrieve an element by its id. If it is not present in the cache, returns undefined; if it is present,
  * then the value is returned and the entry is moved to the bottom of the cache
  * @param {String} key The block cache entry key (file.id + ':' + byte offset)
- * @returns {Uint8Array | undefined} The requested cache data or undefined 
+ * @returns {Uint8Array | undefined} The requested cache data or undefined
  */
 LRUCache.prototype.get = function (key) {
     var entry = this.cache.get(key);
@@ -94,7 +72,7 @@ LRUCache.prototype.get = function (key) {
 /**
  * Stores a value in the cache by id and prunes the least recently used entry if the cache is larger than MAX_CACHE_SIZE
  * @param {String} key The key under which to store the value (file.id + ':' + byte offset from start of ZIM archive)
- * @param {Uint8Array} value The value to store in the cache 
+ * @param {Uint8Array} value The value to store in the cache
  */
 LRUCache.prototype.store = function (key, value) {
     // We get the existing entry's object for memory-management purposes; if it exists, it will contain identical data
@@ -106,7 +84,7 @@ LRUCache.prototype.store = function (key, value) {
     if (entry) this.cache.delete(key);
     else entry = value;
     this.cache.set(key, entry);
-    // If we've exceeded the cache capacity, then delete the least recently accessed value, 
+    // If we've exceeded the cache capacity, then delete the least recently accessed value,
     // which will be the item at the top of the Map, i.e the first position
     if (this.cache.size > this.capacity) {
         if (this.cache.keys) {
@@ -144,7 +122,7 @@ var cache = new LRUCache();
  * @param {Object} file The requested ZIM archive to read from
  * @param {Number} begin The byte from which to start reading
  * @param {Number} end The byte at which to stop reading (end will not be read)
- * @return {Promise<Uint8Array>} A Promise that resolves to the correctly concatenated data from the cache 
+ * @return {Promise<Uint8Array>} A Promise that resolves to the correctly concatenated data from the cache
  *     or from the ZIM archive
  */
 var read = function (file, begin, end) {
@@ -160,7 +138,7 @@ var read = function (file, begin, end) {
             // Data not in cache, so read from archive
             /** CACHE TUNING **/
             // misses++;
-            // DEV: This is a self-calling function, i.e. the function is called with an argument of <id> which then 
+            // DEV: This is a self-calling function, i.e. the function is called with an argument of <id> which then
             // becomes the <offset> parameter
             readRequests.push(function (offset) {
                 return file._readSplitSlice(offset, offset + BLOCK_SIZE).then(function (result) {
@@ -176,7 +154,7 @@ var read = function (file, begin, end) {
     }
     /** CACHE TUNING **/
     // if (misses + hits > 2000) {
-    //     console.log('** Block cache hit rate: ' + Math.round(hits / (hits + misses) * 1000) / 10 + '% [ hits:' + hits + 
+    //     console.log('** Block cache hit rate: ' + Math.round(hits / (hits + misses) * 1000) / 10 + '% [ hits:' + hits +
     //         ' / misses:' + misses + ' ] Size: ' + cache.cache.size);
     //     hits = 0;
     //     misses = 0;

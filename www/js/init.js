@@ -1,25 +1,26 @@
 ﻿/*!
  * init.js : Configuration for the app
  * This file sets the app's main parameters and variables
- * 
+ *
  * Copyright 2013-2023 Mossroy, Jaifroid and contributors
  * License GPL v3:
- * 
+ *
  * This file is part of Kiwix.
- * 
+ *
  * Kiwix is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Kiwix is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
+
 'use strict';
 
 // Set a global error handler to prevent app crashes
@@ -37,7 +38,7 @@ var assetsCache = new Map();
 /**
  * A global parameter object for storing variables that need to be remembered between page loads,
  * or across different functions and modules
- * 
+ *
  * @type Object
  */
 var params = {};

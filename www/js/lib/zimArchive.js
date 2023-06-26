@@ -19,28 +19,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
-/**
- * zimArchive.js: Support for archives in ZIM format.
- *
- * Copyright 2015 Mossroy and contributors
- * License GPL v3:
- *
- * This file is part of Kiwix.
- *
- * Kiwix is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Kiwix is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
- */
+
 'use strict';
+
+/* global params */
+
 import zimfile from './zimfile.js';
 import zimDirEntry from './zimDirEntry.js';
 import transformZimit from './transformZimit.js';
@@ -50,8 +33,8 @@ import utf8 from './utf8.js';
 
 /**
  * ZIM Archive
- * 
- * 
+ *
+ *
  * @typedef ZIMArchive
  * @property {ZIMFile} _file The ZIM file (instance of ZIMFile, that might physically be split into several actual files)
  * @property {String} _language Language of the content
@@ -75,16 +58,16 @@ var LZ;
 /**
  * Creates a ZIM archive object to access the ZIM file at the given path in the given storage.
  * This constructor can also be used with a single File parameter.
- * 
+ *
  * @param {StorageFirefoxOS|Array<Blob>} storage Storage (in this case, the path must be given) or Array of Files (path parameter must be omitted)
  * @param {String} path The Storage path for an OS that requires this to be specified
  * @param {callbackZIMArchive} callbackReady The function to call when the archive is ready to use
  * @param {callbackZIMArchive} callbackError The function to call when an error occurs
  */
-function ZIMArchive(storage, path, callbackReady, callbackError) {
+function ZIMArchive (storage, path, callbackReady, callbackError) {
     var that = this;
     that._file = null;
-    that._language = ""; //@TODO
+    that._language = ''; // @TODO
     var createZimfile = function (fileArray) {
         zimfile.fromFileArray(fileArray).then(function (file) {
             that._file = file;
@@ -124,7 +107,7 @@ function ZIMArchive(storage, path, callbackReady, callbackError) {
                     var libzimReaderType = params.debugLibzimASM || ('WebAssembly' in self ? 'wasm' : 'asm');
                     console.log('Instantiating libzim ' + libzimReaderType + ' Web Worker...');
                     LZ = new Worker('js/lib/libzim-' + libzimReaderType + '.js');
-                    that.callLibzimWorker({action: "init", files: that._file._files}).then(function (msg) {
+                    that.callLibzimWorker({ action: 'init', files: that._file._files }).then(function (msg) {
                         // console.debug(msg);
                         params.searchProvider = 'fulltext: ' + libzimReaderType;
                         // Update the API panel
@@ -169,13 +152,13 @@ function ZIMArchive(storage, path, callbackReady, callbackError) {
             that._searchArchiveParts(storage, path.slice(0, -2)).then(function (fileArray) {
                 createZimfile(fileArray);
             }).catch(function (error) {
-                callbackError("Error reading files in split archive " + path + ": " + error, "Error reading archive files");
+                callbackError('Error reading files in split archive ' + path + ': ' + error, 'Error reading archive files');
             });
         } else {
             storage.get(path).then(function (file) {
                 createZimfile([file]);
             }).catch(function (error) {
-                callbackError("Error reading ZIM file " + path + " : " + error, "Error reading archive file");
+                callbackError('Error reading ZIM file ' + path + ' : ' + error, 'Error reading archive file');
             });
         }
     }
@@ -187,15 +170,16 @@ function ZIMArchive(storage, path, callbackReady, callbackError) {
  * @param {String} prefixPath path to the split files, missing the "aa" / "ab" / ... suffix.
  * @returns {Promise} that resolves to the array of file objects found.
  */
-ZIMArchive.prototype._searchArchiveParts = function(storage, prefixPath) {
+ZIMArchive.prototype._searchArchiveParts = function (storage, prefixPath) {
     var fileArray = [];
-    var nextFile = function(part) {
+    var nextFile = function (part) {
         var suffix = String.fromCharCode(0x61 + Math.floor(part / 26)) + String.fromCharCode(0x61 + part % 26);
         return storage.get(prefixPath + suffix)
-            .then(function(file) {
+            .then(function (file) {
                 fileArray.push(file);
                 return nextFile(part + 1);
-            }, function(error) {
+            }, function (error) {
+                console.error('Error reading split archive file ' + prefixPath + suffix + ': ', error);
                 return fileArray;
             });
     };
@@ -203,10 +187,10 @@ ZIMArchive.prototype._searchArchiveParts = function(storage, prefixPath) {
 };
 
 /**
- * 
+ *
  * @returns {Boolean}
  */
-ZIMArchive.prototype.isReady = function() {
+ZIMArchive.prototype.isReady = function () {
     return this._file !== null;
 };
 
@@ -216,18 +200,18 @@ ZIMArchive.prototype.isReady = function() {
  * @returns {String} Either 'zimit' for a Zimit archive, or 'open' for an OpenZIM archive
  */
 ZIMArchive.prototype.setZimType = function () {
-   var fileType = null;
-   if (this.isReady()) {
-       fileType = 'open';
-       this._file.mimeTypes.forEach(function (v) {
-           if (/warc-headers/i.test(v)) fileType = 'zimit';
-       });
-       this._file.zimType = fileType;
-       console.debug('Archive type set to: ' + fileType);
-   } else {
-       console.error('ZIMArchive is not ready! Cannot set ZIM type.');
-   }
-   return fileType;
+    var fileType = null;
+    if (this.isReady()) {
+        fileType = 'open';
+        this._file.mimeTypes.forEach(function (v) {
+            if (/warc-headers/i.test(v)) fileType = 'zimit';
+        });
+        this._file.zimType = fileType;
+        console.debug('Archive type set to: ' + fileType);
+    } else {
+        console.error('ZIMArchive is not ready! Cannot set ZIM type.');
+    }
+    return fileType;
 };
 
 /**
@@ -235,7 +219,7 @@ ZIMArchive.prototype.setZimType = function () {
  * @param {callbackDirEntry} callback
  * @returns {Promise} that resolves to the DirEntry
  */
-ZIMArchive.prototype.getMainPageDirEntry = function(callback) {
+ZIMArchive.prototype.getMainPageDirEntry = function (callback) {
     if (this.isReady()) {
         var mainPageUrlIndex = this._file.mainPage;
         var that = this;
@@ -248,11 +232,11 @@ ZIMArchive.prototype.getMainPageDirEntry = function(callback) {
 };
 
 /**
- * 
+ *
  * @param {String} dirEntryId
  * @returns {DirEntry}
  */
-ZIMArchive.prototype.parseDirEntryId = function(dirEntryId) {
+ZIMArchive.prototype.parseDirEntryId = function (dirEntryId) {
     return zimDirEntry.DirEntry.fromStringId(this._file, dirEntryId);
 };
 
@@ -267,7 +251,7 @@ ZIMArchive.prototype.parseDirEntryId = function(dirEntryId) {
  * So, as workaround, we try several variants of the prefix to find more results.
  * This should be enhanced when the ZIM format will be modified to store normalized titles
  * See https://phabricator.wikimedia.org/T108536
- * 
+ *
  * @param {Object} search The current appstate.search object
  * @param {callbackDirEntryList} callback The function to call with the result
  * @param {Boolean} noInterim A flag to prevent callback until all results are ready (used in testing)
@@ -353,7 +337,7 @@ ZIMArchive.prototype.findDirEntriesWithPrefix = function (search, callback, noIn
             )
         )
     );
-    function searchNextVariant() {
+    function searchNextVariant () {
         // If user has initiated a new search, cancel this one
         if (search.status === 'cancelled') return callback([], search);
         var remaining = search.size - dirEntries.length;
@@ -419,14 +403,14 @@ ZIMArchive.prototype.findDirEntriesWithPrefix = function (search, callback, noIn
  * version 0) there are a number of content namespaces, but the primary one in which to search for titles is 'A'. In new-format
  * ZIMs (minor version 1) there is a single content namespace 'C'. See https://openzim.org/wiki/ZIM_file_format. This method
  * throws an error if it cannot determine the namespace or if the ZIM is not ready.
- * @returns {String} The content namespace for the ZIM archive 
+ * @returns {String} The content namespace for the ZIM archive
  */
 ZIMArchive.prototype.getContentNamespace = function () {
     var errorText;
     if (this.isReady()) {
         var ver = this._file.minorVersion;
         // DEV: There are currently only two defined values for minorVersion in the OpenZIM specification
-        // If this changes, adapt the error checking and return values 
+        // If this changes, adapt the error checking and return values
         if (ver > 1) {
             errorText = 'Unknown ZIM minor version!';
         } else {
@@ -440,13 +424,13 @@ ZIMArchive.prototype.getContentNamespace = function () {
 
 /**
  * Look for dirEntries with title starting with the given prefix (case-sensitive)
- * 
+ *
  * @param {String} prefix The case-sensitive value against which dirEntry titles (or url) will be compared
  * @param {Object} search The appstate.search object (for comparison, so that we can cancel long binary searches)
  * @param {callbackDirEntryList} callback The function to call with the array of dirEntries with titles that begin with prefix
  * @param {Integer} startIndex The index number with which to commence the search, or null
  */
-ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function(prefix, search, callback, startIndex) {
+ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function (prefix, search, callback, startIndex) {
     // Save the value of startIndex because value of null has a special meaning in combination with prefix: 
     // produces a list of matches starting with first match and then next x dirEntries thereafter
     var saveStartIndex = startIndex;
@@ -485,22 +469,22 @@ ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function(prefix, se
                 return prefix <= (ns + '/' + ti) ? -1 : 1;
             }
         });
-    }, true).then(function(firstIndex) {
+    }, true).then(function (firstIndex) {
         var vDirEntries = [];
         var addDirEntries = function(index, lastTitle) {
             if (search.status === 'cancelled' || search.found >= search.size || index >= articleCount
             || lastTitle && !~lastTitle.indexOf(prefix) || index - firstIndex >= search.window) {
                 // DEV: Diagnostics to be removed before merge
                 if (vDirEntries.length) {
-                    console.debug('Scanned ' + (index - firstIndex) + ' titles for "' + prefix + 
+                    console.debug('Scanned ' + (index - firstIndex) + ' titles for "' + prefix +
                         '" (found ' + vDirEntries.length + ' match' + (vDirEntries.length === 1 ? ')' : 'es)'));
                 }
                 return {
-                    'dirEntries': vDirEntries,
-                    'nextStart': index
+                    dirEntries: vDirEntries,
+                    nextStart: index
                 };
             }
-            return searchFunction(index).then(function(dirEntry) {
+            return searchFunction(index).then(function (dirEntry) {
                 search.scanCount++;
                 var title = dirEntry.getTitleOrUrl();
                 // If we are searching by URL, display namespace also
@@ -530,7 +514,7 @@ ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function(prefix, se
 
 /**
  * Find Directory Entries corresponding to the requested search using Full Text search provided by libzim
- * 
+ *
  * @param {Object} search The appstate.search object
  * @param {Array} dirEntries The array of already found Directory Entries
  * @param {Integer} number Optional positive number of search results requested (otherwise params.maxSearchResults will be used)
@@ -568,23 +552,23 @@ ZIMArchive.prototype.findDirEntriesFromFullTextSearch = function (search, dirEnt
                 for (var l = 0; l < fullTextDirEntries.length; l++) {
                     dirEntries.push(fullTextDirEntries[l]);
                 }
-                return(dirEntries);
+                return dirEntries;
             });
         } else {
-            return(dirEntries);
+            return dirEntries;
         }
     });
 };
 
 /**
  * Calls the libzim Web Worker with the given parameters, and returns a Promise with its response
- * 
+ *
  * @param {Object} parameters
  * @returns {Promise}
  */
 ZIMArchive.prototype.callLibzimWorker = function (parameters) {
     return new Promise(function (resolve, reject) {
-        console.debug("Calling libzim WebWorker with parameters", parameters);
+        console.debug('Calling libzim WebWorker with parameters', parameters);
         var tmpMessageChannel = new MessageChannel();
         // var t0 = performance.now();
         tmpMessageChannel.port1.onmessage = function (event) {
@@ -609,7 +593,7 @@ ZIMArchive.prototype.callLibzimWorker = function (parameters) {
  */
 
 /**
- * 
+ *
  * @param {DirEntry} dirEntry
  * @param {callbackDirEntry} callback
  */
@@ -627,7 +611,7 @@ ZIMArchive.prototype.resolveRedirect = function(dirEntry, callback) {
  */
 
 /**
- * 
+ *
  * @param {DirEntry} dirEntry
  * @param {callbackStringContent} callback
  */
@@ -737,12 +721,13 @@ ZIMArchive.prototype.getDirEntryByPath = function(path, zimitResolving, original
     return util.binarySearch(0, this._file.entryCount, function(i) {
         return that._file.dirEntryByUrlIndex(i).then(function(dirEntry) {
             var url = dirEntry.namespace + "/" + dirEntry.url;
-            if (path < url)
+            if (path < url) {
                 return -1;
-            else if (path > url)
+            } else if (path > url) {
                 return 1;
-            else
+            } else {
                 return 0;
+            }
         });
     }).then(function (index) {
         if (index === null) return null;
@@ -826,7 +811,7 @@ function fuzzySearch(path, search) {
  * 
  * @param {callbackDirEntry} callback
  */
-ZIMArchive.prototype.getRandomDirEntry = function(callback) {
+ZIMArchive.prototype.getRandomDirEntry = function (callback) {
     // Prefer an article-only (v1) title pointer list, if available
     var articleCount = this._file.articleCount || this._file.entryCount;
     var index = Math.floor(Math.random() * articleCount);
@@ -840,9 +825,9 @@ ZIMArchive.prototype.getRandomDirEntry = function(callback) {
  */
 ZIMArchive.prototype.getMetadata = function (key, callback) {
     var that = this;
-    this.getDirEntryByPath("M/" + key).then(function (dirEntry) {
+    this.getDirEntryByPath('M/' + key).then(function (dirEntry) {
         if (dirEntry === null || dirEntry === undefined) {
-            console.warn("Title M/" + key + " not found in the archive");
+            console.warn('Title M/' + key + ' not found in the archive');
             callback();
         } else {
             that.readUtf8File(dirEntry, function (dirEntryRead, data) {
@@ -850,7 +835,7 @@ ZIMArchive.prototype.getMetadata = function (key, callback) {
             });
         }
     }).catch(function (e) {
-        console.warn("Metadata with key " + key + " not found in the archive", e);
+        console.warn('Metadata with key ' + key + ' not found in the archive', e);
         callback();
     });
 };

@@ -1,7 +1,7 @@
 ﻿/**
  * zstddec_wrapper.js: Javascript wrapper around compiled zstd decompressor.
  *
- * Copyright 2020 Jaifroid, Mossroy and contributors
+ * Copyright 2023 Jaifroid, Mossroy and contributors
  * License GPL v3:
  *
  * This file is part of Kiwix.
@@ -19,7 +19,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
+
 'use strict';
+
+/* global params, ZD */
+/* eslint-disable no-multi-spaces */
 
 import uiUtil from './uiUtil.js';
 import ZDASM from './zstddec-asm.js';
