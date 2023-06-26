@@ -23,7 +23,7 @@
 'use strict';
 
 /* eslint-disable no-global-assign */
-/* global $, webpMachine, webpHero, params */
+/* global webpMachine, , params, appstate, Windows */
 
 import util from './util.js';
 
@@ -35,9 +35,9 @@ var itemsCount = false;
 /**
  * Creates either a blob: or data: URI from the given content
  * The given attribute of the DOM node (nodeAttribute) is then set to this URI
- * 
+ *
  * This is used to inject images (and other dependencies) into the article DOM
- * 
+ *
  * @param {Object} node The node to which the URI should be added
  * @param {String} nodeAttribute The attribute to set to the URI
  * @param {Uint8Array} content The binary content to convert to a URI
@@ -45,7 +45,7 @@ var itemsCount = false;
  * @param {Boolean} makeDataURI If true, make a data: URI instead of a blob URL
  * @param {Function} callback An optional function to call with the URI
  */
-function feedNodeWithBlob(node, nodeAttribute, content, mimeType, makeDataURI, callback) {
+function feedNodeWithBlob (node, nodeAttribute, content, mimeType, makeDataURI, callback) {
     // Decode WebP data if the browser does not support WebP and the mimeType is webp
     if (webpMachine && /image\/webp/i.test(mimeType)) {
         // If we're dealing with a dataURI, first convert to Uint8Array (polyfill cannot read data URIs)
@@ -93,13 +93,13 @@ function feedNodeWithBlob(node, nodeAttribute, content, mimeType, makeDataURI, c
         }
     }
 }
-    
+
 /**
  * Removes parameters and anchors from a URL
  * @param {type} url The URL to be processed
  * @returns {String} The same URL without its parameters and anchors
  */
-function removeUrlParameters(url) {
+function removeUrlParameters (url) {
     // Remove any querystring
     var strippedUrl = url.replace(/\?[^?]*$/, '');
     // Remove any anchor parameters - note that we are deliberately excluding entity references, e.g. '&#39;'.
@@ -109,7 +109,7 @@ function removeUrlParameters(url) {
 
 // Transforms an asset (script or link) element string into a usable element containing the given content or a BLOB
 // reference to the content
-function createNewAssetElement(assetElement, attribute, content) {
+function createNewAssetElement (assetElement, attribute, content) {
     var tag = assetElement.match(/^<([^\s]+)/)[1];
     var regexpMatchAttr = new RegExp(attribute + '=["\']\\s*([^"\'\\s]+)');
     var attrUri = assetElement.match(regexpMatchAttr);
@@ -120,10 +120,10 @@ function createNewAssetElement(assetElement, attribute, content) {
     if (tag === 'link') {
         // We use inline style replacements in this case for compatibility with FFOS
         // If FFOS is no longer supported, we could use the more generic BLOB replacement below
-        mimetype = mimetype ? mimetype : 'text/css';
+        mimetype = mimetype || 'text/css';
         newAsset = '<style data-kiwixsrc="' + attrUri + '" type="' + mimetype + '">' + content + '</style>';
     } else {
-        mimetype = mimetype ? mimetype : tag === 'script' ? 'text/javascript' : '';
+        mimetype = mimetype || (tag === 'script' ? 'text/javascript' : '');
         var assetBlob = new Blob([content], { type: mimetype });
         var assetUri = URL.createObjectURL(assetBlob);
         var refAttribute = tag === 'script' ? 'src' : 'href';
@@ -134,9 +134,9 @@ function createNewAssetElement(assetElement, attribute, content) {
     return newAsset;
 }
 
-function TableOfContents(articleDoc) {
+function TableOfContents (articleDoc) {
     this.doc = articleDoc;
-    this.headings = this.doc.querySelectorAll("h1, h2, h3, h4, h5, h6");
+    this.headings = this.doc.querySelectorAll('h1, h2, h3, h4, h5, h6');
 
     this.getHeadingObjects = function () {
         var headings = [];
@@ -145,7 +145,7 @@ function TableOfContents(articleDoc) {
             var obj = {};
             obj.id = element.id;
             var objectId = element.innerHTML.match(/\bid\s*=\s*["']\s*([^"']+?)\s*["']/i);
-            obj.id = obj.id ? obj.id : objectId && objectId.length > 1 ? objectId[1] : "";
+            obj.id = obj.id ? obj.id : objectId && objectId.length > 1 ? objectId[1] : '';
             obj.index = i;
             obj.textContent = element.textContent;
             obj.tagName = element.tagName;
@@ -155,18 +155,18 @@ function TableOfContents(articleDoc) {
     };
 }
 
-function makeReturnLink(title) {
-    //Abbreviate title if necessary
+function makeReturnLink (title) {
+    // Abbreviate title if necessary
     var shortTitle = title.substring(0, 25);
-    shortTitle = shortTitle == title ? shortTitle : shortTitle + "..."; 
+    shortTitle = shortTitle === title ? shortTitle : shortTitle + '...';
     var link = '<h4 style="font-size:' + ~~(params.relativeUIFontSize * 1.4 * 0.14) + 'px;"><a href="#">&lt;&lt; Return to ' + shortTitle + '</a></h4>';
-    var returnDivs = document.getElementsByClassName("returntoArticle");
+    var returnDivs = document.getElementsByClassName('returntoArticle');
     for (var i = 0; i < returnDivs.length; i++) {
         returnDivs[i].innerHTML = link;
     }
 }
 
-function pollSpinner(msg, noTimeout) {
+function pollSpinner (msg, noTimeout) {
     msg = msg || '';
     document.getElementById('searchingArticles').style.display = 'block';
     var cachingAssets = document.getElementById('cachingAssets');
@@ -178,19 +178,19 @@ function pollSpinner(msg, noTimeout) {
     if (!noTimeout) setTimeout(clearSpinner, 3000);
 }
 
-function clearSpinner() {
+function clearSpinner () {
     document.getElementById('searchingArticles').style.display = 'none';
     var cachingAssets = document.getElementById('cachingAssets');
     cachingAssets.innerHTML = '';
     cachingAssets.style.display = 'none';
 }
 
-function printCustomElements() {
-    //var innerDocument = window.frames[0].frameElement.contentDocument;
+function printCustomElements () {
+    // var innerDocument = window.frames[0].frameElement.contentDocument;
     var innerDocument = document.getElementById('articleContent').contentDocument;
     // For now, adding a printing stylesheet to a zimit ZIM appears to diasble printing of any images!
     if (appstate.wikimediaZimLoaded) {
-        //Add any missing classes
+        // Add any missing classes
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(class\s*=\s*["'][^"']*vcard\b[^>]+>\s*<span)>/ig, '$1 class="map-pin">');
         // Remove encapsulated External Links
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/(<details\b(?![^>]"externalLinks"))((?:[^<]|<(?!\/details>))+?['"]external_links['"])/i, '$1 class="externalLinks" $2');
@@ -210,24 +210,24 @@ function printCustomElements() {
         // Remove openInTab div (we can't do this using DOM methods because it aborts code spawned from onclick event)
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<div\s(?=[^<]+?openInTab)(?:[^<]|<(?!\/div>))+<\/div>\s*/, '');
         // Add an @media print conditional stylesheet
-        var printOptions = innerDocument.getElementById("printOptions");
-        //If there is no printOptions style block in the iframe, create it
+        var printOptions = innerDocument.getElementById('printOptions');
+        // If there is no printOptions style block in the iframe, create it
         if (!printOptions) {
-            var printStyle = innerDocument.createElement("style");
-            printStyle.id = "printOptions";
+            var printStyle = innerDocument.createElement('style');
+            printStyle.id = 'printOptions';
             innerDocument.head.appendChild(printStyle);
-            printOptions = innerDocument.getElementById("printOptions");
+            printOptions = innerDocument.getElementById('printOptions');
         }
-        var printStyleInnerHTML = "@media print { ";
-        printStyleInnerHTML += document.getElementById("printNavBoxCheck").checked ? "" : ".navbox, .vertical-navbox { display: none; } ";
-        printStyleInnerHTML += document.getElementById("printEndNoteCheck").checked ? "" : ".reflist, div[class*=references], .zimReferences, .zimSources { display: none; } ";
-        printStyleInnerHTML += document.getElementById("externalLinkCheck").checked ? "" : ".externalLinks, .furtherReading { display: none; } ";
-        printStyleInnerHTML += document.getElementById("seeAlsoLinkCheck").checked ? "" : ".seeAlso { display: none; } ";
-        printStyleInnerHTML += document.getElementById("printInfoboxCheck").checked ? "" : ".mw-stack, .infobox, .infobox_v2, .infobox_v3, .qbRight, .qbRightDiv, .wv-quickbar, .wikitable { display: none; } ";
+        var printStyleInnerHTML = '@media print { ';
+        printStyleInnerHTML += document.getElementById('printNavBoxCheck').checked ? '' : '.navbox, .vertical-navbox { display: none; } ';
+        printStyleInnerHTML += document.getElementById('printEndNoteCheck').checked ? '' : '.reflist, div[class*=references], .zimReferences, .zimSources { display: none; } ';
+        printStyleInnerHTML += document.getElementById('externalLinkCheck').checked ? '' : '.externalLinks, .furtherReading { display: none; } ';
+        printStyleInnerHTML += document.getElementById('seeAlsoLinkCheck').checked ? '' : '.seeAlso { display: none; } ';
+        printStyleInnerHTML += document.getElementById('printInfoboxCheck').checked ? '' : '.mw-stack, .infobox, .infobox_v2, .infobox_v3, .qbRight, .qbRightDiv, .wv-quickbar, .wikitable { display: none; } ';
         // printStyleInnerHTML += document.getElementById("printImageCheck").checked ? "" : "img, .gallery { display: none; } ";
-        printStyleInnerHTML += ".copyLeft { display: none } ";
-        printStyleInnerHTML += ".map-pin { display: none } ";
-        printStyleInnerHTML += ".external { padding-right: 0 !important } ";
+        printStyleInnerHTML += '.copyLeft { display: none } ';
+        printStyleInnerHTML += '.map-pin { display: none } ';
+        printStyleInnerHTML += '.external { padding-right: 0 !important } ';
     }
     // Using @media print on images doesn't get rid of them all, so use brute force
     if (!document.getElementById('printImageCheck').checked) {
@@ -236,47 +236,49 @@ function printCustomElements() {
         // Remove any breakout link
         innerDocument.body.innerHTML = innerDocument.body.innerHTML.replace(/<img\b[^>]+id="breakoutLink"[^>]*>\s*/, '');
     }
-    var sliderVal = document.getElementById("documentZoomSlider").value;
+    var sliderVal = document.getElementById('documentZoomSlider').value;
     sliderVal = ~~sliderVal;
     sliderVal = Math.floor(sliderVal * (Math.max(window.screen.width, window.screen.height) / 1440));
     if (appstate.wikimediaZimLoaded) {
-        printStyleInnerHTML += "body { font-size: " + sliderVal + "% !important; } ";
-        printStyleInnerHTML += "}";
+        printStyleInnerHTML += 'body { font-size: ' + sliderVal + '% !important; } ';
+        printStyleInnerHTML += '}';
         printOptions.innerHTML = printStyleInnerHTML;
     } else {
         innerDocument.body.style.setProperty('font-size', sliderVal + '%', 'important');
     }
 }
 
-function downloadBlobUWP(blob, filename, message) {
+function downloadBlobUWP (blob, filename, message) {
     // Copy BLOB to downloads folder and launch from there in Edge
     // First create an empty file in the folder
     Windows.Storage.DownloadsFolder.createFileAsync(filename, Windows.Storage.CreationCollisionOption.generateUniqueName)
-    .then(function (file) {
+        .then(function (file) {
         // Open the returned dummy file in order to copy the data into it
-        file.openAsync(Windows.Storage.FileAccessMode.readWrite).then(function (output) {
-            // Get the InputStream stream from the blob object 
-            var input = blob.msDetachStream();
-            // Copy the stream from the blob to the File stream 
-            Windows.Storage.Streams.RandomAccessStream.copyAsync(input, output).then(function () {
-                output.flushAsync().done(function () {
-                    input.close();
-                    output.close();
-                    // Finally, tell the system to open the file if it's not a subtitle file
-                    if (!/\.(?:ttml|ssa|ass|srt|idx|sub|vtt)$/i.test(filename)) Windows.System.Launcher.launchFileAsync(file);
-                    if (file.isAvailable) {
-                        var fileLink = file.path.replace(/\\/g, '/');
-                        fileLink = fileLink.replace(/^([^:]+:\/(?:[^/]+\/)*)(.*)/, function (p0, p1, p2) {
-                            return 'file:///' + p1 + encodeURIComponent(p2);
-                        });
-                        if (message) message.innerHTML = '<strong>Download:</strong> Your file was saved as <a href="' +
-                            fileLink + '" target="_blank" class="alert-link">' + file.path + '</a>';
-                        //window.open(fileLink, null, "msHideView=no");
-                    }
+            file.openAsync(Windows.Storage.FileAccessMode.readWrite).then(function (output) {
+            // Get the InputStream stream from the blob object
+                var input = blob.msDetachStream();
+                // Copy the stream from the blob to the File stream
+                Windows.Storage.Streams.RandomAccessStream.copyAsync(input, output).then(function () {
+                    output.flushAsync().done(function () {
+                        input.close();
+                        output.close();
+                        // Finally, tell the system to open the file if it's not a subtitle file
+                        if (!/\.(?:ttml|ssa|ass|srt|idx|sub|vtt)$/i.test(filename)) Windows.System.Launcher.launchFileAsync(file);
+                        if (file.isAvailable) {
+                            var fileLink = file.path.replace(/\\/g, '/');
+                            fileLink = fileLink.replace(/^([^:]+:\/(?:[^/]+\/)*)(.*)/, function (p0, p1, p2) {
+                                return 'file:///' + p1 + encodeURIComponent(p2);
+                            });
+                            if (message) {
+                                message.innerHTML = '<strong>Download:</strong> Your file was saved as <a href="' +
+                                fileLink + '" target="_blank" class="alert-link">' + file.path + '</a>';
+                            }
+                        // window.open(fileLink, null, "msHideView=no");
+                        }
+                    });
                 });
             });
         });
-    }); 
 }
 
 /**
@@ -306,12 +308,12 @@ function deriveZimUrlFromRelativeUrl (url, base) {
 
 /**
  * Walk up the DOM tree to find the closest element where the tagname matches the supplied regular expression
- * 
+ *
  * @param {Element} el The starting DOM element
  * @param {RegExp} rgx A regular expression to match the element's tagname
  * @returns {Element|null} The matching element or null if no match was found
  */
-function getClosestMatchForTagname(el, rgx) {
+function getClosestMatchForTagname (el, rgx) {
     do {
         if (rgx.test(el.tagName)) return el;
         el = el.parentElement || el.parentNode;
@@ -323,7 +325,7 @@ function getClosestMatchForTagname(el, rgx) {
  * Displays a Bootstrap warning alert with information about how to access content in a ZIM with unsupported active UI
  * @param {String} type The ZIM archive type ('open', 'zimit', or 'legacy')
  */
-function displayActiveContentWarning(type) {
+function displayActiveContentWarning (type) {
     // We have to add the alert box in code, because Bootstrap removes it completely from the DOM when the user dismisses it
     var alertHTML = '';
     if (params.contentInjectionMode === 'jquery' && type === 'open') {
@@ -344,10 +346,10 @@ function displayActiveContentWarning(type) {
         alertHTML =
         '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
             '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
-            '<strong>Active content may not work correctly:</strong> Please ' + (params.displayHiddenBlockElements ? 
-            '<a id="hbeModeLink" href="#displayHiddenBlockElementsDiv" class="alert-link">disable Display hidden block elements</a> ' :
-            params.manipulateImages ? '<a id="imModeLink" href="#imageManipulationDiv" class="alert-link">disable Image manipulation</a> ' : '') + 
-            (params.allowHTMLExtraction ? (params.displayHiddenBlockElements || params.manipulateImages ? 'and ' : '') + 
+            '<strong>Active content may not work correctly:</strong> Please ' + (params.displayHiddenBlockElements
+            ? '<a id="hbeModeLink" href="#displayHiddenBlockElementsDiv" class="alert-link">disable Display hidden block elements</a> '
+            : params.manipulateImages ? '<a id="imModeLink" href="#imageManipulationDiv" class="alert-link">disable Image manipulation</a> ' : '') +
+            (params.allowHTMLExtraction ? (params.displayHiddenBlockElements || params.manipulateImages ? 'and ' : '') +
             'disable Breakout icon ' : '') + 'for this content to work properly. To use Archive Index type a <b><i>space</i></b> ' +
             'in the box above, or <b><i>space / </i></b> for URL Index.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';
@@ -356,10 +358,10 @@ function displayActiveContentWarning(type) {
         alertHTML =
         '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
             '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
-            // '<strong>' + (params.contentInjectionMode === 'jquery' ? 'Limited Zimit' : 'Experimental') + ' support:</strong> ' + 
-            (params.contentInjectionMode === 'jquery' ? '<b>Limited Zimit support!</b> Please <a id="swModeLink" href="#contentInjectionModeDiv" ' + 
-            'class="alert-link">switch to Service Worker mode</a> if your platform supports it. ' : 
-            'Support for <b>Zimit</b> archives is experimental. Some content (e.g. audio/video) may fail. ') + 
+            // '<strong>' + (params.contentInjectionMode === 'jquery' ? 'Limited Zimit' : 'Experimental') + ' support:</strong> ' +
+            (params.contentInjectionMode === 'jquery' ? '<b>Limited Zimit support!</b> Please <a id="swModeLink" href="#contentInjectionModeDiv" ' +
+            'class="alert-link">switch to Service Worker mode</a> if your platform supports it. '
+                : 'Support for <b>Zimit</b> archives is experimental. Some content (e.g. audio/video) may fail. ') +
             'You can search for content above' + (appstate.selectedArchive._file.fullTextIndex ? ' using full-text search if your app supports it, ' +
             'or s' : '. S') + 'tart your search with <b>.*</b> to match part of a title. Type a <b><i>space</i></b> for the ZIM Archive Index, or ' +
             '<b><i>space / </i></b> for the URL Index.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
@@ -372,36 +374,38 @@ function displayActiveContentWarning(type) {
         // Hide the alert box
         alertBoxHeader.style.display = 'none';
     });
-    ['swModeLink', 'jqModeLink', 'imModeLink', 'hbeModeLink', 'stop'].forEach(function(id) {
+    ['swModeLink', 'jqModeLink', 'imModeLink', 'hbeModeLink', 'stop'].forEach(function (id) {
         // Define event listeners for both hyperlinks in alert box: these take the user to the Config tab and highlight
         // the options that the user needs to select
         var modeLink = document.getElementById(id);
-        if (modeLink) modeLink.addEventListener('click', function () {
-            var elementID = id === 'stop' ? 'hideActiveContentWarningCheck' : 
-                id === 'swModeLink' ? 'serviceworkerModeRadio' : 
-                id === 'jqModeLink' ? 'jQueryModeRadio' :
-                id === 'imModeLink' ? 'manipulateImagesCheck' : 'displayHiddenBlockElementsCheck';
-            var thisLabel = document.getElementById(elementID).parentNode;
-            thisLabel.style.borderColor = 'red';
-            thisLabel.style.borderStyle = 'solid';
-            // Make sure the container is visible
-            var container = thisLabel.parentNode;
-            if (!/panel-body/.test(container.className)) {
-                container = container.parentNode;
-            }
-            container.style.display = 'block';
-            container.previousElementSibling.innerHTML = container.previousElementSibling.innerHTML.replace(/▶/, '▼');
-            var btnHome = document.getElementById('btnHome');
-            [thisLabel, btnHome].forEach(function (ele) {
+        if (modeLink) {
+            modeLink.addEventListener('click', function () {
+                var elementID = id === 'stop' ? 'hideActiveContentWarningCheck'
+                    : id === 'swModeLink' ? 'serviceworkerModeRadio'
+                        : id === 'jqModeLink' ? 'jQueryModeRadio'
+                            : id === 'imModeLink' ? 'manipulateImagesCheck' : 'displayHiddenBlockElementsCheck';
+                var thisLabel = document.getElementById(elementID).parentNode;
+                thisLabel.style.borderColor = 'red';
+                thisLabel.style.borderStyle = 'solid';
+                // Make sure the container is visible
+                var container = thisLabel.parentNode;
+                if (!/panel-body/.test(container.className)) {
+                    container = container.parentNode;
+                }
+                container.style.display = 'block';
+                container.previousElementSibling.innerHTML = container.previousElementSibling.innerHTML.replace(/▶/, '▼');
+                var btnHome = document.getElementById('btnHome');
+                [thisLabel, btnHome].forEach(function (ele) {
                 // Define event listeners to cancel the highlighting both on the highlighted element and on the Home tab
-                ele.addEventListener('mousedown', function () {
-                    thisLabel.style.borderColor = '';
-                    thisLabel.style.borderStyle = '';
+                    ele.addEventListener('mousedown', function () {
+                        thisLabel.style.borderColor = '';
+                        thisLabel.style.borderStyle = '';
+                    });
                 });
+                alertBoxHeader.style.display = 'none';
+                document.getElementById('btnConfigure').click();
             });
-            alertBoxHeader.style.display = 'none';
-            document.getElementById('btnConfigure').click();
-        });
+        }
     });
 }
 
@@ -416,35 +420,35 @@ function displayActiveContentWarning(type) {
  * @param {Uint8Array} content The binary-format content of the downloadable file
  * @param {Boolean} autoDismiss If true, dismiss the alert programmatically
  */
-function displayFileDownloadAlert(title, download, contentType, content, autoDismiss) {
+function displayFileDownloadAlert (title, download, contentType, content, autoDismiss) {
     // We have to create the alert box in code, because Bootstrap removes it completely from the DOM when the user dismisses it
     document.getElementById('alertBoxFooter').innerHTML =
         '<div id="downloadAlert" class="alert alert-info alert-dismissible">' +
         '    <a href="#" id="downloaAlertClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
         '    <span id="alertMessage"></span>' +
         '</div>';
-    // Download code adapted from https://stackoverflow.com/a/19230668/9727685 
+    // Download code adapted from https://stackoverflow.com/a/19230668/9727685
     if (!contentType || /application.download/i.test(contentType)) {
         // DEV: Add more contentTypes here for downloadable files
-        contentType = 
-            /\.epub([?#]|$)/i.test(title) ? 'application/epub+zip' :
-            /\.pdf([?#]|$)/i.test(title) ? 'application/pdf' :
-            /\.zip([?#]|$)/i.test(title) ? 'application/zip' :
-            /\.png([?#]|$)/i.test(title) ? 'image/png' :
-            /\.jpe?g([?#]|$)/i.test(title) ? 'image/jpeg' :
-            /\.webp([?#]|$)/i.test(title) ? 'image/webp' :
-            /\.svg([?#]|$)/i.test(title) ? 'image/svg+xml' :
-            /\.gif([?#]|$)/i.test(title) ? 'image/gif' :
-            /\.tiff([?#]|$)/i.test(title) ? 'image/tiff' :
-            /\.mp4([?#]|$)/i.test(title) ? 'video/mp4' :
-            /\.(webm)([?#]|$)/i.test(title) ? 'video/webm' :
-            /\.mpeg([?#]|$)/i.test(title) ? 'video/mpeg' :
-            /\.mp3([?#]|$)/i.test(title) ? 'audio/mpeg' : 
-                // Default contentType if no match:
-            'application/octet-stream';
+        contentType =
+            /\.epub([?#]|$)/i.test(title) ? 'application/epub+zip'
+            : /\.pdf([?#]|$)/i.test(title) ? 'application/pdf'
+            : /\.zip([?#]|$)/i.test(title) ? 'application/zip'
+            : /\.png([?#]|$)/i.test(title) ? 'image/png'
+            : /\.jpe?g([?#]|$)/i.test(title) ? 'image/jpeg'
+            : /\.webp([?#]|$)/i.test(title) ? 'image/webp'
+            : /\.svg([?#]|$)/i.test(title) ? 'image/svg+xml'
+            : /\.gif([?#]|$)/i.test(title) ? 'image/gif'
+            : /\.tiff([?#]|$)/i.test(title) ? 'image/tiff'
+            : /\.mp4([?#]|$)/i.test(title) ? 'video/mp4'
+            : /\.(webm)([?#]|$)/i.test(title) ? 'video/webm'
+            : /\.mpeg([?#]|$)/i.test(title) ? 'video/mpeg'
+            : /\.mp3([?#]|$)/i.test(title) ? 'audio/mpeg'
+            // Default contentType if no match:
+            : 'application/octet-stream';
     }
     var a = document.createElement('a');
-    var blob = new Blob([content], { 'type': contentType });
+    var blob = new Blob([content], { type: contentType });
     // If the filename to use for saving has not been specified, construct it from title
     var filename = download === true ? title.replace(/^.*\/([^\\/?#&]*).*$/, '$1') : download;
     // If not match was possible from the title, give it a generic name
@@ -453,21 +457,21 @@ function displayFileDownloadAlert(title, download, contentType, content, autoDis
     filename = filename.replace(/[\/\\:*?"<>|#&]/g, '_');
     // If the file doesn't have an extension, add one for compatibility with older browsers
     if (!/\.(epub|pdf|odt|zip|png|jpe?g|webp|svg|gif|tiff|mp4|webm|mpe?g|mp3)([?#]|$)/i.test(filename)) {
-        var extension = 
-            /epub/i.test(contentType) ? '.epub' : 
-            /pdf/i.test(contentType) ? '.pdf' : 
-            /opendument/i.test(contentType) ? '.odt' : 
-            /\/zip$/i.test(contentType) ? '.zip' : 
-            /png/i.test(contentType) ? '.png' : 
-            /jpeg/i.test(contentType) ? '.jpeg' : 
-            /webp/i.test(contentType) ? '.webp' : 
-            /svg/i.test(contentType) ? '.svg' : 
-            /gif/i.test(contentType) ? '.gif' : 
-            /tiff/i.test(contentType) ? '.tiff' : 
-            /mp4/i.test(contentType) ? '.mp4' : 
-            /webm/i.test(contentType) ? '.webm' : 
-            /mpeg/i.test(contentType) ? '.mpeg' : 
-            /mp3/i.test(contentType) ? '.mp3' : '';
+        var extension =
+            /epub/i.test(contentType) ? '.epub'
+            : /pdf/i.test(contentType) ? '.pdf'
+            : /opendument/i.test(contentType) ? '.odt'
+            : /\/zip$/i.test(contentType) ? '.zip'
+            : /png/i.test(contentType) ? '.png'
+            : /jpeg/i.test(contentType) ? '.jpeg'
+            : /webp/i.test(contentType) ? '.webp'
+            : /svg/i.test(contentType) ? '.svg'
+            : /gif/i.test(contentType) ? '.gif'
+            : /tiff/i.test(contentType) ? '.tiff'
+            : /mp4/i.test(contentType) ? '.mp4'
+            : /webm/i.test(contentType) ? '.webm'
+            : /mpeg/i.test(contentType) ? '.mpeg'
+            : /mp3/i.test(contentType) ? '.mp3' : '';
         filename = filename.replace(/^(.*?)([#?]|$)/, '$1' + extension);
     }
     a.href = window.URL.createObjectURL(blob);
@@ -481,7 +485,7 @@ function displayFileDownloadAlert(title, download, contentType, content, autoDis
     // We have to add the anchor to a UI element for Firefox to be able to click it programmatically: see https://stackoverflow.com/a/27280611/9727685
     alertMessage.appendChild(a);
     var downloadAlert = document.getElementById('downloadAlert');
-    // For IE11 we need to force use of the saveBlob method with the onclick event 
+    // For IE11 we need to force use of the saveBlob method with the onclick event
     if (window.navigator && window.navigator.msSaveBlob) {
         a.addEventListener('click', function (e) {
             window.navigator.msSaveBlob(blob, filename);
@@ -496,8 +500,7 @@ function displayFileDownloadAlert(title, download, contentType, content, autoDis
         // Following line should run only if there was no error, leaving the alert showing in case of error
         if (autoDismiss && downloadAlert) downloadAlert.style.display = 'none';
         return;
-    }
-    catch (err) {
+    } catch (err) {
         // Edge will error out unless there is a download added but Chrome works better without the attribute
         a.download = filename;
     }
@@ -505,8 +508,7 @@ function displayFileDownloadAlert(title, download, contentType, content, autoDis
         a.click();
         // Following line should run only if there was no error, leaving the alert showing in case of error
         if (autoDismiss && downloadAlert) downloadAlert.style.display = 'none';
-    }
-    catch (err) {
+    } catch (err) {
         // And try to launch through UWP download
         if (typeof Windows !== 'undefined' && Windows.Storage) {
             downloadBlobUWP(blob, filename, alertMessage);
@@ -527,7 +529,7 @@ function displayFileDownloadAlert(title, download, contentType, content, autoDis
  *     (passing an empty or null string defaults to text)
  * @param {Function} callback The function to call with the result: data, mimetype, and status or error code
  */
-function XHR(url, responseType, callback) {
+function XHR (url, responseType, callback) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function (e) {
         if (this.readyState == 4) {
@@ -538,35 +540,34 @@ function XHR(url, responseType, callback) {
     try {
         xhr.open('GET', url, true);
         if (responseType) xhr.responseType = responseType;
-    }
-    catch (e) {
-        console.log("Exception during GET request: " + e);
+    } catch (e) {
+        console.log('Exception during GET request: ' + e);
         err = true;
     }
     if (!err) {
         xhr.send();
     } else {
-        callback("Error", null, 500);
+        callback('Error', null, 500);
     }
 }
 
 /**
  * Inserts a link to break the article out to a new browser tab
- * 
+ *
  * @param {String} mode The app mode to use for the breakoutLink icon (light|dark)
  */
-function insertBreakoutLink(mode) {
-    var desc = "Open article in new tab or window";
+function insertBreakoutLink (mode) {
+    var desc = 'Open article in new tab or window';
     var iframe = document.getElementById('articleContent').contentDocument;
     // This code provides an absolute link, removing the file and any query string from href (we need this because of SW mode)
     var prefix = (window.location.protocol + '//' + window.location.host + window.location.pathname).replace(/\/[^/]*$/, '');
     var div = document.createElement('div');
     div.style.cssText = 'top: 10px; right: 25px; position: relative; z-index: 2; float: right;';
-    div.id = "openInTab";
+    div.id = 'openInTab';
     div.innerHTML = '<a href="#"><img id="breakoutLink" src="' + prefix + '/img/icons/' + (mode == 'light' ? 'new_window.svg' : 'new_window_lb.svg') + '" width="30" height="30" alt="' + desc + '" title="' + desc + '"></a>';
     iframe.body.insertBefore(div, iframe.body.firstChild);
     var openInTab = iframe.getElementById('openInTab');
-    openInTab.addEventListener('click', function(e) {
+    openInTab.addEventListener('click', function (e) {
         e.preventDefault();
         itemsCount = false;
         params.preloadingAllImages = false;
@@ -577,7 +578,7 @@ function insertBreakoutLink(mode) {
 /**
  * Extracts self-contained HTML from the iframe DOM, transforming BLOB references to dataURIs
  */
-function extractHTML() {
+function extractHTML () {
     if (params.preloadingAllImages !== true) {
         params.preloadAllImages();
         return;
@@ -593,10 +594,10 @@ function extractHTML() {
         var items = iframe.querySelectorAll('img[src],link[href][rel="stylesheet"]');
         itemsCount = items.length;
         Array.prototype.slice.call(items).forEach(function (item) {
-            // Extract the BLOB itself from the URL (even if it's a blob: URL)                    
+            // Extract the BLOB itself from the URL (even if it's a blob: URL)
             var itemUrl = item.href || item.src;
             XHR(itemUrl, 'blob', function (response, mimetype, status) {
-                if (status == 500) { 
+                if (status == 500) {
                     itemsCount--;
                     return;
                 }
@@ -604,27 +605,25 @@ function extractHTML() {
                 if (!mimetype) mimetype = /\.svg$/i.test(itemUrl) ? 'image/svg+xml' : '';
                 // Now read the data from the extracted blob
                 var myReader = new FileReader();
-                myReader.addEventListener("loadend", function () {
+                myReader.addEventListener('loadend', function () {
                     if (myReader.result) {
                         var dataURL = myReader.result.replace(/data:;/, 'data:' + mimetype + ';');
                         if (item.href) {
-                            try { item.href = dataURL; }
-                            catch (err) { null; }
+                            try { item.href = dataURL; } catch (err) { null; }
                         }
                         if (item.src) {
-                            try { item.src = dataURL; }
-                            catch (err) { null; }
+                            try { item.src = dataURL; } catch (err) { null; }
                         }
                     }
                     itemsCount--;
                     if (itemsCount === 0) extractHTML();
                 });
-                //Start the reading process.
+                // Start the reading process.
                 myReader.readAsDataURL(response);
             });
         });
     }
-    if (itemsCount > 0) return; //Ensures function stops if we are still extracting images or css
+    if (itemsCount > 0) return; // Ensures function stops if we are still extracting images or css
     // Construct filename (forbidden characters will be removed in the download function)
     var filename = title.replace(/(\.html?)*$/i, '.html');
     var html = iframe.documentElement.outerHTML;
@@ -642,17 +641,17 @@ function extractHTML() {
 
 /**
  * Displays a Bootstrap alert or confirm dialog box depending on the options provided
- * 
- * @param {String} message The alert message(can be formatted using HTML) to display in the body of the modal. 
+ *
+ * @param {String} message The alert message(can be formatted using HTML) to display in the body of the modal.
  * @param {String} label The modal's label or title which appears in the header (optional, Default = "Confirmation" or "Message")
- * @param {Boolean} isConfirm If true, the modal will be a confirm dialog box, otherwise it will be a simple alert message 
- * @param {String} declineConfirmLabel The text to display on the decline confirmation button (optional, Default = "Cancel") 
+ * @param {Boolean} isConfirm If true, the modal will be a confirm dialog box, otherwise it will be a simple alert message
+ * @param {String} declineConfirmLabel The text to display on the decline confirmation button (optional, Default = "Cancel")
  * @param {String} approveConfirmLabel  The text to display on the approve confirmation button (optional, Default = "Confirm")
  * @param {String} closeMessageLabel  The text to display on the close alert message button (optional, Default = "Okay")
  * @param {String} alertModal The modal to display (optional)
  * @returns {Promise<Boolean>} A promise which resolves to true if the user clicked Confirm, false if the user clicked Cancel/Okay, backdrop or the cross(x) button
  */
-function systemAlert(message, label, isConfirm, declineConfirmLabel, approveConfirmLabel, closeMessageLabel, alertModal) {
+function systemAlert (message, label, isConfirm, declineConfirmLabel, approveConfirmLabel, closeMessageLabel, alertModal) {
     alertModal = alertModal || 'alertModal';
     var prfx = alertModal === 'myModal' ? 'my' : alertModal === 'printModal' ? 'print' : '';
     declineConfirmLabel = declineConfirmLabel || 'Cancel';
@@ -706,7 +705,7 @@ function systemAlert(message, label, isConfirm, declineConfirmLabel, approveConf
                 if (Array.from(document.body.children).indexOf(backdrop) >= 0) {
                     document.body.removeChild(backdrop);
                 }
-                //remove event listeners
+                // remove event listeners
                 if (modalCloseBtn) modalCloseBtn.removeEventListener('click', close);
                 if (declineConfirm) declineConfirm.removeEventListener('click', close);
                 if (closeMessage) closeMessage.removeEventListener('click', close);
@@ -765,24 +764,24 @@ function systemAlert(message, label, isConfirm, declineConfirmLabel, approveConf
 
 /**
  * Shows that an upgrade is ready to install
- * @param {String} ver The version of the upgrade 
+ * @param {String} ver The version of the upgrade
  * @param {String} type Either 'load', 'install' or 'download' according to the type of upgrade
  * @param {String} url An optional download URL
  */
-function showUpgradeReady(ver, type, url) {
+function showUpgradeReady (ver, type, url) {
     document.getElementById('alertBoxPersistent').innerHTML =
         '<div id="upgradeAlert" class="alert alert-info alert-dismissible">\n' +
         '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
         '    <span id="persistentMessage"></span>\n' +
         '</div>\n';
-    document.getElementById('persistentMessage').innerHTML = 'Version ' + ver + 
-        (url ? ' is available to ' + type + '! Go to <a href="' + url + '" style="color:white;" target="_blank">' + url + '</a>' 
-        : ' is ready to ' + type + '! (Re-launch app to ' + type + '.)');
+    document.getElementById('persistentMessage').innerHTML = 'Version ' + ver +
+        (url ? ' is available to ' + type + '! Go to <a href="' + url + '" style="color:white;" target="_blank">' + url + '</a>'
+            : ' is ready to ' + type + '! (Re-launch app to ' + type + '.)');
 }
 
 /**
  * Checks if a server is accessible by attempting to load a test image from the server
- * 
+ *
  * @param {String} imageSrc The full URI of the image
  * @param {any} onSuccess A function to call if the image can be loaded
  * @param {any} onError A function to call if the image cannot be loaded
@@ -796,31 +795,28 @@ function checkServerIsAccessible (imageSrc, onSuccess, onError) {
 
 /**
  * Checks whether an element is partially or fully inside the current viewport, and adds the rect.top value to element.top
- * 
- * @param {Window} area The Window to check 
+ *
+ * @param {Window} area The Window to check
  * @param {Element} el The DOM element for which to check visibility
  * @param {Boolean} fully If true, checks that the entire element is inside the viewport
  * @param {Integer} offset An additional bottom (+) or top (-) margin to include in the search window
  * @returns {Boolean} True if the element is fully or partially inside the current viewport
  */
-function isElementInView(area, el, fully, offset) {
+function isElementInView (area, el, fully, offset) {
     offset = offset || 0;
     var rect = el.getBoundingClientRect();
     el.top = rect.top;
-    //console.log(el.dataset.kiwixurl + ': ' + rect.top);
-    if (fully)
-        return rect.top > 0 + (offset < 0 ? offset : 0) && rect.bottom < area.innerHeight + (offset > 0 ? offset : 0) && rect.left > 0 && rect.right < area.innerWidth;
-    else 
-        return rect.top < area.innerHeight + (offset > 0 ? offset : 0) && rect.bottom > 0 + (offset < 0 ? offset : 0) && rect.left < area.innerWidth && rect.right > 0;
+    // console.log(el.dataset.kiwixurl + ': ' + rect.top);
+    if (fully) {return rect.top > 0 + (offset < 0 ? offset : 0) && rect.bottom < area.innerHeight + (offset > 0 ? offset : 0) && rect.left > 0 && rect.right < area.innerWidth;} else {return rect.top < area.innerHeight + (offset > 0 ? offset : 0) && rect.bottom > 0 + (offset < 0 ? offset : 0) && rect.left < area.innerWidth && rect.right > 0;}
 }
 
 /**
  * Initiates pointer touch events on the given element in order to set the zoom level
- * 
- * @param {Element} element The element to which the pointer events should be attached 
+ *
+ * @param {Element} element The element to which the pointer events should be attached
  * @param {Node} container The node to which the pointer events should be applied, if different
  */
-function initTouchZoom(element, container) {
+function initTouchZoom (element, container) {
     container = container || element;
     // Global vars to cache event state
     appstate.evCache = new Array();
@@ -833,7 +829,7 @@ function initTouchZoom(element, container) {
     appstate.startVector = null;
     // Install event handlers for the pointer target
     element.onpointerdown = pointerdown_handler;
-    element.onpointermove = function(event) {
+    element.onpointermove = function (event) {
         pointermove_handler(event, container, contentWin);
     };
     // Use same handler for pointer{up,cancel,out,leave} events since
@@ -844,14 +840,14 @@ function initTouchZoom(element, container) {
     element.onpointerleave = pointerup_handler;
 }
 
-function pointerdown_handler(ev) {
+function pointerdown_handler (ev) {
     // The pointerdown event signals the start of a touch interaction.
     // This event is cached to support 2-finger gestures
     appstate.evCache.push(ev);
     // console.debug('pointerDown', ev);
 }
 
-function pointermove_handler(ev, cont, win) {
+function pointermove_handler (ev, cont, win) {
     // This function implements a 2-pointer horizontal pinch/zoom gesture.
     // console.debug('pointerMove', ev);
     // Find this event in the cache and update its record with this event
@@ -893,7 +889,7 @@ function pointermove_handler(ev, cont, win) {
     }
 }
 
-function pointerup_handler(ev) {
+function pointerup_handler (ev) {
     // console.debug(ev.type, ev);
     // Remove this pointer from the cache
     remove_event(ev);
@@ -904,7 +900,7 @@ function pointerup_handler(ev) {
     }
 }
 
-function remove_event(ev) {
+function remove_event (ev) {
     // Remove this event from the target's cache
     for (var i = 0; i < appstate.evCache.length; i++) {
         if (appstate.evCache[i].pointerId == ev.pointerId) {
@@ -940,12 +936,12 @@ function reportSearchProviderToAPIStatusPanel (provider) {
 
 /**
  * Warn the user that he/she clicked on an external link, and open it in a new tab
- * 
+ *
  * @param {Event} event The click event (on an anchor) to handle (optional, but if not provided, clickedAnchor must be provided)
  * @param {Element} clickedAnchor The DOM anchor that has been clicked (optional, defaults to event.target)
  * @param {String} message The message to display to the user (optional, defaults to a generic message)
  */
-function warnAndOpenExternalLinkInNewTab(event, clickedAnchor, message) {
+function warnAndOpenExternalLinkInNewTab (event, clickedAnchor, message) {
     if (event) {
         // We have to prevent any blank target from firing on the original event
         event.target.removeAttribute('target');
@@ -959,12 +955,11 @@ function warnAndOpenExternalLinkInNewTab(event, clickedAnchor, message) {
     var anchor = '<a id="kiwixExternalLink" href="' + href + '" style="word-break:break-all;">' + clickedAnchor.href + '</a>';
     message += ':</p>' + anchor;
     var opener = function (ev) {
-       try {
+        try {
             window.open(href,  params.windowOpener === 'tab' ? '_blank' : (ev ? ev.target.title : 'Download'),
                 params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
             if (ev) ev.preventDefault();
-        }
-        catch (e) {
+        } catch (e) {
             if (!ev) systemAlert('We could not open this link programmatically! Please turn on "Warn before opening external links" in Configuration (under "Control of browsing data") and try again.');
             else ev.target.target = '_blank';
         }
@@ -984,7 +979,7 @@ function warnAndOpenExternalLinkInNewTab(event, clickedAnchor, message) {
 /**
  * Set up toggles to make Configuration headings collapsible
  */
-function setupConfigurationToggles() {
+function setupConfigurationToggles () {
     var configHeadings = document.querySelectorAll('.panel-heading');
     Array.prototype.slice.call(configHeadings).forEach(function (panelHeading) {
         var headingText = panelHeading.innerHTML;
@@ -1008,8 +1003,8 @@ function setupConfigurationToggles() {
                     var text = head.innerHTML;
                     if (/▶/.test(text)) return;
                     // Don't close panel for certain cases
-                    if (panelHeading === head || /API\sStatus/.test(text + headingText)
-                        ||!params.appCache && /Troubleshooting/.test(text)) return;
+                    if (panelHeading === head || /API\sStatus/.test(text + headingText)||
+                        !params.appCache && /Troubleshooting/.test(text)) return;
                     head.click();
                 });
             } else {
@@ -1058,7 +1053,7 @@ function setupConfigurationToggles() {
  * A function to test whether the app is in full-screen mode
  * @returns {Boolean} True if the app is in full-screen mode, false otherwise
  */
-function appIsFullScreen() {
+function appIsFullScreen () {
     return !!(document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
 }
 
@@ -1067,30 +1062,30 @@ function appIsFullScreen() {
  * @param {Element} el The element to put into full-screen mode. If not provided, the function will cancel any full-screen mode
  * @returns {Promise<Boolean>} A Promise that resolves to true if the element entered full-screen mode, false if full-screen mode cancelled
  */
-function requestOrCancelFullScreen(el) {
+function requestOrCancelFullScreen (el) {
     // Don't do anything if already in full-screen mode, and user has not requested to exit full-screen mode
     if (el && appIsFullScreen()) {
         console.debug('Display is already full screen');
         return Promise.resolve(true);
     }
     // Choose the correct method to request or cancel full-screen mode
-    var rq = function (sel) { 
-        var fn = sel ? 
+    var rq = function (sel) {
+        var fn = sel
             // Request full-screen mode
-            sel.requestFullscreen ? sel.requestFullscreen() :
-            sel.webkitRequestFullscreen ? sel.webkitRequestFullscreen() :
-            sel.mozRequestFullScreen ? sel.mozRequestFullScreen() :
-            sel.msRequestFullscreen ? sel.msRequestFullscreen() : Promise.reject('No full-screen mode API available') :
+            ? sel.requestFullscreen ? sel.requestFullscreen()
+            : sel.webkitRequestFullscreen ? sel.webkitRequestFullscreen()
+            : sel.mozRequestFullScreen ? sel.mozRequestFullScreen()
+            : sel.msRequestFullscreen ? sel.msRequestFullscreen() : Promise.reject('No full-screen mode API available')
             // Cancel full-screen mode
-            document.exitFullscreen ? document.exitFullscreen() :
-            document.webkitExitFullscreen ? document.webkitExitFullscreen() :
-            document.mozCancelFullScreen ? document.mozCancelFullScreen() :
-            document.msExitFullscreen ? document.msExitFullscreen() : Promise.reject('No full-screen mode API available');
-        return Promise.resolve(fn); 
+            : document.exitFullscreen ? document.exitFullscreen()
+            : document.webkitExitFullscreen ? document.webkitExitFullscreen()
+            : document.mozCancelFullScreen ? document.mozCancelFullScreen()
+            : document.msExitFullscreen ? document.msExitFullscreen() : Promise.reject('No full-screen mode API available');
+        return Promise.resolve(fn);
     };
     return rq(el).then(function () {
-        console.log(el ? 'Full-screen mode enabled' : 'Full-screen mode disabled'); 
-        return el ? true : false; 
+        console.log(el ? 'Full-screen mode enabled' : 'Full-screen mode disabled');
+        return el ? true : false;
     }).catch(function (err) {
         console.log('Error enabling full-screen mode', err);
         throw err;
@@ -1099,10 +1094,10 @@ function requestOrCancelFullScreen(el) {
 
 /**
  * Attempts to put the app into full-screen mode and (if requested) lock the display orientation using the Screen Orientation Lock API
- * @param {string} val A valid value in the API, e.g. '', 'natural', 'portrait', 'landscape' 
- * @returns {Promise<String>} A Promise that resolves to a string informing the result (which may be '')  
+ * @param {string} val A valid value in the API, e.g. '', 'natural', 'portrait', 'landscape'
+ * @returns {Promise<String>} A Promise that resolves to a string informing the result (which may be '')
  */
-function lockDisplayOrientation(val) {
+function lockDisplayOrientation (val) {
     if (val) {
         // Request setting the app to full-screen mode
         return requestOrCancelFullScreen(document.documentElement).then(function () {
@@ -1148,7 +1143,7 @@ function lockDisplayOrientation(val) {
 /**
  * Finds the closest <a> or <area> enclosing tag of an element.
  * Returns undefined if there isn't any.
- * 
+ *
  * @param {Element} element The element to test
  * @returns {Element} closest enclosing anchor tag (if any)
  */
