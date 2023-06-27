@@ -22,7 +22,7 @@
 
 'use strict';
 
-/* eslint-disable no-global-assign */
+/* eslint-disable no-global-assign, indent */
 /* global webpMachine, , params, appstate, Windows */
 
 import util from './util.js';
@@ -454,7 +454,7 @@ function displayFileDownloadAlert (title, download, contentType, content, autoDi
     // If not match was possible from the title, give it a generic name
     if (filename === title || !filename) filename = 'downloadfile';
     // Make filename safe
-    filename = filename.replace(/[\/\\:*?"<>|#&]/g, '_');
+    filename = filename.replace(/[/\\:*?"<>|#&]/g, '_');
     // If the file doesn't have an extension, add one for compatibility with older browsers
     if (!/\.(epub|pdf|odt|zip|png|jpe?g|webp|svg|gif|tiff|mp4|webm|mpe?g|mp3)([?#]|$)/i.test(filename)) {
         var extension =
@@ -660,7 +660,7 @@ function systemAlert (message, label, isConfirm, declineConfirmLabel, approveCon
     label = label || (isConfirm ? 'Confirmation' : 'Message');
     return util.PromiseQueue.enqueue(function () {
         return new Promise(function (resolve, reject) {
-            if (!message) reject('Missing body message');
+            if (!message) reject(new Error('Missing body message'));
             // Set the text to the modal and its buttons
             document.getElementById('approveConfirm').textContent = approveConfirmLabel;
             document.getElementById('declineConfirm').textContent = declineConfirmLabel;
@@ -807,7 +807,7 @@ function isElementInView (area, el, fully, offset) {
     var rect = el.getBoundingClientRect();
     el.top = rect.top;
     // console.log(el.dataset.kiwixurl + ': ' + rect.top);
-    if (fully) {return rect.top > 0 + (offset < 0 ? offset : 0) && rect.bottom < area.innerHeight + (offset > 0 ? offset : 0) && rect.left > 0 && rect.right < area.innerWidth;} else {return rect.top < area.innerHeight + (offset > 0 ? offset : 0) && rect.bottom > 0 + (offset < 0 ? offset : 0) && rect.left < area.innerWidth && rect.right > 0;}
+    if (fully) { return rect.top > 0 + (offset < 0 ? offset : 0) && rect.bottom < area.innerHeight + (offset > 0 ? offset : 0) && rect.left > 0 && rect.right < area.innerWidth; } else { return rect.top < area.innerHeight + (offset > 0 ? offset : 0) && rect.bottom > 0 + (offset < 0 ? offset : 0) && rect.left < area.innerWidth && rect.right > 0; }
 }
 
 /**

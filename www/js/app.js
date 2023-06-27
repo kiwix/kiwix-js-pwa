@@ -55,7 +55,7 @@ const DELAY_BETWEEN_KEEPALIVE_SERVICEWORKER = 30000;
  */
 
 // The global parameter and app state objects are defined in init.js
-/* global params, appstate, nw, electronAPI, Windows */
+/* global params, appstate, nw, electronAPI, Windows, webpMachine */
 
 // Placeholders for the article container, the article window and the article DOM
 var articleContainer = document.getElementById('articleContent');
@@ -924,7 +924,7 @@ if (window.electronAPI) {
 // Check for GitHub and Electron updates
 var updateCheck = document.getElementById('updateCheck');
 params.isUWPStoreApp = /UWP/.test(params.appType) && Windows.ApplicationModel && Windows.ApplicationModel.Package &&
-    !/Association.Kiwix/.test(Windows.ApplicationModel.Package.current.id.publisher) || windows.electronAPI && electronAPI.isMicrosoftStoreApp;
+    !/Association.Kiwix/.test(Windows.ApplicationModel.Package.current.id.publisher) || window.electronAPI && electronAPI.isMicrosoftStoreApp;
 // If Internet access is allowed, or it's a UWP Store app, or it's HTML5 (i.e., not Electron/NWJS or UWP) ...
 if (params.allowInternetAccess || params.isUWPStoreApp || /HTML5/.test(params.appType)) {
     updateCheck.style.display = 'none'; // ... hide the update check link
