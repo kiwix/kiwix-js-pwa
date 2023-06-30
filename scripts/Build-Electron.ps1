@@ -82,10 +82,14 @@ if ($alt_tag -imatch 'WikiMed|Wikivoyage') {
 }
 if ($electronbuild -eq "local") {
   if (-Not $dryrun) {
-    # Rewrite the archive for Electron if it is an mdwiki type
-    (Get-Content ./dist/www/js/init.js) -replace '(mdwiki[^-]+)-app_', '$1_' | Set-Content -encoding 'utf8BOM' ./dist/www/js/init.js
-    # In case we are in an mdwiki app, delete the unneeded archive, so it doesn't get packaged
-    rm ./dist/archives/mdwiki*-app*.zim
+    if ($zim -imatch '^mdwiki_') {
+      # Rewrite the archive for Electron if it is an mdwiki type
+      (Get-Content ./dist/www/js/init.js) -replace '(mdwiki[^-]+)-app_', '$1_' | Set-Content -encoding 'utf8BOM' ./dist/www/js/init.js
+      # Delete the unneeded archive, so it doesn't get packaged
+      if (Test-Path ./dist/archives/mdwiki*-app*.zim) {
+        rm ./dist/archives/mdwiki*-app*.zim
+      }
+    }
   } else {
     "[DRYRUN]: Rewriting the archive for Electron if it is an mdwiki type"
     "[DRYRUN]: In case we are in an mdwiki app, delete the unneeded archive, so it doesn't get packaged"
