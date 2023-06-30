@@ -1,6 +1,8 @@
 # Changelog
 
-## Release 2.5.2-Wikivoyage
+## Release 2.5.1 / 2.5.2-Wikivoyage
+
+Note: v2.5.1-Wikivoyage is the legacy UWP app; v2.5.2-Wikivoyage is for the Electron apps
 
 * ENHANCEMENT: Provide more gradual screen width transition with max page width auto setting
 * ENHANCEMENT: The Kiwix PWA can now be added as a Side Panel app in Edge (NB folder picking does not work in this configuration)
