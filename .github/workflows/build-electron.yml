@@ -49,10 +49,15 @@ jobs:
         cd dist && pwd
         # Get archive name
         packagedFile="$(grep -m1 'params\[.packagedFile' www/js/init.js | sed -E 's/^[^"]+"([^"]+\.zim)".+/\1/')"
-        # If file doesn't exist in FS
+        # If file doesn't exist in FS, download it
         if [ ! -f "archives/$packagedFile" ]; then
-          # Generalize the name and download it
-          packagedFileGeneric=$(sed -E 's/_[0-9-]+(\.zim)/\1/' <<<"$packagedFile")
+          # Generalize the name if cron_launched and download it
+          if [[ $CRON_LAUNCHED = true ]]; then
+            packagedFileGeneric=$(sed -E 's/_[0-9-]+(\.zim)/\1/' <<<"$packagedFile")
+          else
+            packagedFileGeneric=$packagedFile
+          fi
+          fi
           echo -e "\nDownloading https://download.kiwix.org/zim/$packagedFileGeneric"
           wget -nv "https://download.kiwix.org/zim/$packagedFileGeneric" -O "archives/$packagedFile"
         fi
@@ -133,8 +138,12 @@ jobs:
         cd dist && pwd
         $packagedFile = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1'
         if ($packagedFile -and ! (Test-Path "archives\$packagedFile" -PathType Leaf)) {
-          # File not in archives, so generalize the name and download it
-          $packagedFileGeneric = $packagedFile -replace '_[0-9-]+(\.zim)', '$1'
+          # File not in archives, so generalize the name (if nightly) and download it
+          if ($CRON_LAUNCHED) {
+            $packagedFileGeneric = $packagedFile -replace '_[0-9-]+(\.zim)', '$1'
+          } else {
+            $packagedFileGeneric = $packagedFile
+          }
           Write-Host "`nDownloading https://download.kiwix.org/zim/$packagedFileGeneric"
           Invoke-WebRequest "https://download.kiwix.org/zim/$packagedFileGeneric" -OutFile "archives\$packagedFile"
         }
