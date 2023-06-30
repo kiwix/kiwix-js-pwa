@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 2.5.1
+## In-progress release 2.5.2
 
 * ENHANCEMENT: Provide more gradual screen width transition with max page width auto setting
 * ENHANCEMENT: The Kiwix PWA can now be added as a Side Panel app in Edge (NB folder picking does not work in this configuration)
@@ -8,6 +8,8 @@
 * BUILD: New appx version of Kiwix JS Electron now available for testing from GitHub Releases
 * BUILD: Allow producing signed or unsigned versions of appx, and compile to appxbundle
 * BUILD: Option to build artefacts only for testing
+* FIX: Miscellaneous small bugfixes and typos
+* DEV: A lot of normalization of coding style using ESLint 
 
 ## Release 2.5.0
 
