@@ -52,14 +52,13 @@ jobs:
         # If file doesn't exist in FS, download it
         if [ ! -f "archives/$packagedFile" ]; then
           # Generalize the name if cron_launched and download it
+          echo -e "\nDownloading https://download.kiwix.org/zim/$packagedFile"
           if [[ $CRON_LAUNCHED = true ]]; then
             packagedFileGeneric=$(sed -E 's/_[0-9-]+(\.zim)/\1/' <<<"$packagedFile")
+            wget -nv "https://download.kiwix.org/zim/$packagedFileGeneric" -O "archives/$packagedFile"
           else
-            packagedFileGeneric=$packagedFile
+            wget -nv "https://mirror.download.kiwix.org/zim/$packagedFile" -O "archives/$packagedFile"
           fi
-          fi
-          echo -e "\nDownloading https://download.kiwix.org/zim/$packagedFileGeneric"
-          wget -nv "https://download.kiwix.org/zim/$packagedFileGeneric" -O "archives/$packagedFile"
         fi
         ls archives
         if [ -f "archives/$packagedFile" ]; then
@@ -139,13 +138,13 @@ jobs:
         $packagedFile = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1'
         if ($packagedFile -and ! (Test-Path "archives\$packagedFile" -PathType Leaf)) {
           # File not in archives, so generalize the name (if nightly) and download it
+          Write-Host "`nDownloading https://download.kiwix.org/zim/$packagedFileGeneric"
           if ($CRON_LAUNCHED) {
             $packagedFileGeneric = $packagedFile -replace '_[0-9-]+(\.zim)', '$1'
+            Invoke-WebRequest "https://download.kiwix.org/zim/$packagedFileGeneric" -OutFile "archives\$packagedFile"
           } else {
-            $packagedFileGeneric = $packagedFile
+            Invoke-WebRequest "https://mirror.download.kiwix.org/zim/$packagedFile" -OutFile "archives\$packagedFile"
           }
-          Write-Host "`nDownloading https://download.kiwix.org/zim/$packagedFileGeneric"
-          Invoke-WebRequest "https://download.kiwix.org/zim/$packagedFileGeneric" -OutFile "archives\$packagedFile"
         }
         ls archives
         if ($packagedFile -and (Test-Path "archives\$packagedFile" -PathType Leaf)) {
