@@ -57,7 +57,11 @@ jobs:
             packagedFileGeneric=$(sed -E 's/_[0-9-]+(\.zim)/\1/' <<<"$packagedFile")
             wget -nv "https://download.kiwix.org/zim/$packagedFileGeneric" -O "archives/$packagedFile"
           else
-            wget -nv "https://mirror.download.kiwix.org/zim/$packagedFile" -O "archives/$packagedFile"
+            flavour=$(sed -E 's/^([^_]+)_.+$/\1/' <<<"$packagedFile")
+            if [[ $flavour = "mdwiki" ]]; then
+              flavour='.hidden/custom_apps'
+            fi
+            wget -nv "https://mirror.download.kiwix.org/zim/$flavour/$packagedFile" -O "archives/$packagedFile"
           fi
         fi
         ls archives
@@ -143,7 +147,11 @@ jobs:
             $packagedFileGeneric = $packagedFile -replace '_[0-9-]+(\.zim)', '$1'
             Invoke-WebRequest "https://download.kiwix.org/zim/$packagedFileGeneric" -OutFile "archives\$packagedFile"
           } else {
-            Invoke-WebRequest "https://mirror.download.kiwix.org/zim/$packagedFile" -OutFile "archives\$packagedFile"
+            $flavour = $packagedFile -replace '^([^_]+)_.+$', '$1'
+            if ($flavour -eq 'mdwiki') {
+              $flavour = '.hidden/custom_apps'
+            }
+            Invoke-WebRequest "https://mirror.download.kiwix.org/zim/$flavour/$packagedFile" -OutFile "archives\$packagedFile"
           }
         }
         ls archives
