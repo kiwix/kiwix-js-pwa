@@ -4,6 +4,7 @@
 
 * ENHANCEMENT: Provide more gradual screen width transition with max page width auto setting
 * ENHANCEMENT: The Kiwix PWA can now be added as a Side Panel app in Edge (NB folder picking does not work in this configuration)
+* ENHANCEMENT: Top toolbar now resized correctly with Window Controls Overlay in installed PWA on macOS and Windows
 * UPDATE: Troubleshooting instructions for installing on Debian on the Releases page
 * BUILD: New appx version of Kiwix JS Electron now available for testing from GitHub Releases
 * BUILD: Allow producing signed or unsigned versions of appx, and compile to appxbundle
