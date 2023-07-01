@@ -13,14 +13,14 @@ console.log('Window location: ' + window.location.pathname + '\nStore publisher 
 const { ipcRenderer, contextBridge } = require('electron');
 const { open, read, close, stat, readdir } = require('fs');
 
-console.log("Inserting required Electron functions into DOM...");
+console.log('Inserting required Electron functions into DOM...');
 
 // DEV: FOR ELECTRON ^12 DO IT THIS WAY:
 contextBridge.exposeInMainWorld('fs', {
-    open: open, 
+    open: open,
     read: read,
     readdir: readdir,
-    close: close, 
+    close: close,
     stat: stat
 });
 // Exposed events and Event callback for electronAPI (you can add events to listen to, so long as main.js sends a message with name of the event)
@@ -50,7 +50,7 @@ contextBridge.exposeInMainWorld('dialog', {
             callback(data);
         });
     }
-  });
+});
 
 // window.Buffer = Buffer;
 
@@ -59,4 +59,3 @@ contextBridge.exposeInMainWorld('dialog', {
 // win.session.cookies.get({}, (error, cookies) => {
 //     console.log(cookies);
 // });
-

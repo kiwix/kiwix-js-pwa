@@ -1,11 +1,11 @@
 // Modules to control application life and create native browser window
 const { app, dialog, ipcMain, BrowserWindow } = require('electron');
 const path = require('path');
-const { autoUpdater } = require("electron-updater");
-
-app.commandLine.appendSwitch("enable-experimental-web-platform-features");
-
+const { autoUpdater } = require('electron-updater');
 const contextMenu = require('electron-context-menu');
+
+app.commandLine.appendSwitch('enable-experimental-web-platform-features');
+
 contextMenu({
     labels: {
         cut: 'Cut',
@@ -33,20 +33,9 @@ contextMenu({
     inspect: true
 });
 
-// This is used to set capabilities of the app: protocol in onready event below
-// protocol.registerSchemesAsPrivileged([{
-//     scheme: 'app',
-//     privileges: {
-//         standard: true,
-//         secure: true,
-//         allowServiceWorkers: true,
-//         supportFetchAPI: true
-//     }
-// }]);
-
 let mainWindow;
 
-function createWindow() {
+function createWindow () {
     // Create the browser window.
     mainWindow = new BrowserWindow({
         // titleBarStyle: 'hidden',
@@ -56,6 +45,12 @@ function createWindow() {
         minHeight: 480,
         autoHideMenuBar: true,
         icon: path.join(__dirname, 'www/img/icons/kiwix-64.png'),
+        // titleBarStyle: 'hidden',
+        // titleBarOverlay: {
+        //     color: '#000000',
+        //     symbolColor: '#ffffff',
+        //     height: 16
+        // },
         webPreferences: {
             preload: path.join(__dirname, 'preload.cjs'),
             nativeWindowOpen: true,
@@ -69,7 +64,7 @@ function createWindow() {
     mainWindow.loadFile('www/index.html');
 }
 
-function registerListeners() {
+function registerListeners () {
     ipcMain.on('file-dialog', function (event) {
         dialog.showOpenDialog(mainWindow, {
             filters: [
@@ -109,7 +104,7 @@ function registerListeners() {
                     console.log('Download is paused');
                     mainWindow.webContents.send('dl-received', 'paused');
                 } else {
-                    let newReceivedBytes = item.getReceivedBytes();
+                    const newReceivedBytes = item.getReceivedBytes();
                     if (newReceivedBytes - receivedBytes < 250000) return;
                     receivedBytes = newReceivedBytes;
                     mainWindow.webContents.send('dl-received', receivedBytes);
@@ -153,7 +148,6 @@ app.whenReady().then(() => {
     createWindow();
     registerListeners();
 
-
     var appName = app.getName();
     console.log('App name: ' + appName);
 
@@ -177,7 +171,6 @@ app.whenReady().then(() => {
         // dock icon is clicked and there are no other windows open.
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
-
 });
 
 // Quit when all windows are closed.
