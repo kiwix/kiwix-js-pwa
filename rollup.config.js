@@ -1,3 +1,4 @@
+/* eslint-disable object-property-newline, object-curly-newline */
 // rollup.config.js
 import resolve from '@rollup/plugin-node-resolve';
 import babel from '@rollup/plugin-babel';
@@ -42,7 +43,7 @@ const config = {
         copy({
             targets: [
                 { src: ['www/js/lib/*dec-wasm.wasm', 'www/js/lib/libzim-asm.js', 'www/js/lib/libzim-wasm.*', 'www/js/lib/darkreader.min.js', 'www/js/lib/webpHeroBundle*', '!www/js/lib/libzim-wasm.dev*'], dest: 'dist/www/js' },
-                { src: ['archives', 'images', 'index.html', 'manifest.json', 'package.json', 'LICENSE', 'CHANGELOG.md', '*.appxmanifest', '*.pfx', '*.cjs', 'Package.StoreAssociation.xml'], dest: 'dist' }
+                { src: ['archives', 'images', 'index.html', 'manifest.json', 'package.json', 'LICENSE', 'CHANGELOG.md', 'README.md', '*.appxmanifest', '*.pfx', '*.cjs', 'Package.StoreAssociation.xml'], dest: 'dist' }
             ],
             flatten: true
         })
@@ -72,10 +73,10 @@ if (process.env.BUILD === 'production') {
                     // Link the html to the new bundle entry point
                     transform: (contents, filename) => contents.toString()
                     // Uncomment the bundle link
-                        .replace(/<!--\s(<script type="text\/javascript.*bundle.js.*)\s-->/, "$1")
+                        .replace(/<!--\s(<script type="text\/javascript.*bundle.js.*)\s-->/, '$1')
                         .replace(/bundle\.js/, 'bundle.min.js')
                     // Comment out the old app.js link
-                        .replace(/(<script type="module.*app.js.*)/, "<!-- $1 -->")
+                        .replace(/(<script type="module.*app.js.*)/, '<!-- $1 -->')
                 }
             ],
             flatten: false
@@ -104,9 +105,9 @@ if (process.env.BUILD === 'production') {
                     // Link the html to the new bundle entry point
                     transform: (contents, filename) => contents.toString()
                     // Uncomment the bundle link
-                        .replace(/<!--\s(<script type="text\/javascript.*bundle.js.*)\s-->/, "$1")
+                        .replace(/<!--\s(<script type="text\/javascript.*bundle.js.*)\s-->/, '$1')
                     // Comment out the old app.js link
-                        .replace(/(<script type="module.*app.js.*)/, "<!-- $1 -->")
+                        .replace(/(<script type="module.*app.js.*)/, '<!-- $1 -->')
                 }
             ],
             flatten: false
