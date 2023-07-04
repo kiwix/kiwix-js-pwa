@@ -14,7 +14,6 @@ _pkginfo.txt
 /AppPackages/*wikivoyage*
 /AppPackages/*wikimed*
 /?ode_modules*/
-package-lock.json
 .vscode/launch.json
 null
 /scripts/kiwix-*.pem
