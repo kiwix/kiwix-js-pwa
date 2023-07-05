@@ -24,7 +24,11 @@ on:
         default: ''
       target:
         description: 'Set the target to update: "ghpages" or "docker" (will update GitHub Pages by default)'
+        type: choice
         required: false
+        options:
+          - ghpages
+          - docker
         default: ghpages  
 
 jobs:

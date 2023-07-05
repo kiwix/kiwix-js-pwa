@@ -13,8 +13,13 @@ on:
         required: false
         default: ''
       target:
+        type: choice
         description: Do you wish to build for "release", "nightly", or "artefacts" for testing? Artefacts will appear under the workflow run.
         required: false
+        options:
+          - release
+          - nightly
+          - artefacts
         default: 'artefacts'
 env:
   INPUT_VERSION: ${{ github.event.inputs.version }}
