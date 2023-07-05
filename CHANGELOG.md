@@ -4,11 +4,12 @@
 
 * UPDATE: Packaged archive updated to `mdwiki_en_all[-app]_maxi_2023-07.zim`
 * UPDATE: Troubleshooting instructions for installing on Debian on the Releases page
+* BUILD: New Electron-based appx version of WikiMed by Kiwix now available from the Microsoft Store and from GitHub Releases
+* BUILD: Allow producing signed or unsigned versions of appx, and compile to appxbundle
+* ENHANCEMENT: Microsoft Store app now supports full-text search for users with 64bit Windows
 * ENHANCEMENT: Top toolbar now resized correctly with Window Controls Overlay in installed PWA on macOS and Windows
 * ENHANCEMENT: When using Window Controls Overlay, app now has a draggable area (left of Kiwix icon)
 * ENHANCEMENT: The Kiwix PWA can now be added as a Side Panel app in Edge (NB folder picking does not work in this configuration)
-* BUILD: New appx version of Kiwix JS Electron now available for testing from GitHub Releases
-* BUILD: Allow producing signed or unsigned versions of appx, and compile to appxbundle
 * BUILD: Option to build artefacts only for testing
 * FIX: Miscellaneous small bugfixes and typos
 * DEV: A lot of normalization of coding style using ESLint
