@@ -63,9 +63,9 @@ jobs:
             wget -nv "https://download.kiwix.org/zim/$packagedFileGeneric" -O "archives/$packagedFile"
           else
             flavour=$(sed -E 's/^([^_]+)_.+$/\1/' <<<"$packagedFile")
-            # if [[ $flavour = "mdwiki" ]]; then
-            #   flavour='.hidden/custom_apps'
-            # fi
+            if [[ $flavour = "mdwiki" ]]; then
+              flavour='other'
+            fi
             wget -nv "https://mirror.download.kiwix.org/zim/$flavour/$packagedFile" -O "archives/$packagedFile"
           fi
         fi
@@ -153,9 +153,9 @@ jobs:
             Invoke-WebRequest "https://download.kiwix.org/zim/$packagedFileGeneric" -OutFile "archives\$packagedFile"
           } else {
             $flavour = $packagedFile -replace '^([^_]+)_.+$', '$1'
-            # if ($flavour -eq 'mdwiki') {
-            #   $flavour = '.hidden/custom_apps'
-            # }
+            if ($flavour -eq 'mdwiki') {
+              $flavour = 'other'
+            }
             Invoke-WebRequest "https://mirror.download.kiwix.org/zim/$flavour/$packagedFile" -OutFile "archives\$packagedFile"
           }
         }
@@ -250,9 +250,9 @@ jobs:
             Invoke-WebRequest "https://download.kiwix.org/zim/$packagedFileGeneric" -OutFile "archives\$packagedFile"
           } else {
             $flavour = $packagedFile -replace '^([^_]+)_.+$', '$1'
-            # if ($flavour -eq 'mdwiki') {
-            #   $flavour = '.hidden/custom_apps'
-            # }
+            if ($flavour -eq 'mdwiki') {
+              $flavour = 'other'
+            }
             Invoke-WebRequest "https://mirror.download.kiwix.org/zim/$flavour/$packagedFile" -OutFile "archives\$packagedFile"
           }
         }
