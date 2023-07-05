@@ -4,7 +4,7 @@
 
 **Kiwix is an offline browser for Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, and many other sites and resources.
 It makes knowledge available, in many different languages, to people with limited or no Internet access. The software and the content are
-free for anyone to use. Get the app and download your choice of offline content (a ZIM archive, which can be downloaded free in-app).
+free for anyone to use. Get the app and download your choice of offline content (ZIM archives, which can be downloaded free in-app).
 There are hundreds of multilingual archives to choose from, on many different topics and subjects. Build a whole digital library of
 offline knowledge!** 
 
@@ -62,7 +62,7 @@ try switching the app to JQuery mode (see Content injection mode in Configuratio
 
 ### Officially supported
 
-* As a Progressive Web App on Linux, Windows, Android, iOS, macOS:
+* As a [Progressive Web App](https://pwa.kiwix.org) (PWA) on Linux, Windows, Android, iOS, macOS:
 
   + <img src="images/googlechrome-color.svg" width="20" /> Google Chrome / Chromium >= 59 (and many browsers based on Chromium, e.g. Opera, Samsung Internet)
   + <img src="images/microsoftedge-color.svg" width="20" /> Microsoft Edge (Chromium) >= 79
@@ -72,10 +72,10 @@ try switching the app to JQuery mode (see Content injection mode in Configuratio
 
 * As an application implemented with the following frameworks:
 
-  + <img src="images/electron-color.svg" width="20" /> Electron >= 1.8.0 (32bit and 64bit builds for Windows, Ubuntu, Debian, Fedora, OpenSUSE, AppImage): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html)
-  + <img src="images/microsoftwindows-color.svg" width="20" /> Universal Windows Platform (UWP) >=10.0.10240: [Microsoft Store app](https://www.microsoft.com/store/apps/9P8SLZ4J979J) or [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html)
+  + <img src="images/electron-color.svg" width="20" /> Electron >= 1.8.0 (Ubuntu, Debian, Fedora, OpenSUSE, AppImage, Windows): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html)
+  + <img src="images/microsoftwindows-color.svg" width="20" /> Universal Windows Platform (UWP) >=10.0.10240: [Microsoft Store app](https://www.microsoft.com/store/apps/9P8SLZ4J979J) or [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html) - Windows 10/11 (Electron), Windows on ARM, Xbox, Windows 10 Mobile
   + <img src="images/nwjs-color.svg" width="20" /> NWJS >= 0.23.0 (Windows 7/8/10/11): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html)
-    - NWJS 0.14.7 (Windows XP/Vista only): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html)
+  + NWJS 0.14.7 (Windows XP/Vista only): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html)
 
 `*` There is a bug with **Firefox on Android** whereby the browser attempts to read the entire ZIM archive into memory or internal storage, which fails
 with archives >1GB approximately.
@@ -100,10 +100,7 @@ buggy and change rapidly.
 
 The code is based on [Kiwix JS](https://github.com/kiwix/kiwix-js), a lightweight HTML/JavaScript port of the Kiwix Offline reader.
 Significant development has gone into packaging this app for various frameworks, and to add some features which are often backported
-upstream. The UWP version targets Windows 10/11 (x86, x64, ARM, mobile, tablet, Xbox, Surface Hub, Holographic) while the NWJS and
-Electron versions also run on earlier Windows (all the way back to Windows XP) and Linux: see the respective
-[releases](https://github.com/kiwix/kiwix-js-windows/releases/) for more information. The PWA should work with any browser that supports
-Service Workers, but has only been tested on Edge Chromium, Edge Legacy, Firefox and Samsung Internet Browser. The PWA uses the File
+upstream. The PWA can be installed as a fully integrated system app if opened in a modern Chromium browser, and it uses the File
 System Access API and the File Handling API for a native-like experience in browsers supporting those APIs. For more info about these
 APIs, see the bottom of this page:
 [File System Access API and File Handling](screenshots/Install-PWA.md#file-system-access-api-and-file-handling).
@@ -116,13 +113,11 @@ a new update is ready to install). Alternative sideloading instructions are avai
 [Releases](https://github.com/kiwix/kiwix-js-windows/releases/). For testing, the Store, Electron and NWJS versions come packaged with a
 mini archive of the top 100 Wikipedia articles (without images and with only the lede paragraph).
 
-Offline ZIM archives are available in-app, or from the [Kiwix repository](https://library.kiwix.org). This app is regularly tested fully
-on Wikimedia ZIM files, though a number of other ZIM file types work. There is preliminary, useable support for most Zimit ZIMs from
-version 1.9.8 onwards, and Type 1 Zimit ZIMs are supported from 2.1.0 onwards. Some archives are very large indeed, for example full
-English Wikipedia with images is currently around 90GB, and you should download this with a BitTorrent client (torrent and magnet links
-are provided in the app). For most storage types (including microSD cards) that are formatted as exFAT or NTFS, you can store even these
-very large files in the storage with no problem. However, if you plan to store your ZIM file on an SD card formatted as **FAT32**, and
-you wish to use an archive larger than 4GB, then you will need to split the ZIM: see
+This app is regularly tested fully on Wikimedia ZIM files, though many other ZIM file types work. There is experimental support for most
+Zimit ZIMs from version 1.9.8 onwards, and Type 1 Zimit ZIMs are supported from 2.1.0 onwards. Some archives are very large indeed: for
+most storage types (including microSD cards) that are formatted as exFAT or NTFS, you can store even these very large files in the storage
+with no problem. However, if you plan to store your ZIM file on an SD card formatted as **FAT32**, and you wish to use an archive larger
+than 4GB, then you will need to split the ZIM: see
 [file splitting instructions](https://github.com/kiwix/kiwix-js-windows/tree/main/AppPackages#download-a-zim-archive-all-platforms).
 
 A lot of development for this app happens upstream in the [Kiwix JS repository](https://kiwix.github.io/kiwix-js/) to which I ontribute
@@ -140,8 +135,9 @@ the About page in the app), and which browser or platform you are using. Please 
 
 ## Contributing code
 
-If you have coding experience and are interested in contributing to this project, we suggest you start by contributing to the upstream [Kiwix JS repository](https://kiwix.github.io/kiwix-js/),
-as much of the code contributed there is subsequently ported to this repository. Please see [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) for details.
+If you have coding experience and are interested in contributing to this project, we suggest you start by contributing to the upstream
+[Kiwix JS repository](https://kiwix.github.io/kiwix-js/), as much of the code contributed there is subsequently ported to this repository.
+Please see [CONTRIBUTING.md](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) for details.
 If you wish to contribute to a specific Kiwix JS Windows/Linux feature, then please open an issue on this repository explaining the feature or other code you
 aim to contribute and how you propose this should be done. You should be comfortable creating PRs and have good knowledge of JavaScript. Follow the same
 [contributing guidelines](https://github.com/kiwix/kiwix-js/blob/main/CONTRIBUTING.md) as for Kiwix JS. We have now transitioned this app to ES6 code, which is
