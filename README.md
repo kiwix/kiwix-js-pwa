@@ -63,11 +63,19 @@ try switching the app to JQuery mode (see Content injection mode in Configuratio
 ### Officially supported
 
 * As a Progressive Web App on Linux, Windows, Android, iOS, macOS:
+
   + <img src="images/googlechrome-color.svg" width="20" /> Google Chrome / Chromium >= 59 (and many browsers based on Chromium, e.g. Opera, Samsung Internet)
   + <img src="images/microsoftedge-color.svg" width="20" /> Microsoft Edge (Chromium) >= 79
   + <img src="images/firefoxbrowser-color.svg" width="20" /> Mozilla Firefox >= 60 (except on Android`*`)
   + <img src="images/safari-color.svg" width="20" /> Apple Safari >= 11.3 (iOS and macOS)
-  + <img src="images/edgelegacy-color.svg" width="20" /> Microsoft Edge Legacy 18 (Windows only)
+  + <img src="images/edgelegacy-color.svg" width="22" /> Microsoft Edge Legacy 18 (Windows only)
+
+* As an application implemented with the following frameworks:
+
+  + <img src="images/electron-color.svg" width="20" /> Electron >= 1.8.0 (32bit and 64bit builds for Windows, Ubuntu, Debian, Fedora, OpenSUSE, AppImage): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html)
+  + <img src="images/microsoftwoindows-color.svg" width="20" /> Universal Windows Platform (UWP) >=10.0.10240: [Microsoft Store app](https://www.microsoft.com/store/apps/9P8SLZ4J979J) or [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html)
+  + <img src="images/nwjs-color.svg" width="20" /> NWJS >= 0.23.0 (Windows 7/8/10/11): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html)
+    - NWJS 0.14.7 (Windows XP/Vista only): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html)
 
 `*` There is a bug with **Firefox on Android** whereby the browser attempts to read the entire ZIM archive into memory or internal storage, which fails
 with archives >1GB approximately.
