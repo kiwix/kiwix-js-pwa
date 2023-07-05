@@ -73,7 +73,7 @@ try switching the app to JQuery mode (see Content injection mode in Configuratio
 * As an application implemented with the following frameworks:
 
   + <img src="images/electron-color.svg" width="20" /> Electron >= 1.8.0 (32bit and 64bit builds for Windows, Ubuntu, Debian, Fedora, OpenSUSE, AppImage): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html)
-  + <img src="images/microsoftwoindows-color.svg" width="20" /> Universal Windows Platform (UWP) >=10.0.10240: [Microsoft Store app](https://www.microsoft.com/store/apps/9P8SLZ4J979J) or [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html)
+  + <img src="images/microsoftwindows-color.svg" width="20" /> Universal Windows Platform (UWP) >=10.0.10240: [Microsoft Store app](https://www.microsoft.com/store/apps/9P8SLZ4J979J) or [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html)
   + <img src="images/nwjs-color.svg" width="20" /> NWJS >= 0.23.0 (Windows 7/8/10/11): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html)
     - NWJS 0.14.7 (Windows XP/Vista only): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html)
 
