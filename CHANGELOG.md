@@ -1,11 +1,12 @@
 # Changelog
 
-## In-progress release 2.5.2
+## Release 2.5.4-WikiMed
 
+* UPDATE: Packaged archive updated to `mdwiki_en_all[-app]_maxi_2023-07.zim`
+* UPDATE: Troubleshooting instructions for installing on Debian on the Releases page
 * ENHANCEMENT: Top toolbar now resized correctly with Window Controls Overlay in installed PWA on macOS and Windows
 * ENHANCEMENT: When using Window Controls Overlay, app now has a draggable area (left of Kiwix icon)
 * ENHANCEMENT: The Kiwix PWA can now be added as a Side Panel app in Edge (NB folder picking does not work in this configuration)
-* UPDATE: Troubleshooting instructions for installing on Debian on the Releases page
 * BUILD: New appx version of Kiwix JS Electron now available for testing from GitHub Releases
 * BUILD: Allow producing signed or unsigned versions of appx, and compile to appxbundle
 * BUILD: Option to build artefacts only for testing
