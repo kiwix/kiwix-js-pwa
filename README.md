@@ -62,13 +62,14 @@ try switching the app to JQuery mode (see Content injection mode in Configuratio
 
 ### Officially supported
 
-* Firefox >= 60 (except on Android)`*`
-* Edge Chromium >= 79
-* Chromium >= 59 (and many browsers based on Chromium, e.g. Opera, Samsung Internet)
-* Edge Legacy 18
-* Safari on iOS
+* As a Progressive Web App on Linux, Windows, Android, iOS, macOS:
+  + <img src="images/googlechrome-color.svg" width="20" /> Google Chrome / Chromium >= 59 (and many browsers based on Chromium, e.g. Opera, Samsung Internet)
+  + <img src="images/microsoftedge-color.svg" width="20" /> Microsoft Edge (Chromium) >= 79
+  + <img src="images/firefoxbrowser-color.svg" width="20" /> Mozilla Firefox >= 60 (except on Android`*`)
+  + <img src="images/safari-color.svg" width="20" /> Apple Safari >= 11.3 (iOS and macOS)
+  + <img src="images/edgelegacy-color.svg" width="20" /> Microsoft Edge Legacy 18 (Windows only)
 
-`*` There is a bug with Firefox in Android whereby the browser attempts to read the entire ZIM archive into memory or internal storage, which fails
+`*` There is a bug with **Firefox on Android** whereby the browser attempts to read the entire ZIM archive into memory or internal storage, which fails
 with archives >1GB approximately.
 
 ### Deprecated
