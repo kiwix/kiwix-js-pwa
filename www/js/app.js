@@ -82,6 +82,9 @@ params['storeType'] = settingsStore.getBestAvailableStorageAPI();
 
 // A parameter to determine whether the webkitdirectory API is available
 params['webkitdirectory'] = util.webkitdirectorySupported();
+if (!params.webkitdirectory) {
+    document.getElementById('archiveDirLegacy').style.display = 'none';
+}
 
 // Placeholder for the alert box header element, so it can be displayed and hidden easily
 const alertBoxHeader = document.getElementById('alertBoxHeader');
