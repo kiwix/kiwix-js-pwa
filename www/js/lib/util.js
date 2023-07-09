@@ -273,6 +273,10 @@ function dataURItoUint8Array (dataURI) {
     }
 }
 
+/**
+ * Detect whether the browser supports the webkitdirectory attribute on input elements
+ * @returns {Boolean} True if the webkitdirectory attribute is supported, false otherwise
+ */
 function webkitdirectorySupported () {
     return 'webkitdirectory' in document.createElement('input');
 }

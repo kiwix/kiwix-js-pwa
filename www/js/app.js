@@ -1167,7 +1167,17 @@ function selectArchive (list) {
 }
 
 // Legacy file picker is used as a fallback when all other pickers are unavailable
-document.getElementById('archiveFilesLegacy').addEventListener('change', setLocalArchiveFromFileSelect);
+var archiveFilesLegacy = document.getElementById('archiveFilesLegacy');
+archiveFilesLegacy.addEventListener('change', function (files) {
+    params.pickedFolder = null;
+    var filename = files.target.files[0].name;
+    params.pickedFile = filename.replace(/\.zim\w\w$/i, '.zimaa');
+    if (params.webkitdirectory) {
+        params.rescan = true;
+        populateDropDownListOfArchives([filename], true);
+    }
+    setLocalArchiveFromFileSelect(files);
+});
 // But in preference, use UWP, File System Access API
 document.getElementById('archiveFile').addEventListener('click', function () {
     if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
@@ -1179,12 +1189,15 @@ document.getElementById('archiveFile').addEventListener('click', function () {
     } else if (window.fs && window.dialog) {
         // Electron file picker if showOpenFilePicker is not available
         dialog.openFile();
+    } else {
+        // Legacy file picker
+        archiveFilesLegacy.click();
     }
 });
 // Legacy webkitdirectory file picker is used as a fallback when File System Access API is unavailable
 var archiveDirLegacy = document.getElementById('archiveDirLegacy');
 archiveDirLegacy.addEventListener('change', function (files) {
-    if (files.target.files.length && !window.showDirectoryPicker && params.webkitdirectory) {
+    if (files.target.files.length) {
         var fileArray = Array.from(files.target.files);
         params.pickedFile = null;
         params.pickedFolder = fileArray[0].webkitRelativePath.split('/')[0];
