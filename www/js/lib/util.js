@@ -273,6 +273,10 @@ function dataURItoUint8Array (dataURI) {
     }
 }
 
+function webkitdirectorySupported () {
+    return 'webkitdirectory' in document.createElement('input');
+}
+
 /**
  * Matches the outermost balanced constructs and their contents
  * even if they have nested balanced constructs within them
@@ -729,6 +733,7 @@ export default {
     leftShift: leftShift,
     matchOuter: matchOuter,
     matchInner: matchInner,
+    webkitdirectorySupported: webkitdirectorySupported,
     Hilitor: Hilitor,
     getClosestForward: getClosestForward,
     getClosestBack: getClosestBack,
