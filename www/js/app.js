@@ -1155,6 +1155,15 @@ function selectArchive (list) {
                 });
             }
         });
+    } else if (!window.fs && !window.nw && params.webkitdirectory) {
+        if (!archiveDirLegacy.files.length) {
+            appstate.waitForFileSelect = selected;
+            // No files are set, so we need to ask user to select the directory again
+            archiveDirLegacy.click();
+        } else {
+            console.debug('Files are set, attempting to select ' + selected);
+            setLocalArchiveFromArchiveList(selected);
+        }
     } else {
         setLocalArchiveFromArchiveList(selected);
     }
@@ -1202,6 +1211,17 @@ archiveDirLegacy.addEventListener('change', function (files) {
         params.pickedFile = null;
         params.pickedFolder = fileArray[0].webkitRelativePath.split('/')[0];
         processFilesArray(fileArray);
+        if (appstate.waitForFileSelect) {
+            var selected = appstate.waitForFileSelect;
+            appstate.waitForFileSelect = null;
+            // Select the selected file in the dropdown list of archives
+            document.getElementById('archiveList').value = selected;
+            console.debug('Files are set, attempting to select ' + selected);
+            setLocalArchiveFromArchiveList(selected);
+        }
+    } else {
+        appstate.waitForFileSelect = null;
+        console.log('User cancelled directory picker, or chose a directory with no files');
     }
 });
 document.getElementById('archiveFiles').addEventListener('click', function (e) {
@@ -2623,7 +2643,8 @@ if ($.isFunction(navigator.getDeviceStorages)) {
 }
 if (storages !== null && storages.length > 0 ||
     typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined' ||
-    typeof window.fs !== 'undefined' || typeof window.showOpenFilePicker === 'function') {
+    typeof window.fs !== 'undefined' || typeof window.showOpenFilePicker === 'function' ||
+    params.webkitdirectory) {
     if (window.fs && !(params.pickedFile || params.pickedFolder)) {
         // Below we compare the prefix of the files, i.e. the generic filename without date, so we can smoothly deal with upgrades
         if (params.packagedFile && params.storedFile.replace(/(^[^-]+all).+/, '$1') === params.packagedFile.replace(/(^[^-]+all).+/, '$1')) {
@@ -2650,9 +2671,8 @@ if (storages !== null && storages.length > 0 ||
     } else if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
         console.log('Loading picked file for UWP app...');
         processPickedFileUWP(params.pickedFile);
-    // } else if (launchArguments && 'launchQueue' in window) {
-    //     // The app was launched with a file
-    //     processNativeFileHandle(params.pickedFile);
+    } else if (!window.fs && !window.nw && params.webkitdirectory) {
+        searchForArchivesInPreferencesOrStorage();
     } else {
         // @AUTOLOAD packaged archive in Electron and NWJS packaged apps
         // We need to read the packaged file using the node File System API (so user doesn't need to pick it on startup)
@@ -2708,7 +2728,6 @@ if (storages !== null && storages.length > 0 ||
                     uiUtil.systemAlert(message);
                 }, 10);
             }
-
         });
         document.getElementById('hideFileSelectors').style.display = params.showFileSelectors ? 'inline' : 'none';
     }
@@ -2818,9 +2837,10 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
                 } else {
                     // It's genuinely no longer available, so let's ask the user to pick it
                     var message = '<p>We could not find the archive <b>' + lastSelectedArchive + '</b>!</p><p>Please select its location...</p>';
-                    if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined')
+                    if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
                         message += '<p><i>Note:</i> If you drag-drop an archive into this UWP app, then it will have to be dragged again each time you launch the app. Try double-clicking on the archive instead, or select it using the controls on this page.</p>';
-                    if (document.getElementById('configuration').style.display == 'none') {
+                    }
+                    if (document.getElementById('configuration').style.display === 'none') {
                         document.getElementById('btnConfigure').click();
                     }
                     uiUtil.systemAlert(message).then(function () {
