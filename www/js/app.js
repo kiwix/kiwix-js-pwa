@@ -1156,7 +1156,7 @@ function selectArchive (list) {
             }
         });
     } else {
-        setLocalArchiveFromArchiveList([selected]);
+        setLocalArchiveFromArchiveList(selected);
     }
     setTimeout(function () {
         document.getElementById('openLocalFiles').style.display = 'none';
@@ -2918,57 +2918,8 @@ function setLocalArchiveFromArchiveList (archive) {
                             openCurrentArchive.style.display = 'inline';
                             return;
                         } else if (params.pickedFolder.kind === 'directory') {
-                            return processNativeDirHandle(params.pickedFolder, function (fileHandles) {
-                                var fileHandle;
-                                var fileset = [];
-                                if (fileHandles) {
-                                    for (var i = 0; i < fileHandles.length; i++) {
-                                        if (fileHandles[i].name == archive) {
-                                            fileHandle = fileHandles[i];
-                                            break;
-                                        }
-                                    }
-                                    if (fileHandle) {
-                                        // Deal with split archives
-                                        if (/\.zim\w\w$/i.test(fileHandle.name)) {
-                                            var genericFileName = fileHandle.name.replace(/(\.zim)\w\w$/i, '$1');
-                                            var testFileName = new RegExp(genericFileName + '\\w\\w$');
-                                            for (i = 0; i < fileHandles.length; i++) {
-                                                if (testFileName.test(fileHandles[i].name)) {
-                                                    // This gets a JS File object from a file handle
-                                                    fileset.push(fileHandles[i].getFile().then(function (file) {
-                                                        return file;
-                                                    }));
-                                                }
-                                            }
-                                        } else {
-                                            // Deal with single unslpit archive
-                                            fileset.push(fileHandle.getFile().then(function (file) {
-                                                return file;
-                                            }));
-                                        }
-                                        if (fileset.length) {
-                                            // Wait for all getFile Promises to resolve
-                                            Promise.all(fileset).then(function (resolvedFiles) {
-                                                setLocalArchiveFromFileList(resolvedFiles);
-                                            });
-                                        } else {
-                                            console.error('There was an error reading the picked file(s)!');
-                                        }
-                                    } else {
-                                        console.error('The picked file could not be found in the selected folder!');
-                                        var archiveList = [];
-                                        for (i = 0; i < fileHandles.length; i++) {
-                                            if (/\.zim(aa)?$/i.test(fileHandles[i].name)) {
-                                                archiveList.push(fileHandles[i].name);
-                                            }
-                                        }
-                                        populateDropDownListOfArchives(archiveList);
-                                        document.getElementById('btnConfigure').click();
-                                    }
-                                } else {
-                                    console.log('There was an error obtaining the file handle(s).');
-                                }
+                            return processNativeDirHandle(params.pickedFolder, function (files) {
+                                processDirectoryOfFiles(files, archive);
                             });
                         }
                         openCurrentArchive.style.display = 'none';
@@ -2993,7 +2944,7 @@ function setLocalArchiveFromArchiveList (archive) {
                         } else {
                             uiUtil.systemAlert('We could not find the location of the file ' + archive +
                                 '. This can happen if you dragged and dropped a file into the app. Please use the file or folder pickers instead.');
-                            if (document.getElementById('configuration').style.display == 'none') {
+                            if (document.getElementById('configuration').style.display === 'none') {
                                 document.getElementById('btnConfigure').click();
                             }
                             displayFileSelect();
@@ -3001,46 +2952,7 @@ function setLocalArchiveFromArchiveList (archive) {
                     }
                     return;
                 } else if (params.pickedFolder && params.webkitdirectory) {
-                    // Webkit directory support
-                    var files = archiveDirLegacy.files;
-                    var file;
-                    var fileset = [];
-                    for (i = 0; i < files.length; i++) {
-                        if (files[i].name === archive[0]) {
-                            file = files[i];
-                            break;
-                        }
-                    }
-                    if (file) {
-                        // Deal with split archives
-                        if (/\.zim\w\w$/i.test(file.name)) {
-                            var genericFileName = file.name.replace(/(\.zim)\w\w$/i, '$1');
-                            var testFileName = new RegExp(genericFileName + '\\w\\w$');
-                            for (i = 0; i < files.length; i++) {
-                                if (testFileName.test(files[i].name)) {
-                                    fileset.push(files[i]);
-                                }
-                            }
-                        } else {
-                            // Deal with single unslpit archive
-                            fileset.push(file);
-                        }
-                        if (fileset.length) {
-                            setLocalArchiveFromFileList(fileset);
-                        } else {
-                            console.error('There was an error reading the picked file(s)!');
-                        }
-                    } else {
-                        console.error('The picked file could not be found in the selected folder!');
-                        var archiveList = [];
-                        for (i = 0; i < files.length; i++) {
-                            if (/\.zim(aa)?$/i.test(files[i].name)) {
-                                archiveList.push(files[i].name);
-                            }
-                        }
-                        populateDropDownListOfArchives(archiveList);
-                        document.getElementById('btnConfigure').click();
-                    }
+                    processDirectoryOfFiles(archiveDirLegacy.files, archive);
                     return;
                 } else { // Check if user previously picked a specific file rather than a folder
                     if (params.pickedFile && typeof MSApp !== 'undefined') {
@@ -3128,6 +3040,67 @@ function setLocalArchiveFromArchiveList (archive) {
             // callbackError which is called in case of an error
             uiUtil.systemAlert(message, label);
         });
+    }
+}
+
+function processDirectoryOfFiles (fileHandles, archive) {
+    var fileHandle;
+    var fileset = [];
+    if (fileHandles) {
+        for (var i = 0; i < fileHandles.length; i++) {
+            if (fileHandles[i].name === archive) {
+                fileHandle = fileHandles[i];
+                break;
+            }
+        }
+        if (fileHandle) {
+            // Deal with split archives
+            if (/\.zim\w\w$/i.test(fileHandle.name)) {
+                var genericFileName = fileHandle.name.replace(/(\.zim)\w\w$/i, '$1');
+                var testFileName = new RegExp(genericFileName + '\\w\\w$');
+                for (i = 0; i < fileHandles.length; i++) {
+                    if (testFileName.test(fileHandles[i].name)) {
+                        if (fileHandles[i].getFile) {
+                            // This gets a JS File object from a file handle
+                            fileset.push(fileHandles[i].getFile().then(function (file) {
+                                return file;
+                            }));
+                        } else {
+                            fileset.push(fileHandles[i]);
+                        }
+                    }
+                }
+            } else {
+                // Deal with single unslpit archive
+                if (fileHandle.getFile) {
+                    fileset.push(fileHandle.getFile().then(function (file) {
+                        return file;
+                    }));
+                } else {
+                    fileset.push(fileHandle);
+                }
+            }
+            if (fileset.length) {
+                // Wait for all getFile Promises to resolve
+                Promise.all(fileset).then(function (resolvedFiles) {
+                    setLocalArchiveFromFileList(resolvedFiles);
+                });
+            } else {
+                console.error('There was an error reading the picked file(s)!');
+            }
+        } else {
+            console.error('The picked file could not be found in the selected folder!');
+            var archiveList = [];
+            for (i = 0; i < fileHandles.length; i++) {
+                if (/\.zim(aa)?$/i.test(fileHandles[i].name)) {
+                    archiveList.push(fileHandles[i].name);
+                }
+            }
+            populateDropDownListOfArchives(archiveList);
+            document.getElementById('btnConfigure').click();
+        }
+    } else {
+        console.log('There was an error obtaining the file handle(s).');
     }
 }
 
