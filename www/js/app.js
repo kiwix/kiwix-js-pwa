@@ -1155,7 +1155,7 @@ function selectArchive (list) {
                 });
             }
         });
-    } else if (!window.fs && !window.nw && params.webkitdirectory) {
+    } else if (typeof MSApp === 'undefined' && !window.fs && !window.nw && params.webkitdirectory) {
         if (!archiveDirLegacy.files.length) {
             appstate.waitForFileSelect = selected;
             // No files are set, so we need to ask user to select the directory again
