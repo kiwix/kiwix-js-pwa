@@ -20,7 +20,7 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* global fs */
+/* global fs, params */
 
 'use strict';
 
@@ -278,7 +278,7 @@ function dataURItoUint8Array (dataURI) {
  * @returns {Boolean} True if the webkitdirectory attribute is supported, false otherwise
  */
 function webkitdirectorySupported () {
-    return 'webkitdirectory' in document.createElement('input');
+    return 'webkitdirectory' in document.createElement('input') && !/iOS|Android/.test(params.appType);
 }
 
 /**
