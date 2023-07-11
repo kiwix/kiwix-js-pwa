@@ -1158,7 +1158,7 @@ function selectArchive (list) {
                 });
             }
         });
-    } else if (typeof MSApp === 'undefined' && !window.fs && !window.nw && params.webkitdirectory) {
+    } else if (typeof MSApp === 'undefined' && !window.fs && params.webkitdirectory) {
         // If we don't have any picked files or directories...
         if (!archiveDirLegacy.files.length && !archiveFilesLegacy.files.length) {
             appstate.waitForFileSelect = selected;
@@ -2695,7 +2695,7 @@ if (storages !== null && storages.length > 0 ||
     } else if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
         console.log('Loading picked file for UWP app...');
         processPickedFileUWP(params.pickedFile);
-    } else if (!window.fs && !window.nw && params.webkitdirectory) {
+    } else if (!window.fs && params.webkitdirectory) {
         searchForArchivesInPreferencesOrStorage();
     } else {
         // @AUTOLOAD packaged archive in Electron and NWJS packaged apps
