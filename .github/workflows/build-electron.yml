@@ -190,7 +190,7 @@ jobs:
           }
           # To ensure there is enough disk space, we can delete the archive that is no longer needed
           rm -r dist/archives
-          ./scripts/Create-DraftRelease -buildonly -tag_name $INPUT_VERSION_E -portableonly -nobundle -wingetprompt N
+          ./scripts/Create-DraftRelease -buildonly -tag_name $INPUT_VERSION_E -portableonly -nobundle -wingetprompt N -nobranchcheck
         }
     - name: Publish packages
       if: github.event.inputs.target != 'artefacts'

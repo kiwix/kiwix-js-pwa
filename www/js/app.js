@@ -1163,7 +1163,7 @@ function selectArchive (list) {
         if (!archiveDirLegacy.files.length && !archiveFilesLegacy.files.length) {
             appstate.waitForFileSelect = selected;
             // No files are set, so we need to ask user to select the file or directory again
-            if (params.pickedFolder || document.getElementById('archiveList').children.length > 1) {
+            if (params.pickedFolder || document.getElementById('archiveList').options.length > 1) {
                 archiveDirLegacy.click();
             } else {
                 archiveFilesLegacy.click();
@@ -1229,6 +1229,9 @@ archiveDirLegacy.addEventListener('change', function (files) {
         var fileArray = Array.from(files.target.files);
         params.pickedFile = null;
         params.pickedFolder = fileArray[0].webkitRelativePath.replace(/\/[^/]*$/, '');
+        if (document.getElementById('archiveList').options.length === 0) {
+            params.storedFile = null;
+        }
         processFilesArray(fileArray);
         if (appstate.waitForFileSelect) {
             var selected = appstate.waitForFileSelect;
