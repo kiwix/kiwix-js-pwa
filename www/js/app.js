@@ -82,9 +82,6 @@ params['storeType'] = settingsStore.getBestAvailableStorageAPI();
 
 // A parameter to determine whether the webkitdirectory API is available
 params['webkitdirectory'] = util.webkitdirectorySupported();
-if (!params.webkitdirectory) {
-    document.getElementById('archiveDirLegacy').style.display = 'none';
-}
 
 // Placeholder for the alert box header element, so it can be displayed and hidden easily
 const alertBoxHeader = document.getElementById('alertBoxHeader');
@@ -760,6 +757,11 @@ document.getElementById('btnHome').addEventListener('click', function () {
 var currentArchive = document.getElementById('currentArchive');
 var currentArchiveLink = document.getElementById('currentArchiveLink');
 var openCurrentArchive = document.getElementById('openCurrentArchive');
+var archiveFilesLegacy = document.getElementById('archiveFilesLegacy');
+var archiveDirLegacy = document.getElementById('archiveDirLegacy');
+if (!params.webkitdirectory) {
+    document.getElementById('archiveDirLegacy').style.display = 'none';
+}
 
 function setTab (activeBtn) {
     // Highlight the selected section in the navbar
@@ -1177,7 +1179,6 @@ function selectArchive (list) {
 }
 
 // Legacy file picker is used as a fallback when all other pickers are unavailable
-var archiveFilesLegacy = document.getElementById('archiveFilesLegacy');
 archiveFilesLegacy.addEventListener('change', function (files) {
     params.pickedFolder = null;
     var filename = files.target.files[0].name;
@@ -1205,7 +1206,6 @@ document.getElementById('archiveFile').addEventListener('click', function () {
     }
 });
 // Legacy webkitdirectory file picker is used as a fallback when File System Access API is unavailable
-var archiveDirLegacy = document.getElementById('archiveDirLegacy');
 archiveDirLegacy.addEventListener('change', function (files) {
     if (files.target.files.length) {
         var fileArray = Array.from(files.target.files);
@@ -1857,9 +1857,9 @@ function cssUIThemeGetOrSet (value, getOnly) {
     var elements;
     if (value == 'dark') {
         document.getElementsByTagName('body')[0].classList.add('dark');
-        document.getElementById('archiveFilesLegacy').classList.add('dark');
+        archiveFilesLegacy.classList.add('dark');
         document.getElementById('footer').classList.add('darkfooter');
-        document.getElementById('archiveFilesLegacy').classList.remove('btn');
+        archiveFilesLegacy.classList.remove('btn');
         document.getElementById('findInArticle').classList.add('dark');
         document.getElementById('prefix').classList.add('dark');
         elements = document.querySelectorAll('.settings');
@@ -1873,8 +1873,8 @@ function cssUIThemeGetOrSet (value, getOnly) {
         document.getElementsByTagName('body')[0].classList.remove('dark');
         document.getElementById('search-article').classList.remove('dark');
         document.getElementById('footer').classList.remove('darkfooter');
-        document.getElementById('archiveFilesLegacy').classList.remove('dark');
-        document.getElementById('archiveFilesLegacy').classList.add('btn');
+        archiveFilesLegacy.classList.remove('dark');
+        archiveFilesLegacy.classList.add('btn');
         document.getElementById('findInArticle').classList.remove('dark');
         document.getElementById('prefix').classList.remove('dark');
         elements = document.querySelectorAll('.settings');
@@ -3151,8 +3151,6 @@ function displayFileSelect () {
         UWPInstructions.style.display = 'block';
     }
     document.getElementById('rescanStorage').style.display = 'none';
-    // This handles use of the file picker
-    document.getElementById('archiveFiles').addEventListener('change', setLocalArchiveFromFileSelect);
 }
 
 function handleGlobalDragover (e) {
@@ -3171,7 +3169,6 @@ function handleIframeDragover (e) {
 function handleIframeDrop (e) {
     e.stopPropagation();
     e.preventDefault();
-    return;
 }
 
 function handleFileDrop (packet) {
@@ -3195,7 +3192,7 @@ function handleFileDrop (packet) {
         params.rescan = false;
         setLocalArchiveFromFileList(files);
         // This clears the display of any previously picked archive in the file selector
-        document.getElementById('archiveFilesLegacy').value = '';
+        archiveFilesLegacy.value = '';
     }
 }
 
@@ -3589,14 +3586,14 @@ function loadPackagedArchive () {
  * Sets the localArchive from the File selects populated by user
  */
 function setLocalArchiveFromFileSelect () {
-    setLocalArchiveFromFileList(document.getElementById('archiveFilesLegacy').files);
+    setLocalArchiveFromFileList(archiveFilesLegacy.files);
     params.rescan = false;
 }
 /**
  * Sets the localArchive from the directory selected by user
  */
 function setLocalArchiveFromDirSelect () {
-    setLocalArchiveFromFileList(document.getElementById('archiveDirLegacy').files);
+    setLocalArchiveFromFileList(archiveDirLegacy.files);
     params.rescan = false;
 }
 
