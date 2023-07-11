@@ -1192,6 +1192,7 @@ function selectArchive (list) {
 archiveFilesLegacy.addEventListener('change', function (files) {
     params.pickedFolder = null;
     params.pickedFile = files.target.files[0].name.replace(/\.zim\w\w$/i, '.zimaa');
+    params.storedFile = params.pickedFile;
     if (appstate.waitForFileSelect) {
         var selected = appstate.waitForFileSelect;
         appstate.waitForFileSelect = null;
@@ -1199,8 +1200,12 @@ archiveFilesLegacy.addEventListener('change', function (files) {
         document.getElementById('archiveList').value = selected;
         console.debug('Files are set, attempting to select ' + selected);
     }
-    populateDropDownListOfArchives([params.pickedFile], true);
-    setLocalArchiveFromArchiveList(params.pickedFile);
+    if (params.webkitdirectory) {
+        populateDropDownListOfArchives([params.pickedFile], true);
+        setLocalArchiveFromArchiveList(params.pickedFile);
+    } else {
+        setLocalArchiveFromFileList(files.target.files);
+    }
 });
 // But in preference, use UWP, File System Access API
 document.getElementById('archiveFile').addEventListener('click', function () {
@@ -1263,6 +1268,8 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
             scanUWPFolderforArchives(params.pickedFolder)
         } else if (window.fs) {
             scanNodeFolderforArchives(params.pickedFolder);
+        } else if (params.webkitdirectory) {
+            document.getElementById('archiveFiles').click();
         }
     } else if (typeof window.showOpenFilePicker === 'function' && !params.pickedFile) {
         getNativeFSHandle(function (fsHandle) {
