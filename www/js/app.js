@@ -1130,6 +1130,7 @@ function selectArchive (list) {
     // Void any previous picked file to prevent it launching
     if (params.pickedFile && params.pickedFile.name !== selected) {
         params.pickedFile = '';
+        params.storedFile = '';
     }
     if (!window.fs && window.showOpenFilePicker) {
         getNativeFSHandle(function (handle) {
@@ -1161,10 +1162,19 @@ function selectArchive (list) {
         // If we don't have any picked files or directories...
         if (!archiveDirLegacy.files.length && !archiveFilesLegacy.files.length) {
             appstate.waitForFileSelect = selected;
-            // No files are set, so we need to ask user to select the directory again
-            archiveDirLegacy.click();
+            // No files are set, so we need to ask user to select the file or directory again
+            if (params.pickedFolder || document.getElementById('archiveList').children.length > 1) {
+                archiveDirLegacy.click();
+            } else {
+                archiveFilesLegacy.click();
+            }
         } else {
             console.debug('Files are set, attempting to select ' + selected);
+            params.pickedFile = selected;
+            if (archiveDirLegacy.files.length) {
+                params.pickedFolder = archiveDirLegacy.files[0].webkitRelativePath.replace(/\/[^/]*$/, '');
+                params.pickedFile = '';
+            }
             setLocalArchiveFromArchiveList(selected);
         }
     } else {
@@ -1181,13 +1191,16 @@ function selectArchive (list) {
 // Legacy file picker is used as a fallback when all other pickers are unavailable
 archiveFilesLegacy.addEventListener('change', function (files) {
     params.pickedFolder = null;
-    var filename = files.target.files[0].name;
-    params.pickedFile = filename.replace(/\.zim\w\w$/i, '.zimaa');
-    if (params.webkitdirectory) {
-        params.rescan = true;
-        populateDropDownListOfArchives([filename], true);
+    params.pickedFile = files.target.files[0].name.replace(/\.zim\w\w$/i, '.zimaa');
+    if (appstate.waitForFileSelect) {
+        var selected = appstate.waitForFileSelect;
+        appstate.waitForFileSelect = null;
+        // Select the selected file in the dropdown list of archives
+        document.getElementById('archiveList').value = selected;
+        console.debug('Files are set, attempting to select ' + selected);
     }
-    setLocalArchiveFromFileSelect(files);
+    populateDropDownListOfArchives([params.pickedFile], true);
+    setLocalArchiveFromArchiveList(params.pickedFile);
 });
 // But in preference, use UWP, File System Access API
 document.getElementById('archiveFile').addEventListener('click', function () {
@@ -1210,7 +1223,7 @@ archiveDirLegacy.addEventListener('change', function (files) {
     if (files.target.files.length) {
         var fileArray = Array.from(files.target.files);
         params.pickedFile = null;
-        params.pickedFolder = fileArray[0].webkitRelativePath.split('/')[0];
+        params.pickedFolder = fileArray[0].webkitRelativePath.replace(/\/[^/]*$/, '');
         processFilesArray(fileArray);
         if (appstate.waitForFileSelect) {
             var selected = appstate.waitForFileSelect;
@@ -1218,8 +1231,8 @@ archiveDirLegacy.addEventListener('change', function (files) {
             // Select the selected file in the dropdown list of archives
             document.getElementById('archiveList').value = selected;
             console.debug('Files are set, attempting to select ' + selected);
-            setLocalArchiveFromArchiveList(selected);
         }
+        setLocalArchiveFromArchiveList(selected);
     } else {
         appstate.waitForFileSelect = null;
         console.log('User cancelled directory picker, or chose a directory with no files');
@@ -2947,7 +2960,6 @@ function setLocalArchiveFromArchiveList (archive) {
                     }).catch(function () {
                         openCurrentArchive.style.display = 'inline';
                     });
-                    return;
                 } else if (window.fs) {
                     if (params.pickedFile) {
                         setLocalArchiveFromFileList([params.pickedFile]);
@@ -2980,15 +2992,19 @@ function setLocalArchiveFromArchiveList (archive) {
                         try {
                             selectedStorage = MSApp.createFileFromStorageFile(params.pickedFile);
                             setLocalArchiveFromFileList([selectedStorage]);
-                            return;
                         } catch (err) {
                             // Probably user has moved or deleted the previously selected file
                             uiUtil.systemAlert('The previously picked archive can no longer be found!');
                             console.error('Picked archive not found: ' + err);
                         }
+                        return;
                     } else if (params.pickedFile && typeof window.showOpenFilePicker === 'function') {
                         // Native FS API for single file
                         setLocalArchiveFromFileList([params.pickedFile]);
+                        return;
+                    } else if (params.pickedFile && params.webkitdirectory) {
+                        // Webkitdirectory API for single file
+                        setLocalArchiveFromFileList(archiveFilesLegacy.files);
                         return;
                     }
                 }
