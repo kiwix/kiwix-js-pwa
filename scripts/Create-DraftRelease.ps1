@@ -295,7 +295,7 @@ if (-Not ($dryrun -or $buildonly)) {
 if (-Not $nobundle) {
   "`nBuilding production bundle with rollup..."
   if (-Not $dryrun) {
-    & npm run del-dist && npm run build-min 
+    & npm run build-min 
   } else {
     "[DRYRUN] & npm run build"
   }
