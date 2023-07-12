@@ -53,7 +53,7 @@ jobs:
         echo "Changing to the dist directory"
         cd dist && pwd
         # Get archive name
-        packagedFile="$(grep -m1 'params\[.packagedFile' www/js/init.js | sed -E "s/^.+([^']+\.zim)'.+/\1/')"
+        packagedFile=$(grep -m1 'params\[.packagedFile' www/js/init.js | sed -E "s/^.+'([^']+\.zim)'.+/\1/")
         # If file doesn't exist in FS, download it
         if [ ! -f "archives/$packagedFile" ]; then
           # Generalize the name if cron_launched and download it
