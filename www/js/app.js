@@ -1190,19 +1190,25 @@ function selectArchive (list) {
 
 // Legacy file picker is used as a fallback when all other pickers are unavailable
 archiveFilesLegacy.addEventListener('change', function (files) {
+    var filesArray = Array.from(files.target.files);
     params.pickedFolder = null;
-    params.pickedFile = files.target.files[0].name.replace(/\.zim\w\w$/i, '.zimaa');
-    params.storedFile = params.pickedFile;
+    params.pickedFile = filesArray[0];
+    params.storedFile = params.pickedFile.name.replace(/\.zim\w\w$/i, '.zimaa');
+    if (params.webkitdirectory) {
+        settingsStore.setItem('pickedFolder', '', Infinity);
+        processFilesArray(filesArray);
+    }
+    var selected = params.storedFile;
     if (appstate.waitForFileSelect) {
-        var selected = appstate.waitForFileSelect;
+        selected = appstate.waitForFileSelect;
         appstate.waitForFileSelect = null;
         // Select the selected file in the dropdown list of archives
         document.getElementById('archiveList').value = selected;
         console.debug('Files are set, attempting to select ' + selected);
     }
-    if (params.webkitdirectory) {
-        populateDropDownListOfArchives([params.pickedFile], true);
-        setLocalArchiveFromArchiveList(params.pickedFile);
+    if (!window.fs && params.webkitdirectory) {
+        // populateDropDownListOfArchives([params.pickedFile], true);
+        setLocalArchiveFromArchiveList(selected);
     } else {
         setLocalArchiveFromFileList(files.target.files);
     }
@@ -1226,21 +1232,25 @@ document.getElementById('archiveFile').addEventListener('click', function () {
 // Legacy webkitdirectory file picker is used as a fallback when File System Access API is unavailable
 archiveDirLegacy.addEventListener('change', function (files) {
     if (files.target.files.length) {
-        var fileArray = Array.from(files.target.files);
+        var filesArray = Array.from(files.target.files);
+        // Supports reading in NWJS/Electron frameworks that have a path property on the File object
+        var path = filesArray[0] ? filesArray[0].path ? filesArray[0].path : filesArray[0].webkitRelativePath : '';
         params.pickedFile = null;
-        params.pickedFolder = fileArray[0].webkitRelativePath.replace(/\/[^/]*$/, '');
+        params.pickedFolder = path.replace(/[/\\][^/\\]*$/, '');
+        settingsStore.setItem('pickedFolder', params.pickedFolder, Infinity);
         if (document.getElementById('archiveList').options.length === 0) {
             params.storedFile = null;
         }
-        processFilesArray(fileArray);
+        processFilesArray(filesArray);
+        var selected = '';
         if (appstate.waitForFileSelect) {
-            var selected = appstate.waitForFileSelect;
+            selected = appstate.waitForFileSelect;
             appstate.waitForFileSelect = null;
             // Select the selected file in the dropdown list of archives
             document.getElementById('archiveList').value = selected;
             console.debug('Files are set, attempting to select ' + selected);
         }
-        setLocalArchiveFromArchiveList(selected);
+        if (selected) setLocalArchiveFromArchiveList(selected);
     } else {
         appstate.waitForFileSelect = null;
         console.log('User cancelled directory picker, or chose a directory with no files');
@@ -2983,6 +2993,8 @@ function setLocalArchiveFromArchiveList (archive) {
                                 } else {
                                     setLocalArchiveFromFileList(selectedFiles);
                                 }
+                            }).catch(function (err) {
+                                console.error(err);
                             });
                         } else {
                             uiUtil.systemAlert('We could not find the location of the file ' + archive +
@@ -3437,7 +3449,7 @@ function processFilesArray (files, callback) {
         });
         if (archiveList.length) {
             document.getElementById('noZIMFound').style.display = 'none';
-            populateDropDownListOfArchives(archiveList);
+            populateDropDownListOfArchives(archiveList, true);
             if (callback) callback(files, archiveList);
             return;
         }
@@ -3602,6 +3614,8 @@ function loadPackagedArchive () {
                 params.storedFile = params.packagedFile;
                 setLocalArchiveFromFileList(fileObjects);
                 populateDropDownListOfArchives(fileNames, true);
+            }).catch(function (err) {
+                console.error(err);
             });
             // createFakeFileObjectNode(params.packagedFile, params.archivePath + '/' + params.packagedFile, processFakeFile);
         }
@@ -3672,6 +3686,7 @@ function readNodeDirectoryAndCreateNodeFileObjects (folder, file) {
         var selectedFileSet = [], selectedFileNamesSet = [];
         var count = 0;
         var fileHandle = typeof file === 'string' ? file : file[0];
+        // Electron may need to handle the path differently
         if (folder === params.archivePath && /^file:/i.test(window.location.protocol)) {
             folder = decodeURIComponent(window.location.href.replace(/www\/[^/?#]+(?:[?#].*)?$/, '') + folder);
         }
