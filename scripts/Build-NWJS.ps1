@@ -1,6 +1,7 @@
 ﻿[CmdletBinding()]
 param (
-    [switch]$only32bit = $false
+    [switch]$only32bit = $false,
+    [switch]$usesdk = $false
 )
 $builds = @("win-ia32", "win-xp")
 if (-Not $only32bit) {
@@ -41,17 +42,21 @@ foreach ($build in $builds) {
     $folderTarget = "$PSScriptRoot\..\dist\bld\nwjs\$build-$version"
     $target = "$folderTarget\kiwix_js_windows$sep$appBuild"
     $fullTarget = "$target-$build"
+    $sdk = ""
+    if ($usesdk) {
+        $sdk = "-sdk"
+    }
     $ZipFolder = "$PSScriptRoot\..\dist\node_modules\nwjs-builder-phoenix\caches\"
-    $ZipLocation = $ZipFolder + "nwjs-v$version-$build.zip"
+    $ZipLocation = $ZipFolder + "nwjs$sdk-v$version-$build.zip"
     $UnzipLocation = "$ZipLocation-extracted\"
-    $buildLocation = "$ZipLocation-extracted\nwjs-v$version-$build\"
+    $buildLocation = "$ZipLocation-extracted\nwjs$sdk-v$version-$build\"
     if (-Not (Test-Path $ZipFolder -PathType Container)) {
         mkdir $ZipFolder
     }
     if (-Not (Test-Path $buildLocation -PathType Container)) {
         # We need to download and/or unzip the release, as it is not available
         if (-Not (Test-Path $ZipLocation -PathType Leaf)) {
-            $serverFile = "https://dl.nwjs.io/v$version/nwjs-v$version-$build.zip"
+            $serverFile = "https://dl.nwjs.io/v$version/nwjs$sdk-v$version-$build.zip"
             "Downloading $serverFile"
             Invoke-WebRequest -Uri $serverFile -OutFile $ZipLocation
         }
