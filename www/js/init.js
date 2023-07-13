@@ -51,6 +51,7 @@ var params = {};
  * @type Object
  */
 var appstate = {};
+
 // ******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******
 params['appVersion'] = '2.5.4'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
 // ******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************
@@ -107,6 +108,8 @@ params['rightClickType'] = getSetting('rightClickType'); // 'single|double|false
 params['navButtonsPos'] = getSetting('navButtonsPos') || 'bottom'; // 'top|bottom' A setting that determines where the back-forward nav buttons appear
 
 // Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
+params['cacheAPI'] = 'kiwixjs-assetsCache'; // Set the global Cache API database or cache name here, and synchronize with Service Worker
+params['cacheIDB'] = 'kiwix-assetsCache'; // Set the global IndexedDB database here (Slightly different name to disambiguate)
 params['imageDisplayMode'] = params.imageDisplay ? 'progressive' : 'manual';
 params['storedFile'] = getSetting('lastSelectedArchive');
 params.storedFile = launchArguments ? launchArguments.files[0].name : params.storedFile || params['packagedFile'] || '';

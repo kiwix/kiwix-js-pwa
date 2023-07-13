@@ -1440,11 +1440,6 @@ document.getElementById('manipulateImagesCheck').addEventListener('click', funct
 ['btnReset', 'btnReset2'].forEach(function (id) {
     document.getElementById(id).addEventListener('click', function () {
         settingsStore.reset();
-        // Because the reset function used in settingsStore for indexedDB only works on Chromium, we need to clear keys manually as well
-        if (appstate.clearIndexedDB) {
-            cache.clear('reset');
-            appstate.clearIndexedDB = false;
-        }
     });
 });
 document.getElementById('btnRefreshApp').addEventListener('click', function () {
