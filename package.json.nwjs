@@ -22,12 +22,14 @@
     "nwVersion": "0.14.7",
     "output": "bld/nwjs/win-x86-xp",
     "files": [
-      "archives/**",
       "service-worker.js",
       "index.html",
       "CHANGELOG.md",
       "LICENCE",
+      "manifest.json",
       "www/**",
+      "archives/README.md",
+      "archives/wikip*.*",      
       "!**/*.dev.{js,wasm}"
     ],
     "win": {
@@ -38,12 +40,14 @@
     "nwVersion": "0.72.0",
     "output": "bld/nwjs/win-x64",
     "files": [
-      "archives/**",
       "service-worker.js",
       "index.html",
       "CHANGELOG.md",
       "LICENCE",
+      "manifest.json",
       "www/**",
+      "archives/README.md",
+      "archives/wikip*.*",
       "!**/*.dev.{js,wasm}"
     ],
     "win": {
@@ -58,6 +62,7 @@
       "index.html",
       "CHANGELOG.md",
       "LICENCE",
+      "manifest.json",
       "www/**",
       "archives/README.md",
       "archives/wikip*.*",

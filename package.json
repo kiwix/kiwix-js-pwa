@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-electron",
   "productName": "Kiwix JS Electron",
-  "version": "2.5.4-E",
+  "version": "2.5.4-N",
   "description": "Kiwix JS packaged for the Electron framework",
   "main": "main.cjs",
   "type": "module",
@@ -88,6 +88,7 @@
       "index.html",
       "CHANGELOG.md",
       "LICENCE",
+      "manifest.json",
       "www/**",
       "preload.cjs",
       "main.cjs",
@@ -157,3 +158,5 @@
     "electron-updater": "^6.1.0"
   }
 }
+
+
