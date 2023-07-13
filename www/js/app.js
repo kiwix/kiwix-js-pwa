@@ -1071,7 +1071,7 @@ function getNativeFSHandle (callback) {
             } else {
                 // We have failed to load a picked archive via the File System API, but if params.storedFilePath exists, then the archive
                 // was launched with Electron APIs, so we can get the folder that way
-                if (params.storedFile && params.storedFilePath) params.pickedFolder = params.pickedFolder = params.storedFilePath.replace(/[^\\/]+$/, '');;
+                if (params.storedFile && params.storedFilePath) params.pickedFolder = params.pickedFolder = params.storedFilePath.replace(/[^\\/]+$/, '');
                 scanNodeFolderforArchives(params.pickedFolder, function () {
                     // We now have the list of archives in the dropdown, so we try to select the storedFile
                     setLocalArchiveFromArchiveList(params.storedFile);
@@ -1092,7 +1092,7 @@ document.getElementById('btnAbout').addEventListener('click', function () {
     }
     // Check if we're 'unclicking' the button
     var searchDiv = document.getElementById('about');
-    if (searchDiv.style.display != 'none') {
+    if (searchDiv.style.display !== 'none') {
         setTab();
         return;
     }
