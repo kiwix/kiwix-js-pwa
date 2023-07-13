@@ -2621,7 +2621,7 @@ var storages = [];
 function searchForArchivesInPreferencesOrStorage () {
     // First see if the list of archives is stored in the cookie
     var listOfArchivesFromCookie = settingsStore.getItem('listOfArchives');
-    if (listOfArchivesFromCookie !== null && listOfArchivesFromCookie !== undefined && listOfArchivesFromCookie !== '') {
+    if (listOfArchivesFromCookie) {
         var directories = listOfArchivesFromCookie.split('|');
         populateDropDownListOfArchives(directories);
     } else {
@@ -2836,7 +2836,7 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
             comboArchiveList.options[i] = new Option(archiveDirectory, archiveDirectory);
         }
     }
-    // Store the list of archives in a cookie, to avoid rescanning at each start
+    // Store the list of archives in settingsStore, to avoid rescanning at each start
     settingsStore.setItem('listOfArchives', archiveDirectories.join('|'), Infinity);
     comboArchiveList.size = comboArchiveList.length > 15 ? 15 : comboArchiveList.length;
     // Kiwix-Js-Windows #23 - remove dropdown caret if only one archive
@@ -2845,7 +2845,7 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
     if (comboArchiveList.options.length > 0) {
         // If we're doing a rescan, then don't attempt to jump to the last selected archive, but leave selectors open
         var lastSelectedArchive = params.rescan ? '' : params.storedFile;
-        if (lastSelectedArchive !== null && lastSelectedArchive !== undefined && lastSelectedArchive !== '') {
+        if (lastSelectedArchive) {
             //  || comboArchiveList.options.length == 1
             // Either we have previously chosen a file, or there is only one file
             // Attempt to select the corresponding item in the list, if it exists
@@ -2871,8 +2871,10 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
                 // }
                 // Warn user that the file they wanted is no longer available
                 var message = '<p>We could not find the archive <b>' + lastSelectedArchive + '</b>!</p><p>Please select its location...</p>';
-                if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
-                    message += '<p><i>Note:</i> If you drag-drop an archive into this UWP app, then it will have to be dragged again each time you launch the app. Try double-clicking on the archive instead, or select it using the controls on this page.</p>';
+                if (params.webkitdirectory && !window.fs || typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
+                    message += '<p><i>Note:</i> If you drag-drop an archive into this app, then it will have to be dragged again each time you launch the app. Try ';
+                    message += typeof Windows !== 'undefined' ? 'double-clicking on the archive instead, or ' : '';
+                    message += 'selecting it using the controls on this page.</p>';
                 }
                 if (document.getElementById('configuration').style.display === 'none') {
                     document.getElementById('btnConfigure').click();
@@ -3005,7 +3007,7 @@ function setLocalArchiveFromArchiveList (archive) {
                         }
                     }
                     return;
-                } else if (params.pickedFolder && params.webkitdirectory) {
+                } else if (params.pickedFolder && params.webkitdirectory && archiveDirLegacy.files.length) {
                     processDirectoryOfFiles(archiveDirLegacy.files, archive);
                     return;
                 } else { // Check if user previously picked a specific file rather than a folder

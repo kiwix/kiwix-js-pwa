@@ -60,7 +60,7 @@ var useAssetsCache = true;
  * This is an expert setting in Configuration
  * @type {Boolean}
  */
- var useAppCache = true;
+var useAppCache = true;
 
 /**
  * A Boolean that governs whether images are displayed
