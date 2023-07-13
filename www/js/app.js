@@ -1245,7 +1245,13 @@ archiveDirLegacy.addEventListener('change', function (files) {
         // Supports reading in NWJS/Electron frameworks that have a path property on the File object
         var path = filesArray[0] ? filesArray[0].path ? filesArray[0].path : filesArray[0].webkitRelativePath : '';
         params.pickedFile = null;
-        params.pickedFolder = path.replace(/[/\\][^/\\]*$/, '');
+        var oldDir = params.pickedFolder;
+        params.pickedFolder = path.replace(/[^\\/]*$/, '');
+        // If we're picking a different directroy, don't look for the previously picked file in it
+        if (params.pickedFolder !== oldDir) {
+            params.storedFile = null;
+            params.storedFilePath = null;
+        }
         settingsStore.setItem('pickedFolder', params.pickedFolder, Infinity);
         if (document.getElementById('archiveList').options.length === 0) {
             params.storedFile = null;
@@ -2705,7 +2711,7 @@ if (storages !== null && storages.length > 0 ||
         }
     }
     if (!params.pickedFile) {
-        if (params.storedFile && window.showOpenFilePicker) {
+        if (params.storedFile && (window.showOpenFilePicker)) {
             // We are in an app with support for File System Access API, so we can't auto-load the file, show file pickers
             document.getElementById('btnConfigure').click();
         } else {
@@ -2881,7 +2887,7 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
                 // Warn user that the file they wanted is no longer available
                 var message = '<p>We could not find the archive <b>' + lastSelectedArchive + '</b>!</p><p>Please select its location...</p>';
                 if (params.webkitdirectory && !window.fs || typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
-                    message += '<p><i>Note:</i> If you drag-drop an archive into this app, then it will have to be dragged again each time you launch the app. Try ';
+                    message += '<p><i>Note:</i> If you drag-drop ' + (window.showOpenFilePicker ? 'a <b>split</b>' : 'an') + ' archive into this app, then it will have to be dragged again each time you launch the app. Try ';
                     message += typeof Windows !== 'undefined' ? 'double-clicking on the archive instead, or ' : '';
                     message += 'selecting it using the controls on this page.</p>';
                 }
@@ -3238,6 +3244,10 @@ function handleFileDrop (packet) {
         document.getElementById('openLocalFiles').style.display = 'none';
         document.getElementById('rescanStorage').style.display = 'block';
         document.getElementById('usage').style.display = 'none';
+        // We have to void the previous picked folder, because dragged files don't have a folder
+        // This also prevents a file-not-found alert to the user when picking a new directory
+        params.pickedFolder = null;
+        settingsStore.setItem('pickedFolder', '', Infinity);
         params.rescan = false;
         setLocalArchiveFromFileList(files);
     }
