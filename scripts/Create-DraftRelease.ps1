@@ -11,7 +11,8 @@ param (
     [string]$electronbuild = "", # 'local' or 'cloud'
     [switch]$portableonly = $false, # If set, only the portable electron build will be built. Implies local electron build.
     [switch]$updatewinget = $false,
-    [string]$wingetprompt = "" # Provide an override response (Y/N) to the winget prompt at the end of the script - for automation
+    [string]$wingetprompt = "", # Provide an override response (Y/N) to the winget prompt at the end of the script - for automation
+    [switch]$nobranchcheck = $false # If set, will not check that the current branch is correct for the type of app to build
 )
 # DEV: To build Electron packages for all platforms and NWJS for XP and Vista in a single release, use, e.g., "v1.3.0E+N" (Electron + NWJS)
 # DEV: To build UWP + Electron in a single release (for WikiMed or Wikivoyage), use "v1.3.0+E" (plus Electron)
@@ -185,8 +186,12 @@ if ($numeric_tag -ne $file_tag_numeric) {
 $actual_branch = git rev-parse --abbrev-ref HEAD
 if ($branch -ne $actual_branch) {
   Write-Host "`nError! The branch you are on [$actual_branch] does not match the type of app you wish to build [$branch]!" -ForegroundColor Red
-  Write-Host "Please switch to the correct branch and try again.`n" -ForegroundColor Red
-  exit 1
+  if (-not $nobranchcheck) { 
+    Write-Host "Please switch to the correct branch and try again.`n" -ForegroundColor Red
+    exit 1
+  } else {
+    Write-Host "Continuing anyway as you have specified the -nobranchcheck option.`n" -ForegroundColor Yellow
+  }
 }
 
 # Determine type of Electron build if any
@@ -290,7 +295,7 @@ if (-Not ($dryrun -or $buildonly)) {
 if (-Not $nobundle) {
   "`nBuilding production bundle with rollup..."
   if (-Not $dryrun) {
-    & npm run del-dist && npm run build-min 
+    & npm run build-min 
   } else {
     "[DRYRUN] & npm run build"
   }
@@ -428,7 +433,7 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         }
       }
       # Check for the existence of the requested packaged archive
-      $packagedFile = (Select-String 'packagedFile' "dist\www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1'
+      $packagedFile = (Select-String 'packagedFile' "dist\www\js\init.js" -List) -ireplace "^.+['`"]([^'`"]+\.zim)['`"].+", '$1'
       if ($packagedFile -and ! (Test-Path "dist\archives\$packagedFile" -PathType Leaf)) {
         # File not in archives
         $downloadArchiveChk = Read-Host "`nWe could not find the packaged archive, do you wish to download it? Y/N"

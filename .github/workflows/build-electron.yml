@@ -53,7 +53,7 @@ jobs:
         echo "Changing to the dist directory"
         cd dist && pwd
         # Get archive name
-        packagedFile="$(grep -m1 'params\[.packagedFile' www/js/init.js | sed -E 's/^[^"]+"([^"]+\.zim)".+/\1/')"
+        packagedFile=$(grep -m1 'params\[.packagedFile' www/js/init.js | sed -E "s/^.+'([^']+\.zim)'.+/\1/")
         # If file doesn't exist in FS, download it
         if [ ! -f "archives/$packagedFile" ]; then
           # Generalize the name if cron_launched and download it
@@ -144,7 +144,7 @@ jobs:
       run: |
         echo "Changing to the dist directory"
         cd dist && pwd
-        $packagedFile = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1'
+        $packagedFile = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace "^.+'([^']+\.zim)'.+", '$1'
         if ($packagedFile -and ! (Test-Path "archives\$packagedFile" -PathType Leaf)) {
           # File not in archives, so generalize the name (if nightly) and download it
           Write-Host "`nDownloading https://download.kiwix.org/zim/$packagedFile"
@@ -190,7 +190,7 @@ jobs:
           }
           # To ensure there is enough disk space, we can delete the archive that is no longer needed
           rm -r dist/archives
-          ./scripts/Create-DraftRelease -buildonly -tag_name $INPUT_VERSION_E -portableonly -nobundle -wingetprompt N
+          ./scripts/Create-DraftRelease -buildonly -tag_name $INPUT_VERSION_E -portableonly -nobundle -wingetprompt N -nobranchcheck
         }
     - name: Publish packages
       if: github.event.inputs.target != 'artefacts'
@@ -241,7 +241,7 @@ jobs:
       run: |
         echo "Changing to the dist directory"
         cd dist && pwd
-        $packagedFile = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace '^[^"]+"([^"]+\.zim)".+', '$1'
+        $packagedFile = (Select-String 'packagedFile' "www\js\init.js" -List) -ireplace "^.+'([^']+\.zim)'.+", '$1'
         if ($packagedFile -and ! (Test-Path "archives\$packagedFile" -PathType Leaf)) {
           # File not in archives, so generalize the name (if nightly) and download it
           Write-Host "`nDownloading https://download.kiwix.org/zim/$packagedFile"

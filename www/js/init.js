@@ -23,6 +23,8 @@
 
 'use strict';
 
+/* global Windows, launchArguments */
+
 // Set a global error handler to prevent app crashes
 window.onerror = function (msg, url, line, col, error) {
     console.error('Error caught in app [' + url + ':' + line + ']:\n' + msg, error);
@@ -45,57 +47,58 @@ var params = {};
 
 /**
  * A global state object
- * 
+ *
  * @type Object
  */
 var appstate = {};
-/******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******/
-params['appVersion'] = "2.5.4"; //DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
-/******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************/
-params['packagedFile'] = getSetting('packagedFile') || "wikipedia_en_100_mini_2023-06.zim"; //For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
-params['archivePath'] = "archives"; //The directory containing the packaged archive(s) (relative to app's root directory)  
-params['fileVersion'] = getSetting('fileVersion') || "wikipedia_en_100_mini_2023-06.zim (2 June 2023)"; //This will be displayed in the app - optionally include date of ZIM file
+
+// ******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******
+params['appVersion'] = '2.5.4'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
+// ******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************
+params['packagedFile'] = getSetting('packagedFile') || 'wikipedia_en_100_mini_2023-06.zim'; // For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
+params['archivePath'] = 'archives'; // The directory containing the packaged archive(s) (relative to app's root directory)
+params['fileVersion'] = getSetting('fileVersion') || 'wikipedia_en_100_mini_2023-06.zim (2 June 2023)'; // This will be displayed in the app - optionally include date of ZIM file
 // List of known start pages cached in the FS:
 params['cachedStartPages'] = {
     'wikipedia_en_medicine-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
-    'wikipedia_en_medicine_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
+    wikipedia_en_medicine_maxi: 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
     // 'mdwiki_en_all_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
-    'wikivoyage_en_all_maxi': 'A/Main_Page'
+    wikivoyage_en_all_maxi: 'A/Main_Page'
 };
-params['kiwixDownloadLink'] = "https://download.kiwix.org/zim/"; //Include final slash
-params['kiwixHiddenDownloadLink'] = "https://master.download.kiwix.org/zim/";
-/******* DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
-params['PWAServer'] = "https://pwa.kiwix.org/"; // Production server
+params['kiwixDownloadLink'] = 'https://download.kiwix.org/zim/'; // Include final slash
+params['kiwixHiddenDownloadLink'] = 'https://master.download.kiwix.org/zim/';
+/** ***** DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
+params['PWAServer'] = 'https://pwa.kiwix.org/'; // Production server
 // params['PWAServer'] = "https://kiwix.github.io/kiwix-js-windows/dist/"; // Test server
 params['storeType'] = getBestAvailableStorageAPI();
 params['appType'] = getAppType();
 params['keyPrefix'] = 'kiwixjs-'; // Prefix to use for localStorage keys
 // Maximum number of article titles to return (range is 5 - 100, default 30)
 params['maxSearchResultsSize'] = ~~(getSetting('maxSearchResultsSize') || 30);
-params['relativeFontSize'] = ~~(getSetting('relativeFontSize') || 100); //Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
-params['relativeUIFontSize'] = ~~(getSetting('relativeUIFontSize') || 100); //Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
-params['cssSource'] = getSetting('cssSource') || "auto"; //Set default to "auto", "desktop" or "mobile"
-params['removePageMaxWidth'] = getSetting('removePageMaxWidth') != null ? getSetting('removePageMaxWidth') : "auto"; //Set default for removing max-width restriction on Wikimedia pages ("auto" = removed in desktop, not in mobile; true = always remove; false = never remove)
-params['displayHiddenBlockElements'] = getSetting('displayHiddenBlockElements') !== null ? getSetting('displayHiddenBlockElements') : "auto"; //Set default for displaying hidden block elements ("auto" = displayed in Wikimedia archives in mobile style)
-params['openAllSections'] = getSetting('openAllSections') != null ? getSetting('openAllSections') : true; //Set default for opening all sections in ZIMs that have collapsible sections and headings ("auto" = let CSS decide according to screen width; true = always open until clicked by user; false = always closed until clicked by user)
-params['cssCache'] = getSetting('cssCache') != null ? getSetting('cssCache') : true; //Set default to true to use cached CSS, false to use Zim only
-params['cssTheme'] = getSetting('cssTheme') || 'light'; //Set default to 'auto', 'light', 'dark' or 'invert' to use respective themes for articles
-params['cssUITheme'] = getSetting('cssUITheme') || 'light'; //Set default to 'auto', 'light' or 'dark' to use respective themes for UI'
+params['relativeFontSize'] = ~~(getSetting('relativeFontSize') || 100); // Sets the initial font size for articles (as a percentage) - user can adjust using zoom buttons
+params['relativeUIFontSize'] = ~~(getSetting('relativeUIFontSize') || 100); // Sets the initial font size for UI (as a percentage) - user can adjust using slider in Config
+params['cssSource'] = getSetting('cssSource') || 'auto'; // Set default to "auto", "desktop" or "mobile"
+params['removePageMaxWidth'] = getSetting('removePageMaxWidth') != null ? getSetting('removePageMaxWidth') : 'auto'; // Set default for removing max-width restriction on Wikimedia pages ("auto" = removed in desktop, not in mobile; true = always remove; false = never remove)
+params['displayHiddenBlockElements'] = getSetting('displayHiddenBlockElements') !== null ? getSetting('displayHiddenBlockElements') : 'auto'; // Set default for displaying hidden block elements ("auto" = displayed in Wikimedia archives in mobile style)
+params['openAllSections'] = getSetting('openAllSections') != null ? getSetting('openAllSections') : true; // Set default for opening all sections in ZIMs that have collapsible sections and headings ("auto" = let CSS decide according to screen width; true = always open until clicked by user; false = always closed until clicked by user)
+params['cssCache'] = getSetting('cssCache') != null ? getSetting('cssCache') : true; // Set default to true to use cached CSS, false to use Zim only
+params['cssTheme'] = getSetting('cssTheme') || 'light'; // Set default to 'auto', 'light', 'dark' or 'invert' to use respective themes for articles
+params['cssUITheme'] = getSetting('cssUITheme') || 'light'; // Set default to 'auto', 'light' or 'dark' to use respective themes for UI'
 params['resetDisplayOnResize'] = getSetting('resetDisplayOnResize') == true; // Default for the display reset feature that fixes bugs with secondary displays
-params['imageDisplay'] = getSetting('imageDisplay') != null ? getSetting('imageDisplay') : true; //Set default to display images from Zim
-params['manipulateImages'] = getSetting('manipulateImages') != null ? getSetting('manipulateImages') : true; //Makes dataURIs by default instead of BLOB URIs for images
-params['linkToWikimediaImageFile'] = getSetting('linkToWikimediaImageFile') == true; //Links images to Wikimedia online version if ZIM archive is a Wikipedia archive
-params['hideToolbars'] = getSetting('hideToolbars') != null ? getSetting('hideToolbars') : true; //Set default to true (hides both), 'top' (hides top only), or false (no hiding)
-params['rememberLastPage'] = getSetting('rememberLastPage') != null ? getSetting('rememberLastPage') : true; //Set default option to remember the last visited page between sessions
+params['imageDisplay'] = getSetting('imageDisplay') != null ? getSetting('imageDisplay') : true; // Set default to display images from Zim
+params['manipulateImages'] = getSetting('manipulateImages') != null ? getSetting('manipulateImages') : true; // Makes dataURIs by default instead of BLOB URIs for images
+params['linkToWikimediaImageFile'] = getSetting('linkToWikimediaImageFile') == true; // Links images to Wikimedia online version if ZIM archive is a Wikipedia archive
+params['hideToolbars'] = getSetting('hideToolbars') != null ? getSetting('hideToolbars') : true; // Set default to true (hides both), 'top' (hides top only), or false (no hiding)
+params['rememberLastPage'] = getSetting('rememberLastPage') != null ? getSetting('rememberLastPage') : true; // Set default option to remember the last visited page between sessions
 params['assetsCache'] = getSetting('assetsCache') != null ? getSetting('assetsCache') : true; // Whether to use cache by default or not
 params['appCache'] = getSetting('appCache') !== false; // Will be true by default unless explicitly set to false
-params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax') : true; //Set default to true to display math formulae with MathJax, false to use fallback SVG images only
-//params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
-params['showFileSelectors'] = true; //False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
+params['useMathJax'] = getSetting('useMathJax') != null ? getSetting('useMathJax') : true; // Set default to true to display math formulae with MathJax, false to use fallback SVG images only
+// params['showFileSelectors'] = getCookie('showFileSelectors') != null ? getCookie('showFileSelectors') : false; //Set to true to display hidden file selectors in packaged apps
+params['showFileSelectors'] = true; // False will cause file selectors to be hidden on each load of the app (by ignoring cookie)
 params['hideActiveContentWarning'] = getSetting('hideActiveContentWarning') != null ? getSetting('hideActiveContentWarning') : false;
 params['allowHTMLExtraction'] = getSetting('allowHTMLExtraction') == true;
-params['alphaChar'] = getSetting('alphaChar') || 'A'; //Set default start of alphabet string (used by the Archive Index)
-params['omegaChar'] = getSetting('omegaChar') || 'Z'; //Set default end of alphabet string
+params['alphaChar'] = getSetting('alphaChar') || 'A'; // Set default start of alphabet string (used by the Archive Index)
+params['omegaChar'] = getSetting('omegaChar') || 'Z'; // Set default end of alphabet string
 params['contentInjectionMode'] = getSetting('contentInjectionMode') || ((navigator.serviceWorker && !window.nw) ? 'serviceworker' : 'jquery'); // Deafault to SW mode if the browser supports it
 params['allowInternetAccess'] = getSetting('allowInternetAccess'); // Access disabled unless user specifically asked for it: NB allow this value to be null as we use it later
 params['openExternalLinksInNewTabs'] = getSetting('openExternalLinksInNewTabs') !== null ? getSetting('openExternalLinksInNewTabs') : true; // Parameter to turn on/off opening external links in new tab
@@ -104,7 +107,9 @@ params['windowOpener'] = getSetting('windowOpener'); // 'tab|window|false' A set
 params['rightClickType'] = getSetting('rightClickType'); // 'single|double|false' A setting that determines whether a single or double right-click is used to open a new window/tab
 params['navButtonsPos'] = getSetting('navButtonsPos') || 'bottom'; // 'top|bottom' A setting that determines where the back-forward nav buttons appear
 
-//Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
+// Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
+params['cacheAPI'] = 'kiwixjs-assetsCache'; // Set the global Cache API database or cache name here, and synchronize with Service Worker
+params['cacheIDB'] = 'kiwix-assetsCache'; // Set the global IndexedDB database here (Slightly different name to disambiguate)
 params['imageDisplayMode'] = params.imageDisplay ? 'progressive' : 'manual';
 params['storedFile'] = getSetting('lastSelectedArchive');
 params.storedFile = launchArguments ? launchArguments.files[0].name : params.storedFile || params['packagedFile'] || '';
@@ -114,16 +119,16 @@ params['storedFilePath'] = getSetting('lastSelectedArchivePath');
 params.storedFilePath = params.storedFilePath ? decodeURIComponent(params.storedFilePath) : params.archivePath + '/' + params.packagedFile;
 params.storedFilePath = launchArguments ? launchArguments.files[0].path || '' : params.storedFilePath;
 params.originalPackagedFile = params.packagedFile;
-params['localStorage'] = "";
-params['pickedFile'] = launchArguments ? launchArguments.files[0] : "";
-params['pickedFolder'] = "";
+params['localStorage'] = '';
+params['pickedFile'] = launchArguments ? launchArguments.files[0] : '';
+params['pickedFolder'] = '';
 params['themeChanged'] = params['themeChanged'] || false;
 params['printIntercept'] = false;
 params['printInterception'] = false;
 params['appIsLaunching'] = true; // Allows some routines to tell if the app has just been launched
 params['PWAInstalled'] = window.matchMedia('(display-mode: standalone)').matches; // Because user may reset the app, we have to test for standalone mode
-params['falFileToken'] = "zimfile"; // UWP support
-params['falFolderToken'] = "zimfilestore"; // UWP support
+params['falFileToken'] = 'zimfile'; // UWP support
+params['falFolderToken'] = 'zimfilestore'; // UWP support
 params.pagesLoaded = 0; // Page counter used to show PWA Install Prompt only after user has played with the app for a while
 params.localUWPSettings = /UWP/.test(params.appType) ? Windows.Storage.ApplicationData.current.localSettings.values : null;
 appstate['target'] = 'iframe'; // The target for article loads (this should always be 'iframe' initially, and will only be changed as a result of user action)
@@ -218,24 +223,24 @@ document.getElementById('manipulateImagesCheck').checked = params.manipulateImag
 document.getElementById('removePageMaxWidthCheck').checked = params.removePageMaxWidth === true; // Will be false if false or auto
 document.getElementById('removePageMaxWidthCheck').indeterminate = params.removePageMaxWidth === 'auto';
 document.getElementById('removePageMaxWidthCheck').readOnly = params.removePageMaxWidth === 'auto';
-document.getElementById('pageMaxWidthState').textContent = (params.removePageMaxWidth === "auto" ? "auto" : params.removePageMaxWidth ? "always" : "never");
+document.getElementById('pageMaxWidthState').textContent = (params.removePageMaxWidth === 'auto' ? 'auto' : params.removePageMaxWidth ? 'always' : 'never');
 document.getElementById('displayHiddenBlockElementsCheck').checked = params.displayHiddenBlockElements === true;
 document.getElementById('displayHiddenBlockElementsCheck').indeterminate = params.displayHiddenBlockElements === 'auto';
 document.getElementById('displayHiddenBlockElementsCheck').readOnly = params.displayHiddenBlockElements === 'auto';
-document.getElementById('displayHiddenElementsState').textContent = (params.displayHiddenBlockElements === "auto" ? "auto" : params.displayHiddenBlockElements ? "always" : "never");
+document.getElementById('displayHiddenElementsState').textContent = (params.displayHiddenBlockElements === 'auto' ? 'auto' : params.displayHiddenBlockElements ? 'always' : 'never');
 document.getElementById('openAllSectionsCheck').checked = params.openAllSections;
 document.getElementById('linkToWikimediaImageFileCheck').checked = params.linkToWikimediaImageFile;
 document.getElementById('useOSMCheck').checked = /openstreetmap/.test(params.mapsURI);
-document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme == "dark"; // Will be true, or false if light or auto
-document.getElementById('cssUIDarkThemeCheck').indeterminate = params.cssUITheme == "auto";
-document.getElementById('cssUIDarkThemeCheck').readOnly = params.cssUITheme == "auto";
+document.getElementById('cssUIDarkThemeCheck').checked = params.cssUITheme == 'dark'; // Will be true, or false if light or auto
+document.getElementById('cssUIDarkThemeCheck').indeterminate = params.cssUITheme == 'auto';
+document.getElementById('cssUIDarkThemeCheck').readOnly = params.cssUITheme == 'auto';
 document.getElementById('cssUIDarkThemeState').innerHTML = params.cssUITheme;
 document.getElementById('cssWikiDarkThemeCheck').checked = /dark|invert/.test(params.cssTheme);
-document.getElementById('cssWikiDarkThemeCheck').indeterminate = params.cssTheme == "auto";
-document.getElementById('cssWikiDarkThemeCheck').readOnly = params.cssTheme == "auto";
+document.getElementById('cssWikiDarkThemeCheck').indeterminate = params.cssTheme == 'auto';
+document.getElementById('cssWikiDarkThemeCheck').readOnly = params.cssTheme == 'auto';
 document.getElementById('cssWikiDarkThemeState').innerHTML = params.cssTheme;
-document.getElementById('darkInvert').style.display = /dark|invert|darkReader/i.test(params.cssTheme) ? "inline" : "none";
-document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' && /dark|invert|darkReader/i.test(params.cssTheme) ? "inline" : "none";
+document.getElementById('darkInvert').style.display = /dark|invert|darkReader/i.test(params.cssTheme) ? 'inline' : 'none';
+document.getElementById('darkDarkReader').style.display = params.contentInjectionMode === 'serviceworker' && /dark|invert|darkReader/i.test(params.cssTheme) ? 'inline' : 'none';
 document.getElementById('cssWikiDarkThemeInvertCheck').checked = params.cssTheme == 'invert';
 document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = params.cssTheme == 'darkReader';
 document.getElementById('resetDisplayOnResizeCheck').checked = params.resetDisplayOnResize;
@@ -248,17 +253,17 @@ document.getElementById('omegaCharTxt').value = params.omegaChar;
 document.getElementById('titleSearchRange').value = params.maxSearchResultsSize;
 document.getElementById('titleSearchRangeVal').innerHTML = params.maxSearchResultsSize;
 document.getElementById('hideToolbarsCheck').checked = params.hideToolbars === true; // Will be false if false or 'top'
-document.getElementById('hideToolbarsCheck').indeterminate = params.hideToolbars === "top";
-document.getElementById('hideToolbarsCheck').readOnly = params.hideToolbars === "top";
-document.getElementById('hideToolbarsState').innerHTML = (params.hideToolbars === "top" ? "top" : params.hideToolbars ? "both" : "never");
+document.getElementById('hideToolbarsCheck').indeterminate = params.hideToolbars === 'top';
+document.getElementById('hideToolbarsCheck').readOnly = params.hideToolbars === 'top';
+document.getElementById('hideToolbarsState').innerHTML = (params.hideToolbars === 'top' ? 'top' : params.hideToolbars ? 'both' : 'never');
 document.getElementById('openExternalLinksInNewTabsCheck').checked = params.openExternalLinksInNewTabs;
 document.getElementById('disableDragAndDropCheck').checked = params.disableDragAndDrop;
 document.getElementById('debugLibzimASMDrop').value = params.debugLibzimASM || '';
 if (params.windowOpener === null) { // Setting has never been activated, so determine a sensible default
-    params.windowOpener = /UWP/.test(params.appType) && params.contentInjectionMode === 'jquery' ? false : 
+    params.windowOpener = /UWP/.test(params.appType) && params.contentInjectionMode === 'jquery' ? false :
     /iOS/.test(params.appType) ? false :
     ('MSBlobBuilder' in window || params.PWAInstalled) ? 'window' : // IE11/Edge Legacy/UWP work best in window mode, not in tab mode, as does installed PWA!
-    /PWA/.test(params.appType) ? 'tab' : false; 
+    /PWA/.test(params.appType) ? 'tab' : false;
 }
 if (params.windowOpener) params.allowHTMLExtraction = false;
 document.getElementById('allowHTMLExtractionCheck').checked = params.allowHTMLExtraction;
@@ -302,7 +307,7 @@ if (params.packagedFileStub && params.appVersion !== getSetting('appVersion') &&
     deleteSetting('listOfArchives');
     params.localStorageUpgradeNeeded = true;
 }
-if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') { //UWP
+if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') { // UWP
     var futureAccessList = Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList;
     Windows.ApplicationModel.Package.current.installedLocation.getFolderAsync(params.archivePath).done(function (appFolder) {
         params.localStorage = appFolder;
@@ -310,13 +315,13 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
             futureAccessList.getFolderAsync(params.falFolderToken).done(function (pickedFolder) {
                 params.pickedFolder = params.localStorageUpgradeNeeded ? params.localStorage : pickedFolder;
             }, function (err) {
-                console.error("The previously picked folder is no longer accessible: " + err.message);
+                console.error('The previously picked folder is no longer accessible: ' + err.message);
             });
         }
     }, function (err) {
-        console.error("This app doesn't appear to have access to local storage!");
+        console.error(new Error("This app doesn't appear to have access to local storage!"));
     });
-    //If we don't already have a picked file (e.g. by launching app with click on a ZIM file), then retrieve it from futureAccessList if possible
+    // If we don't already have a picked file (e.g. by launching app with click on a ZIM file), then retrieve it from futureAccessList if possible
     var listOfArchives = getSetting('listOfArchives');
     // But don't get the picked file if we already have access to the folder and the file is in it!
     if (listOfArchives && ~listOfArchives.indexOf(params.storedFile) && params.pickedFolder) {
@@ -327,7 +332,7 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
             futureAccessList.getFileAsync(params.falFileToken).done(function (file) {
                 if (file.name === params.storedFile) params.pickedFile = file;
             }, function (err) {
-                console.error("The previously picked file is no longer accessible: " + err.message);
+                console.error('The previously picked file is no longer accessible: ' + err.message);
             });
         }
     }
@@ -412,7 +417,7 @@ function getSetting(name) {
         // Use localStorage instead
         result = localStorage.getItem(params.keyPrefix + name);
     }
-    return result === null || result === "undefined" ? null : result === "true" ? true : result === "false" ? false : result;
+    return result === null || result === 'undefined' ? null : result === 'true' ? true : result === 'false' ? false : result;
 }
 
 function setSetting(name, val) {

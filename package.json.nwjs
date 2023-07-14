@@ -16,18 +16,20 @@
     "start": "run --x86 --mirror https://dl.nwjs.io/ .",
     "dist-win-x86": "build --tasks win-x86 --mirror https://dl.nwjs.io/ .",
     "dist-win-x64": "build --tasks win-x64 --mirror https://dl.nwjs.io/ .",
-    "dist": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./scripts/Build_NWJS.ps1"
+    "dist": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./scripts/Build-NWJS.ps1"
   },
   "build-xp": {
     "nwVersion": "0.14.7",
     "output": "bld/nwjs/win-x86-xp",
     "files": [
-      "archives/**",
       "service-worker.js",
       "index.html",
       "CHANGELOG.md",
       "LICENCE",
+      "manifest.json",
       "www/**",
+      "archives/README.md",
+      "archives/wikip*.*",      
       "!**/*.dev.{js,wasm}"
     ],
     "win": {
@@ -38,12 +40,14 @@
     "nwVersion": "0.72.0",
     "output": "bld/nwjs/win-x64",
     "files": [
-      "archives/**",
       "service-worker.js",
       "index.html",
       "CHANGELOG.md",
       "LICENCE",
+      "manifest.json",
       "www/**",
+      "archives/README.md",
+      "archives/wikip*.*",
       "!**/*.dev.{js,wasm}"
     ],
     "win": {
@@ -58,6 +62,7 @@
       "index.html",
       "CHANGELOG.md",
       "LICENCE",
+      "manifest.json",
       "www/**",
       "archives/README.md",
       "archives/wikip*.*",

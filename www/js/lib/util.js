@@ -20,7 +20,7 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* global fs */
+/* global fs, params */
 
 'use strict';
 
@@ -271,6 +271,14 @@ function dataURItoUint8Array (dataURI) {
         }
         return new Uint8Array(ab);
     }
+}
+
+/**
+ * Detect whether the browser supports the webkitdirectory attribute on input elements
+ * @returns {Boolean} True if the webkitdirectory attribute is supported, false otherwise
+ */
+function webkitdirectorySupported () {
+    return 'webkitdirectory' in document.createElement('input') && !/iOS|Android/.test(params.appType);
 }
 
 /**
@@ -729,6 +737,7 @@ export default {
     leftShift: leftShift,
     matchOuter: matchOuter,
     matchInner: matchInner,
+    webkitdirectorySupported: webkitdirectorySupported,
     Hilitor: Hilitor,
     getClosestForward: getClosestForward,
     getClosestBack: getClosestBack,

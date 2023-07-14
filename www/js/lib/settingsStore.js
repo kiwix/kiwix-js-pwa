@@ -2,7 +2,6 @@
 
 /* global define, params */
 
-import cache from './cache.js';
 import uiUtil from './uiUtil.js';
 
 var regexpCookieKeysToMigrate = new RegExp([
@@ -102,7 +101,8 @@ function reset(object) {
     // 3. Clear any IndexedDB entries
     if (!object || object === 'indexedDB') {
       if (/indexedDB/.test(assetsCache.capability)) {
-        cache.clear('reset');
+        window.indexedDB.deleteDatabase(params.indexedDB);
+        console.debug('All IndexedDB entries were deleted...');
       }
     }
 
