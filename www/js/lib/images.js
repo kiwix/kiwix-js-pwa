@@ -313,16 +313,16 @@ function prepareImagesServiceWorker (win, forPrinting) {
             prepareManualExtraction(container);
         } else {
             // Extract all images if we are on the landing page
-            if (params.isLandingPage) {
-                setTimeout(function () {
-                    extractImages(documentImages);
-                }, 0);
-            } else {
+            // if (params.isLandingPage) {
+            //     setTimeout(function () {
+            //         extractImages(documentImages);
+            //     }, 0);
+            // } else {
                 // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
                 setTimeout(function () {
                     lazyLoad(documentImages);
                 }, 400);
-            }
+            // }
         }
     }
 }
@@ -371,16 +371,16 @@ function prepareImagesJQuery (win, forPrinting) {
         extractImages(documentImages, params.preloadingAllImages ? params.preloadAllImages : params.printImagesLoaded);
     } else if (params.imageDisplayMode === 'progressive') {
         // Extract all images if we are on the landing page
-        if (params.isLandingPage) {
-            setTimeout(function () {
-                extractImages(documentImages);
-            }, 0);
-        } else {
+        // if (params.isLandingPage) {
+        //     setTimeout(function () {
+        //         extractImages(documentImages);
+        //     }, 0);
+        // } else {
             // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
             setTimeout(function () {
                 lazyLoad(documentImages);
             }, 400);
-        }
+        // }
     } else {
         // User wishes to extract images manually
         prepareManualExtraction(container);

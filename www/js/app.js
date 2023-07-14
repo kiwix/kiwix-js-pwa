@@ -1415,9 +1415,9 @@ document.getElementById('navButtonsPosCheck').addEventListener('change', functio
 });
 $('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
     if (params.contentInjectionMode === 'serviceworker' && !this.checked) {
-        uiUtil.systemAlert('Image display can only be turned off in JQuery mode!');
-        this.checked = true;
-        return;
+        uiUtil.systemAlert('Turning off image display is only guaranteed in JQuery mode. Some images may still display in ServiceWorker mode');
+        // this.checked = true;
+        // return;
     }
     params.imageDisplay = this.checked;
     params.imageDisplayMode = this.checked ? 'progressive' : 'manual';
@@ -4382,9 +4382,9 @@ var articleLoadedSW = function (dirEntry) {
         listenForNavigationKeys();
         // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
         // We need to set a timeout so that dynamically generated URLs are parsed as well (e.g. in Gutenberg ZIMs)
-        if (params.windowOpener) setTimeout(function () {
+        if (params.windowOpener) { setTimeout(function () {
             parseAnchorsJQuery(dirEntry);
-        }, 1500);
+        }, 1500); }
         if ((params.zimType === 'open' || params.manipulateImages) && /manual|progressive/.test(params.imageDisplayMode)) {
             images.prepareImagesServiceWorker(articleWindow);
         } else {
@@ -4415,9 +4415,9 @@ var articleLoadedSW = function (dirEntry) {
         // Jump to any anchor parameter
         if (anchorParameter) {
             var target = articleWindow.document.getElementById(anchorParameter);
-            if (target) setTimeout(function () {
+            if (target) { setTimeout(function () {
                 target.scrollIntoView();
-            }, 1000);
+            }, 1000); }
             anchorParameter = '';
         }
         params.isLandingPage = false;
@@ -4491,7 +4491,6 @@ function handleMessageChannelMessage (event) {
                             content: ''
                         });
                     }
-                    return;
                 } else if (dirEntry.isRedirect()) {
                     appstate.selectedArchive.resolveRedirect(dirEntry, function (resolvedDirEntry) {
                         var redirectURL = resolvedDirEntry.namespace + '/' + resolvedDirEntry.url;
@@ -4510,7 +4509,8 @@ function handleMessageChannelMessage (event) {
                     var imageDisplayMode = params.imageDisplayMode;
                     // These ZIM types have so much dynamic content that we have to allow all images
                     if (params.imageDisplay && (/gutenberg|phet/i.test(appstate.selectedArchive._file.name) ||
-                        params.isLandingPage || params.zimType === 'zimit')) {
+                        // params.isLandingPage ||
+                        params.zimType === 'zimit')) {
                         imageDisplayMode = 'all';
                     }
                     // console.debug('Spinner should show now: [' + mimetype + '] ' + title);
@@ -4618,7 +4618,9 @@ function postTransformedHTML (thisMessage, thisMessagePort, thisDirEntry) {
         if (/UWP/.test(params.appType) && (appstate.target === 'window' || appstate.messageChannelWaiting) &&
             params.imageDisplay) { thisMessage.imageDisplay = 'all'; }
         // We need to do the same for Gutenberg and PHET ZIMs
-        if (params.imageDisplay && (/gutenberg|phet/i.test(appstate.selectedArchive._file.name) || params.isLandingPage)) {
+        if (params.imageDisplay && (/gutenberg|phet/i.test(appstate.selectedArchive._file.name)
+            // || params.isLandingPage
+            )) {
             thisMessage.imageDisplay = 'all';
         }
         // Let's send the content to the ServiceWorker
@@ -4818,8 +4820,9 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             if (/data:image/i.test(relAssetUrl)) return match;
             newBlock = match;
             // Add the kiwix-display directive so that the SW sends a dummy image instead
-            if (params.manipulateImages && params.imageDisplay !== 'all' && /^<img/i.test(blockStart))
+            if (params.manipulateImages && params.imageDisplay !== 'all' && /^<img/i.test(blockStart)) {
                 newBlock = newBlock.replace(relAssetUrl, relAssetUrl + '?kiwix-display');
+            }
             if (wikiLang) {
                 // For Wikipedia archives, hyperlink the image to the File version
                 var assetZIMUrl = decodeURIComponent(relAssetUrl);
