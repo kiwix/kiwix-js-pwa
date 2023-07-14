@@ -7,11 +7,13 @@
 * ENHANCEMENT: Fast re-opening of previously picked archives or directories in these browsers (number of clicks minimized)
 * ENHANCEMENT: Dragged and dropped files, including split files, can now be re-opened automatically in Electron and NWJS apps
 * ENHANCEMENT: Provide more gradual screen width transition with max page width auto setting
+* ENHANCEMENT: Restored the ability not to display images in ServiceWorker Mode in non-Zimit ZIMs
+* ENHANCEMENT: Restored lazy-loading of images on most landing pages (improves Android experience with image-heavy landing pages)
 * ENHANCEMENT: The Kiwix PWA can now be added as a Side Panel app in Edge (NB folder picking does not work in this configuration)
-* BUILD: Allow producing signed or unsigned versions of appx, and compile to appxbundle
 * ENHANCEMENT: Top toolbar now resized correctly with Window Controls Overlay in installed PWA on macOS and Windows
 * ENHANCEMENT: When using Window Controls Overlay, app now has a draggable area (left of Kiwix icon)
 * UPDATE: Troubleshooting instructions for installing on Debian on the Releases page
+* BUILD: Allow producing signed or unsigned versions of appx, and compile to appxbundle
 * BUILD: Option to build artefacts only for testing
 * FIX: Miscellaneous small bugfixes and typos
 * DEV: A lot of normalization of coding style using ESLint
