@@ -1,45 +1,48 @@
 ﻿/**
  * images.js : Functions for the processing of images
- * 
+ *
  * Copyright 2013-2019 Mossroy and contributors
  * License GPL v3:
- * 
+ *
  * This file is part of Kiwix.
- * 
+ *
  * Kiwix is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Kiwix is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 /**
  * images.js : Functions for the processing of images
- * 
+ *
  * Copyright 2013-2019 Mossroy and contributors
  * License GPL v3:
- * 
+ *
  * This file is part of Kiwix.
- * 
+ *
  * Kiwix is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Kiwix is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
+
+/* global params, appstate, Windows, articleContainer */
+
 'use strict';
 
 import uiUtil from './uiUtil.js';
@@ -63,7 +66,7 @@ var abandon = false;
  * A regular expression to find or transform image URLs in an article
  * DEV: make sure list of file types here is the same as the list in Service Worker code
  */
-var imageURLRegexp =  /(^|\/).+\.(jpe?g|png|svg|gif|webp)($|[?#])/i;
+var imageURLRegexp = /(^|\/).+\.(jpe?g|png|svg|gif|webp)($|[?#])/i;
 
 /**
  * A regular expression to find MathTex in an image
@@ -73,11 +76,11 @@ var transformMathTextRegexp = /<img\s+(?=[^>]+?math-fallback-image)[^>]*?alt\s*=
 /**
  * Iterates over an array or collection of image nodes, extracting the image data from the ZIM
  * and inserting a BLOB URL to each image in the image's src attribute
- * 
+ *
  * @param {Object} images An array or collection of DOM image nodes
  * @param {Function} callback An optional function to call when all requested images have been loaded
  */
-function extractImages(images, callback) {
+function extractImages (images, callback) {
     var remaining = images.length;
     if (!remaining && callback) callback();
     var checkBatch = function () {
@@ -94,7 +97,7 @@ function extractImages(images, callback) {
         var imageUrl = image.getAttribute('data-kiwixurl');
         if (!imageUrl) { remaining--; return; }
         // Create data-kiwixsrc needed for stylesheets
-        else { image.setAttribute('data-kiwixsrc', imageUrl); } 
+        else { image.setAttribute('data-kiwixsrc', imageUrl); }
         image.removeAttribute('data-kiwixurl');
         var title = decodeURIComponent(imageUrl);
         extractorBusy++;
@@ -145,15 +148,15 @@ function extractImages(images, callback) {
 /**
  * Iterates over an array or collection of image nodes, preparing each node for manual image
  * extraction when user taps the indicated area
- * 
+ *
  */
-function prepareManualExtraction(win) {
+function prepareManualExtraction (win) {
     container = win;
     var doc = container.document;
     var documentImages = doc.querySelectorAll('img');
     for (var i = 0, l = documentImages.length; i < l; i++) {
         var originalHeight = documentImages[i].getAttribute('height') || '';
-        //Ensure 36px clickable image height so user can request images by tapping
+        // Ensure 36px clickable image height so user can request images by tapping
         documentImages[i].height = '36';
         documentImages[i].style.background = 'lightblue';
         documentImages[i].style.opacity = '1';
@@ -169,11 +172,11 @@ function prepareManualExtraction(win) {
             // DEV: Algorithm below doesn't queue webp images correctly, so for now we will extract images
             // only one-by-one on image click
             // var visibleImages = queueImages('poll', 0, function() { extractImages(visibleImages); }).visible;
-            // visibleImages.forEach(function (image) { 
+            // visibleImages.forEach(function (image) {
             //    image.style.opacity = '0';
             //    if (image.dataset.kiwixheight) image.height = image.dataset.kiwixheight;
             //    else image.removeAttribute('height');
-            //});
+            // });
             thisImage.style.opacity = '0';
             if (thisImage.dataset.kiwixheight) thisImage.height = thisImage.dataset.kiwixheight;
             else thisImage.removeAttribute('height');
@@ -187,21 +190,21 @@ var imageStore = [];
 var maxImageBatch = 1;
 
 /**
- * Sorts an array or collection of image nodes, returning a list of those that are inside the visible viewport 
- * 
+ * Sorts an array or collection of image nodes, returning a list of those that are inside the visible viewport
+ *
  * @param {Array} docImgs The array of images to process
- * @param {String} action If null, imageStore only will be processed; if 'extract', documentImages in viewport will be 
+ * @param {String} action If null, imageStore only will be processed; if 'extract', documentImages in viewport will be
  *     extracted; if 'poll', will just return the visible and remaining image arrays
  * @param {Number} margin An extra margin to add to the top (-) or bottom (+) of windows.innerHeight
  * @param {Function} callback Function to call when last image has been extracted (only called if <extract> is true)
  * @returns {Object} An object with two arrays of images, visible and remaining
  */
-function queueImages(docImgs, action, margin, callback) {
+function queueImages (docImgs, action, margin, callback) {
     if (abandon) {
         for (var q = imageStore.length; q--;) {
             imageStore[q].queued = false;
         }
-        //console.log('User scrolled: abandoning image queue...')
+        // console.log('User scrolled: abandoning image queue...')
         imageStore = [];
     }
     if (imageStore.length && !extractorBusy) {
@@ -212,7 +215,7 @@ function queueImages(docImgs, action, margin, callback) {
     var visible = [];
     var remaining = [];
     var batchCount = 0;
-    //console.log('Images requested...');
+    // console.log('Images requested...');
     for (var i = 0, l = docImgs.length; i < l; i++) {
         if (docImgs[i].queued || docImgs[i].tagName === 'IMG' && !docImgs[i].dataset.kiwixurl) continue;
         if (uiUtil.isElementInView(container, docImgs[i], null, margin)) {
@@ -232,18 +235,18 @@ function queueImages(docImgs, action, margin, callback) {
             }
         } else {
             remaining.push(docImgs[i]);
-        } 
+        }
     }
     // Callback has to be run inside a timeout because receiving function will expect the visible and remaining arrays to
     // have been returned before running callback code; NB if images have been scheduled for extraction, callback will be
     // called above instead of here, but we still need this in case there are no immediately visible images
     if (callback && !batchCount) setTimeout(callback);
-    return { 'visible': visible, 'remaining': remaining };
+    return { visible: visible, remaining: remaining };
 }
 
 /**
  * Prepares the article container in order to process the image nodes that have been disabled in Service Worker
- * 
+ *
  * @param {Window} win The Window of the iframe tab that contains the document
  * @param {Boolean} forPrinting If true, extracts all images
  */
@@ -252,12 +255,12 @@ function prepareImagesServiceWorker (win, forPrinting) {
     var doc = container.document;
     var documentImages = doc.querySelectorAll('img:not([src^="data:"])');
     // Schedule loadMathJax here in case next line aborts this function
-    setTimeout(function() {
+    setTimeout(function () {
         loadMathJax();
     }, 1000);
     if (!forPrinting && !documentImages.length) return;
     var imageHtml;
-    var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
+    var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
     for (var i = 0, l = documentImages.length; i < l; i++) {
         // Process Wikimedia MathML, but not if we'll be using the jQuery routine later
         if (!(params.manipulateImages || params.allowHTMLExtraction)) {
@@ -281,7 +284,7 @@ function prepareImagesServiceWorker (win, forPrinting) {
                 documentImages[i].style.opacity = '0';
             }
             if (params.manipulateImages || params.allowHTMLExtraction) {
-                documentImages[i].outerHTML = documentImages[i].outerHTML.replace(params.regexpTagsWithZimUrl, function(match, blockStart, equals, quote, relAssetUrl, blockEnd) {
+                documentImages[i].outerHTML = documentImages[i].outerHTML.replace(params.regexpTagsWithZimUrl, function (match, blockStart, equals, quote, relAssetUrl, blockEnd) {
                     var parameters = relAssetUrl.replace(/^[^?]+/, '');
                     var assetZIMUrlEnc;
                     if (params.zimType === 'zimit' && !relAssetUrl.indexOf(indexRoot)) {
@@ -316,7 +319,7 @@ function prepareImagesServiceWorker (win, forPrinting) {
                 }, 0);
             } else {
                 // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
-                setTimeout(function() {
+                setTimeout(function () {
                     lazyLoad(documentImages);
                 }, 400);
             }
@@ -326,7 +329,7 @@ function prepareImagesServiceWorker (win, forPrinting) {
 
 /**
  * Prepares the article container in order to process the image nodes that have been disabled in the DOM
- * 
+ *
  * @param {Window} win The Window of the iframe or tab that contains the document
  * @param {Boolean} forPrinting If true, extracts all images
  */
@@ -334,12 +337,12 @@ function prepareImagesJQuery (win, forPrinting) {
     container = win;
     var doc = container.document;
     var documentImages = doc.querySelectorAll('img[data-kiwixurl], video, audio');
-    var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
+    var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
     indexRoot = indexRoot.replace(/^\//, '');
     // Zimit ZIMs work better if all images are extracted
     if (params.zimType === 'zimit') forPrinting = true;
     // In case there are no images in the doc, we need to schedule the loadMathJax function here
-    setTimeout(function() {
+    setTimeout(function () {
         loadMathJax();
     }, 1000);
     if (!forPrinting && !documentImages.length) return;
@@ -352,7 +355,7 @@ function prepareImagesJQuery (win, forPrinting) {
             image.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
             image.style.opacity = '0';
             // Set a minimum width to avoid some images not rendering in squashed hidden tables
-            if (params.displayHiddenBlockElements && image.width && !image.style.minWidth && 
+            if (params.displayHiddenBlockElements && image.width && !image.style.minWidth &&
                 /wiki|wiktionary/i.test(appstate.selectedArchive._file.name)) {
                 var imgX = image.width + '';
                 imgX = imgX.replace(/(\d+)$/, '$1px');
@@ -374,7 +377,7 @@ function prepareImagesJQuery (win, forPrinting) {
             }, 0);
         } else {
             // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
-            setTimeout(function() {
+            setTimeout(function () {
                 lazyLoad(documentImages);
             }, 400);
         }
@@ -388,7 +391,7 @@ function prepareImagesJQuery (win, forPrinting) {
  * Extracts media blobs in jQuery mode and offers to download them
  * @param {Node} medium A DOM node representing a medium
  */
-function insertMediaBlobsJQuery(medium) {
+function insertMediaBlobsJQuery (medium) {
     var trackBlob;
     var media = [medium];
     // Ensure we have a source or sources
@@ -406,9 +409,11 @@ function insertMediaBlobsJQuery(medium) {
         // If the "controls" property is missing, we need to add it to ensure jQuery-only users can operate the video. See kiwix-js #760.
         if (/audio|video/i.test(mediaElement.tagName) && !mediaElement.hasAttribute('controls')) mediaElement.setAttribute('controls', '');
         // Create custom subtitle / cc load menu if it doesn't already exist
-        if (!container.document.getElementById('kiwixCCMenu')) buildCustomCCMenu(container.document, mediaElement, function (ccBlob) {
-            trackBlob = ccBlob;
-        });
+        if (!container.document.getElementById('kiwixCCMenu')) {
+            buildCustomCCMenu(container.document, mediaElement, function (ccBlob) {
+                trackBlob = ccBlob;
+            });
+        }
         // Load media file
         appstate.selectedArchive.getDirEntryByPath(decodeURIComponent(source)).then(function (dirEntry) {
             return appstate.selectedArchive.readBinaryFile(dirEntry, function (fileDirEntry, mediaArray) {
@@ -430,16 +435,16 @@ function insertMediaBlobsJQuery(medium) {
                         '    <span id="alertMessage"></span>\n' +
                         '</div>\n';
                     var alertMessage = document.getElementById('alertMessage');
-                    var filename = iframe.title + '_' + dirEntry.url.replace(/^.*\/([^\/]+)$/, '$1');
+                    var filename = iframe.title + '_' + dirEntry.url.replace(/^.*\/([^/]+)$/, '$1');
                     // Make filename safe
-                    filename = filename.replace(/[\/\\:*?"<>|]/g, '_');
+                    filename = filename.replace(/[/\\:*?"<>|]/g, '_');
                     alertMessage.innerHTML = '<a href="#" class="alert-link" id="downloadMedia">Download this file</a> (and any selected subtitles) to play with another app';
                     document.getElementById('downloadMedia').addEventListener('click', function () {
                         var downloadFiles = [];
                         downloadFiles.push({
-                            'blob': blob,
-                            'filename': filename,
-                            'src': mediaSource.src
+                            blob: blob,
+                            filename: filename,
+                            src: mediaSource.src
                         });
                         // Add any selected subtitle file to the download package
                         var selTextTrack = iframe.getElementById('kiwixSelCC');
@@ -447,9 +452,9 @@ function insertMediaBlobsJQuery(medium) {
                             var selTextExt = selTextTrack.dataset.kiwixurl.replace(/^.*\.([^.]+)$/, '$1');
                             // Subtitle files should have same name as video + .es.vtt (for example)
                             downloadFiles.push({
-                                'blob': trackBlob,
-                                'filename': filename.replace(/^(.*)\.[^.]+$/, '$1.' + selTextTrack.srclang + '.' + selTextExt),
-                                'src': selTextTrack.src
+                                blob: trackBlob,
+                                filename: filename.replace(/^(.*)\.[^.]+$/, '$1.' + selTextTrack.srclang + '.' + selTextExt),
+                                src: selTextTrack.src
                             });
                         }
                         for (var j = downloadFiles.length; j--;) {
@@ -491,12 +496,12 @@ function insertMediaBlobsJQuery(medium) {
  * Create a custom dropdown menu item beneath the given mediaElement (audio or video block) to allow the user to
  * select the language of text tracks (subtitles/CC) to extract from the ZIM (this is necessary because there is
  * no universal onchange event that fires for subtitle changes in the html5 video widget when the URL is invalid)
- * 
+ *
  * @param {Document} doc The document in which the new menu will be placed (usually window.document or iframe)
  * @param {Element} mediaElement The media element (usually audio or video block) which contains the text tracks
  * @param {Function} callback The function to call wtih the blob
  */
-function buildCustomCCMenu(doc, mediaElement, callback) {
+function buildCustomCCMenu (doc, mediaElement, callback) {
     var optionList = [];
     var langs = '';
     var src = '';
@@ -548,11 +553,11 @@ function buildCustomCCMenu(doc, mediaElement, callback) {
 
 /**
  * Processes an array or collection of image nodes so that they will be lazy loaded (progressive extraction)
- * 
- * @param {Object} documentImages An array or collection of DOM image nodes which will be processed for 
- *        progressive image extraction 
+ *
+ * @param {Object} documentImages An array or collection of DOM image nodes which will be processed for
+ *        progressive image extraction
  */
-function lazyLoad(documentImages) {
+function lazyLoad (documentImages) {
     // The amount by which to offset the second reading of the viewport
     var offset = window.innerHeight * 2;
     // Perform an immediate extraction of visible images so as not to disconcert the user
@@ -571,12 +576,12 @@ function lazyLoad(documentImages) {
         abandon = true;
         clearTimeout(timeout);
         var velo = container.pageYOffset - scrollPos;
-        timeout = setTimeout(function() {
+        timeout = setTimeout(function () {
             // We have stopped scrolling
-            //console.log("Stopped scrolling; velo=" + velo);
+            // console.log("Stopped scrolling; velo=" + velo);
             queueImages(documentImages);
             abandon = false;
-            queueImages(documentImages, 'extract', 0, function() {
+            queueImages(documentImages, 'extract', 0, function () {
                 queueImages(documentImages, 'extract', velo >= 0 ? offset : -offset);
             });
         }, rate);
@@ -586,11 +591,11 @@ function lazyLoad(documentImages) {
 
 /**
  * Attaches KaTeX scripts to the window of the document, if there is MathML to process
- * 
- * @param {Object} win The window that contains the document to be processed 
+ *
+ * @param {Object} win The window that contains the document to be processed
  * @returns {Null} Returns null if the function was aborted
  */
-function loadMathJax(win) {
+function loadMathJax (win) {
     if (!params.useMathJax) return;
     container = container || win;
     var doc = container.document;
@@ -601,35 +606,35 @@ function loadMathJax(win) {
     }
     if (params.containsMathTexRaw || params.containsMathTex || params.containsMathSVG) {
         var script1, script2, script3;
-        var link = doc.createElement("link");
-        link.rel = "stylesheet";
-        link.href = prefix + "js/katex/katex.min.css";
+        var link = doc.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = prefix + 'js/katex/katex.min.css';
         doc.head.appendChild(link);
-        script1 = doc.createElement("script");
-        script1.type = "text/javascript";
-        //script.src = "js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
-        script1.src = prefix + "js/katex/katex.min.js";
+        script1 = doc.createElement('script');
+        script1.type = 'text/javascript';
+        // script.src = "js/MathJax/MathJax.js?config=TeX-AMS_HTML-full";
+        script1.src = prefix + 'js/katex/katex.min.js';
         if (params.containsMathTex) {
-            script2 = doc.createElement("script");
-            script2.type = "text/javascript";
-            script2.src = prefix + "js/katex/contrib/mathtex-script-type.min.js";
+            script2 = doc.createElement('script');
+            script2.type = 'text/javascript';
+            script2.src = prefix + 'js/katex/contrib/mathtex-script-type.min.js';
         }
         if (params.containsMathTex || params.containsMathTexRaw) {
-            script3 = doc.createElement("script");
-            script3.type = "text/javascript";
-            script3.src = prefix + "js/katex/contrib/auto-render.min.js";
-            script3.onload = function() {
-                container.renderMathInElement(doc.body, { 
+            script3 = doc.createElement('script');
+            script3.type = 'text/javascript';
+            script3.src = prefix + 'js/katex/contrib/auto-render.min.js';
+            script3.onload = function () {
+                container.renderMathInElement(doc.body, {
                     delimiters: [
-                        {left: "$$", right: "$$", display: true},
-                        {left: "$", right: "$", display: false},
-                        {left: "\\(", right: "\\)", display: false},
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false },
+                        { left: '\\(', right: '\\)', display: false },
                         // {left: "\\begin{equation}", right: "\\end{equation}", display: true},
                         // {left: "\\begin{align}", right: "\\end{align}", display: true},
                         // {left: "\\begin{alignat}", right: "\\end{alignat}", display: true},
                         // {left: "\\begin{gather}", right: "\\end{gather}", display: true},
                         // {left: "\\begin{CD}", right: "\\end{CD}", display: true},
-                        {left: "\\[", right: "\\]", display: true}
+                        { left: '\\[', right: '\\]', display: true }
                     ],
                     globalGroup: true,
                     throwOnError: false
@@ -643,7 +648,7 @@ function loadMathJax(win) {
         doc.body.appendChild(script1);
         // if (params.containsMathTex || params.containsMathTexRaw) script.innerHTML = 'MathJax.Hub.Queue(["Typeset", MathJax.Hub]); \
         //     console.log("Typesetting maths with MathJax");';
-        params.containsMathTexRaw = false; //Prevents doing a second Typeset run on the same document
+        params.containsMathTexRaw = false; // Prevents doing a second Typeset run on the same document
         params.containsMathTex = false;
     }
 }

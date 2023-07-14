@@ -5855,8 +5855,10 @@ params.preloadAllImages = function () {
             }
         }, 1000);
         params.preloadingAllImages = true;
-        if (params.imageDisplay) params.contentInjectionMode === 'jquery'
+        if (params.imageDisplay) {
+            params.contentInjectionMode === 'jquery'
             ? images.prepareImagesJQuery(articleWindow, true) : images.prepareImagesServiceWorker(articleWindow, true);
+        }
         return;
     }
     // All images should now be loaded, or else user did not request loading images

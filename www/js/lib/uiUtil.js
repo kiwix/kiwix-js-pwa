@@ -53,7 +53,7 @@ function feedNodeWithBlob (node, nodeAttribute, content, mimeType, makeDataURI, 
             content = util.dataURItoUint8Array(content);
         }
         // DEV: Note that webpMachine is single threaded and will reject an image if it is busy
-        // However, the loadImagesJQuery() function in app.js is sequential (it waits for a callback
+        // However, the prepareImagesJQuery() function in images.js is sequential (it waits for a callback
         // before processing another image) so we do not need to queue WebP images here
         webpMachine.decode(content).then(function (uri) {
             // DEV: WebpMachine.decode() returns a data: URI
