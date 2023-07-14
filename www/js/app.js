@@ -1414,10 +1414,8 @@ document.getElementById('navButtonsPosCheck').addEventListener('change', functio
     uiUtil.systemAlert('This setting will be applied on next app launch');
 });
 $('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
-    if (params.contentInjectionMode === 'serviceworker' && !this.checked) {
-        uiUtil.systemAlert('Turning off image display is only guaranteed in JQuery mode. Some images may still display in ServiceWorker mode');
-        // this.checked = true;
-        // return;
+    if (!this.checked) {
+        uiUtil.systemAlert('Please note that some images may still display if the ZIM type requires it (e.g. Zimit ZIMs, PhET, Gutenberg).');
     }
     params.imageDisplay = this.checked;
     params.imageDisplayMode = this.checked ? 'progressive' : 'manual';
