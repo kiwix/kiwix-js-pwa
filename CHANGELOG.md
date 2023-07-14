@@ -1,7 +1,11 @@
 # Changelog
 
-## In-progress release 2.5.4
+## In-progress release 2.5.5
 
+* FEATURE: Improved file and folder picking experience for Firefox and older browsers lacking the File System Access API
+* FEATURE: Ability to pick a folder of ZIM archives in nearly all apps and frameworks with support for Webkitdirectory API
+* ENHANCEMENT: Fast re-opening of previously picked archives or directories in these browsers (number of clicks minimized)
+* ENHANCEMENT: Dragged and dropped files, including split files, can now be re-opened automatically in Electron and NWJS apps
 * ENHANCEMENT: Provide more gradual screen width transition with max page width auto setting
 * ENHANCEMENT: The Kiwix PWA can now be added as a Side Panel app in Edge (NB folder picking does not work in this configuration)
 * BUILD: Allow producing signed or unsigned versions of appx, and compile to appxbundle
