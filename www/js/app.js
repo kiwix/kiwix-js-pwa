@@ -3262,7 +3262,7 @@ function handleFileDrop (packet) {
 
 function pickFileUWP () { // Support UWP FilePicker [kiwix-js-windows #3]
     // Create the picker object and set options
-    var filePicker = new Windows.Storage.Pickers.FileOpenPicker;
+    var filePicker = new Windows.Storage.Pickers.FileOpenPicker();
     filePicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.downloads;
     // Filter folder contents
     filePicker.fileTypeFilter.replaceAll(['.zim']);
@@ -3368,7 +3368,7 @@ function processPickedFileUWP (file) {
 }
 
 function pickFolderUWP () { // Support UWP FilePicker [kiwix-js-windows #3]
-    var folderPicker = new Windows.Storage.Pickers.FolderPicker;
+    var folderPicker = new Windows.Storage.Pickers.FolderPicker();
     folderPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.downloads;
     folderPicker.fileTypeFilter.replaceAll(['.zim', '.dat', '.idx', '.txt', '.zimaa']);
 
