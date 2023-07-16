@@ -23,7 +23,7 @@
 
 'use strict';
 
-/* eslint-disable indent */
+/* eslint-disable indent, eqeqeq */
 
 // import styles from '../css/app.css' assert { type: "css" };
 // import bootstrap from '../css/bootstrap.min.css' assert { type: "css" };
@@ -55,7 +55,7 @@ const DELAY_BETWEEN_KEEPALIVE_SERVICEWORKER = 30000;
  */
 
 // The global parameter and app state objects are defined in init.js
-/* global params, appstate, nw, electronAPI, Windows, webpMachine, dialog */
+/* global params, appstate, nw, electronAPI, Windows, webpMachine, dialog, LaunchParams, launchQueue, abstractFilesystemAccess, MSApp */
 
 // Placeholders for the article container, the article window and the article DOM
 var articleContainer = document.getElementById('articleContent');
@@ -760,7 +760,7 @@ var openCurrentArchive = document.getElementById('openCurrentArchive');
 var archiveFilesLegacy = document.getElementById('archiveFilesLegacy');
 var archiveDirLegacy = document.getElementById('archiveDirLegacy');
 if (!params.webkitdirectory) {
-    document.getElementById('archiveDirLegacy').style.display = 'none';
+    archiveDirLegacy.style.display = 'none';
 }
 
 function setTab (activeBtn) {
@@ -1382,7 +1382,7 @@ $('input:checkbox[name=allowInternetAccess]').on('change', function () {
                     // Void the PWA_launch signal so that user will be asked again next time
                     params.localUWPSettings.PWA_launch = '';
                     window.location.href = 'ms-appx-web:///www/index.html' + uriParams;
-                    throw 'Beam me down, Scotty!';
+                    console.warn('Beam me down, Scotty!');
                 };
                 uiUtil.systemAlert(message, 'Information', true, 'Cancel', 'Reload app').then(function (response) {
                     if (response) {
@@ -1505,9 +1505,7 @@ var refreshFullScreen = function (evt) {
             });
         }
     } else {
-        if (params.lockDisplayOrientation) uiUtil.lockDisplayOrientation(params.lockDisplayOrientation).catch(function () {
-            return;
-        });
+        if (params.lockDisplayOrientation) uiUtil.lockDisplayOrientation(params.lockDisplayOrientation).catch(function () {});
     }
 };
 // Add event listener to the app UI
@@ -1539,13 +1537,15 @@ document.getElementById('lockDisplayOrientationDrop').addEventListener('change',
                 params.lockDisplayOrientation = event.target.value || '';
                 settingsStore.setItem('lockDisplayOrientation', params.lockDisplayOrientation, Infinity);
                 that.value = params.lockDisplayOrientation || '';
-                if (params.lockDisplayOrientation) uiUtil.systemAlert('<p>The following error was received (this is expected on Desktop devices):</p>' +
+                if (params.lockDisplayOrientation) {
+                    uiUtil.systemAlert('<p>The following error was received (this is expected on Desktop devices):</p>' +
                     '<blockquote><code>' + err.toString() + '</code></blockquote>' +
                     "<p>If screen lock doesn't work, please change setting back to 'Normal' or try a different option.</p>");
+                }
             } else {
                 uiUtil.systemAlert((!params.PWAInstalled && /iOS/.test(params.appType)
                 ? '<p>In Safari on iOS, consider adding this app to your homescreen (Share --&gt Add to Home) isntead.</p>' : '') +
-                 '<p>There was an error setting the requested screen state:</p><blockquote><code>' + err.toString() +  '</code></blockquote>');
+                 '<p>There was an error setting the requested screen state:</p><blockquote><code>' + err.toString() + '</code></blockquote>');
                 that.value = params.lockDisplayOrientation || '';
             }
             setDynamicIcons();
@@ -1556,15 +1556,17 @@ document.getElementById('lockDisplayOrientationDrop').addEventListener('change',
         uiUtil.lockDisplayOrientation().then(function () {
             setDynamicIcons();
         }).catch(function () {
-            return;
+            console.log('Error locking screen orientation');
         });
     }
 });
 document.getElementById('debugLibzimASMDrop').addEventListener('change', function (event) {
     var that = this;
     var message = '<p>App will reload to apply the new setting.</p>'
-    if (event.target.value) message += '<p><i>Please be aware that leaving this override setting on can have anomalous effects, ' +
+    if (event.target.value) {
+        message += '<p><i>Please be aware that leaving this override setting on can have anomalous effects, ' +
         'e.g. the app will no longer check whether the OS supports full-text searching and searches may fail silently.</i></p>'
+    }
     uiUtil.systemAlert(message,
         'Developer option!', true).then(function (confirm) {
         if (confirm) {
@@ -1577,7 +1579,7 @@ document.getElementById('debugLibzimASMDrop').addEventListener('change', functio
     });
 });
 $('input:checkbox[name=openExternalLinksInNewTabs]').on('change', function () {
-    params.openExternalLinksInNewTabs = this.checked ? true : false;
+    params.openExternalLinksInNewTabs = this.checked;
     settingsStore.setItem('openExternalLinksInNewTabs', params.openExternalLinksInNewTabs, Infinity);
     params.themeChanged = true;
 });
@@ -1587,14 +1589,18 @@ document.getElementById('tabOpenerCheck').addEventListener('click', function () 
         uiUtil.systemAlert('Please note that due to the Content Secuirty Policy, external links and PDFs always open in a new tab or window, regardless of this setting.');
     }
     if (params.windowOpener && /UWP\|PWA/.test(params.appType) && params.contentInjectionMode === 'jquery') {
-        if (!params.noWarning) uiUtil.systemAlert('<p>In this UWP app, opening a new browsable window only works in Service Worker mode.</p>' +
+        if (!params.noWarning) {
+            uiUtil.systemAlert('<p>In this UWP app, opening a new browsable window only works in Service Worker mode.</p>' +
             '<p>Your system appears to support SW mode, so please try switching to it in Expert Settings below.</p>' +
             '<p>If your system does not support SW mode, then use the more basic "Download or open current article" feature below.</p>');
+        }
         params.windowOpener = false;
     } else if (params.windowOpener && /iOS|UWP$/.test(params.appType)) {
-        if (!params.noWarning) uiUtil.systemAlert('<p>This option is not currently supported ' + (/iOS/.test(params.appType)
+        if (!params.noWarning) {
+            uiUtil.systemAlert('<p>This option is not currently supported ' + (/iOS/.test(params.appType)
             ? 'on iOS devices because programmatic opening of windows is forbidden. However, the native long-press feature may work.</p>'
             : 'in UWP apps that cannot use Service Worker mode.</p><p>Please try the more basic "Download or open current article" feature below instead.</p>'));
+        }
         params.windowOpener = false;
     }
     settingsStore.setItem('windowOpener', params.windowOpener, Infinity);
@@ -1670,12 +1676,12 @@ document.getElementById('allowHTMLExtractionCheck').addEventListener('click', fu
     params.themeChanged = true;
 });
 $('input:text[name=alphaChar]').on('change', function (e) {
-    params.alphaChar = this.value.length == 1 ? this.value : params.alphaChar;
+    params.alphaChar = this.value.length === 1 ? this.value : params.alphaChar;
     this.value = params.alphaChar;
     settingsStore.setItem('alphaChar', params.alphaChar, Infinity);
 });
 $('input:text[name=omegaChar]').on('change', function (e) {
-    params.omegaChar = this.value.length == 1 ? this.value : params.omegaChar;
+    params.omegaChar = this.value.length === 1 ? this.value : params.omegaChar;
     this.value = params.omegaChar;
     settingsStore.setItem('omegaChar', params.omegaChar, Infinity);
 });
@@ -1697,7 +1703,7 @@ document.getElementById('hideToolbarsCheck').addEventListener('click', function 
     // if (this.readOnly) { this.checked = true; this.readOnly = false; }
     // else if (this.checked) this.readOnly = this.indeterminate = true;
     params.hideToolbars = this.indeterminate ? 'top' : this.checked;
-    document.getElementById('hideToolbarsState').innerHTML = params.hideToolbars == 'top' ? 'top only' : params.hideToolbars ? 'both' : 'never';
+    document.getElementById('hideToolbarsState').innerHTML = params.hideToolbars === 'top' ? 'top only' : params.hideToolbars ? 'both' : 'never';
     settingsStore.setItem('hideToolbars', params.hideToolbars, Infinity);
     checkToolbar();
 });
@@ -1736,8 +1742,9 @@ var scrollFunction = function () {
                 if (newScrollY > navbarDim.height) {
                     header.style.transform = 'translateY(-' + (navbarDim.height - 2) + 'px)';
                     iframe.style.transform = 'translateY(-' + (navbarDim.height - 2) + 'px)';
-                    if (params.hideToolbars === true) // Only hide footer if requested
+                    if (params.hideToolbars === true) { // Only hide footer if requested
                         footer.style.transform = 'translateY(' + (footerDim.height - 2) + 'px)';
+                    }
                 }
                 throttle = 0;
             }, 200);
@@ -1824,8 +1831,9 @@ document.getElementById('cssUIDarkThemeCheck').addEventListener('click', functio
     // if (this.readOnly) this.checked = this.readOnly = false;
     // else if (!this.checked) this.readOnly = this.indeterminate = true;
     // Code below shows how to invert the order
-    if (this.readOnly) { this.checked = true; this.readOnly = false; }
-    else if (this.checked) this.readOnly = this.indeterminate = true;
+    if (this.readOnly) {
+        this.checked = true; this.readOnly = false;
+    } else if (this.checked) this.readOnly = this.indeterminate = true;
     params.cssUITheme = this.indeterminate ? 'auto' : this.checked ? 'dark' : 'light';
     if (!uiSettings) initializeUISettings();
     settingsStore.setItem('cssUITheme', params.cssUITheme, Infinity);
@@ -1839,8 +1847,9 @@ document.getElementById('cssWikiDarkThemeCheck').addEventListener('click', funct
     // if (this.readOnly) this.checked = this.readOnly = false;
     // else if (!this.checked) this.readOnly = this.indeterminate = true;
     // Invert order:
-    if (this.readOnly) { this.checked = true; this.readOnly = false; }
-    else if (this.checked) this.readOnly = this.indeterminate = true;
+    if (this.readOnly) {
+        this.checked = true; this.readOnly = false;
+    } else if (this.checked) this.readOnly = this.indeterminate = true;
     params.cssTheme = this.indeterminate ? 'auto' : this.checked ? 'dark' : 'light';
     if (!uiSettings) initializeUISettings();
     var determinedValue = params.cssTheme;
@@ -1924,7 +1933,7 @@ function cssUIThemeGetOrSet (value, getOnly) {
         document.getElementById('findInArticle').classList.remove('dark');
         document.getElementById('prefix').classList.remove('dark');
         elements = document.querySelectorAll('.settings');
-        for (var i = 0; i < elements.length; i++) {
+        for (i = 0; i < elements.length; i++) {
             elements[i].style.border = '1px solid black';
         }
         document.getElementById('kiwixIcon').src = /wikivoyage/i.test(params.storedFile) ? 'img/icons/wikivoyage-black-32.png' : /medicine|mdwiki/i.test(params.storedFile) ? 'img/icons/wikimed-blue-32.png' : 'img/icons/kiwix-blue-32.png';
@@ -1990,7 +1999,7 @@ document.getElementById('resetDisplayOnResizeCheck').addEventListener('click', f
 });
 $('input:checkbox[name=rememberLastPage]').on('change', function (e) {
     if (params.rememberLastPage && this.checked) document.getElementById('rememberLastPageCheck').checked = true;
-    params.rememberLastPage = this.checked ? true : false;
+    params.rememberLastPage = this.checked;
     settingsStore.setItem('rememberLastPage', params.rememberLastPage, Infinity);
     if (!params.rememberLastPage) {
         settingsStore.setItem('lastPageVisit', '', Infinity);
@@ -2803,13 +2812,12 @@ var historyPop = function (event) {
         uiUtil.clearSpinner();
         document.getElementById('configuration').style.display = 'none';
         document.getElementById('articleListWithHeader').style.display = 'none';
-        let articleContent = document.getElementById('articleContent');
-        let articleContentDoc = articleContent ? articleContent.contentDocument : null;
+        const articleContent = document.getElementById('articleContent');
+        const articleContentDoc = articleContent ? articleContent.contentDocument : null;
         while (articleContentDoc.firstChild) articleContentDoc.removeChild(articleContentDoc.firstChild);
-        if (title && !('' === title)) {
+        if (title && !(title === '')) {
             goToArticle(title);
-        }
-        else if (titleSearch && titleSearch !== '') {
+        } else if (titleSearch && titleSearch !== '') {
             $('#prefix').val(titleSearch);
             if (titleSearch !== appstate.search.prefix) {
                 searchDirEntriesFromPrefix(titleSearch);
@@ -2912,7 +2920,7 @@ function setLocalArchiveFromArchiveList (archive) {
     if (archive && archive.length > 0) {
         // Now, try to find which DeviceStorage has been selected by the user
         // It is the prefix of the archive directory
-        var regexpStorageName = /^\/([^\/]+)\//;
+        var regexpStorageName = /^\/([^/]+)\//;
         var regexpResults = regexpStorageName.exec(archive);
         var selectedStorage = null;
         if (regexpResults && regexpResults.length > 0) {
@@ -3060,8 +3068,9 @@ function setLocalArchiveFromArchiveList (archive) {
             }
         }
         // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
-        if (cssBlobCache)
+        if (cssBlobCache) {
             cssBlobCache = new Map();
+        }
         // if (cssDirEntryCache)
         //    cssDirEntryCache = new Map();
         appstate.selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archive, function (archive) {
@@ -3261,7 +3270,7 @@ function pickFileUWP () { // Support UWP FilePicker [kiwix-js-windows #3]
 }
 
 function pickFileNativeFS () {
-    return window.showOpenFilePicker({multiple: false}).then(function (fileHandle) {
+    return window.showOpenFilePicker({ multiple: false }).then(function (fileHandle) {
         return processNativeFileHandle(fileHandle[0]);
     });
 }
@@ -3424,7 +3433,7 @@ function processNativeDirHandle (dirHandle, callback) {
 
 function scanNodeFolderforArchives (folder, callback) {
     if (folder) {
-        fs.readdir(folder, function (err, files) {
+        window.fs.readdir(folder, function (err, files) {
             if (err) console.error('There was an error reading files in the folder: ' + err.message, err);
             else {
                 params.pickedFolder = folder;
@@ -3705,7 +3714,7 @@ function createFakeFileObjectNode (filename, filepath, callback) {
     file.path = filepath;
     file.readMode = 'electron';
     // Get file size
-    fs.stat(file.path, function (err, stats) {
+    window.fs.stat(file.path, function (err, stats) {
         if (err) {
             file.size = null;
             console.error('File cannot be found!', err);
@@ -3762,15 +3771,15 @@ function readNodeDirectoryAndCreateNodeFileObjects (folder, file) {
                         }
                     }
                     if (!selectedFileNamesSet.length) {
-                        reject('The requested archive is not in the archive folder ' + folder + '!');
+                        reject(new Error('The requested archive is not in the archive folder ' + folder + '!'));
                     }
                 } else {
-                    reject('The requested archive does not appear to be a ZIM file!');
+                    reject(new Error('The requested archive does not appear to be a ZIM file!'));
                 }
             } else {
                 // Folder was empty...
                 // createFakeFileObjectNode(fileHandle, folder + '/' + fileHandle, setLocalArchiveFromFileList);
-                reject('No files were found in the folder!');
+                reject(new Error('No files were found in the folder!'));
             }
          });
     });
@@ -3788,7 +3797,7 @@ var linkListener = function () {
     }
 };
 var returnDivs = document.getElementsByClassName('returntoArticle');
-for (var i = 0; i < returnDivs.length; i++) {
+for (i = 0; i < returnDivs.length; i++) {
     returnDivs[i].addEventListener('click', linkListener);
 }
 
@@ -3811,7 +3820,7 @@ function readRemoteArchive (url) {
                     request.response.name = url;
                     resolve(request.response);
                 } else {
-                    reject('HTTP status ' + request.status + ' when reading ' + url);
+                    reject(new Error('HTTP status ' + request.status + ' when reading ' + url));
                 }
             }
         };
@@ -3861,13 +3870,13 @@ function onKeyUpPrefix (evt) {
 function listenForNavigationKeys () {
     var listener = function (e) {
         var hit = false;
-        if (/^(Arrow)?Left$/.test(e.key) && (e.ctrlKey||e.altKey)) {
+        if (/^(Arrow)?Left$/.test(e.key) && (e.ctrlKey || e.altKey)) {
             // Ctrl/Alt-Left was pressed
             e.preventDefault();
             if (hit) return;
             hit = true;
             articleWindow.history.back();
-        } else if (/^(Arrow)?Right$/.test(e.key) && (e.ctrlKey||e.altKey)) {
+        } else if (/^(Arrow)?Right$/.test(e.key) && (e.ctrlKey || e.altKey)) {
             // Ctrl/Alt-Right was pressed
             e.preventDefault();
             if (hit) return;
@@ -3907,7 +3916,7 @@ function searchDirEntriesFromPrefix (prefix) {
         // Cancel the old search (zimArchive search object will receive this change)
         appstate.search.status = 'cancelled';
         // Initiate a new search object and point appstate.search to it (the zimAcrhive search object will continue to point to the old object)
-        appstate.search = {prefix: prefix, status: 'init', type: '', size: params.maxSearchResultsSize};
+        appstate.search = { prefix: prefix, status: 'init', type: '', size: params.maxSearchResultsSize };
         alertBoxHeader.style.display = 'none';
         if (!prefix || /^\s/.test(prefix)) {
             var sel = prefix ? prefix.replace(/^\s(.*)/, '$1') : '';
@@ -3935,14 +3944,14 @@ function searchDirEntriesFromPrefix (prefix) {
  * @param {String} prefix Optional search prefix from which to start an alphabetical search
  */
 function showZIMIndex (start, prefix) {
-    var searchUrlIndex =  /^[-ABCHIJMUVWX]?\//.test(prefix) ? true : false;
+    var searchUrlIndex = /^[-ABCHIJMUVWX]?\//.test(prefix);
     // If we're searching by title index number (other than 0 or null), we should ignore any prefix
     if (isNaN(start)) {
         prefix = prefix || '';
     } else {
         prefix = start > 0 ? '' : prefix;
     }
-    appstate.search = {prefix: prefix, state: '', searchUrlIndex: searchUrlIndex, size: params.maxSearchResultsSize, window: params.maxSearchResultsSize};
+    appstate.search = { prefix: prefix, state: '', searchUrlIndex: searchUrlIndex, size: params.maxSearchResultsSize, window: params.maxSearchResultsSize };
     if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
         appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(prefix, appstate.search, function (dirEntryArray, nextStart) {
             var docBody = document.getElementById('mymodalVariableContent');
@@ -3953,7 +3962,7 @@ function showZIMIndex (start, prefix) {
                 newHtml += '\n<a  class="list-group-item" href="#" dirEntryId="' + encodeURIComponent(dirEntry.toStringId()) +
                     '">' + (appstate.search.searchUrlIndex ? dirEntry.namespace + '/' + dirEntry.url : '' + dirEntry.getTitleOrUrl()) + '</a>';
             }
-            start = start ? start : 0;
+            start = start || 0;
             var back = start ? '<a href="#" data-start="' + (start - params.maxSearchResultsSize) +
                 '" class="continueAnchor">&lt;&lt; Previous ' + params.maxSearchResultsSize + '</a>' : '';
             var next = dirEntryArray.length === params.maxSearchResultsSize ? '<a href="#" data-start="' + nextStart +
@@ -4040,9 +4049,11 @@ function showZIMIndex (start, prefix) {
                 var zimIndex = document.getElementById('zimDirEntryIndex');
                 if (zimIndex) zimIndex.innerHTML = newHtml;
                 var backNextBlocks = document.querySelectorAll('.backNext');
-                if (backNextBlocks) Array.prototype.slice.call(backNextBlocks).forEach(function (block) {
-                    block.innerHTML = backNext;
-                });
+                if (backNextBlocks) {
+                    Array.prototype.slice.call(backNextBlocks).forEach(function (block) {
+                        block.innerHTML = backNext;
+                    });
+                }
             }
             // This is content that must be changed each time the list of articles changes
             var continueAnchors = docBody.querySelectorAll('.continueAnchor');
@@ -4089,7 +4100,7 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
     } else if (reportingSearch.status === 'error') {
         message = 'Incorrect search syntax! See <a href="#searchSyntaxError" id="searchSyntaxLink">Search syntax</a> in About!';
     } else {
-        message = 'Finished. ' + (nbDirEntry ? nbDirEntry : 'No') + ' articles found' +
+        message = 'Finished. ' + (nbDirEntry || 'No') + ' articles found' +
         (appstate.search.type === 'basic' ? ': try fewer words for full search.' : '.');
     }
     if (!stillSearching && reportingSearch.scanCount) message += ' [scanned ' + reportingSearch.scanCount + ' titles]';
@@ -4195,7 +4206,7 @@ function readArticle (dirEntry) {
     } else {
         var mimeType = dirEntry.getMimetype();
         // TESTING//
-        console.log('Initiating ' + mimeType  + ' load of ' + dirEntry.namespace + '/' + dirEntry.url + '...');
+        console.log('Initiating ' + mimeType + ' load of ' + dirEntry.namespace + '/' + dirEntry.url + '...');
         alertBoxHeader.style.display = 'none';
         // Set startup parameter to guard against boot loop
         if (settingsStore.getItem('lastPageLoad') !== 'rebooting') settingsStore.setItem('lastPageLoad', 'failed', Infinity);
@@ -4303,7 +4314,6 @@ function readArticle (dirEntry) {
                     htmlContent = params.lastPageHTML;
                     goToRetrievedContent(htmlContent);
                 }
-
             } else {
                 goToRetrievedContent(htmlContent);
             }
@@ -4333,7 +4343,7 @@ var filterClickEvent = function (event) {
             event.stopPropagation();
             console.debug('filterClickEvent opening new window for PDF');
             clickedAnchor.newcontainer = true;
-            window.open(clickedAnchor.href,  params.windowOpener === 'tab' ? '_blank' : clickedAnchor.title,
+            window.open(clickedAnchor.href, params.windowOpener === 'tab' ? '_blank' : clickedAnchor.title,
                 params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
             // Make sure that the last saved page is not a PDF, or else we'll have a CSP exception on restarting the app
             // @TODO - may not be necessary because params.lastPageVisit is only set when HTML is loaded
@@ -4380,9 +4390,11 @@ var articleLoadedSW = function (dirEntry) {
         listenForNavigationKeys();
         // We need to keep tabs on the opened tabs or windows if the user wants right-click functionality, and also parse download links
         // We need to set a timeout so that dynamically generated URLs are parsed as well (e.g. in Gutenberg ZIMs)
-        if (params.windowOpener) { setTimeout(function () {
-            parseAnchorsJQuery(dirEntry);
-        }, 1500); }
+        if (params.windowOpener) {
+            setTimeout(function () {
+                parseAnchorsJQuery(dirEntry);
+            }, 1500);
+        }
         if ((params.zimType === 'open' || params.manipulateImages) && /manual|progressive/.test(params.imageDisplayMode)) {
             images.prepareImagesServiceWorker(articleWindow);
         } else {
@@ -4413,9 +4425,11 @@ var articleLoadedSW = function (dirEntry) {
         // Jump to any anchor parameter
         if (anchorParameter) {
             var target = articleWindow.document.getElementById(anchorParameter);
-            if (target) { setTimeout(function () {
-                target.scrollIntoView();
-            }, 1000); }
+            if (target) {
+                setTimeout(function () {
+                    target.scrollIntoView();
+                }, 1000);
+            }
             anchorParameter = '';
         }
         params.isLandingPage = false;
@@ -4432,7 +4446,6 @@ var articleLoadedSW = function (dirEntry) {
         //     articleWindow.removeEventListener('mousedown', filterClickEvent, true);
         // }
     };
-
 };
 
 var loadingArticle = '';
@@ -4492,7 +4505,7 @@ function handleMessageChannelMessage (event) {
                 } else if (dirEntry.isRedirect()) {
                     appstate.selectedArchive.resolveRedirect(dirEntry, function (resolvedDirEntry) {
                         var redirectURL = resolvedDirEntry.namespace + '/' + resolvedDirEntry.url;
-                        // Ask the ServiceWork to send an HTTP redirect to the browser.
+                        // Ask the ServiceWork to send an HTTP redirect to the browser.
                         // We could send the final content directly, but it is necessary to let the browser know in which directory it ends up.
                         // Else, if the redirect URL is in a different directory than the original URL,
                         // the relative links in the HTML content would fail. See #312
@@ -4577,10 +4590,12 @@ function handleMessageChannelMessage (event) {
                     });
                 }
             };
-            if (params.zimType === 'zimit') title = title.replace(/^([^?]+)(\?[^?]*)?$/, function (m0, m1, m2) {
-                // Note that Zimit ZIMs store ZIM URLs encoded, but SOME incorrectly encode using encodeURIComponent, instead of encodeURI!
-                return m1.replace(/[&]/g, '%26').replace(/,/g, '%2C') + (m2 || '');
-            });
+            if (params.zimType === 'zimit') {
+                title = title.replace(/^([^?]+)(\?[^?]*)?$/, function (m0, m1, m2) {
+                    // Note that Zimit ZIMs store ZIM URLs encoded, but SOME incorrectly encode using encodeURIComponent, instead of encodeURI!
+                    return m1.replace(/[&]/g, '%26').replace(/,/g, '%2C') + (m2 || '');
+                });
+            }
             // Intercept YouTube video requests
             if (params.zimType === 'zimit' && /youtubei.*player/.test(title)) {
                 var cns = appstate.selectedArchive.getContentNamespace();
@@ -4600,7 +4615,7 @@ function handleMessageChannelMessage (event) {
                 messagePort.postMessage({
                     action: 'giveContent',
                     title: title,
-                    content: new Uint8Array
+                    content: new Uint8Array()
                 });
             });
         } else {
@@ -4664,7 +4679,7 @@ function postTransformedHTML (thisMessage, thisMessagePort, thisDirEntry) {
 
 // Compile some regular expressions needed to modify links
 // Pattern to find the path in a url
-var regexpPath = /^(.*\/)[^\/]+$/;
+var regexpPath = /^(.*\/)[^/]+$/;
 // Pattern to find a ZIM URL (with its namespace) - see https://wiki.openzim.org/wiki/ZIM_file_format#Namespaces
 params.regexpZIMUrlWithNamespace = /^[./]*([-ABCHIJMUVWX]\/.+)$/;
 // The case-insensitive regex below finds images, scripts, stylesheets (not tracks) with ZIM-type metadata and image namespaces.
@@ -4698,7 +4713,6 @@ var anchorParameter;
 params.containsMathTexRaw = false;
 params.containsMathTex = false;
 params.containsMathSVG = false;
-var treePath;
 
 // Stores a url to direntry mapping and is refered to/updated anytime there is a css lookup
 // When archive changes these caches should be reset.
@@ -4727,7 +4741,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
         articleWindow.kiwixType = appstate.target;
         // Scroll the old container to the top
-        articleWindow.scrollTo(0,0);
+        articleWindow.scrollTo(0, 0);
         articleDocument = articleWindow.document.documentElement;
         articleDocument.innerHTML = htmlArticle;
         return;
@@ -4783,7 +4797,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
     }
     var newBlock;
     var assetZIMUrlEnc;
-    var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
+    var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
     if (params.contentInjectionMode == 'jquery') {
         htmlArticle = htmlArticle.replace(params.regexpTagsWithZimUrl, function (match, blockStart, equals, quote, relAssetUrl, blockClose) {
             // Don't process data URIs (yet)
@@ -5010,7 +5024,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             if (/bingmaps/.test(params.mapsURI)) {
                 html = hrefAttr + params.mapsURI + '?collection=point.' + latitude + '_' + longitude + '_' +
                 encodeURIComponent(id.replace(/_/g, ' ')).replace(/\.(\w\w)/g, '%$1') +
-                (p5 ? '\&lvl=' + p5 : '') + p4.replace(/style=["']\s?background:[^"']+["']/i, '');
+                (p5 ? '&lvl=' + p5 : '') + p4.replace(/style=["']\s?background:[^"']+["']/i, '');
             }
             if (/openstreetmap/.test(params.mapsURI)) {
                 html = hrefAttr + params.mapsURI + '?mlat=' + latitude + '&mlon=' + longitude + '#map=18/' + latitude + '/' + longitude +
@@ -5049,13 +5063,12 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 console.error('Error constructiong regular expression in app.js', err);
             }
             var fnReturnID = fnReturnMatch ? fnReturnMatch[1] : '';
-            return match + '\r\n<a href=\"#' + fnReturnID + '">^&nbsp;</a>';
+            return match + '\r\n<a href="#' + fnReturnID + '">^&nbsp;</a>';
         });
 
         // Exempt Nautilus and YouTube based ZIMs from stylesheet preloading
         var nautilus = params.contentInjectionMode === 'serviceworker'
             ? htmlArticle.match(/<script\b[^>]+['"][^'"]*(?:nautilus|zim_prefix)\.js[^'"]*[^>]*>[^<]*<\/script>\s*/i) : null;
-
     }
 
     if (params.zimType === 'open' && !nautilus || params.contentInjectionMode === 'jquery') {
@@ -5102,7 +5115,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 }
             }
         }
-        for (var i = 0; i < arr.length; i++) {
+        for (i = 0; i < arr.length; i++) {
             var zimLink = arr[i].match(/(?:href|data-kiwixurl)\s*=\s*['"]([^'"]+)/i);
             zimLink = zimLink ? params.zimType === 'zimit' ? zimLink[1] : decodeURIComponent(uiUtil.removeUrlParameters(zimLink[1])) : '';
             /* zl = zimLink; zim = zimType; cc = cssCache; cs = cssSource; i  */
@@ -5128,20 +5141,24 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 // var cssContent = util.uintToString(content);
                 var mimetype = /\.ico$/i.test(title) ? 'image' : 'text/css';
                 var cssBlob;
-                if (content) cssBlob = new Blob([content], {
-                    type: mimetype
-                });
+                if (content) {
+                    cssBlob = new Blob([content], {
+                        type: mimetype
+                    });
+                }
                 var newURL = cssBlob ? [title, URL.createObjectURL(cssBlob)] : [title, ''];
                 blobArray.push(newURL);
-                if (cssBlobCache)
+                if (cssBlobCache) {
                     cssBlobCache.set(newURL[0], newURL[1]);
+                }
                 injectCSS(); // DO NOT move this: it must run within .then function to pass correct values
             }).catch(function (err) {
                 console.error(err);
                 var newURL = [title, ''];
                 blobArray.push(newURL);
-                if (cssBlobCache)
+                if (cssBlobCache) {
                     cssBlobCache.set(newURL[0], newURL[1]);
+                }
                 injectCSS();
             });
         }
@@ -5241,7 +5258,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // Ensure the window target is permanently stored as a property of the articleWindow (since appstate.target can change)
             articleWindow.kiwixType = appstate.target;
             // Scroll the old container to the top
-            articleWindow.scrollTo(0,0);
+            articleWindow.scrollTo(0, 0);
             articleDocument = articleWindow.document.documentElement;
 
             // ** Write article html to the new article container **
@@ -5251,9 +5268,11 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
 
             if (articleWindow.kiwixType === 'iframe') {
                 // Add any missing classes stripped from the <html> tag
-                if (htmlCSS) htmlCSS.forEach(function (cl) {
-                    docBody.classList.add(cl);
-                });
+                if (htmlCSS) {
+                    htmlCSS.forEach(function (cl) {
+                        docBody.classList.add(cl);
+                    });
+                }
                 if (!params.disableDragAndDrop) {
                     // Deflect drag-and-drop of ZIM file on the iframe to Config
                     docBody.addEventListener('dragover', handleIframeDragover);
@@ -5348,9 +5367,11 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // Jump to any anchor parameter
             if (anchorParameter) {
                 var target = articleWindow.document.getElementById(anchorParameter);
-                if (target) setTimeout(function () {
-                    target.scrollIntoView();
-                }, 1000);
+                if (target) {
+                    setTimeout(function () {
+                        target.scrollIntoView();
+                    }, 1000);
+                }
                 anchorParameter = '';
             }
             params.isLandingPage = false;
@@ -5459,12 +5480,11 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             uiUtil.clearSpinner();
         }, 6000);
     } // End of injectHtml
-
 } // End of displayArticleInForm()
 
 function parseAnchorsJQuery (dirEntry) {
     var currentProtocol = articleWindow.location.protocol;
-    currentProtocol === 'about:' ? currentProtocol = ':' : currentProtocol;
+    currentProtocol = currentProtocol === 'about:' ? ':' : currentProtocol;
     var currentHost = articleWindow.location.host;
     // Percent-encode dirEntry.url and add regex escape character \ to the RegExp special characters - see https://www.regular-expressions.info/characters.html;
     // NB dirEntry.url can also contain path separator / in some ZIMs (Stackexchange). } and ] do not need to be escaped as they have no meaning on their own.
@@ -5596,7 +5616,7 @@ function addListenersToLink (a, href, baseUrl) {
         e.stopPropagation();
         anchorParameter = href.match(/#([^#;]+)$/);
         anchorParameter = anchorParameter ? anchorParameter[1] : '';
-        var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
+        var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
         var zimRoot = indexRoot.replace(/^.+?\/www\//, '/');
         var zimUrl;
         var zimUrlFullEncoding;
@@ -5638,7 +5658,7 @@ function addListenersToLink (a, href, baseUrl) {
             a.newcontainer = true;
             onDetectedClick(event);
         }, 800);
-    }, { passive:false });
+    }, { passive: false });
     a.addEventListener('touchend', function () {
         a.touched = false;
         a.newcontainer = false;
@@ -5749,20 +5769,21 @@ dropup.addEventListener('click', function () {
 function setupTableOfContents () {
     var iframe = document.getElementById('articleContent');
     var innerDoc = iframe.contentDocument;
-    var tableOfContents = new uiUtil.toc(innerDoc);
+    var tableOfContents = new uiUtil.ToC(innerDoc);
     var headings = tableOfContents.getHeadingObjects();
 
     dropup.style.fontSize = ~~(params.relativeUIFontSize * 0.14) + 'px';
     var dropupHtml = '';
     headings.forEach(function (heading) {
-        if (/^h1$/i.test(heading.tagName))
+        if (/^h1$/i.test(heading.tagName)) {
             dropupHtml += '<li style="font-size:' + params.relativeFontSize + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
-        else if (/^h2$/i.test(heading.tagName))
+        } else if (/^h2$/i.test(heading.tagName)) {
             dropupHtml += '<li style="font-size:' + ~~(params.relativeFontSize * 0.9) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
-        else if (/^h3$/i.test(heading.tagName))
+        } else if (/^h3$/i.test(heading.tagName)) {
             dropupHtml += '<li style="font-size:' + ~~(params.relativeFontSize * 0.8) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
-        else if (/^h4$/i.test(heading.tagName))
+        } else if (/^h4$/i.test(heading.tagName)) {
             dropupHtml += '<li style="font-size:' + ~~(params.relativeFontSize * 0.7) + '%;"><a href="#" data-heading-id="' + heading.id + '">' + heading.textContent + '</a></li>';
+        }
         // Skip smaller headings (if there are any) to avoid making list too long
     });
     var ToCList = document.getElementById('ToCList');
@@ -5772,7 +5793,6 @@ function setupTableOfContents () {
     Array.prototype.slice.call(ToCList.getElementsByTagName('a')).forEach(function (listElement) {
         listElement.addEventListener('click', function () {
             var sectionEle = innerDoc.getElementById(this.dataset.headingId);
-            var i;
             var csec = util.closest(sectionEle, 'details, section');
             csec = csec && /DETAILS|SECTION/.test(csec.parentElement.tagName) ? csec.parentElement : csec;
             openAllSections(true, csec);
@@ -5902,20 +5922,19 @@ function pushBrowserHistoryState (title, titleSearch) {
     var stateObj = {};
     var urlParameters;
     var stateLabel;
-    if (title && !('' === title)) {
+    if (title && !(title === '')) {
         // Prevents creating a double history for the same page (wrapped to prevent exception in IE and Edge Legacy for tabs)
-        try { if (targetWin.history.state && targetWin.history.state.title === title) return; }
-        catch (err) { console.error('Unable to access History for this window', err); return; }
+        try {
+            if (targetWin.history.state && targetWin.history.state.title === title) return;
+        } catch (err) { console.error('Unable to access History for this window', err); return; }
         stateObj.title = title;
         urlParameters = '?title=' + title;
         stateLabel = 'Wikipedia Article : ' + title;
-    }
-    else if (titleSearch && !('' === titleSearch)) {
+    } else if (titleSearch && !(titleSearch === '')) {
         stateObj.titleSearch = titleSearch;
         urlParameters = '?titleSearch=' + titleSearch;
         stateLabel = 'Wikipedia search : ' + titleSearch;
-    }
-    else return;
+    } else return;
     // Edge Legacy and IE cannot push history state to another window/tab and produce an exception;
     // independent navigation history is therefore disabled for these browsers
     try {

@@ -1178,7 +1178,7 @@ export default {
     deriveZimUrlFromRelativeUrl: deriveZimUrlFromRelativeUrl,
     getClosestMatchForTagname: getClosestMatchForTagname,
     removeUrlParameters: removeUrlParameters,
-    toc: TableOfContents,
+    ToC: TableOfContents,
     isElementInView: isElementInView,
     makeReturnLink: makeReturnLink,
     pollSpinner: pollSpinner,
