@@ -12,6 +12,7 @@
 * ENHANCEMENT: The Kiwix PWA can now be added as a Side Panel app in Edge (NB folder picking does not work in this configuration)
 * ENHANCEMENT: Top toolbar now resized correctly with Window Controls Overlay in installed PWA on macOS and Windows
 * ENHANCEMENT: When using Window Controls Overlay, app now has a draggable area (left of Kiwix icon)
+* UPDATE: Sample archive changed to `wikipedia_en_100_mini_2023-07`
 * UPDATE: Troubleshooting instructions for installing on Debian on the Releases page
 * BUILD: Allow producing signed or unsigned versions of appx, and compile to appxbundle
 * BUILD: Option to build artefacts only for testing
