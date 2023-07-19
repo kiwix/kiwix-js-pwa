@@ -2703,12 +2703,6 @@ if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
     });
 }
 
-// Check if the Electron app was launched with a file, using the file association mechanism of the Electron API
-// if (window.electronAPI && electronAPI.checkLaunchFile) {
-//     electronAPI.checkLaunchFile();
-//     // Callback for above function
-// }
-
 // @STORAGE AUTOLOAD STARTS HERE
 if ($.isFunction(navigator.getDeviceStorages)) {
     // The method getDeviceStorages is available (FxOS>=1.1)
