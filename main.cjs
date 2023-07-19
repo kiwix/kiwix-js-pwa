@@ -124,6 +124,7 @@ function registerListeners () {
 
 // Get the launch file path
 function processLaunchFilePath (arg) {
+    console.log('Scanning for launch file path...');
     var openFilePath = null;
     if (arg && arg.length >= 2) {
         for (var i = 0; i < arg.length; i++) {

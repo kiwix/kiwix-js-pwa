@@ -933,7 +933,14 @@ if (window.electronAPI) {
             if (pathParts) {
                 params.rescan = false;
                 console.debug('[ElectronAPI] App was launched with the following file path: ' + fullPath);
-                createFakeFileObjectNode(pathParts[2], fullPath, processFakeFile);
+                var archiveFolder = pathParts[1], archiveFile = pathParts[2];
+                // Empty the archive list (we will reconstruct it)
+                // document.getElementById('archiveList').options.length = 0;
+                params.storedFile = archiveFile;
+                scanNodeFolderforArchives(archiveFolder, function (archivesInFolder) {
+                    // console.debug('archivesInFolder: ' + JSON.stringify(archivesInFolder));
+                    setLocalArchiveFromArchiveList(archiveFile);
+                });
                 return;
             }
         }
@@ -3246,6 +3253,7 @@ function handleIframeDrop (e) {
 }
 
 function handleFileDrop (packet) {
+    appstate.filesDropped = true;
     packet.stopPropagation();
     packet.preventDefault();
     configDropZone.style.border = '';
@@ -3526,7 +3534,7 @@ function setLocalArchiveFromFileList (files) {
             return;
         }
         // Note the index of the .zimaa file
-        firstFileIndex = /\.zimaa$/i.test(files[i].name) ? i : firstFileIndex;
+        firstFileIndex = /\.zim(aa)?$/i.test(files[i].name) ? i : firstFileIndex;
         // Allow reading with electron if we have the path info
         if (typeof window.fs !== 'undefined' && files[i].path) {
             files[i].readMode = 'electron';
@@ -3550,8 +3558,7 @@ function setLocalArchiveFromFileList (files) {
     }
     // If the file name is already in the archive list, try to select it in the list
     var listOfArchives = document.getElementById('archiveList');
-    // Files aren't in order necessarily, so we need to find
-    if (listOfArchives && firstFileIndex) listOfArchives.value = files[firstFileIndex].name;
+    if (listOfArchives && files[firstFileIndex]) listOfArchives.value = files[firstFileIndex].name;
     // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
     if (cssBlobCache) cssBlobCache = new Map();
     appstate.selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
@@ -3594,7 +3601,7 @@ function setLocalArchiveFromFileList (files) {
         settingsStore.setItem('lastSelectedArchive', params.storedFile, Infinity);
         settingsStore.setItem('lastSelectedArchivePath', params.storedFilePath, Infinity);
         // If we have dragged and dropped files into an Electron app, we should have access to the path, so we should store it
-        if (params.storedFilePath) {
+        if (appstate.filesDropped && params.storedFilePath) {
             params.pickedFolder = null;
             params.pickedFile = params.storedFilePath;
             settingsStore.setItem('pickedFolder', '', Infinity);
@@ -3605,6 +3612,7 @@ function setLocalArchiveFromFileList (files) {
             cache.idxDB('delete', 'pickedFSHandle', function () {
                 console.debug('File handle deleted');
             });
+            appstate.filesDropped = false;
         }
         var reloadLink = document.getElementById('reloadPackagedArchive');
         if (reloadLink) {
