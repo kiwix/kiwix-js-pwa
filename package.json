@@ -21,6 +21,16 @@
         "from": "archives",
         "to": "archives"
       },
+      "fileAssociations": [
+        {
+          "ext": "zim",
+          "name": "ZIM Archive"
+        },
+        {
+          "ext": "zimaa",
+          "name": "ZIM Archive"
+        }
+      ],
       "publish": [
         "github"
       ],
@@ -44,6 +54,16 @@
         "from": "archives",
         "to": "app/archives"
       },
+      "fileAssociations": [
+        {
+          "ext": "zim",
+          "name": "ZIM Archive"
+        },
+        {
+          "ext": "zimaa",
+          "name": "ZIM Archive"
+        }
+      ],
       "publish": [
         "github"
       ],
@@ -158,3 +178,5 @@
     "electron-updater": "^6.1.0"
   }
 }
+
+

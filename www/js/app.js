@@ -610,14 +610,13 @@ document.getElementById('btnRescanDeviceStorage').addEventListener('click', func
         returnDivs[i].innerHTML = '';
     }
     params.rescan = true;
-    // Reload any ZIM files in local storage (which the usar can't otherwise select with the filepicker)
-    loadPackagedArchive();
+    // Deprecated: Reload any ZIM files in local storage (which the usar can't otherwise select with the filepicker)
+    // loadPackagedArchive();
     if (storages.length) {
         searchForArchivesInStorage();
     } else {
         displayFileSelect();
     }
-    document.getElementById('rescanStorage').style.display = 'none';
 });
 // Bottom bar :
 // @TODO Since bottom bar now hidden in Settings and About the returntoArticle code cannot be accessed;
@@ -926,6 +925,19 @@ if (window.electronAPI) {
                 }
             }, 10000);
         }
+    });
+    electronAPI.on('get-launch-file-path', function (fullPath) {
+        if (fullPath) {
+            fullPath = fullPath.replace(/\\/g, '/');
+            var pathParts = fullPath.match(/^(.+[/\\])([^/\\]+)$/i);
+            if (pathParts) {
+                params.rescan = false;
+                console.debug('[ElectronAPI] App was launched with the following file path: ' + fullPath);
+                createFakeFileObjectNode(pathParts[2], fullPath, processFakeFile);
+                return;
+            }
+        }
+        console.debug('[ElectronAPI] No file was launched with the app');
     });
 }
 
@@ -2676,6 +2688,7 @@ function searchForArchivesInStorage () {
     }
 }
 
+// Check if there are files in the launch queue to be handled by the File Handling API
 if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
     console.log('File Handling API is available');
     launchQueue.setConsumer(function (launchParams) {
@@ -2689,6 +2702,12 @@ if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
         }
     });
 }
+
+// Check if the Electron app was launched with a file, using the file association mechanism of the Electron API
+// if (window.electronAPI && electronAPI.checkLaunchFile) {
+//     electronAPI.checkLaunchFile();
+//     // Callback for above function
+// }
 
 // @STORAGE AUTOLOAD STARTS HERE
 if ($.isFunction(navigator.getDeviceStorages)) {

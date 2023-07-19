@@ -122,44 +122,52 @@ function registerListeners () {
     });
 }
 
+// Get the launch file path
+function processLaunchFilePath (arg) {
+    var openFilePath = null;
+    if (arg && arg.length >= 2) {
+        for (var i = 0; i < arg.length; i++) {
+            console.log('Arg ' + i + ': ' + arg[i]);
+            if (/\.zim(?:\w\w)?$/i.test(arg[i])) {
+                openFilePath = arg[i];
+                break;
+            }
+        }
+        console.log('Launch file path: ' + openFilePath);
+    }
+    return openFilePath;
+}
+
+// Prevent launching multiple instances for now (they are not isolated)
+// Code from https://stackoverflow.com/a/73669484/9727685
+// Behaviour on second instance for parent process
+const gotSingleInstanceLock = app.requestSingleInstanceLock();
+if (!gotSingleInstanceLock) {
+    app.quit(); // Quits the app if app.requestSingleInstanceLock() returns false
+} else {
+    app.on('second-instance', (_, argv) => {
+        // User requested a second instance of the app.
+        // argv has the process.argv arguments of the second instance.
+        if (app.hasSingleInstanceLock()) {
+            if (mainWindow) {
+                if (mainWindow.isMinimized()) {
+                    mainWindow.restore();
+                }
+                mainWindow.focus();
+                var path = processLaunchFilePath(argv);
+                mainWindow.webContents.send('get-launch-file-path', path);
+            }
+        }
+    });
+}
+
 app.whenReady().then(() => {
-    // //protocol.registerFileProtocol('app', (request, callback) => {
-    // protocol.registerHttpProtocol('app', (request, callback) => {
-    //     const url = request.url.replace(/^app:\/\/([^?#]*?)([^?#\/\\]+)([#?].*$|$)/, function(_p0, relPath, linkUrl, hash) {
-    //         let replaceLink = relPath + linkUrl;
-    //         // This prevents the querystring from being passed to Electron on main app reload
-    //         if (/www\/index\.html/.test(replaceLink)) return replaceLink;
-    //         return replaceLink + hash;
-    //     });
-    //     //let returnPath = path.normalize(`${__dirname}/${url}`);
-    //     let returnPath = __dirname + '/' + url;
-    //     returnPath = path.normalize(returnPath);
-    //     console.log(returnPath);
-    //     callback({
-    //         path: returnPath
-    //         // url: 'file://' + path.normalize(`${__dirname}/${url}`),
-    //         // method: 'GET'
-    //     });
-    //     // console.log(path.normalize(`${__dirname}/${url}` + ':' + url));
-    // }, (error) => {
-    //     if (error) console.error('Failed to register protocol');
-    // });
     // Create the new window
     createWindow();
     registerListeners();
 
     var appName = app.getName();
     console.log('App name: ' + appName);
-
-    // setTimeout(function () {
-    //     // Don't auto update if the app is a packaged app
-    //     if (/wikimed|wikivoyage/i.test(appName)) {
-    //         console.log('Auto-update: Packaged apps with large ZIM archives are not auto-updated.\n');
-    //         return;
-    //     }
-    //     console.log('Auto-update: checking for update...\n');
-    //     autoUpdater.checkForUpdates();
-    // }, 30000);
 
     // Send message to renderer if update is available
     autoUpdater.on('update-downloaded', function (info) {
@@ -170,6 +178,11 @@ app.whenReady().then(() => {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
+
+    mainWindow.webContents.on('did-finish-load', () => {
+        const launchFilePath = processLaunchFilePath(process.argv);
+        mainWindow.webContents.send('get-launch-file-path', launchFilePath);
     });
 });
 
