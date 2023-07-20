@@ -4,7 +4,7 @@
 
 * FEATURE: Improved file and folder picking experience for Firefox and older browsers lacking the File System Access API
 * FEATURE: Ability to pick a folder of ZIM archives in nearly all apps and frameworks with support for Webkitdirectory API
-* FEATURE: Electron-based Store app can now handle ZIM files, including the `.zimaa` part of a split ZIM fileset
+* FEATURE: Electron app can now handle ZIM files, including the `.zimaa` part of a split ZIM fileset
 * ENHANCEMENT: Fast re-opening of previously picked archives or directories in these browsers (number of clicks minimized)
 * ENHANCEMENT: Dragged and dropped files, including split files, can now be re-opened automatically in Electron and NWJS apps
 * ENHANCEMENT: Provide more gradual screen width transition with max page width auto setting
@@ -17,6 +17,7 @@
 * UPDATE: Troubleshooting instructions for installing on Debian on the Releases page
 * BUILD: Allow producing signed or unsigned versions of appx, and compile to appxbundle
 * BUILD: Option to build artefacts only for testing
+* FIX: Broken Kiwix icon for Linux app packages
 * FIX: Miscellaneous small bugfixes and typos
 * DEV: A lot of normalization of coding style using ESLint
 
