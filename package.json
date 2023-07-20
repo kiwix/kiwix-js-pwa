@@ -89,7 +89,7 @@
           ]
         }
       ],
-      "icon": "electron_icons/icon.png",
+      "icon": "../electron_icons/mac/icon.icns",
       "category": "Education"
     },
     "nsis": {
@@ -181,5 +181,3 @@
     "electron-updater": "^6.1.0"
   }
 }
-
-
