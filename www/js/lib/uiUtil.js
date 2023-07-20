@@ -367,7 +367,7 @@ function displayActiveContentWarning (type) {
             '<b><i>space / </i></b> for the URL Index.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';
     }
-    var alertBoxHeader = document.getElementById('alertBoxHeader');
+    const alertBoxHeader = document.getElementById('alertBoxHeader');
     alertBoxHeader.innerHTML = alertHTML;
     alertBoxHeader.style.display = 'block';
     document.getElementById('activeContentClose').addEventListener('click', function () {
@@ -769,14 +769,18 @@ function systemAlert (message, label, isConfirm, declineConfirmLabel, approveCon
  * @param {String} url An optional download URL
  */
 function showUpgradeReady (ver, type, url) {
-    document.getElementById('alertBoxPersistent').innerHTML =
+    const alertBoxPersistent = document.getElementById('alertBoxPersistent');
+    alertBoxPersistent.innerHTML =
         '<div id="upgradeAlert" class="alert alert-info alert-dismissible">\n' +
-        '    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
+        '    <a href="#" id="closeUpgradeAlert" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
         '    <span id="persistentMessage"></span>\n' +
         '</div>\n';
     document.getElementById('persistentMessage').innerHTML = 'Version ' + ver +
         (url ? ' is available to ' + type + '! Go to <a href="' + url + '" style="color:white;" target="_blank">' + url + '</a>'
             : ' is ready to ' + type + '! (Re-launch app to ' + type + '.)');
+    document.getElementById('closeUpgradeAlert').addEventListener('click', function () {
+        alertBoxPersistent.style.display = 'none';
+    });
 }
 
 /**
