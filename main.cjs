@@ -155,8 +155,8 @@ if (!gotSingleInstanceLock) {
                     mainWindow.restore();
                 }
                 mainWindow.focus();
-                var path = processLaunchFilePath(argv);
-                mainWindow.webContents.send('get-launch-file-path', path);
+                const launchFilePath = processLaunchFilePath(argv);
+                mainWindow.webContents.send('get-launch-file-path', launchFilePath);
             }
         }
     });

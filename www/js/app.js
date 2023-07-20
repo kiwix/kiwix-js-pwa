@@ -934,9 +934,9 @@ if (window.electronAPI) {
                 params.rescan = false;
                 console.debug('[ElectronAPI] App was launched with the following file path: ' + fullPath);
                 var archiveFolder = pathParts[1], archiveFile = pathParts[2];
-                // Empty the archive list (we will reconstruct it)
-                // document.getElementById('archiveList').options.length = 0;
                 params.storedFile = archiveFile;
+                // This is needed to prevent the app from trying to load the previous storedFilePath when the File System Access API is available
+                params.storedFilePath = null;
                 scanNodeFolderforArchives(archiveFolder, function (archivesInFolder) {
                     // console.debug('archivesInFolder: ' + JSON.stringify(archivesInFolder));
                     setLocalArchiveFromArchiveList(archiveFile);
@@ -2887,12 +2887,13 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
         // If we're doing a rescan, then don't attempt to jump to the last selected archive, but leave selectors open
         var lastSelectedArchive = params.rescan ? '' : params.storedFile;
         if (lastSelectedArchive) {
-            //  || comboArchiveList.options.length == 1
-            // Either we have previously chosen a file, or there is only one file
+            // console.debug('Last selected archive: ' + lastSelectedArchive);
             // Attempt to select the corresponding item in the list, if it exists
             var success = false;
-            if ($("#archiveList option[value='" + lastSelectedArchive + "']").length > 0) {
-                $('#archiveList').val(lastSelectedArchive);
+            var arrayOfOptionValues = Array.apply(null, comboArchiveList.options).map(function (el) { return el.text; })
+            // console.debug('Archive list: ' + arrayOfOptionValues);
+            if (~arrayOfOptionValues.indexOf(lastSelectedArchive)) {
+                comboArchiveList.value = lastSelectedArchive;
                 success = true;
                 settingsStore.setItem('lastSelectedArchive', lastSelectedArchive, Infinity);
             }
@@ -3453,6 +3454,8 @@ function processNativeDirHandle (dirHandle, callback) {
 }
 
 function scanNodeFolderforArchives (folder, callback) {
+    // var stackTrace = Error().stack;
+    // console.debug('Stack trace: ' + stackTrace);
     if (folder) {
         window.fs.readdir(folder, function (err, files) {
             if (err) console.error('There was an error reading files in the folder: ' + err.message, err);
