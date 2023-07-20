@@ -57,11 +57,13 @@
       "fileAssociations": [
         {
           "ext": "zim",
-          "name": "ZIM Archive"
+          "name": "ZIM Archive",
+          "mimeType": "application/x-openzim"
         },
         {
           "ext": "zimaa",
-          "name": "ZIM Archive"
+          "name": "ZIM Archive",
+          "mimeType": "application/x-openzim"
         }
       ],
       "publish": [
@@ -87,6 +89,7 @@
           ]
         }
       ],
+      "icon": "electron_icons/icon.png",
       "category": "Education"
     },
     "nsis": {
