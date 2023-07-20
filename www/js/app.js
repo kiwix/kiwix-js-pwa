@@ -610,14 +610,13 @@ document.getElementById('btnRescanDeviceStorage').addEventListener('click', func
         returnDivs[i].innerHTML = '';
     }
     params.rescan = true;
-    // Reload any ZIM files in local storage (which the usar can't otherwise select with the filepicker)
-    loadPackagedArchive();
+    // Deprecated: Reload any ZIM files in local storage (which the usar can't otherwise select with the filepicker)
+    // loadPackagedArchive();
     if (storages.length) {
         searchForArchivesInStorage();
     } else {
         displayFileSelect();
     }
-    document.getElementById('rescanStorage').style.display = 'none';
 });
 // Bottom bar :
 // @TODO Since bottom bar now hidden in Settings and About the returntoArticle code cannot be accessed;
@@ -926,6 +925,26 @@ if (window.electronAPI) {
                 }
             }, 10000);
         }
+    });
+    electronAPI.on('get-launch-file-path', function (fullPath) {
+        if (fullPath) {
+            fullPath = fullPath.replace(/\\/g, '/');
+            var pathParts = fullPath.match(/^(.+[/\\])([^/\\]+)$/i);
+            if (pathParts) {
+                params.rescan = false;
+                console.debug('[ElectronAPI] App was launched with the following file path: ' + fullPath);
+                var archiveFolder = pathParts[1], archiveFile = pathParts[2];
+                params.storedFile = archiveFile;
+                // This is needed to prevent the app from trying to load the previous storedFilePath when the File System Access API is available
+                params.storedFilePath = null;
+                scanNodeFolderforArchives(archiveFolder, function (archivesInFolder) {
+                    // console.debug('archivesInFolder: ' + JSON.stringify(archivesInFolder));
+                    setLocalArchiveFromArchiveList(archiveFile);
+                });
+                return;
+            }
+        }
+        console.debug('[ElectronAPI] No file was launched with the app');
     });
 }
 
@@ -2676,6 +2695,7 @@ function searchForArchivesInStorage () {
     }
 }
 
+// Check if there are files in the launch queue to be handled by the File Handling API
 if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
     console.log('File Handling API is available');
     launchQueue.setConsumer(function (launchParams) {
@@ -2867,12 +2887,13 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
         // If we're doing a rescan, then don't attempt to jump to the last selected archive, but leave selectors open
         var lastSelectedArchive = params.rescan ? '' : params.storedFile;
         if (lastSelectedArchive) {
-            //  || comboArchiveList.options.length == 1
-            // Either we have previously chosen a file, or there is only one file
+            // console.debug('Last selected archive: ' + lastSelectedArchive);
             // Attempt to select the corresponding item in the list, if it exists
             var success = false;
-            if ($("#archiveList option[value='" + lastSelectedArchive + "']").length > 0) {
-                $('#archiveList').val(lastSelectedArchive);
+            var arrayOfOptionValues = Array.apply(null, comboArchiveList.options).map(function (el) { return el.text; })
+            // console.debug('Archive list: ' + arrayOfOptionValues);
+            if (~arrayOfOptionValues.indexOf(lastSelectedArchive)) {
+                comboArchiveList.value = lastSelectedArchive;
                 success = true;
                 settingsStore.setItem('lastSelectedArchive', lastSelectedArchive, Infinity);
             }
@@ -3233,6 +3254,7 @@ function handleIframeDrop (e) {
 }
 
 function handleFileDrop (packet) {
+    appstate.filesDropped = true;
     packet.stopPropagation();
     packet.preventDefault();
     configDropZone.style.border = '';
@@ -3432,6 +3454,8 @@ function processNativeDirHandle (dirHandle, callback) {
 }
 
 function scanNodeFolderforArchives (folder, callback) {
+    // var stackTrace = Error().stack;
+    // console.debug('Stack trace: ' + stackTrace);
     if (folder) {
         window.fs.readdir(folder, function (err, files) {
             if (err) console.error('There was an error reading files in the folder: ' + err.message, err);
@@ -3513,7 +3537,7 @@ function setLocalArchiveFromFileList (files) {
             return;
         }
         // Note the index of the .zimaa file
-        firstFileIndex = /\.zimaa$/i.test(files[i].name) ? i : firstFileIndex;
+        firstFileIndex = /\.zim(aa)?$/i.test(files[i].name) ? i : firstFileIndex;
         // Allow reading with electron if we have the path info
         if (typeof window.fs !== 'undefined' && files[i].path) {
             files[i].readMode = 'electron';
@@ -3537,8 +3561,7 @@ function setLocalArchiveFromFileList (files) {
     }
     // If the file name is already in the archive list, try to select it in the list
     var listOfArchives = document.getElementById('archiveList');
-    // Files aren't in order necessarily, so we need to find
-    if (listOfArchives && firstFileIndex) listOfArchives.value = files[firstFileIndex].name;
+    if (listOfArchives && files[firstFileIndex]) listOfArchives.value = files[firstFileIndex].name;
     // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
     if (cssBlobCache) cssBlobCache = new Map();
     appstate.selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
@@ -3581,7 +3604,7 @@ function setLocalArchiveFromFileList (files) {
         settingsStore.setItem('lastSelectedArchive', params.storedFile, Infinity);
         settingsStore.setItem('lastSelectedArchivePath', params.storedFilePath, Infinity);
         // If we have dragged and dropped files into an Electron app, we should have access to the path, so we should store it
-        if (params.storedFilePath) {
+        if (appstate.filesDropped && params.storedFilePath) {
             params.pickedFolder = null;
             params.pickedFile = params.storedFilePath;
             settingsStore.setItem('pickedFolder', '', Infinity);
@@ -3592,6 +3615,7 @@ function setLocalArchiveFromFileList (files) {
             cache.idxDB('delete', 'pickedFSHandle', function () {
                 console.debug('File handle deleted');
             });
+            appstate.filesDropped = false;
         }
         var reloadLink = document.getElementById('reloadPackagedArchive');
         if (reloadLink) {

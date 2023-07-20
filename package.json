@@ -21,6 +21,16 @@
         "from": "archives",
         "to": "archives"
       },
+      "fileAssociations": [
+        {
+          "ext": "zim",
+          "name": "ZIM Archive"
+        },
+        {
+          "ext": "zimaa",
+          "name": "ZIM Archive"
+        }
+      ],
       "publish": [
         "github"
       ],
@@ -44,6 +54,18 @@
         "from": "archives",
         "to": "app/archives"
       },
+      "fileAssociations": [
+        {
+          "ext": "zim",
+          "name": "ZIM Archive",
+          "mimeType": "application/x-openzim"
+        },
+        {
+          "ext": "zimaa",
+          "name": "ZIM Archive",
+          "mimeType": "application/x-openzim"
+        }
+      ],
       "publish": [
         "github"
       ],
@@ -67,6 +89,7 @@
           ]
         }
       ],
+      "icon": "../electron_icons/mac/icon.icns",
       "category": "Education"
     },
     "nsis": {
