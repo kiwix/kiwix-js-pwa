@@ -3,10 +3,12 @@
 ## Release 2.5.6
 
 * FEATURE: Ability to pick a folder of ZIM archives in nearly all apps and frameworks supporting the Webkitdirectory API
+* FEATURE: New Electron-based appx version of Kiwix JS now served from the Microsoft Store and from GitHub Releases
 * FEATURE: Electron app can now handle ZIM files, including the `.zimaa` part of a split ZIM fileset
 * FEATURE: Improved file and folder picking experience for Firefox and older browsers lacking the File System Access API
 * ENHANCEMENT: Fast re-opening of previously picked archives or directories in these browsers (number of clicks minimized)
 * ENHANCEMENT: Dragged and dropped files, including split files, can now be re-opened automatically in Electron and NWJS apps
+* ENHANCEMENT: Microsoft Store app now supports full-text search for users with 64bit Windows
 * ENHANCEMENT: Provide more gradual screen width transition with max page width auto setting
 * ENHANCEMENT: Restored the ability not to display images in ServiceWorker Mode in non-Zimit ZIMs
 * ENHANCEMENT: Restored lazy-loading of images on most landing pages (improves Android experience with image-heavy landing pages)
