@@ -2,9 +2,9 @@
 
 ## Release 2.5.6
 
-* FEATURE: Improved file and folder picking experience for Firefox and older browsers lacking the File System Access API
-* FEATURE: Ability to pick a folder of ZIM archives in nearly all apps and frameworks with support for Webkitdirectory API
+* FEATURE: Ability to pick a folder of ZIM archives in nearly all apps and frameworks supporting the Webkitdirectory API
 * FEATURE: Electron app can now handle ZIM files, including the `.zimaa` part of a split ZIM fileset
+* FEATURE: Improved file and folder picking experience for Firefox and older browsers lacking the File System Access API
 * ENHANCEMENT: Fast re-opening of previously picked archives or directories in these browsers (number of clicks minimized)
 * ENHANCEMENT: Dragged and dropped files, including split files, can now be re-opened automatically in Electron and NWJS apps
 * ENHANCEMENT: Provide more gradual screen width transition with max page width auto setting
@@ -19,6 +19,7 @@
 * BUILD: Option to build artefacts only for testing
 * FIX: Broken Kiwix icon for Linux app packages
 * FIX: Fidelity of layout for translation tables in cached Wiktionary mobile and desktop styles
+* FIX: Broken file handling in legacy UWP app
 * FIX: Miscellaneous small bugfixes and typos
 * DEV: A lot of normalization of coding style using ESLint
 
