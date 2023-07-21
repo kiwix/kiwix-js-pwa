@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-electron",
   "productName": "Kiwix JS Electron",
-  "version": "2.5.6-E",
+  "version": "2.5.6",
   "description": "Kiwix JS packaged for the Electron framework",
   "main": "main.cjs",
   "type": "module",
@@ -78,6 +78,7 @@
         },
         {
           "target": "deb",
+          "icon": "../electron_icons/mac/icon.icns",
           "arch": [
             "x64"
           ]
@@ -89,7 +90,6 @@
           ]
         }
       ],
-      "icon": "../electron_icons/mac/icon.icns",
       "category": "Education"
     },
     "nsis": {
