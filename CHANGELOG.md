@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 2.5.5
+## Release 2.5.6
 
 * FEATURE: Improved file and folder picking experience for Firefox and older browsers lacking the File System Access API
 * FEATURE: Ability to pick a folder of ZIM archives in nearly all apps and frameworks with support for Webkitdirectory API
@@ -18,6 +18,7 @@
 * BUILD: Allow producing signed or unsigned versions of appx, and compile to appxbundle
 * BUILD: Option to build artefacts only for testing
 * FIX: Broken Kiwix icon for Linux app packages
+* FIX: Fidelity of layout for translation tables in cached Wiktionary mobile and desktop styles
 * FIX: Miscellaneous small bugfixes and typos
 * DEV: A lot of normalization of coding style using ESLint
 
