@@ -48,12 +48,12 @@
     <!-- link href="css/bootstrap-theme.min.css" rel="stylesheet" media="screen" /-->
     <script type="text/javascript">
         // This script is needed to retrieve launch arguments when the app is started from cold by double-clicking on a file
-        var launchArguments = null;
+        var launchArgumentsUWP = null;
         if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.UI.WebUI.WebUIApplication) {
             Windows.UI.WebUI.WebUIApplication.addEventListener('activated', function (eventArgs) {
                 if (eventArgs.kind === Windows.ApplicationModel.Activation.ActivationKind.file) {
                     console.log("App was activated with a file: " + eventArgs.files[0].name);
-                    launchArguments = eventArgs;
+                    launchArgumentsUWP = eventArgs;
                 }
             }, false);
         }
