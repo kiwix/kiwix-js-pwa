@@ -23,7 +23,7 @@
 
 'use strict';
 
-/* global Windows, launchArguments */
+/* global Windows, launchArgumentsUWP */
 
 // Set a global error handler to prevent app crashes
 window.onerror = function (msg, url, line, col, error) {
@@ -66,10 +66,10 @@ params['cachedStartPages'] = {
     wikivoyage_en_all_maxi: 'A/Main_Page'
 };
 params['kiwixDownloadLink'] = 'https://download.kiwix.org/zim/'; // Include final slash
-params['kiwixHiddenDownloadLink'] = 'https://master.download.kiwix.org/zim/';
+// params['kiwixHiddenDownloadLink'] = 'https://master.download.kiwix.org/zim/';
 /** ***** DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
 params['PWAServer'] = 'https://pwa.kiwix.org/'; // Production server
-// params['PWAServer'] = "https://kiwix.github.io/kiwix-js-windows/dist/"; // Test server
+// params['PWAServer'] = 'https://kiwix.github.io/kiwix-js-windows/dist/'; // Test server
 params['storeType'] = getBestAvailableStorageAPI();
 params['appType'] = getAppType();
 params['keyPrefix'] = 'kiwixjs-'; // Prefix to use for localStorage keys
@@ -112,15 +112,13 @@ params['cacheAPI'] = 'kiwixjs-assetsCache'; // Set the global Cache API database
 params['cacheIDB'] = 'kiwix-assetsCache'; // Set the global IndexedDB database here (Slightly different name to disambiguate)
 params['imageDisplayMode'] = params.imageDisplay ? 'progressive' : 'manual';
 params['storedFile'] = getSetting('lastSelectedArchive');
-params.storedFile = launchArguments ? launchArguments.files[0].name : params.storedFile || params['packagedFile'] || '';
+params.storedFile = params.storedFile || params['packagedFile'] || '';
 params['lastPageVisit'] = params.rememberLastPage && params.storedFile ? getSetting(params.storedFile.replace(/(\.zim)\w?\w?$/, '$1')) || '' : '';
 params.lastPageVisit = params.lastPageVisit ? params.lastPageVisit + '@kiwixKey@' + params.storedFile : '';
 params['storedFilePath'] = getSetting('lastSelectedArchivePath');
 params.storedFilePath = params.storedFilePath ? decodeURIComponent(params.storedFilePath) : params.archivePath + '/' + params.packagedFile;
-params.storedFilePath = launchArguments ? launchArguments.files[0].path || '' : params.storedFilePath;
 params.originalPackagedFile = params.packagedFile;
 params['localStorage'] = '';
-params['pickedFile'] = launchArguments ? launchArguments.files[0] : '';
 params['pickedFolder'] = '';
 params['themeChanged'] = params['themeChanged'] || false;
 params['printIntercept'] = false;
@@ -178,12 +176,12 @@ if (!/^http/i.test(window.location.protocol) && params.localUWPSettings &&
         uriParams += params.fileVersion ? '&fileVersion=' + encodeURIComponent(params.fileVersion) : '';
         // Signal failure of PWA until it has successfully launched (in init.js it will be changed to 'success')
         params.localUWPSettings.PWA_launch = 'fail';
-        if (launchArguments && typeof Windows.Storage !== 'undefined') {
+        if (launchArgumentsUWP && typeof Windows.Storage !== 'undefined') {
             // We have to ensure the PWA will have access to the file with which the app was launched
             var fal = Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList;
-            fal.addOrReplace(params.falFileToken, launchArguments.files[0]);
+            fal.addOrReplace(params.falFileToken, launchArgumentsUWP.files[0]);
             if (fal.containsItem(params.falFolderToken)) fal.remove(params.falFolderToken);
-            uriParams += '&lastSelectedArchive=' + encodeURIComponent(launchArguments.files[0].name);
+            uriParams += '&lastSelectedArchive=' + encodeURIComponent(launchArgumentsUWP.files[0].name);
         }
         window.location.href = params.PWAServer + 'www/index.html' + uriParams;
         // This will trigger the error catching above, cleanly dematerialize this script and transport us swiftly to PWA land
