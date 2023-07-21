@@ -86,6 +86,21 @@ params['webkitdirectory'] = util.webkitdirectorySupported();
 // Placeholder for the alert box header element, so it can be displayed and hidden easily
 const alertBoxHeader = document.getElementById('alertBoxHeader');
 
+// Retrieve UWP launch arguments when the app is started by double-clicking on a file
+if (typeof Windows !== 'undefined' && Windows.UI && Windows.UI.WebUI && Windows.UI.WebUI.WebUIApplication) {
+    Windows.UI.WebUI.WebUIApplication.addEventListener('activated', function (eventArgs) {
+        if (eventArgs.kind === Windows.ApplicationModel.Activation.ActivationKind.file) {
+            params.storedFile = eventArgs.files[0].name || '';
+            if (params.storedFile) {
+                params.pickedFile = eventArgs.files[0];
+                params.storedFilePath = eventArgs.files[0].path;
+                console.log('App was activated with a file: ' + params.storedFile);
+                processPickedFileUWP(params.pickedFile);
+            }
+        }
+    }, false);
+}
+
 // Test caching capability
 cache.test(function () {});
 // Unique identifier of the article expected to be displayed
