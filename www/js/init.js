@@ -181,7 +181,7 @@ if (!/^http/i.test(window.location.protocol) && params.localUWPSettings &&
             var fal = Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList;
             fal.addOrReplace(params.falFileToken, launchArgumentsUWP.files[0]);
             if (fal.containsItem(params.falFolderToken)) fal.remove(params.falFolderToken);
-            uriParams += '&lastSelectedArchive=' + encodeURIComponent(launchArgumentsUWP.files[0].name);
+            uriParams += '&lasSelectedArchivePath=&lastSelectedArchive=' + encodeURIComponent(launchArgumentsUWP.files[0].name);
         }
         window.location.href = params.PWAServer + 'www/index.html' + uriParams;
         // This will trigger the error catching above, cleanly dematerialize this script and transport us swiftly to PWA land
