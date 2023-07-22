@@ -12,7 +12,7 @@
             "Kiwix": {
                 "name": "GitHub Releases",
                 "type": "appx",
-                "identityName": "Kiwix.KiwixJSElectron",
+                "identityName": "Kiwix.KiwixJS",
                 "dispalyName": "Kiwix JS",
                 "publisher": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, C=CH",
                 "publisherDisplayName": "Association Kiwix"
