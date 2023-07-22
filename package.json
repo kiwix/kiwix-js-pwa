@@ -2,7 +2,7 @@
   "name": "kiwix-js-electron",
   "productName": "Kiwix JS Electron",
   "version": "2.5.6-E",
-  "description": "Kiwix JS packaged for the Electron framework",
+  "description": "Kiwix JS offline ZIM archive reader packaged for the Electron framework",
   "main": "main.cjs",
   "type": "module",
   "build": {
@@ -94,6 +94,9 @@
     "deb": {
       "icon": "../electron_icons/mac/icon.icns"
     },
+    "rpm": {
+      "icon": "../electron_icons/mac/icon.icns"
+    },
     "nsis": {
       "oneClick": "false",
       "allowElevation": "true",
@@ -166,7 +169,7 @@
     "babel-plugin-polyfill-corejs3": "^0.7.1",
     "del-cli": "^5.0.0",
     "electron": "22.3.12",
-    "electron-builder": "^24.4.0",
+    "electron-builder": "^24.6.2",
     "eslint": "^8.42.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.27.5",
