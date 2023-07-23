@@ -17,6 +17,7 @@ if ($overridetarget) {
     $INPUT_TARGET = $overridetarget
 }
 $target = "/data/download/release/kiwix-js-electron"
+$win_target = "/data/download/release/kiwix-js-windows"
 $keyfile = "$PSScriptRoot\ssh_key"
 $keyfile = $keyfile -ireplace '[\\/]', '/'
 
@@ -178,6 +179,12 @@ if (-not $githubonly) {
                 $renamed_file = $renamed_file -replace '^.*?([\\/]bld)', './dist$1' -replace '[\\/]', '/'
                 "Copying $renamed_file to $target..."
                 & "C:\Program Files\Git\usr\bin\scp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$renamed_file", "ci@master.download.kiwix.org:$target")
+                if ($renamed_file -match '\.appx$') {
+                    "Also copying $renamed_file to $win_target..."
+                    $renamed_win_file = $renamed_file -replace 'electron', 'windows'
+                    mv $renamed_file $renamed_win_file
+                    & "C:\Program Files\Git\usr\bin\scp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$renamed_win_file", "ci@master.download.kiwix.org:$win_target")
+                }
             }
         }
     }
