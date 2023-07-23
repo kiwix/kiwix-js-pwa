@@ -91,9 +91,6 @@
       ],
       "category": "Education"
     },
-    "deb": {
-      "icon": "../electron_icons/mac/icon.icns"
-    },
     "nsis": {
       "oneClick": "false",
       "allowElevation": "true",
