@@ -4383,6 +4383,8 @@ function readArticle (dirEntry) {
 var filterClickEvent = function (event) {
     console.debug('filetClickEvent fired');
     if (params.contentInjectionMode === 'jquery') return;
+    // Ignore click if we are dealing with an image that has not yet been extracted
+    if (event.target.dataset && event.target.dataset.kiwixhidden) return;
     // Trap clicks in the iframe to restore Fullscreen mode
     if (params.lockDisplayOrientation) refreshFullScreen();
     // Find the closest enclosing A tag (if any)
@@ -4517,7 +4519,7 @@ var loadingArticle = '';
 function handleMessageChannelMessage (event) {
     if (event.data.error) {
         console.error('Error in MessageChannel', event.data.error);
-        reject(event.data.error);
+        throw event.data.error;
     } else {
         // We received a message from the ServiceWorker
         if (event.data.action === 'askForContent') {

@@ -95,9 +95,10 @@ function extractImages (images, callback) {
             return;
         }
         var imageUrl = image.getAttribute('data-kiwixurl');
-        if (!imageUrl) { remaining--; return; }
+        if (!imageUrl) {
+            remaining--; return;
         // Create data-kiwixsrc needed for stylesheets
-        else { image.setAttribute('data-kiwixsrc', imageUrl); }
+        } else { image.setAttribute('data-kiwixsrc', imageUrl); }
         image.removeAttribute('data-kiwixurl');
         var title = decodeURIComponent(imageUrl);
         extractorBusy++;
@@ -161,6 +162,7 @@ function prepareManualExtraction (win) {
         documentImages[i].style.background = 'lightblue';
         documentImages[i].style.opacity = '1';
         documentImages[i].dataset.kiwixheight = originalHeight;
+        documentImages[i].dataset.kiwixhidden = 'true';
         documentImages[i].addEventListener('click', function (e) {
             // Line below ensures documentImages remains in scope
             var thisImage = e.currentTarget;
@@ -180,6 +182,7 @@ function prepareManualExtraction (win) {
             thisImage.style.opacity = '0';
             if (thisImage.dataset.kiwixheight) thisImage.height = thisImage.dataset.kiwixheight;
             else thisImage.removeAttribute('height');
+            delete thisImage.dataset.kiwixhidden;
             extractImages([thisImage]);
         });
     }
@@ -312,17 +315,10 @@ function prepareImagesServiceWorker (win, forPrinting) {
         if (params.imageDisplayMode === 'manual') {
             prepareManualExtraction(container);
         } else {
-            // Extract all images if we are on the landing page
-            // if (params.isLandingPage) {
-            //     setTimeout(function () {
-            //         extractImages(documentImages);
-            //     }, 0);
-            // } else {
-                // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
-                setTimeout(function () {
-                    lazyLoad(documentImages);
-                }, 400);
-            // }
+            // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
+            setTimeout(function () {
+                lazyLoad(documentImages);
+            }, 400);
         }
     }
 }
@@ -370,17 +366,10 @@ function prepareImagesJQuery (win, forPrinting) {
     if (forPrinting) {
         extractImages(documentImages, params.preloadingAllImages ? params.preloadAllImages : params.printImagesLoaded);
     } else if (params.imageDisplayMode === 'progressive') {
-        // Extract all images if we are on the landing page
-        // if (params.isLandingPage) {
-        //     setTimeout(function () {
-        //         extractImages(documentImages);
-        //     }, 0);
-        // } else {
-            // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
-            setTimeout(function () {
-                lazyLoad(documentImages);
-            }, 400);
-        // }
+        // We need to start detecting images after the hidden articleContent has been displayed (otherwise they are not detected)
+        setTimeout(function () {
+            lazyLoad(documentImages);
+        }, 400);
     } else {
         // User wishes to extract images manually
         prepareManualExtraction(container);
