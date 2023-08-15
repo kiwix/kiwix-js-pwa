@@ -1,5 +1,9 @@
 # Changelog
 
+## In-progress release 2.5.8
+
+* REGRESSION: Fixed loss of ability to access custom ZIMs from download library 
+
 ## Release 2.5.6
 
 * FEATURE: Ability to pick a folder of ZIM archives in nearly all apps and frameworks supporting the Webkitdirectory API
