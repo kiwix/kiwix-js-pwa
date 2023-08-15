@@ -1,5 +1,9 @@
 # Changelog
 
+## In-progress release 2.5.8
+
+* REGRESSION: Fixed loss of ability to access custom ZIMs from download library 
+
 ## In-progress release 2.5.7-Wikivoyage
 
 * UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2023-07`
