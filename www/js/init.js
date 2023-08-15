@@ -66,7 +66,7 @@ params['cachedStartPages'] = {
     wikivoyage_en_all_maxi: 'A/Main_Page'
 };
 params['kiwixDownloadLink'] = 'https://download.kiwix.org/zim/wikivoyage/'; // Include final slash
-// params['kiwixHiddenDownloadLink'] = 'https://master.download.kiwix.org/zim/';
+params['kiwixHiddenDownloadLink'] = 'https://master.download.kiwix.org/zim/';
 /** ***** DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
 params['PWAServer'] = 'https://pwa.kiwix.org/'; // Production server
 // params['PWAServer'] = 'https://kiwix.github.io/kiwix-js-windows/dist/'; // Test server
