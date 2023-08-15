@@ -181,8 +181,6 @@ function resizeIFrame (reload) {
     checkToolbar();
 }
 
-document.onDOMContentLoaded = resizeIFrame;
-
 window.onresize = function () {
     resizeIFrame(true);
     // Check whether fullscreen icon needs to be updated
@@ -231,17 +229,18 @@ function onPointerUp (e) {
 
 if (/UWP/.test(params.appType)) document.body.addEventListener('pointerup', onPointerUp);
 
+var prefix = document.getElementById('prefix');
 var searchArticlesFocused = false;
 document.getElementById('searchArticles').addEventListener('click', function () {
-    var prefix = document.getElementById('prefix').value;
+    var val = prefix.value;
     // Do not initiate the same search if it is already in progress
-    if (appstate.search.prefix === prefix && !/^(cancelled|complete)$/.test(appstate.search.status)) return;
+    if (appstate.search.prefix === val && !/^(cancelled|complete)$/.test(appstate.search.status)) return;
     document.getElementById('welcomeText').style.display = 'none';
     $('.alert').hide();
     uiUtil.pollSpinner();
-    pushBrowserHistoryState(null, prefix);
+    pushBrowserHistoryState(null, val);
     // Initiate the search
-    searchDirEntriesFromPrefix(prefix);
+    searchDirEntriesFromPrefix(val);
     clearFindInArticle();
     // Re-enable top-level scrolling
     document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
@@ -253,7 +252,7 @@ document.getElementById('formArticleSearch').addEventListener('submit', function
 });
 // Handle keyboard events in the prefix (article search) field
 var keyPressHandled = false;
-$('#prefix').on('keydown', function (e) {
+prefix.addEventListener('keydown', function (e) {
 // If user presses Escape...
 // IE11 returns "Esc" and the other browsers "Escape"; regex below matches both
     if (/^Esc/.test(e.key)) {
@@ -308,7 +307,7 @@ $('#prefix').on('keydown', function (e) {
     }
 });
 // Search for titles as user types characters
-$('#prefix').on('keyup', function (e) {
+prefix.addEventListener('keyup', function (e) {
     if (appstate.selectedArchive !== null && appstate.selectedArchive.isReady()) {
         // Prevent processing by keyup event if we already handled the keypress in keydown event
         if (keyPressHandled) {
@@ -319,19 +318,19 @@ $('#prefix').on('keyup', function (e) {
     }
 });
 // Restore the search results if user goes back into prefix field
-$('#prefix').on('focus', function (e) {
-    var prefixVal = $('#prefix').val();
-    if (/^\s/.test(prefixVal)) {
+prefix.addEventListener('focus', function () {
+    var val = prefix.value;
+    if (/^\s/.test(val)) {
         // If user had previously had the archive index open, clear it
         document.getElementById('prefix').value = '';
-    } else if (prefixVal !== '') {
+    } else if (val !== '') {
         document.getElementById('articleListWithHeader').style.display = '';
     }
     document.getElementById('scrollbox').style.position = 'absolute';
     document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
 });
 // Hide the search results if user moves out of prefix field
-document.getElementById('prefix').addEventListener('blur', function () {
+prefix.addEventListener('blur', function () {
     if (!searchArticlesFocused) {
         appstate.search.status = 'cancelled';
     }
@@ -849,7 +848,7 @@ function setTab (activeBtn) {
     while (articleList.firstChild) articleList.removeChild(articleList.firstChild);
     while (articleListHeaderMessage.firstChild) articleListHeaderMessage.removeChild(articleListHeaderMessage.firstChild);
     document.getElementById('articleListWithHeader').style.display = 'none';
-    $('#prefix').val('');
+    prefix.value = '';
     document.getElementById('welcomeText').style.display = 'none';
     if (params.beforeinstallpromptFired) {
         var divInstall1 = document.getElementById('divInstall1');
@@ -1349,42 +1348,44 @@ document.getElementById('downloadTrigger').addEventListener('click', function ()
     kiwixServe.requestXhttpData(params.kiwixDownloadLink);
 });
 
-$('input:radio[name=contentInjectionMode]').on('change', function () {
-    if (this.value === 'jquery' && !params.appCache) {
-        uiUtil.systemAlert('You must deselect the "Bypass AppCache" option before switching to JQuery mode!');
-        this.checked = false;
-        document.getElementById('serviceworkerModeRadio').checked = true;
-        return;
-    }
-    var returnDivs = document.getElementsByClassName('returntoArticle');
-    for (var i = 0; i < returnDivs.length; i++) {
-        returnDivs[i].innerHTML = '';
-    }
-    // Do the necessary to enable or disable the Service Worker
-    setContentInjectionMode(this.value);
-    // If we're in a PWA UWP app, warn the user that this does not disable the PWA
-    if (this.value === 'jquery' && /^http/i.test(window.location.protocol) && /UWP\|PWA/.test(params.appType) &&
-        params.allowInternetAccess === 'true') {
-        uiUtil.systemAlert(
-            '<p>Please note that switching content injection mode does not revert to local code.</p>' +
-            '<p>If you wish to exit the PWA, you will need to turn off "Allow Internet access?" above.</p>'
-        );
-    }
-    if (this.value === 'serviceworker') {
-        if (params.manipulateImages || params.allowHTMLExtraction) {
-            if (!appstate.wikimediaZimLoaded) {
-                var message = 'Please note that we are disabling "Image manipulation" and/or "Download or open current article" features, as these options ' +
-                'can interfere with ZIMs that have active content. You may turn them back on, but be aware that they are only ' +
-                'recommended for use with Wikimedia ZIMs.';
-                uiUtil.systemAlert(message);
-                if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
-                if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
+document.querySelectorAll('input[name="contentInjectionMode"][type="radio"]').forEach(function (element) {
+    element.addEventListener('change', function () {
+        if (this.value === 'jquery' && !params.appCache) {
+            uiUtil.systemAlert('You must deselect the "Bypass AppCache" option before switching to JQuery mode!');
+            this.checked = false;
+            document.getElementById('serviceworkerModeRadio').checked = true;
+            return;
+        }
+        var returnDivs = document.getElementsByClassName('returntoArticle');
+        for (var i = 0; i < returnDivs.length; i++) {
+            returnDivs[i].innerHTML = '';
+        }
+        // Do the necessary to enable or disable the Service Worker
+        setContentInjectionMode(this.value);
+        // If we're in a PWA UWP app, warn the user that this does not disable the PWA
+        if (this.value === 'jquery' && /^http/i.test(window.location.protocol) && /UWP\|PWA/.test(params.appType) &&
+            params.allowInternetAccess === 'true') {
+            uiUtil.systemAlert(
+                '<p>Please note that switching content injection mode does not revert to local code.</p>' +
+                '<p>If you wish to exit the PWA, you will need to turn off "Allow Internet access?" above.</p>'
+            );
+        }
+        if (this.value === 'serviceworker') {
+            if (params.manipulateImages || params.allowHTMLExtraction) {
+                if (!appstate.wikimediaZimLoaded) {
+                    var message = 'Please note that we are disabling "Image manipulation" and/or "Download or open current article" features, as these options ' +
+                    'can interfere with ZIMs that have active content. You may turn them back on, but be aware that they are only ' +
+                    'recommended for use with Wikimedia ZIMs.';
+                    uiUtil.systemAlert(message);
+                    if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
+                    if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
+                }
             }
         }
-    }
-    params.themeChanged = true; // This will reload the page
+        params.themeChanged = true; // This will reload the page
+    });
 });
-$('input:checkbox[name=allowInternetAccess]').on('change', function () {
+document.getElementById('allowInternetAccessCheck').addEventListener('change', function () {
     document.getElementById('serverResponse').style.display = 'none';
     params.allowInternetAccess = this.checked;
     if (!this.checked) {
@@ -1447,7 +1448,7 @@ document.getElementById('navButtonsPosCheck').addEventListener('change', functio
     settingsStore.setItem('navButtonsPos', params.navButtonsPos, Infinity);
     uiUtil.systemAlert('This setting will be applied on next app launch');
 });
-$('input:checkbox[name=imageDisplayMode]').on('change', function (e) {
+document.getElementById('imageDisplayModeCheck').addEventListener('change', function (e) {
     if (!this.checked) {
         uiUtil.systemAlert('Please note that some images may still display if the ZIM type requires it (e.g. Zimit ZIMs, PhET, Gutenberg).');
     }
@@ -1506,7 +1507,7 @@ document.getElementById('disableDragAndDropCheck').addEventListener('change', fu
         }
     });
 });
-$('input:checkbox[name=hideActiveContentWarning]').on('change', function () {
+document.getElementById('hideActiveContentWarningCheck').addEventListener('change', function () {
     params.hideActiveContentWarning = this.checked;
     settingsStore.setItem('hideActiveContentWarning', params.hideActiveContentWarning, Infinity);
     refreshCacheStatus();
@@ -1612,7 +1613,7 @@ document.getElementById('debugLibzimASMDrop').addEventListener('change', functio
         }
     });
 });
-$('input:checkbox[name=openExternalLinksInNewTabs]').on('change', function () {
+document.getElementById('openExternalLinksInNewTabsCheck').addEventListener('change', function () {
     params.openExternalLinksInNewTabs = this.checked;
     settingsStore.setItem('openExternalLinksInNewTabs', params.openExternalLinksInNewTabs, Infinity);
     params.themeChanged = true;
@@ -1709,12 +1710,12 @@ document.getElementById('allowHTMLExtractionCheck').addEventListener('click', fu
     settingsStore.setItem('allowHTMLExtraction', params.allowHTMLExtraction, Infinity);
     params.themeChanged = true;
 });
-$('input:text[name=alphaChar]').on('change', function (e) {
+document.getElementById('alphaCharTxt').addEventListener('change', function () {
     params.alphaChar = this.value.length === 1 ? this.value : params.alphaChar;
     this.value = params.alphaChar;
     settingsStore.setItem('alphaChar', params.alphaChar, Infinity);
 });
-$('input:text[name=omegaChar]').on('change', function (e) {
+document.getElementById('omegaCharTxt').addEventListener('change', function () {
     params.omegaChar = this.value.length === 1 ? this.value : params.omegaChar;
     this.value = params.omegaChar;
     settingsStore.setItem('omegaChar', params.omegaChar, Infinity);
@@ -1750,7 +1751,6 @@ Array.prototype.slice.call(document.querySelectorAll('.aboutLink')).forEach(func
 var iframe = document.getElementById('articleContent');
 var header = document.getElementById('top');
 var footer = document.getElementById('footer');
-var prefix = document.getElementById('prefix');
 var findInArticle = document.getElementById('findInArticle');
 var navbarDim;
 var footerDim;
@@ -2031,8 +2031,7 @@ document.getElementById('resetDisplayOnResizeCheck').addEventListener('click', f
     settingsStore.setItem('resetDisplayOnResize', this.checked, Infinity);
     resizeIFrame(this.checked);
 });
-$('input:checkbox[name=rememberLastPage]').on('change', function (e) {
-    if (params.rememberLastPage && this.checked) document.getElementById('rememberLastPageCheck').checked = true;
+document.getElementById('rememberLastPageCheck').addEventListener('change', function () {
     params.rememberLastPage = this.checked;
     settingsStore.setItem('rememberLastPage', params.rememberLastPage, Infinity);
     if (!params.rememberLastPage) {
@@ -2057,10 +2056,12 @@ document.getElementById('cachedAssetsModeRadioFalse').addEventListener('change',
         cache.clear('all', refreshCacheStatus);
     }
 });
-$('input:radio[name=cssInjectionMode]').on('click', function (e) {
-    params.cssSource = this.value;
-    settingsStore.setItem('cssSource', params.cssSource, Infinity);
-    params.themeChanged = true;
+document.querySelectorAll('input[name=cssInjectionMode]').forEach(function (element) {
+    element.addEventListener('click', function () {
+        params.cssSource = this.value;
+        settingsStore.setItem('cssSource', params.cssSource, Infinity);
+        params.themeChanged = true;
+    });
 });
 document.getElementById('removePageMaxWidthCheck').addEventListener('click', function () {
     // This code implements a tri-state checkbox
@@ -2163,11 +2164,14 @@ document.getElementById('useOSMCheck').addEventListener('click', function () {
     settingsStore.setItem('mapsURI', params.mapsURI, Infinity);
     params.themeChanged = true;
 });
-$('input:radio[name=useMathJax]').on('click', function (e) {
-    params.useMathJax = /true/i.test(this.value);
-    settingsStore.setItem('useMathJax', params.useMathJax, Infinity);
-    params.themeChanged = true;
+document.querySelectorAll('input[name=useMathJax]').forEach(function (element) {
+    element.addEventListener('click', function () {
+        params.useMathJax = /true/i.test(this.value);
+        settingsStore.setItem('useMathJax', params.useMathJax, Infinity);
+        params.themeChanged = true;
+    });
 });
+
 var library = document.getElementById('libraryArea');
 var unhideArchiveLibraryAnchors = document.getElementsByClassName('unhideLibrary');
 for (var i = 0; i < unhideArchiveLibraryAnchors.length; i++) {
@@ -2182,7 +2186,7 @@ document.getElementById('downloadTrigger').addEventListener('mousedown', functio
     library.style.borderStyle = '';
 });
 
-$('input:checkbox[name=displayFileSelectors]').on('change', function (e) {
+document.getElementById('displayFileSelectorsCheck').addEventListener('change', function () {
     params.showFileSelectors = this.checked;
     document.getElementById('rescanStorage').style.display = 'block';
     document.getElementById('openLocalFiles').style.display = 'none';
@@ -2198,7 +2202,7 @@ $('input:checkbox[name=displayFileSelectors]').on('change', function (e) {
     if (params.showFileSelectors) document.getElementById('configuration').scrollIntoView();
 });
 
-$(document).ready(function (e) {
+document.addEventListener('DOMContentLoaded', function () {
     // Set initial behaviour (see also init.js)
     cssUIThemeGetOrSet(params.cssUITheme);
     // @TODO - this is initialization code, and should be in init.js (withoug jQuery)
@@ -2842,7 +2846,7 @@ var historyPop = function (event) {
         // Select the correct window to which to write the popped history in case the user
         // siwtches to a tab and navigates history without first clicking on a link
         if (appstate.target === 'window') articleWindow = event.target;
-        $('#prefix').val('');
+        prefix.value = '';
         document.getElementById('welcomeText').style.display = 'none';
         uiUtil.clearSpinner();
         document.getElementById('configuration').style.display = 'none';
@@ -2853,7 +2857,7 @@ var historyPop = function (event) {
         if (title && !(title === '')) {
             goToArticle(title);
         } else if (titleSearch && titleSearch !== '') {
-            $('#prefix').val(titleSearch);
+            prefix.value = titleSearch;
             if (titleSearch !== appstate.search.prefix) {
                 searchDirEntriesFromPrefix(titleSearch);
             } else {
@@ -4163,13 +4167,15 @@ function populateListOfArticles (dirEntryArray, reportingSearch) {
     articleListDiv.innerHTML = articleListDivHtml;
     // We have to use mousedown below instead of click as otherwise the prefix blur event fires first
     // and prevents this event from firing; note that touch also triggers mousedown
-    $('#articleList a').on('mousedown', function (e) {
-        // Cancel search immediately
-        appstate.search.status = 'cancelled';
-        handleTitleClick(e);
-        document.getElementById('scrollbox').style.height = 0;
-        document.getElementById('articleListWithHeader').style.display = 'none';
-        return false;
+    document.querySelectorAll('#articleList a').forEach(function (link) {
+        link.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            // Cancel search immediately
+            appstate.search.status = 'cancelled';
+            handleTitleClick(e);
+            document.getElementById('scrollbox').style.height = 0;
+            document.getElementById('articleListWithHeader').style.display = 'none';
+        });
     });
     if (!stillSearching) uiUtil.clearSpinner();
     document.getElementById('articleListWithHeader').style.display = '';
