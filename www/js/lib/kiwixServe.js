@@ -9,7 +9,7 @@
  * License GPL v3:
  *
  * This file is part of Kiwix.
- * 
+ *
  * Kiwix is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -26,13 +26,15 @@
  * License GPL v3:
  *
  * This file is part of Kiwix.
- * 
+ *
  * Kiwix is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  */
 'use strict';
+
+/* globals params */
 
 var langCodes = {
     aa: 'Afar (Afar)',
@@ -250,7 +252,6 @@ var langCodes = {
     ng: 'Oshiwambo (Ndonga)',
     nl: 'Nederlands (Dutch)',
     nn: 'Norsk (nynorsk) (Norwegian Nynorsk)',
-    no: 'Norsk (bokmål / riksmål) (Norwegian Bokmål)',
     nr: 'isiNdebele (South Ndebele)',
     nso: 'Sesotho sa Leboa / Sepedi (Northern Sotho)',
     nrm: 'Nouormand / Normaund (Norman)',
@@ -397,47 +398,46 @@ regexpFilter = /wikivoyage/.test(params.packagedFile) ? /^(?!.+wikivoyage_)[^_\n
 
 /**
  * Makes a request to the Kiwix Download server and processes the output for ease of user selection
- * 
- * @param {String} URL The URL of the download server 
- * @param {String} lang The selected language code (optional helper value used internally) 
- * @param {String} subj The selected subject (optional helper value) 
- * @param {String} kiwixDate The selected date (optional helper value) 
+ *
+ * @param {String} URL The URL of the download server
+ * @param {String} lang The selected language code (optional helper value used internally)
+ * @param {String} subj The selected subject (optional helper value)
+ * @param {String} kiwixDate The selected date (optional helper value)
  */
-function requestXhttpData(URL, lang, subj, kiwixDate) {
+function requestXhttpData (URL, lang, subj, kiwixDate) {
     if (!params.allowInternetAccess) {
         document.getElementById('serverResponse').innerHTML = "Blocked: select 'Allow Internet access'";
-        document.getElementById('serverResponse').style.display = "inline";
+        document.getElementById('serverResponse').style.display = 'inline';
         return;
     }
     if (!URL) {
-        document.getElementById('serverResponse').innerHTML = "Unrecognized filetype, please try different link";
-        document.getElementById('serverResponse').style.display = "inline";
+        document.getElementById('serverResponse').innerHTML = 'Unrecognized filetype, please try different link';
+        document.getElementById('serverResponse').style.display = 'inline';
         return;
     }
     var xhttp = new XMLHttpRequest();
-    //DEV: timeout set here to 20s (except for meta4 links); if this isn't long enough for your target countries, increase
+    // DEV: timeout set here to 20s (except for meta4 links); if this isn't long enough for your target countries, increase
     var timeout = /\.magnet$/i.test(URL) ? 3000 : /\.meta4$/i.test(URL) ? 6000 : 20000;
     var xhttpTimeout = setTimeout(ajaxTimeout, timeout);
-    function ajaxTimeout() {
+    function ajaxTimeout () {
         xhttp.abort();
         var responseMessageBox = document.getElementById('serverResponse');
-        responseMessageBox.innerHTML = "Connection attempt timed out (failed)";
+        responseMessageBox.innerHTML = 'Connection attempt timed out (failed)';
         if (/https?:|file:/.test(window.location.protocol)) responseMessageBox.innerHTML = "Browser's CORS Policy disallowed access!";
-        if (/\.meta4$/i.test(URL)) responseMessageBox.innerHTML = "Archive descriptor xml file (meta4) is missing!";
-        if (/\.magnet$/i.test(URL)) responseMessageBox.innerHTML = "Unable to get magnet link!";
-        document.getElementById('serverResponse').style.display = "inline";
+        if (/\.meta4$/i.test(URL)) responseMessageBox.innerHTML = 'Archive descriptor xml file (meta4) is missing!';
+        if (/\.magnet$/i.test(URL)) responseMessageBox.innerHTML = 'Unable to get magnet link!';
+        document.getElementById('serverResponse').style.display = 'inline';
         if (!/\.magnet$/i.test(URL)) serverError(URL);
-        return;
     }
     xhttp.onreadystatechange = function () {
-        serverResponse.innerHTML = "Server response: 0 Waiting...";
-        serverResponse.style.display = "inline";
+        serverResponse.innerHTML = 'Server response: 0 Waiting...';
+        serverResponse.style.display = 'inline';
         console.debug('Server responded: readyState ' + this.readyState + '; status ' + this.status);
-        if (this.readyState == 4) {
-            serverResponse.innerHTML = "Server response: " + this.status + " " + this.statusText + " Waiting....";
-            if (this.status == 200) {
+        if (this.readyState === 4) {
+            serverResponse.innerHTML = 'Server response: ' + this.status + ' ' + this.statusText + ' Waiting....';
+            if (this.status === 200) {
                 clearTimeout(xhttpTimeout);
-                serverResponse.innerHTML = "Server response: " + this.status + " " + this.statusText + " (data received)";
+                serverResponse.innerHTML = 'Server response: ' + this.status + ' ' + this.statusText + ' (data received)';
                 // Strip sorting querystring
                 URL = URL.replace(/\?.*/, '');
                 if (/\.meta4$/i.test(URL)) {
@@ -447,10 +447,10 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
                 } else {
                     processXhttpData(this.responseText);
                 }
-            } else if (this.status == 0) {
-                if (window.location.protocol == "file:") {
+            } else if (this.status === 0) {
+                if (window.location.protocol === 'file:') {
                     document.getElementById('serverResponse').innerHTML = 'Cannot use XMLHttpRequest with file:// protocol';
-                    document.getElementById('serverResponse').style.display = "inline";
+                    document.getElementById('serverResponse').style.display = 'inline';
                 } else {
                     clearTimeout(xhttpTimeout);
                     serverResponse.innerHTML = 'Archive descriptor xml file (meta4) is missing!';
@@ -462,15 +462,15 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
         }
     };
     // var urlArr = URL.split('?');
-    xhttp.open("GET", URL, true);
+    xhttp.open('GET', URL, true);
     xhttp.send(null);
 
-    function serverError(URL) {
+    function serverError (URL) {
         var requestedURL, altURL, torrentURL;
         if (/\.meta4$/i.test(URL)) {
             requestedURL = URL.replace(/\.meta4$/i, '');
-            altURL = /wikipedia|wikisource|wikivoyage|wiktionary/i.test(URL) ? 
-                requestedURL.replace(/(download\.kiwix\.org)/i, 'www.mirrorservice.org/sites/$1') : '';
+            altURL = /wikipedia|wikisource|wikivoyage|wiktionary/i.test(URL)
+                ? requestedURL.replace(/(download\.kiwix\.org)/i, 'www.mirrorservice.org/sites/$1') : '';
             torrentURL = URL.replace(/\.meta4$/i, '.torrent');
             var header = document.getElementById('dl-panel-heading');
             var headerDoc = 'There is a server issue, but please try the following links to your file:';
@@ -480,17 +480,17 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
             }
             header.outerHTML = header.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + headerDoc + '</div>');
             var body = document.getElementById('dl-panel-body');
-            var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^\/]*\.meta4$/i, "\/") + '">&lt;&lt; Back to list of files</a></p>\r\n';
-            bodyDoc += '<p><b>Directly download ZIM archive:</b></p>' + 
+            var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^/]*\.meta4$/i, '/') + '">&lt;&lt; Back to list of files</a></p>\r\n';
+            bodyDoc += '<p><b>Directly download ZIM archive:</b></p>' +
             '<p><a href="' + requestedURL + '"' + target + '>' + requestedURL + '</a></p>' +
-            (altURL ? '<p><b>Possible mirror:</b></p>' + 
+            (altURL ? '<p><b>Possible mirror:</b></p>' +
             '<p><a href="' + altURL + '"' + target + '>' + altURL + '</a></p>' : '') +
-            (~URL.indexOf(params.kiwixHiddenDownloadLink) ? '' :
-                '<p><b>Download with bittorrent:</b></p>' + 
+            (~URL.indexOf(params.kiwixHiddenDownloadLink) ? ''
+                : '<p><b>Download with bittorrent:</b></p>' +
                 '<p><a href="' + torrentURL + '"' + target + '>' + torrentURL + '</a></p>');
             body.outerHTML = body.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + bodyDoc + '</div>');
-            downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, "File in");
-            downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, "panel-warning");
+            downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, 'File in');
+            downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, 'panel-warning');
             var langSel = document.getElementById('langs');
             var subjSel = document.getElementById('subjects');
             var dateSel = document.getElementById('dates');
@@ -508,36 +508,38 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
                 '<p>You can either try again or else open this link in a new browser window:<br />' +
                 '<a href="' + params.kiwixDownloadLink + '"' + target + '>' + params.kiwixDownloadLink + '</a></p><br /></span>';
         }
-        downloadLinks.style.display = "block";
+        downloadLinks.style.display = 'block';
     }
 
-    function processMetaLink(doc) {
-        //It's the metalink with download links
+    function processMetaLink (doc) {
+        // It's the metalink with download links
         var linkArray = doc.match(/<url\b[^>]*>[^<]*<\/url>/ig);
         var size = doc.match(/<size>(\d+)<\/size>/i);
-        //Filter value (add comma separators if required)
-        size = size.length ? size[1] : "";
+        // Filter value (add comma separators if required)
+        size = size.length ? size[1] : '';
         var megabytes = size ? Math.round(size * 10 / (1024 * 1024)) / 10 : size;
-        //Use the lookbehind reversal trick to add commas....
+        // Use the lookbehind reversal trick to add commas....
         size = size.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
         var megabytes$ = megabytes.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
-        doc = "";
-        for (var i = 1; i < linkArray.length; i++) { //NB we'ere intentionally discarding first link to kiwix.org (not to zim)
-        doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li><a href="$1"' + target + '>$1</a></li>\r\n');
+        doc = '';
+        for (var i = 1; i < linkArray.length; i++) { // NB we'ere intentionally discarding first link to kiwix.org (not to zim)
+            doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li><a href="$1"' + target + '>$1</a></li>\r\n');
         }
         var headerDoc = 'We found the following links to your file:';
-        var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^\/]*\.meta4$/i, "\/") + '">&lt;&lt; Back to list of files</a></p>\r\n';
-        bodyDoc += /\/(ted|videos)\//i.test(URL) && /UWP/.test(params.appType) ? '<h4 style="color:red">IMPORTANT: <b>VIDEOS</b> (e.g. TED Talks, Khan Academy, etc.) can be played in the UWP app on Windows 10, but on Windows 10 Mobile you may need to play the videos with an external app such as VLC Media Player (from the Store).</h4>\r\n<p>Please note if you cannot switch to Service Worker mode (see Configuration - Expert Settings) you will need to search for the videos using standard ZIM search or by typing a space in search to show the ZIM Archive Index, because the ZIM\'s proprietary UI does not work in JQuery mode.' : ''; 
-        bodyDoc += /\/gutenberg\//i.test(URL) ? '<p>You can read Gutenberg books in this app, but please note that if you cannot switch to Service Worker mode (see Configuration - Expert Settings) you will need to search for books using standard or wildcard ZIM search (e.g. \'.*quixote\') or by typing a space in search to show the ZIM Archive Index, because the ZIM\'s proprietary UI does not work in JQuery mode.' : ''; 
-        bodyDoc += "<h5";
+        var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^/]*\.meta4$/i, '/') + '">&lt;&lt; Back to list of files</a></p>\r\n';
+        bodyDoc += /\/(ted|videos)\//i.test(URL) && /UWP/.test(params.appType) ? '<h4 style="color:red">IMPORTANT: <b>VIDEOS</b> (e.g. TED Talks, Khan Academy, etc.) can be played in the UWP app on Windows 10, but on Windows 10 Mobile you may need to play the videos with an external app such as VLC Media Player (from the Store).</h4>\r\n<p>Please note if you cannot switch to Service Worker mode (see Configuration - Expert Settings) you will need to search for the videos using standard ZIM search or by typing a space in search to show the ZIM Archive Index, because the ZIM\'s proprietary UI does not work in JQuery mode.' : '';
+        bodyDoc += /\/gutenberg\//i.test(URL) ? '<p>You can read Gutenberg books in this app, but please note that if you cannot switch to Service Worker mode (see Configuration - Expert Settings) you will need to search for books using standard or wildcard ZIM search (e.g. \'.*quixote\') or by typing a space in search to show the ZIM Archive Index, because the ZIM\'s proprietary UI does not work in JQuery mode.' : '';
+        bodyDoc += '<h5';
         bodyDoc += megabytes > 2000 ? ' style="color:red;"> WARNING: ' : '>';
         bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unknown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
         bodyDoc += '<p><b>New! <i><a id="preview" target="_blank">Preview this archive</a></i></b> in your browser before downloading it</p>';
-        if (megabytes > 200) bodyDoc += '<p><b>Consider using BitTorrent to download file:</b></p>\r\n<ul>' + 
-            '<li><b>BitTorrent file</b>: <a href="' + URL.replace(/\.meta4$/, ".torrent") + '"' + target + '>' +
-                URL.replace(/\.meta4$/, ".torrent") + '</a></li>\r\n' + 
-             '<li><b>Magnet link</b>: <a id="magnet" href="' + URL.replace(/\.meta4$/, ".magnet") + '"' + target + '>' +
-                URL.replace(/\.meta4$/, ".magnet") + '</a> (if torrent app doesn\'t launch, <a id="magnetAlt" href="#" target="_blank">tap here</a> and copy/paste link into your app)<br /></li></ul>\r\n';
+        if (megabytes > 200) {
+            bodyDoc += '<p><b>Consider using BitTorrent to download file:</b></p>\r\n<ul>' +
+            '<li><b>BitTorrent file</b>: <a href="' + URL.replace(/\.meta4$/, '.torrent') + '"' + target + '>' +
+                URL.replace(/\.meta4$/, '.torrent') + '</a></li>\r\n' +
+             '<li><b>Magnet link</b>: <a id="magnet" href="' + URL.replace(/\.meta4$/, '.magnet') + '"' + target + '>' +
+                URL.replace(/\.meta4$/, '.magnet') + '</a> (if torrent app doesn\'t launch, <a id="magnetAlt" href="#" target="_blank">tap here</a> and copy/paste link into your app)<br /></li></ul>\r\n';
+        }
         if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
             bodyDoc += '<p style="color:red;">If you plan to store this archive on a drive/microSD formatted as <b>FAT32</b> (most are not), then you will need to download the file on a PC and split it into chunks less than 4GB: see <a href="https://github.com/kiwix/kiwix-js-windows/tree/main/AppPackages#download-a-zim-archive-all-platforms" target="_blank">Download a ZIM archive</a>.</p>\r\n';
             // bodyDoc += '<p><b>To browse for a split version of this archive click here: <a id="portable" href="#" data-kiwix-dl="' +
@@ -553,14 +555,14 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
         bodyDoc += '<p><b>Direct download:</b> (<i>links will open in a new browser window</i>)</p><ol>\r\n' + doc + '</ol>\r\n';
         bodyDoc += '<br /><br />';
         // Try to get magnet link
-        if (megabytes > 200) requestXhttpData(URL.replace(/\.meta4$/, ".magnet"));
+        if (megabytes > 200) requestXhttpData(URL.replace(/\.meta4$/, '.magnet'));
         var header = document.getElementById('dl-panel-heading');
         header.outerHTML = header.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + headerDoc + '</div>');
         var body = document.getElementById('dl-panel-body');
         body.outerHTML = body.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + bodyDoc + '</div>');
-        downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, "File in");
-        if (megabytes > 4000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, "panel-danger");
-        if (megabytes > 2000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, "panel-warning");
+        downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/Index\s+of/ig, 'File in');
+        if (megabytes > 4000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, 'panel-danger');
+        if (megabytes > 2000) downloadLinks.innerHTML = downloadLinks.innerHTML.replace(/panel-success/i, 'panel-warning');
         var langSel = document.getElementById('langs');
         var subjSel = document.getElementById('subjects');
         var dateSel = document.getElementById('dates');
@@ -583,7 +585,7 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
         // }
     }
 
-    function processMagnetLink(link) {
+    function processMagnetLink (link) {
         link = link.replace(/&amp;/g, '&');
         var magnetLink = document.getElementById('magnet');
         // Set up backup link
@@ -599,27 +601,27 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
         });
     }
 
-    function processXhttpData(doc) {
+    function processXhttpData (doc) {
         // Remove images
-        doc = doc.replace(/<img\b[^>]*>\s*/ig, "");
+        doc = doc.replace(/<img\b[^>]*>\s*/ig, '');
         // Reduce size of header
         doc = doc.replace(/<h1\b[^>]*>([^<]*)<\/h1>/ig, '<h3 id="indexHeader">$1</h3>');
-        //Limit height of pre box and prevent word wrapping
+        // Limit height of pre box and prevent word wrapping
         doc = doc.replace(/<pre>/i, '<div class="panel panel-success">\r\n' +
             '<pre id="dl-panel-heading" class="panel-heading" style="overflow-x:auto;word-wrap:normal;">$#$#</pre>\r\n' +
             '<pre id="dl-panel-body" class="panel panel-body" style="max-height:360px;word-wrap:normal;margin-bottom:10px;overflow:auto;">');
-        // Remove hr at end of page and add extra </div>           
-        doc = doc.replace(/<hr\b[^>]*>(\s*<\/pre>)/i, "$1</div>");
+        // Remove hr at end of page and add extra </div>
+        doc = doc.replace(/<hr\b[^>]*>(\s*<\/pre>)/i, '$1</div>');
         // Remove any residual hr
         doc = doc.replace(/<hr>\s*<(\/?div|\/body)/ig, '<$1');
         // Move header into panel-header (NB regex is deliberately redundant to increase specificity of search)
-        doc = doc.replace(/\$\#\$\#([\s\S]+?)(<a\s+href[^>]+>name<[\s\S]+?last\s+modified<[\s\S]+?)<hr>\s*/i, "$2$1");
+        doc = doc.replace(/\$#\$#([\s\S]+?)(<a\s+href[^>]+>name<[\s\S]+?last\s+modified<[\s\S]+?)<hr>\s*/i, '$2$1');
         // If this failed, we're probably in a non-mirrored directory, so add simple header
-        doc = doc.replace(/\$\#\$\#/, 'Name');
+        doc = doc.replace(/\$#\$#/, 'Name');
         if (/\dK|\dM|\dG/.test(doc)) {
-            //Swap size and date fields to make file size more prominent on narrow screens
-            doc = doc.replace(/(<a\b[^>]*>last\s+modified<\/a>\s*)(<a\b[^>]*>size<\/a>)\s*/ig, " $2    $1");
-            doc = doc.replace(/(\d{4}-\d\d-\d\d\s\d\d\:\d\d)\s\s([\s\d.\w-]{7})$/img, " $2 $1");
+            // Swap size and date fields to make file size more prominent on narrow screens
+            doc = doc.replace(/(<a\b[^>]*>last\s+modified<\/a>\s*)(<a\b[^>]*>size<\/a>)\s*/ig, ' $2    $1');
+            doc = doc.replace(/(\d{4}-\d\d-\d\d\s\d\d:\d\d)\s\s([\s\d.\w-]{7})$/img, ' $2 $1');
             // Remove unused README file
             doc = doc.replace(/^<a\s+href\b[^<]+README.+$[\r\n]*/m, '');
         }
@@ -633,10 +635,10 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
         var stDoc; // Placeholder for standardized doc to be used to get arrays
         if (/^[^_\n\r]+_([^_\n\r]+)_.+\.zi[mp].+$/m.test(doc)) {
             // Delete lines that do not match regexpFilter (this ensures packaged apps only show ZIMs appropriate to the package)
-            doc = regexpFilter ? doc.replace(regexpFilter, "") : doc;
+            doc = regexpFilter ? doc.replace(regexpFilter, '') : doc;
             stDoc = getStandardizedDoc(doc);
 
-            //Get language and date arrays
+            // Get language and date arrays
             var langArray = getLangArray(stDoc);
             var subjectArray = getSubjectArray(stDoc);
             var dateArray = getDateArray(stDoc);
@@ -686,11 +688,11 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
         var langSel = document.getElementById('langs');
         var subjSel = document.getElementById('subjects');
         var dateSel = document.getElementById('dates');
-        var langPanel = document.getElementById('dl-panel-body');    
+        var langPanel = document.getElementById('dl-panel-body');
         if (lang || subj || kiwixDate) {
             var rgxLang = lang ? new RegExp(lang, 'i') : null;
             var selectEntries = document.querySelectorAll('.wikiLang');
-            //Hide all entries except specified language, subject, or date
+            // Hide all entries except specified language, subject, or date
             for (var i = 0; i < selectEntries.length; i++) {
                 if (lang && lang !== 'All' && !rgxLang.test(selectEntries[i].lang)) selectEntries[i].style.display = 'none';
                 if (subj && subj !== 'All' && selectEntries[i].dataset.kiwixsubject !== subj) selectEntries[i].style.display = 'none';
@@ -701,23 +703,23 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
             if (dateSel) dateSel.value = kiwixDate || 'All';
         }
         if (langArray && langSel) {
-            //Set up event listener for language selector
-            langSel.addEventListener("change", function () {
+            // Set up event listener for language selector
+            langSel.addEventListener('change', function () {
                 var dateID = dateSel ? dateSel.options[dateSel.selectedIndex].value : '';
                 var subjID = subjSel ? subjSel.options[subjSel.selectedIndex].value : '';
                 var langID = langSel ? langSel.options[langSel.selectedIndex].value : '';
                 // Make langID into case-insensitive regex
                 var rgxlangID = new RegExp(langID, 'i');
-                //Reset any hidden entries
-                //langPanel.innerHTML = langPanel.innerHTML.replace(/(display:\s*)none\b/mig, 'inline');
-                var langEntries = langPanel.querySelectorAll(".wikiLang");
-                //Hide all entries except specified language
+                // Reset any hidden entries
+                // langPanel.innerHTML = langPanel.innerHTML.replace(/(display:\s*)none\b/mig, 'inline');
+                var langEntries = langPanel.querySelectorAll('.wikiLang');
+                // Hide all entries except specified language
                 if (langID) {
                     for (var i = 0; i < langEntries.length; i++) {
-                        if (rgxlangID.test(langEntries[i].lang) || langID == "All") langEntries[i].style.display = "inline";
-                        if (!rgxlangID.test(langEntries[i].lang) && langID != "All") langEntries[i].style.display = "none";
-                        if (subjID && langEntries[i].dataset.kiwixsubject !== subjID && subjID !== "All") langEntries[i].style.display = "none";
-                        if (dateID && langEntries[i].dataset.kiwixdate !== dateID && dateID !== "All") langEntries[i].style.display = "none";
+                        if (rgxlangID.test(langEntries[i].lang) || langID === 'All') langEntries[i].style.display = 'inline';
+                        if (!rgxlangID.test(langEntries[i].lang) && langID !== 'All') langEntries[i].style.display = 'none';
+                        if (subjID && langEntries[i].dataset.kiwixsubject !== subjID && subjID !== 'All') langEntries[i].style.display = 'none';
+                        if (dateID && langEntries[i].dataset.kiwixdate !== dateID && dateID !== 'All') langEntries[i].style.display = 'none';
                     }
                     var visibleZIMs = langPanel.innerText.match(/^.*?\.zi[mp]/mgi);
                     // Prune date list
@@ -751,19 +753,19 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
             });
         }
         if (subjectArray && subjSel) {
-            //Set up event listener for subject selector
-            subjSel.addEventListener("change", function () {
+            // Set up event listener for subject selector
+            subjSel.addEventListener('change', function () {
                 var langID = langSel ? langSel.options[langSel.selectedIndex].value : '';
                 var subjID = subjSel ? subjSel.options[subjSel.selectedIndex].value : '';
                 var dateID = dateSel ? dateSel.options[dateSel.selectedIndex].value : '';
-                var subjEntries = document.querySelectorAll(".wikiLang");
-                //Hide all entries except specified subject
+                var subjEntries = document.querySelectorAll('.wikiLang');
+                // Hide all entries except specified subject
                 if (subjID) {
                     for (var i = 0; i < subjEntries.length; i++) {
-                        if (subjEntries[i].dataset.kiwixsubject === subjID || subjID === "All") subjEntries[i].style.display = "inline";
-                        if (subjEntries[i].dataset.kiwixsubject !== subjID && subjID !== "All") subjEntries[i].style.display = "none";
-                        if (langID && subjEntries[i].lang !== langID && langID !== "All") subjEntries[i].style.display = "none";
-                        if (dateID && subjEntries[i].dataset.kiwixdate !== dateID && dateID !== "All") subjEntries[i].style.display = "none";
+                        if (subjEntries[i].dataset.kiwixsubject === subjID || subjID === 'All') subjEntries[i].style.display = 'inline';
+                        if (subjEntries[i].dataset.kiwixsubject !== subjID && subjID !== 'All') subjEntries[i].style.display = 'none';
+                        if (langID && subjEntries[i].lang !== langID && langID !== 'All') subjEntries[i].style.display = 'none';
+                        if (dateID && subjEntries[i].dataset.kiwixdate !== dateID && dateID !== 'All') subjEntries[i].style.display = 'none';
                     }
                     var visibleZIMs = langPanel.innerText.match(/^.*?\.zi[mp]/mgi);
                     // Prune the language list
@@ -774,7 +776,7 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
                         var langTestPanel = langPanel.innerText.replace(/(_\w+)-(\w+_)/, '$1$2');
                         langList = langList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
                             if (p1 !== 'All' && !~langTestPanel.indexOf('_' + p1 + '_')) return '';
-                            return '<option value="' + p1 + '"' + (langID === p1 ? ' selected' : '' ) + '>' + p1 + (p1 === 'All' ? '' : ' : ' + langCodes[p1]) + '</option>';
+                            return '<option value="' + p1 + '"' + (langID === p1 ? ' selected' : '') + '>' + p1 + (p1 === 'All' ? '' : ' : ' + langCodes[p1]) + '</option>';
                         });
                         langSel.innerHTML = langList;
                     }
@@ -798,19 +800,19 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
             });
         }
         if (dateArray && dateSel) {
-            //Set up event listener for date selector
-            dateSel.addEventListener("change", function () {
+            // Set up event listener for date selector
+            dateSel.addEventListener('change', function () {
                 var langID = langSel ? langSel.options[langSel.selectedIndex].value : '';
                 var subjID = subjSel ? subjSel.options[subjSel.selectedIndex].value : '';
                 var dateID = dateSel ? dateSel.options[dateSel.selectedIndex].value : '';
-                var dateEntries = document.querySelectorAll(".wikiLang");
-                //Hide all entries except specified date
+                var dateEntries = document.querySelectorAll('.wikiLang');
+                // Hide all entries except specified date
                 if (dateID) {
                     for (var i = 0; i < dateEntries.length; i++) {
-                        if (dateEntries[i].dataset.kiwixdate == dateID || dateID == "All") dateEntries[i].style.display = "inline";
-                        if (dateEntries[i].dataset.kiwixdate != dateID && dateID != "All") dateEntries[i].style.display = "none";
-                        if (langID && dateEntries[i].lang != langID && langID != "All") dateEntries[i].style.display = "none";
-                        if (subjID && dateEntries[i].dataset.kiwixsubject !== subjID && subjID !== "All") dateEntries[i].style.display = "none";
+                        if (dateEntries[i].dataset.kiwixdate === dateID || dateID === 'All') dateEntries[i].style.display = 'inline';
+                        if (dateEntries[i].dataset.kiwixdate !== dateID && dateID !== 'All') dateEntries[i].style.display = 'none';
+                        if (langID && dateEntries[i].lang !== langID && langID !== 'All') dateEntries[i].style.display = 'none';
+                        if (subjID && dateEntries[i].dataset.kiwixsubject !== subjID && subjID !== 'All') dateEntries[i].style.display = 'none';
                     }
                     var visibleZIMs = langPanel.innerText.match(/^.*?\.zi[mp]/mgi);
                     // Prune the language list
@@ -821,7 +823,7 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
                         var langTestPanel = langPanel.innerText.replace(/(_\w+)-(\w+_)/, '$1$2');
                         langList = langList.replace(/^(.*)[\r\n]*/mg, function (p0, p1) {
                             if (p1 !== 'All' && !~langTestPanel.indexOf('_' + p1 + '_')) return '';
-                            return '<option value="' + p1 + '"' + (langID === p1 ? ' selected' : '' ) + '>' + p1 + (p1 === 'All' ? '' : ' : ' + langCodes[p1]) + '</option>';
+                            return '<option value="' + p1 + '"' + (langID === p1 ? ' selected' : '') + '>' + p1 + (p1 === 'All' ? '' : ' : ' + langCodes[p1]) + '</option>';
                         });
                         langSel.innerHTML = langList;
                     }
@@ -845,13 +847,13 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
                 }
             });
         }
-        var links = downloadLinks.getElementsByTagName("a");
+        var links = downloadLinks.getElementsByTagName('a');
         for (i = 0; i < links.length; i++) {
-            //Store the href
-            links[i].setAttribute("data-kiwix-dl", links[i].getAttribute('href'));
+            // Store the href
+            links[i].setAttribute('data-kiwix-dl', links[i].getAttribute('href'));
             // Preserve sort order
-            if (!/\?C=\w;O=\w/.test(links[i].href)) links[i].href = "#";
-            if (/\.\.\//.test(links[i].innerHTML)) links[i].innerHTML = 'Parent Directory'; 
+            if (!/\?C=\w;O=\w/.test(links[i].href)) links[i].href = '#';
+            if (/\.\.\//.test(links[i].innerHTML)) links[i].innerHTML = 'Parent Directory';
             links[i].addEventListener('click', function (e) {
                 e.preventDefault();
                 var langSel = document.getElementById('langs');
@@ -863,11 +865,11 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
                 var replaceURL = URL + this.dataset.kiwixDl;
                 replaceURL = /(custom_apps|endless|dev)\//.test(this.text) ? params.kiwixHiddenDownloadLink + '.hidden/' + this.text : replaceURL;
                 replaceURL = /(archive)\//.test(this.text) ? params.kiwixDownloadLink.replace(/\/zim\//, '/archive/zim/') : replaceURL;
-                //Allow both zim and zip format
+                // Allow both zim and zip format
                 if (/\.zi[mp]$/i.test(this.dataset.kiwixDl)) {
-                    replaceURL = replaceURL + ".meta4";
+                    replaceURL = replaceURL + '.meta4';
                 } else if (/parent\s*directory|\.\.\//i.test(this.text)) {
-                    replaceURL = URL.replace(/\/[^\/]*\/$/i, '\/');
+                    replaceURL = URL.replace(/\/[^/]*\/$/i, '/');
                     replaceURL = replaceURL.replace(params.kiwixHiddenDownloadLink, params.kiwixDownloadLink);
                     replaceURL = replaceURL.replace(/\.hidden\//, '');
                     replaceURL = replaceURL.replace(/\/archive\/$/, '/zim/');
@@ -875,33 +877,33 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
                     replaceURL = this.getAttribute('href').replace(/;/g, '&');
                     replaceURL = URL + replaceURL;
                 } else if (!/\/$/.test(this.text)) {
-                    //Unrecognized filetype and it's not a directory, so prevent potentially harmful download
-                    replaceURL = "";
+                    // Unrecognized filetype and it's not a directory, so prevent potentially harmful download
+                    replaceURL = '';
                 }
                 requestXhttpData(replaceURL, langID, subjID, dateID);
             });
         }
-        //Display the finished panel
-        downloadLinks.style.display = "block";
+        // Display the finished panel
+        downloadLinks.style.display = 'block';
         document.getElementById('indexHeader').scrollIntoView();
         document.getElementById('scrollbox').scrollTop += 65;
 
         // Standardize the document for array extraction
-        function getStandardizedDoc(fromDoc) {
-            //Add back any missing carriage returns
+        function getStandardizedDoc (fromDoc) {
+            // Add back any missing carriage returns
             var std = fromDoc.replace(/<\/span><span\b/ig, '\n');
-            //Delete all lines without a wiki pattern from language list
+            // Delete all lines without a wiki pattern from language list
             std = std.replace(/^(?![^_\n\r]+_([\w-]+)_.+$).*[\r\n]*/mg, '');
-            //Delete any hidden lines
+            // Delete any hidden lines
             std = std.replace(/^.*?display:\s*none;.*[\r\n]*/mg, '');
             return std;
         }
 
         // Get list of languages
-        function getLangArray(fromDoc) {
+        function getLangArray (fromDoc) {
             // Normalize line spacing
             fromDoc = fromDoc.replace(/[\r\n]+/g, '\n');
-            // Deal first with two-code languages (the most common) 
+            // Deal first with two-code languages (the most common)
             // var langList = fromDoc.replace(/^[^_]+_([a-z]{2})_.+[\r\n]*/mg, '@$1\n');
             var langList = fromDoc.replace(/^.*_([a-z]{2})_.+[\r\n]*/mg, '@$1\n');
             // Now deal with longer language codes
@@ -923,8 +925,8 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
         }
 
         // Get list of subjects
-        function getSubjectArray(fromDoc) {
-            //Get list of all subjects
+        function getSubjectArray (fromDoc) {
+            // Get list of all subjects
             var subList;
             if (/\/(mooc|phet|zimit|videos|other)\b/i.test(URL)) {
                 return null;
@@ -933,13 +935,13 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
             } else {
                 subList = fromDoc.replace(/^[^>]+>[^_]+_[^_]+_((?:[^_]|_(?!maxi|mini|nopic|\d\d\d\d))+).+[\r\n]*/mg, '$1\n');
             }
-            //Delete recurrences
+            // Delete recurrences
             subList = subList.replace(/^([\w_-]+)$[\r\n]*(?=[\s\S]*^\1$)/gm, '');
-            //Remove 'all'
+            // Remove 'all'
             subList = subList.replace(/^all$/mi, '');
             var subArray = subList.match(/^.+$/mg);
             if (subArray) {
-                //Sort list alphabetically
+                // Sort list alphabetically
                 subArray.sort();
                 // Add 'All' at astart
                 subArray.unshift('All');
@@ -947,15 +949,15 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
             return subArray;
         }
 
-        //Get list of dates
-        function getDateArray(fromDoc) {
-            //Get list of all dates
+        // Get list of dates
+        function getDateArray (fromDoc) {
+            // Get list of all dates
             var dateList = fromDoc.replace(/^.*?(\d+[-]\d+)\.zi[mp].+[\r\n]*/mig, '$1\n');
-            //Delete recurrences
+            // Delete recurrences
             dateList = dateList.replace(/(\b\d+[-]\d+)\n(?=[\s\S]*\b\1\n?)/g, '');
             dateList = 'All\n' + dateList;
             var dateArray = dateList.match(/^.+$/mg);
-            //Sort list alphabetically
+            // Sort list alphabetically
             dateArray.sort();
             dateArray.reverse();
             return dateArray;
@@ -963,9 +965,7 @@ function requestXhttpData(URL, lang, subj, kiwixDate) {
     }
 }
 
-
-
 export default {
-    //langCodes: langCodes,
+    // langCodes: langCodes,
     requestXhttpData: requestXhttpData
 };
