@@ -236,7 +236,9 @@ document.getElementById('searchArticles').addEventListener('click', function () 
     // Do not initiate the same search if it is already in progress
     if (appstate.search.prefix === val && !/^(cancelled|complete)$/.test(appstate.search.status)) return;
     document.getElementById('welcomeText').style.display = 'none';
-    $('.alert').hide();
+    document.querySelectorAll('.alert').forEach(function (el) {
+        el.style.display = 'none';
+    });
     uiUtil.pollSpinner();
     pushBrowserHistoryState(null, val);
     // Initiate the search
@@ -1048,7 +1050,9 @@ document.getElementById('btnConfigure').addEventListener('click', function () {
         }
         return;
     }
-    $('.alert').hide();
+    document.querySelectorAll('.alert').forEach(function (el) {
+        el.style.display = 'none';
+    });
     // Highlight the selected section in the navbar
     setTab('btnConfigure');
     // Hide footer toolbar
@@ -1136,7 +1140,9 @@ document.getElementById('btnAbout').addEventListener('click', function () {
     // Show the selected content in the page
     document.getElementById('about').style.display = '';
     document.getElementById('articleContent').style.display = 'none';
-    $('.alert').hide();
+    document.querySelectorAll('.alert').forEach(function (el) {
+        el.style.display = 'none';
+    });
     // Re-enable top-level scrolling
     document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
     document.getElementById('search-article').style.overflowY = 'auto';
@@ -2294,35 +2300,42 @@ document.addEventListener('DOMContentLoaded', function () {
  * Displays or refreshes the API status shown to the user
  */
 function refreshAPIStatus () {
+    var messageChannelStatus = document.getElementById('messageChannelStatus');
+    var serviceWorkerStatus = document.getElementById('serviceWorkerStatus');
     var apiStatusPanel = document.getElementById('apiStatusDiv');
     apiStatusPanel.classList.remove('panel-success', 'panel-warning', 'panel-danger');
     var apiPanelClass = 'panel-success';
     if (isMessageChannelAvailable()) {
-        $('#messageChannelStatus').html('MessageChannel API available');
-        $('#messageChannelStatus').removeClass('apiAvailable apiUnavailable')
-            .addClass('apiAvailable');
+        messageChannelStatus.textContent = 'MessageChannel API available';
+        messageChannelStatus.classList.remove('apiAvailable');
+        messageChannelStatus.classList.remove('apiUnavailable')
+        messageChannelStatus.classList.add('apiAvailable');
     } else {
         apiPanelClass = 'panel-warning';
-        $('#messageChannelStatus').html('MessageChannel API unavailable');
-        $('#messageChannelStatus').removeClass('apiAvailable apiUnavailable')
-            .addClass('apiUnavailable');
+        messageChannelStatus.textContent = 'MessageChannel API unavailable';
+        messageChannelStatus.classList.remove('apiAvailable');
+        messageChannelStatus.classList.remove('apiUnavailable');
+        messageChannelStatus.classList.add('apiUnavailable');
     }
     if (isServiceWorkerAvailable()) {
         if (isServiceWorkerReady()) {
-            $('#serviceWorkerStatus').html('ServiceWorker API available, and registered');
-            $('#serviceWorkerStatus').removeClass('apiAvailable apiUnavailable')
-                .addClass('apiAvailable');
+            serviceWorkerStatus.textContent = 'ServiceWorker API available, and registered';
+            serviceWorkerStatus.classList.remove('apiAvailable');
+            serviceWorkerStatus.classList.remove('apiUnavailable');
+            serviceWorkerStatus.classList.add('apiAvailable');
         } else {
             apiPanelClass = 'panel-warning';
-            $('#serviceWorkerStatus').html('ServiceWorker API available, but not registered');
-            $('#serviceWorkerStatus').removeClass('apiAvailable apiUnavailable')
-                .addClass('apiUnavailable');
+            serviceWorkerStatus.textContent = 'ServiceWorker API available, but not registered';
+            serviceWorkerStatus.classList.remove('apiAvailable');
+            serviceWorkerStatus.classList.remove('apiUnavailable');
+            serviceWorkerStatus.classList.add('apiUnavailable');
         }
     } else {
         apiPanelClass = 'panel-warning';
-        $('#serviceWorkerStatus').html('ServiceWorker API unavailable');
-        $('#serviceWorkerStatus').removeClass('apiAvailable apiUnavailable')
-            .addClass('apiUnavailable');
+        serviceWorkerStatus.textContent = 'ServiceWorker API unavailable';
+        serviceWorkerStatus.classList.remove('apiAvailable');
+        serviceWorkerStatus.classList.remove('apiUnavailable');
+        serviceWorkerStatus.classList.add('apiUnavailable');
     }
 
     // Update Settings Store section of API panel with API name
@@ -6046,7 +6059,9 @@ function goToArticle (path, download, contentType, pathEnc) {
             }
         } else {
             // params.isLandingPage = false;
-            $('.alert').hide();
+            document.querySelectorAll('.alert').forEach(function (el) {
+                el.style.display = 'none';
+            });
             readArticle(dirEntry);
         }
     }).catch(function (e) {
