@@ -1,10 +1,6 @@
 # Changelog
 
-## In-progress release 2.5.8
-
-* REGRESSION: Fixed loss of ability to access custom ZIMs from download library 
-
-## In-progress release 2.5.7-Wikivoyage
+## Release 2.6.1 / 2.6.2-Wikivoyage
 
 * UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2023-07`
 * FEATURE: Ability to pick a folder of ZIM archives in nearly all apps and frameworks supporting the Webkitdirectory API
@@ -14,6 +10,9 @@
 * ENHANCEMENT: Restored lazy-loading of images on most landing pages (improves Android experience with image-heavy landing pages)
 * ENHANCEMENT: Top toolbar now resized correctly with Window Controls Overlay in installed PWA on macOS and Windows
 * ENHANCEMENT: When using Window Controls Overlay, app now has a draggable area (left of Kiwix icon)
+* REGRESSION: Fixed loss of ability to access custom ZIMs from download library
+* REGRESSION: Work around missing titles in English-language Wikivoyage scrapes since 2023-07
+* FIX: Conflict between manual image display and hyperlinking images to high-res Wikimedia versions
 * FIX: Broken Kiwix icon for Linux app packages
 * FIX: Miscellaneous small bugfixes and typos
 * DEV: A lot of normalization of coding style using ESLint
