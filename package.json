@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-wikivoyage",
   "productName": "Wikivoyage by Kiwix",
-  "version": "2.5.8-E",
+  "version": "2.6.1-E",
   "description": "Wikivoyage packaged for the Electron framework",
   "main": "main.cjs",
   "type": "module",
@@ -21,16 +21,6 @@
         "from": "archives",
         "to": "archives"
       },
-      "fileAssociations": [
-        {
-          "ext": "zim",
-          "name": "ZIM Archive"
-        },
-        {
-          "ext": "zimaa",
-          "name": "ZIM Archive"
-        }
-      ],
       "publish": [
         "github"
       ],
@@ -50,18 +40,6 @@
         "from": "archives",
         "to": "app/archives"
       },
-      "fileAssociations": [
-        {
-          "ext": "zim",
-          "name": "ZIM Archive",
-          "mimeType": "application/x-openzim"
-        },
-        {
-          "ext": "zimaa",
-          "name": "ZIM Archive",
-          "mimeType": "application/x-openzim"
-        }
-      ],
       "publish": [
         "github"
       ],
