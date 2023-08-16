@@ -1,8 +1,11 @@
 # Changelog
 
-## In-progress release 2.5.8
+## In-progress release 2.6.2
 
-* REGRESSION: Fixed loss of ability to access custom ZIMs from download library 
+* REGRESSION: Fixed loss of ability to access custom ZIMs from download library
+* REGRESSION: Work around missing titles in English-language Wikivoyage scrapes since 2023-07
+* FIX: Conflict between manual image display and hyperlinking images to high-res Wikimedia versions
+* DEV: Added clear documentation to the Create-DraftRelease.ps1 script
 
 ## Release 2.5.6
 
