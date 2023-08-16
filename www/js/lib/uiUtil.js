@@ -955,7 +955,7 @@ function warnAndOpenExternalLinkInNewTab (event, clickedAnchor, message) {
     if (!clickedAnchor) clickedAnchor = event.target;
     var href = clickedAnchor.protocol ? clickedAnchor.href : 'http://' + clickedAnchor.href;
     clickedAnchor.type = clickedAnchor.type || (/https:\/\/www.openstreetmap.*?mlat/.test(href) ? 'map' : 'link');
-    var message = message || '<p>Click the link to open this external ' + clickedAnchor.type + ' (in a new ' + params.windowOpener + ')';
+    message = message || '<p>Click the link to open this external ' + clickedAnchor.type + ' (in a new ' + params.windowOpener + ')';
     var anchor = '<a id="kiwixExternalLink" href="' + href + '" style="word-break:break-all;">' + clickedAnchor.href + '</a>';
     message += ':</p>' + anchor;
     var opener = function (ev) {

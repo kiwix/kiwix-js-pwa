@@ -1,26 +1,80 @@
 [CmdletBinding()]
 param (
-    [string]$tag_name = "",
-    [switch]$dryrun = $false,
-    [switch]$buildstorerelease = $false,
+    [string]$tag_name = "", # Tag name for the release, e.g., v1.3.0
+    [switch]$dryrun = $false, # If set, will not create a release or upload assets
+    [switch]$nobundle = $false, # If set, skips the bundling stage with rollup 
+    [switch]$draftonly = $false, # If set, will create a draft release only with no assets attached
+    [switch]$buildonly = $false, # If set, will build only and not create a release
+    [switch]$buildstorerelease = $false, # If set, will build a Store release (UWP and Electron appxbundle)
     [switch]$skipsigning = $false, # Does not sign either the UWP appxbundle or the Electron Windows apps
-    [switch]$draftonly = $false,
-    [switch]$buildonly = $false,
-    [switch]$nobundle = $false, # Setting to true would skip the bundling stage with rollup 
-    [string]$winonly = "", # Flag for the Electron build: if set to any value, will build only Windows Electron apps. Set to "appx" to build only the appx package for Electron.
-    [string]$electronbuild = "", # 'local' or 'cloud'
+    [string]$electronbuild = "", # Determines whether the Electron apps will be built 'local' or in the 'cloud'
     [switch]$portableonly = $false, # If set, only the portable electron build will be built. Implies local electron build.
-    [switch]$updatewinget = $false,
+    [string]$winonly = "", # Flag for the Electron build: if set to any value, will build only Windows Electron apps. Set to "appx" to build only the appx package for Electron.
+    [switch]$nobranchcheck = $false, # If set, will not check that the current branch is correct for the type of app to build
+    [switch]$updatewinget = $false, # If set, will update the winget manifest and create a PR
     [string]$wingetprompt = "", # Provide an override response (Y/N) to the winget prompt at the end of the script - for automation
-    [switch]$nobranchcheck = $false # If set, will not check that the current branch is correct for the type of app to build
+    [switch]$help = $false # If invoked with -help, will display help on valid switches
 )
-# DEV: To build Electron packages for all platforms and NWJS for XP and Vista in a single release, use, e.g., "v1.3.0E+N" (Electron + NWJS)
-# DEV: To build UWP + Electron in a single release (for WikiMed or Wikivoyage), use "v1.3.0+E" (plus Electron)
-# DEV: To build UWP + Electron + NWJS packages in a single release, use "v1.3.0+E+N"
+# DEV: To build new icons, install electron-icon-builder, then
+# electron-icon-builder --input=C:\Repos\kiwix-js-windows\bld\icon.png --output=./build_resources/
+# then move icons in png into /build_resources/icons/
 
-# DEV: To build new icons, use
-# electron-icon-builder --input=C:\Users\geoff\Source\Repos\kiwix-js-windows\bld\icon.png --output=./bld/
-# then move icons in png into /bld/icons/
+function Get-ReleaseHelp {
+@"
+
+    Usage: .\Create-DraftRelease [tag_name or ?] [-dryrun] [-nobundle] [-draftonly] [-buildonly]
+        [-buildstorerelease] [-skipsigning] [-electronbuild local|cloud] [-portableonly] 
+        [-winonly Y|appx] [-nobranchcheck] [-updatewinget] [-wingetprompt Y|N] [-help] 
+    
+    Optionally drafts a new release of the app on GitHub and/or builds and uploads binaries for a
+    UWP, Electron or NWJS release of the app, or combinations thereof. If no parameters are provided,
+    the script will operate in guided mode, prompting for a tag name and other parameters. It will
+    then draft or build a release as appropriate. To run in automated contexts, ensure minimum
+    parameters are provided to prevent any prompt (try first with -dryrun).
+
+    To build the base app, check out main before running this script. To build the WikiMed or Wikivoyage
+    apps, check out the appropriate branch before running this script and add -WikiMed or -Wikivoyage to
+    the end of tag_name. To build Linux apps locally, the script will use Windows Subsystem for Linux.
+    MacOS is not currently supported by this repository, but it is supported by electron-builder. 
+    
+    To create a release on GitHub, you must ensure that your GitHub token is available in a file named
+    'github_token' in the same folder or set the variable `$GITHUB_TOKEN to the token. To build the
+    Electron and NWJS apps, this script calls scripts Build-Electron.ps1 and Build-NWJS.ps1, which must be
+    available in the same folder. Ensure the electron-builder dependency is installed with npm install.
+    To build the UWP app, Visual Studio 2017 must be installed. To sign the UWP appxbundle and local
+    Electron builds, you must ensure that your certificate and password are given in the environment
+    variables CSC_LINK and CSC_KEY_PASSWORD (this is an electron-builder requirement).
+    
+    tag_name            Tag name for the release plus E or N modifiers, e.g.,
+                        v1.2.0[-WikiMed|Wikivoyage] : will build the UWP app;
+                        v1.2.0E[-WikiMed|Wikivoyage] : will build Electron apps
+                        v1.2.0+E : will build the UWP app plus Electron
+                        v1.2.0+E+N : will build the UWP app plus Electron and NWJS
+                        v1.2.0E+N : will build Electron and NWJS apps only
+                        v1.2.0N : will build NWJS apps only
+    -dryrun             Will not create a release or upload assets, but will simulate all operations
+    -nobundle           Skips the bundling stage with rollup 
+    -draftonly          Will create a draft release only with no assets attached
+    -buildonly          Will build only and not create a release
+    -buildstorerelease  Will build a Store release (UWP and Electron appxbundle)
+    -skipsigning        Does not sign or re-sign either the UWP appxbundle or the Electron Windows apps
+    -electronbuild      Set to 'local' to build Electron apps locally, or 'cloud' to build on GitHub
+    -portableonly       Only the portable electron build will be built (implies local electron build)
+    -winonly            If set to any value, will build only Windows Electron apps; Set to 'appx' to
+                        build only the appx package for Electron
+    -nobranchcheck      Will not check that the current branch is correct for the type of app to build
+                        (i.e., WikiMed or Wikivoyage)
+    -updatewinget       Will update the winget manifest and create a PR
+    -wingetprompt       Provide an override response (Y/N) to the winget prompt at the end of the script
+    -help or ?          Prints these instructions
+    
+"@
+}
+
+if ($help -or $tag_name -eq '?') {
+  Get-ReleaseHelp
+  exit
+}
 
 # Provide parameters
 $release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-windows/releases'
