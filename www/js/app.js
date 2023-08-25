@@ -4941,8 +4941,8 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // Put site.js in the correct position
             htmlArticle = htmlArticle.replace(/(<script\b[^>]+\/site\.js["']><\/script>\s*)((?:[^<]|<(?!\/body))+)/, '$2$1');
             // @TODO Remove when fixed in https://github.com/openzim/mwoffliner/issues/1872
-            // Add missing title to Wikivoyage articles for post June 2023 scrapes
-            htmlArticle = /wikivoyage_en/.test(appstate.selectedArchive._file.name) && !/<h1\b[^>]+section-heading/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl() + '</h1>') : htmlArticle;
+            // Add missing title to WikiMedia articles for post June 2023 scrapes
+            htmlArticle = !params.isLandingPage && !/<h1\b[^>]+section-heading/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl() + '</h1>') : htmlArticle;
         }
 
         // Gutenberg ZIMs try to initialize before all assets are fully loaded. Affect UWP app.
