@@ -1,7 +1,8 @@
 # Changelog
 
-## In-progress release 2.6.2
+## In-progress release 2.6.3
 
+* REGRESSION: Fixed loss of ability to pick ZIM archives in latest Chromium on Android
 * REGRESSION: Fixed loss of ability to access custom ZIMs from download library
 * REGRESSION: Work around missing titles in English-language Wikivoyage scrapes since 2023-07
 * FIX: Conflict between manual image display and hyperlinking images to high-res Wikimedia versions

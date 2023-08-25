@@ -102,31 +102,11 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
                             <ul style="padding-left: 15px;">
+                                <li>Fixed loss of ability to pick ZIM archives in latest Chromium on Android</li>
                                 <li>Fixed regression preventing access to custom ZIM archives in download library</li>
                                 <li>Work around missing titles in English-language Wikivoyage scrapes since 2023-07</li>
                                 <li>Fix conflict between manual image display and hyperlinking images to high-res Wikimedia versions</li>
-                                <li>Ability to pick a folder of ZIM archives in nearly all apps and frameworks supporting the Webkitdirectory API</li>
-                                <li>New Electron-based appx version of Kiwix JS now served from the Microsoft Store and from GitHub Releases</li>
-                                <li>The Electron app is registerd as the default app for handling .zim or .zimaa archive files on Windows and Linux</li>
-                                <li>Improved file and folder picking experience for Firefox and older browsers lacking the File System Access API</li>
-                                <li>Fast re-opening of previously picked archives or directories in these browsers (number of clicks minimized)</li>
-                                <li>Dragged and dropped files, including split files, can now be re-opened automatically in Electron and NWJS apps</li>
-                                <li>Microsoft Store app now supports full-text search for users with 64bit Windows</li>
-                                <li>Provide more gradual screen width transition with max page width auto setting</li>
-                                <li>Restored the ability not to display images in ServiceWorker Mode in non-Zimit ZIMs</li>
-                                <li>Restored lazy-loading of images on most landing pages (improves Android experience with image-heavy landing pages)</li>
-                                <li>The Kiwix PWA can now be added as a Side Panel app in Edge (folder picking does not work in this configuration)</li>
-                                <li>Top toolbar now resized correctly with Window Controls Overlay in installed PWA on macOS and Windows</li>
-                                <li>When using Window Controls Overlay, app now has a draggable area (left of Kiwix icon)</li>
-                                <li>Sample archive changed to wikipedia_en_100_mini_2023-07</li>
-                                <li>Troubleshooting instructions for installing on Debian on the Releases page</li>
-                                <li>Allow producing signed or unsigned versions of appx, and compile to appxbundle</li>
-                                <li>Option to build artefacts only for testing</li>
-                                <li>Fixed broken Kiwix icon for Linux app packages</li>
-                                <li>Improved fidelity of layout for translation tables in cached Wiktionary mobile and desktop styles</li>
-                                <li>Fixed broken file handling in legacy UWP app</li>
-                                <li>Miscellaneous small bugfixes and typos</li>
-                                <li>A lot of normalization of coding style using ESLint</li>
+                                <li>Added clear documentation to the Create-DraftRelease.ps1 script</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>
