@@ -124,7 +124,7 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                         params.searchProvider += ': no_fulltext'; // message += 'this ZIM does not have a full-text index.';
                     } else if (isSplitZim) {
                         params.searchProvider += ': split_zim'; // message += 'the ZIM archive is split.';
-                    } else if (libzimReaderType === 'asm' && typeof Atomics === 'undefined') {
+                    } else if (typeof Atomics === 'undefined') {
                         params.searchProvider += ': no_atomics'; // message += 'this browser does not support Atomic operations.';
                     } else if (/Android/.test(params.appType)) {
                         params.searchProvider += ': no_sharedArrayBuffer';
