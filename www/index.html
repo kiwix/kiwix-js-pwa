@@ -102,6 +102,7 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
                             <ul style="padding-left: 15px;">
+                                <li>Full-text search enabled by default on iOS 15+</li>
                                 <li>Fixed loss of ability to pick ZIM archives in latest Chromium on Android</li>
                                 <li>Fixed regression preventing access to custom ZIM archives in download library</li>
                                 <li>Work around missing titles in all WikiMedia scrapes since 2023-07</li>
@@ -466,9 +467,10 @@
                     </p>
                     <h3 id="fullTextSearch">Full-text search</h3>
                     <p>
-                        Some versions of this app (PWA and Electron, but not UWP) support <b>full-text search <i>if your ZIM has a full-text index</i></b>. The API panel in Configuration will tell you
+                        Some versions of this app (PWA and Electron-based) support <b>full-text search <i>if your ZIM has a full-text index</i></b>. The API panel in Configuration will tell you
                         whether the loaded ZIM and app support full-text search. A full-text search will be launched automatically after the title search if the latter didn't return the maximum number
-                        of results you have set in Configuration (default is 30).
+                        of results you have set in Configuration (default is 30). Users of iOS will need to be on iOS 15+ for full-text search to work (if you are on an earlier version, we recommend
+                        you disable use of libzim WASM/ASM in Expert settings -> Troubleshooting and development).
                     </p>
                     <p>
                         Full-text results are displayed <i>after</i> any matching title search results. Full-text search results can be considerably slower than title search with very large ZIM archives.

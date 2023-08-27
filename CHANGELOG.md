@@ -1,7 +1,8 @@
 # Changelog
 
-## In-progress release 2.6.3
+## Release 2.6.4
 
+* FEATURE: Full-text search enabled by default on iOS 15+
 * REGRESSION: Fixed loss of ability to pick ZIM archives in latest Chromium on Android
 * REGRESSION: Fixed loss of ability to access custom ZIMs from download library
 * REGRESSION: Work around missing titles in all WikiMedia scrapes since 2023-07

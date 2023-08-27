@@ -67,7 +67,7 @@ try switching the app to JQuery mode (see Content injection mode in Configuratio
   + <img src="images/googlechrome-color.svg" width="20" /> Google Chrome / Chromium >= 59 (and many browsers based on Chromium, e.g. Opera, Samsung Internet)
   + <img src="images/microsoftedge-color.svg" width="20" /> Microsoft Edge (Chromium) >= 79
   + <img src="images/firefoxbrowser-color.svg" width="20" /> Mozilla Firefox >= 60 (except on Android`*`)
-  + <img src="images/safari-color.svg" width="20" /> Apple Safari >= 11.3 (iOS and macOS)
+  + <img src="images/safari-color.svg" width="20" /> Apple Safari >= 11.3 for iOS and macOS (full-text search only works on iOS 15+)
   + <img src="images/edgelegacy-color.svg" width="22" /> Microsoft Edge Legacy 18 (Windows only)
 
 * As an application implemented with the following frameworks:
