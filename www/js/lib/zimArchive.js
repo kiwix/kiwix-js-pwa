@@ -101,10 +101,12 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
             ]).then(function () {
                 // There is currently an exception thrown in the libzim wasm if we attempt to load a split ZIM archive, so we work around
                 var isSplitZim = /\.zima.$/i.test(that._file._files[0].name);
-                if (that._file.fullTextIndex && (params.debugLibzimASM || !isSplitZim && typeof Atomics !== 'undefined' 
-                    // Note that Android and NWJS currently throw due to problems with Web Worker context
-                    && !/Android/.test(params.appType) && !(window.nw && that._file._files[0].readMode === 'electron'))) {
-                    var libzimReaderType = params.debugLibzimASM || ('WebAssembly' in self ? 'wasm' : 'asm');
+                var libzimReaderType = params.debugLibzimASM || ('WebAssembly' in self ? 'wasm' : 'asm');
+                if (that._file.fullTextIndex && (params.debugLibzimASM || !isSplitZim &&
+                // The ASM implementation requires Atomics support, whereas the WASM implementation does not
+                (libzimReaderType === 'asm' && typeof Atomics !== 'undefined') &&
+                // Note that Android and NWJS currently throw due to problems with Web Worker context
+                !/Android/.test(params.appType) && !(window.nw && that._file._files[0].readMode === 'electron'))) {
                     console.log('Instantiating libzim ' + libzimReaderType + ' Web Worker...');
                     LZ = new Worker('js/lib/libzim-' + libzimReaderType + '.js');
                     that.callLibzimWorker({ action: 'init', files: that._file._files }).then(function (msg) {
@@ -122,7 +124,7 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                         params.searchProvider += ': no_fulltext'; // message += 'this ZIM does not have a full-text index.';
                     } else if (isSplitZim) {
                         params.searchProvider += ': split_zim'; // message += 'the ZIM archive is split.';
-                    } else if (typeof Atomics === 'undefined') {
+                    } else if (libzimReaderType === 'asm' && typeof Atomics === 'undefined') {
                         params.searchProvider += ': no_atomics'; // message += 'this browser does not support Atomic operations.';
                     } else if (/Android/.test(params.appType)) {
                         params.searchProvider += ': no_sharedArrayBuffer';
