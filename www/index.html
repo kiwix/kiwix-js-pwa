@@ -1129,13 +1129,14 @@
                                         <span class="checkmark"></span>
                                         <b>Permanently hide active content warning</b> (for experienced users)
                                     </label>
-                                    <b title="You can force the app to use libzim full-text searching if the ZIM has a full-text index. Useful for earlier versions of Android, for example.">Force use of libzim W/ASM for reading full-text index:</b>
+                                    <b title="You can force the app to use libzim full-text searching if the ZIM has a full-text index. Useful for earlier versions of Android, for example.">Force / disable libzim W/ASM for reading full-text index:</b>
                                     <select title="You can force the app to use libzim full-text searching if the ZIM has a full-text index. Useful for earlier versions of Android, for example." name="debugLibzimASM" id="debugLibzimASMDrop" class="dropdown">
                                         <option value="">Default</option>
                                         <option value="wasm">WASM</option>
                                         <option value="asm">ASM</option>
                                         <option value="wasm.dev">WASM debug</option>
                                         <option value="asm.dev">ASM debug</option>
+                                        <option id="libzimDisable" value="disable">Disable</option>
                                     </select>
                                     <p><i>Warning! Disables OS/ZIM checks and may make title search unresponsive!</i></p>
                                     <label class="checkbox" title="In some browsers on some platforms, drag-and-drop may malfunction and make it difficult to select text, and other operations. Disable it here if it is causing issues." >

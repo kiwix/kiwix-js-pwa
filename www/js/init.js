@@ -257,6 +257,7 @@ document.getElementById('hideToolbarsState').innerHTML = (params.hideToolbars ==
 document.getElementById('openExternalLinksInNewTabsCheck').checked = params.openExternalLinksInNewTabs;
 document.getElementById('disableDragAndDropCheck').checked = params.disableDragAndDrop;
 document.getElementById('debugLibzimASMDrop').value = params.debugLibzimASM || '';
+if (params.debugLibzimASM === 'disable') document.getElementById('debugLibzimASMDrop').style.color = 'red';
 if (params.windowOpener === null) { // Setting has never been activated, so determine a sensible default
     params.windowOpener = /UWP/.test(params.appType) && params.contentInjectionMode === 'jquery' ? false :
     /iOS/.test(params.appType) ? false :

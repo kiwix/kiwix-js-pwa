@@ -102,7 +102,7 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                 // There is currently an exception thrown in the libzim wasm if we attempt to load a split ZIM archive, so we work around
                 var isSplitZim = /\.zima.$/i.test(that._file._files[0].name);
                 var libzimReaderType = params.debugLibzimASM || ('WebAssembly' in self ? 'wasm' : 'asm');
-                if (that._file.fullTextIndex && (params.debugLibzimASM || !isSplitZim &&
+                if (that._file.fullTextIndex && params.debugLibzimASM !== 'disable' && (params.debugLibzimASM || !isSplitZim &&
                 // The ASM implementation requires Atomics support, whereas the WASM implementation does not
                 (libzimReaderType === 'asm' && typeof Atomics !== 'undefined') &&
                 // Note that Android and NWJS currently throw due to problems with Web Worker context
@@ -128,6 +128,10 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                         params.searchProvider += ': no_atomics'; // message += 'this browser does not support Atomic operations.';
                     } else if (/Android/.test(params.appType)) {
                         params.searchProvider += ': no_sharedArrayBuffer';
+                    } else if (params.debugLibzimASM === 'disable') {
+                        params.searchProvider += ': disabled';
+                    } else {
+                        params.searchProvider += ': unknown';
                     }
                     uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider);
                     // uiUtil.systemAlert(message);
