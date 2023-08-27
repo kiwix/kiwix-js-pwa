@@ -4,12 +4,13 @@
 
 * REGRESSION: Fixed loss of ability to pick ZIM archives in latest Chromium on Android
 * REGRESSION: Fixed loss of ability to access custom ZIMs from download library
-* REGRESSION: Work around missing titles in English-language Wikivoyage scrapes since 2023-07
+* REGRESSION: Work around missing titles in all WikiMedia scrapes since 2023-07
 * FIX: Conflict between manual image display and hyperlinking images to high-res Wikimedia versions
 * FIX: More broken Linux icons
 * DEV: Appx package is now uploaded to Kiwix releases
 * DEV: Added clear documentation to the Create-DraftRelease.ps1 script
 * DEV: Remove more unnecessary JQuery from the app
+* DEV: Disable appCache by default if developing with the Vite server
 
 ## Release 2.5.6
 
