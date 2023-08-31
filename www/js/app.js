@@ -4873,7 +4873,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             }
             newBlock = blockStart + 'data-kiwixurl' + equals + assetZIMUrlEnc + blockClose;
             // For Wikipedia archives, hyperlink the image to the File version
-            if (wikiLang && /^<img/i.test(blockStart) && !/usemap=/i.test(match)) {
+            if (wikiLang && /^<img/i.test(blockStart) && !/usemap=|math-fallback-image/i.test(match)) {
                 newBlock = '<a href="https://' + (wikimediaZimFlavour !== 'mdwiki' ? wikiLang + '.' : '') + wikimediaZimFlavour +
                     '.org/wiki/File:' + assetZIMUrlEnc.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1') +
                     '" target="_blank">' + newBlock + '</a>'
@@ -4898,7 +4898,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             if (wikiLang) {
                 // For Wikipedia archives, hyperlink the image to the File version
                 var assetZIMUrl = decodeURIComponent(relAssetUrl);
-                if (/^<img/i.test(blockStart) && !/usemap=/i.test(match)) {
+                if (/^<img/i.test(blockStart) && !/usemap=|math-fallback-image/i.test(match)) {
                     newBlock = '<a href="https://' + (wikimediaZimFlavour !== 'mdwiki' ? wikiLang + '.' : '') + wikimediaZimFlavour +
                         '.org/wiki/File:' + assetZIMUrl.replace(/^.+\/([^/]+?\.(?:jpe?g|svg|png|gif))[^/]*$/i, '$1') +
                         '" target="_blank">' + newBlock + '</a>'
