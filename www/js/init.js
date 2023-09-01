@@ -2,7 +2,7 @@
  * init.js : Configuration for the app
  * This file sets the app's main parameters and variables
  *
- * Copyright 2013-2023 Mossroy, Jaifroid and contributors
+ * Copyright 2013-2023 Jaifroid, Mossroy and contributors
  * License GPL v3:
  *
  * This file is part of Kiwix.

@@ -2,7 +2,7 @@
  * app.js : The main Kiwix User Interface implementation
  * This file handles the interaction between the Kiwix JS back end and the user
  *
- * Copyright 2013-2023 Mossroy, Jaifroid and contributors
+ * Copyright 2013-2023 Jaifroid, Mossroy and contributors
  * License GPL v3:
  *
  * This file is part of Kiwix.
