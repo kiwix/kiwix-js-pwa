@@ -650,9 +650,11 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
         "Setting appVersion in package.json to $base_tag..."
         $json_object = $json_object -replace '("version": ")[^"]+', "`${1}$base_tag"
         if ($dryrun) {
-          "[DRYRUN] would have written new package.json to the distribution folder"
+          "[DRYRUN] would have written new package.json"
+          # $json_object
         } else {
-          Set-Content "$PSScriptRoot/../dist/package.json" $json_object
+          # This will get copied to the dist folder by the Build-Electron script
+          Set-Content "$PSScriptRoot/../package.json" $json_object
         }
       } else {
         Write-Host "`nUnable to auto-build Electron UWP app because the version $numeric_tag is the same as that of the legacy UWP app!`n" -ForegroundColor Red
