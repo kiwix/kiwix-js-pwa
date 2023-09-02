@@ -5,6 +5,7 @@ param (
     [switch]$nobundle = $false, # If set, skips the bundling stage with rollup 
     [switch]$draftonly = $false, # If set, will create a draft release only with no assets attached
     [switch]$buildonly = $false, # If set, will build only and not create a release
+    [switch]$buildalluwp = $false, # Will build both the legacy UWP and the Electron-based appx, incrementing the version number between the builds
     [switch]$buildstorerelease = $false, # If set, will build a Store release (UWP and Electron appxbundle)
     [switch]$skipsigning = $false, # Does not sign either the UWP appxbundle or the Electron Windows apps
     [string]$electronbuild = "", # Determines whether the Electron apps will be built 'local' or in the 'cloud'
@@ -56,11 +57,14 @@ function Get-ReleaseHelp {
     -nobundle           Skips the bundling stage with rollup 
     -draftonly          Will create a draft release only with no assets attached
     -buildonly          Will build only and not create a release
+    -buildalluwp        Will build both the legacy UWP and the Electron-based appx, incrementing the
+                        version number between the builds; there is no need to set the -buildstorerelease flag
+                        if you use this option, as sensible defaults will be used
     -buildstorerelease  Will build a Store release (UWP and Electron appxbundle)
     -skipsigning        Does not sign or re-sign either the UWP appxbundle or the Electron Windows apps
     -electronbuild      Set to 'local' to build Electron apps locally, or 'cloud' to build on GitHub
     -portableonly       Only the portable electron build will be built (implies local electron build)
-    -winonly            If set to any value, will build only Windows Electron apps; Set to 'appx' to
+    -winonly            If set to any value, will build only Windows Electron apps; set to 'appx' to
                         build only the appx package for Electron
     -nobranchcheck      Will not check that the current branch is correct for the type of app to build
                         (i.e., WikiMed or Wikivoyage)
@@ -119,6 +123,15 @@ if ($serviceworker -match 'appVersion\s*=\s*[''"]([^''"]+)') {
   exit
 }
 
+# Set overrides if user requested building both legacy and Electron-based UWP apps
+if ($buildalluwp) {
+  $buildonly = $true
+  $buildstorerelease = $true
+  $plus_electron = $true
+  $electronbuild = 'local'
+  $winonly = 'appx'
+}
+
 if ($tag_name -eq "") {
   "`nTip: You can type '-WikiMed' or '-Wikivoyage' to modify given tag, or simply add modifying suffixes:"
   "E = Electron; N = NWJS; +E = UWP + Electron; E+N = Electron + NWJS; +E+N = UWP + Electron + NWJS"
@@ -164,6 +177,7 @@ $text_tag = $tag_name -creplace '^v[\d.EN+]+-?(.*)$', '$1'
 $numeric_tag = $base_tag -creplace "([\d.]+)[EN]", '$1'
 $old_windows_support = $tag_name -cmatch '\+N'
 $plus_electron = $tag_name -cmatch '\+E'
+if ($buildalluwp) { $plus_electron = $true }
 if ($text_tag -eq '') { $text_tag = 'Windows' }
 # Put the dash back in the tag name
 if (-not $plus_electron) {
@@ -616,9 +630,38 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
   if ($plus_electron) {
     "Building add-on: Electron packages..."
     $base_tag_origin = $base_tag
+    $numeric_tag_origin = $numeric_tag
     $base_tag = $base_tag -replace '^([0-9.]+).*', '$1-E'
+    # If we are building both the legacy and Electron-based UWP apps, we need to increment the build number for the Electron version
+    if ($buildalluwp) {
+      if ($base_tag -match '(^.*\.)([0-9]+)(.*$)') {
+        if ($matches[2]) {
+            $base_tag = $matches[1] + ($matches[2] / 1 + 1) + $matches[3]
+        }
+      }
+      if ($numeric_tag -match '(^.*\.)([0-9]+)(.*$)') {
+        if ($matches[2]) {
+            $numeric_tag = $matches[1] + ($matches[2] / 1 + 1) + $matches[3]
+        }
+      }
+      # If the old and new numeric_tags match
+      if ($numeric_tag -ne $numeric_tag_origin) {
+        "`nBuilding the Electron UWP app with version $base_tag...`n"
+        "Setting appVersion in package.json to $base_tag..."
+        $json_object = $json_object -replace '("version": ")[^"]+', "`${1}$base_tag"
+        if ($dryrun) {
+          "[DRYRUN] would have written new package.json to the distribution folder"
+        } else {
+          Set-Content "$PSScriptRoot/../dist/package.json" $json_object
+        }
+      } else {
+        Write-Host "`nUnable to auto-build Electron UWP app because the version $numeric_tag is the same as that of the legacy UWP app!`n" -ForegroundColor Red
+        exit 1
+      }      
+    }
     . $PSScriptRoot/Build-Electron.ps1
     $base_tag = $base_tag_origin
+    $numeric_tag = $numeric_tag_origin
   } 
   if ($forced_buildonly) {
     "`nBecause your app package was not valid for release on GitHub, we have not uploaded it."
