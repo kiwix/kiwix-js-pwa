@@ -316,7 +316,7 @@ $release_params = @{
 
 # We should have enough information to find the release URL
 if ($updatewinget) {
-  if (-Not $flavour -and $release_body -match 'https:[^)]+?\.(?:appxbundle)') {
+  if (-Not $flavour -and $release_body -match 'https:[^)]+?\.(?:appx(?!bundle))') {
     $package_urls = @($matches[0])
   } 
   if ($release_body -match 'https:[^)]+?\.(?:exe)') {
@@ -333,7 +333,7 @@ if ($updatewinget) {
     } else {
       $package_id = 'Kiwix.' +  'KiwixJS'
     }
-    if ($package_url -match '\.appxbundle') { 
+    if ($package_url -match '\.appx') { 
       $winget_version = $numeric_tag + '.0'
       $UrlsWithOverride = $package_url
     }
