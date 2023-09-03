@@ -98,8 +98,8 @@
     },
     "appx": {
       "backgroundColor": "transparent",
-      "displayName": "Kiwix JS Electron",
-      "identityName": "Kiwix.KiwixJS.Electron",
+      "displayName": "Kiwix JS",
+      "identityName": "Kiwix.KiwixJS",
       "publisher": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, C=CH",
       "publisherDisplayName": "Association Kiwix",
       "languages": "en-GB",
