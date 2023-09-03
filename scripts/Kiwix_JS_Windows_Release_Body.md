@@ -30,6 +30,7 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
     + Or, on a PC, open a Terminal (or command prompt) and run `winget install 'kiwix js' -s msstore`
     + Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.kiwixjs` - this doesn't auto-update, but you can upgrade easily by running `winget upgrade kiwix.kiwixjs`
   - **Installable (Electron)**
+    + Windows 10/11 64bit - [Kiwix-JS-Electron-<<numeric_tag>>-E.appx](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E.appx) - new, modern install / uninstall
     + Windows 7/8/10/11: [Kiwix-JS-Electron-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix-JS-Electron-Setup-<<numeric_tag>>-E.exe) [**AUTO**]
     + Alternatively, run `winget install kiwix.kiwixjs.electron` in a Windows 10/11 Terminal [**AUTO**]
   - **Portable - no install needed**
