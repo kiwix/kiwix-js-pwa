@@ -61,6 +61,7 @@ if ($VERSION -match '^v?[\d.]') {
     }
     "Setting App Version to $CustomVersion in package.json ...`n"
     $PackageJson = $PackageJson -replace '("version":\s+")[^"]+', "`${1}$CustomVersion"
+    $PackageJson = $PackageJson -replace '\s+$', ''
     Set-Content ./package.json $PackageJson
 } else {
     "No valid INPUT_VERSION or TAG_VERSION were provided. File version numbers were unchanged.`n"

@@ -384,6 +384,8 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     "[DRYRUN] would have written new package.json"
     # $json_object
   } else {
+    # Remove extraneous new lines before saving
+    $json_object = $json_object -replace '\s+$', ''
     Set-Content "$PSScriptRoot/../package.json" $json_object
   }
   if ($draftonly) {
