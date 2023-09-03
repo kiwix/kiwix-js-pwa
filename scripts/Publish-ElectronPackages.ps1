@@ -181,7 +181,7 @@ if (-not $githubonly) {
                 & "C:\Program Files\Git\usr\bin\scp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$renamed_file", "ci@master.download.kiwix.org:$target")
                 if (!$CRON_LAUNCHED -and $renamed_file -match '\.appx$') {
                     "Also copying $renamed_file to $win_target..."
-                    $renamed_win_file = $renamed_file -replace 'electron', 'windows'
+                    $renamed_win_file = $renamed_file -replace 'electron_x86-64', 'windows'
                     mv $renamed_file $renamed_win_file
                     & "C:\Program Files\Git\usr\bin\scp.exe" @('-P', '30022', '-o', 'StrictHostKeyChecking=no', '-i', "$keyfile", "$renamed_win_file", "ci@master.download.kiwix.org:$win_target")
                 }
