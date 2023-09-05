@@ -38,6 +38,10 @@ or you can preview a ZIM at [library.kiwix.org](https://library.kiwix.org) befor
 Once installed, bookmarked or added to your home screen, the PWA works even when your device is fully offline!
 **[Take a look at our demo](screenshots/Install-PWA.md) that shows how quick and easy it is to install the PWA.**
 
+And when we say "Universal", we mean Universal: Android, iOS, macOS, Linux, Windows...
+
+<img src="https://github.com/kiwix/kiwix-js-windows/assets/4304337/bbe944b5-ab64-4a24-a826-367e0ded0e33" width=640 />
+
 ## How do I get all of Wikipedia offline?
 
 If you want it with images, then please be aware that it's a big download: the English version is around 90 Gigabytes! We recommend you
@@ -49,6 +53,13 @@ If you really want full English Wikipedia with images, then we strongly recommen
 select a large archive for download in the app, it will provide you with a torrent link. Click the link and allow your browser to
 download and open the torrent file. This small file will open in qBittorrent and you'll be asked where you want to save the archive you
 want to download. It's much easier than it sounds!
+
+## What about Zimit (Web Archive) format?
+
+Zimit is the new service that allows you to archive any web site as a ZIM. Try it out at https://youzim.it/. The Kiwix JS PWA and Electron apps have
+_experimental_ support for Zimit archives: it will display text, images, dynamic content, but some content such as embedded video or audio may break.
+Try it and see! You don't have to make your own Zimit ZIMs: Kiwix download library (available in-app) publishes a number of fantastically useful refernce
+sites in the Zimit file format, such as the CIA World Factbook (amongst many others).
 
 ![Kiwix_better_zimit_montage](https://github.com/kiwix/kiwix-js-windows/assets/4304337/9462d1ee-d7e4-45db-866d-a1839c0f6b19)
 
