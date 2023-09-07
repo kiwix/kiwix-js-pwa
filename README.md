@@ -59,7 +59,7 @@ want to download. It's much easier than it sounds!
 Zimit is the new service that allows you to archive any web site as a ZIM. Try it out at https://youzim.it/. The Kiwix JS PWA and Electron apps have
 _experimental_ support for Zimit archives: text, images, dynamic content will be displayed, but some content such as embedded video or audio may break.
 Try it and see! You don't have to make your own Zimit ZIMs: Kiwix download library (available in-app) publishes a number of fantastically useful refernce
-sites in the Zimit file format, such as the Ready Gove disaster preparedness site, the fascinating Low Tech magazine, the CIA World Factbook --
+sites in the Zimit file format, such as the Ready.Gov disaster preparedness site, the fascinating Low-Tech magazine, the CIA World Factbook --
 amongst many others. Just open the Zimit directory in the in-app library.
 
 ![Kiwix_better_zimit_montage](https://github.com/kiwix/kiwix-js-windows/assets/4304337/9462d1ee-d7e4-45db-866d-a1839c0f6b19)
