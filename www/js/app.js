@@ -4917,7 +4917,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         // Dirty patches that improve performance or layout with Wikimedia ZIMs. DEV: review regularly and remove when no longer needed.
         if (appstate.wikimediaZimLoaded && params.cssCache) {
             // Reduce weight of unused JS archives for mediawiki ZIMs. This patch also removes mediawiki.page.ready.js which breakds the iframe kiwix-js #972
-            htmlArticle = htmlArticle.replace(/<script\b[^<]+src=["'][^"']*(mediawiki|jquery|configvars|startup|visibilitytoggles|site|enhancements|scribunto|ext\.math|\.player)[^"']*\.js\b[^<]+<\/script>/gi, '');
+            htmlArticle = htmlArticle.replace(/<script\b[^<]+src=["'][^"']*(mediawiki|jquery|configvars|startup|visibilitytoggles|site|enhancements|scribunto|ext\.math|\.player|webp(?:Handler|Hero))[^"']*\.js\b[^<]+<\/script>/gi, '');
             // @TODO - remove this when issue fixed: VERY DIRTY PATCH FOR HTML IN PAGE TITLES on Wikivoyage
             htmlArticle = htmlArticle.replace(/&lt;a href[^"]+"\/wiki\/([^"]+)[^<]+&gt;([^<]+)&lt;\/a&gt;/ig, '<a href="$1.html">$2</a>');
             htmlArticle = htmlArticle.replace(/&lt;(\/?)(i|b|em|strong)&gt;/ig, '<$1$2>');
