@@ -4943,6 +4943,9 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // @TODO Remove when fixed in https://github.com/openzim/mwoffliner/issues/1872
             // Add missing title to WikiMedia articles for post June 2023 scrapes
             htmlArticle = !params.isLandingPage && !/<h1\b[^>]+section-heading/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl() + '</h1>') : htmlArticle;
+        } else if (appstate.wikimediaZimLoaded && params.manipulateImages) {
+            // Remove incompatible webP handler that breaks on some Edge Legacy
+            htmlArticle = htmlArticle.replace(/<script\b[^<]+src=["'][^"']*(webp(?:Handler|Hero))[^"']*\.js\b[^<]+<\/script>/gi, '');
         }
 
         // Gutenberg ZIMs try to initialize before all assets are fully loaded. Affect UWP app.
