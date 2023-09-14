@@ -1,13 +1,13 @@
 {
-  "name": "kiwix-js-electron",
-  "productName": "Kiwix JS Electron",
-  "version": "2.6.4-E",
-  "description": "Kiwix JS offline ZIM archive reader packaged for the Electron framework",
+  "name": "kiwix-js-wikimed",
+  "productName": "WikiMed by Kiwix",
+  "version": "2.6.5-E",
+  "description": "WikiMed by Kiwix packaged for the Electron framework",
   "main": "main.cjs",
   "type": "module",
   "build": {
-    "appId": "kiwix.js.electron",
-    "productName": "Kiwix JS Electron",
+    "appId": "kiwix.js.wikimed",
+    "productName": "WikiMed by Kiwix",
     "directories": {
       "output": "bld/Electron",
       "buildResources": "../electron_icons"
@@ -37,10 +37,6 @@
       "target": [
         {
           "target": "NSIS",
-          "arch": "ia32"
-        },
-        {
-          "target": "portable",
           "arch": "ia32"
         },
         {
@@ -81,12 +77,6 @@
           "arch": [
             "x64"
           ]
-        },
-        {
-          "target": "rpm",
-          "arch": [
-            "x64"
-          ]
         }
       ],
       "category": "Education"
@@ -98,8 +88,8 @@
     },
     "appx": {
       "backgroundColor": "transparent",
-      "displayName": "Kiwix JS",
-      "identityName": "Kiwix.KiwixJS",
+      "displayName": "WikiMed by Kiwix",
+      "identityName": "Kiwix.WikiMed",
       "publisher": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, C=CH",
       "publisherDisplayName": "Association Kiwix",
       "languages": "en-GB",
@@ -139,7 +129,13 @@
   "repository": "https://github.com/kiwix/kiwix-js-windows",
   "keywords": [
     "Kiwix",
+    "WikiMed",
     "offline",
+    "medical",
+    "medicine",
+    "medicines",
+    "pharmaceutical",
+    "pharmaceuticals",
     "Wikipedia",
     "ZIM",
     "reader"
