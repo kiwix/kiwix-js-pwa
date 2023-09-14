@@ -1,5 +1,11 @@
 # Changelog
 
+## In-progress release 2.6.6
+
+* ENHANCEMENT: Avoid double loading of WebP Polyfill when present in ZIM
+* FIX: Avoid duplication of title in wider range of ZIMs
+* UPDATE: Electron version bumped to 22.3.21
+
 ## Release 2.6.4
 
 * FEATURE: Full-text search enabled by default on iOS 15+
