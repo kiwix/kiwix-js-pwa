@@ -33,3 +33,7 @@ If you grant this permission permanently (tick the check box), you won't be both
 When you open a ZIM archive or folder *from within the app* (from Configuration), you are asked for permission to access the file or the folder containing your ZIM archives. On next
 launch, the selected file or folder is remembered. When you click on the archive name, you are given a quick permissions prompt (just once per launch). This is a security feature of
 the API and can't currently be avoided.
+
+## Add the PWA to the Edge sidebar
+
+If you are using Microsoft Edge (Chromium), you can now add the PWA to the Edge sidebar. See our demo [Add Kiwix PWA to Edge sidebar](Add-KiwixPWA-to-Edge-sidebar.md).
