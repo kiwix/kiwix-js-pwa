@@ -1,6 +1,6 @@
 # Kiwix JS for PWA, Windows and Linux (Electron, NWJS, UWP)
 
-Demos: [ [Installing the PWA](screenshots/Install-PWA.md) ] [ [Picking a folder of archives](screenshots/Folder-Picking.md) ] [ [Add PWA to Edge sidebar](screenshots/Add-KiwixPWA-to-Edge-sidebar.md) ]
+Demos: [ [Installing the PWA](screenshots/Install-PWA.md) ]  [ [Picking a folder of archives](screenshots/Folder-Picking.md) ]  [ [Add PWA to Edge sidebar](screenshots/Add-KiwixPWA-to-Edge-sidebar.md) ]
 
 ![Kiwix JS Seven Wonders Montage trans](https://user-images.githubusercontent.com/4304337/218268736-2820050c-289f-4d4b-aef9-7e9f4f33c658.png)
 
