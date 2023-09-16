@@ -1,5 +1,7 @@
 # Kiwix JS for PWA, Windows and Linux (Electron, NWJS, UWP)
 
+Demos:&emsp;[&ensp;[Installing the PWA](screenshots/Install-PWA.md)&ensp;]&emsp;[&ensp;[Picking a folder of archives](screenshots/Folder-Picking.md)&ensp;]&emsp;[&ensp;[Adding app to Edge sidebar](screenshots/Add-KiwixPWA-to-Edge-sidebar.md)&ensp;]
+
 ![Kiwix JS Seven Wonders Montage trans](https://user-images.githubusercontent.com/4304337/218268736-2820050c-289f-4d4b-aef9-7e9f4f33c658.png)
 
 **Kiwix is an offline browser for Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, and many other sites and resources.
