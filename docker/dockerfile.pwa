@@ -2,7 +2,7 @@ FROM nginx:latest
 
 EXPOSE 80
 
-COPY ./dist/manifest.json /usr/share/nginx/html
+COPY ./dist/manifest.webmanifest /usr/share/nginx/html
 COPY ./dist/service-worker.js /usr/share/nginx/html
 COPY ./dist/index.html /usr/share/nginx/html
 COPY ./dist/CHANGELOG.md /usr/share/nginx/html

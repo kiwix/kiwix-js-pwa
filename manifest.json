@@ -1,61 +1,47 @@
 {
-  "dir": "ltr",
-  "lang": "en-GB",
-  "name": "Kiwix JS PWA Edition",
-  "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "browser"],
-  "edge_side_panel": { 
-    "preferred_width": 496 
-  },
-  "categories": ["reference", "books", "education"],
-  "iarc_rating_id": "3596f0d9-387e-4d64-a165-5fef16a6c8e3",
-  "start_url": ".",
-  "short_name": "Kiwix PWA",
-  "theme_color": "#2F4F4F",
-  "description": "Kiwix is an offline reader for content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, and many other Web archives. It makes knowledge available to people with limited or no Internet access.",
-  "background_color": "#000",
-  "related_applications": [
-    {
-      "platform": "windows",
-      "url": "https://www.microsoft.com/store/apps/9P8SLZ4J979J",
-      "id": "9P8SLZ4J979J"
-    }
-  ],
-  "prefer_related_applications": false,
-  "icons": [
-    {
-      "src": "www/img/icons/kiwix-48.png",
-      "sizes": "48x48",
-      "type": "image/png"
+    "manifest_version": 3,
+    "name": "Kiwix JS PWA Edition",
+    "version": "2.6.6",
+
+    "description": "Kiwix is an offline reader for content from Wikipedia, Project Gutenberg, TED Talks, Wikivoyage, Stackexchange, and many other Web archives. It makes knowledge available to people with limited or no Internet access.",
+  
+    "icons": {
+        "16": "www/img/icons/kiwix-16.png",
+        "19": "www/img/icons/kiwix-19.png",
+        "32": "www/img/icons/kiwix-32.png",
+        "38": "www/img/icons/kiwix-38.png",
+        "48": "www/img/icons/kiwix-48.png",
+        "64": "www/img/icons/kiwix-64.png",
+        "90": "www/img/icons/kiwix-90.png",
+        "128": "www/img/icons/kiwix-128.png"
     },
-    {
-      "src": "www/img/icons/kiwix-64.ico",
-      "sizes": "64x64",
-      "type": "image/ico"
+
+    "action": {
+        "default_icon": {
+            "16": "www/img/icons/kiwix-16.png",
+            "19": "www/img/icons/kiwix-19.png",
+            "32": "www/img/icons/kiwix-32.png",
+            "38": "www/img/icons/kiwix-38.png",
+            "64": "www/img/icons/kiwix-64.png"
+        },
+        "default_title": "Kiwix JS PWA"
     },
-    {
-      "src": "www/img/icons/kiwix-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+
+    "background": {
+        "service_worker": "service-worker.js"
     },
-    {
-      "src": "www/img/icons/kiwix-256.png",
-      "sizes": "256x256",
-      "type": "image/png"
+
+    "content_security_policy": {
+        "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';",
+        "sandbox": "sandbox allow-scripts allow-downloads allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';"
     },
-    {
-      "src": "www/img/icons/kiwix-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ],
-  "file_handlers": [
-    {
-      "action": "www/index.html",
-      "accept": {
-        "application/octet-stream": [ ".zim" ]
-      },
-      "launch_type": "single-client"
-    }
-  ]
+
+    "web_accessible_resources": [{
+        "resources": ["www/index.html", "www/article.html"],
+        "matches": ["https://*.kiwix.org/*"]
+    }],
+
+    "author": "Kiwix",
+    "homepage_url": "https://www.kiwix.org",
+    "offline_enabled": true
 }

@@ -110,7 +110,7 @@
       "index.html",
       "CHANGELOG.md",
       "LICENCE",
-      "manifest.json",
+      "manifest.webmanifest",
       "www/**",
       "preload.cjs",
       "main.cjs",

@@ -110,7 +110,7 @@ const regexpByteRangeHeader = /^\s*bytes=(\d+)-/;
  */
 let precacheFiles = [
   ".", // This caches the redirect to www/index.html, in case a user launches the app from its root directory
-  "manifest.json",
+  "manifest.webmanifest",
   "service-worker.js",
   "www/favicon.ico",
   "www/-/mw/ext.cite.styles.css",
@@ -226,6 +226,16 @@ if ('WebAssembly' in self) {
     "www/js/lib/zstddec-asm.js",
     "www/js/lib/libzim-asm.js"
   );
+}
+
+/**
+ * If we're in a Chromium extension, add a listener to launch the tab when the icon is clicked
+ */
+if (typeof chrome !== 'undefined' && chrome.action) {
+    chrome.action.onClicked.addListener(function () {
+        var newURL = chrome.runtime.getURL('www/index.html');
+        chrome.tabs.create({ url: newURL });
+    });
 }
 
 // Process install event

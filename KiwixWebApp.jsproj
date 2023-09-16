@@ -197,7 +197,7 @@
     <Content Include="www\js\lib\zstddec-wasm.wasm" />
     <Content Include="www\js\lib\webpHeroBundle_0.0.0-dev.27.js" />
     <None Include="Package.StoreAssociation.xml" />
-    <Content Include="manifest.json" />
+    <Content Include="manifest.webmanifest" />
     <Content Include="service-worker.js" />
     <Content Include="www\-\static\main.css" />
     <Content Include="www\-\s\css_modules\content.parsoid.css" />

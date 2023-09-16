@@ -77,7 +77,7 @@ foreach ($build in $builds) {
     # Copy latest binary x64
     cp $buildLocation\* $fullTarget -Recurse
     $root = $PSScriptRoot -replace 'scripts.*$', ''
-    cp $root\dist\package.json, $root\dist\service-worker.js, $root\dist\index.html, $root\CHANGELOG.md, $root\LICENSE, $root\manifest.json, $root\dist\www $fullTarget -Recurse
+    cp $root\dist\package.json, $root\dist\service-worker.js, $root\dist\index.html, $root\CHANGELOG.md, $root\LICENSE, $root\manifest.webmanifest, $root\dist\www $fullTarget -Recurse
     # Remove unwanted files
     # del $fullTarget\www\js\lib\libzim-*.dev.*
     "Copying archive..."
