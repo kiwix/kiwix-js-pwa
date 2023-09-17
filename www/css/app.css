@@ -144,6 +144,14 @@ div:not(.panel-success, .alert-message) {
     padding: 0px 1em !important;
 }
 
+#OPFSQuota {
+    padding: 4px;
+    width: -moz-fit-content;
+    width: fit-content;
+    border-style: groove;
+    border-width: 3px;
+}
+
 .form-control:not([id^="findInArticle"]) {
     margin-top: 5px !important;
     margin-bottom: 5px !important;

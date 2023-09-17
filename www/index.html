@@ -436,7 +436,7 @@
                     <p>
                         In some modern browsers, you will see an experimental option "<b>Use Private File System</b>" above the File and Folder selectors. If you tick this option,
                         then the app will request an <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system" target="_blank">Origin Private File System</a>
-                        from the browser. Then, when you pick a ZIM file, it will be stored in the Private File System. The advantage of this is that the file system can be accessed by the app
+                        (OPFS) from the browser. Then, when you pick a ZIM file, it will be stored in the OPFS. The advantage of this is that the file system can be accessed by the app
                         without needing to give permission, even after you relaunch it.
                     </p>
                     <p>
@@ -764,11 +764,12 @@
                                             <input type="button" class="btn btn-primary btn-inline" value="Select file" id="archiveFile" />
                                         </div>
                                         <div class="col-xs-6">
+                                            <div id="OPFSQuota"  style="display: none;"></div>
                                             <input type="button" class="btn btn-primary btn-inline" value="Select folder" id="archiveFiles" />
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-xs-6">
+                                        <div class="col-xs-6" id="archiveFileLabel">
                                             <p>For a single unsplit archive</p>
                                         </div>
                                         <div class="col-xs-6" id="archiveFilesLabel">
