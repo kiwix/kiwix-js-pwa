@@ -280,6 +280,7 @@
                     <ul style="padding-left:1em;">
                         <li><a href="#addingArchives">Adding archives and languages</a></li>
                         <li><a href="#changelog">Changelog and Features</a></li>
+                        <li><a href="#filehandling">File handling and File System access</a></li>
                         <li><a href="#searchSyntax">Title search syntax and alphabetical ZIM Archive Index</a></li>
                         <li><a href="#fullTextSearch">Full-text search</a></li>
                         <li><a href="#linkHandling">Link handling, dynamic content and image download</a></li>
@@ -414,8 +415,36 @@
                     <p>
                         <b>Builds of this app are available that do not use a Store or an online Service Worker.</b> Please see:
                         <ul>
-                            <li><a href="https://github.com/kiwix/kiwix-js-windows/releases">Releases</a></li>
-                            <li><a href="https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html">NWJS version</a> - this version is completely standalone and will never self-update.</li>
+                            <li><a href="https://github.com/kiwix/kiwix-js-windows/releases" target="_blank">Releases</a></li>
+                            <li><a href="https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html" target="_blank">NWJS version</a> - this version is completely standalone and will never self-update.</li>
+                        </ul>
+                    </p>
+                    <h3 id="filehandling">File handling and File System access</h3>
+                    <p>
+                        This app reads very large files stored on your device. All versions of the app can pick a file from any user-accessible location, and on desktop browsers, you
+                        can drag-and-drop any ZIM archive into the app. Some versions of the app can also be granted access to a folder or directory in which you may store several ZIM
+                        archives. If this option is available, you will see a "Select folder" button (after clicking "Select storage"). In almost all cases, except for installed
+                        Electron apps, you will be asked to grant permission to access previously picked files or folders every time the app launches (usually this is just one or two
+                        clicks). This is a security feature of your browser and operating system, and we cannot circumvent it.
+                    </p>
+                    <p>
+                        Chromium desktop browsers support the <a href="https://developer.chrome.com/en/articles/file-handling/" target="_blank">File Handling API</a> when you install the PWA.
+                        This allows you to associate ZIM files with the app, so that when you double-click a ZIM file in your system's file explorer, it will open in the app. The first time
+                        you do this, you will be asked for permission to handle ZIM archives, and the browser will remember your choice. You can change your choice in the browser settings.
+                    </p>
+                    <h4 id="OPFS">Origin Private File System</h4>
+                    <p>
+                        In some modern browsers, you will see an experimental option "<b>Use Private File System</b>" above the File and Folder selectors. If you tick this option,
+                        then the app will request an <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system" target="_blank">Origin Private File System</a>
+                        from the browser. Then, when you pick a ZIM file, it will be stored in the Private File System. The advantage of this is that the file system can be accessed by the app
+                        without needing to give permission, even after you relaunch it.
+                    </p>
+                    <p>
+                        However, there are some limitations:
+                        <ul>
+                            <li>the file system has a quota set by the browser, which only makes it suitable for small-to-medium-sized archives;</li>
+                            <li>when you clear the app's data (e.g. clearing cookies, etc.), the browser can delete the file system and any files in it without warning;</li>
+                            <li>any file you store here will only be accessible by this app (you cannot export, share, or use other apps to read them).</li>
                         </ul>
                     </p>
                     <h3 id="searchSyntax">Title search syntax and alphabetical ZIM Archive Index</h3>
@@ -713,15 +742,24 @@
                             <div id="archivesFound" class="row">
                                 <p><span id="archiveNumber">Archives found on this device (tap "Select storage" to rescan)</span>:</p>
                                 <div class="col-xs-12">
-                                    <select id="archiveList" class="form-control" multiple></select><br />
+                                    <select id="archiveList" class="form-control" multiple></select>
                                 </div>
                             </div>
-                            <div id="noZIMFound" style="display: none;">
+                            <div id="noZIMFound" style="display: none; margin-top: 1em">
                                 <p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
                             </div>
-                            <div id="openLocalFiles">
+                            <div id="openLocalFiles" style="margin-top: 0.5em;">
                                 <div id="archiveFilesDiv">
-                                    <div class="row">
+                                    <div id="useOPFS" class="row">
+                                        <div class="col-xs-12" style="margin-left: 1em;">
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="useOPFS" id="useOPFSCheck">
+                                                <span class="checkmark"></span>
+                                                <b>Use Private File System</b> (<i>experimental</i>: see <a href="#OPFS" class="aboutLink"><b>About OPFS</b></a> for info)
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top: 0.5em;">
                                         <div class="col-xs-6">
                                             <input type="button" class="btn btn-primary btn-inline" value="Select file" id="archiveFile" />
                                         </div>
@@ -758,7 +796,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div id="rescanStorage" class="row">
+                            <div id="rescanStorage" class="row" style="margin-top: 1em;">
                                 <div class="col-xs-11">
                                     <input style="float:left; margin-right:1em;" type="button" class="btn btn-primary btn-inline" value="Select storage" id="btnRescanDeviceStorage" />
                                     Tap to select app's local storage or to select a file or folder. <b>You can also drag and drop a ZIM file into the app.</b>
