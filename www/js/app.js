@@ -799,7 +799,7 @@ function setTab (activeBtn) {
     } else {
         cssUIThemeGetOrSet(determinedTheme);
     }
-    if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog && !params.webkitdirectory) {
+    if (typeof Windows === 'undefined' && !(typeof window.showOpenFilePicker === 'function' || navigator && navigator.storage && 'getDirectory' in navigator.storage) && !window.dialog && !params.webkitdirectory) {
         // If not UWP, File System Access API, webkitdirectory API or Electron methods, display legacy File Select
         document.getElementById('archiveFilesDiv').style.display = 'none';
         document.getElementById('archivesFound').style.display = 'none';
@@ -1072,7 +1072,7 @@ document.getElementById('btnConfigure').addEventListener('click', function () {
         params.pickedFolder = params.localStorage;
     }
     // If user had previously picked a file using Native FS, offer to re-open
-    if (typeof window.showOpenFilePicker === 'function' && !(params.pickedFile || params.pickedFolder)) {
+    if ((typeof window.showOpenFilePicker === 'function' || params.useOPFS) && !(params.pickedFile || params.pickedFolder)) {
         getNativeFSHandle();
     }
 });
@@ -1174,7 +1174,7 @@ function selectArchive (list) {
         params.pickedFile = '';
         params.storedFile = '';
     }
-    if (window.showOpenFilePicker) {
+    if (window.showOpenFilePicker || params.useOPFS) {
         getNativeFSHandle(function (handle) {
             if (!handle) {
                 if (window.fs && params.storedFilePath) {
@@ -1271,7 +1271,7 @@ document.getElementById('archiveFile').addEventListener('click', function () {
     if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
         // UWP FilePicker
         pickFileUWP();
-    } else if (typeof window.showOpenFilePicker === 'function') {
+    } else if (typeof window.showOpenFilePicker === 'function' || params.useOPFS) {
         if (params.useOPFS) {
             // We need to pick a file and store it in the OPFS, so we use the legacy picker
             archiveFilesLegacy.click();
@@ -1388,7 +1388,7 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
     // Refresh list of archives
     if (params.pickedFolder) {
         params.rescan = true;
-        if (window.showOpenFilePicker) {
+        if (window.showOpenFilePicker || params.useOPFS) {
             processNativeDirHandle(params.pickedFolder);
         } else if (typeof Windows !== 'undefined') {
             scanUWPFolderforArchives(params.pickedFolder)
@@ -1397,7 +1397,7 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
         } else if (params.webkitdirectory) {
             document.getElementById('archiveFiles').click();
         }
-    } else if (typeof window.showOpenFilePicker === 'function' && !params.pickedFile) {
+    } else if ((params.useOPFS || typeof window.showOpenFilePicker === 'function') && !params.pickedFile) {
         getNativeFSHandle(function (fsHandle) {
             if (fsHandle && fsHandle.kind === 'directory') {
                 processNativeDirHandle(fsHandle);
