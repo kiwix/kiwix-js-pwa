@@ -320,7 +320,7 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
             });
         }
     }, function (err) {
-        console.error(new Error("This app doesn't appear to have access to local storage!"));
+        console.error("This app doesn't appear to have access to local storage!", err);
     });
     // If we don't already have a picked file (e.g. by launching app with click on a ZIM file), then retrieve it from futureAccessList if possible
     var listOfArchives = getSetting('listOfArchives');

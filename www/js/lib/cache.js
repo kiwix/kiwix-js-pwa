@@ -712,6 +712,25 @@ function verifyPermission (fileHandle, withWrite) {
 }
 
 /**
+ * Deletes an entry from the OPFS file system
+ *
+ * @param {String} name The filename of the entry to delete
+ */
+function deleteOPFSEntry (name) {
+    if (navigator && navigator.storage && 'getDirectory' in navigator.storage) {
+        return navigator.storage.getDirectory().then(function (dir) {
+            dir.removeEntry(name).then(function () {
+                console.log('Deleted ' + name + ' from OPFS');
+            }).catch(function (err) {
+                console.error('Unable to delete ' + name + ' from OPFS', err);
+            });
+        }).catch(function (err) {
+            console.error('Unable to get directory from OPFS', err);
+        });
+    }
+}
+
+/**
  * Wraps a semaphor in a Promise. A function can signal that it is done by setting a sempahor to true,
  * if it has first set it to false at the outset of the procedure. Ensure no other functions use the same
  * sempahor. The semaphor must be an object key of the app-wide assetsCache object.
@@ -747,5 +766,6 @@ export default {
     wait: wait,
     getItemFromCacheOrZIM: getItemFromCacheOrZIM,
     replaceAssetRefsWithUri: replaceAssetRefsWithUri,
-    verifyPermission: verifyPermission
+    verifyPermission: verifyPermission,
+    deleteOPFSEntry: deleteOPFSEntry
 };

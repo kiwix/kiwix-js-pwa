@@ -742,7 +742,7 @@
                             <div id="archivesFound" class="row">
                                 <p><span id="archiveNumber">Archives found on this device (tap "Select storage" to rescan)</span>:</p>
                                 <div class="col-xs-12">
-                                    <select id="archiveList" class="custom-select" multiple></select>
+                                    <select id="archiveList" class="form-control" multiple></select>
                                 </div>
                             </div>
                             <div id="noZIMFound" style="display: none; margin-top: 1em">
@@ -751,11 +751,18 @@
                             <div id="openLocalFiles" style="margin-top: 0.5em;">
                                 <div id="archiveFilesDiv">
                                     <div id="useOPFS" class="row">
-                                        <div class="col-xs-12" style="margin-left: 1em;">
+                                        <div class="col-xs-6" style="margin-left: 1em;">
                                             <label class="checkbox">
-                                                <input type="checkbox" name="useOPFS" id="useOPFSCheck">
+                                                <input type="checkbox" name="useOPFS" id="useOPFSCheck" />
                                                 <span class="checkmark"></span>
                                                 <b>Use Private File System</b> (<i>experimental</i>: see <a href="#OPFS" class="aboutLink"><b>About OPFS</b></a> for info)
+                                            </label>
+                                        </div>
+                                        <div class="col-xs-5" id="deleteOPFSEntry" style="display: none;">
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="deleteOPFSEntry" id="deleteOPFSEntryCheck" />
+                                                <span class="checkmark"></span>
+                                                <b>Delete next picked entry</b>
                                             </label>
                                         </div>
                                     </div>

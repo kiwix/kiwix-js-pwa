@@ -1078,6 +1078,15 @@ document.getElementById('btnConfigure').addEventListener('click', function () {
 });
 
 function getNativeFSHandle (callback) {
+    if (params.useOPFS && navigator && navigator.storage && 'getDirectory' in navigator.storage) {
+        // We should be able to get the folder from the OPFS entry
+        console.debug('Getting the OPFS directory entry');
+        return navigator.storage.getDirectory().then(function (handle) {
+            if (callback) callback(handle);
+            else return processNativeDirHandle(handle);
+        });
+    }
+    console.debug('Getting the last serialized file or folder entry');
     cache.idxDB('pickedFSHandle', function (val) {
         if (val) {
             var handle = val;
@@ -1103,8 +1112,9 @@ function getNativeFSHandle (callback) {
                 }
             });
         } else {
+            console.warn('No file or folder handle was previously stored in indexedDB');
             if (callback) {
-                callback(null);
+                callback(val);
             } else {
                 // We have failed to load a picked archive via the File System API, but if params.storedFilePath exists, then the archive
                 // was launched with Electron APIs, so we can get the folder that way
@@ -1170,9 +1180,20 @@ function selectArchive (list) {
     selectFired = true;
     var selected = list.target.value;
     // Void any previous picked file to prevent it launching
+    params.storedFile = selected;
     if (params.pickedFile && params.pickedFile.name !== selected) {
         params.pickedFile = '';
-        params.storedFile = '';
+    }
+    if (params.useOPFS && params.deleteOPFSEntry) {
+        // User requested deletion of an OPFS entry
+        cache.deleteOPFSEntry(selected).then(function () {
+            settingsStore.removeItem('lastSelectedArchive');
+            params.rescan = true;
+            processNativeDirHandle(params.pickedFolder);
+        });
+        document.getElementById('deleteOPFSEntryCheck').click();
+        selectFired = false;
+        return;
     }
     if (window.showOpenFilePicker || params.useOPFS) {
         getNativeFSHandle(function (handle) {
@@ -1192,7 +1213,7 @@ function selectArchive (list) {
             }
             if (handle.kind === 'directory') {
                 params.pickedFolder = handle;
-                setLocalArchiveFromArchiveList(selected);
+                setLocalArchiveFromArchiveList([params.storedFile]);
             } else if (handle.kind === 'file') {
                 handle.getFile().then(function (file) {
                     params.pickedFile = file;
@@ -1364,6 +1385,7 @@ function setOPFSUI () {
     var archiveFileLabel = document.getElementById('archiveFileLabel');
     var archiveFiles = document.getElementById('archiveFiles');
     var archiveFilesLabel = document.getElementById('archiveFilesLabel');
+    var deleteOPFSEntry = document.getElementById('deleteOPFSEntry');
     var OPFSQuota = document.getElementById('OPFSQuota');
     if (params.useOPFS) {
         settingsStore.setItem('useOPFS', true, Infinity);
@@ -1373,6 +1395,7 @@ function setOPFSUI () {
         archiveFile.value = 'Select file(s)';
         archiveFileLabel.innerHTML = '<p>Select file(s) to add to the Private File System</p>'
         OPFSQuota.style.display = '';
+        deleteOPFSEntry.style.display = '';
         populateOPFSStorageQuota();
     } else {
         settingsStore.setItem('useOPFS', false, Infinity);
@@ -1382,8 +1405,17 @@ function setOPFSUI () {
         archiveFile.value = 'Select file';
         archiveFileLabel.innerHTML = '<p>For a single unsplit archive</p>'
         OPFSQuota.style.display = 'none';
+        deleteOPFSEntry.style.display = 'none';
     }
 }
+document.getElementById('deleteOPFSEntryCheck').addEventListener('click', function (e) {
+    params.deleteOPFSEntry = e.target.checked;
+    if (params.deleteOPFSEntry) {
+        document.getElementById('archiveList').style.background = 'pink';
+    } else {
+        document.getElementById('archiveList').style.background = '';
+    }
+});
 document.getElementById('btnRefresh').addEventListener('click', function () {
     // Refresh list of archives
     if (params.pickedFolder) {
