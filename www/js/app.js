@@ -1360,18 +1360,28 @@ document.getElementById('useOPFSCheck').addEventListener('change', function (e) 
 });
 function setOPFSUI () {
     var useOPFS = document.getElementById('useOPFSCheck');
+    var archiveFile = document.getElementById('archiveFile');
+    var archiveFileLabel = document.getElementById('archiveFileLabel');
     var archiveFiles = document.getElementById('archiveFiles');
     var archiveFilesLabel = document.getElementById('archiveFilesLabel');
+    var OPFSQuota = document.getElementById('OPFSQuota');
     if (params.useOPFS) {
         settingsStore.setItem('useOPFS', true, Infinity);
         useOPFS.checked = true;
         archiveFiles.style.display = 'none';
         archiveFilesLabel.style.display = 'none';
+        archiveFile.value = 'Select file(s)';
+        archiveFileLabel.innerHTML = '<p>Select file(s) to add to the Private File System</p>'
+        OPFSQuota.style.display = '';
+        populateOPFSStorageQuota();
     } else {
         settingsStore.setItem('useOPFS', false, Infinity);
         useOPFS.checked = false;
         archiveFiles.style.display = '';
         archiveFilesLabel.style.display = '';
+        archiveFile.value = 'Select file';
+        archiveFileLabel.innerHTML = '<p>For a single unsplit archive</p>'
+        OPFSQuota.style.display = 'none';
     }
 }
 document.getElementById('btnRefresh').addEventListener('click', function () {
@@ -3576,6 +3586,17 @@ function scanUWPFolderforArchives (folder) {
     }
 }
 
+function populateOPFSStorageQuota () {
+    if (navigator && navigator.storage && ('estimate' in navigator.storage)) {
+    navigator.storage.estimate().then(function (estimate) {
+        var percent = ((estimate.usage / estimate.quota) * 100).toFixed(2);
+        document.getElementById('OPFSQuota').innerHTML =
+            '<b>OPFS storage quota:</b><br />Used: <b>' + percent + '%</b>; Remaining: <b>' +
+            (estimate.quota / 1024 / 1024 / 1024).toFixed(2) + ' GB</b>';
+        });
+    }
+}
+
 function storePickedFilesInOPFS (files) {
     var filesCount = 0;
     files.forEach(function (file) {
@@ -3588,6 +3609,7 @@ function storePickedFilesInOPFS (files) {
                     console.debug('File ' + file.name + ' written successfully!');
                     if (filesCount === files.length) {
                         processNativeDirHandle(params.pickedFolder);
+                        populateOPFSStorageQuota();
                     }
                 });
             });
