@@ -24,6 +24,7 @@
 'use strict';
 
 /* global Windows, launchArgumentsUWP */
+/* eslint-disable no-unused-vars */
 
 // Set a global error handler to prevent app crashes
 window.onerror = function (msg, url, line, col, error) {
@@ -106,6 +107,7 @@ params['disableDragAndDrop'] = getSetting('disableDragAndDrop') == true; // A pa
 params['windowOpener'] = getSetting('windowOpener'); // 'tab|window|false' A setting that determines whether right-click/long-press of a ZIM link opens a new window/tab
 params['rightClickType'] = getSetting('rightClickType'); // 'single|double|false' A setting that determines whether a single or double right-click is used to open a new window/tab
 params['navButtonsPos'] = getSetting('navButtonsPos') || 'bottom'; // 'top|bottom' A setting that determines where the back-forward nav buttons appear
+params['useOPFS'] = getSetting('useOPFS') == true; // A setting that determines whether to use OPFS (experimental)
 
 // Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['cacheAPI'] = 'kiwixjs-assetsCache'; // Set the global Cache API database or cache name here, and synchronize with Service Worker

@@ -1239,6 +1239,11 @@ function selectArchive (list) {
 // Legacy file picker is used as a fallback when all other pickers are unavailable
 archiveFilesLegacy.addEventListener('change', function (files) {
     var filesArray = Array.from(files.target.files);
+    if (params.useOPFS) {
+        // User has chosen a file or files to store in the Origin Private File System
+        storePickedFilesInOPFS(filesArray);
+        return;
+    }
     params.pickedFolder = null;
     params.pickedFile = filesArray[0];
     params.storedFile = params.pickedFile.name.replace(/\.zim\w\w$/i, '.zimaa');
@@ -1267,8 +1272,13 @@ document.getElementById('archiveFile').addEventListener('click', function () {
         // UWP FilePicker
         pickFileUWP();
     } else if (typeof window.showOpenFilePicker === 'function') {
-        // File System Access API file picker
-        pickFileNativeFS();
+        if (params.useOPFS) {
+            // We need to pick a file and store it in the OPFS, so we use the legacy picker
+            archiveFilesLegacy.click();
+        } else {
+            // File System Access API file picker
+            pickFileNativeFS();
+        }
     } else if (window.fs && window.dialog) {
         // Electron file picker if showOpenFilePicker is not available
         dialog.openFile();
@@ -1325,6 +1335,45 @@ document.getElementById('archiveFiles').addEventListener('click', function (e) {
         archiveDirLegacy.click();
     }
 });
+setOPFSUI();
+document.getElementById('useOPFSCheck').addEventListener('change', function (e) {
+    params.useOPFS = e.target.checked;
+    setOPFSUI();
+    if (params.useOPFS) {
+        if (navigator && navigator.storage && ('getDirectory' in navigator.storage)) {
+            navigator.storage.getDirectory().then(function (dir) {
+                params.pickedFolder = dir;
+                processNativeDirHandle(dir);
+                setOPFSUI();
+            }).catch(function (err) {
+                console.error('Unable to get Origin Private File System!', err);
+                uiUtil.systemAlert('<p>We could not access the Origin Private File System!</p><p>Please try picking a folder instead.</p><p>Reported error: ' + err + '</p>');
+                params.useOPFS = false;
+                setOPFSUI();
+            });
+        } else {
+            uiUtil.systemAlert('<p>Your browser does not support the Origin Private File System!</p><p>Please try picking a folder instead.</p>');
+            params.useOPFS = false;
+            setOPFSUI();
+        }
+    }
+});
+function setOPFSUI () {
+    var useOPFS = document.getElementById('useOPFSCheck');
+    var archiveFiles = document.getElementById('archiveFiles');
+    var archiveFilesLabel = document.getElementById('archiveFilesLabel');
+    if (params.useOPFS) {
+        settingsStore.setItem('useOPFS', true, Infinity);
+        useOPFS.checked = true;
+        archiveFiles.style.display = 'none';
+        archiveFilesLabel.style.display = 'none';
+    } else {
+        settingsStore.setItem('useOPFS', false, Infinity);
+        useOPFS.checked = false;
+        archiveFiles.style.display = '';
+        archiveFilesLabel.style.display = '';
+    }
+}
 document.getElementById('btnRefresh').addEventListener('click', function () {
     // Refresh list of archives
     if (params.pickedFolder) {
@@ -3525,6 +3574,25 @@ function scanUWPFolderforArchives (folder) {
         // The picker was dismissed with no selected file
         console.log('User closed folder picker without picking a file');
     }
+}
+
+function storePickedFilesInOPFS (files) {
+    var filesCount = 0;
+    files.forEach(function (file) {
+        filesCount++;
+        params.pickedFolder.getFileHandle(file.name, { create: true })
+        .then(function (fileHandle) {
+            fileHandle.createWritable().then(function (writer) {
+                writer.write(file).then(function () {
+                    writer.close();
+                    console.debug('File ' + file.name + ' written successfully!');
+                    if (filesCount === files.length) {
+                        processNativeDirHandle(params.pickedFolder);
+                    }
+                });
+            });
+        });
+    });
 }
 
 function processFilesArray (files, callback) {
