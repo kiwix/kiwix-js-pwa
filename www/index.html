@@ -441,8 +441,13 @@
                         while the OPFS is displayed, that file will be <b>not</b> be stored in the OPFS, but instead will be opened and displayed.
                     </p>
                     <p>
-                        If you want to <b>delete an archive</b> from the Private File System, click the <span class="glyphicon glyphicon-trash"></span> icon, and then click on the file you wish to delte.
-                        You will be asked for confirmation.
+                        If you want to <b>delete an archive</b> from the Private File System, click the <span class="glyphicon glyphicon-trash"></span> icon,
+                        and then click on the file you wish to delete. You will be asked for confirmation.
+                    </p>
+                    <p>
+                        In some cases, you may be able to <b>export an archive</b> from the OPFS to the visible file system. Click the <span class="glyphicon glyphicon-share"></span>
+                        icon, and then click on the file you wish to export. The OPFS copy of the file is <i>not</i> deleted after export. If you do not see the export icon,
+                        then this feature is not available in your browser.
                     </p>
                     <p>    
                         The main <b>advantages</b> of the OPFS, especially on mobile, are:
@@ -458,7 +463,7 @@
                             <li>on mobile OS, it can take a long time to store a file in the OPFS, especially if it is larger than 1GB. On Firefox for Android, importing a file is
                                 <b>extremely</b> slow, and liable not to complete, especially if you are not patient and move away from the Configuration page;</li>
                             <li>when you clear the app's data (e.g. clearing cookies, etc.), the browser can delete the file system and any files in it without warning;</li>
-                            <li>any file you store here will only be accessible by this app (you cannot currently export, share, or use other apps to read them).</li>
+                            <li>any file you store here will only be accessible by this app (unless you export it to the visible file system).</li>
                         </ul>
                     </p>
                     <h3 id="searchSyntax">Title search syntax and alphabetical ZIM Archive Index</h3>
@@ -763,7 +768,10 @@
                                 <p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
                             </div>
                             <div id="useOPFS" class="row">
-                                <div class="col-xs-10"></div>
+                                <div class="col-xs-9"></div>
+                                <div class="col-xs-1">
+                                    <a href="#" title="Export the next archive that you select"  style="display: none;" id="btnExportOPFSEntry"><span class="glyphicon glyphicon-share"></span></a>
+                                </div>
                                 <div class="col-xs-1">
                                     <a href="#" title="Delete the next archive that you select"  style="display: none;" id="btnDeleteOPFSEntry"><span class="glyphicon glyphicon-trash"></span></a>
                                 </div>
@@ -775,10 +783,10 @@
                                 <div id="archiveFilesDiv">
                                     <div class="row">
                                         <div class="col-xs-6" id="archiveFileLabel">
-                                            <p>For a single unsplit archive</p>
+                                            <p><b>Pick a single unsplit archive</b>:</p>
                                         </div>
                                         <div class="col-xs-6" id="archiveFilesLabel">
-                                            <p>For multiple or split archives</p>
+                                            <p><b>For multiple or split archives</b>:</p>
                                         </div>
                                     </div>
                                     <div id="UWPInstructions" class="row">
@@ -787,7 +795,7 @@
                                             Alternatively, <b>drag-and-drop your file(s) into the app.</b>
                                         </p>
                                     </div>
-                                    <div class="row" style="margin-top: 0.5em;">
+                                    <div class="row">
                                         <div class="col-xs-6">
                                             <input type="button" class="btn btn-primary btn-inline" value="Select file" id="archiveFile" />
                                         </div>
@@ -810,7 +818,7 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="row" style="margin-left: 0.5em;">
+                                <div class="row" style="margin: 0.5em;">
                                     <label class="checkbox">
                                         <input type="checkbox" name="useOPFS" id="useOPFSCheck" />
                                         <span class="checkmark"></span>
@@ -835,11 +843,13 @@
                                             <td style="width:100%;">Opens library of archives for download:<br /><i>Warning:</i> this will use data</td>
                                         </tr>
                                     </table>
-                                    <label class="checkbox">
-                                        <input type="checkbox" name="allowInternetAccess" id="allowInternetAccessCheck">
-                                        <span class="checkmark"></span>
-                                        <b>Allow Internet access?</b> <span id="updateStatus">and <b>check for updates</b></span>
-                                    </label>
+                                    <div class="row" style="margin: 0.5em;">
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="allowInternetAccess" id="allowInternetAccessCheck">
+                                            <span class="checkmark"></span>
+                                            <b>Allow Internet access?</b> <span id="updateStatus">and <b>check for updates</b></span>
+                                        </label>
+                                    </div>
                                 </div>
                                 <div id="downloadLinks" style="display: none;"></div>
                                 <pre id="serverResponse" class="panel-footer" style="display:none;"></pre>

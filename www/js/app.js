@@ -1199,6 +1199,19 @@ function selectArchive (list) {
         selectFired = false;
         return;
     }
+    if (params.useOPFS && params.exportOPFSEntry) {
+        // User requested export of an OPFS entry
+        cache.exportOPFSEntry(selected).then(function (exported) {
+            if (exported) {
+                uiUtil.systemAlert('The OPFS entry for ' + selected + ' was successfully exported to the selected folder.');
+            } else {
+                uiUtil.systemAlert('The OPFS entry for ' + selected + ' could not be exported.');
+            }
+        });
+        document.getElementById('btnExportOPFSEntry').click();
+        selectFired = false;
+        return;
+    }
     if (window.showOpenFilePicker || params.useOPFS) {
         getNativeFSHandle(function (handle) {
             if (!handle) {
@@ -1393,6 +1406,7 @@ function setOPFSUI () {
     var archiveFiles = document.getElementById('archiveFiles');
     var archiveFilesLabel = document.getElementById('archiveFilesLabel');
     var btnDeleteOPFSEntry = document.getElementById('btnDeleteOPFSEntry');
+    var btnExportOPFSEntry = document.getElementById('btnExportOPFSEntry');
     var OPFSQuota = document.getElementById('OPFSQuota');
     if (params.useOPFS) {
         settingsStore.setItem('useOPFS', true, Infinity);
@@ -1400,9 +1414,10 @@ function setOPFSUI () {
         archiveFiles.style.display = 'none';
         archiveFilesLabel.style.display = 'none';
         archiveFile.value = 'Select file(s)';
-        archiveFileLabel.innerHTML = '<p><b>Select file(s) to add to the Private File System</b></p>'
+        archiveFileLabel.innerHTML = '<p><b>Select file(s) to add to the Private File System</b>:</p>'
         OPFSQuota.style.display = '';
         btnDeleteOPFSEntry.style.display = '';
+        if ('showOpenFilePicker' in window) btnExportOPFSEntry.style.display = '';
         populateOPFSStorageQuota();
     } else {
         settingsStore.setItem('useOPFS', false, Infinity);
@@ -1410,9 +1425,10 @@ function setOPFSUI () {
         archiveFiles.style.display = '';
         archiveFilesLabel.style.display = '';
         archiveFile.value = 'Select file';
-        archiveFileLabel.innerHTML = '<p>For a single unsplit archive</p>'
+        archiveFileLabel.innerHTML = '<p><b>Pick a single unsplit archive</b>:</p>'
         OPFSQuota.style.display = 'none';
         btnDeleteOPFSEntry.style.display = 'none';
+        btnExportOPFSEntry.style.display = 'none';
     }
 }
 // Set the OPFS UI no app launch
@@ -1421,7 +1437,14 @@ setOPFSUI();
 if (params.useOPFS) {
     loadOPFSDirectory();
 }
-
+document.getElementById('btnExportOPFSEntry').addEventListener('click', function () {
+    params.exportOPFSEntry = !params.exportOPFSEntry;
+    if (params.exportOPFSEntry) {
+        document.getElementById('archiveList').style.background = 'yellow';
+    } else {
+        document.getElementById('archiveList').style.background = '';
+    }
+});
 document.getElementById('btnDeleteOPFSEntry').addEventListener('click', function () {
     params.deleteOPFSEntry = !params.deleteOPFSEntry;
     if (params.deleteOPFSEntry) {

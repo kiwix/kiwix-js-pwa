@@ -712,6 +712,44 @@ function verifyPermission (fileHandle, withWrite) {
 }
 
 /**
+ * Exports an entry from the OPFS file system to the user-visible file system
+ *
+ * @param {String} name The filename of the entry to export
+ */
+function exportOPFSEntry (name) {
+    if (navigator && navigator.storage && 'getDirectory' in navigator.storage) {
+        return navigator.storage.getDirectory().then(function (dir) {
+            return dir.getFileHandle(name).then(function (fileHandle) {
+                try {
+                    // Obtain a file handle to a new file in the user-visible file system
+                    // with the same name as the file in the origin private file system.
+                    return window.showSaveFilePicker({
+                        suggestedName: fileHandle.name || ''
+                    }).then(function (saveHandle) {
+                        return saveHandle.createWritable().then(function (writable) {
+                            return fileHandle.getFile().then(function (file) {
+                                return writable.write(file).then(function () {
+                                    writable.close();
+                                    return true;
+                                });
+                            });
+                        });
+                    }).catch(function (err) {
+                        console.error(err.name, err.message);
+                    });
+                } catch (err) {
+                    console.error(err.name, err.message);
+                }
+            }).catch(function (err) {
+                console.error('Unable to get file handle from OPFS', err);
+            });
+        }).catch(function (err) {
+            console.error('Unable to get directory from OPFS', err);
+        });
+    }
+}
+
+/**
  * Deletes an entry from the OPFS file system
  *
  * @param {String} name The filename of the entry to delete
@@ -767,5 +805,6 @@ export default {
     getItemFromCacheOrZIM: getItemFromCacheOrZIM,
     replaceAssetRefsWithUri: replaceAssetRefsWithUri,
     verifyPermission: verifyPermission,
+    exportOPFSEntry: exportOPFSEntry,
     deleteOPFSEntry: deleteOPFSEntry
 };
