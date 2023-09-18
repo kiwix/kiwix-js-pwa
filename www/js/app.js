@@ -1356,29 +1356,31 @@ document.getElementById('archiveFiles').addEventListener('click', function (e) {
         archiveDirLegacy.click();
     }
 });
-setOPFSUI();
 document.getElementById('useOPFSCheck').addEventListener('change', function (e) {
     params.useOPFS = e.target.checked;
     setOPFSUI();
     if (params.useOPFS) {
-        if (navigator && navigator.storage && ('getDirectory' in navigator.storage)) {
-            navigator.storage.getDirectory().then(function (dir) {
-                params.pickedFolder = dir;
-                processNativeDirHandle(dir);
-                setOPFSUI();
-            }).catch(function (err) {
-                console.error('Unable to get Origin Private File System!', err);
-                uiUtil.systemAlert('<p>We could not access the Origin Private File System!</p><p>Please try picking a folder instead.</p><p>Reported error: ' + err + '</p>');
-                params.useOPFS = false;
-                setOPFSUI();
-            });
-        } else {
-            uiUtil.systemAlert('<p>Your browser does not support the Origin Private File System!</p><p>Please try picking a folder instead.</p>');
-            params.useOPFS = false;
-            setOPFSUI();
-        }
+        loadOPFSDirectory();
     }
 });
+function loadOPFSDirectory () {
+    if (navigator && navigator.storage && ('getDirectory' in navigator.storage)) {
+        navigator.storage.getDirectory().then(function (dir) {
+            params.pickedFolder = dir;
+            processNativeDirHandle(dir);
+            setOPFSUI();
+        }).catch(function (err) {
+            console.error('Unable to get Origin Private File System!', err);
+            uiUtil.systemAlert('<p>We could not access the Origin Private File System!</p><p>Please try picking a folder instead.</p><p>Reported error: ' + err + '</p>');
+            params.useOPFS = false;
+            setOPFSUI();
+        });
+    } else {
+        uiUtil.systemAlert('<p>Your browser does not support the Origin Private File System!</p><p>Please try picking a folder instead.</p>');
+        params.useOPFS = false;
+        setOPFSUI();
+    }
+}
 function setOPFSUI () {
     var useOPFS = document.getElementById('useOPFSCheck');
     var archiveFile = document.getElementById('archiveFile');
@@ -1408,6 +1410,13 @@ function setOPFSUI () {
         deleteOPFSEntry.style.display = 'none';
     }
 }
+// Set the OPFS UI no app launch
+setOPFSUI();
+// If user had previously set the app to use the OPFS directory, attempt to launch any ZIM in it
+if (params.useOPFS) {
+    loadOPFSDirectory();
+}
+
 document.getElementById('deleteOPFSEntryCheck').addEventListener('click', function (e) {
     params.deleteOPFSEntry = e.target.checked;
     if (params.deleteOPFSEntry) {
