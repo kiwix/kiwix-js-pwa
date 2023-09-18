@@ -1432,6 +1432,7 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
     } else if ((params.useOPFS || typeof window.showOpenFilePicker === 'function') && !params.pickedFile) {
         getNativeFSHandle(function (fsHandle) {
             if (fsHandle && fsHandle.kind === 'directory') {
+                if (params.useOPFS) params.rescan = false;
                 processNativeDirHandle(fsHandle);
             } else {
                 uiUtil.systemAlert('You need to pick a folder in order to rescan it!');
@@ -3463,8 +3464,9 @@ function processFakeFile (fakeFileList) {
 
 function pickFolderNativeFS () {
     window.showDirectoryPicker().then(function (dirHandle) {
-        // Do not attempt to jump to file (we have to let user choose)
-        params.rescan = true;
+        // Do not attempt to jump to file if permission is needed (we have to let user choose)
+        if (params.useOPFS) params.rescan = false;
+        else params.rescan = true;
         return processNativeDirHandle(dirHandle);
     }).catch(function (err) {
         console.error('Error reading directory', err);
