@@ -434,17 +434,31 @@
                     </p>
                     <h4 id="OPFS">Origin Private File System</h4>
                     <p>
-                        In some modern browsers, you will see an experimental option "<b>Use Private File System</b>" above the File and Folder selectors. If you tick this option,
+                        In some modern browsers, you will see an experimental option "<b>Display Private File System</b>" under the File and Folder selectors. If you tick this option,
                         then the app will request an <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system" target="_blank">Origin Private File System</a>
-                        (OPFS) from the browser. Then, when you pick a ZIM file, it will be stored in the OPFS. The advantage of this is that the file system can be accessed by the app
-                        without needing to give permission, even after you relaunch it.
+                        (OPFS) from the browser. Then, when you pick a ZIM file, instead of opening it, it will be stored in the OPFS. You may also select all the parts of a split ZIM file to store in the OPFS
+                        (<code>.zimaa</code>, <code>.zimab</code>, etc.). Note that in this case, only the <code>.zimaa</code> entry will be displayed in the file list. If you drag-and-drop a file into the app
+                        while the OPFS is displayed, that file will be <b>not</b> be stored in the OPFS, but instead will be opened and displayed.
                     </p>
                     <p>
-                        However, there are some limitations:
+                        If you want to <b>delete an archive</b> from the Private File System, click the <span class="glyphicon glyphicon-trash"></span> icon, and then click on the file you wish to delte.
+                        You will be asked for confirmation.
+                    </p>
+                    <p>    
+                        The main <b>advantages</b> of the OPFS, especially on mobile, are:
+                        <ul>
+                            <li>that the file system can be accessed by the app without needing to give permission, even after you relaunch the app (the last selected archive will automatically launch);</li>
+                            <li>Additionally, once a file is stored in the OPFS, access to it, e.g. on Android, is much faster than with standard file picking.</li>
+                        </ul>
+                    </p>
+                    <p>
+                        However, there are some <b>limitations</b> of the OPFS:
                         <ul>
                             <li>the file system has a quota set by the browser, which only makes it suitable for small-to-medium-sized archives;</li>
+                            <li>on mobile OS, it can take a long time to store a file in the OPFS, especially if it is larger than 1GB. On Firefox for Android, importing a file is
+                                <b>extremely</b> slow, and liable not to complete, especially if you are not patient and move away from the Configuration page;</li>
                             <li>when you clear the app's data (e.g. clearing cookies, etc.), the browser can delete the file system and any files in it without warning;</li>
-                            <li>any file you store here will only be accessible by this app (you cannot export, share, or use other apps to read them).</li>
+                            <li>any file you store here will only be accessible by this app (you cannot currently export, share, or use other apps to read them).</li>
                         </ul>
                     </p>
                     <h3 id="searchSyntax">Title search syntax and alphabetical ZIM Archive Index</h3>
@@ -748,33 +762,17 @@
                             <div id="noZIMFound" style="display: none; margin-top: 1em">
                                 <p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
                             </div>
+                            <div id="useOPFS" class="row">
+                                <div class="col-xs-10"></div>
+                                <div class="col-xs-1">
+                                    <a href="#" title="Delete the next archive that you select"  style="display: none;" id="btnDeleteOPFSEntry"><span class="glyphicon glyphicon-trash"></span></a>
+                                </div>
+                                <div class="col-xs-1">
+                                    <a href="#" title="Refresh archive list" id="btnRefresh"><span class="glyphicon glyphicon-refresh"></span></a>
+                                </div>
+                            </div>
                             <div id="openLocalFiles" style="margin-top: 0.5em;">
                                 <div id="archiveFilesDiv">
-                                    <div id="useOPFS" class="row">
-                                        <div class="col-xs-6" style="margin-left: 1em;">
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="useOPFS" id="useOPFSCheck" />
-                                                <span class="checkmark"></span>
-                                                <b>Use Private File System</b> (<i>experimental</i>: see <a href="#OPFS" class="aboutLink"><b>About OPFS</b></a> for info)
-                                            </label>
-                                        </div>
-                                        <div class="col-xs-5" id="deleteOPFSEntry" style="display: none;">
-                                            <label class="checkbox">
-                                                <input type="checkbox" name="deleteOPFSEntry" id="deleteOPFSEntryCheck" />
-                                                <span class="checkmark"></span>
-                                                <b>Delete next picked entry</b>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="row" style="margin-top: 0.5em;">
-                                        <div class="col-xs-6">
-                                            <input type="button" class="btn btn-primary btn-inline" value="Select file" id="archiveFile" />
-                                        </div>
-                                        <div class="col-xs-6">
-                                            <div id="OPFSQuota"  style="display: none;"></div>
-                                            <input type="button" class="btn btn-primary btn-inline" value="Select folder" id="archiveFiles" />
-                                        </div>
-                                    </div>
                                     <div class="row">
                                         <div class="col-xs-6" id="archiveFileLabel">
                                             <p>For a single unsplit archive</p>
@@ -788,6 +786,15 @@
                                             Choose <b>File</b> for one archive, or <b>Folder</b> for multiple or split archive files in a single directory.<br />
                                             Alternatively, <b>drag-and-drop your file(s) into the app.</b>
                                         </p>
+                                    </div>
+                                    <div class="row" style="margin-top: 0.5em;">
+                                        <div class="col-xs-6">
+                                            <input type="button" class="btn btn-primary btn-inline" value="Select file" id="archiveFile" />
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <div id="OPFSQuota"  style="display: none;"></div>
+                                            <input type="button" class="btn btn-primary btn-inline" value="Select folder" id="archiveFiles" />
+                                        </div>
                                     </div>
                                 </div>
                                 <div id="archiveFilesLegacyDiv">
@@ -803,14 +810,18 @@
                                         </p>
                                     </div>
                                 </div>
+                                <div class="row" style="margin-left: 0.5em;">
+                                    <label class="checkbox">
+                                        <input type="checkbox" name="useOPFS" id="useOPFSCheck" />
+                                        <span class="checkmark"></span>
+                                        <b>Display Private File System</b> (<i>experimental</i>: see <a href="#OPFS" class="aboutLink"><b>About OPFS</b></a>)
+                                    </label>
+                                </div>
                             </div>
                             <div id="rescanStorage" class="row" style="margin-top: 1em;">
-                                <div class="col-xs-11">
+                                <div class="col-xs-12">
                                     <input style="float:left; margin-right:1em;" type="button" class="btn btn-primary btn-inline" value="Select storage" id="btnRescanDeviceStorage" />
                                     Tap to select app's local storage or to select a file or folder. <b>You can also drag and drop a ZIM file into the app.</b>
-                                </div>
-                                <div class="col-xs-1">
-                                    <a href="#" title="Refresh archive list" id="btnRefresh"><span class="glyphicon glyphicon-refresh"></span></a>
                                 </div>
                             </div>
                         </div>

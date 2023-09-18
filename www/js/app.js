@@ -1185,13 +1185,17 @@ function selectArchive (list) {
         params.pickedFile = '';
     }
     if (params.useOPFS && params.deleteOPFSEntry) {
-        // User requested deletion of an OPFS entry
-        cache.deleteOPFSEntry(selected).then(function () {
-            settingsStore.removeItem('lastSelectedArchive');
-            params.rescan = true;
-            processNativeDirHandle(params.pickedFolder);
+        // User requested deletion of an OPFS entry, seek confirmation first
+        uiUtil.systemAlert('Are you sure you want to delete the OPFS entry for ' + selected + '?', 'Delete OPFS entry', true, null, 'Delete ZIM').then(function (confirmed) {
+            if (confirmed) {
+                cache.deleteOPFSEntry(selected).then(function () {
+                    settingsStore.removeItem('lastSelectedArchive');
+                    params.rescan = true;
+                    processNativeDirHandle(params.pickedFolder);
+                });
+            }
         });
-        document.getElementById('deleteOPFSEntryCheck').click();
+        document.getElementById('btnDeleteOPFSEntry').click();
         selectFired = false;
         return;
     }
@@ -1388,7 +1392,7 @@ function setOPFSUI () {
     var archiveFileLabel = document.getElementById('archiveFileLabel');
     var archiveFiles = document.getElementById('archiveFiles');
     var archiveFilesLabel = document.getElementById('archiveFilesLabel');
-    var deleteOPFSEntry = document.getElementById('deleteOPFSEntry');
+    var btnDeleteOPFSEntry = document.getElementById('btnDeleteOPFSEntry');
     var OPFSQuota = document.getElementById('OPFSQuota');
     if (params.useOPFS) {
         settingsStore.setItem('useOPFS', true, Infinity);
@@ -1396,9 +1400,9 @@ function setOPFSUI () {
         archiveFiles.style.display = 'none';
         archiveFilesLabel.style.display = 'none';
         archiveFile.value = 'Select file(s)';
-        archiveFileLabel.innerHTML = '<p>Select file(s) to add to the Private File System</p>'
+        archiveFileLabel.innerHTML = '<p><b>Select file(s) to add to the Private File System</b></p>'
         OPFSQuota.style.display = '';
-        deleteOPFSEntry.style.display = '';
+        btnDeleteOPFSEntry.style.display = '';
         populateOPFSStorageQuota();
     } else {
         settingsStore.setItem('useOPFS', false, Infinity);
@@ -1408,7 +1412,7 @@ function setOPFSUI () {
         archiveFile.value = 'Select file';
         archiveFileLabel.innerHTML = '<p>For a single unsplit archive</p>'
         OPFSQuota.style.display = 'none';
-        deleteOPFSEntry.style.display = 'none';
+        btnDeleteOPFSEntry.style.display = 'none';
     }
 }
 // Set the OPFS UI no app launch
@@ -1418,8 +1422,8 @@ if (params.useOPFS) {
     loadOPFSDirectory();
 }
 
-document.getElementById('deleteOPFSEntryCheck').addEventListener('click', function (e) {
-    params.deleteOPFSEntry = e.target.checked;
+document.getElementById('btnDeleteOPFSEntry').addEventListener('click', function () {
+    params.deleteOPFSEntry = !params.deleteOPFSEntry;
     if (params.deleteOPFSEntry) {
         document.getElementById('archiveList').style.background = 'pink';
     } else {
