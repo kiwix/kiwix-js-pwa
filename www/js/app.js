@@ -1365,6 +1365,7 @@ document.getElementById('useOPFSCheck').addEventListener('change', function (e) 
 });
 function loadOPFSDirectory () {
     if (navigator && navigator.storage && ('getDirectory' in navigator.storage)) {
+        console.debug('Loading the OPFS directory');
         navigator.storage.getDirectory().then(function (dir) {
             params.pickedFolder = dir;
             processNativeDirHandle(dir);
