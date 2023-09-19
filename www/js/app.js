@@ -3056,9 +3056,10 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
     // Store the list of archives in settingsStore, to avoid rescanning at each start
     settingsStore.setItem('listOfArchives', archiveDirectories.join('|'), Infinity);
     comboArchiveList.size = comboArchiveList.length > 15 ? 15 : comboArchiveList.length;
-    // Kiwix-Js-Windows #23 - remove dropdown caret if only one archive
-    if (comboArchiveList.length > 1) comboArchiveList.removeAttribute('multiple');
-    if (comboArchiveList.length === 1) comboArchiveList.setAttribute('multiple', '1');
+    if (/Android|iOS/.test(params.appType)) {
+        if (comboArchiveList.length > 1) comboArchiveList.removeAttribute('multiple');
+        if (comboArchiveList.length === 1) comboArchiveList.setAttribute('multiple', '1');
+    }
     if (comboArchiveList.options.length > 0) {
         // If we're doing a rescan, then don't attempt to jump to the last selected archive, but leave selectors open
         var lastSelectedArchive = params.rescan ? '' : params.storedFile;
