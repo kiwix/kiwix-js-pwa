@@ -1242,7 +1242,7 @@ function selectArchive (list) {
             }
             if (handle.kind === 'directory') {
                 params.pickedFolder = handle;
-                setLocalArchiveFromArchiveList([params.storedFile]);
+                setLocalArchiveFromArchiveList(params.storedFile);
             } else if (handle.kind === 'file') {
                 handle.getFile().then(function (file) {
                     params.pickedFile = file;
@@ -3797,6 +3797,11 @@ function setLocalArchiveFromFileList (files) {
         params.storedFilePath = archive._file._files[0].path ? archive._file._files[0].path : '';
         settingsStore.setItem('lastSelectedArchive', params.storedFile, Infinity);
         settingsStore.setItem('lastSelectedArchivePath', params.storedFilePath, Infinity);
+        if (!~params.lastPageVisit.indexOf(params.storedFile.replace(/\.zim(\w\w)?$/, ''))) {
+            // The archive has changed, so we must blank the last page
+            params.lastPageVisit = '';
+            params.lastPageHTML = '';
+        }
         // If we have dragged and dropped files into an Electron app, we should have access to the path, so we should store it
         if (appstate.filesDropped && params.storedFilePath) {
             params.pickedFolder = null;
@@ -3833,7 +3838,7 @@ function setLocalArchiveFromFileList (files) {
                 params.rescan = false;
             }, 100);
         } else {
-            if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog) {
+            if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !params.useOPFS && !window.dialog) {
                 document.getElementById('instructions').style.display = 'none';
             } else {
                 document.getElementById('openLocalFiles').style.display = 'none';
@@ -3844,10 +3849,6 @@ function setLocalArchiveFromFileList (files) {
                 var lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, '');
                 goToArticle(lastPage);
             } else {
-                // The archive has changed, so we must blank the last page in case the Home page of the new archive
-                // has the same title as the previous archive (possible if it is, for example, "index")
-                params.lastPageVisit = '';
-                params.lastPageHTML = '';
                 document.getElementById('btnHome').click();
             }
         }
