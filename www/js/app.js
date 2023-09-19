@@ -1186,7 +1186,11 @@ function selectArchive (list) {
     }
     if (params.useOPFS && params.deleteOPFSEntry) {
         // User requested deletion of an OPFS entry, seek confirmation first
-        uiUtil.systemAlert('Are you sure you want to delete the OPFS entry for ' + selected + '?', 'Delete OPFS entry', true, null, 'Delete ZIM').then(function (confirmed) {
+        var message = 'Are you sure you want to delete the OPFS entry for ' + selected;
+        if (/\.zimaa$/i.test(selected)) message += ' <b>and all its parts</b>';
+        message += '?';
+        return uiUtil.systemAlert(message, 'Delete OPFS entries', true, null, 'Delete ZIM')
+            .then(function (confirmed) {
             if (confirmed) {
                 cache.deleteOPFSEntry(selected).then(function () {
                     settingsStore.removeItem('lastSelectedArchive');
@@ -1194,14 +1198,22 @@ function selectArchive (list) {
                     processNativeDirHandle(params.pickedFolder);
                 });
             }
+            document.getElementById('btnDeleteOPFSEntry').click();
+            selectFired = false;
         });
-        document.getElementById('btnDeleteOPFSEntry').click();
-        selectFired = false;
-        return;
     }
     if (params.useOPFS && params.exportOPFSEntry) {
         // User requested export of an OPFS entry
+        // First check that user is not trying to export a split ZIM archive (which is impossible)
+        if (/\.zimaa$/i.test(selected)) {
+            selectFired = false;
+            return uiUtil.systemAlert('It is unfortunately not possible to export all the parts of a split ZIM archive using this app. ' +
+                'For split ZIMs, you are limited to opening or deleting the archive (and its parts).');
+        }
+        // Show the spinner while the OPFS entry is exported
+        uiUtil.pollSpinner('Exporting OPFS entry...', true);
         cache.exportOPFSEntry(selected).then(function (exported) {
+            uiUtil.clearSpinner();
             if (exported) {
                 uiUtil.systemAlert('The OPFS entry for ' + selected + ' was successfully exported to the selected folder.');
             } else {
@@ -1279,8 +1291,17 @@ archiveFilesLegacy.addEventListener('change', function (files) {
     var filesArray = Array.from(files.target.files);
     if (params.useOPFS) {
         // User has chosen a file or files to store in the Origin Private File System
-        storePickedFilesInOPFS(filesArray);
-        return;
+        // This operation can take a long time, so show the spinner
+        uiUtil.pollSpinner('Adding files to OPFS...', true);
+        return cache.importOPFSEntries(filesArray).then(function () {
+                uiUtil.systemAlert('The selected files were successfully added to the OPFS!');
+                uiUtil.clearSpinner();
+                processNativeDirHandle(params.pickedFolder);
+                populateOPFSStorageQuota();
+        }).catch(function (err) {
+            console.error('Unable to import files to OPFS!', err);
+            uiUtil.systemAlert('We could not import the selected files to the OPFS!');
+        });
     }
     params.pickedFolder = null;
     params.pickedFile = filesArray[0];
@@ -3666,26 +3687,6 @@ function populateOPFSStorageQuota () {
             (estimate.quota / 1024 / 1024 / 1024).toFixed(2) + ' GB</b>';
         });
     }
-}
-
-function storePickedFilesInOPFS (files) {
-    var filesCount = 0;
-    files.forEach(function (file) {
-        filesCount++;
-        params.pickedFolder.getFileHandle(file.name, { create: true })
-        .then(function (fileHandle) {
-            fileHandle.createWritable().then(function (writer) {
-                writer.write(file).then(function () {
-                    writer.close();
-                    console.debug('File ' + file.name + ' written successfully!');
-                    if (filesCount === files.length) {
-                        processNativeDirHandle(params.pickedFolder);
-                        populateOPFSStorageQuota();
-                    }
-                });
-            });
-        });
-    });
 }
 
 function processFilesArray (files, callback) {

@@ -520,7 +520,7 @@ function getItemFromCacheOrZIM (selectedArchive, key, dirEntry) {
                     });
                 }
             }).catch(function (e) {
-                reject('could not find DirEntry for asset : ' + title, e);
+                reject(new Error('Could not find DirEntry for asset ' + title, e));
             });
         });
     });
@@ -712,9 +712,28 @@ function verifyPermission (fileHandle, withWrite) {
 }
 
 /**
+ * Imports the picked files into the OPFS file system
+ *
+ * @param {Array} files An array of File objects to import
+ */
+function importOPFSEntries (files) {
+    return Promise.all(files.map(function (file) {
+        return params.pickedFolder.getFileHandle(file.name, { create: true }).then(function (fileHandle) {
+            return fileHandle.createWritable().then(function (writer) {
+                return writer.write(file).then(function () {
+                    console.log('Imported ' + file.name + ' to OPFS');
+                    return writer.close();
+                });
+            });
+        });
+    }));
+}
+
+/**
  * Exports an entry from the OPFS file system to the user-visible file system
  *
  * @param {String} name The filename of the entry to export
+ * @returns {Promise<Boolean>} A Promise for a Boolean value indicating whether the export was successful
  */
 function exportOPFSEntry (name) {
     if (navigator && navigator.storage && 'getDirectory' in navigator.storage) {
@@ -734,17 +753,18 @@ function exportOPFSEntry (name) {
                                 });
                             });
                         });
-                    }).catch(function (err) {
-                        console.error(err.name, err.message);
                     });
                 } catch (err) {
                     console.error(err.name, err.message);
+                    return false;
                 }
             }).catch(function (err) {
                 console.error('Unable to get file handle from OPFS', err);
+                return false;
             });
         }).catch(function (err) {
             console.error('Unable to get directory from OPFS', err);
+            return false;
         });
     }
 }
@@ -756,14 +776,61 @@ function exportOPFSEntry (name) {
  */
 function deleteOPFSEntry (name) {
     if (navigator && navigator.storage && 'getDirectory' in navigator.storage) {
-        return navigator.storage.getDirectory().then(function (dir) {
-            dir.removeEntry(name).then(function () {
-                console.log('Deleted ' + name + ' from OPFS');
+        return navigator.storage.getDirectory().then(function (dirHandle) {
+            return iterateOPFSEntries().then(function (entries) {
+                var baseName = name.replace(/\.zim[^.]*$/i, '');
+                entries.forEach(function (entry) {
+                    if (~entry.name.indexOf(baseName)) {
+                        dirHandle.removeEntry(entry.name).then(function () {
+                            console.log('Deleted ' + entry.name + ' from OPFS');
+                        }).catch(function (err) {
+                            console.error('Unable to delete ' + entry.name + ' from OPFS', err);
+                        });
+                    }
+                });
             }).catch(function (err) {
-                console.error('Unable to delete ' + name + ' from OPFS', err);
+                console.error('Unable to get directory from OPFS', err);
             });
         }).catch(function (err) {
             console.error('Unable to get directory from OPFS', err);
+        });
+    }
+}
+
+/**
+ * Iterates the OPFS file system and returns an array of entries found
+ *
+ * @returns {Promise<Array>} A Promise for an array of entries in the OPFS file system
+ */
+function iterateOPFSEntries () {
+    if (navigator && navigator.storage && 'getDirectory' in navigator.storage) {
+        return navigator.storage.getDirectory().then(function (dirHandle) {
+            var archiveEntries = [];
+            var entries = dirHandle.entries();
+            var promisesForEntries = [];
+            // Push the pormise for each entry to the promises array
+            var pushPromises = new Promise(function (resolve) {
+                (function iterate () {
+                    return entries.next().then(function (result) {
+                        if (!result.done) {
+                            // Process the entry, then continue iterating
+                            var entry = result.value[1];
+                            archiveEntries.push(entry);
+                            promisesForEntries.push(result);
+                            iterate();
+                        } else {
+                            return resolve(true);
+                        }
+                    });
+                })();
+            });
+            return pushPromises.then(function () {
+                return Promise.all(promisesForEntries).then(function () {
+                    return archiveEntries;
+                }).catch(function (err) {
+                    console.error('Unable to iterate OPFS entries', err);
+                });
+            });
         });
     }
 }
@@ -805,6 +872,8 @@ export default {
     getItemFromCacheOrZIM: getItemFromCacheOrZIM,
     replaceAssetRefsWithUri: replaceAssetRefsWithUri,
     verifyPermission: verifyPermission,
+    importOPFSEntries: importOPFSEntries,
     exportOPFSEntry: exportOPFSEntry,
-    deleteOPFSEntry: deleteOPFSEntry
+    deleteOPFSEntry: deleteOPFSEntry,
+    iterateOPFSEntries: iterateOPFSEntries
 };
