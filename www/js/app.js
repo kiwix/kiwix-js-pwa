@@ -1161,7 +1161,7 @@ document.getElementById('archiveList').addEventListener('keydown', function (e) 
         selectArchive(e);
     }
 });
-document.getElementById('archiveList').addEventListener('click', selectArchive);
+document.getElementById('archiveList').addEventListener('change', selectArchive);
 currentArchiveLink.addEventListener('click', function (e) {
     e.target.value = currentArchiveLink.innerHTML;
     selectArchive(e);
@@ -3056,7 +3056,7 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
     // Store the list of archives in settingsStore, to avoid rescanning at each start
     settingsStore.setItem('listOfArchives', archiveDirectories.join('|'), Infinity);
     comboArchiveList.size = comboArchiveList.length > 15 ? 15 : comboArchiveList.length;
-    if (/Android|iOS/.test(params.appType)) {
+    if (!/Android|iOS/.test(params.appType)) {
         if (comboArchiveList.length > 1) comboArchiveList.removeAttribute('multiple');
         if (comboArchiveList.length === 1) comboArchiveList.setAttribute('multiple', '1');
     }
