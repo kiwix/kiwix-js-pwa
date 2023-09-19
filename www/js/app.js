@@ -808,8 +808,6 @@ function setTab (activeBtn) {
         document.getElementById('btnRefresh').style.display = 'none';
     } else {
         document.getElementById('archiveFilesLegacyDiv').style.display = 'none';
-        // Remove instructions if user has already loaded an archive, and it isn't the packaged archive
-        document.getElementById('UWPInstructions').style.display = appstate.selectedArchive && ~params.packagedFile.indexOf(appstate.selectedArchive._file.name) ? 'none' : 'block';
     }
     document.getElementById('chooseArchiveFromLocalStorage').style.display = 'block';
     document.getElementById('libraryArea').style.borderColor = '';
@@ -3041,10 +3039,6 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
     document.getElementById('chooseArchiveFromLocalStorage').style.display = '';
     document.getElementById('rescanStorage').style.display = params.rescan ? 'none' : 'block';
     document.getElementById('openLocalFiles').style.display = params.rescan ? 'block' : 'none';
-    // Hide instructions now user has selected a folder, unless the packaged archive is still loaded
-    if (appstate.selectedArchive && appstate.selectedArchive._file && !~params.packagedFile.indexOf(appstate.selectedArchive._file.name)) {
-        document.getElementById('UWPInstructions').style.display = 'none';
-    }
     var plural = 's';
     plural = archiveDirectories.length === 1 ? '' : plural;
     document.getElementById('archiveNumber').innerHTML = '<b>' + archiveDirectories.length + '</b> Archive' + plural + ' found in selected location (tap "Select storage" to change)';
@@ -3407,13 +3401,6 @@ if (!params.disableDragAndDrop) {
  */
 function displayFileSelect () {
     document.getElementById('openLocalFiles').style.display = 'block';
-    // Remove instructions if user has already loaded an archive, and it isn't the packaged archive
-    var UWPInstructions = document.getElementById('UWPInstructions');
-    if (appstate.selectedArchive) {
-        UWPInstructions.style.display = ~params.packagedFile.indexOf(appstate.selectedArchive._file.name) ? 'block' : 'none';
-    } else {
-        UWPInstructions.style.display = 'block';
-    }
     document.getElementById('rescanStorage').style.display = 'none';
 }
 
