@@ -1458,16 +1458,18 @@ if (params.useOPFS) {
 }
 document.getElementById('btnExportOPFSEntry').addEventListener('click', function () {
     params.exportOPFSEntry = !params.exportOPFSEntry;
+    var determinedTheme = params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme;
     if (params.exportOPFSEntry) {
-        document.getElementById('archiveList').style.background = 'yellow';
+        document.getElementById('archiveList').style.background = determinedTheme === 'dark' ? 'darkgoldenrod' : 'yellow';
     } else {
         document.getElementById('archiveList').style.background = '';
     }
 });
 document.getElementById('btnDeleteOPFSEntry').addEventListener('click', function () {
     params.deleteOPFSEntry = !params.deleteOPFSEntry;
+    var determinedTheme = params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme;
     if (params.deleteOPFSEntry) {
-        document.getElementById('archiveList').style.background = 'pink';
+        document.getElementById('archiveList').style.background = determinedTheme === 'dark' ? 'firebrick' : 'pink';
     } else {
         document.getElementById('archiveList').style.background = '';
     }
