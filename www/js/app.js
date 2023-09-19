@@ -1162,6 +1162,7 @@ document.getElementById('archiveList').addEventListener('keydown', function (e) 
     }
 });
 document.getElementById('archiveList').addEventListener('change', selectArchive);
+document.getElementById('archiveList').addEventListener('click', selectArchive);
 currentArchiveLink.addEventListener('click', function (e) {
     e.target.value = currentArchiveLink.innerHTML;
     selectArchive(e);
@@ -1316,7 +1317,7 @@ archiveFilesLegacy.addEventListener('change', function (files) {
         document.getElementById('archiveList').value = selected;
         console.debug('Files are set, attempting to select ' + selected);
     }
-    if (!window.fs && params.webkitdirectory) {
+    if (!window.fs && (params.webkitdirectory || params.useOPFS)) {
         // populateDropDownListOfArchives([params.pickedFile], true);
         setLocalArchiveFromArchiveList(selected);
     } else {
