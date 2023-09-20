@@ -3765,6 +3765,7 @@ function setLocalArchiveFromFileList (files) {
     }
     if (!listOfArchives.value) {
         // Add the file name to the archive list
+        params.rescan = false;
         populateDropDownListOfArchives([files[firstFileIndex].name], true);
     }
     // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
