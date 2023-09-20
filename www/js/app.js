@@ -803,7 +803,7 @@ function setTab (activeBtn) {
         // If not UWP, File System Access API, webkitdirectory API or Electron methods, hide the folder picker
         document.getElementById('archiveFiles').style.display = 'none';
         document.getElementById('archiveFilesLabel').style.display = 'none';
-        document.getElementById('fsManager').style.display = 'none';
+        if (!params.useOPFS) document.getElementById('fsManager').style.display = 'none';
     //     document.getElementById('archiveFilesDiv').style.display = 'none';
     //     document.getElementById('archivesFound').style.display = 'none';
     //     document.getElementById('instructions').style.display = appstate.selectedArchive ? 'none' : 'block';
