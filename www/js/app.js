@@ -1450,7 +1450,8 @@ function setOPFSUI () {
         archiveFiles.style.display = '';
         archiveFilesLabel.style.display = '';
         if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog && !params.webkitdirectory) {
-            archiveFileLabel.innerHTML = '<p><b>Select archive(s) or drag-and-drop</b>:</p>';
+            archiveFileLabel.innerHTML = '<p><b>Pick archive(s) or drag-and-drop</b>:</p>';
+            archiveFileLabel.classList.remove('col-xs-6');
             archiveFile.value = 'Select file(s)';
         } else {
             archiveFileLabel.innerHTML = '<p><b>Pick a single unsplit archive</b>:</p>';
