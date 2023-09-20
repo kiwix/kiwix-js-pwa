@@ -1438,6 +1438,8 @@ function setOPFSUI () {
         useOPFS.checked = true;
         archiveFiles.style.display = 'none';
         archiveFilesLabel.style.display = 'none';
+        archiveFileLabel.classList.remove('col-xs-12');
+        archiveFileLabel.classList.add('col-xs-6');
         archiveFile.value = 'Select file(s)';
         archiveFileLabel.innerHTML = '<p><b>Select file(s) to add to the Private File System</b>:</p>'
         OPFSQuota.style.display = '';
@@ -1447,13 +1449,14 @@ function setOPFSUI () {
     } else {
         settingsStore.setItem('useOPFS', false, Infinity);
         useOPFS.checked = false;
-        archiveFiles.style.display = '';
-        archiveFilesLabel.style.display = '';
         if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog && !params.webkitdirectory) {
             archiveFileLabel.innerHTML = '<p><b>Pick archive(s) or drag-and-drop</b>:</p>';
             archiveFileLabel.classList.remove('col-xs-6');
+            archiveFileLabel.classList.add('col-xs-12');
             archiveFile.value = 'Select file(s)';
         } else {
+            archiveFiles.style.display = '';
+            archiveFilesLabel.style.display = '';
             archiveFileLabel.innerHTML = '<p><b>Pick a single unsplit archive</b>:</p>';
             archiveFile.value = 'Select file';
         }
