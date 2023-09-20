@@ -767,7 +767,7 @@
                             <div id="noZIMFound" style="display: none; margin-top: 1em">
                                 <p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
                             </div>
-                            <div id="useOPFS" class="row">
+                            <div id="fsManager" class="row">
                                 <div class="col-xs-9"></div>
                                 <div class="col-xs-1">
                                     <a href="#" title="Export the next archive that you select"  style="display: none;" id="btnExportOPFSEntry"><span class="glyphicon glyphicon-share"></span></a>
@@ -783,7 +783,7 @@
                                 <div id="archiveFilesDiv">
                                     <div class="row">
                                         <div class="col-xs-6" id="archiveFileLabel">
-                                            <p><b>Pick a single unsplit archive</b>:</p>
+                                            <p><b>Pick archive(s) or drag-and-drop</b>:</p>
                                         </div>
                                         <div class="col-xs-6" id="archiveFilesLabel">
                                             <p><b>For multiple or split archives</b>:</p>
@@ -791,7 +791,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-xs-6">
-                                            <input type="button" class="btn btn-primary btn-inline" value="Select file" id="archiveFile" />
+                                            <input type="button" class="btn btn-primary btn-inline" value="Select file(s)" id="archiveFile" />
                                         </div>
                                         <div class="col-xs-6">
                                             <div id="OPFSQuota"  style="display: none;"></div>
@@ -812,7 +812,7 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="row" style="margin: 0.5em;">
+                                <div id="displayOPFS" class="row" style="display: none; margin: 0.5em;">
                                     <label class="checkbox">
                                         <input type="checkbox" name="useOPFS" id="useOPFSCheck" />
                                         <span class="checkmark"></span>

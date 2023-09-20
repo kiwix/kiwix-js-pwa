@@ -799,16 +799,21 @@ function setTab (activeBtn) {
     } else {
         cssUIThemeGetOrSet(determinedTheme);
     }
-    if (typeof Windows === 'undefined' && !(typeof window.showOpenFilePicker === 'function' || navigator && navigator.storage && 'getDirectory' in navigator.storage) && !window.dialog && !params.webkitdirectory) {
-        // If not UWP, File System Access API, webkitdirectory API or Electron methods, display legacy File Select
-        document.getElementById('archiveFilesDiv').style.display = 'none';
-        document.getElementById('archivesFound').style.display = 'none';
-        document.getElementById('instructions').style.display = appstate.selectedArchive ? 'none' : 'block';
-        document.getElementById('archiveFilesLegacyDiv').style.display = 'block';
-        document.getElementById('btnRefresh').style.display = 'none';
-    } else {
-        document.getElementById('archiveFilesLegacyDiv').style.display = 'none';
+    if (typeof Windows === 'undefined' && typeof window.showDirectoryPicker !== 'function' && !window.dialog && !params.webkitdirectory) {
+        // If not UWP, File System Access API, webkitdirectory API or Electron methods, hide the folder picker
+        document.getElementById('archiveFiles').style.display = 'none';
+        document.getElementById('archiveFilesLabel').style.display = 'none';
+        document.getElementById('fsManager').style.display = 'none';
+    //     document.getElementById('archiveFilesDiv').style.display = 'none';
+    //     document.getElementById('archivesFound').style.display = 'none';
+    //     document.getElementById('instructions').style.display = appstate.selectedArchive ? 'none' : 'block';
+    //     document.getElementById('archiveFilesLegacyDiv').style.display = 'block';
+    //     document.getElementById('btnRefresh').style.display = 'none';
     }
+    if (navigator && navigator.storage && ('getDirectory' in navigator.storage)) {
+        document.getElementById('displayOPFS').style.display = '';
+    }
+    document.getElementById('archiveFilesLegacyDiv').style.display = 'none';
     document.getElementById('chooseArchiveFromLocalStorage').style.display = 'block';
     document.getElementById('libraryArea').style.borderColor = '';
     document.getElementById('libraryArea').style.borderStyle = '';
@@ -1444,8 +1449,13 @@ function setOPFSUI () {
         useOPFS.checked = false;
         archiveFiles.style.display = '';
         archiveFilesLabel.style.display = '';
-        archiveFile.value = 'Select file';
-        archiveFileLabel.innerHTML = '<p><b>Pick a single unsplit archive</b>:</p>'
+        if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog && !params.webkitdirectory) {
+            archiveFileLabel.innerHTML = '<p><b>Select archive(s) or drag-and-drop</b>:</p>';
+            archiveFile.value = 'Select file(s)';
+        } else {
+            archiveFileLabel.innerHTML = '<p><b>Pick a single unsplit archive</b>:</p>';
+            archiveFile.value = 'Select file';
+        }
         OPFSQuota.style.display = 'none';
         btnDeleteOPFSEntry.style.display = 'none';
         btnExportOPFSEntry.style.display = 'none';
@@ -3746,7 +3756,13 @@ function setLocalArchiveFromFileList (files) {
     }
     // If the file name is already in the archive list, try to select it in the list
     var listOfArchives = document.getElementById('archiveList');
-    if (listOfArchives && files[firstFileIndex]) listOfArchives.value = files[firstFileIndex].name;
+    if (listOfArchives && files[firstFileIndex]) {
+        listOfArchives.value = files[firstFileIndex].name;
+    }
+    if (!listOfArchives.value) {
+        // Add the file name to the archive list
+        populateDropDownListOfArchives([files[firstFileIndex].name], true);
+    }
     // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
     if (cssBlobCache) cssBlobCache = new Map();
     appstate.selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
