@@ -1309,8 +1309,15 @@ archiveFilesLegacy.addEventListener('change', function (files) {
         });
     }
     params.pickedFolder = null;
-    params.pickedFile = filesArray[0];
-    params.storedFile = params.pickedFile.name.replace(/\.zim\w\w$/i, '.zimaa');
+    params.pickedFile = null;
+    if (params.storedFile === params.packagedFile) {
+        params.storedFile = null;
+        params.storedFilePath = null;
+    }
+    if (filesArray.length === 1) {
+        params.pickedFile = filesArray[0];
+        params.storedFile = params.pickedFile.name.replace(/\.zim\w\w$/i, '.zimaa');
+    }
     if (params.webkitdirectory) {
         settingsStore.setItem('pickedFolder', '', Infinity);
         processFilesArray(filesArray);
