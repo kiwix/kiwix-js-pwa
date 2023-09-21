@@ -39,6 +39,7 @@ import transformStyles from './lib/transformStyles.js';
 import transformZimit from './lib/transformZimit.js';
 import kiwixServe from './lib/kiwixServe.js';
 import updater from './lib/updater.js';
+import { search } from 'core-js/fn/symbol';
 
 // Import stylesheets programmatically
 // document.adoptedStyleSheets = [styles, bootstrap];
@@ -803,7 +804,7 @@ function setTab (activeBtn) {
         // If not UWP, File System Access API, webkitdirectory API or Electron methods, hide the folder picker
         document.getElementById('archiveFiles').style.display = 'none';
         document.getElementById('archiveFilesLabel').style.display = 'none';
-        if (!params.useOPFS) document.getElementById('fsManager').style.display = 'none';
+        // if (!params.useOPFS) document.getElementById('fsManager').style.display = 'none';
     //     document.getElementById('archiveFilesDiv').style.display = 'none';
     //     document.getElementById('archivesFound').style.display = 'none';
     //     document.getElementById('instructions').style.display = appstate.selectedArchive ? 'none' : 'block';
@@ -1491,28 +1492,34 @@ document.getElementById('btnDeleteOPFSEntry').addEventListener('click', function
 });
 document.getElementById('btnRefresh').addEventListener('click', function () {
     // Refresh list of archives
-    if (params.pickedFolder) {
-        params.rescan = true;
-        if (window.showOpenFilePicker || params.useOPFS) {
-            processNativeDirHandle(params.pickedFolder);
-        } else if (typeof Windows !== 'undefined') {
-            scanUWPFolderforArchives(params.pickedFolder)
-        } else if (window.fs) {
-            scanNodeFolderforArchives(params.pickedFolder);
-        } else if (params.webkitdirectory) {
-            document.getElementById('archiveFiles').click();
+    params.rescan = true;
+    var btnArchiveFiles = document.getElementById('archiveFiles');
+    var btnArchiveFile = document.getElementById('archiveFile');
+    if (!params.storedFile && !params.pickedFolder) {
+        if (params.useOPFS || window.showOpenFilePicker) {
+            getNativeFSHandle(function (fsHandle) {
+                if (fsHandle && fsHandle.kind === 'directory') {
+                    if (params.useOPFS) params.rescan = false;
+                    processNativeDirHandle(fsHandle);
+                } else {
+                    btnArchiveFiles.click();
+                }
+            });
+        } else {
+            uiUtil.systemAlert('You need to pick a file or folder before you can rescan it!');
         }
-    } else if ((params.useOPFS || typeof window.showOpenFilePicker === 'function') && !params.pickedFile) {
-        getNativeFSHandle(function (fsHandle) {
-            if (fsHandle && fsHandle.kind === 'directory') {
-                if (params.useOPFS) params.rescan = false;
-                processNativeDirHandle(fsHandle);
-            } else {
-                uiUtil.systemAlert('You need to pick a folder in order to rescan it!');
-            }
-        });
-    } else {
-        uiUtil.systemAlert('You need to pick a folder in order to rescan it!');
+    } else if (params.storedFile) {
+        console.debug('Could not automatically reload ' + params.pickedFile);
+        if (!~params.storedFile.indexOf(params.packagedFile)) btnArchiveFile.click();
+        else uiUtil.systemAlert('You need to pick a file or folder before you can rescan it!');
+    } else if (window.showOpenFilePicker || params.useOPFS) {
+        processNativeDirHandle(params.pickedFolder);
+    } else if (typeof Windows !== 'undefined') {
+        scanUWPFolderforArchives(params.pickedFolder)
+    } else if (window.fs) {
+        scanNodeFolderforArchives(params.pickedFolder);
+    } else if (params.webkitdirectory) {
+        document.getElementById('archiveFiles').click();
     }
 });
 document.getElementById('downloadTrigger').addEventListener('click', function () {
@@ -2944,7 +2951,8 @@ if (storages !== null && storages.length > 0 ||
     } else if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
         console.log('Loading picked file for UWP app...');
         processPickedFileUWP(params.pickedFile);
-    } else if (!window.fs && params.webkitdirectory) {
+    } else if (!window.fs) {
+        // This should run, e.g., if we have params.webkitdirectory but not windows.fs, and also if we're using legacy file picking
         searchForArchivesInPreferencesOrStorage();
     } else {
         // @AUTOLOAD packaged archive in Electron and NWJS packaged apps
@@ -3007,11 +3015,12 @@ if (storages !== null && storages.length > 0 ||
 } else {
     // If DeviceStorage is not available, we display the file select components
     displayFileSelect();
-    if (document.getElementById('archiveFiles').files && document.getElementById('archiveFiles').files.length > 0) {
+    if (document.getElementById('archiveFilesLegacy').files && document.getElementById('archiveFilesLegacy').files.length > 0) {
         // Archive files are already selected,
         setLocalArchiveFromFileSelect();
     } else {
         document.getElementById('btnConfigure').click();
+        searchForArchivesInPreferencesOrStorage();
     }
 }
 
