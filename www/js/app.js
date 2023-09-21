@@ -3280,12 +3280,22 @@ function setLocalArchiveFromArchiveList (archive) {
                 // if (!params.pickedFolder) {
                 // This gets called, for example, if the picked folder or picked file are in FutureAccessList but now are
                 // no longer accessible. There will be a (handled) error in cosole log, and params.pickedFolder and params.pickedFile will be blank
-                params.rescan = true;
                 if (params.localStorage) {
                     scanUWPFolderforArchives(params.localStorage);
+                } else if (params.pickedFile && params.pickedFile.name) {
+                    // We already have a file handle, which means the file is already loaded or can be loaded
+                    if (!appstate.selectedArchive) {
+                        setLocalArchiveFromFileList([params.pickedFile]);
+                    } else {
+                        document.getElementById('btnHome').click();
+                    }
+                } else if (archiveFilesLegacy.files.length) {
+                    // There are files already loaded, so see if the selected file is one of those
+                    setLocalArchiveFromFileList(archiveFilesLegacy.files);
                 } else {
                     var btnConfigure = document.getElementById('btnConfigure');
                     if (!btnConfigure.classList.contains('active')) btnConfigure.click();
+                    document.getElementById('archiveFile').click();
                 }
                 return;
                 // }
@@ -3295,8 +3305,6 @@ function setLocalArchiveFromArchiveList (archive) {
         if (cssBlobCache) {
             cssBlobCache = new Map();
         }
-        // if (cssDirEntryCache)
-        //    cssDirEntryCache = new Map();
         appstate.selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archive, function (archive) {
             settingsStore.setItem('lastSelectedArchive', archive, Infinity);
             // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
@@ -3737,28 +3745,37 @@ function setLocalArchiveFromFileList (files) {
         return;
     }
     // Check for usable file types
-    var firstFileIndex = null;
+    var firstSplitFileIndex = null;
+    var storedFileIndex = null;
+    var fileNames = [];
     for (var i = files.length; i--;) {
         // DEV: you can support other file types by adding (e.g.) '|dat|idx' after 'zim\w{0,2}'
         if (!/\.(?:zim\w{0,2})$/i.test(files[i].name)) {
             uiUtil.systemAlert('One or more files does not appear to be a ZIM file!');
             return;
         }
-        // Note the index of the .zimaa file
-        firstFileIndex = /\.zim(aa)?$/i.test(files[i].name) ? i : firstFileIndex;
+        // Add file names to array
+        if (/\.zim(aa)?$/i.test(files[i].name)) fileNames.push(files[i].name);
+        // Note the index of any .zimaa file
+        firstSplitFileIndex = /\.zimaa$/i.test(files[i].name) ? i : firstSplitFileIndex;
+        // Note the index of the stored file
+        storedFileIndex = files[i].name === params.storedFile ? i : storedFileIndex;
         // Allow reading with electron if we have the path info
         if (typeof window.fs !== 'undefined' && files[i].path) {
             files[i].readMode = 'electron';
             console.log('File path is: ' + files[i].path);
-            if (files.length === 1 || params.firstFileIndex) {
+            if (files.length === 1 || ~firstSplitFileIndex) {
                 params.pickedFile = files[i].path;
                 settingsStore.setItem('pickedFile', params.pickedFile, Infinity);
             }
         }
     }
+    // If there was only one file chosen (or set of split ZIMs, but we only store zimaa), select it
+    if (fileNames.length === 1 || firstSplitFileIndex !== null) storedFileIndex = firstSplitFileIndex || 0;
+    populateDropDownListOfArchives(fileNames, true);
     // Check that user hasn't picked just part of split ZIM
-    if (files.length == 1 && /\.zim\w\w/i.test(files[0].name)) {
-        uiUtil.systemAlert('<p>You have picked only part of a split archive!</p><p>Please select its folder in Config, ' +
+    if (fileNames.length === 1 && firstSplitFileIndex && files.length === 1) {
+        return uiUtil.systemAlert('<p>You have picked only part of a split archive!</p><p>Please select its folder in Config, ' +
             'or drag and drop <b>all</b> of its parts into Config.</p>').then(function () {
                 if (document.getElementById('configuration').style.display === 'none') {
                     document.getElementById('btnConfigure').click();
@@ -3767,15 +3784,22 @@ function setLocalArchiveFromFileList (files) {
             }
         );
     }
-    // If the file name is already in the archive list, try to select it in the list
+    // If a picked file name is already in the archive list, try to select it in the list
     var listOfArchives = document.getElementById('archiveList');
-    if (listOfArchives && files[firstFileIndex]) {
-        listOfArchives.value = files[firstFileIndex].name;
+    if (listOfArchives && files[storedFileIndex]) {
+        listOfArchives.value = files[storedFileIndex].name;
     }
+    // We should not proceed if there is no selected archive
     if (!listOfArchives.value) {
-        // Add the file name to the archive list
+        return;
+    }
+    // If we only picked one archive, display it
+    if (fileNames.length === 1) {
         params.rescan = false;
-        populateDropDownListOfArchives([files[firstFileIndex].name], true);
+    }
+    // If the number of files is greater than one and the user hasn't selected a split archive, then set files to the selected file index
+    if (files.length > 1 && firstSplitFileIndex === null) {
+        files = [files[storedFileIndex]];
     }
     // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
     if (cssBlobCache) cssBlobCache = new Map();
