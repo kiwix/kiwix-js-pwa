@@ -230,9 +230,8 @@ ZIMFile.prototype.dirEntry = function (offset) {
  * @returns {Promise<DirEntry>} A Promise for the requested DirEntry
  */
 ZIMFile.prototype.dirEntryByUrlIndex = function (index) {
-    var that = appstate.selectedArchive._file;
-    return that._readInteger(that.urlPtrPos + index * 8, 8).then(function (dirEntryPos) {
-        return that.dirEntry(dirEntryPos);
+    return appstate.selectedArchive._file._readInteger(appstate.selectedArchive._file.urlPtrPos + index * 8, 8).then(function (dirEntryPos) {
+        return appstate.selectedArchive._file.dirEntry(dirEntryPos);
     });
 };
 
