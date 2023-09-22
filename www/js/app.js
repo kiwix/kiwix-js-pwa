@@ -39,7 +39,6 @@ import transformStyles from './lib/transformStyles.js';
 import transformZimit from './lib/transformZimit.js';
 import kiwixServe from './lib/kiwixServe.js';
 import updater from './lib/updater.js';
-import { search } from 'core-js/fn/symbol';
 
 // Import stylesheets programmatically
 // document.adoptedStyleSheets = [styles, bootstrap];
