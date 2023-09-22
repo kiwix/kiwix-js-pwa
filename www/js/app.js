@@ -1161,13 +1161,17 @@ document.getElementById('btnAbout').addEventListener('click', function () {
     document.getElementById('search-article').style.overflowY = 'auto';
 });
 var selectFired = false;
-document.getElementById('archiveList').addEventListener('keydown', function (e) {
+var archiveList = document.getElementById('archiveList');
+archiveList.addEventListener('keydown', function (e) {
     if (/^Enter$/.test(e.key)) {
         selectArchive(e);
     }
 });
-document.getElementById('archiveList').addEventListener('change', selectArchive);
-document.getElementById('archiveList').addEventListener('click', selectArchive);
+archiveList.addEventListener('change', selectArchive);
+archiveList.addEventListener('focus', function () {
+    // Unselect any selected option so that the user can select the same option again
+    archiveList.selectedIndex = -1;
+});
 currentArchiveLink.addEventListener('click', function (e) {
     e.target.value = currentArchiveLink.innerHTML;
     selectArchive(e);
