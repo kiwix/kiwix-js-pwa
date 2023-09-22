@@ -3778,7 +3778,11 @@ function setLocalArchiveFromFileList (files) {
     }
     // If there was only one file chosen (or set of split ZIMs, but we only store zimaa), select it
     if (fileNames.length === 1 || firstSplitFileIndex !== null) storedFileIndex = firstSplitFileIndex || 0;
-    populateDropDownListOfArchives(fileNames, true);
+    // If the selected archive is not the currently selected on on the archive list, update it
+    var archiveList = document.getElementById('archiveList');
+    if (archiveList.value !== files[storedFileIndex].name) {
+        populateDropDownListOfArchives(fileNames, true);
+    }
     // Check that user hasn't picked just part of split ZIM
     if (fileNames.length === 1 && firstSplitFileIndex && files.length === 1) {
         return uiUtil.systemAlert('<p>You have picked only part of a split archive!</p><p>Please select its folder in Config, ' +
@@ -3791,12 +3795,11 @@ function setLocalArchiveFromFileList (files) {
         );
     }
     // If a picked file name is already in the archive list, try to select it in the list
-    var listOfArchives = document.getElementById('archiveList');
-    if (listOfArchives && files[storedFileIndex]) {
-        listOfArchives.value = files[storedFileIndex].name;
+    if (archiveList && files[storedFileIndex]) {
+        archiveList.value = files[storedFileIndex].name;
     }
     // We should not proceed if there is no selected archive
-    if (!listOfArchives.value) {
+    if (!archiveList.value) {
         return;
     }
     // If we only picked one archive, display it
