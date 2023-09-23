@@ -2963,12 +2963,12 @@ if (storages !== null && storages.length > 0 ||
         }
     }
     if (!params.pickedFile) {
-        if (params.storedFile && !params.useOPFS) {
+        if (params.storedFile) {
             // We are in an app that cannot open files auotomatically, so just show file pickers
             searchForArchivesInPreferencesOrStorage(true);
             document.getElementById('btnConfigure').click();
         } else {
-            searchForArchivesInPreferencesOrStorage();
+            searchForArchivesInPreferencesOrStorage(true);
         }
     } else if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
         console.log('Loading picked file for UWP app...');
