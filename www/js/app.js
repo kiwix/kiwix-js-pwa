@@ -3315,8 +3315,7 @@ function setLocalArchiveFromArchiveList (archive) {
         if (cssBlobCache) {
             cssBlobCache = new Map();
         }
-        return zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archive).then(function (archiveObject) {
-            appstate.selectedArchive = archiveObject;
+        appstate.selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archive, function (archive) {
             settingsStore.setItem('lastSelectedArchive', archive, Infinity);
             // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
             // (this only affects jQuery mode)
@@ -3361,8 +3360,9 @@ function setLocalArchiveFromArchiveList (archive) {
                 document.getElementById('usage').style.display = 'none';
                 document.getElementById('btnHome').click();
             }
-        }).catch(function (error) {
-            console.error(error);
+        }, function (message, label) {
+            // callbackError which is called in case of an error
+            uiUtil.systemAlert(message, label);
         });
     }
 }
@@ -3816,12 +3816,11 @@ function setLocalArchiveFromFileList (files) {
     }
     // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
     if (cssBlobCache) cssBlobCache = new Map();
-    return zimArchiveLoader.loadArchiveFromFiles(files).then(function (archive) {
-        appstate.selectedArchive = archive;
+    appstate.selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
         // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
         // (this only affects jQuery mode)
         appstate.target = 'iframe';
-        appstate.wikimediaZimLoaded = archive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(archive._file.name);
+        appstate.wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
         if (params.contentInjectionMode === 'serviceworker') {
             if (!appstate.wikimediaZimLoaded) {
                 if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
@@ -3911,8 +3910,9 @@ function setLocalArchiveFromFileList (files) {
                 document.getElementById('btnHome').click();
             }
         }
-    }).catch(function (error) {
-        console.error(error.message, error);
+    }, function (message, label) {
+        // callbackError which is called in case of an error
+        uiUtil.systemAlert(message, label);
     });
 }
 

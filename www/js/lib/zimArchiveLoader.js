@@ -29,27 +29,23 @@ import jQuery from './jquery.module.js';
  * Create a ZIMArchive from DeviceStorage location
  * @param {DeviceStorage} storage
  * @param {String} path
- * @returns {Promise<ZIMArchive>} Promise for a ZIMArchive
+ * @param {callbackZIMArchive} callbackReady
+ * @param {callbackZIMArchive} callbackError
+ * @returns {ZIMArchive}
  */
-function loadArchiveFromDeviceStorage (storage, path) {
-    return new zimArchive.ZIMArchive(storage, path).then(function (archive) {
-        return archive;
-    }).catch(function (error) {
-        return new Error('Error loading archive from DeviceStorage', error);
-    });
+function loadArchiveFromDeviceStorage (storage, path, callbackReady, callbackError) {
+    return new zimArchive.ZIMArchive(storage, path, callbackReady, callbackError);
 }
 /**
  * Create a ZIMArchive from Files
  * @param {Array.<File>} files
- * @returns {Promise<ZIMArchive>} Promise for a ZIMArchive
+ * @param {callbackZIMArchive} callbackReady
+ * @param {callbackZIMArchive} callbackError
+ * @returns {ZIMArchive}
  */
-function loadArchiveFromFiles (files) {
+function loadArchiveFromFiles (files, callbackReady, callbackError) {
     if (files.length >= 1) {
-        return new zimArchive.ZIMArchive(files, null).then(function (archive) {
-            return archive;
-        }).catch(function (error) {
-            return new Error('Error loading archive from file(s)', error);
-        });
+        return new zimArchive.ZIMArchive(files, null, callbackReady, callbackError);
     }
 }
 

@@ -61,21 +61,22 @@ var LZ;
  *
  * @param {StorageFirefoxOS|Array<Blob>} storage Storage (in this case, the path must be given) or Array of Files (path parameter must be omitted)
  * @param {String} path The Storage path for an OS that requires this to be specified
- * @returns {Promise<ZIMArchive>} A Promise for the ZIM archive object
+ * @param {callbackZIMArchive} callbackReady The function to call when the archive is ready to use
+ * @param {callbackZIMArchive} callbackError The function to call when an error occurs
  */
-function ZIMArchive (storage, path) {
+function ZIMArchive (storage, path, callbackReady, callbackError) {
     var that = this;
     that._file = null;
     that._language = ''; // @TODO
     var createZimfile = function (fileArray) {
-        return zimfile.fromFileArray(fileArray).then(function (file) {
+        zimfile.fromFileArray(fileArray).then(function (file) {
             that._file = file;
             // Clear the previous libzimWoker
             LZ = null;
             // Set a global parameter to report the search provider type
             params.searchProvider = 'title';
             // File has been created, but we need to add any Listings which extend the archive metadata
-            return that._file.setListings([
+            that._file.setListings([
                 // Provide here any Listings for which we need to extract metadata as key:value obects to be added to the file
                 // 'ptrName' and 'countName' contain the key names to be set in the archive file object
                 {
@@ -105,8 +106,7 @@ function ZIMArchive (storage, path) {
                 // The ASM implementation requires Atomics support, whereas the WASM implementation does not
                 (typeof Atomics !== 'undefined' || libzimReaderType === 'wasm') &&
                 // Note that Android and NWJS currently throw due to problems with Web Worker context
-                // !/Android/.test(params.appType) &&
-                !(window.nw && that._file._files[0].readMode === 'electron'))) {
+                !/Android/.test(params.appType) && !(window.nw && that._file._files[0].readMode === 'electron'))) {
                     console.log('Instantiating libzim ' + libzimReaderType + ' Web Worker...');
                     LZ = new Worker('js/lib/libzim-' + libzimReaderType + '.js');
                     that.callLibzimWorker({ action: 'init', files: that._file._files }).then(function (msg) {
@@ -136,14 +136,14 @@ function ZIMArchive (storage, path) {
                     uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider);
                     // uiUtil.systemAlert(message);
                 }
-                // Set the archive file type ('open' or 'zimit')
-                params.zimType = that.setZimType();
-                // DEV: Currently, extended listings are only used for title (=article) listings when the user searches
-                // for an article or uses the Random button, by which time the listings will have been extracted.
-                // If, in the future, listings are used in a more time-critical manner, consider forcing a wait before
-                // declaring the archive to be ready, by chaining the following callback in a .then() function of setListings.
-                return that;
             });
+            // Set the archive file type ('open' or 'zimit')
+            params.zimType = that.setZimType();
+            // DEV: Currently, extended listings are only used for title (=article) listings when the user searches
+            // for an article or uses the Random button, by which time the listings will have been extracted.
+            // If, in the future, listings are used in a more time-critical manner, consider forcing a wait before
+            // declaring the archive to be ready, by chaining the following callback in a .then() function of setListings.
+            callbackReady(that);
         });
     };
     if (storage && !path) {
@@ -151,20 +151,20 @@ function ZIMArchive (storage, path) {
         // We need to convert the FileList into an Array
         var fileArray = [].slice.call(fileList);
         // The constructor has been called with an array of File/Blob parameter
-        return createZimfile(fileArray);
+        createZimfile(fileArray);
     } else {
         if (/.*zim..$/.test(path)) {
             // split archive
-            return that._searchArchiveParts(storage, path.slice(0, -2)).then(function (fileArray) {
-                return createZimfile(fileArray);
+            that._searchArchiveParts(storage, path.slice(0, -2)).then(function (fileArray) {
+                createZimfile(fileArray);
             }).catch(function (error) {
-                return new Error('Error reading files in split archive ' + path, error);
+                callbackError('Error reading files in split archive ' + path + ': ' + error, 'Error reading archive files');
             });
         } else {
-            return storage.get(path).then(function (file) {
-                return createZimfile([file]);
+            storage.get(path).then(function (file) {
+                createZimfile([file]);
             }).catch(function (error) {
-                return new Error('Error reading ZIM file ' + path, error);
+                callbackError('Error reading ZIM file ' + path + ' : ' + error, 'Error reading archive file');
             });
         }
     }
@@ -445,10 +445,10 @@ ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function (prefix, s
     var cns = this.getContentNamespace();
     // Search v1 article listing if available, otherwise fallback to v0
     var articleCount = this._file.articleCount || this._file.entryCount;
-    var searchFunction = this._file.dirEntryByTitleIndex;
+    var searchFunction = appstate.selectedArchive._file.dirEntryByTitleIndex;
     if (search.searchUrlIndex) {
         articleCount = this._file.entryCount;
-        searchFunction = this._file.dirEntryByUrlIndex;
+        searchFunction = appstate.selectedArchive._file.dirEntryByUrlIndex;
     }
     util.binarySearch(startIndex, articleCount, function(i) {
         return searchFunction(i).then(function(dirEntry) {
@@ -622,7 +622,7 @@ ZIMArchive.prototype.resolveRedirect = function(dirEntry, callback) {
  * @param {callbackStringContent} callback
  */
 ZIMArchive.prototype.readUtf8File = function(dirEntry, callback) {
-    var cns = this.getContentNamespace();
+    var cns = appstate.selectedArchive.getContentNamespace();
     return dirEntry.readData().then(function(data) {
         var mimetype = dirEntry.getMimetype();
         if (window.TextDecoder) {
@@ -652,9 +652,8 @@ ZIMArchive.prototype.readUtf8File = function(dirEntry, callback) {
         if (dirEntry.inspect || dirEntry.zimitRedirect) {
             if (dirEntry.inspect) dirEntry = transformZimit.getZimitRedirect(dirEntry, data, cns);
             if (dirEntry.zimitRedirect) {
-                var that = this;
-                return this.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
-                    return that.readUtf8File(rd, callback);
+                return appstate.selectedArchive.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
+                    return appstate.selectedArchive.readUtf8File(rd, callback);
                 });
             }
        } else {
@@ -686,10 +685,10 @@ ZIMArchive.prototype.readBinaryFile = function(dirEntry, callback) {
     return dirEntry.readData().then(function(data) {
         var mimetype = dirEntry.getMimetype();
         if (dirEntry.inspect) {
-            dirEntry = transformZimit.getZimitRedirect(dirEntry, utf8.parse(data), that.getContentNamespace());
+            dirEntry = transformZimit.getZimitRedirect(dirEntry, utf8.parse(data), appstate.selectedArchive.getContentNamespace());
             if (dirEntry.zimitRedirect) {
-                return that.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
-                    return that.readBinaryFile(rd, callback);
+                return appstate.selectedArchive.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
+                    return appstate.selectedArchive.readBinaryFile(rd, callback);
                 })
             }
         } else {
@@ -719,7 +718,7 @@ ZIMArchive.prototype.getDirEntryByPath = function(path, zimitResolving, original
         var revisedPath = path.replace(/.*?((?:C\/A|A)\/(?!.*(?:C\/A|A)).+)$/, '$1');
         if (revisedPath !== path) {
             console.warn('*** Revised path from ' + path + '\nto: ' + revisedPath + ' ***');
-            if (that._file.zimType === 'zimit') {
+            if (appstate.selectedArchive._file.zimType === 'zimit') {
                 console.debug('*** DEV: Consider correcting this error in tranformZimit.js ***');
             }
             path = revisedPath;
@@ -786,7 +785,7 @@ ZIMArchive.prototype.getDirEntryByPath = function(path, zimitResolving, original
 /**
  * Initiate a fuzzy search for dirEntries matching the search object
  * @param {String} path Human-readable path to search for
- * @param {Object} search The search object
+ * @param {Object} search The search object 
  * @returns {Promise<DirEntry>} A Promise that resolves to a Directory Entry, or null if not found
  */
 function fuzzySearch(path, search) {

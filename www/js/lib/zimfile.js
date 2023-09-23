@@ -230,9 +230,8 @@ ZIMFile.prototype.dirEntry = function (offset) {
  * @returns {Promise<DirEntry>} A Promise for the requested DirEntry
  */
 ZIMFile.prototype.dirEntryByUrlIndex = function (index) {
-    var that = this;
-    return that._readInteger(that.urlPtrPos + index * 8, 8).then(function (dirEntryPos) {
-        return that.dirEntry(dirEntryPos);
+    return appstate.selectedArchive._file._readInteger(appstate.selectedArchive._file.urlPtrPos + index * 8, 8).then(function (dirEntryPos) {
+        return appstate.selectedArchive._file.dirEntry(dirEntryPos);
     });
 };
 
@@ -242,7 +241,7 @@ ZIMFile.prototype.dirEntryByUrlIndex = function (index) {
  * @returns {Promise<DirEntry>} A Promise for the requested DirEntry
  */
 ZIMFile.prototype.dirEntryByTitleIndex = function (index) {
-    var that = this;
+    var that = appstate.selectedArchive._file;
     // Use v1 title pointerlist if available, or fall back to legacy v0 list
     var ptrList = that.articlePtrPos || that.titlePtrPos;
     return that._readInteger(ptrList + index * 4, 4).then(function (urlIndex) {
