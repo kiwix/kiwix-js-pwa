@@ -35,7 +35,7 @@ function loadArchiveFromDeviceStorage (storage, path) {
     return new zimArchive.ZIMArchive(storage, path).then(function (archive) {
         return archive;
     }).catch(function (error) {
-        return new Error('Error loading archive from DeviceStorage', error);
+        throw new Error('Error loading archive from DeviceStorage', { cause: error });
     });
 }
 /**
@@ -48,7 +48,7 @@ function loadArchiveFromFiles (files) {
         return new zimArchive.ZIMArchive(files, null).then(function (archive) {
             return archive;
         }).catch(function (error) {
-            return new Error('Error loading archive from file(s)', error);
+            throw new Error('Error loading archive from file(s)', { cause: error });
         });
     }
 }
