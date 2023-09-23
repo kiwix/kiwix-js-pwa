@@ -143,9 +143,6 @@ function ZIMArchive (storage, path) {
                 // If, in the future, listings are used in a more time-critical manner, consider forcing a wait before
                 // declaring the archive to be ready, by chaining the following callback in a .then() function of setListings.
                 return that;
-            }).catch(function (error) {
-                console.error('Error setting listings in ZIM file', error);
-                throw error;
             });
         });
     };
@@ -625,12 +622,11 @@ ZIMArchive.prototype.resolveRedirect = function(dirEntry, callback) {
  * @param {callbackStringContent} callback
  */
 ZIMArchive.prototype.readUtf8File = function(dirEntry, callback) {
-    var that = this;
     var cns = this.getContentNamespace();
     return dirEntry.readData().then(function(data) {
         var mimetype = dirEntry.getMimetype();
         if (window.TextDecoder) {
-            data = new TextDecoder('utf-8').decode(data);
+            data = new TextDecoder('utf-8').decode(data);    
         } else {
             // Support for IE11 and Edge Legacy - only support UTF-8 decoding
             data = utf8.parse(data);
@@ -640,8 +636,8 @@ ZIMArchive.prototype.readUtf8File = function(dirEntry, callback) {
             // var encoding = decData.match(/<meta\b[^>]+?Content-Type[^>]+?charset=([^'"\s]+)/i);
             // encoding = encoding ? encoding[1] : '';
             // if (encoding && !/utf-8/i.test(encoding)) decData = new TextDecoder(encoding).decode(data);
-
-            // Some Zimit assets have moved location and we need to follow the moved permanently data
+            
+            //Some Zimit assets have moved location and we need to follow the moved permanently data
             if (/301\s*moved\s+permanently/i.test(data)) dirEntry = transformZimit.getZimitRedirect(dirEntry, data, cns);
 
             // Some Zimit archives have an incorrect meta charset tag. See https://github.com/openzim/warc2zim/issues/88.
@@ -656,11 +652,12 @@ ZIMArchive.prototype.readUtf8File = function(dirEntry, callback) {
         if (dirEntry.inspect || dirEntry.zimitRedirect) {
             if (dirEntry.inspect) dirEntry = transformZimit.getZimitRedirect(dirEntry, data, cns);
             if (dirEntry.zimitRedirect) {
-                return that.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
+                var that = this;
+                return this.getDirEntryByPath(dirEntry.zimitRedirect).then(function (rd) {
                     return that.readUtf8File(rd, callback);
                 });
             }
-        } else {
+       } else {
             // DEV: Note that we cannot terminate regex below with $ because there is a (rogue?) mimetype
             // of 'text/html;raw=true'
             if (params.zimType === 'zimit' && /\/(?:html|css|javascript)\b/i.test(mimetype)) {
@@ -713,7 +710,7 @@ ZIMArchive.prototype.readBinaryFile = function(dirEntry, callback) {
  * @param {String} originalPath Optional string used internally to prevent infinite loop
  * @return {Promise<DirEntry>} A Promise that resolves to a Directory Entry, or null if not found.
  */
-ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, originalPath) {
+ZIMArchive.prototype.getDirEntryByPath = function(path, zimitResolving, originalPath) {
     var that = this;
     if (originalPath) appstate.originalPath = originalPath;
     path = path.replace(/\?kiwix-display/, '');
@@ -771,7 +768,7 @@ ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, origina
                     size: 1,
                     found: 0
                 }
-                return that.fuzzySearch(path, search);
+                return fuzzySearch(path, search);
             } else {
                 var newpath = path.replace(/^((?:A|C\/A)\/)[^/]+\/(.+)$/, '$1$2');
                 if (newpath === path) return null; // No further paths to explore!
@@ -792,8 +789,7 @@ ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, origina
  * @param {Object} search The search object
  * @returns {Promise<DirEntry>} A Promise that resolves to a Directory Entry, or null if not found
  */
-ZIMArchive.prototype.fuzzySearch = function (path, search) {
-    var that = this;
+function fuzzySearch(path, search) {
     return new Promise(function (resolve, reject) {
         console.log('Initiating fuzzy search for ' + path + '...');
         uiUtil.pollSpinner('Fuzzy search for ' + path + '...', true);
@@ -801,7 +797,7 @@ ZIMArchive.prototype.fuzzySearch = function (path, search) {
         // setTimeout(function () {
         //     if (!searchResolved) uiUtil.pollSpinner('Fuzzy search for ' + path + '...', true);
         // }, 5000);
-        return that.findDirEntriesWithPrefixCaseSensitive(path, search, function (dirEntry) {
+        appstate.selectedArchive.findDirEntriesWithPrefixCaseSensitive(path, search, function (dirEntry) {
             if (!search.found && dirEntry && dirEntry[0] && dirEntry[0].url) {
                 search.found++;
                 dirEntry = dirEntry[0];
@@ -814,11 +810,7 @@ ZIMArchive.prototype.fuzzySearch = function (path, search) {
                 searchResolved = true;
                 resolve(null);
             }
-        }, null).catch(function (e) {
-            console.error('Error in fuzzy search', e);
-            searchResolved = true;
-            reject(e);
-        });
+        }, null);
     });
 }
 
