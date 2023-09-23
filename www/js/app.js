@@ -3315,7 +3315,8 @@ function setLocalArchiveFromArchiveList (archive) {
         if (cssBlobCache) {
             cssBlobCache = new Map();
         }
-        appstate.selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archive, function (archive) {
+        return zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archive).then(function (archiveObject) {
+            appstate.selectedArchive = archiveObject;
             settingsStore.setItem('lastSelectedArchive', archive, Infinity);
             // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
             // (this only affects jQuery mode)
@@ -3360,9 +3361,8 @@ function setLocalArchiveFromArchiveList (archive) {
                 document.getElementById('usage').style.display = 'none';
                 document.getElementById('btnHome').click();
             }
-        }, function (message, label) {
-            // callbackError which is called in case of an error
-            uiUtil.systemAlert(message, label);
+        }).catch(function (error) {
+            console.error(error);
         });
     }
 }
@@ -3816,11 +3816,12 @@ function setLocalArchiveFromFileList (files) {
     }
     // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
     if (cssBlobCache) cssBlobCache = new Map();
-    appstate.selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
+    return zimArchiveLoader.loadArchiveFromFiles(files).then(function (archive) {
+        appstate.selectedArchive = archive;
         // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
         // (this only affects jQuery mode)
         appstate.target = 'iframe';
-        appstate.wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
+        appstate.wikimediaZimLoaded = archive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(archive._file.name);
         if (params.contentInjectionMode === 'serviceworker') {
             if (!appstate.wikimediaZimLoaded) {
                 if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
@@ -3910,9 +3911,8 @@ function setLocalArchiveFromFileList (files) {
                 document.getElementById('btnHome').click();
             }
         }
-    }, function (message, label) {
-        // callbackError which is called in case of an error
-        uiUtil.systemAlert(message, label);
+    }).catch(function (error) {
+        console.error(error.message, error);
     });
 }
 
