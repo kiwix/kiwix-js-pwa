@@ -1175,8 +1175,7 @@ archiveList.addEventListener('keydown', function (e) {
     }
 });
 archiveList.addEventListener('change', selectArchive);
-archiveList.addEventListener('click', selectArchive);
-archiveList.addEventListener('focus', function () {
+archiveList.addEventListener('mousedown', function () {
     // Unselect any selected option so that the user can select the same option again
     archiveList.selectedIndex = -1;
 });
