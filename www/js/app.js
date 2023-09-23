@@ -1175,13 +1175,13 @@ archiveList.addEventListener('keydown', function (e) {
     }
 });
 archiveList.addEventListener('change', selectArchive);
+archiveList.addEventListener('click', function (e) {
+    // Only accept the click if there is one archive in the list
+    if (archiveList.length === 1) selectArchive(e);
+});
 archiveList.addEventListener('mousedown', function () {
     // Unselect any selected option so that the user can select the same option again
     archiveList.selectedIndex = -1;
-    if (archiveList.length > 1) {
-        // Reselect the archive
-        archiveList.selectedIndex = 0;
-    }
 });
 currentArchiveLink.addEventListener('click', function (e) {
     e.target.value = currentArchiveLink.innerHTML;
@@ -2963,8 +2963,8 @@ if (storages !== null && storages.length > 0 ||
         }
     }
     if (!params.pickedFile) {
-        if (params.storedFile && (window.showOpenFilePicker)) {
-            // We are in an app with support for File System Access API, so we can't auto-load the file, show file pickers
+        if (params.storedFile && !params.useOPFS) {
+            // We are in an app that cannot open files auotomatically, so just show file pickers
             document.getElementById('btnConfigure').click();
         } else {
             searchForArchivesInPreferencesOrStorage();
