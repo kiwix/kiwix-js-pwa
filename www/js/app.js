@@ -2884,12 +2884,12 @@ function launchUWPServiceWorker () {
  */
 var storages = [];
 
-function searchForArchivesInPreferencesOrStorage () {
+function searchForArchivesInPreferencesOrStorage (displayOnly) {
     // First see if the list of archives is stored in the cookie
     var listOfArchivesFromCookie = settingsStore.getItem('listOfArchives');
     if (listOfArchivesFromCookie) {
         var directories = listOfArchivesFromCookie.split('|');
-        populateDropDownListOfArchives(directories);
+        populateDropDownListOfArchives(directories, displayOnly);
     } else {
         if (storages.length || params.localStorage) {
             searchForArchivesInStorage();
@@ -2965,6 +2965,7 @@ if (storages !== null && storages.length > 0 ||
     if (!params.pickedFile) {
         if (params.storedFile && !params.useOPFS) {
             // We are in an app that cannot open files auotomatically, so just show file pickers
+            searchForArchivesInPreferencesOrStorage(true);
             document.getElementById('btnConfigure').click();
         } else {
             searchForArchivesInPreferencesOrStorage();
@@ -3041,7 +3042,7 @@ if (storages !== null && storages.length > 0 ||
         setLocalArchiveFromFileSelect();
     } else {
         document.getElementById('btnConfigure').click();
-        searchForArchivesInPreferencesOrStorage();
+        searchForArchivesInPreferencesOrStorage(true);
     }
 }
 
@@ -3316,7 +3317,7 @@ function setLocalArchiveFromArchiveList (archive) {
                 } else {
                     var btnConfigure = document.getElementById('btnConfigure');
                     if (!btnConfigure.classList.contains('active')) btnConfigure.click();
-                    if (!params.appIsLaunching) document.getElementById('archiveFile').click();
+                    document.getElementById('archiveFile').click();
                 }
                 return;
                 // }
