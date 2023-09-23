@@ -20,13 +20,6 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 
-import xz from './xzdec_wrapper.js';
-import zstd from './zstddec_wrapper.js';
-import util from './util.js';
-import utf8 from './utf8.js';
-import zimDirEntry from './zimDirEntry.js';
-import FileCache from './filecache.js';
-
 'use strict';
 
 /* global params */
@@ -67,6 +60,13 @@ params.decompressorAPI = {
     decompressorLastUsed: null,
     errorStatus: null
 };
+
+import xz from './xzdec_wrapper.js';
+import zstd from './zstddec_wrapper.js';
+import util from './util.js';
+import utf8 from './utf8.js';
+import zimDirEntry from './zimDirEntry.js';
+import FileCache from './filecache.js';
 
 /**
  * A variable to keep track of the currently loaded ZIM archive, e.g., for labelling cache entries
@@ -230,9 +230,9 @@ ZIMFile.prototype.dirEntry = function (offset) {
  * @returns {Promise<DirEntry>} A Promise for the requested DirEntry
  */
 ZIMFile.prototype.dirEntryByUrlIndex = function (index) {
-    var file = this;
-    return file._readInteger(this.urlPtrPos + index * 8, 8).then(function (dirEntryPos) {
-        return file.dirEntry(dirEntryPos);
+    var that = this;
+    return that._readInteger(that.urlPtrPos + index * 8, 8).then(function (dirEntryPos) {
+        return that.dirEntry(dirEntryPos);
     });
 };
 
