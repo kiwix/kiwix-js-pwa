@@ -136,14 +136,14 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                     uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider);
                     // uiUtil.systemAlert(message);
                 }
+                // Set the archive file type ('open' or 'zimit')
+                params.zimType = that.setZimType();
+                // DEV: Currently, extended listings are only used for title (=article) listings when the user searches
+                // for an article or uses the Random button, by which time the listings will have been extracted.
+                // If, in the future, listings are used in a more time-critical manner, consider forcing a wait before
+                // declaring the archive to be ready, by chaining the following callback in a .then() function of setListings.
+                callbackReady(that);
             });
-            // Set the archive file type ('open' or 'zimit')
-            params.zimType = that.setZimType();
-            // DEV: Currently, extended listings are only used for title (=article) listings when the user searches
-            // for an article or uses the Random button, by which time the listings will have been extracted.
-            // If, in the future, listings are used in a more time-critical manner, consider forcing a wait before
-            // declaring the archive to be ready, by chaining the following callback in a .then() function of setListings.
-            callbackReady(that);
         });
     };
     if (storage && !path) {
