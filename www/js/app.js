@@ -3316,7 +3316,7 @@ function setLocalArchiveFromArchiveList (archive) {
                 } else {
                     var btnConfigure = document.getElementById('btnConfigure');
                     if (!btnConfigure.classList.contains('active')) btnConfigure.click();
-                    document.getElementById('archiveFile').click();
+                    if (!params.appIsLaunching) document.getElementById('archiveFile').click();
                 }
                 return;
                 // }
