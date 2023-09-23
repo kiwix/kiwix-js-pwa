@@ -1163,11 +1163,19 @@ document.getElementById('btnAbout').addEventListener('click', function () {
 var selectFired = false;
 var archiveList = document.getElementById('archiveList');
 archiveList.addEventListener('keydown', function (e) {
+    e.preventDefault();
     if (/^Enter$/.test(e.key)) {
         selectArchive(e);
+    } else if (/^ArrowDown$/.test(e.key)) {
+        if (archiveList.selectedIndex === archiveList.length - 1) archiveList.selectedIndex = 0;
+        else archiveList.selectedIndex++;
+    } else if (/^ArrowUp$/.test(e.key)) {
+        if (archiveList.selectedIndex === 0) archiveList.selectedIndex = archiveList.length - 1;
+        else archiveList.selectedIndex--;
     }
 });
 archiveList.addEventListener('change', selectArchive);
+archiveList.addEventListener('click', selectArchive);
 archiveList.addEventListener('focus', function () {
     // Unselect any selected option so that the user can select the same option again
     archiveList.selectedIndex = -1;
