@@ -1178,6 +1178,10 @@ archiveList.addEventListener('change', selectArchive);
 archiveList.addEventListener('mousedown', function () {
     // Unselect any selected option so that the user can select the same option again
     archiveList.selectedIndex = -1;
+    if (archiveList.length > 1) {
+        // Reselect the archive
+        archiveList.selectedIndex = 0;
+    }
 });
 currentArchiveLink.addEventListener('click', function (e) {
     e.target.value = currentArchiveLink.innerHTML;
