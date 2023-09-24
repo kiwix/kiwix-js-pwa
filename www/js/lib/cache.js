@@ -722,7 +722,7 @@ function importOPFSEntries (files) {
             return fileHandle.createWritable().then(function (writer) {
                 uiUtil.pollSpinner('Importing ' + file.name + '...', true);
                 return writer.write(file).then(function () {
-                    console.log('Imported ' + file.name + ' to OPFS');
+                    uiUtil.pollSpinner('Imported ' + file.name + '...', true);
                     return writer.close();
                 });
             });
