@@ -3425,7 +3425,7 @@ function processDirectoryOfFiles (fileHandles, archive) {
             if (fileset.length) {
                 // Wait for all getFile Promises to resolve
                 Promise.all(fileset).then(function (resolvedFiles) {
-                    setLocalArchiveFromFileList(resolvedFiles);
+                    setLocalArchiveFromFileList(resolvedFiles, true);
                 });
             } else {
                 console.error('There was an error reading the picked file(s)!');
@@ -3767,7 +3767,13 @@ function processFilesArray (files, callback) {
     if (/UWP/.test(params.appType)) Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.remove(params.falFolderToken);
 }
 
-function setLocalArchiveFromFileList (files) {
+/**
+ * Sets the local archive from an array of File objects
+ * @param {Array<File>} files An array of File objects
+ * @param {Boolean} fromArchiveList Indicates that the file was picked from the archive list, so don't re-populate list
+ * @returns A callback function that resolves when the archive is loaded
+ */
+function setLocalArchiveFromFileList (files, fromArchiveList) {
     if (!files.length) {
         if (document.getElementById('configuration').style.display == 'none') {
             document.getElementById('btnConfigure').click();
@@ -3801,11 +3807,17 @@ function setLocalArchiveFromFileList (files) {
             }
         }
     }
+    var noZIMFound = document.getElementById('noZIMFound');
+    if (fileNames.length) {
+        noZIMFound.style.display = 'none';
+    } else {
+        noZIMFound.style.display = '';
+    }
     // If there was only one file chosen (or set of split ZIMs, but we only store zimaa), select it
     if (fileNames.length === 1 || firstSplitFileIndex !== null) storedFileIndex = firstSplitFileIndex || 0;
     // Populate the list of archives with the newly selected file(s)
     var archiveList = document.getElementById('archiveList');
-    populateDropDownListOfArchives(fileNames, true);
+    if (!fromArchiveList) populateDropDownListOfArchives(fileNames, true);
     // Check that user hasn't picked just part of split ZIM
     if (fileNames.length === 1 && firstSplitFileIndex && files.length === 1) {
         return uiUtil.systemAlert('<p>You have picked only part of a split archive!</p><p>Please select its folder in Config, ' +
@@ -3835,6 +3847,7 @@ function setLocalArchiveFromFileList (files) {
     }
     // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
     if (cssBlobCache) cssBlobCache = new Map();
+    // TODO: Turn this into a Promise
     appstate.selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
         // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
         // (this only affects jQuery mode)
