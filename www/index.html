@@ -424,8 +424,8 @@
                         This app reads very large files stored on your device. All versions of the app can pick a file from any user-accessible location, and on desktop browsers, you
                         can drag-and-drop any ZIM archive into the app. Some versions of the app can also be granted access to a folder or directory in which you may store several ZIM
                         archives. If this option is available, you will see a "Select folder" button (after clicking "Select storage"). In almost all cases, except for installed
-                        Electron apps, you will be asked to grant permission to access previously picked files or folders every time the app launches (usually this is just one or two
-                        clicks). This is a security feature of your browser and operating system, and we cannot circumvent it.
+                        Electron apps or if you are using the Origin Private File System (see below), you will be asked to grant permission to access previously picked files or
+                        folders every time the app launches (usually this is just one or two clicks). This is a security feature of your browser and operating system.
                     </p>
                     <p>
                         Chromium desktop browsers support the <a href="https://developer.chrome.com/en/articles/file-handling/" target="_blank">File Handling API</a> when you install the PWA.
@@ -436,9 +436,9 @@
                     <p>
                         In some modern browsers, you will see an experimental option "<b>Display Private File System</b>" under the File and Folder selectors. If you tick this option,
                         then the app will request an <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system" target="_blank">Origin Private File System</a>
-                        (OPFS) from the browser. Then, when you pick a ZIM file, instead of opening it, it will be stored in the OPFS. You may also select all the parts of a split ZIM file to store in the OPFS
-                        (<code>.zimaa</code>, <code>.zimab</code>, etc.). Note that in this case, only the <code>.zimaa</code> entry will be displayed in the file list. If you drag-and-drop a file into the app
-                        while the OPFS is displayed, that file will be <b>not</b> be stored in the OPFS, but instead will be opened and displayed.
+                        (OPFS) from the browser. Then, when you pick a ZIM file, instead of opening it, it will be stored in the OPFS. You may also select more than one archive to store in the OPFS,
+                        including all the parts of a split ZIM file (<code>.zimaa</code>, <code>.zimab</code>, etc.). Note that in this case, only the <code>.zimaa</code> entry will be displayed in
+                        the file list. If you drag-and-drop a file into the app while the OPFS is displayed, that file will be <b>not</b> be stored in the OPFS, but instead will be opened and displayed.
                     </p>
                     <p>
                         If you want to <b>delete an archive</b> from the Private File System, click the <span class="glyphicon glyphicon-trash"></span> icon,
