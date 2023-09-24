@@ -1307,18 +1307,37 @@ function selectArchive (list) {
 // Legacy file picker is used as a fallback when all other pickers are unavailable
 archiveFilesLegacy.addEventListener('change', function (files) {
     var filesArray = Array.from(files.target.files);
+    // Construct a list of filenames joined with <li> tags
+    var filenamesList = '';
+    var filesSize = 0;
+    filesArray.forEach(function (file) {
+        filesSize += file.size;
+        filenamesList += '<li>' + file.name + '</li>';
+    });
     if (params.useOPFS) {
-        // User has chosen a file or files to store in the Origin Private File System
-        // This operation can take a long time, so show the spinner
-        uiUtil.pollSpinner('Adding files to OPFS...', true);
-        return cache.importOPFSEntries(filesArray).then(function () {
-                uiUtil.systemAlert('The selected files were successfully added to the OPFS!');
-                uiUtil.clearSpinner();
-                processNativeDirHandle(params.pickedFolder);
-                populateOPFSStorageQuota();
-        }).catch(function (err) {
-            console.error('Unable to import files to OPFS!', err);
-            uiUtil.systemAlert('We could not import the selected files to the OPFS!');
+        // Abort if user didn't select any files
+        if (filesArray.length === 0) return;
+        // Check the size of the files does not exceed the quota
+        if (filesSize > appstate.OPFSQuota) {
+            return uiUtil.systemAlert('<p>The total size of the selected files is <b>' + (filesSize / 1024 / 1024 / 1024).toFixed(2) +
+            ' GB</b>, which<br />exceeds the estimated OPFS quota of <b>' + (appstate.OPFSQuota / 1024 / 1024 / 1024).toFixed(2) + ' GB</n>!',
+            'OPFS Quota Exceeded', null, null, null, 'Cancel');
+        }
+        return uiUtil.systemAlert('<p>Do you want to add these files to the Private File System?<p><ul>' + filenamesList + '</ul>',
+        'Add to OPFS', true, null, 'Add to OPFS').then(function (confirmed) {
+            if (!confirmed) return;
+            // User has chosen a file or files to store in the Origin Private File System
+            // This operation can take a long time, so show the spinner
+            uiUtil.pollSpinner('Adding files to OPFS...', true);
+            return cache.importOPFSEntries(filesArray).then(function () {
+                    uiUtil.systemAlert('The selected files were successfully added to the OPFS!');
+                    uiUtil.clearSpinner();
+                    processNativeDirHandle(params.pickedFolder);
+                    populateOPFSStorageQuota();
+            }).catch(function (err) {
+                console.error('Unable to import files to OPFS!', err);
+                uiUtil.systemAlert('We could not import the selected files to the OPFS!');
+            });
         });
     }
     params.pickedFolder = null;
@@ -1466,7 +1485,7 @@ function setOPFSUI () {
         archiveFilesLabel.style.display = 'none';
         archiveFileLabel.classList.remove('col-xs-12');
         archiveFileLabel.classList.add('col-xs-6');
-        archiveFile.value = 'Select file(s)';
+        archiveFile.value = 'Add file(s)';
         archiveFileLabel.innerHTML = '<p><b>Select file(s) to add to the Private File System</b>:</p>'
         OPFSQuota.style.display = '';
         btnDeleteOPFSEntry.style.display = '';
@@ -3735,6 +3754,7 @@ function populateOPFSStorageQuota () {
     if (navigator && navigator.storage && ('estimate' in navigator.storage)) {
     navigator.storage.estimate().then(function (estimate) {
         var percent = ((estimate.usage / estimate.quota) * 100).toFixed(2);
+        appstate.OPFSQuota = estimate.quota;
         document.getElementById('OPFSQuota').innerHTML =
             '<b>OPFS storage quota:</b><br />Used: <b>' + percent + '%</b>; Remaining: <b>' +
             (estimate.quota / 1024 / 1024 / 1024).toFixed(2) + ' GB</b>';
