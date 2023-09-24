@@ -803,14 +803,9 @@ function setTab (activeBtn) {
         // If not UWP, File System Access API, webkitdirectory API or Electron methods, hide the folder picker
         document.getElementById('archiveFiles').style.display = 'none';
         document.getElementById('archiveFilesLabel').style.display = 'none';
-        // if (!params.useOPFS) document.getElementById('fsManager').style.display = 'none';
-    //     document.getElementById('archiveFilesDiv').style.display = 'none';
-    //     document.getElementById('archivesFound').style.display = 'none';
-    //     document.getElementById('instructions').style.display = appstate.selectedArchive ? 'none' : 'block';
-    //     document.getElementById('archiveFilesLegacyDiv').style.display = 'block';
-    //     document.getElementById('btnRefresh').style.display = 'none';
     }
-    if (navigator && navigator.storage && ('getDirectory' in navigator.storage)) {
+    // Display OPFS checkbox if the browser supports the full API
+    if (navigator && navigator.storage && ('getDirectory' in navigator.storage) && ('estimate' in navigator.storage)) {
         document.getElementById('displayOPFS').style.display = '';
     }
     document.getElementById('archiveFilesLegacyDiv').style.display = 'none';
