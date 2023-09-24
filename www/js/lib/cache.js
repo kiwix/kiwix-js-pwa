@@ -720,6 +720,7 @@ function importOPFSEntries (files) {
     return Promise.all(files.map(function (file) {
         return params.pickedFolder.getFileHandle(file.name, { create: true }).then(function (fileHandle) {
             return fileHandle.createWritable().then(function (writer) {
+                uiUtil.pollSpinner('Importing ' + file.name + '...', true);
                 return writer.write(file).then(function () {
                     console.log('Imported ' + file.name + ' to OPFS');
                     return writer.close();
