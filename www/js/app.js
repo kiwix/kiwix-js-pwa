@@ -813,8 +813,10 @@ function setTab (activeBtn) {
     document.getElementById('libraryArea').style.borderColor = '';
     document.getElementById('libraryArea').style.borderStyle = '';
     if (params.packagedFile && params.storedFile && params.storedFile !== params.packagedFile) {
-        currentArchiveLink.innerHTML = params.storedFile;
+        currentArchiveLink.innerHTML = params.storedFile.replace(/\.zim(\w\w)?$/i, '');
+        currentArchiveLink.dataset.archive = params.storedFile;
         currentArchive.style.display = 'block';
+        openCurrentArchive.style.display = (params.pickedFile || params.pickedFolder) ? 'none' : '';
         document.getElementById('downloadLinksText').style.display = 'none';
         document.getElementById('usage').style.display = 'none';
     }
@@ -1179,11 +1181,11 @@ archiveList.addEventListener('mousedown', function () {
     archiveList.selectedIndex = -1;
 });
 currentArchiveLink.addEventListener('click', function (e) {
-    e.target.value = currentArchiveLink.innerHTML;
+    e.target.value = currentArchiveLink.dataset.archive;
     selectArchive(e);
 });
 openCurrentArchive.addEventListener('click', function (e) {
-    e.target.value = currentArchiveLink.innerHTML;
+    e.target.value = currentArchiveLink.dataset.archive;
     selectArchive(e);
 });
 
@@ -2395,7 +2397,9 @@ document.getElementById('displayFileSelectorsCheck').addEventListener('change', 
     document.getElementById('downloadLinksText').style.display = params.showFileSelectors ? 'none' : 'inline';
     document.getElementById('usage').style.display = params.showFileSelectors ? 'none' : 'inline';
     if (params.packagedFile && params.storedFile && params.storedFile != params.packagedFile) {
-        currentArchiveLink.innerHTML = params.storedFile.replace(/\.zim$/i, '');
+        currentArchiveLink.innerHTML = params.storedFile.replace(/\.zim(\w\w)?$/i, '');
+        currentArchiveLink.dataset.archive = params.storedFile;
+        openCurrentArchive.style.display = (params.pickedFile || params.pickedFolder) ? 'none' : '';
         currentArchive.style.display = params.showFileSelectors ? 'none' : 'block';
         document.getElementById('downloadLinksText').style.display = params.showFileSelectors ? 'none' : 'block';
     }
@@ -3091,7 +3095,7 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
     document.getElementById('openLocalFiles').style.display = params.rescan ? 'block' : 'none';
     var plural = 's';
     plural = archiveDirectories.length === 1 ? '' : plural;
-    document.getElementById('archiveNumber').innerHTML = '<b>' + archiveDirectories.length + '</b> Archive' + plural + ' found in selected location (tap "Select storage" to change)';
+    document.getElementById('archiveNumber').innerHTML = '<b>' + archiveDirectories.length + '</b> Archive' + plural + ' found in selected location';
     var comboArchiveList = document.getElementById('archiveList');
     var usage = document.getElementById('usage');
     comboArchiveList.options.length = 0;
