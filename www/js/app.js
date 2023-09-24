@@ -813,7 +813,7 @@ function setTab (activeBtn) {
     document.getElementById('libraryArea').style.borderColor = '';
     document.getElementById('libraryArea').style.borderStyle = '';
     if (params.packagedFile && params.storedFile && params.storedFile !== params.packagedFile) {
-        currentArchiveLink.innerHTML = params.storedFile.replace(/\.zim$/i, '');
+        currentArchiveLink.innerHTML = params.storedFile;
         currentArchive.style.display = 'block';
         document.getElementById('downloadLinksText').style.display = 'none';
         document.getElementById('usage').style.display = 'none';
@@ -3797,11 +3797,9 @@ function setLocalArchiveFromFileList (files) {
     }
     // If there was only one file chosen (or set of split ZIMs, but we only store zimaa), select it
     if (fileNames.length === 1 || firstSplitFileIndex !== null) storedFileIndex = firstSplitFileIndex || 0;
-    // If the selected archive is not the currently selected on on the archive list, update it
+    // Populate the list of archives with the newly selected file(s)
     var archiveList = document.getElementById('archiveList');
-    if (archiveList.value !== files[storedFileIndex].name) {
-        populateDropDownListOfArchives(fileNames, true);
-    }
+    populateDropDownListOfArchives(fileNames, true);
     // Check that user hasn't picked just part of split ZIM
     if (fileNames.length === 1 && firstSplitFileIndex && files.length === 1) {
         return uiUtil.systemAlert('<p>You have picked only part of a split archive!</p><p>Please select its folder in Config, ' +
