@@ -1238,6 +1238,8 @@ function selectArchive (list) {
         selectFired = false;
         return;
     }
+    // Show the spinner because on some sytems loading the archive is slow
+    uiUtil.pollSpinner('Loading archive...', true);
     if (window.showOpenFilePicker || params.useOPFS) {
         getNativeFSHandle(function (handle) {
             if (!handle) {
