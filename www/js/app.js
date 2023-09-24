@@ -1105,7 +1105,7 @@ function getNativeFSHandle (callback) {
                     if (callback) {
                         callback(handle);
                     } else {
-                        searchForArchivesInPreferencesOrStorage();
+                        searchForArchivesInPreferencesOrStorage(true);
                     }
                 }
             });
@@ -1419,6 +1419,11 @@ document.getElementById('useOPFSCheck').addEventListener('change', function (e) 
     params.useOPFS = e.target.checked;
     setOPFSUI();
     if (params.useOPFS) {
+        params.storedFile = null;
+        params.storedFilePath = null;
+        params.pickedFile = null;
+        params.pickedFolder = null;
+        settingsStore.removeItem('lastSelectedArchive');
         loadOPFSDirectory();
     }
 });
@@ -2940,7 +2945,7 @@ if ($.isFunction(navigator.getDeviceStorages)) {
 if (storages !== null && storages.length > 0 ||
     typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined' ||
     typeof window.fs !== 'undefined' || typeof window.showOpenFilePicker === 'function' ||
-    params.webkitdirectory) {
+    params.webkitdirectory || params.useOPFS) {
     if (window.fs && !(params.pickedFile || params.pickedFolder)) {
         // Below we compare the prefix of the files, i.e. the generic filename without date, so we can smoothly deal with upgrades
         if (params.packagedFile && params.storedFile.replace(/(^[^-]+all).+/, '$1') === params.packagedFile.replace(/(^[^-]+all).+/, '$1')) {
@@ -3515,6 +3520,9 @@ function pickFileUWP () { // Support UWP FilePicker [kiwix-js-windows #3]
 function pickFileNativeFS () {
     return window.showOpenFilePicker({ multiple: false }).then(function (fileHandle) {
         return processNativeFileHandle(fileHandle[0]);
+    }).catch(function (err) {
+        // This is normal if the user is starting the app for the first time
+        console.warn('User cancelled file picker, or else it is not possible to access the file system programmatically', err);
     });
 }
 
