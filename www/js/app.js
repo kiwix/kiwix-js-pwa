@@ -1472,8 +1472,10 @@ function loadOPFSDirectory () {
 function setOPFSUI () {
     var useOPFS = document.getElementById('useOPFSCheck');
     var archiveFile = document.getElementById('archiveFile');
+    var archiveFileCol = document.getElementById('archiveFileCol');
     var archiveFileLabel = document.getElementById('archiveFileLabel');
     var archiveFiles = document.getElementById('archiveFiles');
+    var archiveFilesCol = document.getElementById('archiveFilesCol');
     var archiveFilesLabel = document.getElementById('archiveFilesLabel');
     var btnDeleteOPFSEntry = document.getElementById('btnDeleteOPFSEntry');
     var btnExportOPFSEntry = document.getElementById('btnExportOPFSEntry');
@@ -1485,9 +1487,13 @@ function setOPFSUI () {
         archiveFilesLabel.style.display = 'none';
         archiveFileLabel.classList.remove('col-xs-6');
         archiveFileLabel.classList.add('col-xs-12');
+        archiveFileLabel.innerHTML = '<p><b>Select file(s) to add to OPFS</b>:</p>'
         archiveFile.value = 'Add file(s)';
         archiveFile.title = 'Select a single file or multiple files to add to the Origin Private File System. In total, they must not exceed the estimated quota displayed in the OPFS quota panel.';
-        archiveFileLabel.innerHTML = '<p><b>Select file(s) to add to OPFS</b>:</p>'
+        archiveFileCol.classList.remove('col-xs-6');
+        archiveFileCol.classList.add('col-xs-5');
+        archiveFilesCol.classList.remove('col-xs-6');
+        archiveFilesCol.classList.add('col-xs-7');
         OPFSQuota.style.display = '';
         btnDeleteOPFSEntry.style.display = '';
         if ('showOpenFilePicker' in window) btnExportOPFSEntry.style.display = '';
@@ -1495,6 +1501,10 @@ function setOPFSUI () {
     } else {
         settingsStore.setItem('useOPFS', false, Infinity);
         useOPFS.checked = false;
+        archiveFileCol.classList.remove('col-xs-5');
+        archiveFileCol.classList.add('col-xs-6');
+        archiveFilesCol.classList.remove('col-xs-7');
+        archiveFilesCol.classList.add('col-xs-6');
         if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog && !params.webkitdirectory) {
             archiveFileLabel.innerHTML = '<p><b>Pick ZIM archive(s)</b>:</p>';
             archiveFileLabel.classList.remove('col-xs-6');

@@ -790,12 +790,12 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-xs-5">
+                                        <div id="archiveFileCol" class="col-xs-6">
                                             <input type="button" class="btn btn-primary btn-inline" value="Select file(s)" id="archiveFile" />
                                         </div>
-                                        <div class="col-xs-7">
+                                        <div id="archiveFilesCol" class="col-xs-6">
                                             <div id="OPFSQuota"  style="display: none;"></div>
-                                            <input type="button" class="btn btn-primary btn-inline" value="Select folder" title="Select a folder containing several ZIM files, and/or all the parts of a split ZIM file." id="archiveFiles" />
+                                            <input type="button" class="btn btn-primary btn-inline" value="Select folder" id="archiveFiles" title="Select a folder containing several ZIM files, and/or all the parts of a split ZIM file." />
                                         </div>
                                     </div>
                                 </div>
@@ -816,7 +816,7 @@
                                     <label class="checkbox" title="This uses a dedicated Origin Private File System (OPFS) for the app, which allows the app to load these files automatically on launch (without your having to provide permission each time). See About -> Origin Private File System for more information.">
                                         <input type="checkbox" name="useOPFS" id="useOPFSCheck" />
                                         <span class="checkmark"></span>
-                                        <b>Use Private File System</b> (<i>experimental</i>) <a href="#OPFS" class="aboutLink"><b>[info]</b></a>
+                                        <b>Use Private File System <a href="#OPFS" class="aboutLink">[info]</a></b> (<i>experimental</i>)
                                     </label>
                                 </div>
                             </div>
