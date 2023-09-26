@@ -1483,8 +1483,8 @@ function setOPFSUI () {
         useOPFS.checked = true;
         archiveFiles.style.display = 'none';
         archiveFilesLabel.style.display = 'none';
-        archiveFileLabel.classList.remove('col-xs-12');
-        archiveFileLabel.classList.add('col-xs-6');
+        archiveFileLabel.classList.remove('col-xs-6');
+        archiveFileLabel.classList.add('col-xs-12');
         archiveFile.value = 'Add file(s)';
         archiveFile.title = 'Select a single file or multiple files to add to the Origin Private File System. In total, they must not exceed the estimated quota displayed in the OPFS quota panel.';
         archiveFileLabel.innerHTML = '<p><b>Select file(s) to add to OPFS</b>:</p>'
@@ -1496,16 +1496,18 @@ function setOPFSUI () {
         settingsStore.setItem('useOPFS', false, Infinity);
         useOPFS.checked = false;
         if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog && !params.webkitdirectory) {
-            archiveFileLabel.innerHTML = '<p><b>Pick archive(s) or drag-and-drop</b>:</p>';
+            archiveFileLabel.innerHTML = '<p><b>Pick ZIM archive(s)</b>:</p>';
             archiveFileLabel.classList.remove('col-xs-6');
             archiveFileLabel.classList.add('col-xs-12');
-            archiveFile.title = 'Select one or more files you wish to access during this session. You may load as many files as you wish, and they will be added to the selection list above.';
+            archiveFile.title = 'Select one or more files you wish to access during this session from your device\'s storage. You may load as many files as you wish, and they will be added to the selection list above.';
             archiveFile.value = 'Select file(s)';
         } else {
             archiveFiles.style.display = '';
             archiveFilesLabel.style.display = '';
             archiveFileLabel.innerHTML = '<p><b>Pick a single unsplit archive</b>:</p>';
-            archiveFile.title = 'Select a single file. For split or multiple files, place the files in a directory and use the "Select folder" button instead.'
+            archiveFileLabel.classList.remove('col-xs-12');
+            archiveFileLabel.classList.add('col-xs-6');
+            archiveFile.title = 'Select a single file from your device\'s storage. For split or multiple files, place the files in a directory and use the "Select folder" button instead.'
             archiveFile.value = 'Select file';
         }
         OPFSQuota.style.display = 'none';
