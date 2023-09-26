@@ -1486,7 +1486,8 @@ function setOPFSUI () {
         archiveFileLabel.classList.remove('col-xs-12');
         archiveFileLabel.classList.add('col-xs-6');
         archiveFile.value = 'Add file(s)';
-        archiveFileLabel.innerHTML = '<p><b>Select file(s) to add to the Private File System</b>:</p>'
+        archiveFile.title = 'Select a single file or multiple files to add to the Origin Private File System. In total, they must not exceed the estimated quota displayed in the OPFS quota panel.';
+        archiveFileLabel.innerHTML = '<p><b>Select file(s) to add to OPFS</b>:</p>'
         OPFSQuota.style.display = '';
         btnDeleteOPFSEntry.style.display = '';
         if ('showOpenFilePicker' in window) btnExportOPFSEntry.style.display = '';
@@ -1498,11 +1499,13 @@ function setOPFSUI () {
             archiveFileLabel.innerHTML = '<p><b>Pick archive(s) or drag-and-drop</b>:</p>';
             archiveFileLabel.classList.remove('col-xs-6');
             archiveFileLabel.classList.add('col-xs-12');
+            archiveFile.title = 'Select one or more files you wish to access during this session. You may load as many files as you wish, and they will be added to the selection list above.';
             archiveFile.value = 'Select file(s)';
         } else {
             archiveFiles.style.display = '';
             archiveFilesLabel.style.display = '';
             archiveFileLabel.innerHTML = '<p><b>Pick a single unsplit archive</b>:</p>';
+            archiveFile.title = 'Select a single file. For split or multiple files, place the files in a directory and use the "Select folder" button instead.'
             archiveFile.value = 'Select file';
         }
         OPFSQuota.style.display = 'none';

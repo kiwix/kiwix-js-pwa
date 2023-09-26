@@ -795,7 +795,7 @@
                                         </div>
                                         <div class="col-xs-6">
                                             <div id="OPFSQuota"  style="display: none;"></div>
-                                            <input type="button" class="btn btn-primary btn-inline" value="Select folder" id="archiveFiles" />
+                                            <input type="button" class="btn btn-primary btn-inline" value="Select folder" title="Select a folder containing several ZIM files, and/or all the parts of a split ZIM file." id="archiveFiles" />
                                         </div>
                                     </div>
                                 </div>
@@ -813,17 +813,17 @@
                                     </div>
                                 </div>
                                 <div id="displayOPFS" class="row" style="display: none; margin: 0.5em;">
-                                    <label class="checkbox">
+                                    <label class="checkbox" title="This uses a dedicated Origin Private File System (OPFS) for the app, which allows the app to load these files automatically on launch (without your having to provide permission each time). See About -> Origin Private File System for more information.">
                                         <input type="checkbox" name="useOPFS" id="useOPFSCheck" />
                                         <span class="checkmark"></span>
-                                        <b>Use Private File System</b> (<i>experimental</i>) <a href="#OPFS" class="aboutLink" title="See About -> Origin Private File System"><b>[info]</b></a>
+                                        <b>Use Private File System</b> (<i>experimental</i>) <a href="#OPFS" class="aboutLink"><b>[info]</b></a>
                                     </label>
                                 </div>
                             </div>
                             <div id="rescanStorage" class="row" style="margin-top: 1em;">
                                 <div class="col-xs-12">
-                                    <input style="float:left; margin-right:1em;" type="button" class="btn btn-primary btn-inline" value="Select storage" id="btnRescanDeviceStorage" />
-                                    Select file/folder or <b>drag and drop ZIM</b>
+                                    <input style="float:left; margin-right:1em;" type="button" class="btn btn-primary btn-inline" value="Select storage" id="btnRescanDeviceStorage" title="Tap to show file or folder pickers and other storage options." />
+                                    Select ZIM files or <b>drag and drop</b>
                                 </div>
                             </div>
                         </div>
