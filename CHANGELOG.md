@@ -1,21 +1,14 @@
 # Changelog
 
-## In-progress release 2.6.6
-
-* ENHANCEMENT: Avoid double loading of WebP Polyfill when present in ZIM
-* FIX: Avoid duplication of title in wider range of ZIMs
-* UPDATE: Electron version bumped to 22.3.21
-
-## Release 2.6.4
+## Release 2.6.7 / 2.6.8-Wikivoyage
 
 * FEATURE: Full-text search enabled by default on iOS 15+
+* UPDATE: Electron version bumped to 22.3.21
+* ENHANCEMENT: Avoid double loading of WebP Polyfill when present in ZIM
 * REGRESSION: Fixed loss of ability to pick ZIM archives in latest Chromium on Android
-* REGRESSION: Fixed loss of ability to access custom ZIMs from download library
-* REGRESSION: Work around missing titles in all WikiMedia scrapes since 2023-07
+* FIX: Avoid duplication of title in wider range of ZIMs
 * FIX: Avoid hyperlinking math fallback images to high-res Wikimedia versions
-* FIX: Conflict between manual image display and hyperlinking images to high-res Wikimedia versions
 * FIX: More broken Linux icons
-* DEV: Appx package is now uploaded to Kiwix releases
 * DEV: Added clear documentation to the Create-DraftRelease.ps1 script
 * DEV: Remove more unnecessary JQuery from the app
 * DEV: Disable appCache by default if developing with the Vite server
