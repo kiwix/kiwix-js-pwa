@@ -86,8 +86,8 @@ try switching the app to JQuery mode (see Content injection mode in Configuratio
 
 * As an application implemented with the following frameworks:
 
-  + <img src="images/electron-color.svg" width="27" /> Electron >= 1.8.0 (Ubuntu, Debian, Fedora, OpenSUSE, AppImage, Windows): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html)
-  + <img src="images/microsoftwindows-color.svg" width="20" /> Universal Windows Platform (UWP) >=10.0.10240: [Microsoft Store app](https://www.microsoft.com/store/apps/9P8SLZ4J979J) or [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html) - Windows 10/11 (Electron), Windows on ARM, Xbox, Windows 10 Mobile
+  + <img src="images/electron-color.svg" width="27" /> Electron >= 1.8.0 (32bit and 64bit builds for Windows, Ubuntu, Debian, Fedora, OpenSUSE, AppImage): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html)
+  + <img src="images/microsoftwindows-color.svg" width="20" /> Universal Windows Platform (UWP) >=10.0.10240: [Microsoft Store app](https://www.microsoft.com/store/apps/9P8SLZ4J979J) or [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html)
   + <img src="images/nwjs-color.svg" width="20" /> NWJS >= 0.23.0 (Windows 7/8/10/11): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html)
   + NWJS 0.14.7 (Windows XP/Vista only): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html)
 
@@ -180,7 +180,7 @@ to Wikipedia or Wikivoyage articles.
 
 ## Privacy Policy
 
-When installed, Kiwix JS Windows and Linux is capable of working entirely offline. This application does not collect or
+When installed, Wikivoyage by Kiwix is capable of working entirely offline. This application does not collect or
 record any of your personal data, though if you installed it from a Store, the Store operator may collect anonymous
 usage data (see below). The app only remembers your browsing history for the duration of a session (for the purpose
 of returning to previously viewed pages). This history is lost on exiting the app with the optional exception of the

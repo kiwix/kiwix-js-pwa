@@ -1,13 +1,13 @@
 {
-  "name": "kiwix-js-electron",
-  "productName": "Kiwix JS Electron",
-  "version": "2.6.6-E",
-  "description": "Kiwix JS offline ZIM archive reader packaged for the Electron framework",
+  "name": "kiwix-js-wikivoyage",
+  "productName": "Wikivoyage by Kiwix",
+  "version": "2.6.7-E",
+  "description": "Wikivoyage packaged for the Electron framework",
   "main": "main.cjs",
   "type": "module",
   "build": {
-    "appId": "kiwix.js.electron",
-    "productName": "Kiwix JS Electron",
+    "appId": "kiwix.js.wikivoyage",
+    "productName": "Wikivoyage by Kiwix",
     "directories": {
       "output": "bld/Electron",
       "buildResources": "../electron_icons"
@@ -21,26 +21,12 @@
         "from": "archives",
         "to": "archives"
       },
-      "fileAssociations": [
-        {
-          "ext": "zim",
-          "name": "ZIM Archive"
-        },
-        {
-          "ext": "zimaa",
-          "name": "ZIM Archive"
-        }
-      ],
       "publish": [
         "github"
       ],
       "target": [
         {
           "target": "NSIS",
-          "arch": "ia32"
-        },
-        {
-          "target": "portable",
           "arch": "ia32"
         },
         {
@@ -54,18 +40,6 @@
         "from": "archives",
         "to": "app/archives"
       },
-      "fileAssociations": [
-        {
-          "ext": "zim",
-          "name": "ZIM Archive",
-          "mimeType": "application/x-openzim"
-        },
-        {
-          "ext": "zimaa",
-          "name": "ZIM Archive",
-          "mimeType": "application/x-openzim"
-        }
-      ],
       "publish": [
         "github"
       ],
@@ -81,12 +55,6 @@
           "arch": [
             "x64"
           ]
-        },
-        {
-          "target": "rpm",
-          "arch": [
-            "x64"
-          ]
         }
       ],
       "category": "Education"
@@ -98,8 +66,8 @@
     },
     "appx": {
       "backgroundColor": "transparent",
-      "displayName": "Kiwix JS",
-      "identityName": "Kiwix.KiwixJS",
+      "displayName": "Wikivoyage by Kiwix",
+      "identityName": "Kiwix.WikivoyagebyKiwix",
       "publisher": "CN=Association Kiwix, O=Association Kiwix, L=Lausanne, C=CH",
       "publisherDisplayName": "Association Kiwix",
       "languages": "en-GB",
@@ -139,7 +107,11 @@
   "repository": "https://github.com/kiwix/kiwix-js-windows",
   "keywords": [
     "Kiwix",
+    "Wikivoyage",
     "offline",
+    "travel",
+    "guide",
+    "tourism",
     "Wikipedia",
     "ZIM",
     "reader"
