@@ -1221,6 +1221,7 @@ function selectArchive (list) {
                     settingsStore.removeItem('lastSelectedArchive');
                     params.rescan = true;
                     processNativeDirHandle(params.pickedFolder);
+                    populateOPFSStorageQuota();
                 });
             }
             document.getElementById('btnDeleteOPFSEntry').click();
@@ -1553,9 +1554,9 @@ function setOPFSUI () {
 // Set the OPFS UI no app launch
 setOPFSUI();
 // If user had previously set the app to use the OPFS directory, attempt to launch any ZIM in it
-if (params.useOPFS) {
-    loadOPFSDirectory();
-}
+// if (params.useOPFS) {
+//     loadOPFSDirectory();
+// }
 document.getElementById('btnExportOPFSEntry').addEventListener('click', function () {
     params.exportOPFSEntry = !params.exportOPFSEntry;
     var determinedTheme = params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme;
@@ -1595,6 +1596,7 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
                 if (fsHandle && fsHandle.kind === 'directory') {
                     if (params.useOPFS) params.rescan = false;
                     processNativeDirHandle(fsHandle);
+                    if (params.useOPFS) populateOPFSStorageQuota();
                 } else {
                     btnArchiveFiles.click();
                 }
@@ -1602,12 +1604,13 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
         } else {
             uiUtil.systemAlert('You need to pick a file or folder before you can rescan it!');
         }
-    } else if (params.storedFile) {
+    } else if (params.storedFile && !params.pickedFolder) {
         console.debug('Could not automatically reload ' + params.pickedFile);
         if (!~params.storedFile.indexOf(params.packagedFile)) btnArchiveFile.click();
         else uiUtil.systemAlert('You need to pick a file or folder before you can rescan it!');
     } else if (window.showOpenFilePicker || params.useOPFS) {
         processNativeDirHandle(params.pickedFolder);
+        if (params.useOPFS) populateOPFSStorageQuota();
     } else if (typeof Windows !== 'undefined') {
         scanUWPFolderforArchives(params.pickedFolder)
     } else if (window.fs) {
