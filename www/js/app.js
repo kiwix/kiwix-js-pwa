@@ -1447,21 +1447,38 @@ document.getElementById('archiveFiles').addEventListener('click', function (e) {
     }
 });
 document.getElementById('useOPFSCheck').addEventListener('change', function (e) {
-    params.useOPFS = e.target.checked;
-    setOPFSUI();
-    if (params.useOPFS) {
-        params.storedFile = null;
-        params.storedFilePath = null;
-        params.pickedFile = null;
-        params.pickedFolder = null;
-        settingsStore.removeItem('lastSelectedArchive');
-        loadOPFSDirectory();
+    var checkAppType = function () {
+        return Promise.resolve(true);
+    };
+    if (e.target.checked && /Electron/i.test(params.appType)) {
+        checkAppType = function () {
+            return uiUtil.systemAlert('<p>There is no advantage to using the Origin Private File System for Electron or NWJS apps.</p><p>Do you still want to use it?</p>',
+            'Use OPFS?', true, null, 'Use OPFS');
+        };
     }
+    return checkAppType().then(function (confirmed) {
+        if (confirmed) {
+            params.useOPFS = e.target.checked;
+            setOPFSUI();
+            if (params.useOPFS) {
+                params.storedFile = null;
+                params.storedFilePath = null;
+                params.pickedFile = null;
+                params.pickedFolder = null;
+                settingsStore.removeItem('lastSelectedArchive');
+                loadOPFSDirectory();
+            }
+        } else {
+            e.target.checked = false;
+            params.useOPFS = false;
+            setOPFSUI();
+        }
+    });
 });
 function loadOPFSDirectory () {
     if (navigator && navigator.storage && ('getDirectory' in navigator.storage)) {
         console.debug('Loading the OPFS directory');
-        navigator.storage.getDirectory().then(function (dir) {
+        return navigator.storage.getDirectory().then(function (dir) {
             params.pickedFolder = dir;
             processNativeDirHandle(dir);
             setOPFSUI();
