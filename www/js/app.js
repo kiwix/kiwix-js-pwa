@@ -1490,9 +1490,9 @@ function loadOPFSDirectory () {
             setOPFSUI();
         });
     } else {
-        uiUtil.systemAlert('<p>Your browser does not support the Origin Private File System!</p><p>Please try picking a folder instead.</p>');
         params.useOPFS = false;
         setOPFSUI();
+        return uiUtil.systemAlert('<p>Your browser does not support the Origin Private File System!</p><p>Please try picking a folder instead.</p>');
     }
 }
 function setOPFSUI () {
@@ -1606,8 +1606,13 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
         }
     } else if (params.storedFile && !params.pickedFolder) {
         console.debug('Could not automatically reload ' + params.pickedFile);
-        if (!~params.storedFile.indexOf(params.packagedFile)) btnArchiveFile.click();
-        else uiUtil.systemAlert('You need to pick a file or folder before you can rescan it!');
+        if (!~params.storedFile.indexOf(params.packagedFile)) {
+            if (archiveList.length > 1 && (params.webkitdirectory || 'showDirectoryPicker' in window)) {
+                btnArchiveFiles.click();
+            } else {
+                btnArchiveFile.click();
+            }
+        } else uiUtil.systemAlert('You need to pick a file or folder before you can rescan it!');
     } else if (window.showOpenFilePicker || params.useOPFS) {
         processNativeDirHandle(params.pickedFolder);
         if (params.useOPFS) populateOPFSStorageQuota();
@@ -2963,6 +2968,10 @@ function launchUWPServiceWorker () {
 var storages = [];
 
 function searchForArchivesInPreferencesOrStorage (displayOnly) {
+    // If we are using OPFS, we should just load the entries
+    if (params.useOPFS) {
+        return loadOPFSDirectory();
+    }
     // First see if the list of archives is stored in the cookie
     var listOfArchivesFromCookie = settingsStore.getItem('listOfArchives');
     if (listOfArchivesFromCookie) {
@@ -3040,7 +3049,7 @@ if (storages !== null && storages.length > 0 ||
             params.pickedFile = params.storedFile;
         }
     }
-    if (!params.pickedFile) {
+    if (!params.pickedFile && !params.pickedFolder) {
         if (params.storedFile) {
             // We are in an app that cannot open files auotomatically, so just show file pickers
             searchForArchivesInPreferencesOrStorage(true);
