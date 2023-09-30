@@ -3203,6 +3203,13 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
         usage.style.display = 'none';
     } else {
         usage.style.display = 'block';
+        // No ZIM files, so if Configuration is not displayed, display it and open file selectors
+        setTimeout(function () {
+            if (document.getElementById('configuration').style.display === 'none') {
+                document.getElementById('btnConfigure').click();
+            }
+            displayFileSelect();
+        }, 250);
     }
 }
 
@@ -3719,7 +3726,7 @@ function processNativeDirHandle (dirHandle, callback) {
                         callback(null);
                     } else {
                         noZIMFound.style.display = 'block';
-                        populateDropDownListOfArchives(archiveList);
+                        populateDropDownListOfArchives(archiveList, true);
                     }
                 }
             }
