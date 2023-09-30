@@ -3,6 +3,7 @@
 ## Release 2.6.7 / 2.6.8-Wikivoyage
 
 * FEATURE: Full-text search enabled by default on iOS 15+
+* UPDATE: Packaged archive updated to `wikivoyage_en_all_maxi_2023-09`
 * UPDATE: Electron version bumped to 22.3.21
 * ENHANCEMENT: Avoid double loading of WebP Polyfill when present in ZIM
 * REGRESSION: Fixed loss of ability to pick ZIM archives in latest Chromium on Android
