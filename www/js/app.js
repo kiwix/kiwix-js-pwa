@@ -1237,17 +1237,16 @@ function selectArchive (list) {
         }
         // Show the spinner while the OPFS entry is exported
         uiUtil.pollSpinner('Exporting OPFS entry...', true);
-        cache.exportOPFSEntry(selected).then(function (exported) {
+        document.getElementById('btnExportOPFSEntry').click();
+        return cache.exportOPFSEntry(selected).then(function (exported) {
             uiUtil.clearSpinner();
+            selectFired = false;
             if (exported) {
                 uiUtil.systemAlert('The OPFS entry for ' + selected + ' was successfully exported to the selected folder.');
             } else {
                 uiUtil.systemAlert('The OPFS entry for ' + selected + ' could not be exported.');
             }
         });
-        document.getElementById('btnExportOPFSEntry').click();
-        selectFired = false;
-        return;
     }
     // Show the spinner because on some sytems loading the archive is slow
     uiUtil.pollSpinner('Loading archive...', true);
@@ -1548,6 +1547,11 @@ document.getElementById('btnExportOPFSEntry').addEventListener('click', function
     } else {
         document.getElementById('archiveList').style.background = '';
     }
+    // Synchronize the OPFS file list
+    if (params.pickedFolder && params.pickedFolder.kind === 'directory') {
+        params.rescan = true;
+        processNativeDirHandle(params.pickedFolder);
+    }
 });
 document.getElementById('btnDeleteOPFSEntry').addEventListener('click', function () {
     params.deleteOPFSEntry = !params.deleteOPFSEntry;
@@ -1556,6 +1560,11 @@ document.getElementById('btnDeleteOPFSEntry').addEventListener('click', function
         document.getElementById('archiveList').style.background = determinedTheme === 'dark' ? 'firebrick' : 'pink';
     } else {
         document.getElementById('archiveList').style.background = '';
+    }
+    // Synchronize the OPFS file list
+    if (params.pickedFolder && params.pickedFolder.kind === 'directory') {
+        params.rescan = true;
+        processNativeDirHandle(params.pickedFolder);
     }
 });
 document.getElementById('btnRefresh').addEventListener('click', function () {
@@ -4821,6 +4830,10 @@ var loadingArticle = '';
  * @param {Event} event The event object of the message channel
  */
 function handleMessageChannelMessage (event) {
+    if (!appstate.selectedArchive) {
+        console.warn('No archive selected');
+        return;
+    }
     if (event.data.error) {
         console.error('Error in MessageChannel', event.data.error);
         throw event.data.error;

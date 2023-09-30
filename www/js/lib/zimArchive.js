@@ -143,6 +143,8 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                 // If, in the future, listings are used in a more time-critical manner, consider forcing a wait before
                 // declaring the archive to be ready, by chaining the following callback in a .then() function of setListings.
                 callbackReady(that);
+            }).catch(function (err) {
+                console.warn('Error setting archive listings: ', err);
             });
         });
     };

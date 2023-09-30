@@ -231,6 +231,7 @@ ZIMFile.prototype.dirEntry = function (offset) {
  */
 ZIMFile.prototype.dirEntryByUrlIndex = function (index) {
     var that = appstate.selectedArchive._file;
+    if (!that) return Promise.resolve(null);
     return that._readInteger(that.urlPtrPos + index * 8, 8).then(function (dirEntryPos) {
         return that.dirEntry(dirEntryPos);
     });
@@ -407,7 +408,7 @@ ZIMFile.prototype.setListings = function (listings) {
             // Get the next Listing
             return listingAccessor(listings.pop());
         }).catch(function (err) {
-            console.error('There was an error accessing a Directory Listing', err);
+            console.warn('There was an error accessing a Directory Listing', err);
         });
     };
     return listingAccessor(listings.pop());
