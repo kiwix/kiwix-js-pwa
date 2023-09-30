@@ -1084,6 +1084,9 @@ function getNativeFSHandle (callback) {
         return navigator.storage.getDirectory().then(function (handle) {
             if (callback) callback(handle);
             else return processNativeDirHandle(handle);
+        }).catch(function (err) {
+            console.warn('Unable to get the OPFS directory entry: ' + err);
+            if (callback) callback(null);
         });
     }
     console.debug('Getting the last serialized file or folder entry');
@@ -1115,7 +1118,7 @@ function getNativeFSHandle (callback) {
             console.warn('No file or folder handle was previously stored in indexedDB');
             if (callback) {
                 callback(val);
-            } else {
+            } else if (window.fs) {
                 // We have failed to load a picked archive via the File System API, but if params.storedFilePath exists, then the archive
                 // was launched with Electron APIs, so we can get the folder that way
                 if (params.storedFile && params.storedFilePath) params.pickedFolder = params.pickedFolder = params.storedFilePath.replace(/[^\\/]+$/, '');
@@ -1123,6 +1126,12 @@ function getNativeFSHandle (callback) {
                     // We now have the list of archives in the dropdown, so we try to select the storedFile
                     setLocalArchiveFromArchiveList(params.storedFile);
                 });
+            } else {
+                console.warn('Unable to get a file or folder handle from indexedDB');
+                // Go to Configuration if it is not already open
+                setTimeout(function () {
+                    if (document.getElementById('configuration').style.display === 'none') document.getElementById('btnConfigure').click();
+                }, 250);
             }
         }
     });
