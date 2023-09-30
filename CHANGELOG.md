@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 2.6.6
+## In-progress release 2.6.8
 
 * ENHANCEMENT: Avoid double loading of WebP Polyfill when present in ZIM
 * FIX: Avoid duplication of title in wider range of ZIMs
