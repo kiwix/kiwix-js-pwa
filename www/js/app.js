@@ -1340,13 +1340,16 @@ archiveFilesLegacy.addEventListener('change', function (files) {
             // This operation can take a long time, so show the spinner
             uiUtil.pollSpinner('Adding files to OPFS...', true);
             return cache.importOPFSEntries(filesArray).then(function () {
-                    uiUtil.systemAlert('The selected files were successfully added to the OPFS!');
-                    uiUtil.clearSpinner();
-                    processNativeDirHandle(params.pickedFolder);
-                    populateOPFSStorageQuota();
+                uiUtil.systemAlert('The selected files were successfully added to the OPFS!');
+                uiUtil.clearSpinner();
+                processNativeDirHandle(params.pickedFolder);
+                populateOPFSStorageQuota();
             }).catch(function (err) {
                 console.error('Unable to import files to OPFS!', err);
-                uiUtil.systemAlert('We could not import the selected files to the OPFS!');
+                var message = '<p>We could not import the selected files to the OPFS!</p><p>Reason: ' + err.message + '</p>';
+                if (/iOS/.test(params.appType)) message = '<p>Unfortunately, iOS does not currently allow importing files to the OPFS.</p><p>Error message: ' + err.message + '</p>';
+                uiUtil.systemAlert(message, 'OPFS import error');
+                uiUtil.clearSpinner();
             });
         });
     }
