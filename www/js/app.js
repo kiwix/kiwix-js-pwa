@@ -1347,7 +1347,7 @@ archiveFilesLegacy.addEventListener('change', function (files) {
             }).catch(function (err) {
                 console.error('Unable to import files to OPFS!', err);
                 var message = '<p>We could not import the selected files to the OPFS!</p><p>Reason: ' + err.message + '</p>';
-                if (/iOS/.test(params.appType)) message = '<p>Unfortunately, iOS does not currently allow importing files to the OPFS.</p><p>Error message: ' + err.message + '</p>';
+                if (/iOS/.test(params.appType)) message = '<p>Unfortunately, iOS does not currently support importing files into the OPFS. Please disable the OPFS and use other file selection options.</p><p>Error message: ' + err.message + '</p>';
                 uiUtil.systemAlert(message, 'OPFS import error');
                 uiUtil.clearSpinner();
             });
