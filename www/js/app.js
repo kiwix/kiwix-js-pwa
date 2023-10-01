@@ -3064,7 +3064,8 @@ if (storages !== null && storages.length > 0 ||
         }
     } else if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
         console.log('Loading picked file for UWP app...');
-        processPickedFileUWP(params.pickedFile);
+        if (params.pickedFile) processPickedFileUWP(params.pickedFile);
+        else searchForArchivesInPreferencesOrStorage();
     } else if (!window.fs) {
         // This should run, e.g., if we have params.webkitdirectory but not windows.fs, and also if we're using legacy file picking
         searchForArchivesInPreferencesOrStorage(true);
@@ -3325,7 +3326,7 @@ function setLocalArchiveFromArchiveList (archive) {
                             }
                         }
                         if (fileset.length) {
-                            setLocalArchiveFromFileList(fileset);
+                            setLocalArchiveFromFileList(fileset, true);
                         } else {
                             console.error('The picked file could not be found in the selected folder!\n' + params.pickedFile);
                             var archiveList = [];
@@ -3388,7 +3389,7 @@ function setLocalArchiveFromArchiveList (archive) {
                     if (params.pickedFile && typeof MSApp !== 'undefined') {
                         try {
                             selectedStorage = MSApp.createFileFromStorageFile(params.pickedFile);
-                            setLocalArchiveFromFileList([selectedStorage]);
+                            setLocalArchiveFromFileList([selectedStorage], true);
                         } catch (err) {
                             // Probably user has moved or deleted the previously selected file
                             uiUtil.systemAlert('The previously picked archive can no longer be found!');
@@ -4061,7 +4062,6 @@ function loadPackagedArchive () {
         params.pickedFolder = params.localStorage;
         params.storedFile = params.packagedFile || '';
         scanUWPFolderforArchives(params.localStorage);
-        if (!params.rescan) setLocalArchiveFromArchiveList(params.storedFile);
     } else if (typeof window.fs !== 'undefined') {
         // We're in an Electron packaged app
         settingsStore.removeItem('lastSelectedArchive');
