@@ -1251,30 +1251,36 @@ function selectArchive (list) {
     }
     // Show the spinner because on some sytems loading the archive is slow
     uiUtil.pollSpinner('Loading archive...', true);
+    var resetUI = function () {
+        uiUtil.clearSpinner();
+        document.getElementById('openLocalFiles').style.display = 'none';
+        document.getElementById('rescanStorage').style.display = 'block';
+        document.getElementById('usage').style.display = 'none';
+        selectFired = false;
+    };
     if (window.showOpenFilePicker || params.useOPFS) {
-        getNativeFSHandle(function (handle) {
+        return getNativeFSHandle(function (handle) {
+            resetUI();
             if (!handle) {
                 if (window.fs && params.storedFilePath) {
                     // Fall back to using the Electron APIs
                     params.pickedFolder = params.storedFilePath.replace(/[^\\/]+$/, '');
-                    setLocalArchiveFromArchiveList(selected);
-                    return;
+                    return setLocalArchiveFromArchiveList(selected);
                 }
                 console.error('No handle was retrieved');
-                uiUtil.systemAlert('We could not get a handle to the previously picked file or folder!<br>' +
-                    'This is probably because the contents of the folder have changed. Please try picking it again.');
                 document.getElementById('openLocalFiles').style.display = 'block';
                 document.getElementById('rescanStorage').style.display = 'none';
-                return;
+                return uiUtil.systemAlert('We could not get a handle to the previously picked file or folder!<br>' +
+                    'This is probably because the contents of the folder have changed. Please try picking it again.');
             }
             if (handle.kind === 'directory') {
                 params.pickedFolder = handle;
-                setLocalArchiveFromArchiveList(params.storedFile);
+                return setLocalArchiveFromArchiveList(params.storedFile);
             } else if (handle.kind === 'file') {
-                handle.getFile().then(function (file) {
+                return handle.getFile().then(function (file) {
                     params.pickedFile = file;
                     params.pickedFile.handle = handle;
-                    setLocalArchiveFromArchiveList(selected);
+                    return setLocalArchiveFromArchiveList(selected);
                 }).catch(function (err) {
                     console.error('Unable to read previously picked file!', err);
                     uiUtil.systemAlert('We could not retrieve the previously picked file or folder!<br>Please try picking it again.');
@@ -1305,12 +1311,7 @@ function selectArchive (list) {
     } else {
         setLocalArchiveFromArchiveList(selected);
     }
-    setTimeout(function () {
-        document.getElementById('openLocalFiles').style.display = 'none';
-        document.getElementById('rescanStorage').style.display = 'block';
-        document.getElementById('usage').style.display = 'none';
-        selectFired = false;
-    }, 0);
+    setTimeout(resetUI, 0);
 }
 
 // Legacy file picker is used as a fallback when all other pickers are unavailable
@@ -1590,6 +1591,8 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
     params.rescan = true;
     var btnArchiveFiles = document.getElementById('archiveFiles');
     var btnArchiveFile = document.getElementById('archiveFile');
+    // Deselect any selected archive in the archiveList
+    archiveList.selectedIndex = -1;
     if (!params.storedFile && !params.pickedFolder) {
         if (params.useOPFS || window.showOpenFilePicker) {
             getNativeFSHandle(function (fsHandle) {
@@ -2968,10 +2971,6 @@ function launchUWPServiceWorker () {
 var storages = [];
 
 function searchForArchivesInPreferencesOrStorage (displayOnly) {
-    // If we are using OPFS, we should just load the entries
-    if (params.useOPFS) {
-        return loadOPFSDirectory();
-    }
     // First see if the list of archives is stored in the cookie
     var listOfArchivesFromCookie = settingsStore.getItem('listOfArchives');
     if (listOfArchivesFromCookie) {
@@ -3049,12 +3048,15 @@ if (storages !== null && storages.length > 0 ||
             params.pickedFile = params.storedFile;
         }
     }
-    if (!params.pickedFile && !params.pickedFolder) {
-        if (params.storedFile) {
-            // We are in an app that cannot open files auotomatically, so just show file pickers
-            searchForArchivesInPreferencesOrStorage(true);
-            document.getElementById('btnConfigure').click();
+    if (!params.pickedFile && !params.pickedFolder || params.useOPFS) {
+        var btnConfigure = document.getElementById('btnConfigure');
+        // If we are using OPFS, we should can load the entries directly
+        if (params.useOPFS) {
+            if (!params.storedFile) btnConfigure.click();
+            loadOPFSDirectory();
         } else {
+            // We are in an app that cannot open files auotomatically, so populate archive list and show file pickers
+            btnConfigure.click();
             searchForArchivesInPreferencesOrStorage(true);
         }
     } else if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
@@ -3062,7 +3064,7 @@ if (storages !== null && storages.length > 0 ||
         processPickedFileUWP(params.pickedFile);
     } else if (!window.fs) {
         // This should run, e.g., if we have params.webkitdirectory but not windows.fs, and also if we're using legacy file picking
-        searchForArchivesInPreferencesOrStorage();
+        searchForArchivesInPreferencesOrStorage(true);
     } else {
         // @AUTOLOAD packaged archive in Electron and NWJS packaged apps
         // We need to read the packaged file using the node File System API (so user doesn't need to pick it on startup)
@@ -3211,7 +3213,15 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
             }
             // Set the localArchive as the last selected (if none has been selected previously, wait for user input)
             if (success) {
-                if (!displayOnly) setLocalArchiveFromArchiveList(lastSelectedArchive);
+                if (!displayOnly) {
+                    setLocalArchiveFromArchiveList(lastSelectedArchive);
+                } else {
+                    setTimeout(function () {
+                        if (document.getElementById('configuration').style.display === 'none') {
+                            document.getElementById('btnConfigure').click();
+                        }
+                    }, 250);
+                }
             } else {
                 // We can't find lastSelectedArchive in the archive list
                 // Let's first check if this is a Store UWP/PWA that has a different archive package from that last selected
@@ -3368,7 +3378,7 @@ function setLocalArchiveFromArchiveList (archive) {
                         }
                     }
                     return;
-                } else if (params.pickedFolder && params.webkitdirectory && archiveDirLegacy.files.length) {
+                } else if (params.pickedFolder && params.webkitdirectory || archiveDirLegacy.files.length) {
                     processDirectoryOfFiles(archiveDirLegacy.files, archive);
                     return;
                 } else { // Check if user previously picked a specific file rather than a folder
