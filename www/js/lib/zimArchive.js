@@ -106,7 +106,7 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                 // The ASM implementation requires Atomics support, whereas the WASM implementation does not
                 (typeof Atomics !== 'undefined' || libzimReaderType === 'wasm') &&
                 // Note that Android and NWJS currently throw due to problems with Web Worker context
-                !/Android/.test(params.appType) && !(window.nw && that._file._files[0].readMode === 'electron'))) {
+                !(/Android/.test(params.appType) && !params.useOPFS) && !(window.nw && that._file._files[0].readMode === 'electron'))) {
                     console.log('Instantiating libzim ' + libzimReaderType + ' Web Worker...');
                     LZ = new Worker('js/lib/libzim-' + libzimReaderType + '.js');
                     that.callLibzimWorker({ action: 'init', files: that._file._files }).then(function (msg) {
