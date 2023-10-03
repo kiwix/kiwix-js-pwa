@@ -1370,7 +1370,7 @@ archiveFilesLegacy.addEventListener('change', function (files) {
             });
         });
     }
-    uiUtil.pollSpinner('Loading archives...', 5000);
+    uiUtil.pollSpinner('', 9000);
     params.pickedFolder = null;
     params.pickedFile = null;
     if (params.storedFile === params.packagedFile) {
@@ -3415,7 +3415,7 @@ function setLocalArchiveFromArchiveList (archive) {
                         return;
                     } else if (params.pickedFile && typeof window.showOpenFilePicker === 'function') {
                         // Native FS API for single file
-                        setLocalArchiveFromFileList([params.pickedFile]);
+                        setLocalArchiveFromFileList([params.pickedFile], true);
                         return;
                     } else if (params.pickedFile && params.webkitdirectory) {
                         // Webkitdirectory API for single file
@@ -3453,6 +3453,7 @@ function setLocalArchiveFromArchiveList (archive) {
             cssBlobCache = new Map();
         }
         appstate.selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archive, function (archive) {
+            uiUtil.clearSpinner();
             settingsStore.setItem('lastSelectedArchive', archive, Infinity);
             // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
             // (this only affects jQuery mode)
@@ -3980,6 +3981,7 @@ function setLocalArchiveFromFileList (files, fromArchiveList) {
     if (cssBlobCache) cssBlobCache = new Map();
     // TODO: Turn this into a Promise
     appstate.selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
+        uiUtil.clearSpinner();
         // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
         // (this only affects jQuery mode)
         appstate.target = 'iframe';
