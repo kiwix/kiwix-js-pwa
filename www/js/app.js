@@ -3423,7 +3423,7 @@ function setLocalArchiveFromArchiveList (archive) {
                     }
                 } else if (archiveFilesLegacy.files.length) {
                     // There are files already loaded, so see if the selected file is one of those
-                    setLocalArchiveFromFileList(archiveFilesLegacy.files);
+                    setLocalArchiveFromFileList(archiveFilesLegacy.files, true);
                 } else {
                     var btnConfigure = document.getElementById('btnConfigure');
                     if (!btnConfigure.classList.contains('active')) btnConfigure.click();
@@ -3921,7 +3921,6 @@ function setLocalArchiveFromFileList (files, fromArchiveList) {
     // If there was only one file chosen (or set of split ZIMs, but we only store zimaa), select it
     if (fileNames.length === 1 || firstSplitFileIndex !== null) storedFileIndex = firstSplitFileIndex || 0;
     // Populate the list of archives with the newly selected file(s)
-    var archiveList = document.getElementById('archiveList');
     if (!fromArchiveList) populateDropDownListOfArchives(fileNames, true);
     // Check that user hasn't picked just part of split ZIM
     if (fileNames.length === 1 && firstSplitFileIndex && files.length === 1) {
