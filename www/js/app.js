@@ -1182,6 +1182,8 @@ archiveList.addEventListener('keydown', function (e) {
 });
 archiveList.addEventListener('change', selectArchive);
 archiveList.addEventListener('click', function (e) {
+    // Esnsure the clicked item is selected in the dropdown
+    if (e.target.value) archiveList.value = e.target.value;
     // Only accept the click if there is one archive in the list
     if (archiveList.length === 1) selectArchive(e);
 });
@@ -1190,11 +1192,11 @@ archiveList.addEventListener('mousedown', function () {
     if (archiveList.length > 1 && ~archiveList.selectedIndex) archiveList.selectedIndex = -1;
 });
 currentArchiveLink.addEventListener('click', function (e) {
-    e.target.value = currentArchiveLink.dataset.archive;
+    e.target.value = archiveList.value = currentArchiveLink.dataset.archive;
     selectArchive(e);
 });
 openCurrentArchive.addEventListener('click', function (e) {
-    e.target.value = currentArchiveLink.dataset.archive;
+    e.target.value = archiveList.value = currentArchiveLink.dataset.archive;
     selectArchive(e);
 });
 
@@ -1208,13 +1210,6 @@ function selectArchive (list) {
     params.storedFile = selected;
     if (params.pickedFile && params.pickedFile.name !== selected) {
         params.pickedFile = '';
-    }
-    // Ensure the selectedIndex of the dropdown is set to the selected archive (needed for legacy browsers)
-    for (var i = 0; i < archiveList.length; i++) {
-        if (archiveList[i].value === selected) {
-            archiveList.selectedIndex = i;
-            break;
-        }
     }
     if (params.useOPFS && params.deleteOPFSEntry) {
         // User requested deletion of an OPFS entry, seek confirmation first
@@ -3191,35 +3186,34 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
     var plural = 's';
     plural = archiveDirectories.length === 1 ? '' : plural;
     document.getElementById('archiveNumber').innerHTML = '<b>' + archiveDirectories.length + '</b> Archive' + plural + ' found in selected location';
-    var comboArchiveList = document.getElementById('archiveList');
     var usage = document.getElementById('usage');
-    comboArchiveList.options.length = 0;
+    archiveList.options.length = 0;
     for (var i = 0; i < archiveDirectories.length; i++) {
         var archiveDirectory = archiveDirectories[i];
         if (archiveDirectory === '/') {
             uiUtil.systemAlert('It looks like you have put some archive files at the root of your sdcard (or internal storage). Please move them in a subdirectory');
         } else {
-            comboArchiveList.options[i] = new Option(archiveDirectory, archiveDirectory);
+            archiveList.options[i] = new Option(archiveDirectory, archiveDirectory);
         }
     }
     // Store the list of archives in settingsStore, to avoid rescanning at each start
     settingsStore.setItem('listOfArchives', archiveDirectories.join('|'), Infinity);
-    comboArchiveList.size = comboArchiveList.length > 15 ? 15 : comboArchiveList.length;
+    archiveList.size = archiveList.length > 15 ? 15 : archiveList.length;
     if (!/Android|iOS/.test(params.appType)) {
-        if (comboArchiveList.length > 1) comboArchiveList.removeAttribute('multiple');
-        if (comboArchiveList.length === 1) comboArchiveList.setAttribute('multiple', '1');
+        if (archiveList.length > 1) archiveList.removeAttribute('multiple');
+        if (archiveList.length === 1) archiveList.setAttribute('multiple', '1');
     }
-    if (comboArchiveList.options.length > 0) {
+    if (archiveList.options.length > 0) {
         // If we're doing a rescan, then don't attempt to jump to the last selected archive, but leave selectors open
         var lastSelectedArchive = params.rescan ? '' : params.storedFile;
         if (lastSelectedArchive) {
             // console.debug('Last selected archive: ' + lastSelectedArchive);
             // Attempt to select the corresponding item in the list, if it exists
             var success = false;
-            var arrayOfOptionValues = Array.apply(null, comboArchiveList.options).map(function (el) { return el.text; })
+            var arrayOfOptionValues = Array.apply(null, archiveList.options).map(function (el) { return el.text; })
             // console.debug('Archive list: ' + arrayOfOptionValues);
             if (~arrayOfOptionValues.indexOf(lastSelectedArchive)) {
-                comboArchiveList.value = lastSelectedArchive;
+                archiveList.value = lastSelectedArchive;
                 success = true;
                 settingsStore.setItem('lastSelectedArchive', lastSelectedArchive, Infinity);
             }
