@@ -1252,7 +1252,7 @@ function selectArchive (list) {
         });
     }
     // Show the spinner because on some sytems loading the archive is slow
-    uiUtil.pollSpinner('Loading archive...', 5000);
+    uiUtil.pollSpinner('Loading archive...', 9000);
     var resetUI = function () {
         document.getElementById('openLocalFiles').style.display = 'none';
         document.getElementById('rescanStorage').style.display = 'block';
@@ -1370,7 +1370,7 @@ archiveFilesLegacy.addEventListener('change', function (files) {
             });
         });
     }
-    uiUtil.pollSpinner('', 9000);
+    uiUtil.pollSpinner('Loading archive...', 9000);
     params.pickedFolder = null;
     params.pickedFile = null;
     if (params.storedFile === params.packagedFile) {
