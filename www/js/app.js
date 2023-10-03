@@ -1209,6 +1209,13 @@ function selectArchive (list) {
     if (params.pickedFile && params.pickedFile.name !== selected) {
         params.pickedFile = '';
     }
+    // Ensure the selectedIndex of the dropdown is set to the selected archive (needed for legacy browsers)
+    for (var i = 0; i < archiveList.length; i++) {
+        if (archiveList[i].value === selected) {
+            archiveList.selectedIndex = i;
+            break;
+        }
+    }
     if (params.useOPFS && params.deleteOPFSEntry) {
         // User requested deletion of an OPFS entry, seek confirmation first
         var message = 'Are you sure you want to delete the OPFS entry for ' + selected;
