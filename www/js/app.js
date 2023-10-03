@@ -1260,6 +1260,22 @@ function selectArchive (list) {
         document.getElementById('usage').style.display = 'none';
         selectFired = false;
     };
+    // We need to handle the case where the user dragged and dropped multiple files into the app
+    if (archiveFilesLegacy.files.length > 0) {
+        // Let's see if the selected file is available in the legacy archive file list
+        var fileFound = false;
+        for (var i = 0; i < archiveFilesLegacy.files.length; i++) {
+            if (archiveFilesLegacy.files[i].name === selected) {
+                fileFound = true;
+                break;
+            }
+        }
+        if (fileFound) {
+            params.pickedFile = archiveFilesLegacy.files[i];
+            setTimeout(resetUI, 100);
+            return setLocalArchiveFromFileList([params.pickedFile], true);
+        }
+    }
     if (window.showOpenFilePicker || params.useOPFS) {
         return getNativeFSHandle(function (handle) {
             resetUI();
@@ -3606,6 +3622,16 @@ function handleFileDrop (packet) {
         });
     } else {
         var files = packet.dataTransfer.files;
+        // Try to store the dragged files (in at least IE11, this is read only, so we have to wrap in try ... catch)
+        try {
+            archiveFilesLegacy.files = files;
+        } catch (err) {
+            console.warn('Unable to store dropped files in legacy file picker, so selecting first file if not split', err);
+            if (!/\.zim\w\w$/i.test(files[0].name) && files.length > 1) {
+                uiUtil.systemAlert('You have dropped multiple files, but in older browsers only the first can be loaded. Please drop only one file at a time in this browser, or use the file picker to pick more.');
+                files = [files[0]];
+            }
+        }
         document.getElementById('openLocalFiles').style.display = 'none';
         document.getElementById('rescanStorage').style.display = 'block';
         document.getElementById('usage').style.display = 'none';
@@ -3613,6 +3639,8 @@ function handleFileDrop (packet) {
         // This also prevents a file-not-found alert to the user when picking a new directory
         params.pickedFolder = null;
         settingsStore.setItem('pickedFolder', '', Infinity);
+        params.pickedFile = null;
+        params.storedFile = null;
         params.rescan = false;
         setLocalArchiveFromFileList(files);
     }
