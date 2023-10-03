@@ -1357,7 +1357,12 @@ archiveFilesLegacy.addEventListener('change', function (files) {
             // This operation can take a long time, so show the spinner
             uiUtil.pollSpinner('Adding files to OPFS...', true);
             return cache.importOPFSEntries(filesArray).then(function () {
-                uiUtil.systemAlert('The selected files were successfully added to the OPFS!');
+                uiUtil.systemAlert('<p>The selected files were successfully added to the OPFS!</p><p><b>We will now reload the app, so that the file(s) can be accessed at full speed.</b></p>')
+                .then(function () {
+                    // Set the app to load this file on startup
+                    settingsStore.setItem('lastSelectedArchive', filesArray[0].name, Infinity);
+                    window.location.reload();
+                });
                 uiUtil.clearSpinner();
                 processNativeDirHandle(params.pickedFolder);
                 populateOPFSStorageQuota();
