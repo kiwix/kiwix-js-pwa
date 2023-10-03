@@ -1187,7 +1187,7 @@ archiveList.addEventListener('click', function (e) {
 });
 archiveList.addEventListener('mousedown', function () {
     // Unselect any selected option so that the user can select the same option again
-    if (archiveList.length > 1) archiveList.selectedIndex = -1;
+    if (archiveList.length > 1 && ~archiveList.selectedIndex) archiveList.selectedIndex = -1;
 });
 currentArchiveLink.addEventListener('click', function (e) {
     e.target.value = currentArchiveLink.dataset.archive;
