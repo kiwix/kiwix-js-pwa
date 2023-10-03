@@ -1254,7 +1254,6 @@ function selectArchive (list) {
     // Show the spinner because on some sytems loading the archive is slow
     uiUtil.pollSpinner('Loading archive...', 5000);
     var resetUI = function () {
-        uiUtil.clearSpinner();
         document.getElementById('openLocalFiles').style.display = 'none';
         document.getElementById('rescanStorage').style.display = 'block';
         document.getElementById('usage').style.display = 'none';
