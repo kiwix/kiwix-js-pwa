@@ -3213,8 +3213,8 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
     }
     // Store the list of archives in settingsStore, to avoid rescanning at each start
     settingsStore.setItem('listOfArchives', archiveDirectories.join('|'), Infinity);
-    archiveList.size = archiveList.length > 15 ? 15 : archiveList.length;
     if (!/Android|iOS/.test(params.appType)) {
+        archiveList.size = archiveList.length > 15 ? 15 : archiveList.length;
         if (archiveList.length > 1) archiveList.removeAttribute('multiple');
         if (archiveList.length === 1) archiveList.setAttribute('multiple', '1');
     }
