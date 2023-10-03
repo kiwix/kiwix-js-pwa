@@ -3375,7 +3375,7 @@ function setLocalArchiveFromArchiveList (archive) {
                     });
                 } else if (window.fs) {
                     if (params.pickedFile) {
-                        setLocalArchiveFromFileList([params.pickedFile]);
+                        setLocalArchiveFromFileList([params.pickedFile], true);
                     } else {
                         if (params.pickedFolder) {
                             readNodeDirectoryAndCreateNodeFileObjects(params.pickedFolder, archive)
@@ -3419,7 +3419,7 @@ function setLocalArchiveFromArchiveList (archive) {
                         return;
                     } else if (params.pickedFile && params.webkitdirectory) {
                         // Webkitdirectory API for single file
-                        setLocalArchiveFromFileList(archiveFilesLegacy.files);
+                        setLocalArchiveFromFileList(archiveFilesLegacy.files, true);
                         return;
                     }
                 }
@@ -3432,7 +3432,7 @@ function setLocalArchiveFromArchiveList (archive) {
                 } else if (params.pickedFile && params.pickedFile.name) {
                     // We already have a file handle, which means the file is already loaded or can be loaded
                     if (!appstate.selectedArchive) {
-                        setLocalArchiveFromFileList([params.pickedFile]);
+                        setLocalArchiveFromFileList([params.pickedFile], true);
                     } else {
                         document.getElementById('btnHome').click();
                     }
