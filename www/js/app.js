@@ -1353,6 +1353,7 @@ archiveFilesLegacy.addEventListener('change', function (files) {
             });
         });
     }
+    uiUtil.pollSpinner('Loading archives...', true);
     params.pickedFolder = null;
     params.pickedFile = null;
     if (params.storedFile === params.packagedFile) {
