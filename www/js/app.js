@@ -3872,10 +3872,10 @@ function populateOPFSStorageQuota () {
     if (navigator && navigator.storage && ('estimate' in navigator.storage)) {
     navigator.storage.estimate().then(function (estimate) {
         var percent = ((estimate.usage / estimate.quota) * 100).toFixed(2);
-        appstate.OPFSQuota = estimate.quota;
+        appstate.OPFSQuota = estimate.quota - estimate.usage;
         document.getElementById('OPFSQuota').innerHTML =
             '<b>OPFS storage quota:</b><br />Used: <b>' + percent + '%</b>; Remaining: <b>' +
-            (estimate.quota / 1024 / 1024 / 1024).toFixed(2) + ' GB</b>';
+            (appstate.OPFSQuota / 1024 / 1024 / 1024).toFixed(2) + ' GB</b>';
         });
     }
 }
