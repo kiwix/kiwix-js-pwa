@@ -712,6 +712,48 @@ function verifyPermission (fileHandle, withWrite) {
 }
 
 /**
+ * Download an archive directly into the picked folder (primarily for use with the Origin Private File System)
+ *
+ * @param {String} archiveName The name of the archive to download (will be used as the filename)
+ * @param {String} archiveUrl An optional URL to download the archive from (if not supplied, will use params.kiwixDownloadLink)
+ * @returns {Promise<FileSystemFileHandle>} A Promise for a FileHandle object representing the downloaded file
+ */
+function downloadArchiveToPickedFolder (archiveName, archiveUrl) {
+    archiveUrl = archiveUrl || params.kiwixDownloadLink + archiveName;
+    if (params.pickedFolder && params.pickedFolder.getFileHandle) {
+        return verifyPermission(params.pickedFolder, true).then(function (permission) {
+            if (permission) {
+                return params.pickedFolder.getFileHandle(archiveName, { create: true }).then(function (fileHandle) {
+                    return fileHandle.createWritable().then(function (writer) {
+                        return fetch(archiveUrl).then(function (response) {
+                            if (!response.ok) {
+                                writer.close().then(function () {
+                                    // Delete the file
+                                    params.pickedFolder.removeEntry(archiveName).then(function () {
+                                        throw new Error('HTTP error, status = ' + response.status);
+                                    });
+                                });
+                            } else {
+                                return response.body.pipeTo(writer).then(function () {
+                                    return fileHandle;
+                                });
+                            }
+                        });
+                    });
+                });
+            } else {
+                throw (new Error('Write permission not granted!'));
+            }
+        }).catch(function (err) {
+            console.error('Error downloading archive', err);
+            throw err;
+        });
+    } else {
+        return Promise.reject(new Error('No picked folder available!'));
+    }
+}
+
+/**
  * Imports the picked files into the OPFS file system
  *
  * @param {Array} files An array of File objects to import
@@ -873,6 +915,7 @@ export default {
     getItemFromCacheOrZIM: getItemFromCacheOrZIM,
     replaceAssetRefsWithUri: replaceAssetRefsWithUri,
     verifyPermission: verifyPermission,
+    downloadArchiveToPickedFolder: downloadArchiveToPickedFolder,
     importOPFSEntries: importOPFSEntries,
     exportOPFSEntry: exportOPFSEntry,
     deleteOPFSEntry: deleteOPFSEntry,

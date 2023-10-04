@@ -34,6 +34,10 @@
  */
 'use strict';
 
+import cache from './cache.js';
+import uiUtil from './uiUtil.js';
+import settingsStore from './settingsStore.js';
+
 /* globals params */
 
 var langCodes = {
@@ -482,9 +486,9 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             var body = document.getElementById('dl-panel-body');
             var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^/]*\.meta4$/i, '/') + '">&lt;&lt; Back to list of files</a></p>\r\n';
             bodyDoc += '<p><b>Directly download ZIM archive:</b></p>' +
-            '<p><a href="' + requestedURL + '"' + target + '>' + requestedURL + '</a></p>' +
+            '<p><a href="' + requestedURL + '"' + target + ' class="download">' + requestedURL + '</a></p>' +
             (altURL ? '<p><b>Possible mirror:</b></p>' +
-            '<p><a href="' + altURL + '"' + target + '>' + altURL + '</a></p>' : '') +
+            '<p><a href="' + altURL + '"' + target + ' class="download">' + altURL + '</a></p>' : '') +
             (~URL.indexOf(params.kiwixHiddenDownloadLink) ? ''
                 : '<p><b>Download with bittorrent:</b></p>' +
                 '<p><a href="' + torrentURL + '"' + target + '>' + torrentURL + '</a></p>');
@@ -523,7 +527,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         var megabytes$ = megabytes.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
         doc = '';
         for (var i = 1; i < linkArray.length; i++) { // NB we'ere intentionally discarding first link to kiwix.org (not to zim)
-            doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li><a href="$1"' + target + '>$1</a></li>\r\n');
+            doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li><a href="$1"' + target + ' class="download">$1</a></li>\r\n');
         }
         var headerDoc = 'We found the following links to your file:';
         var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^/]*\.meta4$/i, '/') + '">&lt;&lt; Back to list of files</a></p>\r\n';
@@ -579,10 +583,31 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             domain = domain.replace(/download/, 'library');
             return domain + file;
         });
-        // Add event listener for split archive link, if necessary
-        // if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
-        //     document.getElementById('portable').addEventListener('click', submitSelectValues);
-        // }
+        // If File System Access API is available, add event listeners on download links to save to local storage
+        if (params.useOPFS || window.showSaveFilePicker) {
+            var downloadUrls = document.getElementsByClassName('download');
+            var mirrorZimUrl = URL.replace(/\.meta4$/i, '').replace(/\/download\./, '/mirror.download.');
+            for (var j = 0; j < downloadUrls.length; j++) {
+                downloadUrls[j].addEventListener('click', function (e) {
+                    if (!params.pickedFolder) return;
+                    e.preventDefault();
+                    var archiveUrl = mirrorZimUrl;
+                    var archiveName = e.target.href.replace(/^.*\/([^/]+)$/, '$1');
+                    uiUtil.pollSpinner('Downloading archive...', true);
+                    return cache.downloadArchiveToPickedFolder(archiveName, archiveUrl).then(function (handle) {
+                        uiUtil.clearSpinner();
+                        return uiUtil.systemAlert('<p>The archive ' + handle.name + ' has been downloaded to your device.</p><p><b>Reloading to activate new ZIM...</b></p>',
+                            'Download complete').then(function () {
+                            settingsStore.setItem('lastSelectedArchive', archiveName);
+                            window.location.reload();
+                        });
+                    }).catch(function (err) {
+                        uiUtil.clearSpinner();
+                        return uiUtil.systemAlert('Unable to download the archive ' + archiveName + ' to your device: ' + err, 'Download failed');
+                    });
+                });
+            }
+        }
     }
 
     function processMagnetLink (link) {
