@@ -926,21 +926,8 @@ if (window.electronAPI) {
         params.upgradeNeeded = true;
         uiUtil.showUpgradeReady(data.version, 'install');
     });
-    var serverResponse = document.getElementById('serverResponse');
     electronAPI.on('dl-received', function (data) {
-        // console.warn('Download in progress: ' + data);
-        serverResponse.style.display = 'inline';
-        var colour = data === 'completed' ? 'green' : isNaN(data) ? 'red' : 'goldenrod';
-        serverResponse.style.setProperty('color', colour, 'important');
-        serverResponse.innerHTML = 'Download progress: ' + data;
-        if (data === 'completed') {
-            setTimeout(function () {
-                serverResponse.style.removeProperty('color');
-                if (document.getElementById('downloadLinks').style.display === 'none') {
-                    serverResponse.style.display = 'none';
-                }
-            }, 10000);
-        }
+        kiwixServe.reportDownloadProgress(data);
     });
     electronAPI.on('get-launch-file-path', function (fullPath) {
         if (fullPath) {
@@ -1347,7 +1334,7 @@ archiveFilesLegacy.addEventListener('change', function (files) {
         // Check the size of the files does not exceed the quota
         if (filesSize > appstate.OPFSQuota) {
             return uiUtil.systemAlert('<p>The total size of the selected files is <b>' + (filesSize / 1024 / 1024 / 1024).toFixed(2) +
-            ' GB</b>, which<br />exceeds the estimated OPFS quota of <b>' + (appstate.OPFSQuota / 1024 / 1024 / 1024).toFixed(2) + ' GB</n>!',
+            ' GB</b>, which<br />exceeds the estimated OPFS quota of <b>' + (appstate.OPFSQuota / 1024 / 1024 / 1024).toFixed(2) + ' GB</b>!',
             'OPFS Quota Exceeded', null, null, null, 'Cancel');
         }
         return uiUtil.systemAlert('<p>Do you want to add these files to the Private File System?<p><ul>' + filenamesList + '</ul>',

@@ -527,7 +527,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         var megabytes$ = megabytes.toString().split('').reverse().join('').replace(/(\d{3}(?!.*\.|$))/g, '$1,').split('').reverse().join('');
         doc = '';
         for (var i = 1; i < linkArray.length; i++) { // NB we'ere intentionally discarding first link to kiwix.org (not to zim)
-            doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li><a href="$1"' + target + ' class="download">$1</a></li>\r\n');
+            doc += linkArray[i].replace(/<url\b[^>]*>([^<]*)<\/url>/i, '<li><a href="$1"' + target + '>$1</a></li>\r\n');
         }
         var headerDoc = 'We found the following links to your file:';
         var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^/]*\.meta4$/i, '/') + '">&lt;&lt; Back to list of files</a></p>\r\n';
@@ -556,7 +556,16 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                 'File Explorer. You will need to extract the contents of the folder <span style="font-family: monospace;"><b>&gt; data &gt; content</b></span>,\r\n' +
                 'and transfer ALL of the files there to an accessible folder on your device. After that, you can search for the folder in this app (see above).</p>\r\n';
         }
-        bodyDoc += '<p><b>Direct download:</b> (<i>links will open in a new browser window</i>)</p><ol>\r\n' + doc + '</ol>\r\n';
+        var mirrorZimUrl = URL.replace(/\.meta4$/i, '').replace(/\/download\./, '/mirror.download.');
+        if (params.useOPFS || (window.showSaveFilePicker && params.pickedFolder && params.pickedFolder.kind === 'directory')) {
+            bodyDoc += '<p><b>Direct download';
+            bodyDoc += params.useOPFS ? ' to Origin Private File System' : ' to your ZIM folder';
+            bodyDoc += ', for smaller archives:</b> (<i>downloads archive in-app</i>)</p><ul>\r\n<li><a href="' + mirrorZimUrl + '" class="download">' + mirrorZimUrl + '</a></li></ul>\r\n';
+            bodyDoc += '<p><b>Browser-managed download from mirrors, for larger archives:</b>';
+        } else {
+            bodyDoc += '<p><b>Browser-managed download from mirrors:</b>';
+        }
+        bodyDoc += ' (<i>links open in a new browser window</i>)</p><ol>\r\n' + doc + '</ol>\r\n';
         bodyDoc += '<br /><br />';
         // Try to get magnet link
         if (megabytes > 200) requestXhttpData(URL.replace(/\.meta4$/, '.magnet'));
@@ -586,17 +595,16 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         // If File System Access API is available, add event listeners on download links to save to local storage
         if (params.useOPFS || window.showSaveFilePicker) {
             var downloadUrls = document.getElementsByClassName('download');
-            var mirrorZimUrl = URL.replace(/\.meta4$/i, '').replace(/\/download\./, '/mirror.download.');
             for (var j = 0; j < downloadUrls.length; j++) {
                 downloadUrls[j].addEventListener('click', function (e) {
-                    if (!params.pickedFolder) return;
+                    if (!(params.pickedFolder && params.pickedFolder.kind === 'directory')) return;
                     e.preventDefault();
                     var archiveUrl = mirrorZimUrl;
                     var archiveName = e.target.href.replace(/^.*\/([^/]+)$/, '$1');
                     uiUtil.pollSpinner('Downloading archive...', true);
-                    return cache.downloadArchiveToPickedFolder(archiveName, archiveUrl).then(function (handle) {
+                    return cache.downloadArchiveToPickedFolder(archiveName, archiveUrl, reportDownloadProgress).then(function () {
                         uiUtil.clearSpinner();
-                        return uiUtil.systemAlert('<p>The archive ' + handle.name + ' has been downloaded to your device.</p><p><b>Reloading to activate new ZIM...</b></p>',
+                        return uiUtil.systemAlert('<p>The archive ' + archiveName + ' has been downloaded to your device.</p><p><b>Reloading to activate new ZIM...</b></p>',
                             'Download complete').then(function () {
                             settingsStore.setItem('lastSelectedArchive', archiveName);
                             window.location.reload();
@@ -990,7 +998,40 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
     }
 }
 
+/**
+ * Reports download progress to the serverResponse panel
+ *
+ * @param {String|Integer} data A string ('completed') or integer representing the download progress (in bytes)
+ */
+function reportDownloadProgress (data) {
+    // console.warn('Download in progress: ' + data);
+    serverResponse.style.display = 'inline';
+    var colour = data === 'completed' ? 'green' : isNaN(data) ? 'red' : 'goldenrod';
+    serverResponse.style.setProperty('color', colour, 'important');
+    var formattedData;
+    if (isNaN(data)) {
+        formattedData = data;
+    } else {
+        // If data is greater than 1GB, convert to GB
+        if (data > 1073741824) {
+            formattedData = (data / 1024 / 1024 / 1024).toFixed(2) + ' GB';
+        } else {
+            formattedData = (data / 1024 / 1024).toFixed(2) + ' MB';
+        }
+    }
+    serverResponse.innerHTML = 'Download progress: ' + formattedData;
+    if (data === 'completed') {
+        setTimeout(function () {
+            serverResponse.style.removeProperty('color');
+            if (document.getElementById('downloadLinks').style.display === 'none') {
+                serverResponse.style.display = 'none';
+            }
+        }, 10000);
+    }
+}
+
 export default {
     // langCodes: langCodes,
-    requestXhttpData: requestXhttpData
+    requestXhttpData: requestXhttpData,
+    reportDownloadProgress: reportDownloadProgress
 };

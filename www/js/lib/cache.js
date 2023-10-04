@@ -716,9 +716,10 @@ function verifyPermission (fileHandle, withWrite) {
  *
  * @param {String} archiveName The name of the archive to download (will be used as the filename)
  * @param {String} archiveUrl An optional URL to download the archive from (if not supplied, will use params.kiwixDownloadLink)
+ * @param {Function} callback Callback function to report the progress of the download
  * @returns {Promise<FileSystemFileHandle>} A Promise for a FileHandle object representing the downloaded file
  */
-function downloadArchiveToPickedFolder (archiveName, archiveUrl) {
+function downloadArchiveToPickedFolder (archiveName, archiveUrl, callback) {
     archiveUrl = archiveUrl || params.kiwixDownloadLink + archiveName;
     if (params.pickedFolder && params.pickedFolder.getFileHandle) {
         return verifyPermission(params.pickedFolder, true).then(function (permission) {
@@ -727,17 +728,44 @@ function downloadArchiveToPickedFolder (archiveName, archiveUrl) {
                     return fileHandle.createWritable().then(function (writer) {
                         return fetch(archiveUrl).then(function (response) {
                             if (!response.ok) {
-                                writer.close().then(function () {
+                                return writer.close().then(function () {
                                     // Delete the file
                                     params.pickedFolder.removeEntry(archiveName).then(function () {
                                         throw new Error('HTTP error, status = ' + response.status);
                                     });
                                 });
-                            } else {
-                                return response.body.pipeTo(writer).then(function () {
-                                    return fileHandle;
-                                });
                             }
+                            var loaded = 0;
+                            return new Response(
+                                new ReadableStream({
+                                    start: function (controller) {
+                                        var reader = response.body.getReader();
+                                        var processResult = function (result) {
+                                            if (result.done) {
+                                                return controller.close();
+                                            }
+                                            loaded += result.value.byteLength;
+                                            // console.debug('Downloaded ' + loaded + ' bytes of data so far');
+                                            if (callback) callback(loaded);
+                                            controller.enqueue(result.value);
+                                            return reader.read().then(processResult);
+                                        };
+                                        return reader.read().then(processResult);
+                                    }
+                                })
+                            ).body.pipeTo(writer).then(function () {
+                                if (callback) callback('completed');
+                                return true;
+                            }).catch(function (err) {
+                                console.error('Error downloading archive', err);
+                                if (callback) callback('error');
+                                writer.close().then(function () {
+                                    // Delete the file
+                                    params.pickedFolder.removeEntry(archiveName).then(function () {
+                                        throw err;
+                                    });
+                                });
+                            });
                         });
                     });
                 });
