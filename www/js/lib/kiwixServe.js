@@ -38,7 +38,7 @@ import cache from './cache.js';
 import uiUtil from './uiUtil.js';
 import settingsStore from './settingsStore.js';
 
-/* globals params */
+/* globals params, appstate */
 
 var langCodes = {
     aa: 'Afar (Afar)',
@@ -537,7 +537,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         bodyDoc += megabytes > 2000 ? ' style="color:red;"> WARNING: ' : '>';
         bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unknown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
         bodyDoc += '<p><b>New! <i><a id="preview" target="_blank">Preview this archive</a></i></b> in your browser before downloading it</p>';
-        if (megabytes > 200) {
+        if (megabytes > 1000) {
             bodyDoc += '<p><b>Consider using BitTorrent to download file:</b></p>\r\n<ul>' +
             '<li><b>BitTorrent file</b>: <a href="' + URL.replace(/\.meta4$/, '.torrent') + '"' + target + '>' +
                 URL.replace(/\.meta4$/, '.torrent') + '</a></li>\r\n' +
@@ -598,21 +598,50 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             for (var j = 0; j < downloadUrls.length; j++) {
                 downloadUrls[j].addEventListener('click', function (e) {
                     if (!(params.pickedFolder && params.pickedFolder.kind === 'directory')) return;
+                    if (params.useOPFS) {
+                        var quotaInMB = appstate.OPFSQuota / (1024 * 1024);
+                        if (megabytes > quotaInMB) {
+                            return uiUtil.systemAlert('<p>Sorry, the archive you selected is too large to download to your Origin Private File System.</p>' +
+                                '<p>It is ' + megabytes$ + 'MB, but your quota is only ' + Math.round(quotaInMB) + 'MB.</p>' +
+                                '<p>Please select a smaller archive, or else select a different download method.</p>', 'File too large');
+                        }
+                    }
                     e.preventDefault();
                     var archiveUrl = mirrorZimUrl;
                     var archiveName = e.target.href.replace(/^.*\/([^/]+)$/, '$1');
-                    uiUtil.pollSpinner('Downloading archive...', true);
-                    return cache.downloadArchiveToPickedFolder(archiveName, archiveUrl, reportDownloadProgress).then(function () {
-                        uiUtil.clearSpinner();
-                        return uiUtil.systemAlert('<p>The archive ' + archiveName + ' has been downloaded to your device.</p><p><b>Reloading to activate new ZIM...</b></p>',
-                            'Download complete').then(function () {
-                            settingsStore.setItem('lastSelectedArchive', archiveName);
-                            window.location.reload();
+                    var downloadArchiveToOPFS = function () {
+                        uiUtil.pollSpinner('Downloading archive...', true);
+                        return cache.downloadArchiveToPickedFolder(archiveName, archiveUrl, reportDownloadProgress).then(function () {
+                            uiUtil.clearSpinner();
+                            return uiUtil.systemAlert('<p>The archive ' + archiveName + ' has been downloaded to your device.</p>' +
+                            (params.useOPFS ? '<p><b>Reloading to activate new ZIM...</b></p>' : ''), 'Download complete').then(function () {
+                                if (params.useOPFS) {
+                                    settingsStore.setItem('lastSelectedArchive', archiveName);
+                                    window.location.reload();
+                                } else {
+                                    document.getElementById('btnRefresh').click();
+                                }
+                            });
+                        }).catch(function (err) {
+                            uiUtil.clearSpinner();
+                            return uiUtil.systemAlert('Unable to download the archive ' + archiveName + ' to your device: ' + err, 'Download failed');
                         });
-                    }).catch(function (err) {
-                        uiUtil.clearSpinner();
-                        return uiUtil.systemAlert('Unable to download the archive ' + archiveName + ' to your device: ' + err, 'Download failed');
-                    });
+                    }
+                    if (params.useOPFS) {
+                        uiUtil.systemAlert('<p>Do you wish to download the archive ' + archiveName + ' directly into the Origin Private File System?</p>' +
+                        '<p><b>If you proceed, do not close the app or interact with it during the download.</b><p>' +
+                        '<p>If you prefer to download in the background, use a browser-managed download link instead, and afterwards import the file into the OPFS using the "Add file(s)" button.</p>',
+                        'Download archive to OPFS?', true).then(function (result) {
+                            if (result) downloadArchiveToOPFS();
+                        });
+                    } else {
+                        uiUtil.systemAlert('<p>Do you wish to download the archive ' + archiveName + ' to the current ZIM folder?</p>' +
+                        '<p><b>If you proceed, do not close the app or interact with it during the download.</b></p>' +
+                        '<p>If you prefer to download the archive in the background, use a browser-managed download link instead, and then move the file manually into your ZIM folder.</p>',
+                        'Download archive to folder?', true).then(function (result) {
+                            if (result) downloadArchiveToOPFS();
+                        });
+                    }
                 });
             }
         }
