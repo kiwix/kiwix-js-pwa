@@ -170,7 +170,7 @@ function makeReturnLink (title) {
  * Starts the spinner, with an optional message and optional timeout interval. If no timeout is specified, the spinner
  * will run for 3s before being cleared. If the timeout is set to true, the spinner will run indefinitely or until pollSpinner
  * is called again.
- * @param {String} msg A message to display below the spinner
+ * @param {String} msg A message (may be HTML-formatted) to display below the spinner
  * @param {Integer|Boolean} noTimeoutOrInterval A timeout value, or if true, the spinner will run indefinitely until pollSpinner is called again
  */
 function pollSpinner (msg, noTimeoutOrInterval) {

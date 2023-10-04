@@ -746,10 +746,11 @@ function downloadArchiveToPickedFolder (archiveName, archiveUrl, callback) {
                                                 return controller.close();
                                             }
                                             loaded += result.value.byteLength;
-                                            if (loaded - reported >= 1048576) {
+                                            if (loaded - reported >= 1048576) { // 1024 * 1024
                                                 reported = loaded;
-                                                if (callback) callback(reported);
-                                                else console.debug('Downloaded ' + reported + ' bytes so far...');
+                                                if (callback) {
+                                                    callback(reported);
+                                                } else console.debug('Downloaded ' + reported + ' bytes so far...');
                                             }
                                             controller.enqueue(result.value);
                                             return reader.read().then(processResult);
