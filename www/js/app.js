@@ -3862,7 +3862,7 @@ function populateOPFSStorageQuota () {
         appstate.OPFSQuota = estimate.quota - estimate.usage;
         document.getElementById('OPFSQuota').innerHTML =
             '<b>OPFS storage quota:</b><br />Used:&nbsp;<b>' + percent + '%</b>; Remaining:&nbsp;<b>' +
-            (appstate.OPFSQuota / 1024 / 1024 / 1024).toFixed(2) + ' GB</b>';
+            (appstate.OPFSQuota / 1024 / 1024 / 1024).toFixed(2) + '&nbsp;GB</b>';
         });
     }
 }
