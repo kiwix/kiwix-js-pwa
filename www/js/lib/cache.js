@@ -736,6 +736,7 @@ function downloadArchiveToPickedFolder (archiveName, archiveUrl, callback) {
                                 });
                             }
                             var loaded = 0;
+                            var reported = 0;
                             return new Response(
                                 new ReadableStream({
                                     start: function (controller) {
@@ -745,8 +746,11 @@ function downloadArchiveToPickedFolder (archiveName, archiveUrl, callback) {
                                                 return controller.close();
                                             }
                                             loaded += result.value.byteLength;
-                                            // console.debug('Downloaded ' + loaded + ' bytes of data so far');
-                                            if (callback) callback(loaded);
+                                            if (loaded - reported >= 1048576) {
+                                                reported = loaded;
+                                                if (callback) callback(reported);
+                                                else console.debug('Downloaded ' + reported + ' bytes so far...');
+                                            }
                                             controller.enqueue(result.value);
                                             return reader.read().then(processResult);
                                         };
