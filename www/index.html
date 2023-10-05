@@ -102,20 +102,21 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
                             <ul style="padding-left: 15px;">
-                                <li>Full-text search enabled by default on iOS 15+</li>
-                                <li>Fixed loss of ability to pick ZIM archives in latest Chromium on Android</li>
-                                <li>Fixed regression preventing access to custom ZIM archives in download library</li>
-                                <li>Work around missing titles in all WikiMedia scrapes since 2023-07</li>
-                                <li>Avoid hyperlinking math fallback images to high-res Wikimedia versions</li>
-                                <li>Fix conflict between manual image display and hyperlinking images to high-res Wikimedia versions</li>
-                                <li>Fix more broken Linux icons</li>
-                                <li>Appx package is now uploaded to Kiwix releases</li>
-                                <li>Added clear documentation to the Create-DraftRelease.ps1 script</li>
-                                <li>Remove more unnecessary JQuery from the app</li>
-                                <li>Disable appCache by default if developing with the Vite server</li>
+                                <li>Rework file system access and support Origin Private File System (OPFS)</li>
+                                <li>Autoload and display of all archives in OPFS on app launch, no permission prompts!</li>
+                                <li>Last selected archive (and optionally article) auto-loaded on app launch if in OPFS</li>
+                                <li>Import existing archives from anywhere on device into the OPFS easily with file picker</li>
+                                <li>Add file manager for deleting, and (in some contexts) exporting OPFS archives</li>
+                                <li>Option to download archives directly into the OPFS, without downloading first to user-visible FS</li>
+                                <li>Option to download archives direclty into any folder pickable with the File System Access API</li>
+                                <li>Full-text search enabled by default on Android for archives in OPFS</li>
+                                <li>Pick multiple archives at once and switch easily between them, even on legacy systems</li>
                                 <li>Avoid double loading of WebP Polyfill when present in ZIM</li>
+                                <li>Fix exception preventing display of legacy archive content in jQuery mode</li>
+                                <li>Fix Failure to display ZIM Archive Index when typing space in some circumstances</li>
                                 <li>Avoid duplication of title in wider range of ZIMs</li>
-                                <li>Electron version bumped to 22.3.21</li>
+                                <li>Sample archive changed to wikipedia_en_100_mini_2023-10</li>
+                                <li>Electron version bumped to 22.3.25</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>

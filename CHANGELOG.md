@@ -2,12 +2,21 @@
 
 ## In-progress release 2.6.9
 
+* FEATURE: Rework file system access and support Origin Private File System (OPFS)
+* ENHANCEMENT: Autoload and display of all archives in OPFS on app launch, no permission prompts!
+* ENHANCEMENT: Last selected archive (and optionally article) auto-loaded on app launch if in OPFS
+* ENHANCEMENT: Import existing archives from anywhere on device into the OPFS easily with file picker
+* ENHANCEMENT: Added file manager for deleting, and (in some contexts) exporting OPFS archives
+* ENHANCEMENT: Option to download archives directly into the OPFS, without downloading first to user-visible FS
+* ENHANCEMENT: Option to download archives direclty into any folder pickable with the File System Access API 
+* ENHANCEMENT: Full-text search enabled by default on Android for archives in OPFS
+* ENHANCEMENT: Pick multiple archives at once and switch easily between them, even on legacy systems
 * ENHANCEMENT: Avoid double loading of WebP Polyfill when present in ZIM
 * FIX: Exception preventing display of legacy archive content in jQuery mode
 * FIX: Failure to display ZIM Archive Index when typing space in some circumstances
 * FIX: Avoid duplication of title in wider range of ZIMs
 * UPDATE: Sample archive changed to `wikipedia_en_100_mini_2023-10`
-* UPDATE: Electron version bumped to 22.3.21
+* UPDATE: Electron version bumped to 22.3.25
 
 ## Release 2.6.4
 
