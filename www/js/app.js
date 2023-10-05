@@ -1481,6 +1481,7 @@ document.getElementById('useOPFSCheck').addEventListener('change', function (e) 
                 params.pickedFile = null;
                 params.pickedFolder = null;
                 settingsStore.removeItem('lastSelectedArchive');
+                params.rescan = true;
                 loadOPFSDirectory();
             }
         } else {
