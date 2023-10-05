@@ -20,7 +20,7 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* globals params, caches, assetsCache */
+/* globals params, appstate, caches, assetsCache */
 
 'use strict';
 import settingsStore from './settingsStore.js';
@@ -857,8 +857,9 @@ function deleteOPFSEntry (name) {
                 var baseName = name.replace(/\.zim[^.]*$/i, '');
                 entries.forEach(function (entry) {
                     if (~entry.name.indexOf(baseName)) {
-                        dirHandle.removeEntry(entry.name).then(function () {
+                        return dirHandle.removeEntry(entry.name).then(function () {
                             console.log('Deleted ' + entry.name + ' from OPFS');
+                            populateOPFSStorageQuota();
                         }).catch(function (err) {
                             console.error('Unable to delete ' + entry.name + ' from OPFS', err);
                         });
@@ -912,6 +913,23 @@ function iterateOPFSEntries () {
 }
 
 /**
+ * Gets the OPFS storage quota and populates the OPFSQuota panel
+ *
+ * @returns {Promise} A Promise that populates the OPFSQuota panel
+ */
+function populateOPFSStorageQuota () {
+    if (navigator && navigator.storage && ('estimate' in navigator.storage)) {
+        return navigator.storage.estimate().then(function (estimate) {
+            var percent = ((estimate.usage / estimate.quota) * 100).toFixed(2);
+            appstate.OPFSQuota = estimate.quota - estimate.usage;
+            document.getElementById('OPFSQuota').innerHTML =
+                '<b>OPFS storage quota:</b><br />Used:&nbsp;<b>' + percent + '%</b>; Remaining:&nbsp;<b>' +
+                (appstate.OPFSQuota / 1024 / 1024 / 1024).toFixed(2) + '&nbsp;GB</b>';
+        });
+    }
+}
+
+/**
  * Wraps a semaphor in a Promise. A function can signal that it is done by setting a sempahor to true,
  * if it has first set it to false at the outset of the procedure. Ensure no other functions use the same
  * sempahor. The semaphor must be an object key of the app-wide assetsCache object.
@@ -952,5 +970,6 @@ export default {
     importOPFSEntries: importOPFSEntries,
     exportOPFSEntry: exportOPFSEntry,
     deleteOPFSEntry: deleteOPFSEntry,
-    iterateOPFSEntries: iterateOPFSEntries
+    iterateOPFSEntries: iterateOPFSEntries,
+    populateOPFSStorageQuota: populateOPFSStorageQuota
 };

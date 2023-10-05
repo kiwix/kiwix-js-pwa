@@ -1210,7 +1210,6 @@ function selectArchive (list) {
                     settingsStore.removeItem('lastSelectedArchive');
                     params.rescan = true;
                     processNativeDirHandle(params.pickedFolder);
-                    populateOPFSStorageQuota();
                 });
             }
             document.getElementById('btnDeleteOPFSEntry').click();
@@ -1352,7 +1351,7 @@ archiveFilesLegacy.addEventListener('change', function (files) {
                 });
                 uiUtil.clearSpinner();
                 processNativeDirHandle(params.pickedFolder);
-                populateOPFSStorageQuota();
+                cache.populateOPFSStorageQuota();
             }).catch(function (err) {
                 console.error('Unable to import files to OPFS!', err);
                 var message = '<p>We could not import the selected files to the OPFS!</p><p>Reason: ' + err.message + '</p>';
@@ -1538,7 +1537,7 @@ function setOPFSUI () {
         OPFSQuota.style.display = '';
         btnDeleteOPFSEntry.style.display = '';
         if ('showOpenFilePicker' in window) btnExportOPFSEntry.style.display = '';
-        populateOPFSStorageQuota();
+        cache.populateOPFSStorageQuota();
     } else {
         settingsStore.setItem('useOPFS', false, Infinity);
         useOPFS.checked = false;
@@ -1613,7 +1612,7 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
                 if (fsHandle && fsHandle.kind === 'directory') {
                     if (params.useOPFS) params.rescan = false;
                     processNativeDirHandle(fsHandle);
-                    if (params.useOPFS) populateOPFSStorageQuota();
+                    if (params.useOPFS) cache.populateOPFSStorageQuota();
                 } else {
                     btnArchiveFiles.click();
                 }
@@ -1632,7 +1631,7 @@ document.getElementById('btnRefresh').addEventListener('click', function () {
         } else uiUtil.systemAlert('You need to pick a file or folder before you can rescan it!');
     } else if (window.showOpenFilePicker || params.useOPFS) {
         processNativeDirHandle(params.pickedFolder);
-        if (params.useOPFS) populateOPFSStorageQuota();
+        if (params.useOPFS) cache.populateOPFSStorageQuota();
     } else if (typeof Windows !== 'undefined') {
         scanUWPFolderforArchives(params.pickedFolder)
     } else if (window.fs) {
@@ -3853,18 +3852,6 @@ function scanUWPFolderforArchives (folder) {
     } else {
         // The picker was dismissed with no selected file
         console.log('User closed folder picker without picking a file');
-    }
-}
-
-function populateOPFSStorageQuota () {
-    if (navigator && navigator.storage && ('estimate' in navigator.storage)) {
-    navigator.storage.estimate().then(function (estimate) {
-        var percent = ((estimate.usage / estimate.quota) * 100).toFixed(2);
-        appstate.OPFSQuota = estimate.quota - estimate.usage;
-        document.getElementById('OPFSQuota').innerHTML =
-            '<b>OPFS storage quota:</b><br />Used:&nbsp;<b>' + percent + '%</b>; Remaining:&nbsp;<b>' +
-            (appstate.OPFSQuota / 1024 / 1024 / 1024).toFixed(2) + '&nbsp;GB</b>';
-        });
     }
 }
 
