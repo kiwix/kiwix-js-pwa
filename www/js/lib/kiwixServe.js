@@ -598,7 +598,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             for (var j = 0; j < downloadUrls.length; j++) {
                 downloadUrls[j].addEventListener('click', function (e) {
                     e.preventDefault();
-                    if (!(params.pickedFolder && params.pickedFolder.kind === 'directory')) return;
+                    if (!(params.pickedFolder && params.pickedFolder.kind === 'directory') || downloadSize > 0) return;
                     if (params.useOPFS) {
                         var quotaInMB = appstate.OPFSQuota / (1024 * 1024);
                         if (megabytes > quotaInMB) {
@@ -634,14 +634,14 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                     if (megabytes > 1000) {
                         if (params.useOPFS) {
                             uiUtil.systemAlert('<p>Do you wish to download the <b>large</b> archive <b><i>' + archiveName + '</i> (' + megabytes$ + ' MB)</b> directly into the Origin Private File System?</p>' +
-                            '<p><b>If you proceed, do not close the app or interact with it during the download.</b><p>' +
+                            '<p><b>If you proceed, do not close the app during the download.</b><p>' +
                             '<p>If you prefer to download in the background, use a browser-managed download link instead, and afterwards import the file into the OPFS using the "Add file(s)" button.</p>',
                             'Download large archive to OPFS?', true).then(function (result) {
                                 if (result) downloadArchiveWithFSA();
                             });
                         } else {
                             uiUtil.systemAlert('<p>Do you wish to download the <b>large</b> archive <b><i>' + archiveName + '</i> (' + megabytes$ + ' MB)</b> to the current ZIM folder?</p>' +
-                            '<p><b>If you proceed, do not close the app or interact with it during the download.</b></p>' +
+                            '<p><b>If you proceed, do not close the app during the download.</b></p>' +
                             '<p>If you prefer to download in the background, use a browser-managed download link instead, and then move the file manually into your ZIM folder.</p>',
                             'Download large archive to folder?', true).then(function (result) {
                                 if (result) downloadArchiveWithFSA();
