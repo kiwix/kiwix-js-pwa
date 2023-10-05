@@ -1,8 +1,10 @@
 # Changelog
 
-## In-progress release 2.6.8
+## In-progress release 2.6.9
 
 * ENHANCEMENT: Avoid double loading of WebP Polyfill when present in ZIM
+* FIX: Exception preventing display of legacy archive content in jQuery mode
+* FIX: Failure to display ZIM Archive Index when typing space in some circumstances
 * FIX: Avoid duplication of title in wider range of ZIMs
 * UPDATE: Electron version bumped to 22.3.21
 
