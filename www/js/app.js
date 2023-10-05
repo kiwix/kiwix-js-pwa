@@ -3228,12 +3228,12 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
             if (success) {
                 if (!displayOnly) {
                     setLocalArchiveFromArchiveList(lastSelectedArchive);
-                } else {
-                    setTimeout(function () {
-                        if (document.getElementById('configuration').style.display === 'none') {
-                            document.getElementById('btnConfigure').click();
-                        }
-                    }, 250);
+                // } else {
+                //     setTimeout(function () {
+                //         if (document.getElementById('configuration').style.display === 'none') {
+                //             document.getElementById('btnConfigure').click();
+                //         }
+                //     }, 250);
                 }
             } else {
                 // We can't find lastSelectedArchive in the archive list
