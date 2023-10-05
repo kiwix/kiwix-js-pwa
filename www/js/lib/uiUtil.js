@@ -363,8 +363,7 @@ function displayActiveContentWarning (type) {
             'disable Breakout icon ' : '') + 'for this content to work properly. To use Archive Index type a <b><i>space</i></b> ' +
             'in the box above, or <b><i>space / </i></b> for URL Index.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';
-    }
-    if (type === 'zimit') {
+    } else if (type === 'zimit') {
         alertHTML =
         '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
             '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
@@ -376,6 +375,9 @@ function displayActiveContentWarning (type) {
             'or s' : '. S') + 'tart your search with <b>.*</b> to match part of a title. Type a <b><i>space</i></b> for the ZIM Archive Index, or ' +
             '<b><i>space / </i></b> for the URL Index.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';
+    } else {
+        // There is nothing to display
+        return;
     }
     const alertBoxHeader = document.getElementById('alertBoxHeader');
     alertBoxHeader.innerHTML = alertHTML;
