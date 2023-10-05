@@ -4505,7 +4505,7 @@ function showZIMIndex (start, prefix) {
                     document.getElementById('mycloseMessage').click();
                 });
             });
-            if (document.getElementById('myModal').style.display === 'none') {
+            if (document.getElementById('myModal').style.display !== 'block') {
                 uiUtil.systemAlert(' ', '', null, null, null, null, 'myModal');
             }
         }, start);
