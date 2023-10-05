@@ -1052,10 +1052,12 @@ function reportDownloadProgress (data) {
     } else {
         var dataMB = (data / 1024 / 1024).toFixed(2);
         // console.debug('dataMB: ' + dataMB + '; data: ' + data);
-        var percentageData = Math.floor(dataMB / downloadSize * 100);
-        if (percentageData > percentageComplete) {
-            percentageComplete = percentageData;
-            uiUtil.pollSpinner('<b>Please wait</b><br />Downloading archive... ' + percentageComplete + '%', true);
+        if (downloadSize > 0) {
+            var percentageData = Math.floor(dataMB / downloadSize * 100);
+            if (percentageData > percentageComplete) {
+                percentageComplete = percentageData;
+                uiUtil.pollSpinner('<b>Please wait</b><br />Downloading archive... ' + percentageComplete + '%', true);
+            }
         }
         // If data is greater than 1GB, convert to GB
         if (data > 1073741824) {
