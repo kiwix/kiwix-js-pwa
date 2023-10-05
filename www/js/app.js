@@ -3029,6 +3029,10 @@ if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
         } else {
             // User launched app by double-clicking on file
             console.debug('Processing NativeFileHandle for ' + launchParams);
+            // Turn off OPFS if it is on, because we are using the File Handling API instead
+            if (params.useOPFS) {
+                document.getElementById('useOPFSCheck').click();
+            }
             processNativeFileHandle(launchParams.files[0]);
         }
     });
@@ -3603,6 +3607,10 @@ function handleFileDrop (packet) {
     packet.preventDefault();
     configDropZone.style.border = '';
     var items = packet.dataTransfer.items;
+    // Turn off OPFS if it is on
+    if (params.useOPFS) {
+        document.getElementById('useOPFSCheck').click();
+    }
     // When dropping multiple files (e.g. a split archive), we cannot use the File System Access API
     if (items && items.length === 1 && items[0].kind === 'file' && typeof items[0].getAsFileSystemHandle !== 'undefined') {
         items[0].getAsFileSystemHandle().then(function (handle) {
