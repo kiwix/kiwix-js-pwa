@@ -456,6 +456,10 @@
                         icon, and then click on the file you wish to export. The OPFS copy of the file is <i>not</i> deleted after export. If you do not see the export icon,
                         then this feature is not available in your browser.
                     </p>
+                    <p>
+                        On iOS in Safari, the OPFS appears to be supported, but there is currently no way to download or move a file from the user-visible file system into the OPFS.
+                        This is because the <code>WriteableFileStream</code> API is not yet available on iOS, but it may become available soon.
+                    </p>
                     <p>    
                         The main <b>advantages</b> of the OPFS, especially on mobile, are:
                         <ul>
@@ -466,7 +470,7 @@
                     <p>
                         However, there are some <b>limitations</b> of the OPFS:
                         <ul>
-                            <li>the file system has a quota set by the browser, which only makes it suitable for small-to-medium-sized archives;</li>
+                            <li>the file system has a quota set by the browser, which may be very small in some browsers;</li>
                             <li>on mobile OS, it can take a long time to store a file in the OPFS, especially if it is larger than 1GB. On Firefox for Android, importing a file is
                                 <b>very</b> slow -- it can be faster to download the file directly into the OPFS from the Download library;</li>
                             <li>when you clear the app's data (e.g. clearing cookies, etc.), the browser can delete the file system and any files in it without warning;</li>
@@ -480,9 +484,7 @@
                     </p>
                     <p>
                         With title search, if you search for 'France' you will get 'France (country)', 'France (disambiguation)', 'France (film)', etc. This kind of search
-                        tries to be <b>case-insensitive</b>, but the number of case variants tried is necessarily limited, e.g. if you search for 'unesco world heritiage',
-                        it will try 'Unesco world heritage', 'UNESCO world heritage', 'unesco World heritage', 'Unesco WORLD heritage', etc., but it won't try 'uNesCO'
-                        and other non-obvious case combinations. If you want to search for 'uNesCO', then you must type it exactly like that.
+                        tries to be <b>case-insensitive</b>, but the number of case variants tried is necessarily limited.
                     </p>
                     <p>
                         You can also use the <b>wildcards</b> <code>.*</code> or <code>.+</code> as part of your title search (these follow regular expression syntax: if you
@@ -490,10 +492,8 @@
                         'List of Medieval bestiaries', 'List of Medieval topics', etc.
                     </p>
                     <p id="searchSyntaxError">
-                        <b>Incorrect search syntax!</b> If you get this message, it's because you used a wildcard but the syntax was incorrect. <i>
-                            Everything after
-                            the wildcard must be a valid regular expression or else the search will fail!
-                        </i> For simple text or numbers after a wildcard, don't worry, it'll work fine,
+                        <b>Incorrect search syntax!</b> If you get this message, it's because you used a wildcard but the syntax was incorrect. <i>Everything after
+                        the wildcard must be a valid regular expression or else the search will fail!</i> For simple text or numbers after a wildcard, don't worry, it'll work fine,
                         but you need to be aware that regular expressions reserve characters like '?', '(', '^', '$', '*', '+', so these (and others) must be used correctly if you
                         use wildcards with them. You might be able to correct an error by placing a backslash before each reserved character, e.g. <code>list.*\(france</code>.
                     </p>
@@ -536,10 +536,9 @@
                         If you see the search result you want, you can click on it without having to wait for the full-text results.
                     </p>
                     <p id="Android">
-                        If you are using the <b>PWA on Android</b>, please note that full-text search is disabled by default because file access on most Android versions is far too slow. If you want to try anyway,
-                        open the 'Troubleshooting and development' section in Configuration and select 'WASM' from the dropdown next to 'Force use of libzim W/ASM'. This may be OK with small ZIM archives,
-                        but don't be surprised if you have to wait 60-90 seconds just for full-text search to become available. With large ZIMs, you could have to wait several minutes, if it loads at all.
-                        Returning full-text search results can also be very slow on Android.
+                        If you are using the <b>PWA on Android</b>, please note that full-text search is only enabled by default for archives in the Origin Private File System. This is because conventional
+                        file access on most Android versions is far too slow, but it is much faster in the OPFS. If you want to enable it in all cases, open the 'Troubleshooting and development' section in
+                        Configuration and select 'WASM' from the dropdown next to 'Force use of libzim W/ASM'.
                     </p>
                     <h3 id="linkHandling">Link handling, dynamic content and image download</h3>
                     <p>
@@ -601,15 +600,15 @@
                     </p>
                     <h4>Officially supported:</h4>
                     <ul>
-                        <li>Firefox &gt;= 60 on all operating systems <i>except</i> Android*</li>
+                        <li>Firefox &gt;= 60 on all operating systems (but see note about Android*)</li>
                         <li>Edge Chromium &gt;= 79</li>
                         <li>Chrome/Chromium &gt;= 59 (and many browsers based on Chromium, e.g. Opera, Samsung Internet)</li>
                         <li>Edge Legacy 18, including UWP</li>
                         <li>Safari on iOS</li>
                     </ul>
                     <p>
-                        * Although Firefox on Android appears to work, there is a bug whereby the app attempts to load the entire ZIM archive into memory or internal storage before accessing it. This fails with
-                        archives larger than 1GB on most phones.
+                        * The Firefox on Android app only works well with files stored in the Origin Private File System. Picking files from the user-visible file system suffers from a Firefox bug whereby the app attempts
+                        to load the picked file into memory, which can take a very long time and may fail.
                     </p>
                     <h4>Deprecated</h4>
                     <p>Although deprecated, we will keep support for as long as is practical:</p>

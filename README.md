@@ -80,7 +80,7 @@ try switching the app to JQuery mode (see Content injection mode in Configuratio
 
   + <img src="images/googlechrome-color.svg" width="20" /> Google Chrome / Chromium >= 59 (and many browsers based on Chromium, e.g. Opera, Samsung Internet)
   + <img src="images/microsoftedge-color.svg" width="20" /> Microsoft Edge (Chromium) >= 79
-  + <img src="images/firefoxbrowser-color.svg" width="20" /> Mozilla Firefox >= 60 (except on Android`*`)
+  + <img src="images/firefoxbrowser-color.svg" width="20" /> Mozilla Firefox >= 60 (but see note about Android`*`)
   + <img src="images/safari-color.svg" width="20" /> Apple Safari >= 11.3 for iOS and macOS (full-text search only works on iOS 15+)
   + <img src="images/edgelegacy-color.svg" width="22" /> Microsoft Edge Legacy 18 (Windows only)
 
@@ -91,8 +91,8 @@ try switching the app to JQuery mode (see Content injection mode in Configuratio
   + <img src="images/nwjs-color.svg" width="20" /> NWJS >= 0.23.0 (Windows 7/8/10/11): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html)
   + NWJS 0.14.7 (Windows XP/Vista only): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html)
 
-`*` There is a bug with **Firefox on Android** whereby the browser attempts to read the entire ZIM archive into memory or internal storage, which fails
-with archives >1GB approximately.
+`*` With **Firefox on Android**, the app is only useable with files stored in the Origin Private File System. There is a Firefox bug whereby the browser
+attempts to read the entire ZIM archive into memory if opening it from the user-visible file system.
 
 ### Deprecated
 
