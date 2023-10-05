@@ -1,6 +1,7 @@
 ﻿'use strict';
 
-/* global define, params */
+/* global params */
+/* eslint-disable indent */
 
 import uiUtil from './uiUtil.js';
 
@@ -130,14 +131,28 @@ function reset(object) {
         }
       });
     }
+
+    // 5. Clear any Origin Private File System Archives
+    // DEV: Method is currently behind a flag, so wait till fully implemented
+    // if (!object || object === 'OPFS') {
+    //   if (navigator && navigator.storage && 'getDirectory' in navigator.storage) {
+    //     navigator.storage.getDirectory().then(function (handle) {
+    //       handle.remove({ recursive: true }).then(function () {
+    //         console.debug('All OPFS archives were deleted...');
+    //       });
+    //     });
+    //   }
+    // }
   };
   // If no specific object was specified, we are doing a general reset, so ask user for confirmation
   if (object) performReset();
   else {
-    uiUtil.systemAlert('<b>WARNING:</b> This will reset the app to a freshly installed state, deleting all app caches and settings! <b>Make sure you have an Internet connection</b> if this is an offline PWA, because it will be erased and reloaded.',
-    'Warning!', true).then(function (confirm) {
-      if (confirm) performReset();
-      else console.debug('User cancelled');
+    uiUtil.systemAlert('<p><b>WARNING:</b> This will reset the app to a freshly installed state, deleting all app caches,' +
+    // ' <b>Archives stored in the Private File System</b>,' +
+    ' and settings!<b></p><p>Make sure you have an Internet connection</b>' +
+    ' if this is an offline PWA, because it will be erased and reloaded.</p>', 'Warning!', true).then(function (confirm) {
+        if (confirm) performReset();
+        else console.debug('User cancelled');
     });
   }
 }
@@ -163,8 +178,8 @@ function _reloadApp() {
   var reboot = function () {
     console.debug('Performing app reload...');
     setTimeout(function () {
-      window.location.href = location.origin + location.pathname + uriParams 
-    }, 300);
+      window.location.href = location.origin + location.pathname + uriParams
+    }, 600);
   };
   // Blank the querystring, so that parameters are not set on reload
   var uriParams = '';
@@ -256,11 +271,11 @@ var settingsStore = {
     if (params.storeType !== 'local_storage') {
       return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[-.+*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
     } else {
-      return localStorage.getItem(keyPrefix + sKey) === null ? false : true;
+      return localStorage.getItem(keyPrefix + sKey) !== null;
     }
   },
   _cookieKeys: function () {
-    var aKeys = document.cookie.replace(/((?:^|\s*;)[^=]+)(?=;|$)|^\s*|\s*(?:=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:=[^;]*)?;\s*/);
+    var aKeys = document.cookie.replace(/((?:^|\s*;)[^=]+)(?=;|$)|^\s*|\s*(?:=[^;]*)?(?:\1|$)/g, '').split(/\s*(?:=[^;]*)?;\s*/);
     for (var nLen = aKeys.length, nIdx = 0; nIdx < nLen; nIdx++) {
       aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]);
     }

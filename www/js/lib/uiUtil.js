@@ -166,7 +166,14 @@ function makeReturnLink (title) {
     }
 }
 
-function pollSpinner (msg, noTimeout) {
+/**
+ * Starts the spinner, with an optional message and optional timeout interval. If no timeout is specified, the spinner
+ * will run for 3s before being cleared. If the timeout is set to true, the spinner will run indefinitely or until pollSpinner
+ * is called again.
+ * @param {String} msg A message (may be HTML-formatted) to display below the spinner
+ * @param {Integer|Boolean} noTimeoutOrInterval A timeout value, or if true, the spinner will run indefinitely until pollSpinner is called again
+ */
+function pollSpinner (msg, noTimeoutOrInterval) {
     msg = msg || '';
     document.getElementById('searchingArticles').style.display = 'block';
     var cachingAssets = document.getElementById('cachingAssets');
@@ -175,7 +182,10 @@ function pollSpinner (msg, noTimeout) {
     else cachingAssets.style.display = 'none';
     // Never allow spinner to run for more than 3s
     clearTimeout(clearSpinner);
-    if (!noTimeout) setTimeout(clearSpinner, 3000);
+    if (!noTimeoutOrInterval || noTimeoutOrInterval !== true) {
+        var interval = noTimeoutOrInterval || 3000;
+        setTimeout(clearSpinner, interval);
+    }
 }
 
 function clearSpinner () {
@@ -342,19 +352,7 @@ function displayActiveContentWarning (type) {
             'please <a id="jqModeLink" href="#contentInjectionModeDiv" class="alert-link">switch to the legacy JQuery mode</a>. ' +
             'You may need to increase font size with zoom buttons at bottom of screen.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';
-    } else if (params.contentInjectionMode === 'serviceworker' && (params.manipulateImages || params.displayHiddenBlockElements || params.allowHTMLExtraction)) {
-        alertHTML =
-        '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
-            '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
-            '<strong>Active content may not work correctly:</strong> Please ' + (params.displayHiddenBlockElements
-            ? '<a id="hbeModeLink" href="#displayHiddenBlockElementsDiv" class="alert-link">disable Display hidden block elements</a> '
-            : params.manipulateImages ? '<a id="imModeLink" href="#imageManipulationDiv" class="alert-link">disable Image manipulation</a> ' : '') +
-            (params.allowHTMLExtraction ? (params.displayHiddenBlockElements || params.manipulateImages ? 'and ' : '') +
-            'disable Breakout icon ' : '') + 'for this content to work properly. To use Archive Index type a <b><i>space</i></b> ' +
-            'in the box above, or <b><i>space / </i></b> for URL Index.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
-        '</div>';
-    }
-    if (type === 'zimit') {
+    } else if (type === 'zimit') {
         alertHTML =
         '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
             '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
@@ -366,6 +364,20 @@ function displayActiveContentWarning (type) {
             'or s' : '. S') + 'tart your search with <b>.*</b> to match part of a title. Type a <b><i>space</i></b> for the ZIM Archive Index, or ' +
             '<b><i>space / </i></b> for the URL Index.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';
+    } else if (params.contentInjectionMode === 'serviceworker' && (params.manipulateImages || (params.displayHiddenBlockElements === true) || params.allowHTMLExtraction)) {
+        alertHTML =
+        '<div id="activeContent" class="alert alert-warning alert-dismissible fade in" style="margin-bottom: 0;">' +
+            '<a href="#" id="activeContentClose" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
+            '<strong>Active content may not work correctly:</strong> Please ' + (params.displayHiddenBlockElements
+            ? '<a id="hbeModeLink" href="#displayHiddenBlockElementsDiv" class="alert-link">disable Display hidden block elements</a> '
+            : params.manipulateImages ? '<a id="imModeLink" href="#imageManipulationDiv" class="alert-link">disable Image manipulation</a> ' : '') +
+            (params.allowHTMLExtraction ? (params.displayHiddenBlockElements || params.manipulateImages ? 'and ' : '') +
+            'disable Breakout icon ' : '') + 'for this content to work properly. To use Archive Index type a <b><i>space</i></b> ' +
+            'in the box above, or <b><i>space / </i></b> for URL Index.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
+        '</div>';
+    } else {
+        // There is nothing to display
+        return;
     }
     const alertBoxHeader = document.getElementById('alertBoxHeader');
     alertBoxHeader.innerHTML = alertHTML;

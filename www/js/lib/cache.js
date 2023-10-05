@@ -20,7 +20,7 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* globals params, caches, assetsCache */
+/* globals params, appstate, caches, assetsCache */
 
 'use strict';
 import settingsStore from './settingsStore.js';
@@ -520,7 +520,7 @@ function getItemFromCacheOrZIM (selectedArchive, key, dirEntry) {
                     });
                 }
             }).catch(function (e) {
-                reject('could not find DirEntry for asset : ' + title, e);
+                reject(new Error('Could not find DirEntry for asset ' + title, e));
             });
         });
     });
@@ -697,7 +697,7 @@ function transform (string, filter) {
  * @returns {Promise<Boolean>} A Promise for a Boolean value indicating whether permission has been granted or not
  */
 function verifyPermission (fileHandle, withWrite) {
-    // if (window.fs) return Promise.resolve(true); // Electron
+    if (params.useOPFS) return Promise.resolve(true); // No permission prompt required for OPFS
     var opts = withWrite ? { mode: 'readwrite' } : {};
     return fileHandle.queryPermission(opts).then(function (permission) {
         if (permission === 'granted') return true;
@@ -709,6 +709,224 @@ function verifyPermission (fileHandle, withWrite) {
             console.warn('Cannot use previously picked file handle programmatically (this is normal) ' + fileHandle.name, error);
         });
     });
+}
+
+/**
+ * Download an archive directly into the picked folder (primarily for use with the Origin Private File System)
+ *
+ * @param {String} archiveName The name of the archive to download (will be used as the filename)
+ * @param {String} archiveUrl An optional URL to download the archive from (if not supplied, will use params.kiwixDownloadLink)
+ * @param {Function} callback Callback function to report the progress of the download
+ * @returns {Promise<FileSystemFileHandle>} A Promise for a FileHandle object representing the downloaded file
+ */
+function downloadArchiveToPickedFolder (archiveName, archiveUrl, callback) {
+    archiveUrl = archiveUrl || params.kiwixDownloadLink + archiveName;
+    if (params.pickedFolder && params.pickedFolder.getFileHandle) {
+        return verifyPermission(params.pickedFolder, true).then(function (permission) {
+            if (permission) {
+                return params.pickedFolder.getFileHandle(archiveName, { create: true }).then(function (fileHandle) {
+                    return fileHandle.createWritable().then(function (writer) {
+                        return fetch(archiveUrl).then(function (response) {
+                            if (!response.ok) {
+                                return writer.close().then(function () {
+                                    // Delete the file
+                                    params.pickedFolder.removeEntry(archiveName).then(function () {
+                                        throw new Error('HTTP error, status = ' + response.status);
+                                    });
+                                });
+                            }
+                            var loaded = 0;
+                            var reported = 0;
+                            return new Response(
+                                new ReadableStream({
+                                    start: function (controller) {
+                                        var reader = response.body.getReader();
+                                        var processResult = function (result) {
+                                            if (result.done) {
+                                                return controller.close();
+                                            }
+                                            loaded += result.value.byteLength;
+                                            if (loaded - reported >= 1048576) { // 1024 * 1024
+                                                reported = loaded;
+                                                if (callback) {
+                                                    callback(reported);
+                                                } else console.debug('Downloaded ' + reported + ' bytes so far...');
+                                            }
+                                            controller.enqueue(result.value);
+                                            return reader.read().then(processResult);
+                                        };
+                                        return reader.read().then(processResult);
+                                    }
+                                })
+                            ).body.pipeTo(writer).then(function () {
+                                if (callback) callback('completed');
+                                return true;
+                            }).catch(function (err) {
+                                console.error('Error downloading archive', err);
+                                if (callback) callback('error');
+                                writer.close().then(function () {
+                                    // Delete the file
+                                    params.pickedFolder.removeEntry(archiveName).then(function () {
+                                        throw err;
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            } else {
+                throw (new Error('Write permission not granted!'));
+            }
+        }).catch(function (err) {
+            console.error('Error downloading archive', err);
+            throw err;
+        });
+    } else {
+        return Promise.reject(new Error('No picked folder available!'));
+    }
+}
+
+/**
+ * Imports the picked files into the OPFS file system
+ *
+ * @param {Array} files An array of File objects to import
+ */
+function importOPFSEntries (files) {
+    return Promise.all(files.map(function (file) {
+        return params.pickedFolder.getFileHandle(file.name, { create: true }).then(function (fileHandle) {
+            return fileHandle.createWritable().then(function (writer) {
+                uiUtil.pollSpinner('Importing ' + file.name.substring(0, 18) + '...', true);
+                return writer.write(file).then(function () {
+                    uiUtil.pollSpinner('Imported ' + file.name + '...', true);
+                    return writer.close();
+                });
+            });
+        });
+    }));
+}
+
+/**
+ * Exports an entry from the OPFS file system to the user-visible file system
+ *
+ * @param {String} name The filename of the entry to export
+ * @returns {Promise<Boolean>} A Promise for a Boolean value indicating whether the export was successful
+ */
+function exportOPFSEntry (name) {
+    if (navigator && navigator.storage && 'getDirectory' in navigator.storage) {
+        return navigator.storage.getDirectory().then(function (dir) {
+            return dir.getFileHandle(name).then(function (fileHandle) {
+                try {
+                    // Obtain a file handle to a new file in the user-visible file system
+                    // with the same name as the file in the origin private file system.
+                    return window.showSaveFilePicker({
+                        suggestedName: fileHandle.name || ''
+                    }).then(function (saveHandle) {
+                        return saveHandle.createWritable().then(function (writable) {
+                            return fileHandle.getFile().then(function (file) {
+                                return writable.write(file).then(function () {
+                                    writable.close();
+                                    return true;
+                                });
+                            });
+                        });
+                    });
+                } catch (err) {
+                    console.error(err.name, err.message);
+                    return false;
+                }
+            }).catch(function (err) {
+                console.error('Unable to get file handle from OPFS', err);
+                return false;
+            });
+        }).catch(function (err) {
+            console.error('Unable to get directory from OPFS', err);
+            return false;
+        });
+    }
+}
+
+/**
+ * Deletes an entry from the OPFS file system
+ *
+ * @param {String} name The filename of the entry to delete
+ */
+function deleteOPFSEntry (name) {
+    if (navigator && navigator.storage && 'getDirectory' in navigator.storage) {
+        return navigator.storage.getDirectory().then(function (dirHandle) {
+            return iterateOPFSEntries().then(function (entries) {
+                var baseName = name.replace(/\.zim[^.]*$/i, '');
+                entries.forEach(function (entry) {
+                    if (~entry.name.indexOf(baseName)) {
+                        return dirHandle.removeEntry(entry.name).then(function () {
+                            console.log('Deleted ' + entry.name + ' from OPFS');
+                            populateOPFSStorageQuota();
+                        }).catch(function (err) {
+                            console.error('Unable to delete ' + entry.name + ' from OPFS', err);
+                        });
+                    }
+                });
+            }).catch(function (err) {
+                console.error('Unable to get directory from OPFS', err);
+            });
+        }).catch(function (err) {
+            console.error('Unable to get directory from OPFS', err);
+        });
+    }
+}
+
+/**
+ * Iterates the OPFS file system and returns an array of entries found
+ *
+ * @returns {Promise<Array>} A Promise for an array of entries in the OPFS file system
+ */
+function iterateOPFSEntries () {
+    if (navigator && navigator.storage && 'getDirectory' in navigator.storage) {
+        return navigator.storage.getDirectory().then(function (dirHandle) {
+            var archiveEntries = [];
+            var entries = dirHandle.entries();
+            var promisesForEntries = [];
+            // Push the pormise for each entry to the promises array
+            var pushPromises = new Promise(function (resolve) {
+                (function iterate () {
+                    return entries.next().then(function (result) {
+                        if (!result.done) {
+                            // Process the entry, then continue iterating
+                            var entry = result.value[1];
+                            archiveEntries.push(entry);
+                            promisesForEntries.push(result);
+                            iterate();
+                        } else {
+                            return resolve(true);
+                        }
+                    });
+                })();
+            });
+            return pushPromises.then(function () {
+                return Promise.all(promisesForEntries).then(function () {
+                    return archiveEntries;
+                }).catch(function (err) {
+                    console.error('Unable to iterate OPFS entries', err);
+                });
+            });
+        });
+    }
+}
+
+/**
+ * Gets the OPFS storage quota and populates the OPFSQuota panel
+ *
+ * @returns {Promise} A Promise that populates the OPFSQuota panel
+ */
+function populateOPFSStorageQuota () {
+    if (navigator && navigator.storage && ('estimate' in navigator.storage)) {
+        return navigator.storage.estimate().then(function (estimate) {
+            var percent = ((estimate.usage / estimate.quota) * 100).toFixed(2);
+            appstate.OPFSQuota = estimate.quota - estimate.usage;
+            document.getElementById('OPFSQuota').innerHTML =
+                '<b>OPFS storage quota:</b><br />Used:&nbsp;<b>' + percent + '%</b>; Remaining:&nbsp;<b>' +
+                (appstate.OPFSQuota / 1024 / 1024 / 1024).toFixed(2) + '&nbsp;GB</b>';
+        });
+    }
 }
 
 /**
@@ -747,5 +965,11 @@ export default {
     wait: wait,
     getItemFromCacheOrZIM: getItemFromCacheOrZIM,
     replaceAssetRefsWithUri: replaceAssetRefsWithUri,
-    verifyPermission: verifyPermission
+    verifyPermission: verifyPermission,
+    downloadArchiveToPickedFolder: downloadArchiveToPickedFolder,
+    importOPFSEntries: importOPFSEntries,
+    exportOPFSEntry: exportOPFSEntry,
+    deleteOPFSEntry: deleteOPFSEntry,
+    iterateOPFSEntries: iterateOPFSEntries,
+    populateOPFSStorageQuota: populateOPFSStorageQuota
 };

@@ -34,7 +34,11 @@
  */
 'use strict';
 
-/* globals params */
+import cache from './cache.js';
+import uiUtil from './uiUtil.js';
+import settingsStore from './settingsStore.js';
+
+/* globals params, appstate */
 
 var langCodes = {
     aa: 'Afar (Afar)',
@@ -482,9 +486,9 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             var body = document.getElementById('dl-panel-body');
             var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^/]*\.meta4$/i, '/') + '">&lt;&lt; Back to list of files</a></p>\r\n';
             bodyDoc += '<p><b>Directly download ZIM archive:</b></p>' +
-            '<p><a href="' + requestedURL + '"' + target + '>' + requestedURL + '</a></p>' +
+            '<p><a href="' + requestedURL + '"' + target + ' class="download">' + requestedURL + '</a></p>' +
             (altURL ? '<p><b>Possible mirror:</b></p>' +
-            '<p><a href="' + altURL + '"' + target + '>' + altURL + '</a></p>' : '') +
+            '<p><a href="' + altURL + '"' + target + ' class="download">' + altURL + '</a></p>' : '') +
             (~URL.indexOf(params.kiwixHiddenDownloadLink) ? ''
                 : '<p><b>Download with bittorrent:</b></p>' +
                 '<p><a href="' + torrentURL + '"' + target + '>' + torrentURL + '</a></p>');
@@ -533,7 +537,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
         bodyDoc += megabytes > 2000 ? ' style="color:red;"> WARNING: ' : '>';
         bodyDoc += 'File size is <b>' + (megabytes ? megabytes$ + 'MB' : 'unknown') + '</b>' + (size ? ' (' + size + ' bytes)' : '') + '</h5>\r\n';
         bodyDoc += '<p><b>New! <i><a id="preview" target="_blank">Preview this archive</a></i></b> in your browser before downloading it</p>';
-        if (megabytes > 200) {
+        if (megabytes > 1000) {
             bodyDoc += '<p><b>Consider using BitTorrent to download file:</b></p>\r\n<ul>' +
             '<li><b>BitTorrent file</b>: <a href="' + URL.replace(/\.meta4$/, '.torrent') + '"' + target + '>' +
                 URL.replace(/\.meta4$/, '.torrent') + '</a></li>\r\n' +
@@ -552,7 +556,16 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                 'File Explorer. You will need to extract the contents of the folder <span style="font-family: monospace;"><b>&gt; data &gt; content</b></span>,\r\n' +
                 'and transfer ALL of the files there to an accessible folder on your device. After that, you can search for the folder in this app (see above).</p>\r\n';
         }
-        bodyDoc += '<p><b>Direct download:</b> (<i>links will open in a new browser window</i>)</p><ol>\r\n' + doc + '</ol>\r\n';
+        var mirrorZimUrl = URL.replace(/\.meta4$/i, '').replace(/\/download\./, '/mirror.download.');
+        if (params.useOPFS || (window.showSaveFilePicker && params.pickedFolder && params.pickedFolder.kind === 'directory')) {
+            bodyDoc += '<p><b>Direct download';
+            bodyDoc += params.useOPFS ? ' to Origin Private File System' : ' to your ZIM folder';
+            bodyDoc += ', for smaller archives:</b> (<i>downloads archive in-app</i>)</p><ul>\r\n<li><a href="' + mirrorZimUrl + '" class="download">' + mirrorZimUrl + '</a></li></ul>\r\n';
+            bodyDoc += '<p><b>Browser-managed download from mirrors, for larger archives:</b>';
+        } else {
+            bodyDoc += '<p><b>Browser-managed download from mirrors:</b>';
+        }
+        bodyDoc += ' (<i>links open in a new browser window</i>)</p><ol>\r\n' + doc + '</ol>\r\n';
         bodyDoc += '<br /><br />';
         // Try to get magnet link
         if (megabytes > 200) requestXhttpData(URL.replace(/\.meta4$/, '.magnet'));
@@ -579,15 +592,73 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             domain = domain.replace(/download/, 'library');
             return domain + file;
         });
-        // Add event listener for split archive link, if necessary
-        // if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
-        //     document.getElementById('portable').addEventListener('click', submitSelectValues);
-        // }
+        // If File System Access API is available, add event listeners on download links to save to local storage
+        if (params.useOPFS || window.showSaveFilePicker) {
+            var downloadUrls = document.getElementsByClassName('download');
+            for (var j = 0; j < downloadUrls.length; j++) {
+                downloadUrls[j].addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (!(params.pickedFolder && params.pickedFolder.kind === 'directory') || downloadSize > 0) return;
+                    if (params.useOPFS) {
+                        var quotaInMB = appstate.OPFSQuota / (1024 * 1024);
+                        if (megabytes > quotaInMB) {
+                            return uiUtil.systemAlert('<p>Sorry, the archive you selected is too large to download to your Origin Private File System.</p>' +
+                                '<p>It is <b>' + megabytes$ + ' MB</b>, but your quota is only <b>' + quotaInMB.toFixed(1) + ' MB</b>.</p>' +
+                                '<p>Please select a smaller archive, or else select a different download method.</p>', 'File too large');
+                        }
+                    }
+                    var archiveUrl = mirrorZimUrl;
+                    var archiveName = e.target.href.replace(/^.*\/([^/]+)$/, '$1');
+                    var downloadArchiveWithFSA = function () {
+                        downloadSize = megabytes;
+                        uiUtil.pollSpinner('<b>Please wait</b><br />Downloading archive... 0%', true);
+                        return cache.downloadArchiveToPickedFolder(archiveName, archiveUrl, reportDownloadProgress).then(function () {
+                            uiUtil.clearSpinner();
+                            return uiUtil.systemAlert('<p>The archive ' + archiveName + ' has been downloaded to your device.</p>' +
+                            (params.useOPFS ? '<p><b>Reloading to activate new ZIM...</b></p>' : ''), 'Download complete').then(function () {
+                                if (params.useOPFS) {
+                                    settingsStore.setItem('lastSelectedArchive', archiveName);
+                                    window.location.reload();
+                                } else {
+                                    document.getElementById('btnRefresh').click();
+                                }
+                            });
+                        }).catch(function (err) {
+                            uiUtil.clearSpinner();
+                            console.error(err);
+                            var message = 'Unable to download the archive ' + archiveName + ' to your device: ' + err;
+                            if (/iOS/.test(params.appType)) message = '<p>Unfortunately, iOS does not currently support downloading files directly into the OPFS. Please select a different download method.</p><p>Error message: ' + err.message + '</p>';
+                            return uiUtil.systemAlert(message, 'Download failed');
+                        });
+                    }
+                    if (megabytes > 1000) {
+                        if (params.useOPFS) {
+                            uiUtil.systemAlert('<p>Do you wish to download the <b>large</b> archive <b><i>' + archiveName + '</i> (' + megabytes$ + ' MB)</b> directly into the Origin Private File System?</p>' +
+                            '<p><b>If you proceed, do not close the app during the download.</b><p>' +
+                            '<p>If you prefer to download in the background, use a browser-managed download link instead, and afterwards import the file into the OPFS using the "Add file(s)" button.</p>',
+                            'Download large archive to OPFS?', true).then(function (result) {
+                                if (result) downloadArchiveWithFSA();
+                            });
+                        } else {
+                            uiUtil.systemAlert('<p>Do you wish to download the <b>large</b> archive <b><i>' + archiveName + '</i> (' + megabytes$ + ' MB)</b> to the current ZIM folder?</p>' +
+                            '<p><b>If you proceed, do not close the app during the download.</b></p>' +
+                            '<p>If you prefer to download in the background, use a browser-managed download link instead, and then move the file manually into your ZIM folder.</p>',
+                            'Download large archive to folder?', true).then(function (result) {
+                                if (result) downloadArchiveWithFSA();
+                            });
+                        }
+                    } else {
+                        downloadArchiveWithFSA();
+                    }
+                });
+            }
+        }
     }
 
     function processMagnetLink (link) {
         link = link.replace(/&amp;/g, '&');
         var magnetLink = document.getElementById('magnet');
+        if (!magnetLink) return;
         // Set up backup link
         var magnetLinkAlt = document.getElementById('magnetAlt');
         magnetLinkAlt.href = magnetLink.href;
@@ -965,7 +1036,54 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
     }
 }
 
+var percentageComplete = 0;
+var downloadSize = 0;
+
+/**
+ * Reports download progress to the serverResponse panel
+ *
+ * @param {String|Integer} data A string ('completed') or integer representing the download progress (in bytes)
+ */
+function reportDownloadProgress (data) {
+    // console.warn('Download in progress: ' + data);
+    serverResponse.style.display = 'inline';
+    var colour = data === 'completed' ? 'green' : isNaN(data) ? 'red' : 'goldenrod';
+    serverResponse.style.setProperty('color', colour, 'important');
+    var formattedData;
+    if (isNaN(data)) {
+        formattedData = data;
+    } else {
+        var dataMB = (data / 1024 / 1024).toFixed(2);
+        // console.debug('dataMB: ' + dataMB + '; data: ' + data);
+        if (downloadSize > 0) {
+            var percentageData = Math.floor(dataMB / downloadSize * 100);
+            if (percentageData > percentageComplete) {
+                percentageComplete = percentageData;
+                uiUtil.pollSpinner('<b>Please wait</b><br />Downloading archive... ' + percentageComplete + '%', true);
+            }
+        }
+        // If data is greater than 1GB, convert to GB
+        if (data > 1073741824) {
+            formattedData = (dataMB / 1024).toFixed(2) + ' GB';
+        } else {
+            formattedData = dataMB + ' MB';
+        }
+    }
+    serverResponse.innerHTML = 'Download progress: ' + formattedData;
+    if (data === 'completed') {
+        percentageComplete = 0;
+        downloadSize = 0;
+        setTimeout(function () {
+            serverResponse.style.removeProperty('color');
+            if (document.getElementById('downloadLinks').style.display === 'none') {
+                serverResponse.style.display = 'none';
+            }
+        }, 10000);
+    }
+}
+
 export default {
     // langCodes: langCodes,
-    requestXhttpData: requestXhttpData
+    requestXhttpData: requestXhttpData,
+    reportDownloadProgress: reportDownloadProgress
 };

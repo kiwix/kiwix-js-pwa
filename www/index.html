@@ -6,7 +6,7 @@
     <title>Kiwix JS PWA</title>
     <meta name="description" content="Offline Wikipedia reader">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data: file: about: https://download.kiwix.org https://master.download.kiwix.org https://pwa.kiwix.org https://kiwix.github.io https://api.github.com 'unsafe-inline' 'unsafe-eval'; frame-src 'self' moz-extension: chrome-extension:; object-src 'none';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data: file: about: https://download.kiwix.org https://*.download.kiwix.org https://pwa.kiwix.org https://kiwix.github.io https://api.github.com 'unsafe-inline' 'unsafe-eval'; frame-src 'self' moz-extension: chrome-extension:; object-src 'none';">
     <meta name="theme-color" content="black">
     <!--
     Kiwix (offline Wikipedia reader) - HTML5/Javascript version
@@ -280,6 +280,7 @@
                     <ul style="padding-left:1em;">
                         <li><a href="#addingArchives">Adding archives and languages</a></li>
                         <li><a href="#changelog">Changelog and Features</a></li>
+                        <li><a href="#filehandling">File handling and File System access</a></li>
                         <li><a href="#searchSyntax">Title search syntax and alphabetical ZIM Archive Index</a></li>
                         <li><a href="#fullTextSearch">Full-text search</a></li>
                         <li><a href="#linkHandling">Link handling, dynamic content and image download</a></li>
@@ -414,8 +415,61 @@
                     <p>
                         <b>Builds of this app are available that do not use a Store or an online Service Worker.</b> Please see:
                         <ul>
-                            <li><a href="https://github.com/kiwix/kiwix-js-windows/releases">Releases</a></li>
-                            <li><a href="https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html">NWJS version</a> - this version is completely standalone and will never self-update.</li>
+                            <li><a href="https://github.com/kiwix/kiwix-js-windows/releases" target="_blank">Releases</a></li>
+                            <li><a href="https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html" target="_blank">NWJS version</a> - this version is completely standalone and will never self-update.</li>
+                        </ul>
+                    </p>
+                    <h3 id="filehandling">File handling and File System access</h3>
+                    <p>
+                        This app reads very large files stored on your device. All versions of the app can pick a file from any user-accessible location, and on desktop browsers, you
+                        can drag-and-drop any ZIM archive into the app. Some versions of the app can also be granted access to a folder or directory in which you may store several ZIM
+                        archives. If this option is available, you will see a "Select folder" button (after clicking "Select storage"). In almost all cases, except for installed
+                        Electron apps or if you are using the Origin Private File System (see below), you will be asked to grant permission to access previously picked files or
+                        folders every time the app launches (usually this is just one or two clicks). This is a security feature of your browser and operating system.
+                    </p>
+                    <p>
+                        Chromium desktop browsers support the <a href="https://developer.chrome.com/en/articles/file-handling/" target="_blank">File Handling API</a> when you install the PWA.
+                        This allows you to associate ZIM files with the app, so that when you double-click a ZIM file in your system's file explorer, it will open in the app. The first time
+                        you do this, you will be asked for permission to handle ZIM archives, and the browser will remember your choice. You can change your choice in the browser settings.
+                    </p>
+                    <h4 id="OPFS">Origin Private File System</h4>
+                    <p>
+                        In some modern browsers, you will see an experimental option "<b>Use Private File System</b>" under the File and Folder selectors. If you tick this option,
+                        then the app will request an <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system" target="_blank">Origin Private File System</a>
+                        (OPFS) from the browser. Then, when you pick a ZIM file, instead of opening it, it will be stored in the OPFS. You may also select more than one archive to store in the OPFS,
+                        including all the parts of a split ZIM file (<code>.zimaa</code>, <code>.zimab</code>, etc.). Note that in this case, only the <code>.zimaa</code> entry will be displayed in
+                        the file list. If you drag-and-drop a file into the app while the OPFS is displayed, that file will be <b>not</b> be stored in the OPFS, but instead will be opened and displayed.
+                    </p>
+                    <p>
+                        You may also <b>download archives directly into the OPFS</b> by using the appropriate download link in the Dowmload Library. Look for the link under
+                        "Direct download to Origin Private File System". Downloading this way is suitable for archives of up to around 2GB in size, depending on your download
+                        speed. Larger files may take too long, and it is generally better to use a browser-managed download link for very large files. Then, if you wish, you
+                        can move the file into the OPFS using the "Add file(s)" picker.
+                    </p>
+                    <p>
+                        If you want to <b>delete an archive</b> from the Private File System, click the <span class="glyphicon glyphicon-trash"></span> icon,
+                        and then click on the file you wish to delete. You will be asked for confirmation.
+                    </p>
+                    <p>
+                        In some cases, you may be able to <b>export an archive</b> from the OPFS to the visible file system. Click the <span class="glyphicon glyphicon-share"></span>
+                        icon, and then click on the file you wish to export. The OPFS copy of the file is <i>not</i> deleted after export. If you do not see the export icon,
+                        then this feature is not available in your browser.
+                    </p>
+                    <p>    
+                        The main <b>advantages</b> of the OPFS, especially on mobile, are:
+                        <ul>
+                            <li>that the file system can be accessed by the app without needing to give permission, even after you relaunch the app (the last selected archive will automatically launch);</li>
+                            <li>Additionally, once a file is stored in the OPFS, access to it, e.g. on Android, is much faster than with standard file picking.</li>
+                        </ul>
+                    </p>
+                    <p>
+                        However, there are some <b>limitations</b> of the OPFS:
+                        <ul>
+                            <li>the file system has a quota set by the browser, which only makes it suitable for small-to-medium-sized archives;</li>
+                            <li>on mobile OS, it can take a long time to store a file in the OPFS, especially if it is larger than 1GB. On Firefox for Android, importing a file is
+                                <b>very</b> slow -- it can be faster to download the file directly into the OPFS from the Download library;</li>
+                            <li>when you clear the app's data (e.g. clearing cookies, etc.), the browser can delete the file system and any files in it without warning;</li>
+                            <li>any file you store here will only be accessible by this app (unless you export it to the visible file system).</li>
                         </ul>
                     </p>
                     <h3 id="searchSyntax">Title search syntax and alphabetical ZIM Archive Index</h3>
@@ -713,35 +767,42 @@
                             <div id="archivesFound" class="row">
                                 <p><span id="archiveNumber">Archives found on this device (tap "Select storage" to rescan)</span>:</p>
                                 <div class="col-xs-12">
-                                    <select id="archiveList" class="form-control" multiple></select><br />
+                                    <select id="archiveList" class="form-control"></select>
                                 </div>
                             </div>
-                            <div id="noZIMFound" style="display: none;">
-                                <p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
+                            <div id="noZIMFound" style="display: none; margin-top: 1em">
+                                <p style="color: red;">There were no ZIM file(s) found in the selected location!</p>
                             </div>
-                            <div id="openLocalFiles">
+                            <div id="fsManager" class="row">
+                                <div class="col-xs-8"></div>
+                                <div class="col-xs-1">
+                                    <a href="#" title="Export the next archive that you select"  style="display: none;" id="btnExportOPFSEntry"><span class="glyphicon glyphicon-share"></span></a>
+                                </div>
+                                <div class="col-xs-1">
+                                    <a href="#" title="Delete the next archive that you select"  style="display: none;" id="btnDeleteOPFSEntry"><span class="glyphicon glyphicon-trash"></span></a>
+                                </div>
+                                <div class="col-xs-1">
+                                    <a href="#" title="Refresh archive list" id="btnRefresh"><span class="glyphicon glyphicon-refresh"></span></a>
+                                </div>
+                            </div>
+                            <div id="openLocalFiles" style="margin-top: 0.5em;">
                                 <div id="archiveFilesDiv">
                                     <div class="row">
-                                        <div class="col-xs-6">
-                                            <input type="button" class="btn btn-primary btn-inline" value="Select file" id="archiveFile" />
+                                        <div class="col-xs-6" id="archiveFileLabel">
+                                            <p><b>Pick ZIM archive(s)</b>:</p>
                                         </div>
-                                        <div class="col-xs-6">
-                                            <input type="button" class="btn btn-primary btn-inline" value="Select folder" id="archiveFiles" />
+                                        <div class="col-xs-6" id="archiveFilesLabel">
+                                            <p><b>For multiple or split archives</b>:</p>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-xs-6">
-                                            <p>For a single unsplit archive</p>
+                                        <div id="archiveFileCol" class="col-xs-6">
+                                            <input type="button" class="btn btn-primary btn-inline" value="Select file(s)" id="archiveFile" />
                                         </div>
-                                        <div class="col-xs-6">
-                                            <p>For multiple or split archives</p>
+                                        <div id="archiveFilesCol" class="col-xs-6">
+                                            <div id="OPFSQuota"  style="display: none;"></div>
+                                            <input type="button" class="btn btn-primary btn-inline" value="Select folder" id="archiveFiles" title="Select a folder containing several ZIM files, and/or all the parts of a split ZIM file." />
                                         </div>
-                                    </div>
-                                    <div id="UWPInstructions" class="row">
-                                        <p>
-                                            Choose <b>File</b> for one archive, or <b>Folder</b> for multiple or split archive files in a single directory.<br />
-                                            Alternatively, <b>drag-and-drop your file(s) into the app.</b>
-                                        </p>
                                     </div>
                                 </div>
                                 <div id="archiveFilesLegacyDiv">
@@ -757,14 +818,18 @@
                                         </p>
                                     </div>
                                 </div>
-                            </div>
-                            <div id="rescanStorage" class="row">
-                                <div class="col-xs-11">
-                                    <input style="float:left; margin-right:1em;" type="button" class="btn btn-primary btn-inline" value="Select storage" id="btnRescanDeviceStorage" />
-                                    Tap to select app's local storage or to select a file or folder. <b>You can also drag and drop a ZIM file into the app.</b>
+                                <div id="displayOPFS" class="row" style="display: none; margin: 0.5em;">
+                                    <label class="checkbox" title="This uses a dedicated Origin Private File System (OPFS) for the app, which allows the app to load these files automatically on launch (without your having to provide permission each time). See About -> Origin Private File System for more information.">
+                                        <input type="checkbox" name="useOPFS" id="useOPFSCheck" />
+                                        <span class="checkmark"></span>
+                                        <b>Use Private File System <a href="#OPFS" class="aboutLink">[info]</a></b> (<i>experimental</i>)
+                                    </label>
                                 </div>
-                                <div class="col-xs-1">
-                                    <a href="#" title="Refresh archive list" id="btnRefresh"><span class="glyphicon glyphicon-refresh"></span></a>
+                            </div>
+                            <div id="rescanStorage" class="row" style="margin-top: 1em;">
+                                <div class="col-xs-12">
+                                    <input style="float:left; margin-right:1em;" type="button" class="btn btn-primary btn-inline" value="Select storage" id="btnRescanDeviceStorage" title="Tap to show file or folder pickers and other storage options." />
+                                    Select ZIM files or <b>drag and drop</b>
                                 </div>
                             </div>
                         </div>
@@ -778,11 +843,13 @@
                                             <td style="width:100%;">Opens library of archives for download:<br /><i>Warning:</i> this will use data</td>
                                         </tr>
                                     </table>
-                                    <label class="checkbox">
-                                        <input type="checkbox" name="allowInternetAccess" id="allowInternetAccessCheck">
-                                        <span class="checkmark"></span>
-                                        <b>Allow Internet access?</b> <span id="updateStatus">and <b>check for updates</b></span>
-                                    </label>
+                                    <div class="row" style="margin: 0.5em;">
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="allowInternetAccess" id="allowInternetAccessCheck">
+                                            <span class="checkmark"></span>
+                                            <b>Allow Internet access?</b> <span id="updateStatus">and <b>check for updates</b></span>
+                                        </label>
+                                    </div>
                                 </div>
                                 <div id="downloadLinks" style="display: none;"></div>
                                 <pre id="serverResponse" class="panel-footer" style="display:none;"></pre>
