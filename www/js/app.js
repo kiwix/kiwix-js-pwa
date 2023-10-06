@@ -3229,24 +3229,10 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
             if (success) {
                 if (!displayOnly) {
                     setLocalArchiveFromArchiveList(lastSelectedArchive);
-                // } else {
-                //     setTimeout(function () {
-                //         if (document.getElementById('configuration').style.display === 'none') {
-                //             document.getElementById('btnConfigure').click();
-                //         }
-                //     }, 250);
                 }
             } else {
                 // We can't find lastSelectedArchive in the archive list
-                // Let's first check if this is a Store UWP/PWA that has a different archive package from that last selected
-                // (or from that indicated in init.js)
-                // if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined' &&
-                //     params.packagedFile && settingsStore.getItem('lastSelectedArchive') !== params.packagedFile) {
-                //     // We didn't pick this file previously, so select first one in list
-                //     params.storedFile = archiveDirectories[0];
-                //     params.fileVersion = ~params.fileVersion.indexOf(params.storedFile.replace(/\.zim\w?\w?$/i, '')) ? params.fileVersion : params.storedFile;
-                //     setLocalArchiveFromArchiveList(params.storedFile);
-                // }
+                // Let's check that we're not dealing with an archive launched from the launchQueue
                 // Warn user that the file they wanted is no longer available
                 var message = '<p>We could not find the archive <b>' + lastSelectedArchive + '</b>!</p><p>Please select its location...</p>';
                 if (params.webkitdirectory && !window.fs || typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
@@ -3750,7 +3736,9 @@ function processPickedFileUWP (file) {
         params.storedFile = file.name;
         // Since we've explicitly picked a file, we should jump to it
         params.rescan = false;
-        populateDropDownListOfArchives([file.name]);
+        setLocalArchiveFromFileList([file]);
+        // populateDropDownListOfArchives([file.name], true);
+        // setLocalArchiveFromArchiveList([file.name]);
     } else {
         // The picker was dismissed with no selected file
         console.log('User closed folder picker without picking a file');
