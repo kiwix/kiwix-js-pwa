@@ -4755,8 +4755,6 @@ var filterClickEvent = function (event) {
     if (params.contentInjectionMode === 'jquery') return;
     // Ignore click if we are dealing with an image that has not yet been extracted
     if (event.target.dataset && event.target.dataset.kiwixhidden) return;
-    // Trap clicks in the iframe to restore Fullscreen mode
-    if (params.lockDisplayOrientation) refreshFullScreen();
     // Find the closest enclosing A tag (if any)
     var clickedAnchor = uiUtil.closestAnchorEnclosingElement(event.target);
     if (clickedAnchor) {
@@ -4789,6 +4787,9 @@ var articleLoadedSW = function (dirEntry) {
     articleDocument = articleWindow.document.documentElement;
     var doc = articleWindow.document;
     var docBody = doc.body;
+    // Refresh fullscreen if necessary
+    articleWindow.removeEventListener('mousedown', refreshFullScreen);
+    if (params.lockDisplayOrientation) articleWindow.addEventListener('mousedown', refreshFullScreen);
     // Trap clicks in the iframe to enable us to work around the sandbox when opening external links and PDFs
     articleWindow.removeEventListener('click', filterClickEvent, true);
     articleWindow.addEventListener('click', filterClickEvent, true);
@@ -5720,7 +5721,10 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
                 }
                 listenForSearchKeys();
                 // Trap clicks in the iframe to restore Fullscreen mode
-                if (params.lockDisplayOrientation) articleWindow.addEventListener('mousedown', refreshFullScreen, true);
+                articleWindow.removeEventListener('mousedown', refreshFullScreen, true);
+                if (params.lockDisplayOrientation) {
+                    articleWindow.addEventListener('mousedown', refreshFullScreen, true);
+                }
                 setupTableOfContents();
             }
             // Set relative font size + Stackexchange-family multiplier
