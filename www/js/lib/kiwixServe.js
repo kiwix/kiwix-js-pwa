@@ -479,13 +479,13 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
             var header = document.getElementById('dl-panel-heading');
             var headerDoc = 'There is a server issue, but please try the following links to your file:';
             if (~URL.indexOf(params.kiwixHiddenDownloadLink)) {
-                headerDoc = 'This file is only available via direct download:';
+                headerDoc = 'This file is only available via browser-managed download:';
                 altURL = requestedURL.replace(/\/master\./i, '/mirror.');
             }
             header.outerHTML = header.outerHTML.replace(/<pre\b([^>]*)>[\s\S]*?<\/pre>/i, '<div$1>' + headerDoc + '</div>');
             var body = document.getElementById('dl-panel-body');
             var bodyDoc = '<p><a id="returnLink" href="#" data-kiwix-dl="' + URL.replace(/\/[^/]*\.meta4$/i, '/') + '">&lt;&lt; Back to list of files</a></p>\r\n';
-            bodyDoc += '<p><b>Directly download ZIM archive:</b></p>' +
+            bodyDoc += '<p><b>Browser-managed download of ZIM archive:</b></p>' +
             '<p><a href="' + requestedURL + '"' + target + ' class="download">' + requestedURL + '</a></p>' +
             (altURL ? '<p><b>Possible mirror:</b></p>' +
             '<p><a href="' + altURL + '"' + target + ' class="download">' + altURL + '</a></p>' : '') +
