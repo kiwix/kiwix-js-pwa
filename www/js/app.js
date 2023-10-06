@@ -3225,11 +3225,10 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
                 success = true;
                 settingsStore.setItem('lastSelectedArchive', lastSelectedArchive, Infinity);
             }
+            if (displayOnly) return;
             // Set the localArchive as the last selected (if none has been selected previously, wait for user input)
             if (success) {
-                if (!displayOnly) {
-                    setLocalArchiveFromArchiveList(lastSelectedArchive);
-                }
+                setLocalArchiveFromArchiveList(lastSelectedArchive);
             } else {
                 // We can't find lastSelectedArchive in the archive list
                 // Let's check that we're not dealing with an archive launched from the launchQueue
