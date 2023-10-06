@@ -1021,8 +1021,9 @@ function setActiveBtn (activeBtn) {
 }
 
 document.getElementById('btnConfigure').addEventListener('click', function () {
-    var searchDiv = document.getElementById('configuration');
-    if (searchDiv.style.display !== 'none') {
+    var config = document.getElementById('configuration');
+    // If Configuration is already displayed...
+    if (config.style.display !== 'none') {
         setTab();
         if (params.themeChanged) {
             params.themeChanged = false;
@@ -1030,37 +1031,33 @@ document.getElementById('btnConfigure').addEventListener('click', function () {
             if (archiveName && ~params.lastPageVisit.indexOf(archiveName)) {
                 goToArticle(params.lastPageVisit.replace(/@kiwixKey@.+$/, ''));
             }
-            // if (history.state !== null) {
-            //    var thisURL = decodeURIComponent(history.state.title);
-            //    goToArticle(thisURL);
-            // }
         }
-        return;
-    }
-    document.querySelectorAll('.alert').forEach(function (el) {
-        el.style.display = 'none';
-    });
-    // Highlight the selected section in the navbar
-    setTab('btnConfigure');
-    // Hide footer toolbar
-    document.getElementById('footer').style.display = 'none';
-    // Show the selected content in the page
-    document.getElementById('configuration').style.display = '';
-    document.getElementById('articleContent').style.display = 'none';
-    document.getElementById('downloadLinks').style.display = 'none';
-    document.getElementById('serverResponse').style.display = 'none';
-    document.getElementById('myModal').style.display = 'none';
-    refreshAPIStatus();
-    // Re-enable top-level scrolling
-    document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
-    document.getElementById('search-article').style.overflowY = 'auto';
-    // If user hadn't previously picked a folder or a file, resort to the local storage folder (UWP functionality)
-    if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
-        params.pickedFolder = params.localStorage;
-    }
-    // If user had previously picked a file using Native FS, offer to re-open
-    if ((typeof window.showOpenFilePicker === 'function' || params.useOPFS) && !(params.pickedFile || params.pickedFolder)) {
-        getNativeFSHandle();
+    } else {
+        document.querySelectorAll('.alert').forEach(function (el) {
+            el.style.display = 'none';
+        });
+        // Highlight the selected section in the navbar
+        setTab('btnConfigure');
+        // Hide footer toolbar
+        document.getElementById('footer').style.display = 'none';
+        // Show the selected content in the page
+        document.getElementById('configuration').style.display = '';
+        document.getElementById('articleContent').style.display = 'none';
+        document.getElementById('downloadLinks').style.display = 'none';
+        document.getElementById('serverResponse').style.display = 'none';
+        document.getElementById('myModal').style.display = 'none';
+        refreshAPIStatus();
+        // Re-enable top-level scrolling
+        document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
+        document.getElementById('search-article').style.overflowY = 'auto';
+        // If user hadn't previously picked a folder or a file, resort to the local storage folder (UWP functionality)
+        if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
+            params.pickedFolder = params.localStorage;
+        }
+        // If user had previously picked a file using Native FS, offer to re-open
+        if ((typeof window.showOpenFilePicker === 'function' || params.useOPFS) && !(params.pickedFile || params.pickedFolder)) {
+            getNativeFSHandle();
+        }
     }
 });
 

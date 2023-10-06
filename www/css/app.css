@@ -282,9 +282,25 @@ nav a.btn-primary, .input-group-addon {
     padding: 5px 1em !important;
 }
 
-.btn:hover, .btn:active, .btn-primary:active, .btn-primary.active {
+.btn:active, .btn-primary:active, .btn-primary.active {
     background: lightsteelblue !important;
     background-color: lightsteelblue !important;
+}
+
+.dark .btn:active, .dark .btn-primary:active, .dark .btn-primary.active {
+    background: darkslategray !important;
+    background-color: darkslategray !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .btn:hover  {
+        background: lightsteelblue !important;
+        background-color: lightsteelblue !important;
+    }
+    .dark .btn:hover {
+        background: darkslategray !important;
+        background-color: darkslategray !important;
+    }
 }
 
 .dark .btn-primary, .dark .btn-secondary, .dark .navbar-inverse {
@@ -296,12 +312,6 @@ nav a.btn-primary, .input-group-addon {
     background: #182828 !important;
     border-color: darkslategray !important;
 }
-
-.dark .btn:hover, .dark .btn:active, .dark .btn-primary:active, .dark .btn-primary.active {
-    background: darkslategray !important;
-    background-color: darkslategray !important;
-}
-
 
 .dark .modal-footer .btn-primary, .dark .modal-footer .btn-secondary {
     border-color: #777 !important;
