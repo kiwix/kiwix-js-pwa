@@ -3716,6 +3716,7 @@ function pickFolderNativeFS () {
 }
 
 function processNativeFileHandle (fileHandle) {
+    console.debug('Processing Native File Handle for: ' + fileHandle.name + ' and storedFile: ' + params.storedFile);
     var handle = fileHandle;
     // Serialize fileHandle to indexedDB
     cache.idxDB('pickedFSHandle', fileHandle, function (val) {
@@ -3769,6 +3770,7 @@ function pickFolderUWP () { // Support UWP FilePicker [kiwix-js-windows #3]
 }
 
 function processNativeDirHandle (dirHandle, callback) {
+    console.debug('Processing Native Directory Handle for: ' + dirHandle + ' and storedFile: ' + params.storedFile);
     // Serialize dirHandle to indexedDB
     cache.idxDB('pickedFSHandle', dirHandle, function (val) {
         console.debug('IndexedDB responded with ' + val);
