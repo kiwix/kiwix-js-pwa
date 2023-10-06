@@ -3030,6 +3030,8 @@ if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
             // Turn off OPFS if it is on, because we are using the File Handling API instead
             if (params.useOPFS) {
                 document.getElementById('useOPFSCheck').click();
+                params.pickedFolder = '';
+                params.storedFile = '';
             }
             processNativeFileHandle(launchParams.files[0]);
         }
@@ -3608,6 +3610,8 @@ function handleFileDrop (packet) {
     // Turn off OPFS if it is on
     if (params.useOPFS) {
         document.getElementById('useOPFSCheck').click();
+        params.pickedFolder = '';
+        params.storedFile = '';
     }
     // When dropping multiple files (e.g. a split archive), we cannot use the File System Access API
     if (items && items.length === 1 && items[0].kind === 'file' && typeof items[0].getAsFileSystemHandle !== 'undefined') {
