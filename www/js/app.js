@@ -1562,12 +1562,7 @@ function setOPFSUI () {
         btnExportOPFSEntry.style.display = 'none';
     }
 }
-// Set the OPFS UI no app launch
-setOPFSUI();
-// If user had previously set the app to use the OPFS directory, attempt to launch any ZIM in it
-// if (params.useOPFS) {
-//     loadOPFSDirectory();
-// }
+
 document.getElementById('btnExportOPFSEntry').addEventListener('click', function () {
     params.exportOPFSEntry = !params.exportOPFSEntry;
     var determinedTheme = params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme;
@@ -3029,14 +3024,17 @@ if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
             console.debug('Processing NativeFileHandle for ' + launchParams);
             // Turn off OPFS if it is on, because we are using the File Handling API instead
             if (params.useOPFS) {
-                document.getElementById('useOPFSCheck').click();
-                params.pickedFolder = '';
-                params.storedFile = '';
+                params.useOPFS = false;
             }
+            params.pickedFolder = '';
+            params.storedFile = '';
             processNativeFileHandle(launchParams.files[0]);
         }
     });
 }
+
+// Set the OPFS UI on app launch (this needs to run after the launchQueue above, as it may turn off OPFS)
+setOPFSUI();
 
 // @STORAGE AUTOLOAD STARTS HERE
 if ($.isFunction(navigator.getDeviceStorages)) {
