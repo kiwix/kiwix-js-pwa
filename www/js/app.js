@@ -1809,6 +1809,7 @@ document.getElementById('hideActiveContentWarningCheck').addEventListener('chang
 // Function to restore the fullscreen/orientation lock state on user click in-app
 // This is necessary because the browser will not restore the state without a user gesture
 var refreshFullScreen = function (evt) {
+    console.debug('refreshFullScreen starting');
     // Don't react if user is selecting an archive or setting the lock orientation
     if (/archiveFilesLegacy|lockDisplayOrientationDrop/.test(evt.target.id)) return;
     // Don't react when picking archive or directory with the File System Access API (because entering fullscreen blocks the permissions prompt)
@@ -4751,12 +4752,12 @@ function readArticle (dirEntry) {
 
 // Add event listener to iframe window to check for links to external resources
 var filterClickEvent = function (event) {
-    console.debug('filetClickEvent fired');
+    console.debug('filterClickEvent fired');
     if (params.contentInjectionMode === 'jquery') return;
     // Ignore click if we are dealing with an image that has not yet been extracted
     if (event.target.dataset && event.target.dataset.kiwixhidden) return;
     // Trap clicks in the iframe to restore Fullscreen mode
-    if (params.lockDisplayOrientation) refreshFullScreen();
+    if (params.lockDisplayOrientation) refreshFullScreen(event);
     // Find the closest enclosing A tag (if any)
     var clickedAnchor = uiUtil.closestAnchorEnclosingElement(event.target);
     if (clickedAnchor) {
@@ -4777,6 +4778,9 @@ var filterClickEvent = function (event) {
                 params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
             // Make sure that the last saved page is not a PDF, or else we'll have a CSP exception on restarting the app
             // @TODO - may not be necessary because params.lastPageVisit is only set when HTML is loaded
+        } else {
+            var decHref = decodeURIComponent(href);
+            uiUtil.pollSpinner('Loading ' + decHref.replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
         }
     }
 };
