@@ -3231,7 +3231,6 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
                 setLocalArchiveFromArchiveList(lastSelectedArchive);
             } else {
                 // We can't find lastSelectedArchive in the archive list
-                // Let's check that we're not dealing with an archive launched from the launchQueue
                 // Warn user that the file they wanted is no longer available
                 var message = '<p>We could not find the archive <b>' + lastSelectedArchive + '</b>!</p><p>Please select its location...</p>';
                 if (params.webkitdirectory && !window.fs || typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
@@ -3701,11 +3700,11 @@ function pickFolderNativeFS () {
 }
 
 function processNativeFileHandle (fileHandle) {
-    console.debug('Processing Native File Handle for: ' + fileHandle.name + ' and storedFile: ' + params.storedFile);
+    // console.debug('Processing Native File Handle for: ' + fileHandle.name + ' and storedFile: ' + params.storedFile);
     var handle = fileHandle;
     // Serialize fileHandle to indexedDB
     cache.idxDB('pickedFSHandle', fileHandle, function (val) {
-        console.log('IndexedDB responded with ' + val);
+        console.debug('IndexedDB responded with ' + val);
     });
     settingsStore.setItem('lastSelectedArchive', fileHandle.name, Infinity);
     params.storedFile = fileHandle.name;
@@ -3756,7 +3755,7 @@ function pickFolderUWP () { // Support UWP FilePicker [kiwix-js-windows #3]
 }
 
 function processNativeDirHandle (dirHandle, callback) {
-    console.debug('Processing Native Directory Handle for: ' + dirHandle + ' and storedFile: ' + params.storedFile);
+    // console.debug('Processing Native Directory Handle for: ' + dirHandle + ' and storedFile: ' + params.storedFile);
     // Serialize dirHandle to indexedDB
     cache.idxDB('pickedFSHandle', dirHandle, function (val) {
         console.debug('IndexedDB responded with ' + val);
