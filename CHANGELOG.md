@@ -15,7 +15,9 @@
 * FIX: Exception preventing display of legacy archive content in jQuery mode
 * FIX: Failure to display ZIM Archive Index when typing space in some circumstances
 * FIX: Avoid duplication of title in wider range of ZIMs
-* UPDATE: Sample archive changed to `wikipedia_en_100_mini_2023-10`
+* FIX: Partially fixed broken "unclick" of Configure button on touchscreen devices
+* REGRESSION: Fixed failure to refresh full-screen state when clicking in-app in SW mode
+* UPDATE: Sample archive updated to `wikipedia_en_100_mini_2023-10`
 * UPDATE: Electron version bumped to 22.3.25
 
 ## Release 2.6.4
