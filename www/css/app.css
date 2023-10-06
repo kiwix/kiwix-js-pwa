@@ -283,19 +283,20 @@ nav a.btn-primary, .input-group-addon {
 }
 
 .btn:active, .btn-primary:active, .btn-primary.active {
-    background: lightsteelblue;
-    background-color: lightsteelblue;
+    background: lightsteelblue !important;
+    background-color: lightsteelblue !important;
 }
 
 .dark .btn:active, .dark .btn-primary:active, .dark .btn-primary.active {
-    background: darkslategray;
-    background-color: darkslategray;
+    background: darkslategray !important;
+    background-color: darkslategray !important;
 }
 
 .btn:hover  {
     background: lightsteelblue;
     background-color: lightsteelblue;
 }
+
 .dark .btn:hover {
     background: darkslategray;
     background-color: darkslategray;
