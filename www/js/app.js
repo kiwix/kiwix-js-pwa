@@ -1563,6 +1563,9 @@ function setOPFSUI () {
     }
 }
 
+// Set the OPFS UI on app launch
+setOPFSUI();
+
 document.getElementById('btnExportOPFSEntry').addEventListener('click', function () {
     params.exportOPFSEntry = !params.exportOPFSEntry;
     var determinedTheme = params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme;
@@ -3023,18 +3026,14 @@ if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
             // User launched app by double-clicking on file
             console.debug('Processing NativeFileHandle for ' + launchParams);
             // Turn off OPFS if it is on, because we are using the File Handling API instead
-            if (params.useOPFS) {
-                params.useOPFS = false;
-            }
+            params.useOPFS = false;
             params.pickedFolder = '';
             params.storedFile = '';
+            setOPFSUI();
             processNativeFileHandle(launchParams.files[0]);
         }
     });
 }
-
-// Set the OPFS UI on app launch (this needs to run after the launchQueue above, as it may turn off OPFS)
-setOPFSUI();
 
 // @STORAGE AUTOLOAD STARTS HERE
 if ($.isFunction(navigator.getDeviceStorages)) {
@@ -3226,28 +3225,12 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
                 success = true;
                 settingsStore.setItem('lastSelectedArchive', lastSelectedArchive, Infinity);
             }
+            if (displayOnly) return;
             // Set the localArchive as the last selected (if none has been selected previously, wait for user input)
             if (success) {
-                if (!displayOnly) {
-                    setLocalArchiveFromArchiveList(lastSelectedArchive);
-                // } else {
-                //     setTimeout(function () {
-                //         if (document.getElementById('configuration').style.display === 'none') {
-                //             document.getElementById('btnConfigure').click();
-                //         }
-                //     }, 250);
-                }
+                setLocalArchiveFromArchiveList(lastSelectedArchive);
             } else {
                 // We can't find lastSelectedArchive in the archive list
-                // Let's first check if this is a Store UWP/PWA that has a different archive package from that last selected
-                // (or from that indicated in init.js)
-                // if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined' &&
-                //     params.packagedFile && settingsStore.getItem('lastSelectedArchive') !== params.packagedFile) {
-                //     // We didn't pick this file previously, so select first one in list
-                //     params.storedFile = archiveDirectories[0];
-                //     params.fileVersion = ~params.fileVersion.indexOf(params.storedFile.replace(/\.zim\w?\w?$/i, '')) ? params.fileVersion : params.storedFile;
-                //     setLocalArchiveFromArchiveList(params.storedFile);
-                // }
                 // Warn user that the file they wanted is no longer available
                 var message = '<p>We could not find the archive <b>' + lastSelectedArchive + '</b>!</p><p>Please select its location...</p>';
                 if (params.webkitdirectory && !window.fs || typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
@@ -3717,10 +3700,11 @@ function pickFolderNativeFS () {
 }
 
 function processNativeFileHandle (fileHandle) {
+    // console.debug('Processing Native File Handle for: ' + fileHandle.name + ' and storedFile: ' + params.storedFile);
     var handle = fileHandle;
     // Serialize fileHandle to indexedDB
     cache.idxDB('pickedFSHandle', fileHandle, function (val) {
-        console.log('IndexedDB responded with ' + val);
+        console.debug('IndexedDB responded with ' + val);
     });
     settingsStore.setItem('lastSelectedArchive', fileHandle.name, Infinity);
     params.storedFile = fileHandle.name;
@@ -3750,7 +3734,8 @@ function processPickedFileUWP (file) {
         params.storedFile = file.name;
         // Since we've explicitly picked a file, we should jump to it
         params.rescan = false;
-        populateDropDownListOfArchives([file.name]);
+        populateDropDownListOfArchives([file.name], true);
+        setLocalArchiveFromArchiveList([file.name]);
     } else {
         // The picker was dismissed with no selected file
         console.log('User closed folder picker without picking a file');
@@ -3770,6 +3755,7 @@ function pickFolderUWP () { // Support UWP FilePicker [kiwix-js-windows #3]
 }
 
 function processNativeDirHandle (dirHandle, callback) {
+    // console.debug('Processing Native Directory Handle for: ' + dirHandle + ' and storedFile: ' + params.storedFile);
     // Serialize dirHandle to indexedDB
     cache.idxDB('pickedFSHandle', dirHandle, function (val) {
         console.debug('IndexedDB responded with ' + val);
