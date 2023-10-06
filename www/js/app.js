@@ -1563,6 +1563,9 @@ function setOPFSUI () {
     }
 }
 
+// Set the OPFS UI on app launch
+setOPFSUI();
+
 document.getElementById('btnExportOPFSEntry').addEventListener('click', function () {
     params.exportOPFSEntry = !params.exportOPFSEntry;
     var determinedTheme = params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme;
@@ -3023,18 +3026,14 @@ if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
             // User launched app by double-clicking on file
             console.debug('Processing NativeFileHandle for ' + launchParams);
             // Turn off OPFS if it is on, because we are using the File Handling API instead
-            if (params.useOPFS) {
-                params.useOPFS = false;
-            }
+            params.useOPFS = false;
             params.pickedFolder = '';
             params.storedFile = '';
+            setOPFSUI();
             processNativeFileHandle(launchParams.files[0]);
         }
     });
 }
-
-// Set the OPFS UI on app launch (this needs to run after the launchQueue above, as it may turn off OPFS)
-setOPFSUI();
 
 // @STORAGE AUTOLOAD STARTS HERE
 if ($.isFunction(navigator.getDeviceStorages)) {
