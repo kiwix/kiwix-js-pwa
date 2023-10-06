@@ -283,21 +283,38 @@ nav a.btn-primary, .input-group-addon {
 }
 
 .btn:active, .btn-primary:active, .btn-primary.active {
-    background: lightsteelblue !important;
-    background-color: lightsteelblue !important;
+    background: lightsteelblue;
+    background-color: lightsteelblue;
 }
 
 .dark .btn:active, .dark .btn-primary:active, .dark .btn-primary.active {
-    background: darkslategray !important;
-    background-color: darkslategray !important;
+    background: darkslategray;
+    background-color: darkslategray;
 }
 
-@media (hover: hover) and (pointer: fine) {
-    .btn:hover  {
+.btn:hover  {
+    background: lightsteelblue;
+    background-color: lightsteelblue;
+}
+.dark .btn:hover {
+    background: darkslategray;
+    background-color: darkslategray;
+}
+
+@media (pointer: coarse) {
+    .btn:hover {
+        background: #d9edf7 !important;
+        background-color: #d9edf7 !important;
+    }
+    .btn:active  {
         background: lightsteelblue !important;
         background-color: lightsteelblue !important;
     }
     .dark .btn:hover {
+        background: #222 !important;
+        background-color: #222 !important;
+    }
+    .dark .btn:active {
         background: darkslategray !important;
         background-color: darkslategray !important;
     }
