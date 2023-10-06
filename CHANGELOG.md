@@ -1,6 +1,6 @@
 # Changelog
 
-## In-progress release 2.6.9
+## Release 2.7.1
 
 * FEATURE: Rework file system access and support Origin Private File System (OPFS)
 * ENHANCEMENT: Autoload and display of all archives in OPFS on app launch, no permission prompts!
