@@ -3736,9 +3736,8 @@ function processPickedFileUWP (file) {
         params.storedFile = file.name;
         // Since we've explicitly picked a file, we should jump to it
         params.rescan = false;
-        setLocalArchiveFromFileList([file]);
-        // populateDropDownListOfArchives([file.name], true);
-        // setLocalArchiveFromArchiveList([file.name]);
+        populateDropDownListOfArchives([file.name], true);
+        setLocalArchiveFromArchiveList([file.name]);
     } else {
         // The picker was dismissed with no selected file
         console.log('User closed folder picker without picking a file');
