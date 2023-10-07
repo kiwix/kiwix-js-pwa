@@ -11,5 +11,5 @@ You may need to adjust the width of the bar so that all the icons fit. You can a
 fit. Please note that the current icon is white, which means it is more visible if the Edge theme is set to "Dark". We are looking into adding an
 outline to the favicon that is used in order to make it more visible in light mode.
 
-Please note that due to a [Chromium bug](https://bugs.chromium.org/p/chromium/issues/detail?id=1368818#c13) (which also affects extensions), folder picking is not available in the sidebar, so please simply pick the
-file you want to load rather than picking a folder of archives.
+Please note that due to a [Chromium bug](https://bugs.chromium.org/p/chromium/issues/detail?id=1368818#c13) (which also affects extensions),
+folder picking is not available in the sidebar, so please simply pick the file you want to load rather than picking a folder of archives.
