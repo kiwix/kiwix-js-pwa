@@ -1338,7 +1338,7 @@ archiveFilesLegacy.addEventListener('change', function (files) {
             if (!confirmed) return;
             // User has chosen a file or files to store in the Origin Private File System
             // This operation can take a long time, so show the spinner
-            uiUtil.pollSpinner('Adding files to OPFS...', true);
+            uiUtil.pollSpinner('<b>Please wait</b><br />Importing files to OPFS...', true);
             return cache.importOPFSEntries(filesArray).then(function () {
                 uiUtil.systemAlert('<p>The selected files were successfully added to the OPFS!</p><p><b>We will now reload the app, so that the file(s) can be accessed at full speed.</b></p>')
                 .then(function () {
