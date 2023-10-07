@@ -534,6 +534,10 @@ pre {
     margin-bottom: 15% !important;
 }
 
+#alertBoxFooter .alert {
+    margin-bottom: 0;
+}
+
 .modal-dialog {
     -webkit-animation-name: animatetop;
     -webkit-animation-duration: 0.1s;

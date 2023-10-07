@@ -167,6 +167,45 @@ function makeReturnLink (title) {
 }
 
 /**
+ * Displays the operations panel in the footer to show a message with an optional timeout interval. If no timeout is specified, the panel
+ * will display for 10s before being cleared. If the timeout is set to true, the panel will display indefinitely or until pollOpsPanel
+ * is called again. If set to false, the panel will be cleared.
+ * @param {String} msg The message (may be HTML-formatted) to display in the panel, or if empty, the panel will be cleared
+ * @param {Integer|Boolean} opControl A timeout value, or if true, the panel will display indefinitely
+ */
+function pollOpsPanel (msg, opControl) {
+    msg = msg || null;
+    var footer = document.getElementById('footer');
+    var opsPanel = document.getElementById('alertBoxFooter');
+    var navigationButtons = document.getElementById('navigationButtons');
+    var configuration = document.getElementById('configuration');
+    var timeout = Number.isFinite(opControl) ? opControl : 10000;
+    if (msg === null) {
+        opsPanel.style.display = 'none';
+        if (configuration.style.display === 'none') {
+            navigationButtons.style.display = 'block';
+            footer.style.display = 'block';
+        } else {
+            navigationButtons.style.display = 'none';
+        }
+    } else {
+        opsPanel.style.display = 'block';
+        opsPanel.innerHTML = '<div class="alert alert-info">' + msg + '</div>';
+        if (configuration.style.display !== 'none') {
+            footer.style.display = 'block';
+            navigationButtons.style.display = 'none';
+        } else {
+            navigationButtons.style.display = 'block';
+        }
+    }
+    // Close panel after 10s if no timeout specified
+    clearTimeout(pollOpsPanel);
+    if (opControl !== true) {
+        setTimeout(pollOpsPanel, timeout);
+    }
+}
+
+/**
  * Starts the spinner, with an optional message and optional timeout interval. If no timeout is specified, the spinner
  * will run for 3s before being cleared. If the timeout is set to true, the spinner will run indefinitely or until pollSpinner
  * is called again.
@@ -1197,6 +1236,7 @@ export default {
     ToC: TableOfContents,
     isElementInView: isElementInView,
     makeReturnLink: makeReturnLink,
+    pollOpsPanel: pollOpsPanel,
     pollSpinner: pollSpinner,
     clearSpinner: clearSpinner,
     XHR: XHR,
