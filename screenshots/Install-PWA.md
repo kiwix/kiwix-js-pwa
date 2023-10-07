@@ -4,6 +4,8 @@ Simply visit **_[pwa.kiwix.org](https://pwa.kiwix.org)_** in a modern browser. R
 
 ![Install-PWA demo](Install-PWA_demo.gif)
 
+See also: [&ensp;[Install PWA in Firefox for Android](Install-PWA_Firefox_Android.gif)&ensp;]&emsp;[&ensp;[Install PWA and use OPFS in Chrome for Android](Demo-OPFS_Chrome_Android.gif)&ensp;]
+
 ## Install in Chrome/Edge, bookmark in Firefox, add to Home in Safari
 
 In **Chromium browsers** (e.g. Chrome, Edge), you can install the PWA (Progressive Web App) as an offline-first app as in the demo above:
