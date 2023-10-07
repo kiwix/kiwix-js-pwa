@@ -2,7 +2,7 @@
 
 Simply visit **_[pwa.kiwix.org](https://pwa.kiwix.org)_** in Firefox on Android. Read more after the demo:
 
-![Install-PWA demo](Install-PWA_Firefox_Android.gif)
+<img src="Install-PWA_Firefox_Android.gif" width="360px" />
 
 See also: [&ensp;[Install PWA and use OPFS in Chrome for Android](Demo-OPFS_Chrome_Android.md)&ensp;]
 
