@@ -623,7 +623,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                                 }
                             });
                         }).catch(function (err) {
-                            uiUtil.clearSpinner();
+                            uiUtil.pollOpsPanel();
                             console.error(err);
                             downloadSize = 0;
                             percentageComplete = 0;
