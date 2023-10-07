@@ -613,7 +613,6 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                         downloadSize = megabytes;
                         uiUtil.pollOpsPanel('<b>Please wait:</b> Downloading archive... 0%', true);
                         return cache.downloadArchiveToPickedFolder(archiveName, archiveUrl, reportDownloadProgress).then(function () {
-                            uiUtil.pollOpsPanel();
                             return uiUtil.systemAlert('<p>The archive ' + archiveName + ' has been downloaded to your device.</p>' +
                             (params.useOPFS ? '<p><b>Reloading to activate new ZIM...</b></p>' : ''), 'Download complete').then(function () {
                                 if (params.useOPFS) {
@@ -1037,24 +1036,24 @@ var downloadSize = 0;
 /**
  * Reports download progress to the serverResponse panel
  *
- * @param {String|Integer} data A string ('completed') or integer representing the download progress (in bytes)
+ * @param {String|Integer} received A string ('completed') or integer representing the download progress (in bytes)
+ * @param {Integer} total An optional integer representing the total size of the download (in bytes)
  */
-function reportDownloadProgress (data) {
-    // console.warn('Download in progress: ' + data);
+function reportDownloadProgress (received, total) {
     serverResponse.style.display = 'inline';
-    var colour = data === 'completed' ? 'green' : isNaN(data) ? 'red' : 'goldenrod';
+    var colour = received === 'completed' ? 'green' : isNaN(received) ? 'red' : 'goldenrod';
     serverResponse.style.setProperty('color', colour, 'important');
     var formattedData;
-    if (isNaN(data)) {
-        formattedData = data;
+    downloadSize = total ? total / 1024 / 1024 : downloadSize;
+    if (isNaN(received)) {
+        formattedData = received;
     } else {
-        var dataMB = (data / 1024 / 1024).toFixed(2);
-        // console.debug('dataMB: ' + dataMB + '; data: ' + data);
+        var dataMB = (received / 1024 / 1024);
         // If data is greater than 1GB, convert to GB
-        if (data > 1073741824) {
+        if (received > 1073741824) {
             formattedData = (dataMB / 1024).toFixed(2) + ' GB';
         } else {
-            formattedData = dataMB + ' MB';
+            formattedData = dataMB.toFixed(2) + ' MB';
         }
         if (downloadSize > 0) {
             var percentageData = Math.floor(dataMB / downloadSize * 100);
@@ -1065,7 +1064,8 @@ function reportDownloadProgress (data) {
         }
     }
     serverResponse.innerHTML = 'Download progress: ' + formattedData;
-    if (data === 'completed') {
+    if (received === 'completed') {
+        uiUtil.pollOpsPanel('Download complete! ' + percentageComplete + '%', 5000);
         percentageComplete = 0;
         downloadSize = 0;
         setTimeout(function () {

@@ -105,9 +105,10 @@ function registerListeners () {
                     mainWindow.webContents.send('dl-received', 'paused');
                 } else {
                     const newReceivedBytes = item.getReceivedBytes();
+                    const totalBytes = item.getTotalBytes();
                     if (newReceivedBytes - receivedBytes < 250000) return;
                     receivedBytes = newReceivedBytes;
-                    mainWindow.webContents.send('dl-received', receivedBytes);
+                    mainWindow.webContents.send('dl-received', receivedBytes, totalBytes);
                 }
             }
         });

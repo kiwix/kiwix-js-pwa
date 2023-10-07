@@ -30,8 +30,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     },
     isMicrosoftStoreApp: process.windowsStore && regexpInstalledFromMicrosoftStore.test(window.location.pathname),
     on: function (event, callback) {
-        ipcRenderer.on(event, function (_, data) {
-            callback(data);
+        ipcRenderer.on(event, function (_, data1, data2) {
+            callback(data1, data2);
         });
     }
 });

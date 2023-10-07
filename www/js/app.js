@@ -926,8 +926,8 @@ if (window.electronAPI) {
         params.upgradeNeeded = true;
         uiUtil.showUpgradeReady(data.version, 'install');
     });
-    electronAPI.on('dl-received', function (data) {
-        kiwixServe.reportDownloadProgress(data);
+    electronAPI.on('dl-received', function (received, total) {
+        kiwixServe.reportDownloadProgress(received, total);
     });
     electronAPI.on('get-launch-file-path', function (fullPath) {
         if (fullPath) {
