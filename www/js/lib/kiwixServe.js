@@ -611,9 +611,9 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                     var archiveName = e.target.href.replace(/^.*\/([^/]+)$/, '$1');
                     var downloadArchiveWithFSA = function () {
                         downloadSize = megabytes;
-                        uiUtil.pollSpinner('<b>Please wait</b><br />Downloading archive... 0%', true);
+                        uiUtil.pollOpsPanel('<b>Please wait:</b> Downloading archive... 0%', true);
                         return cache.downloadArchiveToPickedFolder(archiveName, archiveUrl, reportDownloadProgress).then(function () {
-                            uiUtil.clearSpinner();
+                            uiUtil.pollOpsPanel();
                             return uiUtil.systemAlert('<p>The archive ' + archiveName + ' has been downloaded to your device.</p>' +
                             (params.useOPFS ? '<p><b>Reloading to activate new ZIM...</b></p>' : ''), 'Download complete').then(function () {
                                 if (params.useOPFS) {
@@ -634,21 +634,14 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                         });
                     }
                     if (megabytes > 1000) {
-                        if (params.useOPFS) {
-                            uiUtil.systemAlert('<p>Do you wish to download the <b>large</b> archive <b><i>' + archiveName + '</i> (' + megabytes$ + ' MB)</b> directly into the Origin Private File System?</p>' +
-                            '<p><b>If you proceed, do not close the app during the download.</b><p>' +
-                            '<p>If you prefer to download in the background, use a browser-managed download link instead, and afterwards import the file into the OPFS using the "Add file(s)" button.</p>',
-                            'Download large archive to OPFS?', true).then(function (result) {
-                                if (result) downloadArchiveWithFSA();
-                            });
-                        } else {
-                            uiUtil.systemAlert('<p>Do you wish to download the <b>large</b> archive <b><i>' + archiveName + '</i> (' + megabytes$ + ' MB)</b> to the current ZIM folder?</p>' +
-                            '<p><b>If you proceed, do not close the app during the download.</b></p>' +
-                            '<p>If you prefer to download in the background, use a browser-managed download link instead, and then move the file manually into your ZIM folder.</p>',
-                            'Download large archive to folder?', true).then(function (result) {
-                                if (result) downloadArchiveWithFSA();
-                            });
-                        }
+                        var message = '<p>Do you wish to download the following <b>large</b> archive ' + (params.useOPFS ? 'directly into the Origin Private File System' : 'to the current ZIM folder') +
+                            '?</p><ul><li><i>' + archiveName + '</i> (<b>' + megabytes$ + ' MB</b>)</li></ul><p><b><i>If you proceed, do not close the app during the download.</i></b><p>' +
+                            '<p>If you prefer to download in the background, use a browser-managed download link instead, and ' + (params.useOPFS
+                            ? 'afterwards import the file into the OPFS using the "Add file(s)" button' : 'then move the file manually into your ZIM folder') + '.</p>';
+                        var messageTitle = 'Download large archive to ' + (params.useOPFS ? 'OPFS?' : 'folder?');
+                        uiUtil.systemAlert(message, messageTitle, true, 'Cancel', 'Download').then(function (result) {
+                            if (result) downloadArchiveWithFSA();
+                        });
                     } else {
                         downloadArchiveWithFSA();
                     }
@@ -1057,18 +1050,18 @@ function reportDownloadProgress (data) {
     } else {
         var dataMB = (data / 1024 / 1024).toFixed(2);
         // console.debug('dataMB: ' + dataMB + '; data: ' + data);
-        if (downloadSize > 0) {
-            var percentageData = Math.floor(dataMB / downloadSize * 100);
-            if (percentageData > percentageComplete) {
-                percentageComplete = percentageData;
-                uiUtil.pollSpinner('<b>Please wait</b><br />Downloading archive... ' + percentageComplete + '%', true);
-            }
-        }
         // If data is greater than 1GB, convert to GB
         if (data > 1073741824) {
             formattedData = (dataMB / 1024).toFixed(2) + ' GB';
         } else {
             formattedData = dataMB + ' MB';
+        }
+        if (downloadSize > 0) {
+            var percentageData = Math.floor(dataMB / downloadSize * 100);
+            if (percentageData > percentageComplete) {
+                percentageComplete = percentageData;
+                uiUtil.pollOpsPanel('<b>Do not quit app:</b> Downloading archive... ' + percentageComplete + '% (' + formattedData + ')', true);
+            }
         }
     }
     serverResponse.innerHTML = 'Download progress: ' + formattedData;

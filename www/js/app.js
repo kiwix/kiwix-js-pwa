@@ -1337,8 +1337,8 @@ archiveFilesLegacy.addEventListener('change', function (files) {
         'Add to OPFS', true, null, 'Add to OPFS').then(function (confirmed) {
             if (!confirmed) return;
             // User has chosen a file or files to store in the Origin Private File System
-            // This operation can take a long time, so show the spinner
-            uiUtil.pollSpinner('<b>Please wait</b><br />Importing files to OPFS...', true);
+            // This operation can take a long time, so show opsPanel
+            uiUtil.pollOpsPanel('<b>Please wait:</b> Importing files to OPFS...', true);
             return cache.importOPFSEntries(filesArray).then(function () {
                 uiUtil.systemAlert('<p>The selected files were successfully added to the OPFS!</p><p><b>We will now reload the app, so that the file(s) can be accessed at full speed.</b></p>')
                 .then(function () {
@@ -1346,7 +1346,7 @@ archiveFilesLegacy.addEventListener('change', function (files) {
                     settingsStore.setItem('lastSelectedArchive', filesArray[0].name, Infinity);
                     window.location.reload();
                 });
-                uiUtil.clearSpinner();
+                uiUtil.pollOpsPanel();
                 processNativeDirHandle(params.pickedFolder);
                 cache.populateOPFSStorageQuota();
             }).catch(function (err) {
@@ -1354,7 +1354,7 @@ archiveFilesLegacy.addEventListener('change', function (files) {
                 var message = '<p>We could not import the selected files to the OPFS!</p><p>Reason: ' + err.message + '</p>';
                 if (/iOS/.test(params.appType)) message = '<p>Unfortunately, iOS does not currently support importing files into the OPFS. Please disable the OPFS and use other file selection options.</p><p>Error message: ' + err.message + '</p>';
                 uiUtil.systemAlert(message, 'OPFS import error');
-                uiUtil.clearSpinner();
+                uiUtil.pollOpsPanel();
             });
         });
     }

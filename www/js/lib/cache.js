@@ -795,9 +795,9 @@ function importOPFSEntries (files) {
     return Promise.all(files.map(function (file) {
         return params.pickedFolder.getFileHandle(file.name, { create: true }).then(function (fileHandle) {
             return fileHandle.createWritable().then(function (writer) {
-                uiUtil.pollSpinner('<b>Please wait</b><br />Importing ' + file.name.substring(0, 20) + '...', true);
+                uiUtil.pollOpsPanel('<b>Please wait:</b> Importing ' + file.name + '...', true);
                 return writer.write(file).then(function () {
-                    uiUtil.pollSpinner('<b>Please wait</b><br />Imported ' + file.name.substring(0, 20) + '...', true);
+                    uiUtil.pollOpsPanel('<b>Please wait:</b> Imported ' + file.name + '...', true);
                     return writer.close();
                 });
             });
