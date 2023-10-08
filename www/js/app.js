@@ -5308,7 +5308,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             htmlArticle = htmlArticle.replace(/(<script\b[^>]+\/site\.js["']><\/script>\s*)((?:[^<]|<(?!\/body))+)/, '$2$1');
             // @TODO Remove when fixed in https://github.com/openzim/mwoffliner/issues/1872
             // Add missing title to WikiMedia articles for post June 2023 scrapes
-            htmlArticle = !params.isLandingPage && !/<h1\b[^>]+(?:section-heading|article-header)/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl() + '</h1>') : htmlArticle;
+            htmlArticle = !params.isLandingPage && !/<h1\b[^>]+(?:section-heading|article-header)/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl().replace(/&lt;/g, '<') + '</h1>') : htmlArticle;
         } else if (appstate.wikimediaZimLoaded && params.manipulateImages) {
             // Remove incompatible webP handler that breaks on some Edge Legacy
             htmlArticle = htmlArticle.replace(/<script\b[^<]+src=["'][^"']*(webp(?:Handler|Hero))[^"']*\.js\b[^<]+<\/script>/gi, '');
