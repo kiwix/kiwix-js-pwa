@@ -48,14 +48,5 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "file_handlers": [
-    {
-      "action": "www/index.html",
-      "accept": {
-        "application/octet-stream": [ ".zim" ]
-      },
-      "launch_type": "single-client"
-    }
   ]
 }
