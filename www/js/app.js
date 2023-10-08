@@ -4768,7 +4768,9 @@ var filterClickEvent = function (event) {
             // @TODO - may not be necessary because params.lastPageVisit is only set when HTML is loaded
         } else {
             var decHref = decodeURIComponent(href);
-            uiUtil.pollSpinner('Loading ' + decHref.replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
+            if (!/^(?:#|javascript)/i.test(decHref)) {
+                uiUtil.pollSpinner('Loading ' + decHref.replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
+            }
         }
     }
 };
