@@ -2,6 +2,8 @@
 
 Simply visit **_[pwa.kiwix.org](https://pwa.kiwix.org)_** in Chrome / Edge / Samsung Internet / Kiwi Browser, etc., on Android. Read more after the demo:
 
+_(please be patient while the demo loads)_
+
 <img src="Demo-OPFS_Chrome_Android.gif" width="360px" />
 
 See also: [&ensp;[Install PWA on Firefox for Android](Install-PWA_Firefox_Android.md)&ensp;]
