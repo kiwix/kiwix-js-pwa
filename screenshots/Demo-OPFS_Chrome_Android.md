@@ -8,9 +8,10 @@ See also: [&ensp;[Install PWA on Firefox for Android](Install-PWA_Firefox_Androi
 
 ## Chromium browsers have first-class support for PWAs on Android
 
-**Chromium** browsers (Chrome, Edge, Samsung, etc.) supports installing PWAs on Android (as well as on Desktop), and also have large quotas
-for the Origin Private File System (OPFS). Installing the PWA useful, because the app runs in its own dedicated session and has its own icon
-in your Home Screen (or Start menu on Windows).
+**Chromium** browsers (Chrome, Edge, Samsung, etc.) support installing PWAs on Android (as well as on Desktop), and also have large quotas
+for the Origin Private File System (OPFS). Installing the PWA is wothwhile, because the app runs in its own dedicated session and has its own icon
+in your Home Screen (or Start menu on Windows). However, you can still use it fully offline just by bookmarking https://pwa.kiwix.org/ in your
+browser.
 
 ## Why bother using the OPFS if I can just pick a file from anywhere?
 
