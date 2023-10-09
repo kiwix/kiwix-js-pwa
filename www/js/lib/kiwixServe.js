@@ -611,7 +611,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                     var archiveName = e.target.href.replace(/^.*\/([^/]+)$/, '$1');
                     var downloadArchiveWithFSA = function () {
                         downloadSize = megabytes;
-                        uiUtil.pollOpsPanel('<b>Please wait:</b> Downloading archive... 0%', true);
+                        uiUtil.pollOpsPanel('<span class="glyphicon glyphicon-refresh spinning"></span>&emsp;<b>Please wait:</b> Downloading archive... 0%', true);
                         return cache.downloadArchiveToPickedFolder(archiveName, archiveUrl, reportDownloadProgress).then(function () {
                             return uiUtil.systemAlert('<p>The archive ' + archiveName + ' has been downloaded to your device.</p>' +
                             (params.useOPFS ? '<p><b>Reloading to activate new ZIM...</b></p>' : ''), 'Download complete').then(function () {
@@ -1059,13 +1059,13 @@ function reportDownloadProgress (received, total) {
             var percentageData = Math.floor(dataMB / downloadSize * 100);
             if (percentageData > percentageComplete) {
                 percentageComplete = percentageData;
-                uiUtil.pollOpsPanel('<b>Do not quit app:</b> Downloading archive... ' + percentageComplete + '% (' + formattedData + ')', true);
+                uiUtil.pollOpsPanel('<span class="glyphicon glyphicon-refresh spinning"></span>&emsp;<b>Do not quit app:</b> Downloading archive... ' + percentageComplete + '% (' + formattedData + ')', true);
             }
         }
     }
     serverResponse.innerHTML = 'Download progress: ' + formattedData;
     if (received === 'completed') {
-        uiUtil.pollOpsPanel('Download complete! ' + percentageComplete + '%', 5000);
+        uiUtil.pollOpsPanel('Download complete! 100%', 5000);
         percentageComplete = 0;
         downloadSize = 0;
         setTimeout(function () {

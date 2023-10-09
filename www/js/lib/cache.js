@@ -795,9 +795,9 @@ function importOPFSEntries (files) {
     return Promise.all(files.map(function (file) {
         return params.pickedFolder.getFileHandle(file.name, { create: true }).then(function (fileHandle) {
             return fileHandle.createWritable().then(function (writer) {
-                uiUtil.pollOpsPanel('<span class="glyphicon glyphicon-refresh spinning"></span> <b>Please wait:</b> Importing ' + file.name + '...', true);
+                uiUtil.pollOpsPanel('<span class="glyphicon glyphicon-refresh spinning"></span>&emsp;<b>Please wait:</b> Importing ' + file.name + '...', true);
                 return writer.write(file).then(function () {
-                    uiUtil.pollOpsPanel('<span class="glyphicon glyphicon-refresh spinning"></span> <b>Please wait:</b> Imported ' + file.name + '...', true);
+                    uiUtil.pollOpsPanel('<span class="glyphicon glyphicon-refresh spinning"></span>&emsp;<b>Please wait:</b> Imported ' + file.name + '...', true);
                     return writer.close();
                 });
             });
