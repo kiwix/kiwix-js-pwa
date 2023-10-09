@@ -1570,9 +1570,10 @@ document.getElementById('btnExportOPFSEntry').addEventListener('click', function
     params.exportOPFSEntry = !params.exportOPFSEntry;
     var determinedTheme = params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme;
     if (params.exportOPFSEntry) {
-        document.getElementById('archiveList').style.background = determinedTheme === 'dark' ? 'darkgoldenrod' : 'yellow';
+        params.deleteOPFSEntry = false;
+        archiveList.style.background = determinedTheme === 'dark' ? 'darkgoldenrod' : 'yellow';
     } else {
-        document.getElementById('archiveList').style.background = '';
+        archiveList.style.background = '';
     }
     // Synchronize the OPFS file list
     if (params.pickedFolder && params.pickedFolder.kind === 'directory') {
@@ -1584,9 +1585,10 @@ document.getElementById('btnDeleteOPFSEntry').addEventListener('click', function
     params.deleteOPFSEntry = !params.deleteOPFSEntry;
     var determinedTheme = params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme;
     if (params.deleteOPFSEntry) {
-        document.getElementById('archiveList').style.background = determinedTheme === 'dark' ? 'firebrick' : 'pink';
+        params.exportOPFSEntry = false;
+        archiveList.style.background = determinedTheme === 'dark' ? 'firebrick' : 'pink';
     } else {
-        document.getElementById('archiveList').style.background = '';
+        archiveList.style.background = '';
     }
     // Synchronize the OPFS file list
     if (params.pickedFolder && params.pickedFolder.kind === 'directory') {
