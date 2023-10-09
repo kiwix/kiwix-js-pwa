@@ -1,5 +1,14 @@
 # Changelog
 
+## In-progress release 2.7.4
+
+* ENHANCEMENT: Add indicative colourization to archive list when using OPFS
+* FIX: Empty archive list when OPFS is deactivated
+* FIX: Make sure spinner doesn't block the UI
+* FIX: Ensure some HTML and entities do not appear in constructed article titles
+* FIX: Don't show spinner on click in cases of anchor or javascript links
+* FIX: Cancel OPFS delete if export selected and vice versa
+
 ## Release 2.7.2
 
 * FEATURE: Rework file system access and support Origin Private File System (OPFS)
