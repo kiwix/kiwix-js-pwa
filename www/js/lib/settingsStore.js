@@ -149,7 +149,7 @@ function reset(object) {
   else {
     uiUtil.systemAlert('<p><b>WARNING:</b> This will reset the app to a freshly installed state, deleting all app caches,' +
     // ' <b>Archives stored in the Private File System</b>,' +
-    ' and settings!<b></p><p>Make sure you have an Internet connection</b>' +
+    ' and settings! (Archives stored in the OPFS will be preserved.)<b></p><p>Make sure you have an Internet connection</b>' +
     ' if this is an offline PWA, because it will be erased and reloaded.</p>', 'Warning!', true).then(function (confirm) {
         if (confirm) performReset();
         else console.debug('User cancelled');
