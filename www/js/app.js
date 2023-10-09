@@ -1479,6 +1479,8 @@ document.getElementById('useOPFSCheck').addEventListener('change', function (e) 
                 settingsStore.removeItem('lastSelectedArchive');
                 params.rescan = true;
                 loadOPFSDirectory();
+            } else {
+                populateDropDownListOfArchives([], true);
             }
         } else {
             e.target.checked = false;
@@ -1517,6 +1519,7 @@ function setOPFSUI () {
     var btnDeleteOPFSEntry = document.getElementById('btnDeleteOPFSEntry');
     var btnExportOPFSEntry = document.getElementById('btnExportOPFSEntry');
     var OPFSQuota = document.getElementById('OPFSQuota');
+    var determinedTheme = params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme;
     if (params.useOPFS) {
         settingsStore.setItem('useOPFS', true, Infinity);
         useOPFS.checked = true;
@@ -1531,6 +1534,7 @@ function setOPFSUI () {
         archiveFileCol.classList.add('col-xs-5');
         archiveFilesCol.classList.remove('col-xs-6');
         archiveFilesCol.classList.add('col-xs-7');
+        archiveList.style.background = determinedTheme === 'dark' ? 'darkslategray' : 'lightcyan';
         OPFSQuota.style.display = '';
         btnDeleteOPFSEntry.style.display = '';
         if ('showOpenFilePicker' in window) btnExportOPFSEntry.style.display = '';
@@ -1542,6 +1546,7 @@ function setOPFSUI () {
         archiveFileCol.classList.add('col-xs-6');
         archiveFilesCol.classList.remove('col-xs-7');
         archiveFilesCol.classList.add('col-xs-6');
+        archiveList.style.background = '';
         if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog && !params.webkitdirectory) {
             archiveFileLabel.innerHTML = '<p><b>Pick ZIM archive(s)</b>:</p>';
             archiveFileLabel.classList.remove('col-xs-6');
@@ -1573,7 +1578,7 @@ document.getElementById('btnExportOPFSEntry').addEventListener('click', function
         params.deleteOPFSEntry = false;
         archiveList.style.background = determinedTheme === 'dark' ? 'darkgoldenrod' : 'yellow';
     } else {
-        archiveList.style.background = '';
+        setOPFSUI();
     }
     // Synchronize the OPFS file list
     if (params.pickedFolder && params.pickedFolder.kind === 'directory') {
@@ -1588,7 +1593,7 @@ document.getElementById('btnDeleteOPFSEntry').addEventListener('click', function
         params.exportOPFSEntry = false;
         archiveList.style.background = determinedTheme === 'dark' ? 'firebrick' : 'pink';
     } else {
-        archiveList.style.background = '';
+        setOPFSUI();
     }
     // Synchronize the OPFS file list
     if (params.pickedFolder && params.pickedFolder.kind === 'directory') {
@@ -2268,6 +2273,7 @@ function cssUIThemeGetOrSet (value, getOnly) {
         if (/wikivoyage/i.test(params.packagedFile)) document.getElementById('kiwixIconAbout').src = 'img/icons/wikivoyage-90.png';
     }
     refreshCacheStatus();
+    setOPFSUI();
     return value;
 }
 
