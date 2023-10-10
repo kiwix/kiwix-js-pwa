@@ -136,9 +136,9 @@ function toMobileCSS(html, zim, cc, cs, css) {
     }
     if (cc || (zim == "desktop")) { //If user requested cached styles OR the ZIM does not contain mobile styles
         console.log(zim == "desktop" ? "Transforming display style to mobile..." : "Optimizing cached styles for mobile display...");
-        //Add styling to image captions that is hard-coded in Wikipedia mobile
+        // Add styling to image captions that is hard-coded in Wikipedia mobile
         html = html.replace(/class\s*=\s*["']\s*thumbcaption\s*["']\s*/ig, 'style="margin: 0.5em 0 0.5em; font-size: 0.8em; line-height: 1.5; padding: 0 !important; color: #54595d; width: auto !important;"');
-        //Wrap <h2> tags in <div> to control bottom border width if there's an infobox, but not if it's a new-style ZIM with collapsible details tags
+        // Wrap <h2> tags in <div> to control bottom border width if there's an infobox, but not if it's a new-style ZIM with collapsible details tags
         if (!/<details[\s\S]+?<summary\b/i.test(html)) {
             html = /<table\s+(?=[^>]*class\s*=\s*["'][^"']*(?:mw-stack|infobox|vertical-navbox|qbRight|wv-quickbar))/i.test(html) ? html.replace(/(<h2\s+[^<]*<\/h2>)/ig, '<div style="width: 60%;">$1</div>') : html;
         }
