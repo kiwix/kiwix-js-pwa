@@ -629,7 +629,9 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                             percentageComplete = 0;
                             var message = 'Unable to download the archive ' + archiveName + ' to your device: ' + err;
                             if (/iOS/.test(params.appType) || /^((?!chrome|android).)*safari/i.test(navigator.userAgent)) message = '<p>Unfortunately, Safari and iOS browsers do not currently support downloading files directly into the OPFS. Please select a different download method.</p><p>Error message: ' + err.message + '</p>';
-                            return uiUtil.systemAlert(message, 'Download failed');
+                            return uiUtil.systemAlert(message, 'Download failed').then(function () {
+                                return cache.deleteOPFSEntry(archiveName);
+                            });
                         });
                     }
                     if (megabytes > 1000) {

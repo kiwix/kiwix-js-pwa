@@ -1353,8 +1353,13 @@ archiveFilesLegacy.addEventListener('change', function (files) {
                 console.error('Unable to import files to OPFS!', err);
                 var message = '<p>We could not import the selected files to the OPFS!</p><p>Reason: ' + err.message + '</p>';
                 if (/iOS/.test(params.appType) || /^((?!chrome|android).)*safari/i.test(navigator.userAgent)) message = '<p>Unfortunately, Safari and iOS browsers do not currently support importing files into the OPFS. Please disable the OPFS and use other file selection options.</p><p>Error message: ' + err.message + '</p>';
-                uiUtil.systemAlert(message, 'OPFS import error');
                 uiUtil.pollOpsPanel();
+                uiUtil.systemAlert(message, 'OPFS import error').then(function () {
+                    // Delete each of the files that failed to import
+                    filesArray.forEach(function (file) {
+                        cache.deleteOPFSEntry(file.name);
+                    });
+                });
             });
         });
     }
