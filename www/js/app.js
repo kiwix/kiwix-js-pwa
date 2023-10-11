@@ -5324,17 +5324,17 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             // @TODO Remove when fixed in https://github.com/openzim/mwoffliner/issues/1872
             // Add missing title to WikiMedia articles for post June 2023 scrapes
             htmlArticle = !params.isLandingPage && !/<h1\b[^>]+(?:section-heading|article-header)/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl().replace(/&lt;/g, '<') + '</h1>') : htmlArticle;
-            // Convert section tags to details tags (we have to loop because regex matches innermost <section>...</section>)
-            for (var i = 10; i--;) {
-                console.debug('Loop i=' + i);
-                htmlArticle = !params.isLandingPage ? htmlArticle.replace(/<section\b([^>]*data-mw-section-id=["'][1-9][^>]*)>((?:(?=([^<]+))\3|<(?!section\b[^>]*>))*?)<\/section>/ig, function (m0, m1, m2) {
-                    var summary = m2.replace(/(<(h[2-9])\b[^>]*>(?:[^<]|<(?!\2))+?<\/\2>)/i, '<summary class="section-heading collapsible-heading">$1</summary>');
-                    return '<details ' + m1 + '>' + summary + '</details>';
-                }) : htmlArticle;
-                // We can stop iterating if all sections are consume
-                if (!/<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle)) break;
+            if (!params.isLandingPage) {
+                // Convert section tags to details tags (we have to loop because regex only matches innermost <section>...</section>)
+                for (var i = 5; i--;) {
+                    htmlArticle = htmlArticle.replace(/<section\b([^>]*data-mw-section-id=["'][1-9][^>]*)>((?:(?=([^<]+))\3|<(?!section\b[^>]*>))*?)<\/section>/ig, function (m0, m1, m2) {
+                        var summary = m2.replace(/(<(h[2-9])\b[^>]*>(?:[^<]|<(?!\2))+?<\/\2>)/i, '<summary class="section-heading collapsible-heading">$1</summary>');
+                        return '<details ' + m1 + '>' + summary + '</details>';
+                    });
+                    // We can stop iterating if all sections are consume
+                    if (!/<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle)) break;
+                }
             }
-            // htmlArticle = !params.isLandingPage ? htmlArticle.replace(/(<)section\b([^>]+?data-mw-section-id=['"][1-9][^>]+>(?!<section)(?:[^<]|<(?!h[1-5]))*?)(<h[2-5](?:[^<]|<(?!\/h[2-5]))+?<\/h[2-5]>)((?:[^<]|<(?!section))+?<\/)section/ig, '$1details$2<summary class="section-heading collapsible-heading">$3</summary>$4details') : htmlArticle;
         } else if (appstate.wikimediaZimLoaded && params.manipulateImages) {
             // Remove incompatible webP handler that breaks on some Edge Legacy
             htmlArticle = htmlArticle.replace(/<script\b[^<]+src=["'][^"']*(webp(?:Handler|Hero))[^"']*\.js\b[^<]+<\/script>/gi, '');
