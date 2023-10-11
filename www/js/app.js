@@ -544,6 +544,8 @@ document.getElementById('findText').addEventListener('click', function () {
     var searchDiv = document.getElementById('row2');
     if (searchDiv.style.display !== 'none') {
         setTab();
+        // Return sections to original state
+        openAllSections();
         // Return params.hideToolbars to its original state
         checkToolbar();
         return;
@@ -559,6 +561,8 @@ document.getElementById('findText').addEventListener('click', function () {
     params.hideToolbars = false;
     checkToolbar();
     findInArticle.focus();
+    // We need to open all sections to search
+    openAllSections(true);
     localSearch = new util.Hilitor(innerDocument);
     // TODO: MatchType should be language specific
     findInArticle.addEventListener('keyup', function (e) {
@@ -2365,6 +2369,10 @@ document.querySelectorAll('input[name=cssInjectionMode]').forEach(function (elem
     element.addEventListener('click', function () {
         params.cssSource = this.value;
         settingsStore.setItem('cssSource', params.cssSource, Infinity);
+        if (params.cssSource === 'desktop' && !params.openAllSections) {
+            // If the user has selected desktop style, we should ensure all sections are opened by default
+            document.getElementById('openAllSectionsCheck').click();
+        }
         params.themeChanged = true;
     });
 });
@@ -2452,12 +2460,14 @@ function removePageMaxWidth () {
 document.getElementById('openAllSectionsCheck').addEventListener('click', function (e) {
     params.openAllSections = this.checked;
     settingsStore.setItem('openAllSections', params.openAllSections, Infinity);
-    if (params.contentInjectionMode === 'serviceworker') {
-        // We have to reload the article to respect user's choice
-        goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
-        return;
+    if (appstate.selectedArchive) {
+        if (params.contentInjectionMode === 'serviceworker') {
+            // We have to reload the article to respect user's choice
+            goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+            return;
+        }
+        openAllSections();
     }
-    openAllSections();
 });
 document.getElementById('linkToWikimediaImageFileCheck').addEventListener('click', function () {
     params.linkToWikimediaImageFile = this.checked;
