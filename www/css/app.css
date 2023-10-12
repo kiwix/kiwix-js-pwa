@@ -144,6 +144,14 @@ div:not(.panel-success, .alert-message) {
     padding: 0px 1em !important;
 }
 
+#OPFSQuota {
+    padding: 4px;
+    width: -moz-fit-content;
+    width: fit-content;
+    border-style: groove;
+    border-width: 3px;
+}
+
 .form-control:not([id^="findInArticle"]) {
     margin-top: 5px !important;
     margin-bottom: 5px !important;
@@ -197,19 +205,24 @@ div:not(.panel-success, .alert-message) {
     left: 0;
     right: 0;
     border: 5px solid lightgrey;
-    -webkit-animation: spin 1s linear infinite;
     animation: spin 1s linear infinite;
+    -webkit-animation: spin 1s linear infinite;
     border-top: 5px solid steelblue;
     border-radius: 50%;
     width: 50px;
     height: 50px;
 }
 
+.glyphicon.spinning {
+    color: white;
+    animation: spin 1s linear infinite;
+    -webkit-animation: spin 1s linear infinite;
+}
+
 .status {
     position: absolute;
     top: 50%;
     width: 100%;
-    height: 50%;
     z-index: 1;
 }
 
@@ -274,9 +287,43 @@ nav a.btn-primary, .input-group-addon {
     padding: 5px 1em !important;
 }
 
-.btn:hover, .btn:active, .btn-primary:active, .btn-primary.active {
+.btn:active, .btn-primary:active, .btn-primary.active {
     background: lightsteelblue !important;
     background-color: lightsteelblue !important;
+}
+
+.dark .btn:active, .dark .btn-primary:active, .dark .btn-primary.active {
+    background: darkslategray !important;
+    background-color: darkslategray !important;
+}
+
+.btn:hover  {
+    background: lightsteelblue;
+    background-color: lightsteelblue;
+}
+
+.dark .btn:hover {
+    background: darkslategray;
+    background-color: darkslategray;
+}
+
+@media (pointer: coarse) {
+    .btn:hover {
+        background: #d9edf7 !important;
+        background-color: #d9edf7 !important;
+    }
+    .btn:active  {
+        background: lightsteelblue !important;
+        background-color: lightsteelblue !important;
+    }
+    .dark .btn:hover {
+        background: #222 !important;
+        background-color: #222 !important;
+    }
+    .dark .btn:active {
+        background: darkslategray !important;
+        background-color: darkslategray !important;
+    }
 }
 
 .dark .btn-primary, .dark .btn-secondary, .dark .navbar-inverse {
@@ -288,12 +335,6 @@ nav a.btn-primary, .input-group-addon {
     background: #182828 !important;
     border-color: darkslategray !important;
 }
-
-.dark .btn:hover, .dark .btn:active, .dark .btn-primary:active, .dark .btn-primary.active {
-    background: darkslategray !important;
-    background-color: darkslategray !important;
-}
-
 
 .dark .modal-footer .btn-primary, .dark .modal-footer .btn-secondary {
     border-color: #777 !important;
@@ -496,6 +537,10 @@ pre {
 #alert-modal {
     margin-top: 15% !important;
     margin-bottom: 15% !important;
+}
+
+#alertBoxFooter .alert {
+    margin-bottom: 0;
 }
 
 .modal-dialog {

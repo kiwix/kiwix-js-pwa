@@ -1,10 +1,39 @@
 # Changelog
 
-## In-progress release 2.6.6
+## In-progress release 2.7.4
 
+* ENHANCEMENT: Add indicative colourization to archive list when using OPFS
+* ENHANCEMENT: Add a spinner for adding and direct download of files to OPFS
+* ENHANCEMENT: After failure to import or download to OPFS, delete file stub(s)
+* INFO: Inform user that OPFS files are preserved on app reset
+* INFO: More informative message about import/download error in Safari
+* FIX: Empty archive list when OPFS is deactivated
+* FIX: Make sure spinner doesn't block the UI
+* FIX: Ensure some HTML and entities do not appear in constructed article titles
+* FIX: Don't show spinner on click in cases of anchor or javascript links
+* FIX: Cancel OPFS delete if export selected and vice versa
+
+## Release 2.7.2
+
+* FEATURE: Rework file system access and support Origin Private File System (OPFS)
+* ENHANCEMENT: Autoload and display of all archives in OPFS on app launch, no permission prompts!
+* ENHANCEMENT: Last selected archive (and optionally article) auto-loaded on app launch if in OPFS
+* ENHANCEMENT: Import existing archives from anywhere on device into the OPFS easily with file picker
+* ENHANCEMENT: New file management facility for deleting, and (in some contexts) exporting OPFS archives
+* ENHANCEMENT: Option to download archives directly into the OPFS, without downloading first to user-visible FS
+* ENHANCEMENT: Option to download archives direclty into any folder pickable with the File System Access API 
+* ENHANCEMENT: Full-text search enabled by default on Android for archives in OPFS
+* ENHANCEMENT: Pick multiple archives at once and switch easily between them, even on legacy systems
+* ENHANCEMENT: New Operations Panel to show download progress in PWA and Electron apps
 * ENHANCEMENT: Avoid double loading of WebP Polyfill when present in ZIM
+* FIX: Exception preventing display of legacy archive content in jQuery mode
+* FIX: Failure to display ZIM Archive Index when typing space in some circumstances
 * FIX: Avoid duplication of title in wider range of ZIMs
-* UPDATE: Electron version bumped to 22.3.21
+* FIX: Partially fixed broken "unclick" of Configure button on touchscreen devices
+* REGRESSION: Fixed failure to refresh full-screen state when clicking in-app in SW mode
+* REGRESSION: Fixed rogue error message when using File Handling API
+* UPDATE: Sample archive updated to `wikipedia_en_100_mini_2023-10`
+* UPDATE: Electron version bumped to 22.3.25
 
 ## Release 2.6.4
 

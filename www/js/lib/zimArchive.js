@@ -105,8 +105,8 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                 if (that._file.fullTextIndex && params.debugLibzimASM !== 'disable' && (params.debugLibzimASM || !isSplitZim &&
                 // The ASM implementation requires Atomics support, whereas the WASM implementation does not
                 (typeof Atomics !== 'undefined' || libzimReaderType === 'wasm') &&
-                // Note that Android and NWJS currently throw due to problems with Web Worker context
-                !/Android/.test(params.appType) && !(window.nw && that._file._files[0].readMode === 'electron'))) {
+                // Note that NWJS currently throws due to problems with Web Worker context, and Android is very slow unless we use OPFS
+                !(/Android/.test(params.appType) && !params.useOPFS) && !(window.nw && that._file._files[0].readMode === 'electron'))) {
                     console.log('Instantiating libzim ' + libzimReaderType + ' Web Worker...');
                     LZ = new Worker('js/lib/libzim-' + libzimReaderType + '.js');
                     that.callLibzimWorker({ action: 'init', files: that._file._files }).then(function (msg) {
@@ -136,14 +136,16 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                     uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider);
                     // uiUtil.systemAlert(message);
                 }
+                // Set the archive file type ('open' or 'zimit')
+                params.zimType = that.setZimType();
+                // DEV: Currently, extended listings are only used for title (=article) listings when the user searches
+                // for an article or uses the Random button, by which time the listings will have been extracted.
+                // If, in the future, listings are used in a more time-critical manner, consider forcing a wait before
+                // declaring the archive to be ready, by chaining the following callback in a .then() function of setListings.
+                callbackReady(that);
+            }).catch(function (err) {
+                console.warn('Error setting archive listings: ', err);
             });
-            // Set the archive file type ('open' or 'zimit')
-            params.zimType = that.setZimType();
-            // DEV: Currently, extended listings are only used for title (=article) listings when the user searches
-            // for an article or uses the Random button, by which time the listings will have been extracted.
-            // If, in the future, listings are used in a more time-critical manner, consider forcing a wait before
-            // declaring the archive to be ready, by chaining the following callback in a .then() function of setListings.
-            callbackReady(that);
         });
     };
     if (storage && !path) {

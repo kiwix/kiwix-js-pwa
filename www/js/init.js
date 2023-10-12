@@ -24,6 +24,7 @@
 'use strict';
 
 /* global Windows, launchArgumentsUWP */
+/* eslint-disable no-unused-vars */
 
 // Set a global error handler to prevent app crashes
 window.onerror = function (msg, url, line, col, error) {
@@ -53,11 +54,11 @@ var params = {};
 var appstate = {};
 
 // ******** UPDATE VERSION IN service-worker.js TO MATCH VERSION AND CHECK PWASERVER BELOW!!!!!!! *******
-params['appVersion'] = '2.6.6'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
+params['appVersion'] = '2.7.4'; // DEV: Manually update this version when there is a new release: it is compared to the Settings Store "appVersion" in order to show first-time info, and the cookie is updated in app.js
 // ******* UPDATE THIS ^^^^^^ IN service worker AND PWA-SERVER BELOW !! ********************
-params['packagedFile'] = getSetting('packagedFile') || 'wikipedia_en_100_mini_2023-08.zim'; // For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
+params['packagedFile'] = getSetting('packagedFile') || 'wikipedia_en_100_mini_2023-10.zim'; // For packaged Kiwix JS (e.g. with Wikivoyage file), set this to the filename (for split files, give the first chunk *.zimaa) and place file(s) in default storage
 params['archivePath'] = 'archives'; // The directory containing the packaged archive(s) (relative to app's root directory)
-params['fileVersion'] = getSetting('fileVersion') || 'wikipedia_en_100_mini_2023-08.zim (3 Aug 2023)'; // This will be displayed in the app - optionally include date of ZIM file
+params['fileVersion'] = getSetting('fileVersion') || 'wikipedia_en_100_mini_2023-10.zim (4 oct 2023)'; // This will be displayed in the app - optionally include date of ZIM file
 // List of known start pages cached in the FS:
 params['cachedStartPages'] = {
     'wikipedia_en_medicine-app_maxi': 'A/Wikipedia:WikiProject_Medicine/Open_Textbook_of_Medicine2',
@@ -106,13 +107,14 @@ params['disableDragAndDrop'] = getSetting('disableDragAndDrop') == true; // A pa
 params['windowOpener'] = getSetting('windowOpener'); // 'tab|window|false' A setting that determines whether right-click/long-press of a ZIM link opens a new window/tab
 params['rightClickType'] = getSetting('rightClickType'); // 'single|double|false' A setting that determines whether a single or double right-click is used to open a new window/tab
 params['navButtonsPos'] = getSetting('navButtonsPos') || 'bottom'; // 'top|bottom' A setting that determines where the back-forward nav buttons appear
+params['useOPFS'] = getSetting('useOPFS') === true; // A setting that determines whether to use OPFS (experimental)
 
 // Do not touch these values unless you know what they do! Some are global variables, some are set programmatically
 params['cacheAPI'] = 'kiwixjs-assetsCache'; // Set the global Cache API database or cache name here, and synchronize with Service Worker
 params['cacheIDB'] = 'kiwix-assetsCache'; // Set the global IndexedDB database here (Slightly different name to disambiguate)
 params['imageDisplayMode'] = params.imageDisplay ? 'progressive' : 'manual';
 params['storedFile'] = getSetting('lastSelectedArchive');
-params.storedFile = params.storedFile || params['packagedFile'] || '';
+params.storedFile = params.storedFile || (!params.useOPFS ? params['packagedFile'] : '') || '';
 params['lastPageVisit'] = params.rememberLastPage && params.storedFile ? getSetting(params.storedFile.replace(/(\.zim)\w?\w?$/, '$1')) || '' : '';
 params.lastPageVisit = params.lastPageVisit ? params.lastPageVisit + '@kiwixKey@' + params.storedFile : '';
 params['storedFilePath'] = getSetting('lastSelectedArchivePath');
@@ -318,7 +320,7 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
             });
         }
     }, function (err) {
-        console.error(new Error("This app doesn't appear to have access to local storage!"));
+        console.error("This app doesn't appear to have access to local storage!", err);
     });
     // If we don't already have a picked file (e.g. by launching app with click on a ZIM file), then retrieve it from futureAccessList if possible
     var listOfArchives = getSetting('listOfArchives');
@@ -339,9 +341,9 @@ if (params.storedFile && typeof Windows !== 'undefined' && typeof Windows.Storag
 
 if (!params.pickedFolder && typeof window.showOpenFilePicker !== 'function' && !/UWP/.test(params.appType)) {
     params.pickedFolder = getSetting('pickedFolder') || '';
-    if (!params.pickedFolder && !params.pickedFile) {
-        params.pickedFile = params.storedFilePath || '';
-    }
+    // if (!params.pickedFolder && !params.pickedFile) {
+    //     params.pickedFile = params.storedFilePath || '';
+    // }
 }
 
 // Routine for installing the app adapted from https://pwa-workshop.js.org/

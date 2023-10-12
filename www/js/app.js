@@ -544,6 +544,8 @@ document.getElementById('findText').addEventListener('click', function () {
     var searchDiv = document.getElementById('row2');
     if (searchDiv.style.display !== 'none') {
         setTab();
+        // Return sections to original state
+        openAllSections();
         // Return params.hideToolbars to its original state
         checkToolbar();
         return;
@@ -559,6 +561,8 @@ document.getElementById('findText').addEventListener('click', function () {
     params.hideToolbars = false;
     checkToolbar();
     findInArticle.focus();
+    // We need to open all sections to search
+    openAllSections(true);
     localSearch = new util.Hilitor(innerDocument);
     // TODO: MatchType should be language specific
     findInArticle.addEventListener('keyup', function (e) {
@@ -799,24 +803,24 @@ function setTab (activeBtn) {
     } else {
         cssUIThemeGetOrSet(determinedTheme);
     }
-    if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog && !params.webkitdirectory) {
-        // If not UWP, File System Access API, webkitdirectory API or Electron methods, display legacy File Select
-        document.getElementById('archiveFilesDiv').style.display = 'none';
-        document.getElementById('archivesFound').style.display = 'none';
-        document.getElementById('instructions').style.display = appstate.selectedArchive ? 'none' : 'block';
-        document.getElementById('archiveFilesLegacyDiv').style.display = 'block';
-        document.getElementById('btnRefresh').style.display = 'none';
-    } else {
-        document.getElementById('archiveFilesLegacyDiv').style.display = 'none';
-        // Remove instructions if user has already loaded an archive, and it isn't the packaged archive
-        document.getElementById('UWPInstructions').style.display = appstate.selectedArchive && ~params.packagedFile.indexOf(appstate.selectedArchive._file.name) ? 'none' : 'block';
+    if (typeof Windows === 'undefined' && typeof window.showDirectoryPicker !== 'function' && !window.dialog && !params.webkitdirectory) {
+        // If not UWP, File System Access API, webkitdirectory API or Electron methods, hide the folder picker
+        document.getElementById('archiveFiles').style.display = 'none';
+        document.getElementById('archiveFilesLabel').style.display = 'none';
     }
+    // Display OPFS checkbox if the browser supports the full API
+    if (navigator && navigator.storage && ('getDirectory' in navigator.storage) && ('estimate' in navigator.storage)) {
+        document.getElementById('displayOPFS').style.display = '';
+    }
+    document.getElementById('archiveFilesLegacyDiv').style.display = 'none';
     document.getElementById('chooseArchiveFromLocalStorage').style.display = 'block';
     document.getElementById('libraryArea').style.borderColor = '';
     document.getElementById('libraryArea').style.borderStyle = '';
     if (params.packagedFile && params.storedFile && params.storedFile !== params.packagedFile) {
-        currentArchiveLink.innerHTML = params.storedFile.replace(/\.zim$/i, '');
+        currentArchiveLink.innerHTML = params.storedFile.replace(/\.zim(\w\w)?$/i, '');
+        currentArchiveLink.dataset.archive = params.storedFile;
         currentArchive.style.display = 'block';
+        openCurrentArchive.style.display = (params.pickedFile || params.pickedFolder) ? 'none' : '';
         document.getElementById('downloadLinksText').style.display = 'none';
         document.getElementById('usage').style.display = 'none';
     }
@@ -926,21 +930,8 @@ if (window.electronAPI) {
         params.upgradeNeeded = true;
         uiUtil.showUpgradeReady(data.version, 'install');
     });
-    var serverResponse = document.getElementById('serverResponse');
-    electronAPI.on('dl-received', function (data) {
-        // console.warn('Download in progress: ' + data);
-        serverResponse.style.display = 'inline';
-        var colour = data === 'completed' ? 'green' : isNaN(data) ? 'red' : 'goldenrod';
-        serverResponse.style.setProperty('color', colour, 'important');
-        serverResponse.innerHTML = 'Download progress: ' + data;
-        if (data === 'completed') {
-            setTimeout(function () {
-                serverResponse.style.removeProperty('color');
-                if (document.getElementById('downloadLinks').style.display === 'none') {
-                    serverResponse.style.display = 'none';
-                }
-            }, 10000);
-        }
+    electronAPI.on('dl-received', function (received, total) {
+        kiwixServe.reportDownloadProgress(received, total);
     });
     electronAPI.on('get-launch-file-path', function (fullPath) {
         if (fullPath) {
@@ -1034,8 +1025,9 @@ function setActiveBtn (activeBtn) {
 }
 
 document.getElementById('btnConfigure').addEventListener('click', function () {
-    var searchDiv = document.getElementById('configuration');
-    if (searchDiv.style.display !== 'none') {
+    var config = document.getElementById('configuration');
+    // If Configuration is already displayed...
+    if (config.style.display !== 'none') {
         setTab();
         if (params.themeChanged) {
             params.themeChanged = false;
@@ -1043,41 +1035,49 @@ document.getElementById('btnConfigure').addEventListener('click', function () {
             if (archiveName && ~params.lastPageVisit.indexOf(archiveName)) {
                 goToArticle(params.lastPageVisit.replace(/@kiwixKey@.+$/, ''));
             }
-            // if (history.state !== null) {
-            //    var thisURL = decodeURIComponent(history.state.title);
-            //    goToArticle(thisURL);
-            // }
         }
-        return;
-    }
-    document.querySelectorAll('.alert').forEach(function (el) {
-        el.style.display = 'none';
-    });
-    // Highlight the selected section in the navbar
-    setTab('btnConfigure');
-    // Hide footer toolbar
-    document.getElementById('footer').style.display = 'none';
-    // Show the selected content in the page
-    document.getElementById('configuration').style.display = '';
-    document.getElementById('articleContent').style.display = 'none';
-    document.getElementById('downloadLinks').style.display = 'none';
-    document.getElementById('serverResponse').style.display = 'none';
-    document.getElementById('myModal').style.display = 'none';
-    refreshAPIStatus();
-    // Re-enable top-level scrolling
-    document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
-    document.getElementById('search-article').style.overflowY = 'auto';
-    // If user hadn't previously picked a folder or a file, resort to the local storage folder (UWP functionality)
-    if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
-        params.pickedFolder = params.localStorage;
-    }
-    // If user had previously picked a file using Native FS, offer to re-open
-    if (typeof window.showOpenFilePicker === 'function' && !(params.pickedFile || params.pickedFolder)) {
-        getNativeFSHandle();
+    } else {
+        document.querySelectorAll('.alert').forEach(function (el) {
+            el.style.display = 'none';
+        });
+        // Highlight the selected section in the navbar
+        setTab('btnConfigure');
+        // Hide footer toolbar
+        document.getElementById('footer').style.display = 'none';
+        // Show the selected content in the page
+        document.getElementById('configuration').style.display = '';
+        document.getElementById('articleContent').style.display = 'none';
+        document.getElementById('downloadLinks').style.display = 'none';
+        document.getElementById('serverResponse').style.display = 'none';
+        document.getElementById('myModal').style.display = 'none';
+        refreshAPIStatus();
+        // Re-enable top-level scrolling
+        document.getElementById('scrollbox').style.height = window.innerHeight - document.getElementById('top').getBoundingClientRect().height + 'px';
+        document.getElementById('search-article').style.overflowY = 'auto';
+        // If user hadn't previously picked a folder or a file, resort to the local storage folder (UWP functionality)
+        if (params.localStorage && !params.pickedFolder && !params.pickedFile) {
+            params.pickedFolder = params.localStorage;
+        }
+        // If user had previously picked a file using Native FS, offer to re-open
+        if ((typeof window.showOpenFilePicker === 'function' || params.useOPFS) && !(params.pickedFile || params.pickedFolder)) {
+            getNativeFSHandle();
+        }
     }
 });
 
 function getNativeFSHandle (callback) {
+    if (params.useOPFS && navigator && navigator.storage && 'getDirectory' in navigator.storage) {
+        // We should be able to get the folder from the OPFS entry
+        console.debug('Getting the OPFS directory entry');
+        return navigator.storage.getDirectory().then(function (handle) {
+            if (callback) callback(handle);
+            else return processNativeDirHandle(handle);
+        }).catch(function (err) {
+            console.warn('Unable to get the OPFS directory entry: ' + err);
+            if (callback) callback(null);
+        });
+    }
+    console.debug('Getting the last serialized file or folder entry');
     cache.idxDB('pickedFSHandle', function (val) {
         if (val) {
             var handle = val;
@@ -1098,14 +1098,15 @@ function getNativeFSHandle (callback) {
                     if (callback) {
                         callback(handle);
                     } else {
-                        searchForArchivesInPreferencesOrStorage();
+                        searchForArchivesInPreferencesOrStorage(true);
                     }
                 }
             });
         } else {
+            console.warn('No file or folder handle was previously stored in indexedDB');
             if (callback) {
-                callback(null);
-            } else {
+                callback(val);
+            } else if (window.fs) {
                 // We have failed to load a picked archive via the File System API, but if params.storedFilePath exists, then the archive
                 // was launched with Electron APIs, so we can get the folder that way
                 if (params.storedFile && params.storedFilePath) params.pickedFolder = params.pickedFolder = params.storedFilePath.replace(/[^\\/]+$/, '');
@@ -1113,6 +1114,12 @@ function getNativeFSHandle (callback) {
                     // We now have the list of archives in the dropdown, so we try to select the storedFile
                     setLocalArchiveFromArchiveList(params.storedFile);
                 });
+            } else {
+                console.warn('Unable to get a file or folder handle from indexedDB');
+                // Go to Configuration if it is not already open
+                setTimeout(function () {
+                    if (document.getElementById('configuration').style.display === 'none') document.getElementById('btnConfigure').click();
+                }, 250);
             }
         }
     });
@@ -1148,18 +1155,36 @@ document.getElementById('btnAbout').addEventListener('click', function () {
     document.getElementById('search-article').style.overflowY = 'auto';
 });
 var selectFired = false;
-document.getElementById('archiveList').addEventListener('keydown', function (e) {
+var archiveList = document.getElementById('archiveList');
+archiveList.addEventListener('keydown', function (e) {
+    e.preventDefault();
     if (/^Enter$/.test(e.key)) {
         selectArchive(e);
+    } else if (/^ArrowDown$/.test(e.key)) {
+        if (archiveList.selectedIndex === archiveList.length - 1) archiveList.selectedIndex = 0;
+        else archiveList.selectedIndex++;
+    } else if (/^ArrowUp$/.test(e.key)) {
+        if (archiveList.selectedIndex === 0) archiveList.selectedIndex = archiveList.length - 1;
+        else archiveList.selectedIndex--;
     }
 });
-document.getElementById('archiveList').addEventListener('click', selectArchive);
+archiveList.addEventListener('change', selectArchive);
+archiveList.addEventListener('click', function (e) {
+    // Esnsure the clicked item is selected in the dropdown
+    if (e.target.value) archiveList.value = e.target.value;
+    // Only accept the click if there is one archive in the list
+    if (archiveList.length === 1) selectArchive(e);
+});
+archiveList.addEventListener('mousedown', function () {
+    // Unselect any selected option so that the user can select the same option again
+    if (archiveList.length > 1 && ~archiveList.selectedIndex) archiveList.selectedIndex = -1;
+});
 currentArchiveLink.addEventListener('click', function (e) {
-    e.target.value = currentArchiveLink.innerHTML;
+    e.target.value = archiveList.value = currentArchiveLink.dataset.archive;
     selectArchive(e);
 });
 openCurrentArchive.addEventListener('click', function (e) {
-    e.target.value = currentArchiveLink.innerHTML;
+    e.target.value = archiveList.value = currentArchiveLink.dataset.archive;
     selectArchive(e);
 });
 
@@ -1170,34 +1195,96 @@ function selectArchive (list) {
     selectFired = true;
     var selected = list.target.value;
     // Void any previous picked file to prevent it launching
+    params.storedFile = selected;
     if (params.pickedFile && params.pickedFile.name !== selected) {
         params.pickedFile = '';
-        params.storedFile = '';
     }
-    if (window.showOpenFilePicker) {
-        getNativeFSHandle(function (handle) {
+    if (params.useOPFS && params.deleteOPFSEntry) {
+        // User requested deletion of an OPFS entry, seek confirmation first
+        var message = 'Are you sure you want to delete the OPFS entry for ' + selected;
+        if (/\.zimaa$/i.test(selected)) message += ' <b>and all its parts</b>';
+        message += '?';
+        return uiUtil.systemAlert(message, 'Delete OPFS entries', true, null, 'Delete ZIM')
+            .then(function (confirmed) {
+            if (confirmed) {
+                cache.deleteOPFSEntry(selected).then(function () {
+                    settingsStore.removeItem('lastSelectedArchive');
+                    params.rescan = true;
+                    processNativeDirHandle(params.pickedFolder);
+                });
+            }
+            document.getElementById('btnDeleteOPFSEntry').click();
+            selectFired = false;
+        });
+    }
+    if (params.useOPFS && params.exportOPFSEntry) {
+        // User requested export of an OPFS entry
+        // First check that user is not trying to export a split ZIM archive (which is impossible)
+        if (/\.zimaa$/i.test(selected)) {
+            selectFired = false;
+            return uiUtil.systemAlert('It is unfortunately not possible to export all the parts of a split ZIM archive using this app. ' +
+                'For split ZIMs, you are limited to opening or deleting the archive (and its parts).');
+        }
+        // Show the spinner while the OPFS entry is exported
+        uiUtil.pollSpinner('Exporting OPFS entry...', true);
+        document.getElementById('btnExportOPFSEntry').click();
+        return cache.exportOPFSEntry(selected).then(function (exported) {
+            uiUtil.clearSpinner();
+            selectFired = false;
+            if (exported) {
+                uiUtil.systemAlert('The OPFS entry for ' + selected + ' was successfully exported to the selected folder.');
+            } else {
+                uiUtil.systemAlert('The OPFS entry for ' + selected + ' could not be exported.');
+            }
+        });
+    }
+    // Show the spinner because on some sytems loading the archive is slow
+    uiUtil.pollSpinner('Loading archive...', 9000);
+    var resetUI = function () {
+        document.getElementById('openLocalFiles').style.display = 'none';
+        document.getElementById('rescanStorage').style.display = 'block';
+        document.getElementById('usage').style.display = 'none';
+        selectFired = false;
+    };
+    // We need to handle the case where the user dragged and dropped multiple files into the app
+    if (archiveFilesLegacy.files.length > 0) {
+        // Let's see if the selected file is available in the legacy archive file list
+        var fileFound = false;
+        for (var i = 0; i < archiveFilesLegacy.files.length; i++) {
+            if (archiveFilesLegacy.files[i].name === selected) {
+                fileFound = true;
+                break;
+            }
+        }
+        if (fileFound) {
+            params.pickedFile = archiveFilesLegacy.files[i];
+            setTimeout(resetUI, 100);
+            return setLocalArchiveFromFileList([params.pickedFile], true);
+        }
+    }
+    if (window.showOpenFilePicker || params.useOPFS) {
+        return getNativeFSHandle(function (handle) {
+            resetUI();
             if (!handle) {
                 if (window.fs && params.storedFilePath) {
                     // Fall back to using the Electron APIs
                     params.pickedFolder = params.storedFilePath.replace(/[^\\/]+$/, '');
-                    setLocalArchiveFromArchiveList(selected);
-                    return;
+                    return setLocalArchiveFromArchiveList(selected);
                 }
                 console.error('No handle was retrieved');
-                uiUtil.systemAlert('We could not get a handle to the previously picked file or folder!<br>' +
-                    'This is probably because the contents of the folder have changed. Please try picking it again.');
                 document.getElementById('openLocalFiles').style.display = 'block';
                 document.getElementById('rescanStorage').style.display = 'none';
-                return;
+                return uiUtil.systemAlert('We could not get a handle to the previously picked file or folder!<br>' +
+                    'This is probably because the contents of the folder have changed. Please try picking it again.');
             }
             if (handle.kind === 'directory') {
                 params.pickedFolder = handle;
-                setLocalArchiveFromArchiveList(selected);
+                return setLocalArchiveFromArchiveList(params.storedFile);
             } else if (handle.kind === 'file') {
-                handle.getFile().then(function (file) {
+                return handle.getFile().then(function (file) {
                     params.pickedFile = file;
                     params.pickedFile.handle = handle;
-                    setLocalArchiveFromArchiveList(selected);
+                    return setLocalArchiveFromArchiveList(selected);
                 }).catch(function (err) {
                     console.error('Unable to read previously picked file!', err);
                     uiUtil.systemAlert('We could not retrieve the previously picked file or folder!<br>Please try picking it again.');
@@ -1228,20 +1315,69 @@ function selectArchive (list) {
     } else {
         setLocalArchiveFromArchiveList(selected);
     }
-    setTimeout(function () {
-        document.getElementById('openLocalFiles').style.display = 'none';
-        document.getElementById('rescanStorage').style.display = 'block';
-        document.getElementById('usage').style.display = 'none';
-        selectFired = false;
-    }, 0);
+    setTimeout(resetUI, 0);
 }
 
 // Legacy file picker is used as a fallback when all other pickers are unavailable
 archiveFilesLegacy.addEventListener('change', function (files) {
     var filesArray = Array.from(files.target.files);
+    // Construct a list of filenames joined with <li> tags
+    var filenamesList = '';
+    var filesSize = 0;
+    filesArray.forEach(function (file) {
+        filesSize += file.size;
+        filenamesList += '<li>' + file.name + '</li>';
+    });
+    if (params.useOPFS) {
+        // Abort if user didn't select any files
+        if (filesArray.length === 0) return;
+        // Check the size of the files does not exceed the quota
+        if (filesSize > appstate.OPFSQuota) {
+            return uiUtil.systemAlert('<p>The total size of the selected files is <b>' + (filesSize / 1024 / 1024 / 1024).toFixed(2) +
+            ' GB</b>, which<br />exceeds the estimated OPFS quota of <b>' + (appstate.OPFSQuota / 1024 / 1024 / 1024).toFixed(2) + ' GB</b>!',
+            'OPFS Quota Exceeded', null, null, null, 'Cancel');
+        }
+        return uiUtil.systemAlert('<p>Do you want to add these files to the Private File System?<p><ul>' + filenamesList + '</ul>',
+        'Add to OPFS', true, null, 'Add to OPFS').then(function (confirmed) {
+            if (!confirmed) return;
+            // User has chosen a file or files to store in the Origin Private File System
+            // This operation can take a long time, so show opsPanel
+            uiUtil.pollOpsPanel('<span class="glyphicon glyphicon-refresh spinning"></span>&emsp;<b>Please wait:</b> Importing files to OPFS...', true);
+            return cache.importOPFSEntries(filesArray).then(function () {
+                uiUtil.systemAlert('<p>The selected files were successfully added to the OPFS!</p><p><b>We will now reload the app, so that the file(s) can be accessed at full speed.</b></p>')
+                .then(function () {
+                    // Set the app to load this file on startup
+                    settingsStore.setItem('lastSelectedArchive', filesArray[0].name, Infinity);
+                    window.location.reload();
+                });
+                uiUtil.pollOpsPanel();
+                processNativeDirHandle(params.pickedFolder);
+                cache.populateOPFSStorageQuota();
+            }).catch(function (err) {
+                console.error('Unable to import files to OPFS!', err);
+                var message = '<p>We could not import the selected files to the OPFS!</p><p>Reason: ' + err.message + '</p>';
+                if (/iOS/.test(params.appType) || /^((?!chrome|android).)*safari/i.test(navigator.userAgent)) message = '<p>Unfortunately, Safari and iOS browsers do not currently support importing files into the OPFS. Please disable the OPFS and use other file selection options.</p><p>Error message: ' + err.message + '</p>';
+                uiUtil.pollOpsPanel();
+                uiUtil.systemAlert(message, 'OPFS import error').then(function () {
+                    // Delete each of the files that failed to import
+                    filesArray.forEach(function (file) {
+                        cache.deleteOPFSEntry(file.name);
+                    });
+                });
+            });
+        });
+    }
+    uiUtil.pollSpinner('Loading archive...', 9000);
     params.pickedFolder = null;
-    params.pickedFile = filesArray[0];
-    params.storedFile = params.pickedFile.name.replace(/\.zim\w\w$/i, '.zimaa');
+    params.pickedFile = null;
+    if (params.storedFile === params.packagedFile) {
+        params.storedFile = null;
+        params.storedFilePath = null;
+    }
+    if (filesArray.length === 1) {
+        params.pickedFile = filesArray[0];
+        params.storedFile = params.pickedFile.name.replace(/\.zim\w\w$/i, '.zimaa');
+    }
     if (params.webkitdirectory) {
         settingsStore.setItem('pickedFolder', '', Infinity);
         processFilesArray(filesArray);
@@ -1254,7 +1390,7 @@ archiveFilesLegacy.addEventListener('change', function (files) {
         document.getElementById('archiveList').value = selected;
         console.debug('Files are set, attempting to select ' + selected);
     }
-    if (!window.fs && params.webkitdirectory) {
+    if (!window.fs && (params.webkitdirectory || params.useOPFS)) {
         // populateDropDownListOfArchives([params.pickedFile], true);
         setLocalArchiveFromArchiveList(selected);
     } else {
@@ -1266,9 +1402,14 @@ document.getElementById('archiveFile').addEventListener('click', function () {
     if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
         // UWP FilePicker
         pickFileUWP();
-    } else if (typeof window.showOpenFilePicker === 'function') {
-        // File System Access API file picker
-        pickFileNativeFS();
+    } else if (typeof window.showOpenFilePicker === 'function' || params.useOPFS) {
+        if (params.useOPFS) {
+            // We need to pick a file and store it in the OPFS, so we use the legacy picker
+            archiveFilesLegacy.click();
+        } else {
+            // File System Access API file picker
+            pickFileNativeFS();
+        }
     } else if (window.fs && window.dialog) {
         // Electron file picker if showOpenFilePicker is not available
         dialog.openFile();
@@ -1325,29 +1466,189 @@ document.getElementById('archiveFiles').addEventListener('click', function (e) {
         archiveDirLegacy.click();
     }
 });
-document.getElementById('btnRefresh').addEventListener('click', function () {
-    // Refresh list of archives
-    if (params.pickedFolder) {
-        params.rescan = true;
-        if (window.showOpenFilePicker) {
-            processNativeDirHandle(params.pickedFolder);
-        } else if (typeof Windows !== 'undefined') {
-            scanUWPFolderforArchives(params.pickedFolder)
-        } else if (window.fs) {
-            scanNodeFolderforArchives(params.pickedFolder);
-        } else if (params.webkitdirectory) {
-            document.getElementById('archiveFiles').click();
-        }
-    } else if (typeof window.showOpenFilePicker === 'function' && !params.pickedFile) {
-        getNativeFSHandle(function (fsHandle) {
-            if (fsHandle && fsHandle.kind === 'directory') {
-                processNativeDirHandle(fsHandle);
+document.getElementById('useOPFSCheck').addEventListener('change', function (e) {
+    var checkAppType = function () {
+        return Promise.resolve(true);
+    };
+    if (e.target.checked && /Electron/i.test(params.appType)) {
+        checkAppType = function () {
+            return uiUtil.systemAlert('<p>There is no advantage to using the Origin Private File System for Electron or NWJS apps.</p><p>Do you still want to use it?</p>',
+            'Use OPFS?', true, null, 'Use OPFS');
+        };
+    }
+    return checkAppType().then(function (confirmed) {
+        if (confirmed) {
+            params.useOPFS = e.target.checked;
+            setOPFSUI();
+            if (params.useOPFS) {
+                params.storedFile = null;
+                params.storedFilePath = null;
+                params.pickedFile = null;
+                params.pickedFolder = null;
+                settingsStore.removeItem('lastSelectedArchive');
+                params.rescan = true;
+                loadOPFSDirectory();
             } else {
-                uiUtil.systemAlert('You need to pick a folder in order to rescan it!');
+                populateDropDownListOfArchives([], true);
             }
+        } else {
+            e.target.checked = false;
+            params.useOPFS = false;
+            setOPFSUI();
+        }
+    });
+});
+function loadOPFSDirectory () {
+    if (navigator && navigator.storage && ('getDirectory' in navigator.storage)) {
+        console.debug('Loading the OPFS directory');
+        return navigator.storage.getDirectory().then(function (dir) {
+            params.pickedFolder = dir;
+            processNativeDirHandle(dir);
+            setOPFSUI();
+        }).catch(function (err) {
+            console.error('Unable to get Origin Private File System!', err);
+            uiUtil.systemAlert('<p>We could not access the Origin Private File System!</p><p>Please try picking a folder instead.</p><p>Reported error: ' + err + '</p>');
+            params.useOPFS = false;
+            setOPFSUI();
         });
     } else {
-        uiUtil.systemAlert('You need to pick a folder in order to rescan it!');
+        params.useOPFS = false;
+        setOPFSUI();
+        return uiUtil.systemAlert('<p>Your browser does not support the Origin Private File System!</p><p>Please try picking a folder instead.</p>');
+    }
+}
+function setOPFSUI () {
+    var useOPFS = document.getElementById('useOPFSCheck');
+    var archiveFile = document.getElementById('archiveFile');
+    var archiveFileCol = document.getElementById('archiveFileCol');
+    var archiveFileLabel = document.getElementById('archiveFileLabel');
+    var archiveFiles = document.getElementById('archiveFiles');
+    var archiveFilesCol = document.getElementById('archiveFilesCol');
+    var archiveFilesLabel = document.getElementById('archiveFilesLabel');
+    var btnDeleteOPFSEntry = document.getElementById('btnDeleteOPFSEntry');
+    var btnExportOPFSEntry = document.getElementById('btnExportOPFSEntry');
+    var OPFSQuota = document.getElementById('OPFSQuota');
+    var determinedTheme = params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme;
+    if (params.useOPFS) {
+        settingsStore.setItem('useOPFS', true, Infinity);
+        useOPFS.checked = true;
+        archiveFiles.style.display = 'none';
+        archiveFilesLabel.style.display = 'none';
+        archiveFileLabel.classList.remove('col-xs-6');
+        archiveFileLabel.classList.add('col-xs-12');
+        archiveFileLabel.innerHTML = '<p><b>Select file(s) to add to OPFS</b>:</p>'
+        archiveFile.value = 'Add file(s)';
+        archiveFile.title = 'Select a single file or multiple files to add to the Origin Private File System. In total, they must not exceed the estimated quota displayed in the OPFS quota panel.';
+        archiveFileCol.classList.remove('col-xs-6');
+        archiveFileCol.classList.add('col-xs-5');
+        archiveFilesCol.classList.remove('col-xs-6');
+        archiveFilesCol.classList.add('col-xs-7');
+        archiveList.style.background = determinedTheme === 'dark' ? 'darkslategray' : 'lightcyan';
+        OPFSQuota.style.display = '';
+        btnDeleteOPFSEntry.style.display = '';
+        if ('showOpenFilePicker' in window) btnExportOPFSEntry.style.display = '';
+        cache.populateOPFSStorageQuota();
+    } else {
+        settingsStore.setItem('useOPFS', false, Infinity);
+        useOPFS.checked = false;
+        archiveFileCol.classList.remove('col-xs-5');
+        archiveFileCol.classList.add('col-xs-6');
+        archiveFilesCol.classList.remove('col-xs-7');
+        archiveFilesCol.classList.add('col-xs-6');
+        archiveList.style.background = '';
+        if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog && !params.webkitdirectory) {
+            archiveFileLabel.innerHTML = '<p><b>Pick ZIM archive(s)</b>:</p>';
+            archiveFileLabel.classList.remove('col-xs-6');
+            archiveFileLabel.classList.add('col-xs-12');
+            archiveFile.title = 'Select one or more files you wish to access during this session from your device\'s storage. You may load as many files as you wish, and they will be added to the selection list above.';
+            archiveFile.value = 'Select file(s)';
+        } else {
+            archiveFiles.style.display = '';
+            archiveFilesLabel.style.display = '';
+            archiveFileLabel.innerHTML = '<p><b>Pick a single unsplit archive</b>:</p>';
+            archiveFileLabel.classList.remove('col-xs-12');
+            archiveFileLabel.classList.add('col-xs-6');
+            archiveFile.title = 'Select a single file from your device\'s storage. For split or multiple files, place the files in a directory and use the "Select folder" button instead.'
+            archiveFile.value = 'Select file';
+        }
+        OPFSQuota.style.display = 'none';
+        btnDeleteOPFSEntry.style.display = 'none';
+        btnExportOPFSEntry.style.display = 'none';
+    }
+}
+
+// Set the OPFS UI on app launch
+setOPFSUI();
+
+document.getElementById('btnExportOPFSEntry').addEventListener('click', function () {
+    params.exportOPFSEntry = !params.exportOPFSEntry;
+    var determinedTheme = params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme;
+    if (params.exportOPFSEntry) {
+        params.deleteOPFSEntry = false;
+        archiveList.style.background = determinedTheme === 'dark' ? 'darkgoldenrod' : 'yellow';
+    } else {
+        setOPFSUI();
+    }
+    // Synchronize the OPFS file list
+    if (params.pickedFolder && params.pickedFolder.kind === 'directory') {
+        params.rescan = true;
+        processNativeDirHandle(params.pickedFolder);
+    }
+});
+document.getElementById('btnDeleteOPFSEntry').addEventListener('click', function () {
+    params.deleteOPFSEntry = !params.deleteOPFSEntry;
+    var determinedTheme = params.cssUITheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssUITheme;
+    if (params.deleteOPFSEntry) {
+        params.exportOPFSEntry = false;
+        archiveList.style.background = determinedTheme === 'dark' ? 'firebrick' : 'pink';
+    } else {
+        setOPFSUI();
+    }
+    // Synchronize the OPFS file list
+    if (params.pickedFolder && params.pickedFolder.kind === 'directory') {
+        params.rescan = true;
+        processNativeDirHandle(params.pickedFolder);
+    }
+});
+document.getElementById('btnRefresh').addEventListener('click', function () {
+    // Refresh list of archives
+    params.rescan = true;
+    var btnArchiveFiles = document.getElementById('archiveFiles');
+    var btnArchiveFile = document.getElementById('archiveFile');
+    // Deselect any selected archive in the archiveList
+    archiveList.selectedIndex = -1;
+    if (!params.storedFile && !params.pickedFolder) {
+        if (params.useOPFS || window.showOpenFilePicker) {
+            getNativeFSHandle(function (fsHandle) {
+                if (fsHandle && fsHandle.kind === 'directory') {
+                    if (params.useOPFS) params.rescan = false;
+                    processNativeDirHandle(fsHandle);
+                    if (params.useOPFS) cache.populateOPFSStorageQuota();
+                } else {
+                    btnArchiveFiles.click();
+                }
+            });
+        } else {
+            uiUtil.systemAlert('You need to pick a file or folder before you can rescan it!');
+        }
+    } else if (params.storedFile && !params.pickedFolder) {
+        console.debug('Could not automatically reload ' + params.pickedFile);
+        if (!~params.storedFile.indexOf(params.packagedFile)) {
+            if (archiveList.length > 1 && (params.webkitdirectory || 'showDirectoryPicker' in window)) {
+                btnArchiveFiles.click();
+            } else {
+                btnArchiveFile.click();
+            }
+        } else uiUtil.systemAlert('You need to pick a file or folder before you can rescan it!');
+    } else if (window.showOpenFilePicker || params.useOPFS) {
+        processNativeDirHandle(params.pickedFolder);
+        if (params.useOPFS) cache.populateOPFSStorageQuota();
+    } else if (typeof Windows !== 'undefined') {
+        scanUWPFolderforArchives(params.pickedFolder)
+    } else if (window.fs) {
+        scanNodeFolderforArchives(params.pickedFolder);
+    } else if (params.webkitdirectory) {
+        document.getElementById('archiveFiles').click();
     }
 });
 document.getElementById('downloadTrigger').addEventListener('click', function () {
@@ -1522,6 +1823,7 @@ document.getElementById('hideActiveContentWarningCheck').addEventListener('chang
 // Function to restore the fullscreen/orientation lock state on user click in-app
 // This is necessary because the browser will not restore the state without a user gesture
 var refreshFullScreen = function (evt) {
+    console.debug('refreshFullScreen starting');
     // Don't react if user is selecting an archive or setting the lock orientation
     if (/archiveFilesLegacy|lockDisplayOrientationDrop/.test(evt.target.id)) return;
     // Don't react when picking archive or directory with the File System Access API (because entering fullscreen blocks the permissions prompt)
@@ -1980,6 +2282,7 @@ function cssUIThemeGetOrSet (value, getOnly) {
         if (/wikivoyage/i.test(params.packagedFile)) document.getElementById('kiwixIconAbout').src = 'img/icons/wikivoyage-90.png';
     }
     refreshCacheStatus();
+    setOPFSUI();
     return value;
 }
 
@@ -2066,6 +2369,10 @@ document.querySelectorAll('input[name=cssInjectionMode]').forEach(function (elem
     element.addEventListener('click', function () {
         params.cssSource = this.value;
         settingsStore.setItem('cssSource', params.cssSource, Infinity);
+        if (params.cssSource === 'desktop' && !params.openAllSections) {
+            // If the user has selected desktop style, we should ensure all sections are opened by default
+            document.getElementById('openAllSectionsCheck').click();
+        }
         params.themeChanged = true;
     });
 });
@@ -2153,12 +2460,14 @@ function removePageMaxWidth () {
 document.getElementById('openAllSectionsCheck').addEventListener('click', function (e) {
     params.openAllSections = this.checked;
     settingsStore.setItem('openAllSections', params.openAllSections, Infinity);
-    if (params.contentInjectionMode === 'serviceworker') {
-        // We have to reload the article to respect user's choice
-        goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
-        return;
+    if (appstate.selectedArchive) {
+        if (params.contentInjectionMode === 'serviceworker') {
+            // We have to reload the article to respect user's choice
+            goToArticle(params.lastPageVisit.replace(/@[^@].+$/, ''));
+            return;
+        }
+        openAllSections();
     }
-    openAllSections();
 });
 document.getElementById('linkToWikimediaImageFileCheck').addEventListener('click', function () {
     params.linkToWikimediaImageFile = this.checked;
@@ -2200,7 +2509,9 @@ document.getElementById('displayFileSelectorsCheck').addEventListener('change', 
     document.getElementById('downloadLinksText').style.display = params.showFileSelectors ? 'none' : 'inline';
     document.getElementById('usage').style.display = params.showFileSelectors ? 'none' : 'inline';
     if (params.packagedFile && params.storedFile && params.storedFile != params.packagedFile) {
-        currentArchiveLink.innerHTML = params.storedFile.replace(/\.zim$/i, '');
+        currentArchiveLink.innerHTML = params.storedFile.replace(/\.zim(\w\w)?$/i, '');
+        currentArchiveLink.dataset.archive = params.storedFile;
+        openCurrentArchive.style.display = (params.pickedFile || params.pickedFolder) ? 'none' : '';
         currentArchive.style.display = params.showFileSelectors ? 'none' : 'block';
         document.getElementById('downloadLinksText').style.display = params.showFileSelectors ? 'none' : 'block';
     }
@@ -2691,12 +3002,12 @@ function launchUWPServiceWorker () {
  */
 var storages = [];
 
-function searchForArchivesInPreferencesOrStorage () {
+function searchForArchivesInPreferencesOrStorage (displayOnly) {
     // First see if the list of archives is stored in the cookie
     var listOfArchivesFromCookie = settingsStore.getItem('listOfArchives');
     if (listOfArchivesFromCookie) {
         var directories = listOfArchivesFromCookie.split('|');
-        populateDropDownListOfArchives(directories);
+        populateDropDownListOfArchives(directories, displayOnly);
     } else {
         if (storages.length || params.localStorage) {
             searchForArchivesInStorage();
@@ -2737,6 +3048,11 @@ if ('launchQueue' in window && 'files' in LaunchParams.prototype) {
         } else {
             // User launched app by double-clicking on file
             console.debug('Processing NativeFileHandle for ' + launchParams);
+            // Turn off OPFS if it is on, because we are using the File Handling API instead
+            params.useOPFS = false;
+            params.pickedFolder = '';
+            params.storedFile = '';
+            setOPFSUI();
             processNativeFileHandle(launchParams.files[0]);
         }
     });
@@ -2752,7 +3068,7 @@ if ($.isFunction(navigator.getDeviceStorages)) {
 if (storages !== null && storages.length > 0 ||
     typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined' ||
     typeof window.fs !== 'undefined' || typeof window.showOpenFilePicker === 'function' ||
-    params.webkitdirectory) {
+    params.webkitdirectory || params.useOPFS) {
     if (window.fs && !(params.pickedFile || params.pickedFolder)) {
         // Below we compare the prefix of the files, i.e. the generic filename without date, so we can smoothly deal with upgrades
         if (params.packagedFile && params.storedFile.replace(/(^[^-]+all).+/, '$1') === params.packagedFile.replace(/(^[^-]+all).+/, '$1')) {
@@ -2769,18 +3085,24 @@ if (storages !== null && storages.length > 0 ||
             params.pickedFile = params.storedFile;
         }
     }
-    if (!params.pickedFile) {
-        if (params.storedFile && (window.showOpenFilePicker)) {
-            // We are in an app with support for File System Access API, so we can't auto-load the file, show file pickers
-            document.getElementById('btnConfigure').click();
+    if (!params.pickedFile && !params.pickedFolder || params.useOPFS) {
+        var btnConfigure = document.getElementById('btnConfigure');
+        // If we are using OPFS, we should can load the entries directly
+        if (params.useOPFS) {
+            if (!params.storedFile) btnConfigure.click();
+            loadOPFSDirectory();
         } else {
-            searchForArchivesInPreferencesOrStorage();
+            // We are in an app that cannot open files auotomatically, so populate archive list and show file pickers
+            btnConfigure.click();
+            searchForArchivesInPreferencesOrStorage(true);
         }
     } else if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
         console.log('Loading picked file for UWP app...');
-        processPickedFileUWP(params.pickedFile);
-    } else if (!window.fs && params.webkitdirectory) {
-        searchForArchivesInPreferencesOrStorage();
+        if (params.pickedFile) processPickedFileUWP(params.pickedFile);
+        else searchForArchivesInPreferencesOrStorage();
+    } else if (!window.fs) {
+        // This should run, e.g., if we have params.webkitdirectory but not windows.fs, and also if we're using legacy file picking
+        searchForArchivesInPreferencesOrStorage(true);
     } else {
         // @AUTOLOAD packaged archive in Electron and NWJS packaged apps
         // We need to read the packaged file using the node File System API (so user doesn't need to pick it on startup)
@@ -2842,11 +3164,12 @@ if (storages !== null && storages.length > 0 ||
 } else {
     // If DeviceStorage is not available, we display the file select components
     displayFileSelect();
-    if (document.getElementById('archiveFiles').files && document.getElementById('archiveFiles').files.length > 0) {
+    if (document.getElementById('archiveFilesLegacy').files && document.getElementById('archiveFilesLegacy').files.length > 0) {
         // Archive files are already selected,
         setLocalArchiveFromFileSelect();
     } else {
         document.getElementById('btnConfigure').click();
+        searchForArchivesInPreferencesOrStorage(true);
     }
 }
 
@@ -2891,58 +3214,46 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
     document.getElementById('chooseArchiveFromLocalStorage').style.display = '';
     document.getElementById('rescanStorage').style.display = params.rescan ? 'none' : 'block';
     document.getElementById('openLocalFiles').style.display = params.rescan ? 'block' : 'none';
-    // Hide instructions now user has selected a folder, unless the packaged archive is still loaded
-    if (appstate.selectedArchive && appstate.selectedArchive._file && !~params.packagedFile.indexOf(appstate.selectedArchive._file.name)) {
-        document.getElementById('UWPInstructions').style.display = 'none';
-    }
     var plural = 's';
     plural = archiveDirectories.length === 1 ? '' : plural;
-    document.getElementById('archiveNumber').innerHTML = '<b>' + archiveDirectories.length + '</b> Archive' + plural + ' found in selected location (tap "Select storage" to change)';
-    var comboArchiveList = document.getElementById('archiveList');
+    document.getElementById('archiveNumber').innerHTML = '<b>' + archiveDirectories.length + '</b> Archive' + plural + ' found in selected location';
     var usage = document.getElementById('usage');
-    comboArchiveList.options.length = 0;
+    archiveList.options.length = 0;
     for (var i = 0; i < archiveDirectories.length; i++) {
         var archiveDirectory = archiveDirectories[i];
         if (archiveDirectory === '/') {
             uiUtil.systemAlert('It looks like you have put some archive files at the root of your sdcard (or internal storage). Please move them in a subdirectory');
         } else {
-            comboArchiveList.options[i] = new Option(archiveDirectory, archiveDirectory);
+            archiveList.options[i] = new Option(archiveDirectory, archiveDirectory);
         }
     }
     // Store the list of archives in settingsStore, to avoid rescanning at each start
     settingsStore.setItem('listOfArchives', archiveDirectories.join('|'), Infinity);
-    comboArchiveList.size = comboArchiveList.length > 15 ? 15 : comboArchiveList.length;
-    // Kiwix-Js-Windows #23 - remove dropdown caret if only one archive
-    if (comboArchiveList.length > 1) comboArchiveList.removeAttribute('multiple');
-    if (comboArchiveList.length === 1) comboArchiveList.setAttribute('multiple', '1');
-    if (comboArchiveList.options.length > 0) {
+    if (!/Android|iOS/.test(params.appType)) {
+        archiveList.size = archiveList.length > 15 ? 15 : archiveList.length;
+        if (archiveList.length > 1) archiveList.removeAttribute('multiple');
+        if (archiveList.length === 1) archiveList.setAttribute('multiple', '1');
+    }
+    if (archiveList.options.length > 0) {
         // If we're doing a rescan, then don't attempt to jump to the last selected archive, but leave selectors open
         var lastSelectedArchive = params.rescan ? '' : params.storedFile;
         if (lastSelectedArchive) {
             // console.debug('Last selected archive: ' + lastSelectedArchive);
             // Attempt to select the corresponding item in the list, if it exists
             var success = false;
-            var arrayOfOptionValues = Array.apply(null, comboArchiveList.options).map(function (el) { return el.text; })
+            var arrayOfOptionValues = Array.apply(null, archiveList.options).map(function (el) { return el.text; })
             // console.debug('Archive list: ' + arrayOfOptionValues);
             if (~arrayOfOptionValues.indexOf(lastSelectedArchive)) {
-                comboArchiveList.value = lastSelectedArchive;
+                archiveList.value = lastSelectedArchive;
                 success = true;
                 settingsStore.setItem('lastSelectedArchive', lastSelectedArchive, Infinity);
             }
+            if (displayOnly) return;
             // Set the localArchive as the last selected (if none has been selected previously, wait for user input)
             if (success) {
-                if (!displayOnly) setLocalArchiveFromArchiveList(lastSelectedArchive);
+                setLocalArchiveFromArchiveList(lastSelectedArchive);
             } else {
                 // We can't find lastSelectedArchive in the archive list
-                // Let's first check if this is a Store UWP/PWA that has a different archive package from that last selected
-                // (or from that indicated in init.js)
-                // if (typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined' &&
-                //     params.packagedFile && settingsStore.getItem('lastSelectedArchive') !== params.packagedFile) {
-                //     // We didn't pick this file previously, so select first one in list
-                //     params.storedFile = archiveDirectories[0];
-                //     params.fileVersion = ~params.fileVersion.indexOf(params.storedFile.replace(/\.zim\w?\w?$/i, '')) ? params.fileVersion : params.storedFile;
-                //     setLocalArchiveFromArchiveList(params.storedFile);
-                // }
                 // Warn user that the file they wanted is no longer available
                 var message = '<p>We could not find the archive <b>' + lastSelectedArchive + '</b>!</p><p>Please select its location...</p>';
                 if (params.webkitdirectory && !window.fs || typeof Windows !== 'undefined' && typeof Windows.Storage !== 'undefined') {
@@ -2961,6 +3272,13 @@ function populateDropDownListOfArchives (archiveDirectories, displayOnly) {
         usage.style.display = 'none';
     } else {
         usage.style.display = 'block';
+        // No ZIM files, so if Configuration is not displayed, display it and open file selectors
+        setTimeout(function () {
+            if (document.getElementById('configuration').style.display === 'none') {
+                document.getElementById('btnConfigure').click();
+            }
+            displayFileSelect();
+        }, 250);
     }
 }
 
@@ -3025,7 +3343,7 @@ function setLocalArchiveFromArchiveList (archive) {
                             }
                         }
                         if (fileset.length) {
-                            setLocalArchiveFromFileList(fileset);
+                            setLocalArchiveFromFileList(fileset, true);
                         } else {
                             console.error('The picked file could not be found in the selected folder!\n' + params.pickedFile);
                             var archiveList = [];
@@ -3057,7 +3375,7 @@ function setLocalArchiveFromArchiveList (archive) {
                     });
                 } else if (window.fs) {
                     if (params.pickedFile) {
-                        setLocalArchiveFromFileList([params.pickedFile]);
+                        setLocalArchiveFromFileList([params.pickedFile], true);
                     } else {
                         if (params.pickedFolder) {
                             readNodeDirectoryAndCreateNodeFileObjects(params.pickedFolder, archive)
@@ -3081,14 +3399,14 @@ function setLocalArchiveFromArchiveList (archive) {
                         }
                     }
                     return;
-                } else if (params.pickedFolder && params.webkitdirectory && archiveDirLegacy.files.length) {
+                } else if (params.pickedFolder && params.webkitdirectory || archiveDirLegacy.files.length) {
                     processDirectoryOfFiles(archiveDirLegacy.files, archive);
                     return;
                 } else { // Check if user previously picked a specific file rather than a folder
                     if (params.pickedFile && typeof MSApp !== 'undefined') {
                         try {
                             selectedStorage = MSApp.createFileFromStorageFile(params.pickedFile);
-                            setLocalArchiveFromFileList([selectedStorage]);
+                            setLocalArchiveFromFileList([selectedStorage], true);
                         } catch (err) {
                             // Probably user has moved or deleted the previously selected file
                             uiUtil.systemAlert('The previously picked archive can no longer be found!');
@@ -3097,11 +3415,11 @@ function setLocalArchiveFromArchiveList (archive) {
                         return;
                     } else if (params.pickedFile && typeof window.showOpenFilePicker === 'function') {
                         // Native FS API for single file
-                        setLocalArchiveFromFileList([params.pickedFile]);
+                        setLocalArchiveFromFileList([params.pickedFile], true);
                         return;
                     } else if (params.pickedFile && params.webkitdirectory) {
                         // Webkitdirectory API for single file
-                        setLocalArchiveFromFileList(archiveFilesLegacy.files);
+                        setLocalArchiveFromFileList(archiveFilesLegacy.files, true);
                         return;
                     }
                 }
@@ -3109,12 +3427,22 @@ function setLocalArchiveFromArchiveList (archive) {
                 // if (!params.pickedFolder) {
                 // This gets called, for example, if the picked folder or picked file are in FutureAccessList but now are
                 // no longer accessible. There will be a (handled) error in cosole log, and params.pickedFolder and params.pickedFile will be blank
-                params.rescan = true;
                 if (params.localStorage) {
                     scanUWPFolderforArchives(params.localStorage);
+                } else if (params.pickedFile && params.pickedFile.name) {
+                    // We already have a file handle, which means the file is already loaded or can be loaded
+                    if (!appstate.selectedArchive) {
+                        setLocalArchiveFromFileList([params.pickedFile], true);
+                    } else {
+                        document.getElementById('btnHome').click();
+                    }
+                } else if (archiveFilesLegacy.files.length) {
+                    // There are files already loaded, so see if the selected file is one of those
+                    setLocalArchiveFromFileList(archiveFilesLegacy.files, true);
                 } else {
                     var btnConfigure = document.getElementById('btnConfigure');
                     if (!btnConfigure.classList.contains('active')) btnConfigure.click();
+                    document.getElementById('archiveFile').click();
                 }
                 return;
                 // }
@@ -3124,9 +3452,8 @@ function setLocalArchiveFromArchiveList (archive) {
         if (cssBlobCache) {
             cssBlobCache = new Map();
         }
-        // if (cssDirEntryCache)
-        //    cssDirEntryCache = new Map();
         appstate.selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archive, function (archive) {
+            uiUtil.clearSpinner();
             settingsStore.setItem('lastSelectedArchive', archive, Infinity);
             // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
             // (this only affects jQuery mode)
@@ -3218,7 +3545,7 @@ function processDirectoryOfFiles (fileHandles, archive) {
             if (fileset.length) {
                 // Wait for all getFile Promises to resolve
                 Promise.all(fileset).then(function (resolvedFiles) {
-                    setLocalArchiveFromFileList(resolvedFiles);
+                    setLocalArchiveFromFileList(resolvedFiles, true);
                 });
             } else {
                 console.error('There was an error reading the picked file(s)!');
@@ -3257,13 +3584,6 @@ if (!params.disableDragAndDrop) {
  */
 function displayFileSelect () {
     document.getElementById('openLocalFiles').style.display = 'block';
-    // Remove instructions if user has already loaded an archive, and it isn't the packaged archive
-    var UWPInstructions = document.getElementById('UWPInstructions');
-    if (appstate.selectedArchive) {
-        UWPInstructions.style.display = ~params.packagedFile.indexOf(appstate.selectedArchive._file.name) ? 'block' : 'none';
-    } else {
-        UWPInstructions.style.display = 'block';
-    }
     document.getElementById('rescanStorage').style.display = 'none';
 }
 
@@ -3291,6 +3611,12 @@ function handleFileDrop (packet) {
     packet.preventDefault();
     configDropZone.style.border = '';
     var items = packet.dataTransfer.items;
+    // Turn off OPFS if it is on
+    if (params.useOPFS) {
+        document.getElementById('useOPFSCheck').click();
+        params.pickedFolder = '';
+        params.storedFile = '';
+    }
     // When dropping multiple files (e.g. a split archive), we cannot use the File System Access API
     if (items && items.length === 1 && items[0].kind === 'file' && typeof items[0].getAsFileSystemHandle !== 'undefined') {
         items[0].getAsFileSystemHandle().then(function (handle) {
@@ -3302,6 +3628,16 @@ function handleFileDrop (packet) {
         });
     } else {
         var files = packet.dataTransfer.files;
+        // Try to store the dragged files (in at least IE11, this is read only, so we have to wrap in try ... catch)
+        try {
+            archiveFilesLegacy.files = files;
+        } catch (err) {
+            console.warn('Unable to store dropped files in legacy file picker, so selecting first file if not split', err);
+            if (!/\.zim\w\w$/i.test(files[0].name) && files.length > 1) {
+                uiUtil.systemAlert('You have dropped multiple files, but in older browsers only the first can be loaded. Please drop only one file at a time in this browser, or use the file picker to pick more.');
+                files = [files[0]];
+            }
+        }
         document.getElementById('openLocalFiles').style.display = 'none';
         document.getElementById('rescanStorage').style.display = 'block';
         document.getElementById('usage').style.display = 'none';
@@ -3309,6 +3645,8 @@ function handleFileDrop (packet) {
         // This also prevents a file-not-found alert to the user when picking a new directory
         params.pickedFolder = null;
         settingsStore.setItem('pickedFolder', '', Infinity);
+        params.pickedFile = null;
+        params.storedFile = null;
         params.rescan = false;
         setLocalArchiveFromFileList(files);
     }
@@ -3326,6 +3664,9 @@ function pickFileUWP () { // Support UWP FilePicker [kiwix-js-windows #3]
 function pickFileNativeFS () {
     return window.showOpenFilePicker({ multiple: false }).then(function (fileHandle) {
         return processNativeFileHandle(fileHandle[0]);
+    }).catch(function (err) {
+        // This is normal if the user is starting the app for the first time
+        console.warn('User cancelled file picker, or else it is not possible to access the file system programmatically', err);
     });
 }
 
@@ -3372,8 +3713,9 @@ function processFakeFile (fakeFileList) {
 
 function pickFolderNativeFS () {
     window.showDirectoryPicker().then(function (dirHandle) {
-        // Do not attempt to jump to file (we have to let user choose)
-        params.rescan = true;
+        // Do not attempt to jump to file if permission is needed (we have to let user choose)
+        if (params.useOPFS) params.rescan = false;
+        else params.rescan = true;
         return processNativeDirHandle(dirHandle);
     }).catch(function (err) {
         console.error('Error reading directory', err);
@@ -3381,10 +3723,11 @@ function pickFolderNativeFS () {
 }
 
 function processNativeFileHandle (fileHandle) {
+    // console.debug('Processing Native File Handle for: ' + fileHandle.name + ' and storedFile: ' + params.storedFile);
     var handle = fileHandle;
     // Serialize fileHandle to indexedDB
     cache.idxDB('pickedFSHandle', fileHandle, function (val) {
-        console.log('IndexedDB responded with ' + val);
+        console.debug('IndexedDB responded with ' + val);
     });
     settingsStore.setItem('lastSelectedArchive', fileHandle.name, Infinity);
     params.storedFile = fileHandle.name;
@@ -3414,7 +3757,8 @@ function processPickedFileUWP (file) {
         params.storedFile = file.name;
         // Since we've explicitly picked a file, we should jump to it
         params.rescan = false;
-        populateDropDownListOfArchives([file.name]);
+        populateDropDownListOfArchives([file.name], true);
+        setLocalArchiveFromArchiveList([file.name]);
     } else {
         // The picker was dismissed with no selected file
         console.log('User closed folder picker without picking a file');
@@ -3434,6 +3778,7 @@ function pickFolderUWP () { // Support UWP FilePicker [kiwix-js-windows #3]
 }
 
 function processNativeDirHandle (dirHandle, callback) {
+    // console.debug('Processing Native Directory Handle for: ' + dirHandle + ' and storedFile: ' + params.storedFile);
     // Serialize dirHandle to indexedDB
     cache.idxDB('pickedFSHandle', dirHandle, function (val) {
         console.debug('IndexedDB responded with ' + val);
@@ -3472,7 +3817,7 @@ function processNativeDirHandle (dirHandle, callback) {
                         callback(null);
                     } else {
                         noZIMFound.style.display = 'block';
-                        populateDropDownListOfArchives(archiveList);
+                        populateDropDownListOfArchives(archiveList, true);
                     }
                 }
             }
@@ -3552,7 +3897,13 @@ function processFilesArray (files, callback) {
     if (/UWP/.test(params.appType)) Windows.Storage.AccessCache.StorageApplicationPermissions.futureAccessList.remove(params.falFolderToken);
 }
 
-function setLocalArchiveFromFileList (files) {
+/**
+ * Sets the local archive from an array of File objects
+ * @param {Array<File>} files An array of File objects
+ * @param {Boolean} fromArchiveList Indicates that the file was picked from the archive list, so don't re-populate list
+ * @returns A callback function that resolves when the archive is loaded
+ */
+function setLocalArchiveFromFileList (files, fromArchiveList) {
     if (!files.length) {
         if (document.getElementById('configuration').style.display == 'none') {
             document.getElementById('btnConfigure').click();
@@ -3561,28 +3912,44 @@ function setLocalArchiveFromFileList (files) {
         return;
     }
     // Check for usable file types
-    var firstFileIndex = null;
+    var firstSplitFileIndex = null;
+    var storedFileIndex = null;
+    var fileNames = [];
     for (var i = files.length; i--;) {
         // DEV: you can support other file types by adding (e.g.) '|dat|idx' after 'zim\w{0,2}'
         if (!/\.(?:zim\w{0,2})$/i.test(files[i].name)) {
             uiUtil.systemAlert('One or more files does not appear to be a ZIM file!');
             return;
         }
-        // Note the index of the .zimaa file
-        firstFileIndex = /\.zim(aa)?$/i.test(files[i].name) ? i : firstFileIndex;
+        // Add file names to array
+        if (/\.zim(aa)?$/i.test(files[i].name)) fileNames.push(files[i].name);
+        // Note the index of any .zimaa file
+        firstSplitFileIndex = /\.zimaa$/i.test(files[i].name) ? i : firstSplitFileIndex;
+        // Note the index of the stored file
+        storedFileIndex = files[i].name === params.storedFile ? i : storedFileIndex;
         // Allow reading with electron if we have the path info
         if (typeof window.fs !== 'undefined' && files[i].path) {
             files[i].readMode = 'electron';
             console.log('File path is: ' + files[i].path);
-            if (files.length === 1 || params.firstFileIndex) {
+            if (files.length === 1 || ~firstSplitFileIndex) {
                 params.pickedFile = files[i].path;
                 settingsStore.setItem('pickedFile', params.pickedFile, Infinity);
             }
         }
     }
+    var noZIMFound = document.getElementById('noZIMFound');
+    if (fileNames.length) {
+        noZIMFound.style.display = 'none';
+    } else {
+        noZIMFound.style.display = '';
+    }
+    // If there was only one file chosen (or set of split ZIMs, but we only store zimaa), select it
+    if (fileNames.length === 1 || firstSplitFileIndex !== null) storedFileIndex = firstSplitFileIndex || 0;
+    // Populate the list of archives with the newly selected file(s)
+    if (!fromArchiveList) populateDropDownListOfArchives(fileNames, true);
     // Check that user hasn't picked just part of split ZIM
-    if (files.length == 1 && /\.zim\w\w/i.test(files[0].name)) {
-        uiUtil.systemAlert('<p>You have picked only part of a split archive!</p><p>Please select its folder in Config, ' +
+    if (fileNames.length === 1 && firstSplitFileIndex && files.length === 1) {
+        return uiUtil.systemAlert('<p>You have picked only part of a split archive!</p><p>Please select its folder in Config, ' +
             'or drag and drop <b>all</b> of its parts into Config.</p>').then(function () {
                 if (document.getElementById('configuration').style.display === 'none') {
                     document.getElementById('btnConfigure').click();
@@ -3591,12 +3958,27 @@ function setLocalArchiveFromFileList (files) {
             }
         );
     }
-    // If the file name is already in the archive list, try to select it in the list
-    var listOfArchives = document.getElementById('archiveList');
-    if (listOfArchives && files[firstFileIndex]) listOfArchives.value = files[firstFileIndex].name;
+    // If a picked file name is already in the archive list, try to select it in the list
+    if (archiveList && files[storedFileIndex]) {
+        archiveList.value = files[storedFileIndex].name;
+    }
+    // We should not proceed if there is no selected archive
+    if (!archiveList.value) {
+        return;
+    }
+    // If we only picked one archive, display it
+    if (fileNames.length === 1) {
+        params.rescan = false;
+    }
+    // If the number of files is greater than one and the user hasn't selected a split archive, then set files to the selected file index
+    if (files.length > 1 && firstSplitFileIndex === null) {
+        files = [files[storedFileIndex]];
+    }
     // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
     if (cssBlobCache) cssBlobCache = new Map();
+    // TODO: Turn this into a Promise
     appstate.selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
+        uiUtil.clearSpinner();
         // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
         // (this only affects jQuery mode)
         appstate.target = 'iframe';
@@ -3635,6 +4017,11 @@ function setLocalArchiveFromFileList (files) {
         params.storedFilePath = archive._file._files[0].path ? archive._file._files[0].path : '';
         settingsStore.setItem('lastSelectedArchive', params.storedFile, Infinity);
         settingsStore.setItem('lastSelectedArchivePath', params.storedFilePath, Infinity);
+        if (!~params.lastPageVisit.indexOf(params.storedFile.replace(/\.zim(\w\w)?$/, ''))) {
+            // The archive has changed, so we must blank the last page
+            params.lastPageVisit = '';
+            params.lastPageHTML = '';
+        }
         // If we have dragged and dropped files into an Electron app, we should have access to the path, so we should store it
         if (appstate.filesDropped && params.storedFilePath) {
             params.pickedFolder = null;
@@ -3671,7 +4058,7 @@ function setLocalArchiveFromFileList (files) {
                 params.rescan = false;
             }, 100);
         } else {
-            if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !window.dialog) {
+            if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !params.useOPFS && !window.dialog) {
                 document.getElementById('instructions').style.display = 'none';
             } else {
                 document.getElementById('openLocalFiles').style.display = 'none';
@@ -3682,10 +4069,6 @@ function setLocalArchiveFromFileList (files) {
                 var lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, '');
                 goToArticle(lastPage);
             } else {
-                // The archive has changed, so we must blank the last page in case the Home page of the new archive
-                // has the same title as the previous archive (possible if it is, for example, "index")
-                params.lastPageVisit = '';
-                params.lastPageHTML = '';
                 document.getElementById('btnHome').click();
             }
         }
@@ -3706,7 +4089,6 @@ function loadPackagedArchive () {
         params.pickedFolder = params.localStorage;
         params.storedFile = params.packagedFile || '';
         scanUWPFolderforArchives(params.localStorage);
-        if (!params.rescan) setLocalArchiveFromArchiveList(params.storedFile);
     } else if (typeof window.fs !== 'undefined') {
         // We're in an Electron packaged app
         settingsStore.removeItem('lastSelectedArchive');
@@ -4128,7 +4510,7 @@ function showZIMIndex (start, prefix) {
                     document.getElementById('mycloseMessage').click();
                 });
             });
-            if (document.getElementById('myModal').style.display === 'none') {
+            if (document.getElementById('myModal').style.display !== 'block') {
                 uiUtil.systemAlert(' ', '', null, null, null, null, 'myModal');
             }
         }, start);
@@ -4381,12 +4763,12 @@ function readArticle (dirEntry) {
 
 // Add event listener to iframe window to check for links to external resources
 var filterClickEvent = function (event) {
-    console.debug('filetClickEvent fired');
+    console.debug('filterClickEvent fired');
     if (params.contentInjectionMode === 'jquery') return;
     // Ignore click if we are dealing with an image that has not yet been extracted
     if (event.target.dataset && event.target.dataset.kiwixhidden) return;
     // Trap clicks in the iframe to restore Fullscreen mode
-    if (params.lockDisplayOrientation) refreshFullScreen();
+    if (params.lockDisplayOrientation) refreshFullScreen(event);
     // Find the closest enclosing A tag (if any)
     var clickedAnchor = uiUtil.closestAnchorEnclosingElement(event.target);
     if (clickedAnchor) {
@@ -4407,6 +4789,11 @@ var filterClickEvent = function (event) {
                 params.windowOpener === 'window' ? 'toolbar=0,location=0,menubar=0,width=800,height=600,resizable=1,scrollbars=1' : null);
             // Make sure that the last saved page is not a PDF, or else we'll have a CSP exception on restarting the app
             // @TODO - may not be necessary because params.lastPageVisit is only set when HTML is loaded
+        } else {
+            var decHref = decodeURIComponent(href);
+            if (!/^(?:#|javascript)/i.test(decHref)) {
+                uiUtil.pollSpinner('Loading ' + decHref.replace(/([^/]+)$/, '$1').substring(0, 18) + '...');
+            }
         }
     }
 };
@@ -4517,6 +4904,10 @@ var loadingArticle = '';
  * @param {Event} event The event object of the message channel
  */
 function handleMessageChannelMessage (event) {
+    if (!appstate.selectedArchive) {
+        console.warn('No archive selected');
+        return;
+    }
     if (event.data.error) {
         console.error('Error in MessageChannel', event.data.error);
         throw event.data.error;
@@ -4942,7 +5333,18 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             htmlArticle = htmlArticle.replace(/(<script\b[^>]+\/site\.js["']><\/script>\s*)((?:[^<]|<(?!\/body))+)/, '$2$1');
             // @TODO Remove when fixed in https://github.com/openzim/mwoffliner/issues/1872
             // Add missing title to WikiMedia articles for post June 2023 scrapes
-            htmlArticle = !params.isLandingPage && !/<h1\b[^>]+(?:section-heading|article-header)/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl() + '</h1>') : htmlArticle;
+            htmlArticle = !params.isLandingPage && !/<h1\b[^>]+(?:section-heading|article-header)/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl().replace(/&lt;/g, '<') + '</h1>') : htmlArticle;
+            if (!params.isLandingPage) {
+                // Convert section tags to details tags (we have to loop because regex only matches innermost <section>...</section>)
+                for (var i = 5; i--;) {
+                    htmlArticle = htmlArticle.replace(/<section\b([^>]*data-mw-section-id=["'][1-9][^>]*)>((?:(?=([^<]+))\3|<(?!section\b[^>]*>))*?)<\/section>/ig, function (m0, m1, m2) {
+                        var summary = m2.replace(/(<(h[2-9])\b[^>]*>(?:[^<]|<(?!\2))+?<\/\2>)/i, '<summary class="section-heading collapsible-heading">$1</summary>');
+                        return '<details ' + m1 + '>' + summary + '</details>';
+                    });
+                    // We can stop iterating if all sections are consume
+                    if (!/<section\b[^>]*data-mw-section-id=["'][1-9]/i.test(htmlArticle)) break;
+                }
+            }
         } else if (appstate.wikimediaZimLoaded && params.manipulateImages) {
             // Remove incompatible webP handler that breaks on some Edge Legacy
             htmlArticle = htmlArticle.replace(/<script\b[^<]+src=["'][^"']*(webp(?:Handler|Hero))[^"']*\.js\b[^<]+<\/script>/gi, '');

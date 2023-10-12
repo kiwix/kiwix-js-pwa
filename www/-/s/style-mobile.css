@@ -1039,6 +1039,11 @@ h1[tabindex="0"].collapsible-heading > .indicator {
     border: none;
 }
 
+summary.section-heading {
+    display: list-item !important;
+    cursor: pointer;
+}
+
 .content figure img, .content figure video {
     margin: 0.6em auto 0.6em auto;
     display: block
@@ -2293,7 +2298,7 @@ input.search::-webkit-search-decoration, input.search::-webkit-search-cancel-but
     }
 
 .client-nojs .section-heading .indicator {
-    display: none
+    display: none;
 }
 
 #page-secondary-actions {

@@ -6,7 +6,7 @@
     <title>Kiwix JS PWA</title>
     <meta name="description" content="Offline Wikipedia reader">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data: file: about: https://download.kiwix.org https://master.download.kiwix.org https://pwa.kiwix.org https://kiwix.github.io https://api.github.com 'unsafe-inline' 'unsafe-eval'; frame-src 'self' moz-extension: chrome-extension:; object-src 'none';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data: file: about: https://download.kiwix.org https://*.download.kiwix.org https://pwa.kiwix.org https://kiwix.github.io https://api.github.com 'unsafe-inline' 'unsafe-eval'; frame-src 'self' moz-extension: chrome-extension:; object-src 'none';">
     <meta name="theme-color" content="black">
     <!--
     Kiwix (offline Wikipedia reader) - HTML5/Javascript version
@@ -103,20 +103,21 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
                             <ul style="padding-left: 15px;">
-                                <li>Full-text search enabled by default on iOS 15+</li>
-                                <li>Fixed loss of ability to pick ZIM archives in latest Chromium on Android</li>
-                                <li>Fixed regression preventing access to custom ZIM archives in download library</li>
-                                <li>Work around missing titles in all WikiMedia scrapes since 2023-07</li>
-                                <li>Avoid hyperlinking math fallback images to high-res Wikimedia versions</li>
-                                <li>Fix conflict between manual image display and hyperlinking images to high-res Wikimedia versions</li>
-                                <li>Fix more broken Linux icons</li>
-                                <li>Appx package is now uploaded to Kiwix releases</li>
-                                <li>Added clear documentation to the Create-DraftRelease.ps1 script</li>
-                                <li>Remove more unnecessary JQuery from the app</li>
-                                <li>Disable appCache by default if developing with the Vite server</li>
-                                <li>Avoid double loading of WebP Polyfill when present in ZIM</li>
+                                <li>Rework file system access and support Origin Private File System (OPFS)</li>
+                                <li>Autoload and display of all archives in OPFS on app launch, no permission prompts!</li>
+                                <li>Last selected archive (and optionally article) auto-loaded on app launch if in OPFS</li>
+                                <li>Import existing archives from anywhere on device into the OPFS easily with file picker</li>
+                                <li>New file management facility for deleting, and (in some contexts) exporting OPFS archives</li>
+                                <li>Option to download archives directly into the OPFS, without downloading first to user-visible FS</li>
+                                <li>Option to download archives directly into any folder pickable with the File System Access API</li>
+                                <li>Full-text search enabled by default on Android for archives in OPFS</li>
+                                <li>Pick multiple archives at once and switch easily between them, even on legacy systems</li>
+                                <li>New Operations Panel to show download progress in PWA and Electron apps</li>
+                                <li>Fix exception preventing display of legacy archive content in jQuery mode</li>
+                                <li>Fix Failure to display ZIM Archive Index when typing space in some circumstances</li>
                                 <li>Avoid duplication of title in wider range of ZIMs</li>
-                                <li>Electron version bumped to 22.3.21</li>
+                                <li>Fixed failure to refresh full-screen state when clicking in-app in SW mode</li>
+                                <li>Sample archive updated to wikipedia_en_100_mini_2023-10</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-windows/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>
@@ -281,6 +282,7 @@
                     <ul style="padding-left:1em;">
                         <li><a href="#addingArchives">Adding archives and languages</a></li>
                         <li><a href="#changelog">Changelog and Features</a></li>
+                        <li><a href="#filehandling">File handling and File System access</a></li>
                         <li><a href="#searchSyntax">Title search syntax and alphabetical ZIM Archive Index</a></li>
                         <li><a href="#fullTextSearch">Full-text search</a></li>
                         <li><a href="#linkHandling">Link handling, dynamic content and image download</a></li>
@@ -415,8 +417,65 @@
                     <p>
                         <b>Builds of this app are available that do not use a Store or an online Service Worker.</b> Please see:
                         <ul>
-                            <li><a href="https://github.com/kiwix/kiwix-js-windows/releases">Releases</a></li>
-                            <li><a href="https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html">NWJS version</a> - this version is completely standalone and will never self-update.</li>
+                            <li><a href="https://github.com/kiwix/kiwix-js-windows/releases" target="_blank">Releases</a></li>
+                            <li><a href="https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html" target="_blank">NWJS version</a> - this version is completely standalone and will never self-update.</li>
+                        </ul>
+                    </p>
+                    <h3 id="filehandling">File handling and File System access</h3>
+                    <p>
+                        This app reads very large files stored on your device. All versions of the app can pick a file from any user-accessible location, and on desktop browsers, you
+                        can drag-and-drop any ZIM archive into the app. Some versions of the app can also be granted access to a folder or directory in which you may store several ZIM
+                        archives. If this option is available, you will see a "Select folder" button (after clicking "Select storage"). In almost all cases, except for installed
+                        Electron apps or if you are using the Origin Private File System (see below), you will be asked to grant permission to access previously picked files or
+                        folders every time the app launches (usually this is just one or two clicks). This is a security feature of your browser and operating system.
+                    </p>
+                    <p>
+                        Chromium desktop browsers support the <a href="https://developer.chrome.com/en/articles/file-handling/" target="_blank">File Handling API</a> when you install the PWA.
+                        This allows you to associate ZIM files with the app, so that when you double-click a ZIM file in your system's file explorer, it will open in the app. The first time
+                        you do this, you will be asked for permission to handle ZIM archives, and the browser will remember your choice. You can change your choice in the browser settings.
+                    </p>
+                    <h4 id="OPFS">Origin Private File System</h4>
+                    <p>
+                        In some modern browsers, you will see an experimental option "<b>Use Private File System</b>" under the File and Folder selectors. If you tick this option,
+                        then the app will request an <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system" target="_blank">Origin Private File System</a>
+                        (OPFS) from the browser. Then, when you pick a ZIM file, instead of opening it, it will be stored in the OPFS. You may also select more than one archive to store in the OPFS,
+                        including all the parts of a split ZIM file (<code>.zimaa</code>, <code>.zimab</code>, etc.). Note that in this case, only the <code>.zimaa</code> entry will be displayed in
+                        the file list. If you drag-and-drop a file into the app while the OPFS is displayed, that file will be <b>not</b> be stored in the OPFS, but instead will be opened and displayed.
+                    </p>
+                    <p>
+                        You may also <b>download archives directly into the OPFS</b> by using the appropriate download link in the Dowmload Library. Look for the link under
+                        "Direct download to Origin Private File System". Downloading this way is suitable for archives of up to around 2GB in size, depending on your download
+                        speed. Larger files may take too long, and it is generally better to use a browser-managed download link for very large files. Then, if you wish, you
+                        can move the file into the OPFS using the "Add file(s)" picker.
+                    </p>
+                    <p>
+                        If you want to <b>delete an archive</b> from the Private File System, click the <span class="glyphicon glyphicon-trash"></span> icon,
+                        and then click on the file you wish to delete. You will be asked for confirmation.
+                    </p>
+                    <p>
+                        In some cases, you may be able to <b>export an archive</b> from the OPFS to the visible file system. Click the <span class="glyphicon glyphicon-share"></span>
+                        icon, and then click on the file you wish to export. The OPFS copy of the file is <i>not</i> deleted after export. If you do not see the export icon,
+                        then this feature is not available in your browser.
+                    </p>
+                    <p>
+                        On iOS in Safari, the OPFS appears to be supported, but there is currently no way to download or move a file from the user-visible file system into the OPFS.
+                        This is because the <code>WriteableFileStream</code> API is not yet available on iOS, but it may become available soon.
+                    </p>
+                    <p>    
+                        The main <b>advantages</b> of the OPFS, especially on mobile, are:
+                        <ul>
+                            <li>that the file system can be accessed by the app without needing to give permission, even after you relaunch the app (the last selected archive will automatically launch);</li>
+                            <li>Additionally, once a file is stored in the OPFS, access to it, e.g. on Android, is much faster than with standard file picking.</li>
+                        </ul>
+                    </p>
+                    <p>
+                        However, there are some <b>limitations</b> of the OPFS:
+                        <ul>
+                            <li>the file system has a quota set by the browser, which may be very small in some browsers;</li>
+                            <li>on mobile OS, it can take a long time to store a file in the OPFS, especially if it is larger than 1GB. On Firefox for Android, importing a file is
+                                <b>very</b> slow -- it can be faster to download the file directly into the OPFS from the Download library;</li>
+                            <li>when you clear the app's data (e.g. clearing cookies, etc.), the browser can delete the file system and any files in it without warning;</li>
+                            <li>any file you store here will only be accessible by this app (unless you export it to the visible file system).</li>
                         </ul>
                     </p>
                     <h3 id="searchSyntax">Title search syntax and alphabetical ZIM Archive Index</h3>
@@ -426,9 +485,7 @@
                     </p>
                     <p>
                         With title search, if you search for 'France' you will get 'France (country)', 'France (disambiguation)', 'France (film)', etc. This kind of search
-                        tries to be <b>case-insensitive</b>, but the number of case variants tried is necessarily limited, e.g. if you search for 'unesco world heritiage',
-                        it will try 'Unesco world heritage', 'UNESCO world heritage', 'unesco World heritage', 'Unesco WORLD heritage', etc., but it won't try 'uNesCO'
-                        and other non-obvious case combinations. If you want to search for 'uNesCO', then you must type it exactly like that.
+                        tries to be <b>case-insensitive</b>, but the number of case variants tried is necessarily limited.
                     </p>
                     <p>
                         You can also use the <b>wildcards</b> <code>.*</code> or <code>.+</code> as part of your title search (these follow regular expression syntax: if you
@@ -436,10 +493,8 @@
                         'List of Medieval bestiaries', 'List of Medieval topics', etc.
                     </p>
                     <p id="searchSyntaxError">
-                        <b>Incorrect search syntax!</b> If you get this message, it's because you used a wildcard but the syntax was incorrect. <i>
-                            Everything after
-                            the wildcard must be a valid regular expression or else the search will fail!
-                        </i> For simple text or numbers after a wildcard, don't worry, it'll work fine,
+                        <b>Incorrect search syntax!</b> If you get this message, it's because you used a wildcard but the syntax was incorrect. <i>Everything after
+                        the wildcard must be a valid regular expression or else the search will fail!</i> For simple text or numbers after a wildcard, don't worry, it'll work fine,
                         but you need to be aware that regular expressions reserve characters like '?', '(', '^', '$', '*', '+', so these (and others) must be used correctly if you
                         use wildcards with them. You might be able to correct an error by placing a backslash before each reserved character, e.g. <code>list.*\(france</code>.
                     </p>
@@ -482,10 +537,9 @@
                         If you see the search result you want, you can click on it without having to wait for the full-text results.
                     </p>
                     <p id="Android">
-                        If you are using the <b>PWA on Android</b>, please note that full-text search is disabled by default because file access on most Android versions is far too slow. If you want to try anyway,
-                        open the 'Troubleshooting and development' section in Configuration and select 'WASM' from the dropdown next to 'Force use of libzim W/ASM'. This may be OK with small ZIM archives,
-                        but don't be surprised if you have to wait 60-90 seconds just for full-text search to become available. With large ZIMs, you could have to wait several minutes, if it loads at all.
-                        Returning full-text search results can also be very slow on Android.
+                        If you are using the <b>PWA on Android</b>, please note that full-text search is only enabled by default for archives in the Origin Private File System. This is because conventional
+                        file access on most Android versions is far too slow, but it is much faster in the OPFS. If you want to enable it in all cases, open the 'Troubleshooting and development' section in
+                        Configuration and select 'WASM' from the dropdown next to 'Force use of libzim W/ASM'.
                     </p>
                     <h3 id="linkHandling">Link handling, dynamic content and image download</h3>
                     <p>
@@ -547,15 +601,15 @@
                     </p>
                     <h4>Officially supported:</h4>
                     <ul>
-                        <li>Firefox &gt;= 60 on all operating systems <i>except</i> Android*</li>
+                        <li>Firefox &gt;= 60 on all operating systems (but see note about Android*)</li>
                         <li>Edge Chromium &gt;= 79</li>
                         <li>Chrome/Chromium &gt;= 59 (and many browsers based on Chromium, e.g. Opera, Samsung Internet)</li>
                         <li>Edge Legacy 18, including UWP</li>
                         <li>Safari on iOS</li>
                     </ul>
                     <p>
-                        * Although Firefox on Android appears to work, there is a bug whereby the app attempts to load the entire ZIM archive into memory or internal storage before accessing it. This fails with
-                        archives larger than 1GB on most phones.
+                        * The Firefox on Android app only works well with files stored in the Origin Private File System. Picking files from the user-visible file system suffers from a Firefox bug whereby the app attempts
+                        to load the picked file into memory, which can take a very long time and may fail.
                     </p>
                     <h4>Deprecated</h4>
                     <p>Although deprecated, we will keep support for as long as is practical:</p>
@@ -687,7 +741,7 @@
                                     id="btnRefreshApp" class="btn btn-xs btn-inline" style="border-color: gray" type="button">
                                 Refresh
                             </button>
-                            <button title="WARNING! Make sure you have an Internet connection! This will erase the app's Service Worker and all settings, returning it to a freshly installed state."
+                            <button title="WARNING! Make sure you have an Internet connection! This will erase the app's Service Worker and all settings (except OPFS archives), returning it to a freshly installed state."
                                     id="btnReset2" class="btn btn-xs btn-inline" style="border-color: palevioletred" type="button">
                                 Reset
                             </button>
@@ -714,35 +768,42 @@
                             <div id="archivesFound" class="row">
                                 <p><span id="archiveNumber">Archives found on this device (tap "Select storage" to rescan)</span>:</p>
                                 <div class="col-xs-12">
-                                    <select id="archiveList" class="form-control" multiple></select><br />
+                                    <select id="archiveList" class="form-control"></select>
                                 </div>
                             </div>
-                            <div id="noZIMFound" style="display: none;">
-                                <p style="color: red;">There were no ZIM file(s) found in the selected location! Please choose a different folder.</p>
+                            <div id="noZIMFound" style="display: none; margin-top: 1em">
+                                <p style="color: red;">There were no ZIM file(s) found in the selected location!</p>
                             </div>
-                            <div id="openLocalFiles">
+                            <div id="fsManager" class="row">
+                                <div class="col-xs-8"></div>
+                                <div class="col-xs-1">
+                                    <a href="#" title="Export the next archive that you select"  style="display: none;" id="btnExportOPFSEntry"><span class="glyphicon glyphicon-share"></span></a>
+                                </div>
+                                <div class="col-xs-1">
+                                    <a href="#" title="Delete the next archive that you select"  style="display: none;" id="btnDeleteOPFSEntry"><span class="glyphicon glyphicon-trash"></span></a>
+                                </div>
+                                <div class="col-xs-1">
+                                    <a href="#" title="Refresh archive list" id="btnRefresh"><span class="glyphicon glyphicon-refresh"></span></a>
+                                </div>
+                            </div>
+                            <div id="openLocalFiles" style="margin-top: 0.5em;">
                                 <div id="archiveFilesDiv">
                                     <div class="row">
-                                        <div class="col-xs-6">
-                                            <input type="button" class="btn btn-primary btn-inline" value="Select file" id="archiveFile" />
+                                        <div class="col-xs-6" id="archiveFileLabel">
+                                            <p><b>Pick ZIM archive(s)</b>:</p>
                                         </div>
-                                        <div class="col-xs-6">
-                                            <input type="button" class="btn btn-primary btn-inline" value="Select folder" id="archiveFiles" />
+                                        <div class="col-xs-6" id="archiveFilesLabel">
+                                            <p><b>For multiple or split archives</b>:</p>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-xs-6">
-                                            <p>For a single unsplit archive</p>
+                                        <div id="archiveFileCol" class="col-xs-6">
+                                            <input type="button" class="btn btn-primary btn-inline" value="Select file(s)" id="archiveFile" />
                                         </div>
-                                        <div class="col-xs-6">
-                                            <p>For multiple or split archives</p>
+                                        <div id="archiveFilesCol" class="col-xs-6">
+                                            <div id="OPFSQuota"  style="display: none;"></div>
+                                            <input type="button" class="btn btn-primary btn-inline" value="Select folder" id="archiveFiles" title="Select a folder containing several ZIM files, and/or all the parts of a split ZIM file." />
                                         </div>
-                                    </div>
-                                    <div id="UWPInstructions" class="row">
-                                        <p>
-                                            Choose <b>File</b> for one archive, or <b>Folder</b> for multiple or split archive files in a single directory.<br />
-                                            Alternatively, <b>drag-and-drop your file(s) into the app.</b>
-                                        </p>
                                     </div>
                                 </div>
                                 <div id="archiveFilesLegacyDiv">
@@ -758,14 +819,18 @@
                                         </p>
                                     </div>
                                 </div>
-                            </div>
-                            <div id="rescanStorage" class="row">
-                                <div class="col-xs-11">
-                                    <input style="float:left; margin-right:1em;" type="button" class="btn btn-primary btn-inline" value="Select storage" id="btnRescanDeviceStorage" />
-                                    Tap to select app's local storage or to select a file or folder. <b>You can also drag and drop a ZIM file into the app.</b>
+                                <div id="displayOPFS" class="row" style="display: none; margin: 0.5em;">
+                                    <label class="checkbox" title="This uses a dedicated Origin Private File System (OPFS) for the app, which allows the app to load these files automatically on launch (without your having to provide permission each time). See About -> Origin Private File System for more information.">
+                                        <input type="checkbox" name="useOPFS" id="useOPFSCheck" />
+                                        <span class="checkmark"></span>
+                                        <b>Use Private File System <a href="#OPFS" class="aboutLink">[info]</a></b> (<i>experimental</i>)
+                                    </label>
                                 </div>
-                                <div class="col-xs-1">
-                                    <a href="#" title="Refresh archive list" id="btnRefresh"><span class="glyphicon glyphicon-refresh"></span></a>
+                            </div>
+                            <div id="rescanStorage" class="row" style="margin-top: 1em;">
+                                <div class="col-xs-12">
+                                    <input style="float:left; margin-right:1em;" type="button" class="btn btn-primary btn-inline" value="Select storage" id="btnRescanDeviceStorage" title="Tap to show file or folder pickers and other storage options." />
+                                    Select ZIM files or <b>drag and drop</b>
                                 </div>
                             </div>
                         </div>
@@ -779,11 +844,13 @@
                                             <td style="width:100%;">Opens library of archives for download:<br /><i>Warning:</i> this will use data</td>
                                         </tr>
                                     </table>
-                                    <label class="checkbox">
-                                        <input type="checkbox" name="allowInternetAccess" id="allowInternetAccessCheck">
-                                        <span class="checkmark"></span>
-                                        <b>Allow Internet access?</b> <span id="updateStatus">and <b>check for updates</b></span>
-                                    </label>
+                                    <div class="row" style="margin: 0.5em;">
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="allowInternetAccess" id="allowInternetAccessCheck">
+                                            <span class="checkmark"></span>
+                                            <b>Allow Internet access?</b> <span id="updateStatus">and <b>check for updates</b></span>
+                                        </label>
+                                    </div>
                                 </div>
                                 <div id="downloadLinks" style="display: none;"></div>
                                 <pre id="serverResponse" class="panel-footer" style="display:none;"></pre>
@@ -1157,7 +1224,7 @@
                                         <b>Bypass AppCache</b> (<i>disables offline use of PWA!</i>)
                                     </label>
                                     <p>Reset the app to default settings and erase all caches:</p>
-                                    <label class="button" title="This will return the app to its original settings on launch, and will empty all caches and settings and deregister Service Workers. The app will then reload.">
+                                    <label class="button" title="This will return the app to its original settings on launch, and will empty all caches and settings and deregister Service Workers. Archives stored in the OPFS will be preserved. The app will reload.">
                                         <button type="button" class="btn btn-danger" id="btnReset">Reset app</button>
                                     </label>
                                 </div>

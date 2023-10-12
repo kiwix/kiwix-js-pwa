@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-electron",
   "productName": "Kiwix JS Electron",
-  "version": "2.6.6-E",
+  "version": "2.7.4-E",
   "description": "Kiwix JS offline ZIM archive reader packaged for the Electron framework",
   "main": "main.cjs",
   "type": "module",
@@ -162,7 +162,7 @@
     "@vitejs/plugin-legacy": "^4.0.3",
     "babel-plugin-polyfill-corejs3": "^0.7.1",
     "del-cli": "^5.0.0",
-    "electron": "22.3.21",
+    "electron": "22.3.25",
     "electron-builder": "^24.6.2",
     "eslint": "^8.42.0",
     "eslint-config-standard": "^17.1.0",
