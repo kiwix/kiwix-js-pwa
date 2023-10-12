@@ -1,12 +1,14 @@
 # Changelog
 
-## In-progress release 2.7.4
+## In-progress release 2.7.41
 
 * ENHANCEMENT: Add indicative colourization to archive list when using OPFS
 * ENHANCEMENT: Add a spinner for adding and direct download of files to OPFS
 * ENHANCEMENT: After failure to import or download to OPFS, delete file stub(s)
 * INFO: Inform user that OPFS files are preserved on app reset
 * INFO: More informative message about import/download error in Safari
+* FIX: When using locally cached CSS, the details/summary tags are restored where missing from ZIM
+* FIX: Display of open-close markers for headers is now as expected in mobile css (suppressed in desktop css)
 * FIX: Empty archive list when OPFS is deactivated
 * FIX: Make sure spinner doesn't block the UI
 * FIX: Ensure some HTML and entities do not appear in constructed article titles
