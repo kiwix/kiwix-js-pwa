@@ -1,6 +1,6 @@
 ## Portable and installable builds of Kiwix JS WikiMed Electron Edition for Windows 7/8/10/11 and Linux
 
-This is **not** the UWP/Microsoft Store build. If you are using Windows 10 or 11, we strongly recommend [the WikiMed release for the Microsoft Store](https://kiwix.github.io/kiwix-js-pwa/wikimed-uwp.html), which will keep itself up-to-date automatically. These portable and installable versions run on the included [Electron platform](https://www.electronjs.org/) version 10.4.0. 
+This is **not** the UWP/Microsoft Store build. If you are using Windows 10 or 11, we strongly recommend [the WikiMed release for the Microsoft Store](https://kiwix.github.io/kiwix-js-pwa/wikimed), which will keep itself up-to-date automatically. These portable and installable versions run on the included [Electron platform](https://www.electronjs.org/) version 10.4.0. 
 
 These builds are packaged with the <<date>> English-language WikiMed archive `<<zim>>`. They will run on 32bit and 64bit editions of Windows or Linux (tested on Ubuntu, Debian and OpenSUSE - but see instructions below). The Windows build is **not compatible with Windows XP or Windows Vista**. If you need an app compatible with those old platforms, get [Kiwix JS Windows reader](https://kiwix.github.io/kiwix-js-pwa/kiwix-js-nwjs.html) and download the latest WikiMed archive from within the app.
 

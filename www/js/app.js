@@ -1701,7 +1701,7 @@ document.getElementById('allowInternetAccessCheck').addEventListener('change', f
             var message;
             if (!/PWA/.test(params.appType)) {
                 message = '<p>You are accessing Kiwix JS from a remote server, and it is not possible to disable Internet access fully without exiting the app.</p>' +
-                    '<p>Please visit <a href="https://kiwix.github.io/kiwix-js-pwa/kiwix-js-electron.html" target="_blank">Kiwix JS UWP/Electron/NWJS</a> to find an app version that will run fully offline.</p>';
+                    '<p>Please visit <a href="https://kiwix.github.io/kiwix-js-pwa/app" target="_blank">Kiwix JS UWP/Electron/NWJS</a> to find an app version that will run fully offline.</p>';
                 uiUtil.systemAlert(message);
                 this.checked = true;
                 params.allowInternetAccess = true;
