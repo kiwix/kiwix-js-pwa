@@ -4,7 +4,7 @@ Kiwix is an offline browser of archival content from Wikipedia, Project Gutenber
 
 ![Kiwix JS Seven Wonders Montage trans](https://user-images.githubusercontent.com/4304337/218414297-a087c014-fe79-4a3d-a60a-87690732dc91.png)
 
-To use this app, download your choice of free content in-app from the Download Library on the Configuration page. There is only a small **sample** archive provided in the UWP, Electron and NWJS versions (`<<zim>>`, <<date>>). For what's new, see the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-windows/blob/main/CHANGELOG.md). Builds are provided for 32bit and 64bit editions of Windows and Linux (tested on Ubuntu, Debian, Fedora and OpenSUSE).
+To use this app, download your choice of free content in-app from the Download Library on the Configuration page. There is only a small **sample** archive provided in the UWP, Electron and NWJS versions (`<<zim>>`, <<date>>). For what's new, see the changes listed in the [CHANGELOG](https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md). Builds are provided for 32bit and 64bit editions of Windows and Linux (tested on Ubuntu, Debian, Fedora and OpenSUSE).
 
 **MS Store status: IN CERTIFICATION**
 **Winget status: IN CERTIFICATION**
@@ -16,13 +16,13 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
 
 * **Linux** (see installation instructions below screenshot):
   - **Portable (Electron)** - *recommended*
-    + AppImage 64bit (Ubuntu, Debian, Fedora, OpenSUSE): [Kiwix-JS-Electron-<<numeric_tag>>-E.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E.AppImage) [**AUTO**]
-    + AppImage 32bit (Ubuntu, Debian, Fedora, OpenSUSE): [Kiwix-JS-Electron-<<numeric_tag>>-E-i386.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-i386.AppImage) [**AUTO**]
+    + AppImage 64bit (Ubuntu, Debian, Fedora, OpenSUSE): [Kiwix-JS-Electron-<<numeric_tag>>-E.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E.AppImage) [**AUTO**]
+    + AppImage 32bit (Ubuntu, Debian, Fedora, OpenSUSE): [Kiwix-JS-Electron-<<numeric_tag>>-E-i386.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E-i386.AppImage) [**AUTO**]
   - **Installable (Electron)**
-    + Deb package 64bit (Ubuntu, Debian): [kiwix-js-electron_<<numeric_tag>>-E_amd64.deb](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix-js-electron_<<numeric_tag>>-E_amd64.deb)
-    + Deb package 32bit (Ubuntu, Debian): [kiwix-js-electron_<<numeric_tag>>-E_i386.deb](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix-js-electron_<<numeric_tag>>-E_i386.deb)
-    + RPM package 64bit (Fedora, OpenSUSE): [kiwix-js-electron-<<numeric_tag>>-E.x86_64.rpm](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix-js-electron-<<numeric_tag>>-E.x86_64.rpm)
-    + RPM package 32bit (Fedora, OpenSUSE): [kiwix-js-electron-<<numeric_tag>>-E.i686.rpm](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix-js-electron-<<numeric_tag>>-E.i686.rpm)
+    + Deb package 64bit (Ubuntu, Debian): [kiwix-js-electron_<<numeric_tag>>-E_amd64.deb](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/kiwix-js-electron_<<numeric_tag>>-E_amd64.deb)
+    + Deb package 32bit (Ubuntu, Debian): [kiwix-js-electron_<<numeric_tag>>-E_i386.deb](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/kiwix-js-electron_<<numeric_tag>>-E_i386.deb)
+    + RPM package 64bit (Fedora, OpenSUSE): [kiwix-js-electron-<<numeric_tag>>-E.x86_64.rpm](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/kiwix-js-electron-<<numeric_tag>>-E.x86_64.rpm)
+    + RPM package 32bit (Fedora, OpenSUSE): [kiwix-js-electron-<<numeric_tag>>-E.i686.rpm](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/kiwix-js-electron-<<numeric_tag>>-E.i686.rpm)
 
 * **Windows**:
   - **Store app for Windows 10/11 (UWP)** - *recommended* [**AUTO**]
@@ -30,14 +30,14 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
     + Or, on a PC, open a Terminal (or command prompt) and run `winget install 'kiwix js' -s msstore`
     + Or, if you cannot use the Store, sideload a signed package with `winget install kiwix.kiwixjs` - this doesn't auto-update, but you can upgrade easily by running `winget upgrade kiwix.kiwixjs`
   - **Installable (Electron)**
-    + Windows 10/11 64bit - [Kiwix-JS-Electron-<<numeric_tag>>-E.appx](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E.appx) - new, modern install / uninstall
-    + Windows 7/8/10/11: [Kiwix-JS-Electron-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix-JS-Electron-Setup-<<numeric_tag>>-E.exe) [**AUTO**]
+    + Windows 10/11 64bit - [Kiwix-JS-Electron-<<numeric_tag>>-E.appx](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E.appx) - new, modern install / uninstall
+    + Windows 7/8/10/11: [Kiwix-JS-Electron-Setup-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-Setup-<<numeric_tag>>-E.exe) [**AUTO**]
     + Alternatively, run `winget install kiwix.kiwixjs.electron` in a Windows 10/11 Terminal [**AUTO**]
   - **Portable - no install needed**
-    + **_WARNING:_** Windows **XP** or **Vista** **only** (legacy version): [kiwix_js_windows-XP-<<base_tag>>-N-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-XP-<<base_tag>>-N-win-ia32.zip) - **do not use this with modern Windows!**
-    + Windows 7/8/10/11: self-contained **portable** version, no unzip needed - [Kiwix-JS-Electron-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E.exe) (if you find this version slow to launch, try the Setup version above, or a zipped version below)
-    + [Electron] Windows 7/8/10/11: just unzip to any drive or folder - [Kiwix-JS-Electron-<<numeric_tag>>-E.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E.zip)
-    + [NWJS] Windows 7/8/10/11: just unzip to any drive or folder - [kiwix_js_windows-<<base_tag>>-N-win-ia32.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-<<base_tag>>-N-win-ia32.zip)
+    + **_WARNING:_** Windows **XP** or **Vista** **only** (legacy version): [kiwix_js_windows-XP-<<base_tag>>-N-win-ia32.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/kiwix_js_windows-XP-<<base_tag>>-N-win-ia32.zip) - **do not use this with modern Windows!**
+    + Windows 7/8/10/11: self-contained **portable** version, no unzip needed - [Kiwix-JS-Electron-<<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E.exe) (if you find this version slow to launch, try the Setup version above, or a zipped version below)
+    + [Electron] Windows 7/8/10/11: just unzip to any drive or folder - [Kiwix-JS-Electron-<<numeric_tag>>-E.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/Kiwix-JS-Electron-<<numeric_tag>>-E.zip)
+    + [NWJS] Windows 7/8/10/11: just unzip to any drive or folder - [kiwix_js_windows-<<base_tag>>-N-win-ia32.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/kiwix_js_windows-<<base_tag>>-N-win-ia32.zip)
 
 ![Kiwix-Zimit-montage](https://user-images.githubusercontent.com/4304337/173221055-08fd27ba-5990-4e13-9286-c11e4595d43a.png)
 
@@ -78,10 +78,10 @@ Please choose the correct version (those marked [**AUTO**] will self-update auto
 * In the **NWJS app** only, YouTube-based videos in **Zimit archives** do not play with sound (this does not affect other archives such as TED Talks or Khan Academy).
 * Image manipulation (e.g. saving image to disk) does not currently work with the **NWJS app**.
 * On the **XP build** with some recent ZIMs __there is a CSS error in rendering image-heavy landing pages__, due to the age of the Chromium build included in the runtime package. However, you can access all articles by __pressing a space in the search box__.
-* Please see https://github.com/kiwix/kiwix-js-windows/issues for further known issues. If you find a problem not reported there, please open a new issue on that page.
+* Please see https://github.com/kiwix/kiwix-js-pwa/issues for further known issues. If you find a problem not reported there, please open a new issue on that page.
 
 ## Instructions for sideloading (UWP)
 
 You can sideload the UWP app easily by typing `winget install kiwix.kiwixjs` in a Command Prompt or PowerShell terminal (Windows 10/11). This will download and install the Electron-based appx. If you want to install the legacy UWP appxbundle based on EdgeHTML, then simply download the appxbundle (see below) and double click it. The app installer should launch and will let you install it.
 
-For Windows Mobile or for sideloading manually, please download [KiwixWebApp_<<base_tag>>.0_AnyCPU.appxbundle](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/KiwixWebApp_<<base_tag>>.0_AnyCPU.appxbundle) and the zipped PowerShell script from Assets below. Then follow the detailed instructions at https://github.com/kiwix/kiwix-js-windows/tree/main/AppPackages#readme.
+For Windows Mobile or for sideloading manually, please download [KiwixWebApp_<<base_tag>>.0_AnyCPU.appxbundle](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/KiwixWebApp_<<base_tag>>.0_AnyCPU.appxbundle) and the zipped PowerShell script from Assets below. Then follow the detailed instructions at https://github.com/kiwix/kiwix-js-pwa/tree/main/AppPackages#readme.

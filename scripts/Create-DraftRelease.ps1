@@ -17,7 +17,7 @@ param (
     [switch]$help = $false # If invoked with -help, will display help on valid switches
 )
 # DEV: To build new icons, install electron-icon-builder, then
-# electron-icon-builder --input=C:\Repos\kiwix-js-windows\bld\icon.png --output=./build_resources/
+# electron-icon-builder --input=C:\Repos\kiwix-js-pwa\bld\icon.png --output=./build_resources/
 # then move icons in png into /build_resources/icons/
 
 function Get-ReleaseHelp {
@@ -81,7 +81,7 @@ if ($help -or $tag_name -eq '?') {
 }
 
 # Provide parameters
-$release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-windows/releases'
+$release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-pwa/releases'
 if ($GITHUB_TOKEN) {
   $github_token = $GITHUB_TOKEN
 } else {

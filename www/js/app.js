@@ -1701,7 +1701,7 @@ document.getElementById('allowInternetAccessCheck').addEventListener('change', f
             var message;
             if (!/PWA/.test(params.appType)) {
                 message = '<p>You are accessing Kiwix JS from a remote server, and it is not possible to disable Internet access fully without exiting the app.</p>' +
-                    '<p>Please visit <a href="https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html" target="_blank">Kiwix JS UWP/Electron/NWJS</a> to find an app version that will run fully offline.</p>';
+                    '<p>Please visit <a href="https://kiwix.github.io/kiwix-js-pwa/kiwix-js-electron.html" target="_blank">Kiwix JS UWP/Electron/NWJS</a> to find an app version that will run fully offline.</p>';
                 uiUtil.systemAlert(message);
                 this.checked = true;
                 params.allowInternetAccess = true;
@@ -3652,7 +3652,7 @@ function handleFileDrop (packet) {
     }
 }
 
-function pickFileUWP () { // Support UWP FilePicker [kiwix-js-windows #3]
+function pickFileUWP () { // Support UWP FilePicker [kiwix-js-pwa #3]
     // Create the picker object and set options
     var filePicker = new Windows.Storage.Pickers.FileOpenPicker();
     filePicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.downloads;
@@ -3765,7 +3765,7 @@ function processPickedFileUWP (file) {
     }
 }
 
-function pickFolderUWP () { // Support UWP FilePicker [kiwix-js-windows #3]
+function pickFolderUWP () { // Support UWP FilePicker [kiwix-js-pwa #3]
     var folderPicker = new Windows.Storage.Pickers.FolderPicker();
     folderPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.downloads;
     folderPicker.fileTypeFilter.replaceAll(['.zim', '.dat', '.idx', '.txt', '.zimaa']);
@@ -4650,7 +4650,7 @@ function readArticle (dirEntry) {
         alertBoxHeader.style.display = 'none';
         // Set startup parameter to guard against boot loop
         if (settingsStore.getItem('lastPageLoad') !== 'rebooting') settingsStore.setItem('lastPageLoad', 'failed', Infinity);
-        // Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-windows #56]
+        // Void the localSearch variable to prevent invalid DOM references remainining [kiwix-js-pwa #56]
         localSearch = {};
         // Calculate the current article's ZIM baseUrl to use when processing relative links
         params.baseURL = encodeURI(dirEntry.namespace + '/' + dirEntry.url.replace(/[^/]+$/, ''));

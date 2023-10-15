@@ -38,7 +38,7 @@ if ($original_release_tag_name) {
 if ($electronbuild -eq "cloud") {
   $branch_name = &{ git branch --show-current }
   "Setting the build branch to: $branch_name"
-  $release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-windows/actions/workflows/build-electron.yml/dispatches'
+  $release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-pwa/actions/workflows/build-electron.yml/dispatches'
   # Set up dispatch_params object - for API see https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event
   $dispatch_params = @{
     Uri = $release_uri
@@ -169,7 +169,7 @@ if (-Not (($electronbuild -eq 'cloud') -or $old_windows_support -or (Test-Path $
   # Package portable electron app for Windows
   "`nBuilding portable Electron app for Windows"
   "Compressing release package for Electron..."
-  $foldername = "kiwix-js-windows-win32-ia32"
+  $foldername = "kiwix-js-pwa-win32-ia32"
   $compressed_assets_dir = $base_dir + $foldername
   # Find the executable filename in the folder
   $executable = (ls "$unpacked_folder/*.exe") -replace '^.*[/\\]([^/\\]+)$', '$1' 

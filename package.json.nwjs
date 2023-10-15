@@ -72,7 +72,7 @@
       "icon": "www/img/icons/kiwix-64.ico"
     }
   },
-  "repository": "https://github.com/kiwix/kiwix-js-windows",
+  "repository": "https://github.com/kiwix/kiwix-js-pwa",
   "keywords": [
     "Kiwix",
     "offline",

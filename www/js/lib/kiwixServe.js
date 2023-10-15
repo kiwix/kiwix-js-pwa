@@ -545,7 +545,7 @@ function requestXhttpData (URL, lang, subj, kiwixDate) {
                 URL.replace(/\.meta4$/, '.magnet') + '</a> (if torrent app doesn\'t launch, <a id="magnetAlt" href="#" target="_blank">tap here</a> and copy/paste link into your app)<br /></li></ul>\r\n';
         }
         if (megabytes > 4000 && /\.zim\.meta4$/i.test(URL)) {
-            bodyDoc += '<p style="color:red;">If you plan to store this archive on a drive/microSD formatted as <b>FAT32</b> (most are not), then you will need to download the file on a PC and split it into chunks less than 4GB: see <a href="https://github.com/kiwix/kiwix-js-windows/tree/main/AppPackages#download-a-zim-archive-all-platforms" target="_blank">Download a ZIM archive</a>.</p>\r\n';
+            bodyDoc += '<p style="color:red;">If you plan to store this archive on a drive/microSD formatted as <b>FAT32</b> (most are not), then you will need to download the file on a PC and split it into chunks less than 4GB: see <a href="https://github.com/kiwix/kiwix-js-pwa/tree/main/AppPackages#download-a-zim-archive-all-platforms" target="_blank">Download a ZIM archive</a>.</p>\r\n';
             // bodyDoc += '<p><b>To browse for a split version of this archive click here: <a id="portable" href="#" data-kiwix-dl="' +
             //    URL.replace(/\/zim\/([^/]+\/).*$/m, "/portable/$1") + '">' + URL.replace(/\/zim\/([^/]+\/).*$/m, "/portable/$1") +
             //    '</a>.</b></p>\r\n';
