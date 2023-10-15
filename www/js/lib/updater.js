@@ -30,7 +30,7 @@ import uiUtil from './uiUtil.js';
  * The update server configuration
  */
 params.updateServer = {
-    url: 'https://api.github.com/repos/kiwix/kiwix-js-windows/',
+    url: 'https://api.github.com/repos/kiwix/kiwix-js-pwa/',
     releases: 'releases'
 };
 

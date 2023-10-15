@@ -70,7 +70,7 @@ params['kiwixDownloadLink'] = 'https://download.kiwix.org/zim/'; // Include fina
 params['kiwixHiddenDownloadLink'] = 'https://master.download.kiwix.org/zim/';
 /** ***** DEV: ENSURE SERVERS BELOW ARE LISTED IN package.appxmanifest ************/
 params['PWAServer'] = 'https://pwa.kiwix.org/'; // Production server
-// params['PWAServer'] = 'https://kiwix.github.io/kiwix-js-windows/dist/'; // Test server
+// params['PWAServer'] = 'https://kiwix.github.io/kiwix-js-pwa/dist/'; // Test server
 params['storeType'] = getBestAvailableStorageAPI();
 params['appType'] = getAppType();
 params['keyPrefix'] = 'kiwixjs-'; // Prefix to use for localStorage keys

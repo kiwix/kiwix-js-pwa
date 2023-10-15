@@ -35,7 +35,7 @@ function Main {
             exit 1
         }
         $release_params = @{
-            Uri = "https://api.github.com/repos/kiwix/kiwix-js-windows/releases"
+            Uri = "https://api.github.com/repos/kiwix/kiwix-js-pwa/releases"
             Method = 'GET'
             Headers = @{
                 'Authorization' = "token $GITHUB_TOKEN"
@@ -115,10 +115,10 @@ function Main {
 
     # If the path is a file of the right type, ask for confirmation 
     if ((Test-Path $filename -PathType leaf) -and ($filename -imatch '(.*)\.(?:appx|appxbundle|appxupload)$')) {
-        $newfilename = $filename -ireplace '^.*\\[^\d]+([\d.]+?)\.0_[^\d]+?(\.appx(?:bundle|upload))$', 'kiwix-js-windows_$1$2'
+        $newfilename = $filename -ireplace '^.*\\[^\d]+([\d.]+?)\.0_[^\d]+?(\.appx(?:bundle|upload))$', 'kiwix-js-pwa_$1$2'
         $filename = $filename -ireplace '[\\/]', '/'
         $file = $filename -ireplace '^.*/([^/]+$)', '$1'
-        $target = '/data/download/release/kiwix-js-windows'
+        $target = '/data/download/release/kiwix-js-pwa'
         "$filename is ready to upload to $target ..."
         if ($dryrun) { "DRY RUN: no upload will be made" }
         if (! $yes) {

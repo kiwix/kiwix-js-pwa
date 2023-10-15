@@ -1,5 +1,5 @@
 owner: kiwix
-repo: kiwix-js-windows
+repo: kiwix-js-pwa
 provider: github
 updaterCacheDirName: kiwix-js-electron-updater
 publisherName:

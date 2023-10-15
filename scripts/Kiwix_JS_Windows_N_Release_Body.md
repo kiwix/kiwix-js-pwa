@@ -1,10 +1,10 @@
 ## This is a portable build of Kiwix JS NWJS for any 32bit or 64bit edition of Windows
 
-This is **not** the UWP/Microsoft Store build. If you are using **Windows 10**, you may prefer to use [the release for the Microsoft Store](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html), which is smaller and faster to load. This version runs on the [NWJS platform](https://nwjs.io/) (which is very similar to ElectronJS, but supports older versions of Windows). The package does **not** auto-update (whereas the Store version does). Please choose the correct build as follows:
+This is **not** the UWP/Microsoft Store build. If you are using **Windows 10**, you may prefer to use [the release for the Microsoft Store](https://kiwix.github.io/kiwix-js-pwa/kiwix-js-uwp.html), which is smaller and faster to load. This version runs on the [NWJS platform](https://nwjs.io/) (which is very similar to ElectronJS, but supports older versions of Windows). The package does **not** auto-update (whereas the Store version does). Please choose the correct build as follows:
 
-For Windows XP or Windows Vista: [`kiwix_js_windows-XP-<<base_tag>>-win-ia32.zip`](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-XP-<<base_tag>>-win-ia32.zip)
-For Windows 7,8,10 32bit: [`kiwix_js_windows-<<base_tag>>-win-ia32.zip`](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-<<base_tag>>-win-ia32.zip)
-For Windows 7,8,10 64bit: [`kiwix_js_windows-<<base_tag>>-win-x64.zip`](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>/kiwix_js_windows-<<base_tag>>-win-x64.zip)
+For Windows XP or Windows Vista: [`kiwix_js_windows-XP-<<base_tag>>-win-ia32.zip`](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/kiwix_js_windows-XP-<<base_tag>>-win-ia32.zip)
+For Windows 7,8,10 32bit: [`kiwix_js_windows-<<base_tag>>-win-ia32.zip`](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/kiwix_js_windows-<<base_tag>>-win-ia32.zip)
+For Windows 7,8,10 64bit: [`kiwix_js_windows-<<base_tag>>-win-x64.zip`](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>/kiwix_js_windows-<<base_tag>>-win-x64.zip)
 
 If you have a modern Windows and do not know if your system is 64bit or 32bit, choose the 32bit (ia32) build.
 
