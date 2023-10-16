@@ -44,6 +44,8 @@
 
 import uiUtil from './uiUtil.js';
 
+/* global appstate, params */
+
 /**
  * Filters out the Replay system files (since these cannot be loaded alongside a Service Worker without error)
  * In the case of the H prefix or the landing page, an 'inspect' property is added to the dirEntry, so that we can discover
@@ -51,38 +53,40 @@ import uiUtil from './uiUtil.js';
  * @param {dirEntry} dirEntry The directory entry to modify or anull
  * @returns {dirEntry} The modified directory entry
  */
-function filterReplayFiles(dirEntry) {
+function filterReplayFiles (dirEntry) {
     if (!(dirEntry && dirEntry.url)) return null;
-    if (dirEntry.namespace === 'H' || dirEntry.namespace === 'C' && /^H\//.test(dirEntry.url) 
-        || params.isLandingPage && /^(A\/)?index\.html(?:[?#]|$)/.test(dirEntry.url))
+    if (dirEntry.namespace === 'H' || dirEntry.namespace === 'C' && /^H\//.test(dirEntry.url) ||
+    params.isLandingPage && /^(A\/)?index\.html(?:[?#]|$)/.test(dirEntry.url)) {
         dirEntry.inspect = true;
-    if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|update\.googleapis|play\.google.*(?:stats|logs)|youtube\.com.*\/stats|google\.internal|syndication|survey\.js|yuiloader\.js|doubleclick|play\.google\.|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url))
+    }
+    if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|update\.googleapis|play\.google.*(?:stats|logs)|youtube\.com.*\/stats|google\.internal|syndication|survey\.js|yuiloader\.js|doubleclick|play\.google\.|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url)) {
         dirEntry.nullify = true;
+    }
     return dirEntry;
 }
 
 /**
  * Inspects the HTML of the ZIM archive's landing page or of the requested Header to discover the URL to redirect to
  * adds a custom redirect to the dirEntry
- * @param {dirEntry} dirEntry The directory entry of the landing page or H-prefixed header to process 
+ * @param {dirEntry} dirEntry The directory entry of the landing page or H-prefixed header to process
  * @param {String} data The decoded data which the dirEntry points to
  * @param {String} cns The Content Name Space of the ZIM (usually 'C' or 'A')
  * @returns {dirEntry} The modified directory entry
  */
-function getZimitRedirect(dirEntry, data, cns) {
+function getZimitRedirect (dirEntry, data, cns) {
     var redirect;
     // Type 1 ZIMs don't use the H namespace, and instead use H as prefix to the URL
     if (dirEntry.namespace === 'H' || cns === 'C' && /^H\//.test(dirEntry.url)) {
         // We are dealing with a Header redirect, so we need to find the Location: field
-        redirect = data.match(/^Location:\s*https?:\/\/([^\/]+)(.*)$/m);
+        redirect = data.match(/^Location:\s*https?:\/\/([^/]+)(.*)$/m);
         if (!redirect) redirect = data.match(/^WARC-Target-URI:\s*https?:\/\/([^/]+)(.*)$/m)
         if (redirect && redirect[1]) {
             // Type 1 Zimit ZIMs need intermediary 'A' prefix, since there is no longer any A namespace
             params.zimitPrefix = (cns === 'C' ? 'A/' : '') + redirect[1];
-            dirEntry.zimitRedirect =  cns + '/' + params.zimitPrefix + redirect[2];
+            dirEntry.zimitRedirect = cns + '/' + params.zimitPrefix + redirect[2];
         } else {
             dirEntry.zimitRedirect = null;
-        }    
+        }
     } else if (/301\s*moved\s+permanently/i.test(data)) {
         redirect = data.match(/moved\s+permanently(?:[^<]|<(?!a\s))+<a\s[^"']+["'](?:https?:)?\/?\/?([^"']+)/i);
         if (redirect && redirect[1]) {
@@ -90,11 +94,11 @@ function getZimitRedirect(dirEntry, data, cns) {
         }
         console.debug('*** Asset moved permanently! Redirecting to: ' + dirEntry.zimitRedirect + ' ***');
     } else {
-        redirect = data.match(/window\.mainUrl\s*=\s*(['"])https?:\/\/([^\/]+)(.+?)\1/);
+        redirect = data.match(/window\.mainUrl\s*=\s*(['"])https?:\/\/([^/]+)(.+?)\1/);
         if (redirect && redirect[2] && redirect[3]) {
             // Logic added for Type 1 Zimit ZIMs
             params.zimitPrefix = (dirEntry.namespace === 'C' ? 'A/' : '') + redirect[2];
-            params.zimitStartPage =  dirEntry.namespace + '/' + params.zimitPrefix + redirect[3];
+            params.zimitStartPage = dirEntry.namespace + '/' + params.zimitPrefix + redirect[3];
         } else {
             params.zimitStartPage = null;
         }
@@ -121,13 +125,13 @@ var regexpInlineScriptsNotMaths = /<(script\b(?![^>]+type\s*=\s*["'](?:math\/|te
  * @param {String} mimetype The reported mimetype of the data (this is also in the dirEntry)
  * @returns {String} The transformed data string
  */
-function transformReplayUrls(dirEntry, data, mimetype, callback) {
+function transformReplayUrls (dirEntry, data, mimetype, callback) {
     /**
      * Transform URL links in HTML files
      * Note that some Zimit ZIMs have mimeteypes like 'text/html;raw=true', so we can't simply match 'text/html'
      * Other ZIMs have a mimetype like 'html' (with no 'text/'), so we have to match as generically as possible
      */
-    var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name);
+    var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive._file.name);
     if (/\bx?html\b/i.test(mimetype)) {
         var zimitPrefix = data.match(regexpGetZimitPrefix);
         // If the URL is the same as the URL with everything after the first / removed, then we are in the root directory
@@ -144,11 +148,10 @@ function transformReplayUrls(dirEntry, data, mimetype, callback) {
         // data = data.replace(/(<\/head>\s*)/i, '<script src="https://' + params.zimitPrefix + '/static/wombat.js"></script>\n');
 
         // Get stem for constructing an absolute URL
-        data = data.replace(regexpZimitHtmlLinks, function(match, blockStart, equals, quote, relAssetUrl, blockClose) {
+        data = data.replace(regexpZimitHtmlLinks, function (match, blockStart, equals, quote, relAssetUrl, blockClose) {
             var newBlock = match;
             var assetUrl = relAssetUrl;
-                // DEBUG:
-                // console.log('Asset URL: ' + assetUrl);
+            // console.log('Asset URL: ' + assetUrl);
             // Remove google analytics and other analytics files that cause stall
             if (/analytics|typepad.*stats|googleads|doubleclick|syndication/i.test(assetUrl)) return '';
             // For root-relative links, we need to add the zimitPrefix
@@ -156,7 +159,7 @@ function transformReplayUrls(dirEntry, data, mimetype, callback) {
             // For Zimit assets that begin with https: or // the zimitPrefix is derived from the URL
             assetUrl = assetUrl.replace(/^(?:https?:)?\/\//i, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
             // For fully relative links, we have to remove any '..' if we are in root directory
-            if (rootDirectory) assetUrl = assetUrl.replace(/^(\.\.\/?)+/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/'); 
+            if (rootDirectory) assetUrl = assetUrl.replace(/^(\.\.\/?)+/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
             // Add placeholder to prevent further transformations
             if (/^<a\s/i.test(newBlock)) newBlock = newBlock.replace(relAssetUrl, '@kiwixtrans@' + assetUrl + (params.contentInjectionMode === 'serviceworker' ? '?isKiwixHref' : ''));
             // But for non-anchor URLs, We have to mark potential assets that are not easily identified as assets, due to so many html mimetypes being returned for them
@@ -168,7 +171,7 @@ function transformReplayUrls(dirEntry, data, mimetype, callback) {
         // Deal with image srcsets
         data = data.replace(/<img\b[^>]+srcset=["']([^"']+)/ig, function (match, srcset) {
             var srcsetArr = srcset.split(',');
-            for (var i=0; i < srcsetArr.length; i++) {
+            for (var i = 0; i < srcsetArr.length; i++) {
                 // For root-relative links, we need to add the zimitPrefix
                 srcsetArr[i] = srcsetArr[i].replace(/^\s?\/(?!\/)/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
                 // Zimit prefix is in the URL for absolute URLs
@@ -202,7 +205,7 @@ function transformReplayUrls(dirEntry, data, mimetype, callback) {
         if (youTubeKey && youTubeKey[1]) {
             var videoId = data.match(/originalUrl['":]+[^'"]+?youtube.com\/embed\/([^'"]+)/);
             if (videoId && videoId[1]) {
-                var rgxYouTubeKey = new RegExp(youTubeKey[1].replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), 'g');
+                var rgxYouTubeKey = new RegExp(youTubeKey[1].replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
                 data = data.replace(rgxYouTubeKey, videoId[1]);
             }
         }
@@ -220,9 +223,8 @@ function transformReplayUrls(dirEntry, data, mimetype, callback) {
         if (/passco/i.test(params.zimitPrefix)) {
             data = data.replace(/<script\b[^>]+(?:cart-fragments|lp-global\.min\.js)(?:[^<]|<(?!\/script>))+<\/script>\s*/, '');
         }
-        
     } // End of html transformations
-    
+
     /**
      * Transform css-style links in stylesheet files and stylesheet blocks in HTML
      */
@@ -234,10 +236,10 @@ function transformReplayUrls(dirEntry, data, mimetype, callback) {
             assetUrl = assetUrl.replace(/^\/(?!\/)/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
             // Deal with absolute URLs
             assetUrl = assetUrl.replace(/^(https?:)?\/\//i, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
-            if (rootDirectory) assetUrl = assetUrl.replace(/^(\.\.\/?)+/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/'); 
+            if (rootDirectory) assetUrl = assetUrl.replace(/^(\.\.\/?)+/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
             // Relative assets
-            newBlock = assetUrl === url ? newBlock :
-                newBlock.replace(url, '@kiwixtransformed@' + assetUrl);
+            newBlock = assetUrl === url ? newBlock
+                : newBlock.replace(url, '@kiwixtransformed@' + assetUrl);
             // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
             return newBlock;
         });
@@ -253,9 +255,9 @@ function transformReplayUrls(dirEntry, data, mimetype, callback) {
             var assetUrl = url;
             assetUrl = assetUrl.replace(/^\/(?!\/)/, indexRoot + '/' + dirEntry.namespace + '/' + params.zimitPrefix + '/');
             assetUrl = assetUrl.replace(/^\/\//, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
-            assetUrl = assetUrl.replace(/^https?:\/\//i, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : '')); 
+            assetUrl = assetUrl.replace(/^https?:\/\//i, indexRoot + '/' + dirEntry.namespace + '/' + (dirEntry.namespace === 'C' ? 'A/' : ''));
             // Remove analytics
-            assetUrl = /analytics|(typepad|api).*stats|googleads|doubleclick|syndication|jnn-pa\.googleapis|play\.google\.com/i.test(assetUrl) ? '' : assetUrl; 
+            assetUrl = /analytics|(typepad|api).*stats|googleads|doubleclick|syndication|jnn-pa\.googleapis|play\.google\.com/i.test(assetUrl) ? '' : assetUrl;
             // Relative assets
             newBlock = newBlock.replace(url, '@kiwixtransformed@' + assetUrl);
             // console.debug('Transform: \n' + match + '\n -> ' + newBlock);
@@ -268,7 +270,7 @@ function transformReplayUrls(dirEntry, data, mimetype, callback) {
     data = data.replace(/@kiwixtransformed@(?!\.)/g, '');
     data = data.replace(/@kiwixtrans(?:formed)?@/g, '');
 
-    return data;    
+    return data;
 }
 
 /**
@@ -277,7 +279,7 @@ function transformReplayUrls(dirEntry, data, mimetype, callback) {
  * @param {String} url The URL to transform through fuzzy matching
  * @param {Function} callback The function to call with the transformed url
  */
-function transformVideoUrl(url, articleDocument, callback) {
+function transformVideoUrl (url, articleDocument, callback) {
     if (/youtu(?:be(?:-nocookie)?\.com|\.be)/i.test(url)) {
         var cns = appstate.selectedArchive.getContentNamespace();
         var rgxTrimUrl = new RegExp('(?:[^/]|\\/(?!' + cns + '\\/))+\\/');
@@ -303,7 +305,7 @@ function transformVideoUrl(url, articleDocument, callback) {
                 cpn = cpn ? cpn[1] : null;
                 var ei = dirEntry.url.match(/ei=([^&]+)/i);
                 ei = ei ? ei[1] : null;
-                if (cpn||ei) {
+                if (cpn || ei) {
                     prefix = (cns === 'C' ? cns + '/' : '') + 'A/rr';
                     search = {
                         rgxPrefix: new RegExp('.*' + (ei ? 'ei=' + ei : '') + (cpn ? '.*cpn=' + cpn : ''), 'i'),
@@ -318,7 +320,7 @@ function transformVideoUrl(url, articleDocument, callback) {
                             console.debug('TRANSFORMED VIDEO URL ' + pureUrl + ' --> \n' + transUrl);
                             // If we are dealing with embedded video, we have to find the embedded URL and subsitute it
                             if (/\/embed\//i.test(pureUrl)) {
-                                var indexRoot = window.location.pathname.replace(/[^\/]+$/, '') + encodeURI(appstate.selectedArchive._file.name);
+                                var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive._file.name);
                                 Array.prototype.slice.call(articleDocument.querySelectorAll('iframe')).forEach(function (frame) {
                                     if (~frame.src.indexOf(videoId)) {
                                         var newUrl = window.location.origin + indexRoot + transUrl.replace(/videoembed/, '');
@@ -335,9 +337,10 @@ function transformVideoUrl(url, articleDocument, callback) {
             } else {
                 callback(url);
                 if (/youtube\.com\/embed\//i.test(pureUrl)) {
-                    var anchor = { protocol : 'https:',
-                        href : 'https://www.youtube.com/watch?v=' + videoId,
-                        type : 'video'
+                    var anchor = {
+                        protocol: 'https:',
+                        href: 'https://www.youtube.com/watch?v=' + videoId,
+                        type: 'video'
                     }
                     uiUtil.warnAndOpenExternalLinkInNewTab(null, anchor, 'This video is not available offline in this ZIM. To view online, please open the following URL');
                 }

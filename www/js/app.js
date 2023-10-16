@@ -5304,7 +5304,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         // so add some whitespace at the end of the document
         htmlArticle = htmlArticle.replace(/(<\/body>)/i, '\r\n<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n$1');
         htmlArticle = htmlArticle.replace(/(dditional\s+terms\s+may\s+apply\s+for\s+the\s+media\s+files[^<]+<\/div>\s*)/i, '$1\r\n<h1></h1><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>\r\n');
-
+        var i;
         // Dirty patches that improve performance or layout with Wikimedia ZIMs. DEV: review regularly and remove when no longer needed.
         if (appstate.wikimediaZimLoaded && params.cssCache) {
             // Reduce weight of unused JS archives for mediawiki ZIMs. This patch also removes mediawiki.page.ready.js which breakds the iframe kiwix-js #972
@@ -5336,7 +5336,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             htmlArticle = !params.isLandingPage && !/<h1\b[^>]+(?:section-heading|article-header)/i.test(htmlArticle) ? htmlArticle.replace(/(<section\sdata-mw-section-id="0"[^>]+>\s*)/i, '$1<h1 style="margin:10px 0">' + dirEntry.getTitleOrUrl().replace(/&lt;/g, '<') + '</h1>') : htmlArticle;
             if (!params.isLandingPage) {
                 // Convert section tags to details tags (we have to loop because regex only matches innermost <section>...</section>)
-                for (var i = 5; i--;) {
+                for (i = 5; i--;) {
                     htmlArticle = htmlArticle.replace(/<section\b([^>]*data-mw-section-id=["'][1-9][^>]*)>((?:(?=([^<]+))\3|<(?!section\b[^>]*>))*?)<\/section>/ig, function (m0, m1, m2) {
                         var summary = m2.replace(/(<(h[2-9])\b[^>]*>(?:[^<]|<(?!\2))+?<\/\2>)/i, '<summary class="section-heading collapsible-heading">$1</summary>');
                         return '<details ' + m1 + '>' + summary + '</details>';
@@ -5379,7 +5379,7 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
             }
         } while (hatnote.length);
         // Ensure we replace them in the right order
-        for (var i = hatnotes.length; i--;) {
+        for (i = hatnotes.length; i--;) {
             htmlArticle = htmlArticle.replace(/(<\/h1>\s*)/i, '$1' + hatnotes[i].replace(/(<div\s+)/i, '$1style="padding-top:10px;" '));
         }
 
