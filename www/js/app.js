@@ -3452,53 +3452,7 @@ function setLocalArchiveFromArchiveList (archive) {
         if (cssBlobCache) {
             cssBlobCache = new Map();
         }
-        appstate.selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archive, function (archive) {
-            uiUtil.clearSpinner();
-            settingsStore.setItem('lastSelectedArchive', archive, Infinity);
-            // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
-            // (this only affects jQuery mode)
-            appstate.target = 'iframe';
-            appstate.wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
-            if (params.contentInjectionMode === 'serviceworker') {
-                if (!appstate.wikimediaZimLoaded) {
-                    if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
-                    if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = false;
-                    if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
-                    // Set defaults that allow for greatest compabitibility with Zimit ZIM types
-                    if (params.zimType === 'zimit') {
-                        var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-                        if (params.cssTheme === 'auto' && determinedTheme !== 'light' && !/UWP/.test(params.appType)) {
-                            params.cssTheme = 'darkReader';
-                            document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = true;
-                        }
-                        if (!params.windowOpener) {
-                            params.noWarning = true;
-                            document.getElementById('tabOpenerCheck').click();
-                            params.noWarning = false;
-                        }
-                    }
-                } else {
-                    params.noWarning = true;
-                    if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
-                    if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = 'auto';
-                    params.noWarning = false;
-                    params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
-                    if (params.cssTheme === 'auto') {
-                        document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = false;
-                    }
-                }
-            }
-            // The archive is set : go back to home page to start searching
-            if (params.rescan) {
-                document.getElementById('btnConfigure').click();
-                params.rescan = false;
-            } else {
-                document.getElementById('openLocalFiles').style.display = 'none';
-                document.getElementById('rescanStorage').style.display = 'block';
-                document.getElementById('usage').style.display = 'none';
-                document.getElementById('btnHome').click();
-            }
-        }, function (message, label) {
+        appstate.selectedArchive = zimArchiveLoader.loadArchiveFromDeviceStorage(selectedStorage, archive, archiveReadyCallback, function (message, label) {
             // callbackError which is called in case of an error
             uiUtil.systemAlert(message, label);
         });
@@ -3977,105 +3931,126 @@ function setLocalArchiveFromFileList (files, fromArchiveList) {
     // Reset the cssDirEntryCache and cssBlobCache. Must be done when archive changes.
     if (cssBlobCache) cssBlobCache = new Map();
     // TODO: Turn this into a Promise
-    appstate.selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
-        uiUtil.clearSpinner();
-        // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
-        // (this only affects jQuery mode)
-        appstate.target = 'iframe';
-        appstate.wikimediaZimLoaded = appstate.selectedArchive && /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(appstate.selectedArchive._file.name);
-        if (params.contentInjectionMode === 'serviceworker') {
-            if (!appstate.wikimediaZimLoaded) {
-                if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
-                if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = false;
-                if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
-                // Set defaults that allow for greatest compabitibility with Zimit ZIM types
-                if (params.zimType === 'zimit') {
-                    var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
-                    if (params.cssTheme === 'auto' && determinedTheme !== 'light' && !/UWP/.test(params.appType)) {
-                        params.cssTheme = 'darkReader';
-                        document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = true;
-                    }
-                    if (!params.windowOpener) {
-                        params.noWarning = true;
-                        document.getElementById('tabOpenerCheck').click();
-                        params.noWarning = false;
-                    }
-                }
-            } else {
-                params.noWarning = true;
-                if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
-                if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = 'auto';
-                params.noWarning = false;
-                params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
-                if (params.cssTheme === 'auto') {
-                    document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = false;
-                }
-            }
-        }
-        // The archive is set : go back to home page to start searching
-        params.storedFile = archive._file._files[0].name;
-        params.storedFilePath = archive._file._files[0].path ? archive._file._files[0].path : '';
-        settingsStore.setItem('lastSelectedArchive', params.storedFile, Infinity);
-        settingsStore.setItem('lastSelectedArchivePath', params.storedFilePath, Infinity);
-        if (!~params.lastPageVisit.indexOf(params.storedFile.replace(/\.zim(\w\w)?$/, ''))) {
-            // The archive has changed, so we must blank the last page
-            params.lastPageVisit = '';
-            params.lastPageHTML = '';
-        }
-        // If we have dragged and dropped files into an Electron app, we should have access to the path, so we should store it
-        if (appstate.filesDropped && params.storedFilePath) {
-            params.pickedFolder = null;
-            params.pickedFile = params.storedFilePath;
-            settingsStore.setItem('pickedFolder', '', Infinity);
-            settingsStore.setItem('pickedFile', params.pickedFile, Infinity);
-            populateDropDownListOfArchives([params.storedFile], true);
-            settingsStore.setItem('listOfArchives', encodeURI(params.storedFile), Infinity);
-            // We have to remove the file handle to prevent it from launching next time
-            cache.idxDB('delete', 'pickedFSHandle', function () {
-                console.debug('File handle deleted');
-            });
-            appstate.filesDropped = false;
-        }
-        var reloadLink = document.getElementById('reloadPackagedArchive');
-        if (reloadLink) {
-            if (params.packagedFile != params.storedFile) {
-                reloadLink.style.display = 'inline';
-                reloadLink.removeEventListener('click', loadPackagedArchive);
-                reloadLink.addEventListener('click', loadPackagedArchive);
-                document.getElementById('usage').style.display = 'none';
-            } else {
-                reloadLink.style.display = 'none';
-                currentArchive.style.display = 'none';
-                document.getElementById('usage').style.display = 'inline';
-            }
-        }
-        // This ensures the correct icon is set for the newly loaded archive
-        cssUIThemeGetOrSet(params.cssUITheme);
-        if (params.rescan) {
-            document.getElementById('btnConfigure').click();
-            setTimeout(function () {
-                document.getElementById('btnConfigure').click();
-                params.rescan = false;
-            }, 100);
-        } else {
-            if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !params.useOPFS && !window.dialog) {
-                document.getElementById('instructions').style.display = 'none';
-            } else {
-                document.getElementById('openLocalFiles').style.display = 'none';
-                document.getElementById('rescanStorage').style.display = 'block';
-            }
-            document.getElementById('usage').style.display = 'none';
-            if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile.replace(/\.zim(\w\w)?$/, ''))) {
-                var lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, '');
-                goToArticle(lastPage);
-            } else {
-                document.getElementById('btnHome').click();
-            }
-        }
-    }, function (message, label) {
+    appstate.selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, archiveReadyCallback, function (message, label) {
         // callbackError which is called in case of an error
         uiUtil.systemAlert(message, label);
     });
+}
+
+/**
+ * Functions to be run immediately after the archive is loaded
+ *
+ * @param {ZIMArchive} archive The ZIM archive
+ */
+function archiveReadyCallback (archive) {
+    uiUtil.clearSpinner();
+    // Ensure that the new ZIM output is initially sent to the iframe (e.g. if the last article was loaded in a window)
+    // (this only affects jQuery mode)
+    appstate.target = 'iframe';
+    appstate.wikimediaZimLoaded = /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(archive._file.name);
+    appstate.pureMode = false;
+    // These ZIM types have so much dynamic content that we have to allow all images
+    if (params.imageDisplay && (/gutenberg|phet/i.test(archive._file.name) ||
+    // params.isLandingPage ||
+    /kolibri/i.test(archive._file.creator) ||
+    params.zimType === 'zimit')) {
+        params.imageDisplayMode = 'all';
+        if (params.zimType !== 'zimit') {
+            // For some archive types (Gutenberg, PhET, Kolibri at least), we have to get out of the way and allow the Service Worker
+            // to act as a transparent passthrough (this key will be read in the handleMessageChannelMessage function)
+            console.debug('*** Activating pureMode for ZIM: ' + archive._file.name + ' ***');
+            appstate.pureMode = true;
+        }
+    }
+    if (params.contentInjectionMode === 'serviceworker') {
+        if (!appstate.wikimediaZimLoaded) {
+            if (params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
+            if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = false;
+            if (params.allowHTMLExtraction) document.getElementById('allowHTMLExtractionCheck').click();
+            // Set defaults that allow for greatest compabitibility with Zimit ZIM types
+            if (params.zimType === 'zimit') {
+                var determinedTheme = params.cssTheme == 'auto' ? cssUIThemeGetOrSet('auto', true) : params.cssTheme;
+                if (params.cssTheme === 'auto' && determinedTheme !== 'light' && !/UWP/.test(params.appType)) {
+                    params.cssTheme = 'darkReader';
+                    document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = true;
+                }
+                if (!params.windowOpener) {
+                    params.noWarning = true;
+                    document.getElementById('tabOpenerCheck').click();
+                    params.noWarning = false;
+                }
+            }
+        } else {
+            params.noWarning = true;
+            if (!params.manipulateImages) document.getElementById('manipulateImagesCheck').click();
+            if (settingsStore.getItem('displayHiddenBlockeElements') === 'auto') params.displayHiddenBlockElements = 'auto';
+            params.noWarning = false;
+            params.cssTheme = settingsStore.getItem('cssTheme') || 'light';
+            if (params.cssTheme === 'auto') {
+                document.getElementById('cssWikiDarkThemeDarkReaderCheck').checked = false;
+            }
+        }
+    }
+    // The archive is set : go back to home page to start searching
+    params.storedFile = archive._file._files[0].name;
+    params.storedFilePath = archive._file._files[0].path ? archive._file._files[0].path : '';
+    settingsStore.setItem('lastSelectedArchive', params.storedFile, Infinity);
+    settingsStore.setItem('lastSelectedArchivePath', params.storedFilePath, Infinity);
+    if (!~params.lastPageVisit.indexOf(params.storedFile.replace(/\.zim(\w\w)?$/, ''))) {
+        // The archive has changed, so we must blank the last page
+        params.lastPageVisit = '';
+        params.lastPageHTML = '';
+    }
+    // If we have dragged and dropped files into an Electron app, we should have access to the path, so we should store it
+    if (appstate.filesDropped && params.storedFilePath) {
+        params.pickedFolder = null;
+        params.pickedFile = params.storedFilePath;
+        settingsStore.setItem('pickedFolder', '', Infinity);
+        settingsStore.setItem('pickedFile', params.pickedFile, Infinity);
+        populateDropDownListOfArchives([params.storedFile], true);
+        settingsStore.setItem('listOfArchives', encodeURI(params.storedFile), Infinity);
+        // We have to remove the file handle to prevent it from launching next time
+        cache.idxDB('delete', 'pickedFSHandle', function () {
+            console.debug('File handle deleted');
+        });
+        appstate.filesDropped = false;
+    }
+    var reloadLink = document.getElementById('reloadPackagedArchive');
+    if (reloadLink) {
+        if (params.packagedFile != params.storedFile) {
+            reloadLink.style.display = 'inline';
+            reloadLink.removeEventListener('click', loadPackagedArchive);
+            reloadLink.addEventListener('click', loadPackagedArchive);
+            document.getElementById('usage').style.display = 'none';
+        } else {
+            reloadLink.style.display = 'none';
+            currentArchive.style.display = 'none';
+            document.getElementById('usage').style.display = 'inline';
+        }
+    }
+    // This ensures the correct icon is set for the newly loaded archive
+    cssUIThemeGetOrSet(params.cssUITheme);
+    if (params.rescan) {
+        document.getElementById('btnConfigure').click();
+        setTimeout(function () {
+            document.getElementById('btnConfigure').click();
+            params.rescan = false;
+        }, 100);
+    } else {
+        if (typeof Windows === 'undefined' && typeof window.showOpenFilePicker !== 'function' && !params.useOPFS && !window.dialog) {
+            document.getElementById('instructions').style.display = 'none';
+        } else {
+            document.getElementById('openLocalFiles').style.display = 'none';
+            document.getElementById('rescanStorage').style.display = 'block';
+        }
+        document.getElementById('usage').style.display = 'none';
+        if (params.rememberLastPage && ~params.lastPageVisit.indexOf(params.storedFile.replace(/\.zim(\w\w)?$/, ''))) {
+            var lastPage = params.lastPageVisit.replace(/@kiwixKey@.+/, '');
+            goToArticle(lastPage);
+        } else {
+            document.getElementById('btnHome').click();
+        }
+    }
 }
 
 function loadPackagedArchive () {
@@ -4922,7 +4897,7 @@ function handleMessageChannelMessage (event) {
             if (params.zimType === 'zimit') {
                 titleIsAsset = !/\??isKiwixHref/.test(title);
             }
-            title = title.replace(/\??isKiwixHref/, '');
+            title = title.replace(/\??isKiwixHref/, ''); // Only applies to Zimit archives (added in transformZimit.js)
             if (appstate.selectedArchive && appstate.selectedArchive.landingPageUrl === title) params.isLandingPage = true;
             var messagePort = event.ports[0];
             if (!anchorParameter && event.data.anchorTarget) anchorParameter = event.data.anchorTarget;
@@ -4969,19 +4944,13 @@ function handleMessageChannelMessage (event) {
                 } else {
                     var mimetype = dirEntry.getMimetype();
                     var imageDisplayMode = params.imageDisplayMode;
-                    // These ZIM types have so much dynamic content that we have to allow all images
-                    if (params.imageDisplay && (/gutenberg|phet/i.test(appstate.selectedArchive._file.name) ||
-                        // params.isLandingPage ||
-                        params.zimType === 'zimit')) {
-                        imageDisplayMode = 'all';
-                    }
-                    // console.debug('Spinner should show now: [' + mimetype + '] ' + title);
                     if (/\b(css|javascript|video|vtt|webm)\b/i.test(mimetype)) {
                         var shortTitle = dirEntry.url.replace(/[^/]+\//g, '').substring(0, 18);
                         uiUtil.pollSpinner('Getting ' + shortTitle + '...');
                     }
-                    // If it's an HTML type and not an asset, we load it in a new page instance
-                    if (/\bx?html\b/i.test(mimetype) && !dirEntry.isAsset && !/\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(dirEntry.url)) {
+                    // If it's an HTML type and not an asset, and we're not using pureMode, then we load it in a new page instance
+                    if (/\bx?html\b/i.test(mimetype) && !appstate.pureMode &&
+                    !dirEntry.isAsset && !/\.(png|gif|jpe?g|svg|css|js|mpe?g|webp|webm|woff2?|eot|mp[43])(\?|$)/i.test(dirEntry.url)) {
                         loadingArticle = title;
                         // Intercept files of type html and apply transformations
                         var message = {
