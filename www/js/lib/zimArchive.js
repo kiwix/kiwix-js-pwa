@@ -138,15 +138,20 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                 }
                 // Set the archive file type ('open' or 'zimit')
                 params.zimType = that.setZimType();
-
+                // var thisCallbackReady = callbackReady;
                 // Add any metadata from the M/ namespace that you need access to here
-                that.addMetadataToZIMFile('Creator');
-
+                Promise.all([
+                    that.addMetadataToZIMFile('Creator'),
+                    that.addMetadataToZIMFile('Name')
+                ]).then(function () {
+                    // If the arhchive name doesn't end in `.zim`, we add it to the metadata
+                    that._file.name = that._file.name.replace(/\.zim\s*$/i, '') + '.zim';
+                    callbackReady(that);
+                });
                 // DEV: Currently, extended listings are only used for title (=article) listings when the user searches
                 // for an article or uses the Random button, by which time the listings will have been extracted.
                 // If, in the future, listings are used in a more time-critical manner, consider forcing a wait before
                 // declaring the archive to be ready, by chaining the following callback in a .then() function of setListings.
-                callbackReady(that);
             }).catch(function (err) {
                 console.warn('Error setting archive listings: ', err);
             });
@@ -746,8 +751,9 @@ ZIMArchive.prototype.getDirEntryByPath = function(path, zimitResolving, original
         return that._file.dirEntryByUrlIndex(index);
     }).then(function (dirEntry) {
         // Filter Zimit dirEntries and do somee initial transforms
-        if (that._file.zimType === 'zimit')
+        if (that._file.zimType === 'zimit') {
             dirEntry = transformZimit.filterReplayFiles(dirEntry);
+        }
         if (!dirEntry) {
             // We couldn't get the dirEntry, so look it up the Zimit header
             if (!zimitResolving && that._file.zimType === 'zimit' && !/^(H|C\/H)\//.test(path) && path !== appstate.originalPath) {
@@ -855,15 +861,17 @@ ZIMArchive.prototype.getMetadata = function (key, callback) {
 /**
  * Add Metadata to the ZIM file
  * @param {String} key The key of the metadata to add to the ZIM file
- * @param {Function} callback An optional callback to call with the metadata
+ * @returns {Promise<String>} A Promise that resolves with the metadata string, if it exists
  */
-ZIMArchive.prototype.addMetadataToZIMFile = function (key, callback) {
+ZIMArchive.prototype.addMetadataToZIMFile = function (key) {
     var that = this;
     var lcaseKey = key.toLocaleLowerCase();
-    this.getMetadata(key, function (data) {
-        data = data || '';
-        that._file[lcaseKey] = data;
-        if (callback) callback(data);
+    return new Promise(function (resolve, reject) {
+        that.getMetadata(key, function (data) {
+            data = data || '';
+            that._file[lcaseKey] = data;
+            resolve(data);
+        });
     });
 };
 
