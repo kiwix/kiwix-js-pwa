@@ -22,7 +22,7 @@
 
 'use strict';
 
-/* global params */
+/* global params, appstate */
 
 import zimfile from './zimfile.js';
 import zimDirEntry from './zimDirEntry.js';
@@ -138,6 +138,10 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                 }
                 // Set the archive file type ('open' or 'zimit')
                 params.zimType = that.setZimType();
+
+                // Add any metadata from the M/ namespace that you need access to here
+                that.addMetadataToZIMFile('Creator');
+
                 // DEV: Currently, extended listings are only used for title (=article) listings when the user searches
                 // for an article or uses the Random button, by which time the listings will have been extracted.
                 // If, in the future, listings are used in a more time-critical manner, consider forcing a wait before
@@ -845,6 +849,21 @@ ZIMArchive.prototype.getMetadata = function (key, callback) {
     }).catch(function (e) {
         console.warn('Metadata with key ' + key + ' not found in the archive', e);
         callback();
+    });
+};
+
+/**
+ * Add Metadata to the ZIM file
+ * @param {String} key The key of the metadata to add to the ZIM file
+ * @param {Function} callback An optional callback to call with the metadata
+ */
+ZIMArchive.prototype.addMetadataToZIMFile = function (key, callback) {
+    var that = this;
+    var lcaseKey = key.toLocaleLowerCase();
+    this.getMetadata(key, function (data) {
+        data = data || '';
+        that._file[lcaseKey] = data;
+        if (callback) callback(data);
     });
 };
 
