@@ -131,7 +131,7 @@ function transformReplayUrls (dirEntry, data, mimetype, callback) {
      * Note that some Zimit ZIMs have mimeteypes like 'text/html;raw=true', so we can't simply match 'text/html'
      * Other ZIMs have a mimetype like 'html' (with no 'text/'), so we have to match as generically as possible
      */
-    var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive._file.name);
+    var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive.file.name);
     if (/\bx?html\b/i.test(mimetype)) {
         var zimitPrefix = data.match(regexpGetZimitPrefix);
         // If the URL is the same as the URL with everything after the first / removed, then we are in the root directory
@@ -320,7 +320,7 @@ function transformVideoUrl (url, articleDocument, callback) {
                             console.debug('TRANSFORMED VIDEO URL ' + pureUrl + ' --> \n' + transUrl);
                             // If we are dealing with embedded video, we have to find the embedded URL and subsitute it
                             if (/\/embed\//i.test(pureUrl)) {
-                                var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive._file.name);
+                                var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive.file.name);
                                 Array.prototype.slice.call(articleDocument.querySelectorAll('iframe')).forEach(function (frame) {
                                     if (~frame.src.indexOf(videoId)) {
                                         var newUrl = window.location.origin + indexRoot + transUrl.replace(/videoembed/, '');

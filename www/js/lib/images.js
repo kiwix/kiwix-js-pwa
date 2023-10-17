@@ -105,7 +105,7 @@ function extractImages (images, callback) {
             return;
         }
         // Zimit files (at least) will sometimes have a ZIM prefix, but we are extracting raw here
-        title = title.replace(appstate.selectedArchive._file.name + '/', '');
+        title = title.replace(appstate.selectedArchive.file.name + '/', '');
         // Zimit files store URLs encoded!
         if (params.zimType === 'zimit') title = encodeURI(title);
         appstate.selectedArchive.getDirEntryByPath(title).then(function (dirEntry) {
@@ -242,7 +242,7 @@ function prepareImagesServiceWorker (win, forPrinting) {
     }, 1000);
     if (!forPrinting && !documentImages.length) return;
     var imageHtml;
-    var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
+    var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive.file.name) + '/';
     for (var i = 0, l = documentImages.length; i < l; i++) {
         // Process Wikimedia MathML, but not if we'll be using the jQuery routine later
         if (!(params.manipulateImages || params.allowHTMLExtraction)) {
@@ -312,7 +312,7 @@ function prepareImagesJQuery (win, forPrinting) {
     container = win;
     var doc = container.document;
     var documentImages = doc.querySelectorAll('img[data-kiwixurl], video, audio');
-    var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive._file.name) + '/';
+    var indexRoot = window.location.pathname.replace(/[^/]+$/, '') + encodeURI(appstate.selectedArchive.file.name) + '/';
     indexRoot = indexRoot.replace(/^\//, '');
     // Zimit ZIMs work better if all images are extracted
     if (params.zimType === 'zimit') forPrinting = true;
@@ -331,7 +331,7 @@ function prepareImagesJQuery (win, forPrinting) {
             image.style.opacity = '0';
             // Set a minimum width to avoid some images not rendering in squashed hidden tables
             if (params.displayHiddenBlockElements && image.width && !image.style.minWidth &&
-                /wiki|wiktionary/i.test(appstate.selectedArchive._file.name)) {
+                /wiki|wiktionary/i.test(appstate.selectedArchive.file.name)) {
                 var imgX = image.width + '';
                 imgX = imgX.replace(/(\d+)$/, '$1px');
                 image.style.minWidth = imgX;

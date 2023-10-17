@@ -1,22 +1,22 @@
 ﻿/**
  * zimArchive.js: Support for archives in ZIM format.
  *
- * Copyright 2015 Mossroy and contributors
- * License GPL v3:
+ * Copyright 2015-2023 Mossroy, Jaifroid and contributors
+ * Licence GPL v3:
  *
  * This file is part of Kiwix.
  *
  * Kiwix is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU General Public Licence as published by
+ * the Free Software Foundation, either version 3 of the Licence, or
  * (at your option) any later version.
  *
  * Kiwix is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General Public Licence for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General Public Licence
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 
@@ -34,10 +34,17 @@ import utf8 from './utf8.js';
 /**
  * ZIM Archive
  *
- *
  * @typedef ZIMArchive
- * @property {ZIMFile} _file The ZIM file (instance of ZIMFile, that might physically be split into several actual files)
- * @property {String} _language Language of the content
+ * @property {ZIMFile} file The ZIM file (instance of ZIMFile, that might physically be split into several actual _files)
+ * @property {String} counter Counter of various types of content in the archive
+ * @property {String} creator Creator of the content
+ * @property {String} date Date of the creation of the archive
+ * @property {String} description Description of the content
+ * @property {String} language Language of the content
+ * @property {String} name Name of the archive
+ * @property {String} publisher Publisher of the content
+ * @property {String} title Title of the content
+ * @property {String} zimType Extended property: currently either 'open' for OpenZIM file type, or 'zimit' for the warc2zim file type used by Zimit
  */
 
 /**
@@ -66,17 +73,16 @@ var LZ;
  */
 function ZIMArchive (storage, path, callbackReady, callbackError) {
     var that = this;
-    that._file = null;
-    that._language = ''; // @TODO
+    that.file = null;
     var createZimfile = function (fileArray) {
         zimfile.fromFileArray(fileArray).then(function (file) {
-            that._file = file;
+            that.file = file;
             // Clear the previous libzimWoker
             LZ = null;
             // Set a global parameter to report the search provider type
             params.searchProvider = 'title';
             // File has been created, but we need to add any Listings which extend the archive metadata
-            that._file.setListings([
+            that.file.setListings([
                 // Provide here any Listings for which we need to extract metadata as key:value obects to be added to the file
                 // 'ptrName' and 'countName' contain the key names to be set in the archive file object
                 {
@@ -100,16 +106,16 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                 }
             ]).then(function () {
                 // There is currently an exception thrown in the libzim wasm if we attempt to load a split ZIM archive, so we work around
-                var isSplitZim = /\.zima.$/i.test(that._file._files[0].name);
+                var isSplitZim = /\.zima.$/i.test(that.file._files[0].name);
                 var libzimReaderType = params.debugLibzimASM || ('WebAssembly' in self ? 'wasm' : 'asm');
-                if (that._file.fullTextIndex && params.debugLibzimASM !== 'disable' && (params.debugLibzimASM || !isSplitZim &&
+                if (that.file.fullTextIndex && params.debugLibzimASM !== 'disable' && (params.debugLibzimASM || !isSplitZim &&
                 // The ASM implementation requires Atomics support, whereas the WASM implementation does not
                 (typeof Atomics !== 'undefined' || libzimReaderType === 'wasm') &&
                 // Note that NWJS currently throws due to problems with Web Worker context, and Android is very slow unless we use OPFS
-                !(/Android/.test(params.appType) && !params.useOPFS) && !(window.nw && that._file._files[0].readMode === 'electron'))) {
+                !(/Android/.test(params.appType) && !params.useOPFS) && !(window.nw && that.file._files[0].readMode === 'electron'))) {
                     console.log('Instantiating libzim ' + libzimReaderType + ' Web Worker...');
                     LZ = new Worker('js/lib/libzim-' + libzimReaderType + '.js');
-                    that.callLibzimWorker({ action: 'init', files: that._file._files }).then(function (msg) {
+                    that.callLibzimWorker({ action: 'init', files: that.file._files }).then(function (msg) {
                         // console.debug(msg);
                         params.searchProvider = 'fulltext: ' + libzimReaderType;
                         // Update the API panel
@@ -120,7 +126,7 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                     });
                 } else {
                     // var message = 'Full text searching is not available because ';
-                    if (!that._file.fullTextIndex) {
+                    if (!that.file.fullTextIndex) {
                         params.searchProvider += ': no_fulltext'; // message += 'this ZIM does not have a full-text index.';
                     } else if (isSplitZim) {
                         params.searchProvider += ': split_zim'; // message += 'the ZIM archive is split.';
@@ -134,24 +140,35 @@ function ZIMArchive (storage, path, callbackReady, callbackError) {
                         params.searchProvider += ': unknown';
                     }
                     uiUtil.reportSearchProviderToAPIStatusPanel(params.searchProvider);
-                    // uiUtil.systemAlert(message);
                 }
                 // Set the archive file type ('open' or 'zimit')
                 params.zimType = that.setZimType();
-                // var thisCallbackReady = callbackReady;
-                // Add any metadata from the M/ namespace that you need access to here
+                // Add time-critical metadata from the M/ namespace that you need early access to here
+                // Note that adding metadata here delays the reporting of the ZIM archive as ready
+                // Further metadata are added in the background below, and can be accessed later
                 Promise.all([
                     that.addMetadataToZIMFile('Creator'),
-                    that.addMetadataToZIMFile('Name')
+                    that.addMetadataToZIMFile('Language')
                 ]).then(function () {
-                    // If the arhchive name doesn't end in `.zim`, we add it to the metadata
-                    that._file.name = that._file.name.replace(/\.zim\s*$/i, '') + '.zim';
+                    console.debug('ZIMArchive ready, metadata will be added in the background');
+                    // All listings should be loaded, so we can now call the callback
                     callbackReady(that);
                 });
-                // DEV: Currently, extended listings are only used for title (=article) listings when the user searches
-                // for an article or uses the Random button, by which time the listings will have been extracted.
-                // If, in the future, listings are used in a more time-critical manner, consider forcing a wait before
-                // declaring the archive to be ready, by chaining the following callback in a .then() function of setListings.
+                // Add non-time-critical metadata to archive in background so as not to delay opening of the archive
+                // DEV: Note that it does not make sense to extract illustration (icon) metadata here. Instead, if you implement use of the illustration
+                // metadata as icons for the loaded ZIM [kiwix-js #886], you should simply use the ZIMArdhive.getMetadata() function when needed
+                setTimeout(function () {
+                    Promise.all([
+                        that.addMetadataToZIMFile('Counter'),
+                        that.addMetadataToZIMFile('Date'),
+                        that.addMetadataToZIMFile('Description'),
+                        that.addMetadataToZIMFile('Name'),
+                        that.addMetadataToZIMFile('Publisher'),
+                        that.addMetadataToZIMFile('Title')
+                    ]).then(function () {
+                        console.debug('ZIMArchive metadata loaded:', that);
+                    });
+                }, 1500);
             }).catch(function (err) {
                 console.warn('Error setting archive listings: ', err);
             });
@@ -208,27 +225,27 @@ ZIMArchive.prototype._searchArchiveParts = function (storage, prefixPath) {
  * @returns {Boolean}
  */
 ZIMArchive.prototype.isReady = function () {
-    return this._file !== null;
+    return this.file !== null;
 };
 
 /**
  * Detects whether the supplied archive is a Zimit-style archive or an OpenZIM archive and
- * sets a _file.zimType property accordingly; also returns the detected type. Extends ZIMFile.
+ * sets a zimType property accordingly; also returns the detected type. Extends ZIMArchive.
  * @returns {String} Either 'zimit' for a Zimit archive, or 'open' for an OpenZIM archive
  */
 ZIMArchive.prototype.setZimType = function () {
-    var fileType = null;
+    var archiveType = null;
     if (this.isReady()) {
-        fileType = 'open';
-        this._file.mimeTypes.forEach(function (v) {
-            if (/warc-headers/i.test(v)) fileType = 'zimit';
+        archiveType = 'open';
+        this.file.mimeTypes.forEach(function (v) {
+            if (/warc-headers/i.test(v)) archiveType = 'zimit';
         });
-        this._file.zimType = fileType;
-        console.debug('Archive type set to: ' + fileType);
+        this.zimType = archiveType;
+        console.debug('Archive type set to: ' + archiveType);
     } else {
         console.error('ZIMArchive is not ready! Cannot set ZIM type.');
     }
-    return fileType;
+    return archiveType;
 };
 
 /**
@@ -238,11 +255,11 @@ ZIMArchive.prototype.setZimType = function () {
  */
 ZIMArchive.prototype.getMainPageDirEntry = function (callback) {
     if (this.isReady()) {
-        var mainPageUrlIndex = this._file.mainPage;
+        var mainPageUrlIndex = this.file.mainPage;
         var that = this;
-        this._file.dirEntryByUrlIndex(mainPageUrlIndex).then(function (dirEntry) {
+        this.file.dirEntryByUrlIndex(mainPageUrlIndex).then(function (dirEntry) {
             // Filter out Zimit files that we cannot handle without error
-            if (that._file.zimType === 'zimit') dirEntry = transformZimit.filterReplayFiles(dirEntry);
+            if (that.zimType === 'zimit') dirEntry = transformZimit.filterReplayFiles(dirEntry);
             callback(dirEntry);
         });
     }
@@ -254,7 +271,7 @@ ZIMArchive.prototype.getMainPageDirEntry = function (callback) {
  * @returns {DirEntry}
  */
 ZIMArchive.prototype.parseDirEntryId = function (dirEntryId) {
-    return zimDirEntry.DirEntry.fromStringId(this._file, dirEntryId);
+    return zimDirEntry.DirEntry.fromStringId(this.file, dirEntryId);
 };
 
 /**
@@ -318,7 +335,7 @@ ZIMArchive.prototype.findDirEntriesWithPrefix = function (search, callback, noIn
     var prefixNameSpaces = '';
     if (search.searchUrlIndex) {
         var rgxSplitPrefix = /^[-ABCHIJMUVWX]\//;
-        if (that._file.zimType === 'zimit' && cns === 'C') {
+        if (that.zimType === 'zimit' && cns === 'C') {
             // We have to account for the Zimit prefix in Type 1 ZIMs
             rgxSplitPrefix = /^(?:[CMWX]\/)?(?:[AH]\/)?/;
         }
@@ -425,7 +442,7 @@ ZIMArchive.prototype.findDirEntriesWithPrefix = function (search, callback, noIn
 ZIMArchive.prototype.getContentNamespace = function () {
     var errorText;
     if (this.isReady()) {
-        var ver = this._file.minorVersion;
+        var ver = this.file.minorVersion;
         // DEV: There are currently only two defined values for minorVersion in the OpenZIM specification
         // If this changes, adapt the error checking and return values
         if (ver > 1) {
@@ -455,11 +472,11 @@ ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function (prefix, s
     prefix = prefix || '';
     var cns = this.getContentNamespace();
     // Search v1 article listing if available, otherwise fallback to v0
-    var articleCount = this._file.articleCount || this._file.entryCount;
-    var searchFunction = appstate.selectedArchive._file.dirEntryByTitleIndex;
+    var articleCount = this.file.articleCount || this.file.entryCount;
+    var searchFunction = appstate.selectedArchive.file.dirEntryByTitleIndex;
     if (search.searchUrlIndex) {
-        articleCount = this._file.entryCount;
-        searchFunction = appstate.selectedArchive._file.dirEntryByUrlIndex;
+        articleCount = this.file.entryCount;
+        searchFunction = appstate.selectedArchive.file.dirEntryByUrlIndex;
     }
     util.binarySearch(startIndex, articleCount, function(i) {
         return searchFunction(i).then(function(dirEntry) {
@@ -488,7 +505,7 @@ ZIMArchive.prototype.findDirEntriesWithPrefixCaseSensitive = function (prefix, s
         });
     }, true).then(function (firstIndex) {
         var vDirEntries = [];
-        var addDirEntries = function(index, lastTitle) {
+        var addDirEntries = function (index, lastTitle) {
             if (search.status === 'cancelled' || search.found >= search.size || index >= articleCount
             || lastTitle && !~lastTitle.indexOf(prefix) || index - firstIndex >= search.window) {
                 // DEV: Diagnostics to be removed before merge
@@ -543,7 +560,7 @@ ZIMArchive.prototype.findDirEntriesFromFullTextSearch = function (search, dirEnt
     // We give ourselves an overhead in caclulating the results needed, because full-text search will return some results already found
     // var resultsNeeded = Math.floor(params.maxSearchResultsSize - dirEntries.length / 2);
     var resultsNeeded = number || params.maxSearchResultsSize;
-    return this.callLibzimWorker({action: "search", text: search.prefix, numResults: resultsNeeded}).then(function (results) {
+    return this.callLibzimWorker({ action: 'search', text: search.prefix, numResults: resultsNeeded }).then(function (results) {
         if (results) {
             var dirEntryPaths = [];
             var fullTextPaths = [];
@@ -614,10 +631,10 @@ ZIMArchive.prototype.callLibzimWorker = function (parameters) {
  * @param {DirEntry} dirEntry
  * @param {callbackDirEntry} callback
  */
-ZIMArchive.prototype.resolveRedirect = function(dirEntry, callback) {
+ZIMArchive.prototype.resolveRedirect = function (dirEntry, callback) {
     var that = this;
-    this._file.dirEntryByUrlIndex(dirEntry.redirectTarget).then(function (resolvedDirEntry) {
-        if (that._file.zimType === 'zimit') resolvedDirEntry = transformZimit.filterReplayFiles(resolvedDirEntry);
+    this.file.dirEntryByUrlIndex(dirEntry.redirectTarget).then(function (resolvedDirEntry) {
+        if (that.zimType === 'zimit') resolvedDirEntry = transformZimit.filterReplayFiles(resolvedDirEntry);
         callback(resolvedDirEntry);
     });
 };
@@ -632,7 +649,7 @@ ZIMArchive.prototype.resolveRedirect = function(dirEntry, callback) {
  * @param {DirEntry} dirEntry
  * @param {callbackStringContent} callback
  */
-ZIMArchive.prototype.readUtf8File = function(dirEntry, callback) {
+ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
     var cns = appstate.selectedArchive.getContentNamespace();
     return dirEntry.readData().then(function(data) {
         var mimetype = dirEntry.getMimetype();
@@ -691,7 +708,7 @@ ZIMArchive.prototype.readUtf8File = function(dirEntry, callback) {
  * @param {DirEntry} dirEntry
  * @param {callbackBinaryContent} callback
  */
-ZIMArchive.prototype.readBinaryFile = function(dirEntry, callback) {
+ZIMArchive.prototype.readBinaryFile = function (dirEntry, callback) {
     var that = this;
     return dirEntry.readData().then(function(data) {
         var mimetype = dirEntry.getMimetype();
@@ -720,7 +737,7 @@ ZIMArchive.prototype.readBinaryFile = function(dirEntry, callback) {
  * @param {String} originalPath Optional string used internally to prevent infinite loop
  * @return {Promise<DirEntry>} A Promise that resolves to a Directory Entry, or null if not found.
  */
-ZIMArchive.prototype.getDirEntryByPath = function(path, zimitResolving, originalPath) {
+ZIMArchive.prototype.getDirEntryByPath = function (path, zimitResolving, originalPath) {
     var that = this;
     if (originalPath) appstate.originalPath = originalPath;
     path = path.replace(/\?kiwix-display/, '');
@@ -729,14 +746,14 @@ ZIMArchive.prototype.getDirEntryByPath = function(path, zimitResolving, original
         var revisedPath = path.replace(/.*?((?:C\/A|A)\/(?!.*(?:C\/A|A)).+)$/, '$1');
         if (revisedPath !== path) {
             console.warn('*** Revised path from ' + path + '\nto: ' + revisedPath + ' ***');
-            if (appstate.selectedArchive._file.zimType === 'zimit') {
+            if (appstate.selectedArchive.zimType === 'zimit') {
                 console.debug('*** DEV: Consider correcting this error in tranformZimit.js ***');
             }
             path = revisedPath;
         }
     }
-    return util.binarySearch(0, this._file.entryCount, function(i) {
-        return that._file.dirEntryByUrlIndex(i).then(function(dirEntry) {
+    return util.binarySearch(0, this.file.entryCount, function(i) {
+        return that.file.dirEntryByUrlIndex(i).then(function(dirEntry) {
             var url = dirEntry.namespace + "/" + dirEntry.url;
             if (path < url) {
                 return -1;
@@ -748,15 +765,15 @@ ZIMArchive.prototype.getDirEntryByPath = function(path, zimitResolving, original
         });
     }).then(function (index) {
         if (index === null) return null;
-        return that._file.dirEntryByUrlIndex(index);
+        return that.file.dirEntryByUrlIndex(index);
     }).then(function (dirEntry) {
         // Filter Zimit dirEntries and do somee initial transforms
-        if (that._file.zimType === 'zimit') {
+        if (that.zimType === 'zimit') {
             dirEntry = transformZimit.filterReplayFiles(dirEntry);
         }
         if (!dirEntry) {
             // We couldn't get the dirEntry, so look it up the Zimit header
-            if (!zimitResolving && that._file.zimType === 'zimit' && !/^(H|C\/H)\//.test(path) && path !== appstate.originalPath) {
+            if (!zimitResolving && that.zimType === 'zimit' && !/^(H|C\/H)\//.test(path) && path !== appstate.originalPath) {
                 // We need to look the file up in the Header namespace (double replacement ensures both types of ZIM are supported)
                 var oldPath = path;
                 path = path.replace(/^A\//, 'H/').replace(/^(C\/)A\//, '$1H/');
@@ -831,9 +848,9 @@ function fuzzySearch(path, search) {
  */
 ZIMArchive.prototype.getRandomDirEntry = function (callback) {
     // Prefer an article-only (v1) title pointer list, if available
-    var articleCount = this._file.articleCount || this._file.entryCount;
+    var articleCount = this.file.articleCount || this.file.entryCount;
     var index = Math.floor(Math.random() * articleCount);
-    this._file.dirEntryByTitleIndex(index).then(callback);
+    this.file.dirEntryByTitleIndex(index).then(callback);
 };
 
 /**
@@ -869,7 +886,7 @@ ZIMArchive.prototype.addMetadataToZIMFile = function (key) {
     return new Promise(function (resolve, reject) {
         that.getMetadata(key, function (data) {
             data = data || '';
-            that._file[lcaseKey] = data;
+            that[lcaseKey] = data;
             resolve(data);
         });
     });
