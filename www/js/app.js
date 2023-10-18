@@ -3949,12 +3949,13 @@ function archiveReadyCallback (archive) {
     appstate.target = 'iframe';
     appstate.wikimediaZimLoaded = /wikipedia|wikivoyage|mdwiki|wiktionary/i.test(archive.file.name);
     appstate.pureMode = false;
+    params.imageDisplayMode = params.imageDisplay ? 'progressive' : 'manual';
     // These ZIM types have so much dynamic content that we have to allow all images
-    if (params.imageDisplay && (/gutenberg|phet/i.test(archive.file.name) ||
-    // params.isLandingPage ||
-    /kolibri/i.test(archive.creator) ||
-    params.zimType === 'zimit')) {
-        params.imageDisplayMode = 'all';
+    if (/gutenberg|phet/i.test(archive.file.name) ||
+      // params.isLandingPage ||
+      /kolibri/i.test(archive.creator) ||
+      params.zimType === 'zimit') {
+        if (params.imageDisplay) params.imageDisplayMode = 'all';
         if (params.zimType !== 'zimit') {
             // For some archive types (Gutenberg, PhET, Kolibri at least), we have to get out of the way and allow the Service Worker
             // to act as a transparent passthrough (this key will be read in the handleMessageChannelMessage function)
@@ -5098,10 +5099,13 @@ function postTransformedHTML (thisMessage, thisMessagePort, thisDirEntry) {
 }
 
 // Compile some regular expressions needed to modify links
+
 // Pattern to find the path in a url
 var regexpPath = /^(.*\/)[^/]+$/;
+
 // Pattern to find a ZIM URL (with its namespace) - see https://wiki.openzim.org/wiki/ZIM_file_format#Namespaces
 params.regexpZIMUrlWithNamespace = /^[./]*([-ABCHIJMUVWX]\/.+)$/;
+
 // The case-insensitive regex below finds images, scripts, stylesheets (not tracks) with ZIM-type metadata and image namespaces.
 // It first searches for <img, <script, <link, etc., then scans forward to find, on a word boundary, either src=["'] or href=["']
 // (ignoring any extra whitespace), and it then tests the path of the URL with a non-capturing negative lookahead (?!...) that excludes
@@ -5110,15 +5114,19 @@ params.regexpZIMUrlWithNamespace = /^[./]*([-ABCHIJMUVWX]\/.+)$/;
 // below, it will be further processed to calculate the ZIM URL from the relative path. This regex can cope with legitimate single
 // quote marks (') in the URL.
 params.regexpTagsWithZimUrl = /(<(?:img|script|link)\b[^>]*?\s)(?:src|href)(\s*=\s*(["']))(?![a-z][a-z0-9+.-]+:)(.+?)(?=\3|\?|#)([\s\S]*?>)/ig;
+
 // Similar to above, but tailored for Zimit links
 // params.regexpZimitLinks = /(<(?:a|img|script|link|track)\b[^>]*?\s)(?:src|href)(=(["']))(?!#)(.+?)(?=\3|\?|#)([\s\S]*?>)/ig;
+
 // Regex below tests the html of an article for active content [kiwix-js #466]
-// It inspects every <script> block in the html and matches in the following cases: 1) the script loads a UI application called app.js,
-// init.js, or other common scripts found in unsupported ZIMs; 2) the script block has inline content that does not contain
-// "importScript()", "toggleOpenSection" or an "articleId" assignment (these strings are used widely in our fully supported wikimedia ZIMs,
-// so they are excluded); 3) the script block is not of type "math" (these are MathJax markup scripts used extensively in Stackexchange
-// ZIMs). Note that the regex will match ReactJS <script type="text/html"> markup, which is common in unsupported packaged UIs, e.g. PhET ZIMs.
-var regexpActiveContent = /<script\b(?:(?![^>]+src\b)|(?=[^>]+src\b=["'][^"']*?\b(?:app|init|l1[08]9)\.js))(?![^<]+(?:importScript\(\)|toggleOpenSection|articleId\s?=\s?['"]|window.NREUM))(?![^>]+type\s*=\s*["'](?:math\/|[^"']*?math))/i;
+// It inspects every <script> block in the html and matches in the following cases: 1) the script is of type "module"; 2) the script
+// loads a UI application called app.js, init.js, or other common scripts found in unsupported ZIMs; 3) the script block has inline
+// content that does not contain "importScript()", "toggleOpenSection" or an "articleId" assignment (these strings are used widely in our
+// fully supported wikimedia ZIMs, so they are excluded); 4) the script block is not of type "math" (these are MathJax markup scripts used
+// extensively in Stackexchange ZIMs). Note that the regex will match ReactJS <script type="text/html"> markup, which is common in unsupported
+// packaged UIs, e.g. PhET ZIMs.
+var regexpActiveContent = /<script\b(?:(?![^>]+src\b)|(?=[^>]*type=["']module["'])|(?=[^>]+src\b=["'][^"']*?\b(?:app|init|l1[08]9)\.js))(?![^<]+(?:importScript\(\)|toggleOpenSection|articleId\s?=\s?['"]|window.NREUM))(?![^>]+type\s*=\s*["'](?:math\/|[^"']*?math))/i;
+
 // DEV: The regex below matches ZIM links (anchor hrefs) that should have the html5 "donwnload" attribute added to
 // the link. This is currently the case for epub and pdf files in Project Gutenberg ZIMs -- add any further types you need
 // to support to this regex. The "zip" has been added here as an example of how to support further filetypes
