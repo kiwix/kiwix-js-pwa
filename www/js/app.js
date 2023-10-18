@@ -4705,8 +4705,22 @@ function readArticle (dirEntry) {
                     // if (params.contentInjectionMode === 'jquery') {
                     // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
                     appstate.selectedArchive.readUtf8File(dirEntry, function (fileDirEntry, data) {
-                        if (fileDirEntry.zimitRedirect) goToArticle(fileDirEntry.zimitRedirect);
-                        else displayArticleContentInContainer(fileDirEntry, data);
+                        if (fileDirEntry && fileDirEntry.zimitRedirect) {
+                            goToArticle(fileDirEntry.zimitRedirect);
+                        } else {
+                            if (!data) {
+                                var requestedURL = (dirEntry.zimitRedirect ? dirEntry.zimitRedirect : dirEntry.namespace + '/' + dirEntry.url)
+                                uiUtil.systemAlert('<p>The requested page <b>' + requestedURL + '</b> does not appear to be an article!</p>' +
+                                    '<p>Try searching for content in the search bar, or type a <b><i>space</i></b> for the ZIM ' +
+                                    'index, or <b><i>space /</i></b> for the URL index.</p>').then(function () {
+                                        // prefix.focus();
+                                        prefix.value = requestedURL;
+                                        searchDirEntriesFromPrefix(requestedURL);
+                                    });
+                            }
+                            fileDirEntry = fileDirEntry || dirEntry;
+                            displayArticleContentInContainer(fileDirEntry, data);
+                        }
                     });
                     // This is needed so that the html is cached in displayArticleInForm
                     params.lastPageVisit = '';

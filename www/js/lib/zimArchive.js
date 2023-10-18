@@ -650,6 +650,10 @@ ZIMArchive.prototype.resolveRedirect = function (dirEntry, callback) {
  * @param {callbackStringContent} callback
  */
 ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
+    if (!dirEntry) {
+        console.warn('No directory entry found for requested URL!');
+        return callback(dirEntry, '');
+    }
     var cns = appstate.selectedArchive.getContentNamespace();
     return dirEntry.readData().then(function(data) {
         var mimetype = dirEntry.getMimetype();
@@ -664,8 +668,8 @@ ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
             // var encoding = decData.match(/<meta\b[^>]+?Content-Type[^>]+?charset=([^'"\s]+)/i);
             // encoding = encoding ? encoding[1] : '';
             // if (encoding && !/utf-8/i.test(encoding)) decData = new TextDecoder(encoding).decode(data);
-            
-            //Some Zimit assets have moved location and we need to follow the moved permanently data
+
+            // Some Zimit assets have moved location and we need to follow the moved permanently data
             if (/301\s*moved\s+permanently/i.test(data)) dirEntry = transformZimit.getZimitRedirect(dirEntry, data, cns);
 
             // Some Zimit archives have an incorrect meta charset tag. See https://github.com/openzim/warc2zim/issues/88.
@@ -684,7 +688,7 @@ ZIMArchive.prototype.readUtf8File = function (dirEntry, callback) {
                     return appstate.selectedArchive.readUtf8File(rd, callback);
                 });
             }
-       } else {
+        } else {
             // DEV: Note that we cannot terminate regex below with $ because there is a (rogue?) mimetype
             // of 'text/html;raw=true'
             if (params.zimType === 'zimit' && /\/(?:html|css|javascript)\b/i.test(mimetype)) {
