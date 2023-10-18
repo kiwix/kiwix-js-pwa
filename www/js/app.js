@@ -3459,6 +3459,13 @@ function setLocalArchiveFromArchiveList (archive) {
     }
 }
 
+/**
+ * Processes all the given fileHandles (which should be the fileHandles of the ZIM files in a directory) and matches them to the requested archive.
+ * In particular, it deals with split archives, gathering all the file parts. Intended for use with the File System API.
+ *
+ * @param {Array<FileSystemHandle>} fileHandles A set of fileHandles in a directory
+ * @param {String} archive The name of the archive to be loaded, or of the first split part (.zimaa)
+ */
 function processDirectoryOfFiles (fileHandles, archive) {
     var fileHandle;
     var fileset = [];
