@@ -1,7 +1,7 @@
 {
   "name": "kiwix-js-electron",
   "productName": "Kiwix JS Electron",
-  "version": "2.7.4-E",
+  "version": "2.7.41-E",
   "description": "Kiwix JS offline ZIM archive reader packaged for the Electron framework",
   "main": "main.cjs",
   "type": "module",
@@ -133,10 +133,10 @@
     "dist-linux": "electron-builder build --linux --projectDir dist",
     "dist-linux-appimage": "electron-builder build --linux AppImage:x64 --projectDir dist",
     "publish": "electron-builder --projectDir dist",
-    "postpackage-win": "(robocopy archives bld\\Electron\\kiwix-js-windows-win32-ia32\\resources\\app\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0",
-    "postpackage-linux": "(robocopy archives bld\\Electron\\kiwix-js-windows-linux-x64\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0"
+    "postpackage-win": "(robocopy archives bld\\Electron\\kiwix-js-pwa-win32-ia32\\resources\\app\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0",
+    "postpackage-linux": "(robocopy archives bld\\Electron\\kiwix-js-pwa-linux-x64\\archives\\ > null) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0"
   },
-  "repository": "https://github.com/kiwix/kiwix-js-windows",
+  "repository": "https://github.com/kiwix/kiwix-js-pwa",
   "keywords": [
     "Kiwix",
     "offline",

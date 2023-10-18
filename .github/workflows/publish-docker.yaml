@@ -67,7 +67,7 @@ jobs:
           tag-pattern: /^v?([0-9.]+)$/
           latest-on-tag: true
           dockerfile: docker/dockerfile.pwa
-          restrict-to: kiwix/kiwix-js-windows
+          restrict-to: kiwix/kiwix-js-pwa
           registries: ghcr.io
           manual-tag: ${{ github.event.inputs.version }}
       - name: Restart live webapp
@@ -93,5 +93,5 @@ jobs:
           fi
           # Set gh-pages branch on origin to the currently checked-out branch
           git push origin HEAD:gh-pages --force
-          echo "After deployment, the app will be available at https://kiwix.github.io/kiwix-js-windows/"
-          echo "The production deployment will be available at https://kiwix.github.io/kiwix-js-windows/dist/"
+          echo "After deployment, the app will be available at https://kiwix.github.io/kiwix-js-pwa/"
+          echo "The production deployment will be available at https://kiwix.github.io/kiwix-js-pwa/dist/"

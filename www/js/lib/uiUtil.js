@@ -399,7 +399,7 @@ function displayActiveContentWarning (type) {
             (params.contentInjectionMode === 'jquery' ? '<b>Limited Zimit support!</b> Please <a id="swModeLink" href="#contentInjectionModeDiv" ' +
             'class="alert-link">switch to Service Worker mode</a> if your platform supports it. '
                 : 'Support for <b>Zimit</b> archives is experimental. Some content (e.g. audio/video) may fail. ') +
-            'You can search for content above' + (appstate.selectedArchive._file.fullTextIndex ? ' using full-text search if your app supports it, ' +
+            'You can search for content above' + (appstate.selectedArchive.file.fullTextIndex ? ' using full-text search if your app supports it, ' +
             'or s' : '. S') + 'tart your search with <b>.*</b> to match part of a title. Type a <b><i>space</i></b> for the ZIM Archive Index, or ' +
             '<b><i>space / </i></b> for the URL Index.&nbsp;[<a id="stop" href="#expertSettingsDiv" class="alert-link">Permanently hide</a>]' +
         '</div>';

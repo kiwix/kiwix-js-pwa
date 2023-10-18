@@ -1,7 +1,7 @@
 {
   "name": "kiwix_js_windows",
   "productName": "Kiwix JS Windows",
-  "version": "2.7.4-N",
+  "version": "2.7.41-N",
   "description": "Kiwix JS Windows for NWJS",
   "main": "index.html",
   "domain": "kiwix.js.windows",
@@ -72,7 +72,7 @@
       "icon": "www/img/icons/kiwix-64.ico"
     }
   },
-  "repository": "https://github.com/kiwix/kiwix-js-windows",
+  "repository": "https://github.com/kiwix/kiwix-js-pwa",
   "keywords": [
     "Kiwix",
     "offline",

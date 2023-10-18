@@ -4,7 +4,7 @@ The easiest way to install the UWP app on Windows 10/11 is from the Microsoft St
 
 https://www.microsoft.com/en-gb/store/p/kiwix-js/9p8slz4j979j
 
-There are portable and installable versions for Linux (Ubuntu, Debian, OpenSUSE), and Windows XP/Vista/7/8/10/11 available from https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html. The Store and Electron Setup and AppImage versions are self-updating. The `zip`, `deb` and `rpm` versions do not self-update.
+There are portable and installable versions for Linux (Ubuntu, Debian, OpenSUSE), and Windows XP/Vista/7/8/10/11 available from https://kiwix.github.io/kiwix-js-pwa/app. The Store and Electron Setup and AppImage versions are self-updating. The `zip`, `deb` and `rpm` versions do not self-update.
 
 There is a PWA version at https://pwa.kiwix.org/ which can be installed as an offline app in any Chromium browser (Chrome, Edge) -- see Install button in
 Configuration. In Firefox, the app can be bookmarked, and will work offline, but it cannot be installed.
@@ -20,7 +20,7 @@ different build, then follow the instructions below. _Uninstall any previous ins
 Starting in Windows 10 version 2004, **sideloading is enabled by default** and you can install apps by double-clicking signed app packages.
 On Windows 10 version 1909 and earlier, sideloading requires some additional configuration, as does sideloading unsigned packages.
 
-* **Simple procedure**: Just try launching your package! The Kiwix JS Windows packages downloadable from [Releases](https://github.com/kiwix/kiwix-js-windows/releases/) are signed. Download the `.appxbundle` from the Assets section of a Release and launch it by double-clicking.
+* **Simple procedure**: Just try launching your package! The Kiwix JS Windows packages downloadable from [Releases](https://github.com/kiwix/kiwix-js-pwa/releases/) are signed. Download the `.appxbundle` from the Assets section of a Release and launch it by double-clicking.
 * If you wish to test an unsigned package, find an `.appxbundle` above inside `AppPackages/KiwixWebApp_x.x.x.x_[AnyCPU]_Test/` folders, and try to launch it by double-clicking.
 * You may be prompted to allow sideloading, or you may need to enable it first on version 1909 or earlier: go to Settings -> Update and security -> For developers. If this doesn't work, follow procedure below.
 * **You will need a ZIM archive to use the full features of this app** - [see below](#download-a-zim-archive-all-platforms).
@@ -39,7 +39,7 @@ On Windows 10 version 1909 and earlier, sideloading requires some additional con
 
 ## Windows 10 Mobile
 
-Download the .appx or .appxbundle from [Releases](https://github.com/kiwix/kiwix-js-windows/releases), or open an `AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/` folder above, and save it in your downloads folder, or other accessible folder, on the phone. NB DO NOT DOWNLOAD the .appxupload files you see above, as these are useless for installation.
+Download the .appx or .appxbundle from [Releases](https://github.com/kiwix/kiwix-js-pwa/releases), or open an `AppPackages/KiwixWebApp_0.x.x.x_[AnyCPU]_Test/` folder above, and save it in your downloads folder, or other accessible folder, on the phone. NB DO NOT DOWNLOAD the .appxupload files you see above, as these are useless for installation.
 
 Enable Developer mode on your device (Settings / Updates and security / For developers). Open the File Explorer on the phone, navigate to the downloads folder and tap the KiwixWebApp bundle. You will be asked if you wish to install, but it then installs silently in the background. Be patient: it can take a minute or so for the Kiwix icon to appear in the All Apps list. You will also need to download a ZIM file to use with the app (see below).
 

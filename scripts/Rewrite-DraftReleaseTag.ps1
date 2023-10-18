@@ -32,7 +32,7 @@ if (-not $CRON_LAUNCHED) {
         $GITHUB_TOKEN = Get-Content -Raw "$PSScriptRoot/github_token"
     }
     $draft_release_params = @{
-        Uri = "https://api.github.com/repos/kiwix/kiwix-js-windows/releases"
+        Uri = "https://api.github.com/repos/kiwix/kiwix-js-pwa/releases"
         Method = 'GET'
         Headers = @{
             'Authorization' = "token $GITHUB_TOKEN"

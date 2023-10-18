@@ -17,7 +17,7 @@ if ($overridetarget) {
     $INPUT_TARGET = $overridetarget
 }
 $target = "/data/download/release/kiwix-js-electron"
-$win_target = "/data/download/release/kiwix-js-windows"
+$win_target = "/data/download/release/kiwix-js-pwa"
 $keyfile = "$PSScriptRoot\ssh_key"
 $keyfile = $keyfile -ireplace '[\\/]', '/'
 
@@ -47,7 +47,7 @@ if (-not $CRON_LAUNCHED) {
         $GITHUB_TOKEN = Get-Content -Raw "$PSScriptRoot/github_token"
     }
     $draft_release_params = @{
-        Uri = "https://api.github.com/repos/kiwix/kiwix-js-windows/releases"
+        Uri = "https://api.github.com/repos/kiwix/kiwix-js-pwa/releases"
         Method = 'GET'
         Headers = @{
             'Authorization' = "token $GITHUB_TOKEN"

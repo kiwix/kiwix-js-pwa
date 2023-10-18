@@ -1,23 +1,23 @@
 ## Portable and installable builds of Kiwix JS WikiMed Electron Edition for Windows 7/8/10/11 and Linux
 
-This is **not** the UWP/Microsoft Store build. If you are using Windows 10 or 11, we strongly recommend [the WikiMed release for the Microsoft Store](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html), which will keep itself up-to-date automatically. These portable and installable versions run on the included [Electron platform](https://www.electronjs.org/) version 10.4.0. 
+This is **not** the UWP/Microsoft Store build. If you are using Windows 10 or 11, we strongly recommend [the WikiMed release for the Microsoft Store](https://kiwix.github.io/kiwix-js-pwa/wikimed), which will keep itself up-to-date automatically. These portable and installable versions run on the included [Electron platform](https://www.electronjs.org/) version 10.4.0. 
 
-These builds are packaged with the <<date>> English-language WikiMed archive `<<zim>>`. They will run on 32bit and 64bit editions of Windows or Linux (tested on Ubuntu, Debian and OpenSUSE - but see instructions below). The Windows build is **not compatible with Windows XP or Windows Vista**. If you need an app compatible with those old platforms, get [Kiwix JS Windows reader](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html) and download the latest WikiMed archive from within the app.
+These builds are packaged with the <<date>> English-language WikiMed archive `<<zim>>`. They will run on 32bit and 64bit editions of Windows or Linux (tested on Ubuntu, Debian and OpenSUSE - but see instructions below). The Windows build is **not compatible with Windows XP or Windows Vista**. If you need an app compatible with those old platforms, get [Kiwix JS Windows reader](https://kiwix.github.io/kiwix-js-pwa/kiwix-js-nwjs.html) and download the latest WikiMed archive from within the app.
 
 Choose the correct build (**warning: the download is at least 1.2GB**):
 
 * **Windows**:
   - **Portable** (just unzip, no install needed)
-    + Windows 7/8/10/11 - [Kiwix JS WikiMed <<base_tag>>.zip](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed.<<base_tag>>.zip)
+    + Windows 7/8/10/11 - [Kiwix JS WikiMed <<base_tag>>.zip](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed.<<base_tag>>.zip)
   - **Installable**
-    + Windows 7/8/10/11 - [Kiwix JS WikiMed Setup <<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed.Setup.<<numeric_tag>>-E.exe)
+    + Windows 7/8/10/11 - [Kiwix JS WikiMed Setup <<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed.Setup.<<numeric_tag>>-E.exe)
 * **Linux**:
   - **Portable**
-    + AppImage 64bit (Ubuntu, Debian, OpenSUSE) - [Kiwix JS WikiMed-<<numeric_tag>>-E.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed-<<numeric_tag>>-E.AppImage)
-    + AppImage 32bit (Ubuntu, Debian, OpenSUSE) - [Kiwix JS WikiMed-<<numeric_tag>>-E-i386.AppImage](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed-<<numeric_tag>>-E-i386.AppImage)
+    + AppImage 64bit (Ubuntu, Debian, OpenSUSE) - [Kiwix JS WikiMed-<<numeric_tag>>-E.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed-<<numeric_tag>>-E.AppImage)
+    + AppImage 32bit (Ubuntu, Debian, OpenSUSE) - [Kiwix JS WikiMed-<<numeric_tag>>-E-i386.AppImage](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed-<<numeric_tag>>-E-i386.AppImage)
   - **Installable**
-    + Deb package 64bit (Ubuntu, Debian) - [kiwix-js-wikimed_<<numeric_tag>>-E_amd64.deb](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/kiwix-js-wikimed_<<numeric_tag>>-E_amd64.deb)
-    + Deb package 32bit (Ubuntu, Debian) - [kiwix-js-wikimed_<<numeric_tag>>-E_i386.deb](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/kiwix-js-wikimed_<<numeric_tag>>-E_i386.deb)
+    + Deb package 64bit (Ubuntu, Debian) - [kiwix-js-wikimed_<<numeric_tag>>-E_amd64.deb](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/kiwix-js-wikimed_<<numeric_tag>>-E_amd64.deb)
+    + Deb package 32bit (Ubuntu, Debian) - [kiwix-js-wikimed_<<numeric_tag>>-E_i386.deb](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/kiwix-js-wikimed_<<numeric_tag>>-E_i386.deb)
 
 There is no installation required for the Portable versions. NONE of these builds auto-update (yet). Installation instructions are after the screenshot.
 
@@ -25,11 +25,11 @@ There is no installation required for the Portable versions. NONE of these build
 
 ### Instructions:
 
-* For the Windows Portable build, unzip the contents of the [Kiwix JS WikiMed <<base_tag>>.zip archive](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed.<<base_tag>>.zip) archive to any folder, or to a flash drive / thumb drive, and double click on `Start Kiwix JS WikiMed` or `Start Kiwix JS WikiMed.bat`, or open the `kiwix-js-windows-win32-ia32` folder and double click on `Kiwix JS WikiMed.exe`.
+* For the Windows Portable build, unzip the contents of the [Kiwix JS WikiMed <<base_tag>>.zip archive](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed.<<base_tag>>.zip) archive to any folder, or to a flash drive / thumb drive, and double click on `Start Kiwix JS WikiMed` or `Start Kiwix JS WikiMed.bat`, or open the `kiwix-js-pwa-win32-ia32` folder and double click on `Kiwix JS WikiMed.exe`.
 * For the Windows Setup (installable) build, simply download and launch. It will install itself, together with a shortcut in your shortcut menu, and run. When you want to update the app, just install a new version over it (it will uninstall the old one for you).
 * For the Linux portable builds, download and save the correct AppImage file anywhere (e.g. your Desktop), and double-click it. If it doesn’t work, open Terminal and run `chmod a+x Kiwix.JS.WikiMed*.AppImage` and then `./Kiwix.JS.WikiMed*.AppImage`. On **Debian**, you will probably need to add the `--no-sandbox` switch to the command like this `./Kiwix.JS.WikiMed*.AppImage --no-sandbox` (see https://github.com/electron/electron/issues/17972#issuecomment-516957971). On **OpenSUSE**, you may need to use these commandline switches instead: `./Kiwix.JS.WikiMed*.AppImage --use-gl=disabled --disable-gpu-compositing`.¹
 * For the Linux installable builds, download the correct `.deb` package. Open a terminal, `cd` to the directory containing the package, and type `sudo apt install ./kiwix-js-wikimed*.deb`. Once installed, on **Debian**, you may have to run the app by opening terminal and typing `kiwix-js-wikimed --no-sandbox`. On **Ubuntu**, you should be able to run it from its installed icon. When you want to update, just install the new version, and it will install over the old version. To install on **OpenSUSE**, it may be easiest to extract the files from the AppImage instead of using the Deb package. The executable is `kiwix-js-wikimed` and you may need to add the commandline switches `--use-gl=disabled --disable-gpu-compositing`.¹
-* Windows: **Because the portable archive may not be commonly downloaded, you may face Windows SmartScreen issues** on first launch. Follow instructions to "Run anyway" if you trust this site. If you prefer, use the installable version [Kiwix JS WikiMed Setup <<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-windows/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed.Setup.<<numeric_tag>>-E.exe) which is digitally signed.
+* Windows: **Because the portable archive may not be commonly downloaded, you may face Windows SmartScreen issues** on first launch. Follow instructions to "Run anyway" if you trust this site. If you prefer, use the installable version [Kiwix JS WikiMed Setup <<numeric_tag>>-E.exe](https://github.com/kiwix/kiwix-js-pwa/releases/download/v<<base_tag>>-WikiMed/Kiwix.JS.WikiMed.Setup.<<numeric_tag>>-E.exe) which is digitally signed.
 
 ¹ With many thanks to Jay Midura for documenting the switches needed for OpenSUSE.
 
@@ -46,4 +46,4 @@ There is no installation required for the Portable versions. NONE of these build
 
 * INCONSISTENCY: When printing in jQuery mode, all sections are opened before printing (if the user had closed any), whereas in SW mode, closed sections are not opened before printing;
 * If you download an archive from within the app (from Configuration), you will be able to pick a download directory, and the download will start, but then there will be no further indication that a download is in progress. You will need to check the chosen download directory to see if the download has completed;
-* Please see https://github.com/kiwix/kiwix-js-windows/issues for further known issues. If you find a new issue, please open a new issue on that page.
+* Please see https://github.com/kiwix/kiwix-js-pwa/issues for further known issues. If you find a new issue, please open a new issue on that page.

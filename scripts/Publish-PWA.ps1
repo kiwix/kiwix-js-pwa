@@ -19,7 +19,7 @@ param (
 )
 
 # Provide parameters
-$release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-windows/actions/workflows/publish-docker.yaml/dispatches'
+$release_uri = 'https://api.github.com/repos/kiwix/kiwix-js-pwa/actions/workflows/publish-docker.yaml/dispatches'
 
 $app_params = Select-String 'appVersion' "$PSScriptRoot\..\www\js\init.js" -List
 $serviceworker = Select-String 'appVersion' "$PSScriptRoot\..\service-worker.js" -List

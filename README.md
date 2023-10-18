@@ -12,11 +12,11 @@ offline knowledge!**
 
 The app is available either as an offline-capable, [installable Web App](#universal-progressive-web-app) (PWA), for almost all modern
 browsers and devices, or else as app packages for various Windows and Linux operating systems: see
-**[Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html)**. For **Mac and iOS**, use the offline
+**[Kiwix JS for Windows and Linux](https://kiwix.github.io/kiwix-js-pwa/app)**. For **Mac and iOS**, use the offline
 web app ([more info below](#universal-progressive-web-app)).
 
-We also have packaged apps of **[WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikimed-uwp.html)** (a complete medical
-encyclopaedia), and **[Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-windows/wikivoyage-uwp.html)** (a complete travel guide) in
+We also have packaged apps of **[WikiMed by Kiwix](https://kiwix.github.io/kiwix-js-pwa/wikimed)** (a complete medical
+encyclopaedia), and **[Wikivoyage by Kiwix](https://kiwix.github.io/kiwix-js-pwa/wikivoyage)** (a complete travel guide) in
 English -- no extra download needed! (You can, however, download other languages in these apps.)
 
 If you are using **Windows 10 or 11**, then all three apps are conveniently available in the Microsoft Store:
@@ -24,8 +24,8 @@ If you are using **Windows 10 or 11**, then all three apps are conveniently avai
 **[WikiMed by Kiwix](https://www.microsoft.com/store/apps/9PHJSNP1CZ8J)**,
 and **[Wikivoyage by Kiwix](https://www.microsoft.com/store/apps/9N5SB90Q4JBJ)**. They will automatically update when a new package is
 available. If you are using **Linux**, then the
-[Electron AppImage package](http://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html) of Kiwix JS also (optionally) self-updates,
-as does the installable [Windows Electron package](http://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html). All other apps can
+[Electron AppImage package](http://kiwix.github.io/kiwix-js-pwa/app) of Kiwix JS also (optionally) self-updates,
+as does the installable [Windows Electron package](http://kiwix.github.io/kiwix-js-pwa/app). All other apps can
 (optionally) notify you when a new version is available, and give you a download link.
 
 ## Universal Progressive Web App
@@ -42,7 +42,7 @@ Once installed, bookmarked or added to your home screen, the PWA works even when
 
 And when we say "Universal", we mean Universal: Android, iOS, macOS, Linux, Windows...
 
-<img src="https://github.com/kiwix/kiwix-js-windows/assets/4304337/bbe944b5-ab64-4a24-a826-367e0ded0e33" width=640 />
+<img src="https://github.com/kiwix/kiwix-js-pwa/assets/4304337/bbe944b5-ab64-4a24-a826-367e0ded0e33" width=640 />
 
 ## How do I get all of Wikipedia offline?
 
@@ -64,7 +64,7 @@ Try it and see! You don't have to make your own Zimit ZIMs: Kiwix download libra
 sites in the Zimit file format, such as the Ready.Gov disaster preparedness site, the fascinating Low-Tech magazine, the CIA World Factbook --
 amongst many others. Just open the Zimit directory in the in-app library.
 
-![Kiwix_better_zimit_montage](https://github.com/kiwix/kiwix-js-windows/assets/4304337/9462d1ee-d7e4-45db-866d-a1839c0f6b19)
+![Kiwix_better_zimit_montage](https://github.com/kiwix/kiwix-js-pwa/assets/4304337/9462d1ee-d7e4-45db-866d-a1839c0f6b19)
 
 ## Browser support
 
@@ -86,10 +86,10 @@ try switching the app to JQuery mode (see Content injection mode in Configuratio
 
 * As an application implemented with the following frameworks:
 
-  + <img src="images/electron-color.svg" width="27" /> Electron >= 1.8.0 (Ubuntu, Debian, Fedora, OpenSUSE, AppImage, Windows): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-electron.html)
-  + <img src="images/microsoftwindows-color.svg" width="20" /> Universal Windows Platform (UWP) >=10.0.10240: [Microsoft Store app](https://www.microsoft.com/store/apps/9P8SLZ4J979J) or [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html) - Windows 10/11 (Electron), Windows on ARM, Xbox, Windows 10 Mobile
-  + <img src="images/nwjs-color.svg" width="20" /> NWJS >= 0.23.0 (Windows 7/8/10/11): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html)
-  + NWJS 0.14.7 (Windows XP/Vista only): [GitHub release](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html)
+  + <img src="images/electron-color.svg" width="27" /> Electron >= 1.8.0 (Ubuntu, Debian, Fedora, OpenSUSE, AppImage, Windows): [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app)
+  + <img src="images/microsoftwindows-color.svg" width="20" /> Universal Windows Platform (UWP) >=10.0.10240: [Microsoft Store app](https://www.microsoft.com/store/apps/9P8SLZ4J979J) or [GitHub release](https://kiwix.github.io/kiwix-js-pwa/app) - Windows 10/11 (Electron), Windows on ARM, Xbox, Windows 10 Mobile
+  + <img src="images/nwjs-color.svg" width="20" /> NWJS >= 0.23.0 (Windows 7/8/10/11): [GitHub release](https://kiwix.github.io/kiwix-js-pwa/kiwix-js-nwjs.html)
+  + NWJS 0.14.7 (Windows XP/Vista only): [GitHub release](https://kiwix.github.io/kiwix-js-pwa/kiwix-js-nwjs.html)
 
 `*` With **Firefox on Android**, the app is only useable with files stored in the Origin Private File System. There is a Firefox bug whereby the browser
 attempts to read the entire ZIM archive into memory if opening it from the user-visible file system.
@@ -108,8 +108,8 @@ Although deprecated, we will keep support for as long as is practical:
 This repository is for development of the Kiwix JS app for PWA, Electron, NWJS and Windows 10/11 Universal Windows Platform (UWP).
 The latest code is usually on the main branch, but this is used for active development and may be several commits ahead of releases.
 Installable and portable versions for Windows (XP/Vista/7/8/10/11) and Linux (32bit and 64bit) are available from
-[releases](https://github.com/kiwix/kiwix-js-windows/releases/). Unstable [nightly builds](https://download.kiwix.org/nightly/) of the
-Electron and NWJS apps are available together with a [development deployment](https://kiwix.github.io/kiwix-js-windows/), but code may be
+[releases](https://github.com/kiwix/kiwix-js-pwa/releases/). Unstable [nightly builds](https://download.kiwix.org/nightly/) of the
+Electron and NWJS apps are available together with a [development deployment](https://kiwix.github.io/kiwix-js-pwa/), but code may be
 buggy and change rapidly.
 
 The code is based on [Kiwix JS](https://github.com/kiwix/kiwix-js), a lightweight HTML/JavaScript port of the Kiwix Offline reader.
@@ -122,9 +122,9 @@ APIs, see the bottom of this page:
 All three apps are available in the WinGet Package Manager. You can sideload the UWP version (in Windows 10/11) by opening a Command
 Prompt or PowerShell terminal and typing `winget install kiwix.kiwixjs` (this version will not auto-update, but it will let you know when
 a new update is ready to install). Alternative sideloading instructions are available in the
-[release notes](https://kiwix.github.io/kiwix-js-windows/kiwix-js-uwp.html). The Electron version can be installed with
+[release notes](https://kiwix.github.io/kiwix-js-pwa/app). The Electron version can be installed with
 `winget install kiwix.kiwixjs.electron`, or else by downloading a package from
-[Releases](https://github.com/kiwix/kiwix-js-windows/releases/). For testing, the Store, Electron and NWJS versions come packaged with a
+[Releases](https://github.com/kiwix/kiwix-js-pwa/releases/). For testing, the Store, Electron and NWJS versions come packaged with a
 mini archive of the top 100 Wikipedia articles (without images and with only the lede paragraph).
 
 This app is regularly tested fully on Wikimedia ZIM files, though many other ZIM file types work. There is experimental support for most
@@ -132,7 +132,7 @@ Zimit ZIMs from version 1.9.8 onwards, and Type 1 Zimit ZIMs are supported from 
 most storage types (including microSD cards) that are formatted as exFAT or NTFS, you can store even these very large files in the storage
 with no problem. However, if you plan to store your ZIM file on an SD card formatted as **FAT32**, and you wish to use an archive larger
 than 4GB, then you will need to split the ZIM: see
-[file splitting instructions](https://github.com/kiwix/kiwix-js-windows/tree/main/AppPackages#download-a-zim-archive-all-platforms).
+[file splitting instructions](https://github.com/kiwix/kiwix-js-pwa/tree/main/AppPackages#download-a-zim-archive-all-platforms).
 
 A lot of development for this app happens upstream in the [Kiwix JS repository](https://kiwix.github.io/kiwix-js/) to which I ontribute
 actively. Without Kiwix JS, this app would be impossible, and huge thanks goes to the original developers of first the Evopedia app and
@@ -142,7 +142,7 @@ Kantaris. I can be contacted by email: egk10 at cam ac uk.
 
 ## Reporting bugs
 
-Please use this repository's [issue tracker](https://github.com/kiwix/kiwix-js-windows/issues) to report any bugs you have found with the software. Open a new
+Please use this repository's [issue tracker](https://github.com/kiwix/kiwix-js-pwa/issues) to report any bugs you have found with the software. Open a new
 issue (after checking that the issue you identified doesn't have an issue already). In all cases, please state clearly the version number you are using (see
 the About page in the app), and which browser or platform you are using. Please read the
 [Kiwix JS bug reporting guidelines](https://github.com/kiwix/kiwix-js/blob/main/REPORT_BUG.md) before opening your issue.
@@ -219,6 +219,6 @@ for further information.
 
 **Builds of this app are available that do not use a Store or an online Service Worker.** Please see:
 
-* [Releases](https://github.com/kiwix/kiwix-js-windows/releases/)
-* [NWJS version](https://kiwix.github.io/kiwix-js-windows/kiwix-js-nwjs.html) - this version is completely standalone
+* [Releases](https://github.com/kiwix/kiwix-js-pwa/releases/)
+* [NWJS version](https://kiwix.github.io/kiwix-js-pwa/kiwix-js-nwjs.html) - this version is completely standalone
   and will never access servers unless you allow it to.

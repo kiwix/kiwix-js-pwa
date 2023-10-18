@@ -2,23 +2,27 @@
  * zimfile.js: Low-level ZIM file reader.
  *
  * Copyright 2015 Mossroy and contributors
- * License GPL v3:
+ * Licence GPL v3:
  *
  * This file is part of Kiwix.
  *
  * Kiwix is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU General Public Licence as published by
+ * the Free Software Foundation, either version 3 of the Licence, or
  * (at your option) any later version.
  *
  * Kiwix is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General Public Licence for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General Public Licence
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
+
+'use strict';
+
+/* global params, appstate */
 
 import xz from './xzdec_wrapper.js';
 import zstd from './zstddec_wrapper.js';
@@ -26,10 +30,6 @@ import util from './util.js';
 import utf8 from './utf8.js';
 import zimDirEntry from './zimDirEntry.js';
 import FileCache from './filecache.js';
-
-/* global params, appstate */
-
-'use strict';
 
 /**
  * This code makes an assumption that no Directory Entry will be larger that MAX_SUPPORTED_DIRENTRY_SIZE bytes.
@@ -112,7 +112,6 @@ var readInt = function (data, offset, size) {
  * @property {Integer} mimeListPos Position of the MIME type list (also header size)
  * @property {Integer} mainPage Main page or 0xffffffff if no main page
  * @property {Integer} layoutPage Layout page or 0xffffffffff if no layout page
- * @property {String} zimType Extended property: currently either 'open' for OpenZIM file type, or 'zimit' for the warc2zim file type used by Zimit (set in zimArchive.js)
  * @property {Map} mimeTypes Extended property: the ZIM file's MIME type table rendered as a Map (calculated entry)
  */
 
@@ -230,7 +229,7 @@ ZIMFile.prototype.dirEntry = function (offset) {
  * @returns {Promise<DirEntry>} A Promise for the requested DirEntry
  */
 ZIMFile.prototype.dirEntryByUrlIndex = function (index) {
-    var that = appstate.selectedArchive._file;
+    var that = appstate.selectedArchive.file;
     if (!that) return Promise.resolve(null);
     return that._readInteger(that.urlPtrPos + index * 8, 8).then(function (dirEntryPos) {
         return that.dirEntry(dirEntryPos);
@@ -243,7 +242,7 @@ ZIMFile.prototype.dirEntryByUrlIndex = function (index) {
  * @returns {Promise<DirEntry>} A Promise for the requested DirEntry
  */
 ZIMFile.prototype.dirEntryByTitleIndex = function (index) {
-    var that = appstate.selectedArchive._file;
+    var that = appstate.selectedArchive.file;
     // Use v1 title pointerlist if available, or fall back to legacy v0 list
     var ptrList = that.articlePtrPos || that.titlePtrPos;
     return that._readInteger(ptrList + index * 4, 4).then(function (urlIndex) {
@@ -333,7 +332,6 @@ ZIMFile.prototype.setListings = function (listings) {
     // If we are in a legacy ZIM archive, we need to calculate the true article count (of entries in the A namespace)
     // This effectively emulates the v1 article pointerlist
     if (this.minorVersion === 0) {
-        // console.debug('ZIM DirListing version: 0 (legacy)', this);
         // Initiate a binary search for the first or last article
         var getArticleIndexByOrdinal = function (ordinal) {
             return util.binarySearch(0, that.entryCount, function (i) {
