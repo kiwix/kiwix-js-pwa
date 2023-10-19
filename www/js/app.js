@@ -3459,6 +3459,13 @@ function setLocalArchiveFromArchiveList (archive) {
     }
 }
 
+/**
+ * Processes all the given fileHandles (which should be the fileHandles of the ZIM files in a directory) and matches them to the requested archive.
+ * In particular, it deals with split archives, gathering all the file parts. Intended for use with the File System API.
+ *
+ * @param {Array<FileSystemHandle>} fileHandles A set of fileHandles in a directory
+ * @param {String} archive The name of the archive to be loaded, or of the first split part (.zimaa)
+ */
 function processDirectoryOfFiles (fileHandles, archive) {
     var fileHandle;
     var fileset = [];
@@ -4705,8 +4712,22 @@ function readArticle (dirEntry) {
                     // if (params.contentInjectionMode === 'jquery') {
                     // In jQuery mode, we read the article content in the backend and manually insert it in the iframe
                     appstate.selectedArchive.readUtf8File(dirEntry, function (fileDirEntry, data) {
-                        if (fileDirEntry.zimitRedirect) goToArticle(fileDirEntry.zimitRedirect);
-                        else displayArticleContentInContainer(fileDirEntry, data);
+                        if (fileDirEntry && fileDirEntry.zimitRedirect) {
+                            goToArticle(fileDirEntry.zimitRedirect);
+                        } else {
+                            if (!data) {
+                                var requestedURL = (dirEntry.zimitRedirect ? dirEntry.zimitRedirect : dirEntry.namespace + '/' + dirEntry.url)
+                                uiUtil.systemAlert(
+                                    '<p>The requested page <b>' + requestedURL + '</b> does not appear to be an article!</p>' +
+                                    '<p>Try searching for content in the search bar, or type a <b><i>space</i></b> for the ZIM ' +
+                                    'index, or <b><i>space /</i></b> for the URL index.</p>'
+                                ).then(function () {
+                                    prefix.focus();
+                                });
+                            }
+                            fileDirEntry = fileDirEntry || dirEntry;
+                            displayArticleContentInContainer(fileDirEntry, data);
+                        }
                     });
                     // This is needed so that the html is cached in displayArticleInForm
                     params.lastPageVisit = '';
@@ -5170,8 +5191,10 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         articleWindow.kiwixType = appstate.target;
         // Scroll the old container to the top
         articleWindow.scrollTo(0, 0);
-        articleDocument = articleWindow.document.documentElement;
-        articleDocument.innerHTML = htmlArticle;
+        articleDocument = articleWindow.document;
+        articleDocument.open();
+        articleDocument.write(htmlArticle);
+        articleDocument.close();
         return;
     }
     // If we find a stylesheet beginning with a root-relative link ('/something.css'), then we're in a very old legacy ZIM
