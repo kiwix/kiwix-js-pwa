@@ -5191,8 +5191,10 @@ function displayArticleContentInContainer (dirEntry, htmlArticle) {
         articleWindow.kiwixType = appstate.target;
         // Scroll the old container to the top
         articleWindow.scrollTo(0, 0);
-        articleDocument = articleWindow.document.documentElement;
-        articleDocument.innerHTML = htmlArticle;
+        articleDocument = articleWindow.document;
+        articleDocument.open();
+        articleDocument.write(htmlArticle);
+        articleDocument.close();
         return;
     }
     // If we find a stylesheet beginning with a root-relative link ('/something.css'), then we're in a very old legacy ZIM
