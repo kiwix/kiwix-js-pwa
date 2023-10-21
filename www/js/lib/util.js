@@ -2,21 +2,21 @@
  * util.js : Utility functions
  *
  * Copyright 2013-2023 Mossroy, Jaifroid and contributors
- * License GPL v3:
+ * Licence GPL v3:
  *
  * This file is part of Kiwix.
  *
  * Kiwix is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU General Public Licence as published by
+ * the Free Software Foundation, either version 3 of the Licence, or
  * (at your option) any later version.
  *
  * Kiwix is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General Public Licence for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General Public Licence
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 
@@ -40,7 +40,7 @@ function allCaseFirstLetters (string, caseMatchType) {
         var comboArray = [];
         // Split string into parts beginning with first word letters
         var strParts = string.match(regExpFindStringParts);
-        // Prevent a full search if we have more than 5 string parts
+        // Prevent a full search if we have more than 6 string parts
         if (strParts.length > 6) caseMatchType = 'basic';
         // Set the base (binary or ternary) according to the complexity of the search
         var base = caseMatchType === 'full' ? 3 : 2;
