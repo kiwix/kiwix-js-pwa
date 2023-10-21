@@ -64,6 +64,7 @@ function test (callback) {
         if (typeof Storage !== 'undefined') {
             try {
                 // If localStorage is really supported, this won't produce an error
+                // eslint-disable-next-line no-unused-vars
                 var item = window.localStorage.length;
                 assetsCache.capability = assetsCache.capability + '|localStorage';
             } catch (err) {
@@ -199,6 +200,7 @@ function idxDB (keyOrCommand, valueOrCallback, callback) {
     // Create the schema
     open.onupgradeneeded = function () {
         var db = open.result;
+        // eslint-disable-next-line no-unused-vars
         var store = db.createObjectStore(objStore);
     };
 
@@ -489,6 +491,10 @@ function getItemFromCacheOrZIM (selectedArchive, key, dirEntry) {
                     var readFile = /\b(?:x?html|css|javascript)\b/i.test(mimetype)
                         ? selectedArchive.readUtf8File : selectedArchive.readBinaryFile;
                     readFile(resolvedDirEntry, function (fileDirEntry, content) {
+                        if (!fileDirEntry && !content) {
+                            console.warn('Could not read asset ' + title);
+                            return;
+                        }
                         if (regexpMimeTypes.test(mimetype)) {
                             console.debug('Cache retrieved ' + title + ' from ZIM');
                             // Process any pre-cache transforms
