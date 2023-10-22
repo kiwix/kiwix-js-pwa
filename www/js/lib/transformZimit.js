@@ -59,7 +59,7 @@ function filterReplayFiles (dirEntry) {
     params.isLandingPage && /^(A\/)?index\.html(?:[?#]|$)/.test(dirEntry.url)) {
         dirEntry.inspect = true;
     }
-    if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|update\.googleapis|play\.google.*(?:stats|logs)|youtube\.com.*\/stats|google\.internal|syndication|survey\.js|yuiloader\.js|doubleclick|play\.google\.)(?:[?#]|$)/i.test(dirEntry.url)) {
+    if (/(?:\bload\.js|\bsw\.js|analytics.*\.js|update\.googleapis|play\.google.*(?:stats|logs)|youtube\.com.*\/stats|google\.internal|syndication|survey\.js|yuiloader\.js|doubleclick|play\.google\.|developer\.mozilla\.org\/static\/js\/main\..+\.js)(?:[?#]|$)/i.test(dirEntry.url)) {
         dirEntry.nullify = true;
     }
     return dirEntry;
