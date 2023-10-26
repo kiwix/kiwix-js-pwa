@@ -921,31 +921,12 @@ function iterateAsyncDirEntries (entries, archives, noFilter) {
 function iterateOPFSEntries () {
     if (navigator && navigator.storage && 'getDirectory' in navigator.storage) {
         return navigator.storage.getDirectory().then(function (dirHandle) {
-            var archiveEntries = [];
             var entries = dirHandle.entries();
-            var promisesForEntries = [];
-            // Push the pormise for each entry to the promises array
-            var pushPromises = new Promise(function (resolve) {
-                (function iterate () {
-                    return entries.next().then(function (result) {
-                        if (!result.done) {
-                            // Process the entry, then continue iterating
-                            var entry = result.value[1];
-                            archiveEntries.push(entry);
-                            promisesForEntries.push(result);
-                            iterate();
-                        } else {
-                            return resolve(true);
-                        }
-                    });
-                })();
-            });
-            return pushPromises.then(function () {
-                return Promise.all(promisesForEntries).then(function () {
-                    return archiveEntries;
-                }).catch(function (err) {
-                    console.error('Unable to iterate OPFS entries', err);
-                });
+            return iterateAsyncDirEntries(entries, []).then(function (archiveList) {
+                return archiveList;
+            }).catch(function (err) {
+                console.error('Unable to iterate OPFS entries', err);
+                throw err;
             });
         });
     }
