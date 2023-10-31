@@ -862,12 +862,12 @@ function deleteOPFSEntry (name) {
             return iterateOPFSEntries().then(function (entries) {
                 var baseName = name.replace(/\.zim[^.]*$/i, '');
                 entries.forEach(function (entry) {
-                    if (~entry.name.indexOf(baseName)) {
-                        return dirHandle.removeEntry(entry.name).then(function () {
-                            console.log('Deleted ' + entry.name + ' from OPFS');
+                    if (~entry.indexOf(baseName)) {
+                        return dirHandle.removeEntry(entry).then(function () {
+                            console.log('Deleted ' + entry + ' from OPFS');
                             populateOPFSStorageQuota();
                         }).catch(function (err) {
-                            console.error('Unable to delete ' + entry.name + ' from OPFS', err);
+                            console.error('Unable to delete ' + entry + ' from OPFS', err);
                         });
                     }
                 });
