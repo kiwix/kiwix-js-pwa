@@ -1,12 +1,13 @@
 # Changelog
 
-## In-progress release 2.7.42
+## In-progress release 2.7.6
 
 * ENHANCEMENT: Add indicative colourization to archive list when using OPFS
-* ENHANCEMENT: Add a spinner for adding and direct download of files to OPFS
+* ENHANCEMENT: Show a spinner when adding and direct-downloading files to OPFS
 * ENHANCEMENT: After failure to import or download to OPFS, delete file stub(s)
 * INFO: Inform user that OPFS files are preserved on app reset
 * INFO: More informative message about import/download error in Safari
+* INFO: Added new demo of OPFS features to Repository documentation
 * FIX: Tested and fixed support for new dynamic UI in ZIMs produced by Kolibri scraper
 * FIX: When using locally cached CSS, the details/summary tags are restored where missing from ZIM
 * FIX: Display of open-close markers for headers is now as expected in mobile css (suppressed in desktop css)
@@ -15,8 +16,12 @@
 * FIX: Ensure some HTML and entities do not appear in constructed article titles
 * FIX: Don't show spinner on click in cases of anchor or javascript links
 * FIX: Cancel OPFS delete if export selected and vice versa
-* DEV: Name of repository changed to kiwix-js-pwa
-* DEV: Add facility for adding ZIM metadata to the ZIMArchive object
+* FIX: Better handling of empty directory entries or empty content
+* FIX: Better handling of missing ZIM assets
+* FIX: Exception displaying plain text when a dirEntry does not have any HTML content
+* FIX: Add some sanity checks to prevent runaway searches
+* DEV: Name of repository changed to kiwix-js-pwa, permalinks changed
+* DEV: Provide facility for adding ZIM metadata to the ZIMArchive object
 
 ## Release 2.7.2
 

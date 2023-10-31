@@ -102,22 +102,21 @@
                         <div id="update" class="update">
                             <h3 style="margin-top:0;">Changes in version <span class="version">2.0</span></h3>
                             <ul style="padding-left: 15px;">
-                                <li>For interim updates since v2.7.2, please see <a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank">CHANGELOG</a></li>
-                                <li>Rework file system access and support Origin Private File System (OPFS)</li>
-                                <li>Autoload and display of all archives in OPFS on app launch, no permission prompts!</li>
-                                <li>Last selected archive (and optionally article) auto-loaded on app launch if in OPFS</li>
-                                <li>Import existing archives from anywhere on device into the OPFS easily with file picker</li>
-                                <li>New file management facility for deleting, and (in some contexts) exporting OPFS archives</li>
-                                <li>Option to download archives directly into the OPFS, without downloading first to user-visible FS</li>
-                                <li>Option to download archives directly into any folder pickable with the File System Access API</li>
-                                <li>Full-text search enabled by default on Android for archives in OPFS</li>
-                                <li>Pick multiple archives at once and switch easily between them, even on legacy systems</li>
-                                <li>New Operations Panel to show download progress in PWA and Electron apps</li>
-                                <li>Fix exception preventing display of legacy archive content in jQuery mode</li>
-                                <li>Fix Failure to display ZIM Archive Index when typing space in some circumstances</li>
-                                <li>Avoid duplication of title in wider range of ZIMs</li>
-                                <li>Fixed failure to refresh full-screen state when clicking in-app in SW mode</li>
-                                <li>Sample archive updated to wikipedia_en_100_mini_2023-10</li>
+                                <li>Add indicative colourization to archive list when using OPFS</li>
+                                <li>Show a spinner when adding and direct-downloading files to OPFS</li>
+                                <li>After failure to import or download to OPFS, delete file stub(s)</li>
+                                <li>Inform user that OPFS files are preserved on app reset</li>
+                                <li>Added new demo of OPFS features to Repository documentation</li>
+                                <li>When using locally cached CSS, the details/summary tags are restored where missing from ZIM</li>
+                                <li>Display of open-close markers for headers is now as expected in mobile css (suppressed in desktop css)</li>
+                                <li>Empty the archive list when OPFS is deactivated</li>
+                                <li>Make sure spinner doesn't block the UI</li>
+                                <li>Ensure some HTML and entities do not appear in constructed article titles</li>
+                                <li>Better handling of empty directory entries or empty content</li>
+                                <li>Exception displaying plain text when a dirEntry does not have any HTML content</li>
+                                <li>Add some sanity checks to prevent runaway searches</li>
+                                <li>Name of repository changed to kiwix-js-pwa, permalinks changed</li>
+                                <li>Provide facility for adding ZIM metadata to the ZIMArchive object</li>
                             </ul>
                             <p><a href="https://github.com/kiwix/kiwix-js-pwa/blob/main/CHANGELOG.md" target="_blank" rel="noopener">And there's more...<img alt="external link" src="I/s/Icon_External_Link.png"></a></p>
                         </div>
