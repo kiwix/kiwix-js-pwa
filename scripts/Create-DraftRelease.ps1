@@ -747,15 +747,15 @@ if ($dryrun -or $buildonly -or $release.assets_url -imatch '^https:') {
     }
   }
   "`nCreating permalink..."
-  $permalinkFile = "$PSScriptRoot/../kiwix-js-uwp.html"
+  $permalinkFile = "$PSScriptRoot/../app/uwp.html"
   $permalinkFile2 = ""
   $permalinkFile3 = ""
-  if ($tag_name -imatch 'WikiMed') { $permalinkFile = $permalinkFile -replace 'kiwix-js-uwp', 'wikimed-uwp' }
-  if ($tag_name -imatch 'Wikivoyage') { $permalinkFile = $permalinkFile -replace 'kiwix-js-uwp', 'wikivoyage-uwp' }
+  if ($tag_name -imatch 'WikiMed') { $permalinkFile = $permalinkFile -replace 'app', 'wikiumed' }
+  if ($tag_name -imatch 'Wikivoyage') { $permalinkFile = $permalinkFile -replace 'app', 'wikivoyage' }
   if ($flavour -eq '_N') { $permalinkFile = $permalinkFile -replace 'uwp', 'nwjs' }
   if ($tag_name -match 'E\+N') { $permalinkFile2 = $permalinkFile -replace 'uwp', 'nwjs' }
-  if ($flavour -eq '_E') { $permalinkFile = $permalinkFile -replace 'uwp', 'electron' }
-  if ($plus_electron) { $permalinkFile3 = $permalinkFile -replace 'uwp', 'electron' }
+  if ($flavour -eq '_E') { $permalinkFile = $permalinkFile -replace 'uwp', 'index' }
+  if ($plus_electron) { $permalinkFile3 = $permalinkFile -replace 'uwp', 'index' }
   "Looking for: $permalinkFile"
   foreach ($file in @($permalinkFile, $permalinkFile2, $permalinkFile3)) {
     if ($file) {
